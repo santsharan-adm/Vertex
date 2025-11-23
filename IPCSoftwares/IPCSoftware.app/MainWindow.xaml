@@ -1,0 +1,91 @@
+﻿<Window x:Class="IPCSoftware.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+
+        <!-- RIBBON -->
+        <ContentControl x:Name="RibbonHost" Grid.Row="0"/>
+
+        <!-- MAIN BODY -->
+        <Grid Grid.Row="1">
+
+            <!-- ============================ -->
+            <!--         SIDEBAR              -->
+            <!-- ============================ -->
+            <Border x:Name="SideMenu"
+                    Width="250"
+                    HorizontalAlignment="Left"
+                    Background="#1E1E1E"
+                    Panel.ZIndex="10">
+
+                <Border.RenderTransform>
+                    <TranslateTransform X="-250"/>
+                </Border.RenderTransform>
+
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Style.Triggers>
+                            <!-- OPEN SIDEBAR -->
+                            <DataTrigger Binding="{Binding IsSidebarOpen}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation 
+                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                To="0"
+                                                Duration="0:0:0.25">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation 
+                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                To="-250"
+                                                Duration="0:0:0.25">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseIn"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <StackPanel Margin="12">
+                    <ItemsControl ItemsSource="{Binding SidebarItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding}"
+                                        Margin="0 4"
+                                        Height="34"
+                                        Foreground="White"
+                                        Background="#333"
+                                        Command="{Binding DataContext.SidebarItemClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+            </Border>
+            <!-- MAIN CONTENT -->
+            <ContentControl x:Name="MainContent"/>
+
+        </Grid>
+    </Grid>
+
+</Window>

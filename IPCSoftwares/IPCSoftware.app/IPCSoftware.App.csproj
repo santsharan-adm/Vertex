@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="ConfigDB\users.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NavServices\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IPCSoftware.AppLogger\IPCSoftware.AppLogger.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Helpers\IPCSoftware.Helpers.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="ConfigDB\users.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+</Project>
