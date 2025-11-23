@@ -91,6 +91,9 @@ public class MainWindowViewModel : BaseViewModel
             case "Log Config":
                 _nav.NavigateMain<LogListView>();
                 break;
+            case "Device Config":
+                _nav.NavigateMain<DeviceListView>(); 
+                break;
             case "System Config":
                 // Navigate to system config view
                 break;

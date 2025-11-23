@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using IPCSoftware.Shared.IPCSoftware.Shared;
+using IPCSoftware.Core.Interfaces;
 
 namespace IPCSoftware.App.ViewModels
 {

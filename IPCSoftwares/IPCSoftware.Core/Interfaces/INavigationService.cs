@@ -22,5 +22,10 @@ namespace IPCSoftware.Core.Interfaces
 
         // NEW: For log configuration navigation
         void NavigateToLogConfiguration(LogConfigurationModel logToEdit, Func<Task> onSaveCallback);
+
+        void NavigateToDeviceList();
+        void NavigateToDeviceConfiguration(DeviceModel deviceToEdit, Func<Task> onSaveCallback);
+        void NavigateToDeviceDetail(DeviceModel device);
+        void NavigateToInterfaceConfiguration(DeviceModel parentDevice, DeviceInterfaceModel interfaceToEdit, Func<Task> onSaveCallback);
     }
 }
