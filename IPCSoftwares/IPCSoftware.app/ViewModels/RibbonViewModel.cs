@@ -35,7 +35,7 @@ public class RibbonViewModel : BaseViewModel
     {
         ShowSidebar?.Invoke(new List<string>
         {
-            "Live Dashboard",
+            "OEE Dashboard",
             "Machine Summary",
             "Performance KPIs"
         });
