@@ -1,0 +1,57 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace IPCSoftware.Shared.Models.ConfigModels
+{
+    public class LogConfigurationModel
+    {
+        public int Id { get; set; }
+        public string LogName { get; set; }
+        public string LogType { get; set; }
+        public string DataFolder { get; set; }
+        public string BackupFolder { get; set; }
+        public string FileName { get; set; }
+        public int LogRetentionTime { get; set; }
+        public int LogRetentionFileSize { get; set; }
+        public bool AutoPurge { get; set; }
+        public string BackupSchedule { get; set; }
+        public TimeSpan BackupTime { get; set; }
+        public string Description { get; set; }
+        public string Remark { get; set; }
+        public bool Enabled { get; set; }
+
+        public LogConfigurationModel()
+        {
+            // Default values
+            LogRetentionTime = 30;
+            LogRetentionFileSize = 4;
+            BackupTime = TimeSpan.Zero;
+            Enabled = false;
+        }
+
+        public LogConfigurationModel Clone()
+        {
+            return new LogConfigurationModel
+            {
+                Id = this.Id,
+                LogName = this.LogName,
+                LogType = this.LogType,
+                DataFolder = this.DataFolder,
+                BackupFolder = this.BackupFolder,
+                FileName = this.FileName,
+                LogRetentionTime = this.LogRetentionTime,
+                LogRetentionFileSize = this.LogRetentionFileSize,
+                AutoPurge = this.AutoPurge,
+                BackupSchedule = this.BackupSchedule,
+                BackupTime = this.BackupTime,
+                Description = this.Description,
+                Remark = this.Remark,
+                Enabled = this.Enabled
+            };
+        }
+    }
+
+}

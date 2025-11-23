@@ -5,7 +5,7 @@ using System.Windows.Controls;
 
 namespace IPCSoftware.Services
 {
-    public class NavigationService : INavigationService
+   /* public class NavigationService : INavigationService
     {
         private readonly IServiceProvider _provider;
 
@@ -53,4 +53,7 @@ namespace IPCSoftware.Services
         public void ClearMain() => _mainHost.Content = null;
         public void ClearTop() => _topHost.Content = null;
     }
+
+
+*/
 }

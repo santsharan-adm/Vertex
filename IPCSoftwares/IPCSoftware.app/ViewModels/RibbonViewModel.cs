@@ -1,6 +1,7 @@
 ﻿using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.IPCSoftware.Shared;
 using System.Windows.Input;
 
 public class RibbonViewModel : BaseViewModel
