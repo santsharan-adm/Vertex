@@ -1,6 +1,8 @@
 ﻿using IPCSoftware.App.ViewModels;
+using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.IPCSoftware.Shared;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -8,7 +10,7 @@ public class MainWindowViewModel : BaseViewModel
 {
     private readonly INavigationService _nav;
 
-   // public ICommand SidebarItemClickCommand { get; }
+    public ICommand SidebarItemClickCommand { get; }
     public RibbonViewModel RibbonVM { get; }
 
     public MainWindowViewModel(INavigationService nav, RibbonViewModel ribbonVM)
@@ -16,9 +18,9 @@ public class MainWindowViewModel : BaseViewModel
         _nav = nav;
         RibbonVM = ribbonVM;
         RibbonVM.ShowSidebar = LoadSidebarMenu;
-        // CONNECT RIBBON → SIDEBAR
-       // ConnectSidebar(RibbonVM);
-        //SidebarItemClickCommand = new RelayCommand(() => ConnectSidebar(RibbonVM));
+
+        SidebarItemClickCommand = new RelayCommand<string>(OnSidebarItemClick);
+
         UserSession.OnSessionChanged += () =>
 
         {
@@ -51,10 +53,10 @@ public class MainWindowViewModel : BaseViewModel
     // ==============================
     // RIBBON → SIDEBAR CONNECTION
     // ==============================
-  /*  public void ConnectSidebar(RibbonViewModel ribbonVM)
-    {
-        ribbonVM.ShowSidebar = LoadSidebarMenu;
-    }*/
+    /*  public void ConnectSidebar(RibbonViewModel ribbonVM)
+      {
+          ribbonVM.ShowSidebar = LoadSidebarMenu;
+      }*/
 
     private void LoadSidebarMenu(List<string> items)
     {
@@ -64,4 +66,67 @@ public class MainWindowViewModel : BaseViewModel
 
         IsSidebarOpen = !IsSidebarOpen;   // MVVM triggers animation
     }
+
+
+    private void OnSidebarItemClick(string itemName)
+    {
+        // Close sidebar
+        IsSidebarOpen = false;
+
+        // Navigate based on item name
+        switch (itemName)
+        {
+            // Dashboard Menu
+            case "Live Dashboard":
+                _nav.NavigateMain<DashboardView>();
+                break;
+            case "Machine Summary":
+                // Navigate to machine summary view
+                break;
+            case "Performance KPIs":
+                // Navigate to performance view
+                break;
+
+            // Config Menu
+            case "Log Config":
+                _nav.NavigateMain<LogListView>();
+                break;
+            case "System Config":
+                // Navigate to system config view
+                break;
+            case "Network Config":
+                // Navigate to network config view
+                break;
+
+            // Settings Menu
+            case "General Settings":
+                // Navigate to general settings view
+                break;
+            case "User Preferences":
+                // Navigate to user preferences view
+                break;
+
+            // Logs Menu
+            case "System Logs":
+                // Navigate to system logs view
+                break;
+            case "Application Logs":
+                // Navigate to application logs view
+                break;
+
+            // User Management Menu (Admin only)
+            case "Add User":
+                // Navigate to add user view
+                break;
+            case "User Roles":
+                // Navigate to user roles view
+                break;
+            case "User Audit":
+                // Navigate to user audit view
+                break;
+        }
+
+
+    }
+
 }
