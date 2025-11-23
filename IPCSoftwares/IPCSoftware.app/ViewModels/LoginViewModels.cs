@@ -64,7 +64,7 @@ namespace IPCSoftware.App.ViewModels
             _navigation.NavigateTop(ribbonView);
 
             // Load Dashboard
-            _navigation.NavigateMain<DashboardView>();
+            _navigation.NavigateMain<OEEDashboard>();
         }
 
     }

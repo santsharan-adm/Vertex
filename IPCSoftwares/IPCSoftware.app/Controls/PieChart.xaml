@@ -1,0 +1,38 @@
+<UserControl x:Class="IPCSoftware.App.Controls.PieChart"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+
+    <Grid>
+        <!-- CENTER TEXT -->
+        <StackPanel x:Name="CenterTextPanel"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+            <TextBlock x:Name="CenterTitle"
+                       Text="{Binding CenterText, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                       FontSize="26"
+                       Foreground="White"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- PIE CANVAS -->
+        <Canvas x:Name="PieCanvas"
+                Background="Transparent"
+                Margin="10"/>
+
+        <!-- TOOLTIP -->
+        <Border x:Name="Tooltip"
+                Background="#333"
+                BorderBrush="White"
+                BorderThickness="1"
+                Padding="6"
+                CornerRadius="6"
+                Visibility="Collapsed">
+            <TextBlock x:Name="TooltipText"
+                       Foreground="White"
+                       FontSize="14"/>
+        </Border>
+    </Grid>
+
+</UserControl>
