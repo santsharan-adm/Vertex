@@ -75,6 +75,7 @@
                                         Height="34"
                                         Foreground="White"
                                         Background="#333"
+                                         CommandParameter="{Binding}"
                                         Command="{Binding DataContext.SidebarItemClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

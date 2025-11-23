@@ -1,16 +1,26 @@
-﻿using System.Windows.Controls;
+﻿using IPCSoftware.Shared.Models.ConfigModels;
+using System.Windows.Controls;
 
 namespace IPCSoftware.Core.Interfaces
 {
     public interface INavigationService
     {
-        void Configure(ContentControl mainHost, ContentControl topHost);
+     /*   void Configure(ContentControl mainHost, ContentControl topHost);
 
         void NavigateMain<TView>() where TView : class, new();
-        //void NavigateTop<TView>() where TView : class, new();
+
+        void NavigateTop<TView>() where TView : class, new();
+        void ClearTop();
+        void ClearMain();*/
         void NavigateTop(object view);
 
+
+        void Configure(ContentControl mainContent, ContentControl ribbonHost);
+        void NavigateMain<TView>() where TView : UserControl;
+        void NavigateRibbon<TView>() where TView : UserControl;
         void ClearTop();
-        void ClearMain();
+
+        // NEW: For log configuration navigation
+        void NavigateToLogConfiguration(LogConfigurationModel logToEdit, Func<Task> onSaveCallback);
     }
 }
