@@ -81,6 +81,14 @@ namespace IPCSoftware.App.DI
             services.AddTransient<UserListView>();
             services.AddTransient<UserConfigurationView>();
 
+            services.AddTransient<ModeOfOperation>();
+            services.AddTransient<ManualOperation>();
+            services.AddTransient<PLCIOMonitor>();
+
+            services.AddTransient<ModeOfOperationViewModel>();
+            services.AddTransient<ManualOperationViewModel>();
+            services.AddTransient<PlcIoMonitorViewModel>();
+
             //services.AddTransient<SettingsView>();
             //services.AddTransient<LogsView>();
             //services.AddTransient<UserMgmtView>();

@@ -75,7 +75,8 @@ public class RibbonViewModel : BaseViewModel
                 "User Config",
                 "PLC TAG Config",
                 "Report Config",
-                "External Interface"
+                "External Interface",
+                "PLC IO"
             });
         }
     }

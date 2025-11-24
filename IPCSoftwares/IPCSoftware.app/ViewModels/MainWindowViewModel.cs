@@ -96,6 +96,18 @@ public class MainWindowViewModel : BaseViewModel
                 _nav.NavigateMain<UserListView>(); 
                 break;
         
+            case "Manual Operation":
+                _nav.NavigateMain<ManualOperation>(); 
+                break;
+        
+            case "Mode Of Operation":
+                _nav.NavigateMain<ModeOfOperation>(); 
+                break;
+        
+            case "PLC IO":
+                _nav.NavigateMain<PLCIOMonitor>(); 
+                break;
+        
         }
 
 

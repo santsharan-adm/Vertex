@@ -1,0 +1,88 @@
+﻿<UserControl x:Class="IPCSoftware.App.Views.ModeOfOperation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:IPCSoftware.App.Views"
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.DataContext>
+        <vm:ModeOfOperationViewModel/>
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+        <conv:SingleBtnEqualityConverter  x:Key="SingleBtnEqualityConverter"/>
+        <conv:EnumToSpacedStringConverter x:Key="EnumToSpacedStringConverter"/>
+    </UserControl.Resources>
+
+
+    <Grid>
+        <ItemsControl ItemsSource="{Binding Modes}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="3" Rows="3"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Content="{Binding Converter={StaticResource EnumToSpacedStringConverter}}" 
+        Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+        CommandParameter="{Binding}" 
+        Margin="83,25,61,25" Height="100" Width="NaN" FontSize="10">
+
+                        <Button.Style>
+                            <Style TargetType="Button">
+
+                                <!-- Remove default template -->
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                                            </Border>
+
+                                            <!-- Only pressed effect (optional) -->
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter TargetName="border" Property="Opacity" Value="0.85"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+
+                                <!-- Your selection trigger -->
+                                <Style.Triggers>
+                                    <DataTrigger Value="True">
+                                        <DataTrigger.Binding>
+                                            <MultiBinding Converter="{StaticResource SingleBtnEqualityConverter}">
+                                                <Binding Path="DataContext.SelectedButton"
+                                     RelativeSource="{RelativeSource AncestorType=UserControl}" />
+                                                <Binding />
+                                            </MultiBinding>
+                                        </DataTrigger.Binding>
+
+                                        <Setter Property="Background" Value="Green"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+
+                            </Style>
+                        </Button.Style>
+
+                    </Button>
+
+
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>
