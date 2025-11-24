@@ -80,12 +80,7 @@ public class MainWindowViewModel : BaseViewModel
             case "Live Dashboard":
                 _nav.NavigateMain<DashboardView>();
                 break;
-            case "Machine Summary":
-                // Navigate to machine summary view
-                break;
-            case "Performance KPIs":
-                // Navigate to performance view
-                break;
+         
 
             // Config Menu
             case "Log Config":
@@ -94,39 +89,10 @@ public class MainWindowViewModel : BaseViewModel
             case "Device Config":
                 _nav.NavigateMain<DeviceListView>(); 
                 break;
-            case "System Config":
-                // Navigate to system config view
+            case "Alarm Config":
+                _nav.NavigateMain<AlarmListView>(); 
                 break;
-            case "Network Config":
-                // Navigate to network config view
-                break;
-
-            // Settings Menu
-            case "General Settings":
-                // Navigate to general settings view
-                break;
-            case "User Preferences":
-                // Navigate to user preferences view
-                break;
-
-            // Logs Menu
-            case "System Logs":
-                // Navigate to system logs view
-                break;
-            case "Application Logs":
-                // Navigate to application logs view
-                break;
-
-            // User Management Menu (Admin only)
-            case "Add User":
-                // Navigate to add user view
-                break;
-            case "User Roles":
-                // Navigate to user roles view
-                break;
-            case "User Audit":
-                // Navigate to user audit view
-                break;
+        
         }
 
 

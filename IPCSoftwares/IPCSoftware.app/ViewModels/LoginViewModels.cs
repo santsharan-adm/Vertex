@@ -1,4 +1,5 @@
-﻿using IPCSoftware.App.Views;
+﻿using IPCSoftware.App.NavServices;
+using IPCSoftware.App.Views;
 using IPCSoftware.AppLogger.Interfaces;
 using IPCSoftware.AppLogger.Models;
 using IPCSoftware.Core.Interfaces;
@@ -52,6 +53,8 @@ namespace IPCSoftware.App.ViewModels
             }
 
             _logger.LogInfo($"Login successful: {Username}", LogType.Audit);
+
+             AppInitializationService.InitializeAllServicesAsync();
 
             // Set session
             UserSession.Username = Username;

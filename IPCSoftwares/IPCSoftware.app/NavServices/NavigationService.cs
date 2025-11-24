@@ -231,5 +231,56 @@ namespace IPCSoftware.App.NavServices
 
             _mainContent.Content = configView;
         }
+
+
+        public void NavigateToAlarmList()
+        {
+            NavigateMain<AlarmListView>();
+        }
+
+        public void NavigateToAlarmConfiguration(AlarmConfigurationModel alarmToEdit, Func<Task> onSaveCallback)
+        {
+            var configView = App.ServiceProvider.GetService<AlarmConfigurationView>();
+            var configVM = App.ServiceProvider.GetService<AlarmConfigurationViewModel>();
+
+            configView.DataContext = configVM;
+
+            if (alarmToEdit == null)
+            {
+                configVM.InitializeNewAlarm();
+            }
+            else
+            {
+                configVM.LoadForEdit(alarmToEdit);
+            }
+
+            EventHandler saveHandler = null;
+            EventHandler cancelHandler = null;
+
+            saveHandler = async (s, e) =>
+            {
+                configVM.SaveCompleted -= saveHandler;
+                configVM.CancelRequested -= cancelHandler;
+
+                if (onSaveCallback != null)
+                    await onSaveCallback();
+
+                NavigateMain<AlarmListView>();
+            };
+
+            cancelHandler = (s, e) =>
+            {
+                configVM.SaveCompleted -= saveHandler;
+                configVM.CancelRequested -= cancelHandler;
+                NavigateMain<AlarmListView>();
+            };
+
+            configVM.SaveCompleted += saveHandler;
+            configVM.CancelRequested += cancelHandler;
+
+            _mainContent.Content = configView;
+        }
+
+
     }
 }
