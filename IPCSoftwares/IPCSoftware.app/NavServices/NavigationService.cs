@@ -4,9 +4,6 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
@@ -16,16 +13,12 @@ namespace IPCSoftware.App.NavServices
     {
         private ContentControl _mainContent;
         private ContentControl _ribbonHost;
-
-
         private readonly IServiceProvider _provider;
-
 
         public NavigationService(IServiceProvider provider)
         {
             _provider = provider;
         }
-
 
         public void Configure(ContentControl mainContent, ContentControl ribbonHost)
         {
@@ -33,6 +26,7 @@ namespace IPCSoftware.App.NavServices
             _ribbonHost = ribbonHost;
         }
 
+        // ---------------- MAIN AREA ----------------
         public void NavigateMain<TView>() where TView : UserControl
         {
             if (_mainContent == null)
@@ -42,9 +36,7 @@ namespace IPCSoftware.App.NavServices
             _mainContent.Content = view;
         }
 
-
-
-
+        // ---------------- RIBBON AREA ----------------
         public void NavigateRibbon<TView>() where TView : UserControl
         {
             if (_ribbonHost == null)
@@ -60,13 +52,10 @@ namespace IPCSoftware.App.NavServices
                 _ribbonHost.Content = null;
         }
 
-
-
         public void NavigateTop(object view)
         {
             if (_ribbonHost == null) return;
 
-            // If view is a TYPE (e.g. typeof(RibbonView))
             if (view is Type type)
             {
                 var resolved = _provider.GetService(type);
@@ -74,15 +63,11 @@ namespace IPCSoftware.App.NavServices
             }
             else
             {
-                // If view is already an instance
                 _ribbonHost.Content = view;
             }
         }
 
-
-
-
-        // NEW: Navigate to LogConfiguration with context
+        // --------------- LOG CONFIGURATION ---------------
         public void NavigateToLogConfiguration(LogConfigurationModel logToEdit, Func<Task> onSaveCallback)
         {
             var configView = App.ServiceProvider.GetService<LogConfigurationView>();
@@ -90,17 +75,11 @@ namespace IPCSoftware.App.NavServices
 
             configView.DataContext = configVM;
 
-            // Setup the view model
             if (logToEdit == null)
-            {
                 configVM.InitializeNewLog();
-            }
             else
-            {
                 configVM.LoadForEdit(logToEdit);
-            }
 
-            // Wire up events
             EventHandler saveHandler = null;
             EventHandler cancelHandler = null;
 
@@ -119,6 +98,7 @@ namespace IPCSoftware.App.NavServices
             {
                 configVM.SaveCompleted -= saveHandler;
                 configVM.CancelRequested -= cancelHandler;
+
                 NavigateMain<LogListView>();
             };
 
@@ -127,16 +107,14 @@ namespace IPCSoftware.App.NavServices
 
             _mainContent.Content = configView;
         }
-    }
-}
 
-
-
+        // --------------- DEVICE LIST ---------------
         public void NavigateToDeviceList()
         {
             NavigateMain<DeviceListView>();
         }
 
+        // --------------- DEVICE CONFIG ---------------
         public void NavigateToDeviceConfiguration(DeviceModel deviceToEdit, Func<Task> onSaveCallback)
         {
             var configView = App.ServiceProvider.GetService<DeviceConfigurationView>();
@@ -145,13 +123,9 @@ namespace IPCSoftware.App.NavServices
             configView.DataContext = configVM;
 
             if (deviceToEdit == null)
-            {
                 configVM.InitializeNewDevice();
-            }
             else
-            {
                 configVM.LoadForEdit(deviceToEdit);
-            }
 
             EventHandler saveHandler = null;
             EventHandler cancelHandler = null;
@@ -171,6 +145,7 @@ namespace IPCSoftware.App.NavServices
             {
                 configVM.SaveCompleted -= saveHandler;
                 configVM.CancelRequested -= cancelHandler;
+
                 NavigateMain<DeviceListView>();
             };
 
@@ -180,6 +155,7 @@ namespace IPCSoftware.App.NavServices
             _mainContent.Content = configView;
         }
 
+        // --------------- DEVICE DETAIL ---------------
         public async void NavigateToDeviceDetail(DeviceModel device)
         {
             var detailView = App.ServiceProvider.GetService<DeviceDetailView>();
@@ -191,7 +167,9 @@ namespace IPCSoftware.App.NavServices
             _mainContent.Content = detailView;
         }
 
-        public void NavigateToInterfaceConfiguration(DeviceModel parentDevice, DeviceInterfaceModel interfaceToEdit, Func<Task> onSaveCallback)
+        // --------------- INTERFACE CONFIG ---------------
+        public void NavigateToInterfaceConfiguration(DeviceModel parentDevice,
+            DeviceInterfaceModel interfaceToEdit, Func<Task> onSaveCallback)
         {
             var configView = App.ServiceProvider.GetService<DeviceInterfaceConfigurationView>();
             var configVM = App.ServiceProvider.GetService<DeviceInterfaceConfigurationViewModel>();
@@ -199,13 +177,9 @@ namespace IPCSoftware.App.NavServices
             configView.DataContext = configVM;
 
             if (interfaceToEdit == null)
-            {
                 configVM.InitializeNewInterface(parentDevice);
-            }
             else
-            {
                 configVM.LoadForEdit(parentDevice, interfaceToEdit);
-            }
 
             EventHandler saveHandler = null;
             EventHandler cancelHandler = null;
@@ -225,6 +199,7 @@ namespace IPCSoftware.App.NavServices
             {
                 configVM.SaveCompleted -= saveHandler;
                 configVM.CancelRequested -= cancelHandler;
+
                 NavigateToDeviceDetail(parentDevice);
             };
 
