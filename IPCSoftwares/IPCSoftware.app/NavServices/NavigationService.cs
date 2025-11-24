@@ -127,6 +127,8 @@ namespace IPCSoftware.App.NavServices
 
             _mainContent.Content = configView;
         }
+    }
+}
 
 
 

@@ -4,6 +4,8 @@ using IPCSoftware.App.ViewModels;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace IPCSoftware.App.Views
 {
@@ -23,6 +25,16 @@ namespace IPCSoftware.App.Views
         {
             var chart = sender as PieChart;
             chart.InvalidateVisual();
+        }
+
+        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Image img && img.Source is BitmapImage bmp)
+            {
+                var window = new FullImageView(bmp.UriSource.ToString());
+                window.Owner = Application.Current.MainWindow;
+                window.ShowDialog();
+            }
         }
 
 

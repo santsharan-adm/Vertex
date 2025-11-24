@@ -9,13 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="NavServices\**" />
-    <EmbeddedResource Remove="NavServices\**" />
-    <None Remove="NavServices\**" />
-    <Page Remove="NavServices\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="ConfigDB\users.json" />
     <None Remove="Controls\Images\alarm.png" />
     <None Remove="Controls\Images\AOILogin.jpg" />
@@ -27,6 +20,7 @@
     <PackageReference Include="CustomSelectFileDlg" Version="1.0.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
   </ItemGroup>
 
   <ItemGroup>
