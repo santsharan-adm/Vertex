@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace IPCSoftware.App.Views
 {
     /// <summary>
-    /// Interaction logic for LogConfigurationVie~w.xaml
+    /// Interaction logic for AlarmListView.xaml
     /// </summary>
-    public partial class LogConfigurationView : UserControl
+    public partial class AlarmListView : UserControl
     {
-        public LogConfigurationView()
+        public AlarmListView()
         {
             InitializeComponent();
         }

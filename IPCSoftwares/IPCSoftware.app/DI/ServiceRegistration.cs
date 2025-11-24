@@ -31,6 +31,7 @@ namespace IPCSoftware.App.DI
 
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
+            services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
 
             // ========== MAIN VIEWMODELS (Singleton) ==========
             services.AddSingleton<RibbonViewModel>();
@@ -47,6 +48,11 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceDetailViewModel>();
             services.AddTransient<DeviceInterfaceConfigurationViewModel>();
 
+            // ========== ALARM CONFIGURATION VIEWMODELS (Transient) - NEW ==========
+            services.AddTransient<AlarmListViewModel>();
+            services.AddTransient<AlarmConfigurationViewModel>();
+
+
             // Views
             services.AddTransient<LoginView>();
             services.AddTransient<RibbonView>();
@@ -62,6 +68,11 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceConfigurationView>();
             services.AddTransient<DeviceDetailView>();
             services.AddTransient<DeviceInterfaceConfigurationView>();
+
+            // Alarm Configuration Views - NEW
+            services.AddTransient<AlarmListView>();
+            services.AddTransient<AlarmConfigurationView>();
+
             //services.AddTransient<SettingsView>();
             //services.AddTransient<LogsView>();
             //services.AddTransient<UserMgmtView>();

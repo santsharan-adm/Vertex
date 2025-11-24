@@ -9,6 +9,7 @@ namespace IPCSoftware.Core.Interfaces
 {
     public interface ILogConfigurationService
     {
+        Task InitializeAsync();
         Task<List<LogConfigurationModel>> GetAllAsync();
         Task<LogConfigurationModel> GetByIdAsync(int id);
         Task<LogConfigurationModel> AddAsync(LogConfigurationModel logConfig);

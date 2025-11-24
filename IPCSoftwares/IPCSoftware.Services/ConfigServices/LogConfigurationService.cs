@@ -29,7 +29,7 @@ namespace IPCSoftware.Services.ConfigServices
             _csvFilePath = Path.Combine(_dataFolder, "LogConfigurations.csv");
             _configurations = new List<LogConfigurationModel>();
 
-            _ = InitializeAsync();
+          //  _ = InitializeAsync();
         }
 
 
