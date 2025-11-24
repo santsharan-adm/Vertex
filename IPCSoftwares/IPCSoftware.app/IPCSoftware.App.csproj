@@ -9,13 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="NavServices\**" />
-    <EmbeddedResource Remove="NavServices\**" />
-    <None Remove="NavServices\**" />
-    <Page Remove="NavServices\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="ConfigDB\users.json" />
     <None Remove="Controls\Images\alarm.png" />
     <None Remove="Controls\Images\AOILogin.jpg" />
