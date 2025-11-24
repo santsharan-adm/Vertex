@@ -4,7 +4,6 @@ using IPCSoftware.AppLogger.Interfaces;
 using IPCSoftware.AppLogger.Models;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
-using IPCSoftware.Shared.IPCSoftware.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
 
@@ -70,7 +69,7 @@ namespace IPCSoftware.App.ViewModels
             _navigation.NavigateTop(ribbonView);
 
             // Load Dashboard
-            _navigation.NavigateMain<DashboardView>();
+            _navigation.NavigateMain<OEEDashboard>();
         }
 
     }

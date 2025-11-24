@@ -2,7 +2,6 @@
 using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
-using IPCSoftware.Shared.IPCSoftware.Shared;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -77,8 +76,8 @@ public class MainWindowViewModel : BaseViewModel
         switch (itemName)
         {
             // Dashboard Menu
-            case "Live Dashboard":
-                _nav.NavigateMain<DashboardView>();
+            case "OEE Dashboard":
+                _nav.NavigateMain<OEEDashboard>();
                 break;
          
 

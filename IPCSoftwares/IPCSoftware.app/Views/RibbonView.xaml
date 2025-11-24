@@ -36,7 +36,7 @@
 
         <!-- MIDDLE PANEL (NAV BUTTONS) -->
         <StackPanel Grid.Column="1" Orientation="Horizontal"
-                    HorizontalAlignment="Center"
+                    HorizontalAlignment="Left"
                     VerticalAlignment="Center">
 
             <Button Style="{StaticResource RibbonButtonStyle}"

@@ -37,6 +37,7 @@ namespace IPCSoftware.App.DI
             // ========== MAIN VIEWMODELS (Singleton) ==========
             services.AddSingleton<RibbonViewModel>();
             services.AddSingleton<MainWindowViewModel>();
+            services.AddSingleton<OEEDashboardViewModel>();
 
             // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
             services.AddTransient<LogListViewModel>();
@@ -59,6 +60,7 @@ namespace IPCSoftware.App.DI
             // Views
             services.AddTransient<LoginView>();
             services.AddTransient<RibbonView>();
+            services.AddTransient<OEEDashboard>();
             services.AddTransient<DashboardView>();
 
             // Log Configuration Views

@@ -10,12 +10,17 @@
 
   <ItemGroup>
     <None Remove="ConfigDB\users.json" />
+    <None Remove="Controls\Images\alarm.png" />
+    <None Remove="Controls\Images\AOILogin.jpg" />
+    <None Remove="Controls\Images\qrcode.png" />
+    <None Remove="Controls\Images\TestCamImage.jpg" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CustomSelectFileDlg" Version="1.0.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +33,16 @@
 
   <ItemGroup>
     <Resource Include="ConfigDB\users.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Controls\Images\alarm.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Controls\Images\AOILogin.jpg" />
+    <Resource Include="Controls\Images\qrcode.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Controls\Images\TestCamImage.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
