@@ -42,6 +42,8 @@ namespace IPCSoftware.App.ViewModels
 
         private void ExecuteLogin()
         {
+
+
             _logger.LogInfo($"Login attempt: {Username}", LogType.Audit);
 
             var result = _authService.Login(Username, Password);
