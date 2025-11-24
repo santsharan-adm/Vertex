@@ -17,6 +17,7 @@ public class RibbonViewModel : BaseViewModel
     public ICommand NavigateUserMgmtCommand { get; }
     public ICommand LogoutCommand { get; }
     public Action OnLogout { get; set; }
+
     public Action<List<string>> ShowSidebar { get; set; }   // NEW
 
     public RibbonViewModel(INavigationService nav)

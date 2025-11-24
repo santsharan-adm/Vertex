@@ -3,6 +3,11 @@ using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace IPCSoftware.App.NavServices
@@ -36,6 +41,9 @@ namespace IPCSoftware.App.NavServices
             var view = App.ServiceProvider.GetService<TView>();
             _mainContent.Content = view;
         }
+
+
+
 
         public void NavigateRibbon<TView>() where TView : UserControl
         {
@@ -112,6 +120,112 @@ namespace IPCSoftware.App.NavServices
                 configVM.SaveCompleted -= saveHandler;
                 configVM.CancelRequested -= cancelHandler;
                 NavigateMain<LogListView>();
+            };
+
+            configVM.SaveCompleted += saveHandler;
+            configVM.CancelRequested += cancelHandler;
+
+            _mainContent.Content = configView;
+        }
+    }
+}
+
+
+
+        public void NavigateToDeviceList()
+        {
+            NavigateMain<DeviceListView>();
+        }
+
+        public void NavigateToDeviceConfiguration(DeviceModel deviceToEdit, Func<Task> onSaveCallback)
+        {
+            var configView = App.ServiceProvider.GetService<DeviceConfigurationView>();
+            var configVM = App.ServiceProvider.GetService<DeviceConfigurationViewModel>();
+
+            configView.DataContext = configVM;
+
+            if (deviceToEdit == null)
+            {
+                configVM.InitializeNewDevice();
+            }
+            else
+            {
+                configVM.LoadForEdit(deviceToEdit);
+            }
+
+            EventHandler saveHandler = null;
+            EventHandler cancelHandler = null;
+
+            saveHandler = async (s, e) =>
+            {
+                configVM.SaveCompleted -= saveHandler;
+                configVM.CancelRequested -= cancelHandler;
+
+                if (onSaveCallback != null)
+                    await onSaveCallback();
+
+                NavigateMain<DeviceListView>();
+            };
+
+            cancelHandler = (s, e) =>
+            {
+                configVM.SaveCompleted -= saveHandler;
+                configVM.CancelRequested -= cancelHandler;
+                NavigateMain<DeviceListView>();
+            };
+
+            configVM.SaveCompleted += saveHandler;
+            configVM.CancelRequested += cancelHandler;
+
+            _mainContent.Content = configView;
+        }
+
+        public async void NavigateToDeviceDetail(DeviceModel device)
+        {
+            var detailView = App.ServiceProvider.GetService<DeviceDetailView>();
+            var detailVM = App.ServiceProvider.GetService<DeviceDetailViewModel>();
+
+            detailView.DataContext = detailVM;
+            await detailVM.LoadDevice(device);
+
+            _mainContent.Content = detailView;
+        }
+
+        public void NavigateToInterfaceConfiguration(DeviceModel parentDevice, DeviceInterfaceModel interfaceToEdit, Func<Task> onSaveCallback)
+        {
+            var configView = App.ServiceProvider.GetService<DeviceInterfaceConfigurationView>();
+            var configVM = App.ServiceProvider.GetService<DeviceInterfaceConfigurationViewModel>();
+
+            configView.DataContext = configVM;
+
+            if (interfaceToEdit == null)
+            {
+                configVM.InitializeNewInterface(parentDevice);
+            }
+            else
+            {
+                configVM.LoadForEdit(parentDevice, interfaceToEdit);
+            }
+
+            EventHandler saveHandler = null;
+            EventHandler cancelHandler = null;
+
+            saveHandler = async (s, e) =>
+            {
+                configVM.SaveCompleted -= saveHandler;
+                configVM.CancelRequested -= cancelHandler;
+
+                if (onSaveCallback != null)
+                    await onSaveCallback();
+
+                NavigateToDeviceDetail(parentDevice);
+            };
+
+            cancelHandler = (s, e) =>
+            {
+                configVM.SaveCompleted -= saveHandler;
+                configVM.CancelRequested -= cancelHandler;
+                NavigateToDeviceDetail(parentDevice);
             };
 
             configVM.SaveCompleted += saveHandler;

@@ -30,20 +30,38 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IAppLogger, IPCSoftware.AppLogger.Services.AppLogger>();
 
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
+            services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
 
-            //ViewModels
+            // ========== MAIN VIEWMODELS (Singleton) ==========
             services.AddSingleton<RibbonViewModel>();
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<OEEDashboardViewModel>();
+
+            // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
             services.AddTransient<LogListViewModel>();
             services.AddTransient<LogConfigurationViewModel>();
+
+            // ========== DEVICE CONFIGURATION VIEWMODELS (Transient) ==========
+            services.AddTransient<DeviceListViewModel>();
+            services.AddTransient<DeviceConfigurationViewModel>();
+            services.AddTransient<DeviceDetailViewModel>();
+            services.AddTransient<DeviceInterfaceConfigurationViewModel>();
 
             // Views
             services.AddTransient<LoginView>();
             services.AddTransient<RibbonView>();
             services.AddTransient<OEEDashboard>();
+            services.AddTransient<DashboardView>();
+
+            // Log Configuration Views
             services.AddTransient<LogListView>();
             services.AddTransient<LogConfigurationView>();
+
+            // Device Configuration Views
+            services.AddTransient<DeviceListView>();
+            services.AddTransient<DeviceConfigurationView>();
+            services.AddTransient<DeviceDetailView>();
+            services.AddTransient<DeviceInterfaceConfigurationView>();
             //services.AddTransient<SettingsView>();
             //services.AddTransient<LogsView>();
             //services.AddTransient<UserMgmtView>();
