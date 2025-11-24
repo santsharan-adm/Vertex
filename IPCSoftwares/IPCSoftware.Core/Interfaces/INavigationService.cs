@@ -1,4 +1,5 @@
-﻿using IPCSoftware.Shared.Models.ConfigModels;
+﻿using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System.Windows.Controls;
 
 namespace IPCSoftware.Core.Interfaces
@@ -32,6 +33,10 @@ namespace IPCSoftware.Core.Interfaces
         // Alarm Configuration - NEW
         void NavigateToAlarmList();
         void NavigateToAlarmConfiguration(AlarmConfigurationModel alarmToEdit, Func<Task> onSaveCallback);
+
+        // User Management - NEW
+        void NavigateToUserList();
+        void NavigateToUserConfiguration(UserConfigurationModel userToEdit, Func<Task> onSaveCallback);
 
     }
 }

@@ -1,6 +1,7 @@
 ﻿using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -282,5 +283,54 @@ namespace IPCSoftware.App.NavServices
         }
 
 
+        public void NavigateToUserList()
+        {
+            NavigateMain<UserListView>();
+        }
+
+        public void NavigateToUserConfiguration(UserConfigurationModel userToEdit, Func<Task> onSaveCallback)
+        {
+            var configView = App.ServiceProvider.GetService<UserConfigurationView>();
+            var configVM = App.ServiceProvider.GetService<UserConfigurationViewModel>();
+
+            configView.DataContext = configVM;
+
+            if (userToEdit == null)
+            {
+                configVM.InitializeNewUser();
+            }
+            else
+            {
+                configVM.LoadForEdit(userToEdit);
+            }
+
+            EventHandler saveHandler = null;
+            EventHandler cancelHandler = null;
+
+            saveHandler = async (s, e) =>
+            {
+                configVM.SaveCompleted -= saveHandler;
+                configVM.CancelRequested -= cancelHandler;
+
+                if (onSaveCallback != null)
+                    await onSaveCallback();
+
+                NavigateMain<UserListView>();
+            };
+
+            cancelHandler = (s, e) =>
+            {
+                configVM.SaveCompleted -= saveHandler;
+                configVM.CancelRequested -= cancelHandler;
+                NavigateMain<UserListView>();
+            };
+
+            configVM.SaveCompleted += saveHandler;
+            configVM.CancelRequested += cancelHandler;
+
+            _mainContent.Content = configView;
+        }
     }
+
+
 }
