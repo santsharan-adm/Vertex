@@ -7,6 +7,10 @@ namespace IPCSoftware.App
     public partial class App : Application
     {
         public static ServiceProvider ServiceProvider { get; private set; }
+        public static object AuthService { get; set; }
+        public static object Logger { get; set; }
+        public static object CurrentUser { get; set; }
+        public static string AuthDbPath { get; set; }
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -18,4 +22,5 @@ namespace IPCSoftware.App
             ServiceProvider = services.BuildServiceProvider();
         }
     }
+
 }

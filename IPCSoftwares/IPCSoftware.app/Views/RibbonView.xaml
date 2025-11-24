@@ -24,7 +24,7 @@
         <!-- LEFT PANEL (LOGO + APP TITLE) -->
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="15,0">
             <Ellipse Width="36" Height="36" Fill="#50FFFFFF"/>
-            <TextBlock Text="IPCSoftwares"
+            <TextBlock Text="HOME"
                        Margin="12,0"
                        FontSize="22"
                        FontWeight="Bold"

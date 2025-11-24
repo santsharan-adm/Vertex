@@ -24,7 +24,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IDialogService, DialogService>();
             //AppLogger 
             services.AddSingleton<IAppLogger, IPCSoftware.AppLogger.Services.AppLogger>();
-
+            
             services.AddSingleton<LogConfigService>();
             services.AddSingleton<LogManager>();
             services.AddSingleton<IAppLogger, IPCSoftware.AppLogger.Services.AppLogger>();
@@ -52,6 +52,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<RibbonView>();
             services.AddTransient<OEEDashboard>();
             services.AddTransient<DashboardView>();
+            services.AddTransient<LoginView>();
 
             // Log Configuration Views
             services.AddTransient<LogListView>();

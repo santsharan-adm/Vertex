@@ -79,12 +79,13 @@ public class MainWindowViewModel : BaseViewModel
             case "OEE Dashboard":
                 _nav.NavigateMain<OEEDashboard>();
                 break;
-            case "Machine Summary":
-                // Navigate to machine summary view
+            case "Log Viewer":
+                System.Diagnostics.Debug.WriteLine("LogViewer Called");
+                _nav.NavigateMain<LogViewer>();
                 break;
-            case "Performance KPIs":
-                // Navigate to performance view
-                break;
+            //case "Performance KPIs":
+            //    // Navigate to performance view
+            //    break;
 
             // Config Menu
             case "Log Config":
