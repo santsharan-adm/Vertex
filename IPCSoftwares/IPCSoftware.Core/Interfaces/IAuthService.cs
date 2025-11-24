@@ -8,7 +8,11 @@ namespace IPCSoftware.Core.Interfaces
 {
     public interface IAuthService
     {
-        (bool Success, string Role) Login(string username, string password);
+        Task<(bool Success, string Role)> LoginAsync(string username, string password);
+
+        Task EnsureDefaultUserExistsAsync();
     }
+
+
 }
 

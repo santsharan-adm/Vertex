@@ -12,6 +12,21 @@ namespace IPCSoftware.App.NavServices
     {
         public static async Task InitializeAllServicesAsync()
         {
+            // Initialize UserManagementService FIRST (for authentication)
+            var userManagementService = App.ServiceProvider.GetService<IUserManagementService>();
+            if (userManagementService != null)
+            {
+                await userManagementService.InitializeAsync();
+            }
+
+            // Ensure default admin user exists
+            var authService = App.ServiceProvider.GetService<IAuthService>();
+            if (authService != null)
+            {
+                await authService.EnsureDefaultUserExistsAsync();
+            }
+
+
             // Initialize LogConfigurationService
             var logConfigService = App.ServiceProvider.GetService<ILogConfigurationService>();
             if (logConfigService != null)
