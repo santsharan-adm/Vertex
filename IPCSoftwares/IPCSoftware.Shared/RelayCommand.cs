@@ -1,71 +1,60 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace IPCSoftware.Shared
 {
-    namespace IPCSoftware.Shared
+    public class RelayCommand : ICommand
     {
-        // Existing non-generic RelayCommand
-        public class RelayCommand : ICommand
+        private readonly Action _execute;
+        private readonly Func<bool> _canExecute;
+
+        public RelayCommand(Action execute, Func<bool> canExecute = null)
         {
-            private readonly Action _execute;
-            private readonly Func<bool> _canExecute;
-
-            public RelayCommand(Action execute, Func<bool> canExecute = null)
-            {
-                _execute = execute;
-                _canExecute = canExecute;
-            }
-
-            public bool CanExecute(object parameter) => _canExecute == null || _canExecute();
-            public void Execute(object parameter) => _execute();
-
-            public event EventHandler CanExecuteChanged
-            {
-                add => CommandManager.RequerySuggested += value;
-                remove => CommandManager.RequerySuggested -= value;
-            }
+            _execute = execute;
+            _canExecute = canExecute;
         }
 
-        // NEW: Generic RelayCommand<T> for parameters
-        public class RelayCommand<T> : ICommand
+        public bool CanExecute(object parameter) => _canExecute == null || _canExecute();
+        public void Execute(object parameter) => _execute();
+
+        public event EventHandler CanExecuteChanged
         {
-            private readonly Action<T> _execute;
-            private readonly Func<T, bool> _canExecute;
-
-            public RelayCommand(Action<T> execute, Func<T, bool> canExecute = null)
-            {
-                _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-                _canExecute = canExecute;
-            }
-
-            public bool CanExecute(object parameter)
-            {
-                if (_canExecute == null)
-                    return true;
-
-                if (parameter == null && typeof(T).IsValueType)
-                    return false;
-
-                return _canExecute((T)parameter);
-            }
-
-            public void Execute(object parameter)
-            {
-                _execute((T)parameter);
-            }
-
-            public event EventHandler CanExecuteChanged
-            {
-                add => CommandManager.RequerySuggested += value;
-                remove => CommandManager.RequerySuggested -= value;
-            }
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
         }
     }
 
+    public class RelayCommand<T> : ICommand
+    {
+        private readonly Action<T> _execute;
+        private readonly Func<T, bool> _canExecute;
 
+        public RelayCommand(Action<T> execute, Func<T, bool> canExecute = null)
+        {
+            _execute = execute;
+            _canExecute = canExecute;
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            if (_canExecute == null)
+                return true;
+
+            if (parameter == null && typeof(T).IsValueType)
+                return false;
+
+            return _canExecute((T)parameter);
+        }
+
+        public void Execute(object parameter)
+        {
+            _execute((T)parameter);
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
+        }
+    }
 }

@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using IPCSoftware.Shared.IPCSoftware.Shared;
 
 namespace IPCSoftware.App.ViewModels
 {

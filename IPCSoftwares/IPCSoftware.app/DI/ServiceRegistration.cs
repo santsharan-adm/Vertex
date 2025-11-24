@@ -34,13 +34,14 @@ namespace IPCSoftware.App.DI
             //ViewModels
             services.AddSingleton<RibbonViewModel>();
             services.AddSingleton<MainWindowViewModel>();
+            services.AddSingleton<OEEDashboardViewModel>();
             services.AddTransient<LogListViewModel>();
             services.AddTransient<LogConfigurationViewModel>();
 
             // Views
             services.AddTransient<LoginView>();
             services.AddTransient<RibbonView>();
-            services.AddTransient<DashboardView>();
+            services.AddTransient<OEEDashboard>();
             services.AddTransient<LogListView>();
             services.AddTransient<LogConfigurationView>();
             //services.AddTransient<SettingsView>();
