@@ -1,11 +1,11 @@
 ﻿using IPCSoftware.App.Controls;
-using System;
-using System.Collections.Generic;
+using IPCSoftware.App.Views;
+using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Windows.Media;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace IPCSoftware.App.ViewModels
@@ -74,6 +74,12 @@ namespace IPCSoftware.App.ViewModels
             RejectedUnits = 48;
             Remarks = "All processes stable.";
 
+
+            {
+                ShowImageCommand = new RelayCommand<CameraImageModel>(ShowImage);
+            }
+
+
             CycleTrend = new List<double>
                 {
                     5.8, 6.0, 5.9, 6.1, 5.7, 6.2, 5.9, 6.3, 5.6
@@ -92,5 +98,44 @@ namespace IPCSoftware.App.ViewModels
             Timer.Start();
 
         }
+
+        public ICommand ShowImageCommand { get; }
+
+        private void ShowImage(CameraImageModel img)
+        {
+            if (img == null) return;
+
+            var window = new FullImageView(img.ImagePath);
+            window.ShowDialog();
+        }
+
+        private void OpenImagePopup(string path)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                var popup = new FullImageView(path);
+                popup.Owner = App.Current.MainWindow;
+                popup.ShowDialog();
+                
+            });
+        }
+        public ObservableCollection<CameraImageModel> CameraImages { get; set; }= new ObservableCollection<CameraImageModel>
+{
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="NG" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="TOSSED" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
+
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="NG" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="NG" },
+
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="TOSSED" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="NG" },
+};
+
     }
 }

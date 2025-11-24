@@ -21,10 +21,10 @@ namespace IPCSoftware.Services
                 return new List<UserModel>();
 
             var json = File.ReadAllText(_path);
-            System.Diagnostics.Debug.WriteLine("JSON RAW: " + json);
+            //System.Diagnostics.Debug.WriteLine("JSON RAW: " + json);
 
             var list = JsonSerializer.Deserialize<List<UserModel>>(json);
-            System.Diagnostics.Debug.WriteLine("DESERIALIZED COUNT: " + list?.Count);
+            //System.Diagnostics.Debug.WriteLine("DESERIALIZED COUNT: " + list?.Count);
 
             return list ?? new List<UserModel>();
         }

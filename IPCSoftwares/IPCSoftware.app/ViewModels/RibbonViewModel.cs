@@ -1,9 +1,11 @@
 ﻿using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
-using IPCSoftware.Shared.IPCSoftware.Shared;
 using System.Windows.Input;
 
+
+
+namespace IPCSoftware.App.ViewModels;
 public class RibbonViewModel : BaseViewModel
 {
     private readonly INavigationService _nav;
@@ -15,6 +17,7 @@ public class RibbonViewModel : BaseViewModel
     public ICommand NavigateUserMgmtCommand { get; }
     public ICommand LogoutCommand { get; }
     public Action OnLogout { get; set; }
+
     public Action<List<string>> ShowSidebar { get; set; }   // NEW
 
     public RibbonViewModel(INavigationService nav)
@@ -45,8 +48,9 @@ public class RibbonViewModel : BaseViewModel
     {
         ShowSidebar?.Invoke(new List<string>
         {
-            "General Settings",
-            "User Preferences"
+            "System Settings",
+            "Manual Operation",
+            "Mode Of Operation"
         });
     }
 
@@ -55,7 +59,7 @@ public class RibbonViewModel : BaseViewModel
         ShowSidebar?.Invoke(new List<string>
         {
             "System Logs",
-            "Application Logs"
+            "Production Logs"
         });
     }
 
