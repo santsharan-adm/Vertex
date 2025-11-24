@@ -1,6 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
-using IPCSoftware.Shared.IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
