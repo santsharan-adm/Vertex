@@ -92,6 +92,10 @@ public class MainWindowViewModel : BaseViewModel
                 _nav.NavigateMain<AlarmListView>(); 
                 break;
         
+            case "User Config":
+                _nav.NavigateMain<UserListView>(); 
+                break;
+        
         }
 
 

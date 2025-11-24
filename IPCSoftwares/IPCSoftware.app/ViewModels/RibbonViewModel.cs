@@ -72,6 +72,7 @@ public class RibbonViewModel : BaseViewModel
                 "Log Config",
                 "Device Config",
                 "Alarm Config",
+                "User Config",
                 "PLC TAG Config",
                 "Report Config",
                 "External Interface"
