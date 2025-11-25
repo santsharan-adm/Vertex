@@ -19,6 +19,36 @@ namespace IPCSoftware.AppLogger.Services
             _backupService = new BackupService(); // new line
         }
 
+        private string[] SplitCsv(string line)
+        {
+            var values = new List<string>();
+            bool inQuotes = false;
+            string current = "";
+
+            foreach (char ch in line)
+            {
+                if (ch == '"')
+                {
+                    inQuotes = !inQuotes;
+                    continue;
+                }
+
+                if (ch == ',' && !inQuotes)
+                {
+                    values.Add(current);
+                    current = "";
+                }
+                else
+                {
+                    current += ch;
+                }
+            }
+
+            values.Add(current);
+            return values.ToArray();
+        }
+
+
         // Main method called by AppLogger
         public string ResolveLogFile(LogType type)
         {
@@ -111,5 +141,50 @@ namespace IPCSoftware.AppLogger.Services
         {
             return _configs.FirstOrDefault(x => x.Type == type && x.Enabled);
         }
+
+        public class LogEntry
+        {
+            public DateTime Timestamp { get; set; }
+            public string Level { get; set; }
+            public string Message { get; set; }
+            public string Source { get; set; }
+        }
+
+        public List<LogEntry> ReadLogs(LogType type, DateTime? date = null)
+        {
+            var config = GetConfig(type);
+            if (config == null)
+                return new List<LogEntry>();
+
+            string targetDate = (date ?? DateTime.Now).ToString("yyyyMMdd");
+            string fileName = config.FileNamePattern.Replace("{yyyyMMdd}", targetDate) + ".csv";
+            string fullPath = Path.Combine(config.DataFolder, fileName);
+
+            var result = new List<LogEntry>();
+
+            if (!File.Exists(fullPath))
+                return result;
+
+            var lines = File.ReadAllLines(fullPath);
+
+            // Skip header (Timestamp,Level,...)
+            foreach (var line in lines.Skip(1))
+            {
+                var parts = SplitCsv(line);
+                if (parts.Length < 4)
+                    continue;
+
+                result.Add(new LogEntry
+                {
+                    Timestamp = DateTime.Parse(parts[0]),
+                    Level = parts[1],
+                    Message = parts[2].Trim('"'),
+                    Source = parts[3]
+                });
+            }
+
+            return result;
+        }
+
     }
 }
