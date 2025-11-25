@@ -308,6 +308,18 @@ namespace IPCSoftware.App.NavServices
             _mainContent.Content = configView;
         }
 
+        public void NavigateToSystemSettings()
+        {
+            // Create View + ViewModel via DI container
+            var view = App.ServiceProvider.GetService<SystemSettingView>();
+            var viewModel = App.ServiceProvider.GetService<SystemSettingViewModel>();
+
+            // Assign VM to View
+            view.DataContext = viewModel;
+
+            // Assign to MainContentPresenter
+            _mainContent.Content = view;
+        }
         public void NavigateToPLCTagList()
         {
             NavigateMain<PLCTagListView>();

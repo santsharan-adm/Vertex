@@ -4,9 +4,9 @@ namespace IPCSoftware.AppLogger.Models
 {
     public enum LogType
     {
-        Production = 1,
-        Audit = 2,
-        Error = 3
+        Production = 0,
+        Audit = 1,
+        Error = 2
     }
 
     public enum BackupScheduleType

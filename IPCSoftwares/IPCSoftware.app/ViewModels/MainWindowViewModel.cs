@@ -12,6 +12,8 @@ public class MainWindowViewModel : BaseViewModel
     public ICommand SidebarItemClickCommand { get; }
     public RibbonViewModel RibbonVM { get; }
 
+    
+
     public MainWindowViewModel(INavigationService nav, RibbonViewModel ribbonVM)
     {
         _nav = nav;
@@ -79,7 +81,10 @@ public class MainWindowViewModel : BaseViewModel
             case "OEE Dashboard":
                 _nav.NavigateMain<OEEDashboard>();
                 break;
-         
+
+            case "System Settings":
+                _nav.NavigateToSystemSettings();
+                break;
 
             // Config Menu
             case "Log Config":
