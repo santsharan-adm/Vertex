@@ -49,6 +49,9 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceConfigurationViewModel>();
             services.AddTransient<DeviceDetailViewModel>();
             services.AddTransient<DeviceInterfaceConfigurationViewModel>();
+            services.AddTransient<CameraDetailViewModel>();
+            services.AddTransient<CameraInterfaceConfigurationViewModel>();
+
 
             // ========== ALARM CONFIGURATION VIEWMODELS (Transient) ========== 
             services.AddTransient<AlarmListViewModel>();
@@ -78,6 +81,8 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceConfigurationView>();
             services.AddTransient<DeviceDetailView>();
             services.AddTransient<DeviceInterfaceConfigurationView>();
+            services.AddTransient<CameraDetailView>();
+            services.AddTransient<CameraInterfaceConfigurationView>();
 
             // Alarm Configuration Views 
             services.AddTransient<AlarmListView>();

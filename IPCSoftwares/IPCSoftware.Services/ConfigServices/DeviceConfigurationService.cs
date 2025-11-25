@@ -18,6 +18,9 @@ namespace IPCSoftware.Services.ConfigServices
         private List<DeviceModel> _devices;
         private List<DeviceInterfaceModel> _interfaces;
 
+        private readonly string _cameraInterfacesCsvPath;
+        private List<CameraInterfaceModel> _cameraInterfaces;
+
         private int _nextDeviceId = 1;
         private int _nextInterfaceId = 1;
 
@@ -32,15 +35,18 @@ namespace IPCSoftware.Services.ConfigServices
 
             _devicesCsvPath = Path.Combine(_dataFolder, "Devices.csv");
             _interfacesCsvPath = Path.Combine(_dataFolder, "DeviceInterfaces.csv");
+            _cameraInterfacesCsvPath = Path.Combine(_dataFolder, "CameraInterfaces.csv");
 
             _devices = new List<DeviceModel>();
             _interfaces = new List<DeviceInterfaceModel>();
+            _cameraInterfaces = new List<CameraInterfaceModel>();
         }
 
         public async Task InitializeAsync()
         {
             await LoadDevicesFromCsvAsync();
             await LoadInterfacesFromCsvAsync();
+            await LoadCameraInterfacesFromCsvAsync();
         }
 
         // ==================== DEVICE OPERATIONS ====================
@@ -86,9 +92,16 @@ namespace IPCSoftware.Services.ConfigServices
                 _interfaces.Remove(iface);
             }
 
+            var cameraInterfacesToDelete = _cameraInterfaces.Where(i => i.DeviceNo == device.DeviceNo).ToList();
+            foreach (var camIface in cameraInterfacesToDelete)
+            {
+                _cameraInterfaces.Remove(camIface);
+            }
+
             _devices.Remove(device);
             await SaveDevicesToCsvAsync();
             await SaveInterfacesToCsvAsync();
+            await SaveCameraInterfacesToCsvAsync();
             return true;
         }
 
@@ -102,6 +115,20 @@ namespace IPCSoftware.Services.ConfigServices
         public async Task<DeviceInterfaceModel> GetInterfaceByIdAsync(int id)
         {
             return await Task.FromResult(_interfaces.FirstOrDefault(i => i.Id == id));
+        }
+
+
+        //Camera Interface CRUD Methods
+        public async Task<List<CameraInterfaceModel>> GetCameraInterfacesByDeviceNoAsync(int deviceNo)
+        {
+            return await Task.FromResult(_cameraInterfaces
+                .Where(i => i.DeviceNo == deviceNo)
+                .ToList());
+        }
+
+        public async Task<CameraInterfaceModel> GetCameraInterfaceByIdAsync(int id)
+        {
+            return await Task.FromResult(_cameraInterfaces.FirstOrDefault(i => i.Id == id));
         }
 
         public async Task<DeviceInterfaceModel> AddInterfaceAsync(DeviceInterfaceModel deviceInterface)
@@ -132,6 +159,40 @@ namespace IPCSoftware.Services.ConfigServices
             await SaveInterfacesToCsvAsync();
             return true;
         }
+
+
+        public async Task<CameraInterfaceModel> AddCameraInterfaceAsync(CameraInterfaceModel cameraInterface)
+        {
+            cameraInterface.Id = _cameraInterfaces.Any()
+                ? _cameraInterfaces.Max(i => i.Id) + 1
+                : 1;
+
+            _cameraInterfaces.Add(cameraInterface);
+            await SaveCameraInterfacesToCsvAsync();
+            return cameraInterface;
+        }
+
+        public async Task<bool> UpdateCameraInterfaceAsync(CameraInterfaceModel cameraInterface)
+        {
+            var existing = _cameraInterfaces.FirstOrDefault(i => i.Id == cameraInterface.Id);
+            if (existing == null) return false;
+
+            var index = _cameraInterfaces.IndexOf(existing);
+            _cameraInterfaces[index] = cameraInterface;
+            await SaveCameraInterfacesToCsvAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteCameraInterfaceAsync(int id)
+        {
+            var cameraInterface = _cameraInterfaces.FirstOrDefault(i => i.Id == id);
+            if (cameraInterface == null) return false;
+
+            _cameraInterfaces.Remove(cameraInterface);
+            await SaveCameraInterfacesToCsvAsync();
+            return true;
+        }
+
 
         // ==================== CSV OPERATIONS - DEVICES ====================
 
@@ -194,6 +255,76 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
+
+
+        // Camera Interface CSV Methods
+        private async Task LoadCameraInterfacesFromCsvAsync()
+        {
+            if (!File.Exists(_cameraInterfacesCsvPath))
+            {
+                await SaveCameraInterfacesToCsvAsync();
+                return;
+            }
+
+            try
+            {
+                var lines = await File.ReadAllLinesAsync(_cameraInterfacesCsvPath);
+                if (lines.Length <= 1) return;
+
+                _cameraInterfaces.Clear();
+                for (int i = 1; i < lines.Length; i++)
+                {
+                    var cameraInterface = ParseCameraInterfaceCsvLine(lines[i]);
+                    if (cameraInterface != null)
+                    {
+                        _cameraInterfaces.Add(cameraInterface);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading camera interfaces CSV: {ex.Message}");
+            }
+        }
+
+        private async Task SaveCameraInterfacesToCsvAsync()
+        {
+            try
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine("Id,DeviceNo,DeviceName,Name,Protocol,IPAddress,Port,Gateway,Username,Password,AnonymousLogin,RemotePath,LocalDirectory,Enabled,Description,Remark");
+
+                foreach (var cam in _cameraInterfaces)
+                {
+                    sb.AppendLine($"{cam.Id}," +
+                        $"{cam.DeviceNo}," +
+                        $"\"{EscapeCsv(cam.DeviceName)}\"," +
+                        $"\"{EscapeCsv(cam.Name)}\"," +
+                        $"\"{EscapeCsv(cam.Protocol)}\"," +
+                        $"\"{EscapeCsv(cam.IPAddress)}\"," +
+                        $"{cam.Port}," +
+                        $"\"{EscapeCsv(cam.Gateway)}\"," +
+                        $"\"{EscapeCsv(cam.Username)}\"," +
+                        $"\"{EscapeCsv(cam.Password)}\"," +
+                        $"{cam.AnonymousLogin}," +
+                        $"\"{EscapeCsv(cam.RemotePath)}\"," +
+                        $"\"{EscapeCsv(cam.LocalDirectory)}\"," +
+                        $"{cam.Enabled}," +
+                        $"\"{EscapeCsv(cam.Description)}\"," +
+                        $"\"{EscapeCsv(cam.Remark)}\"");
+                }
+
+                await File.WriteAllTextAsync(_cameraInterfacesCsvPath, sb.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving camera interfaces CSV: {ex.Message}");
+                throw;
+            }
+        }
+
+
+
         private DeviceModel ParseDeviceCsvLine(string line)
         {
             try
@@ -219,6 +350,42 @@ namespace IPCSoftware.Services.ConfigServices
                 return null;
             }
         }
+
+
+        private CameraInterfaceModel ParseCameraInterfaceCsvLine(string line)
+        {
+            try
+            {
+                var values = SplitCsvLine(line);
+                if (values.Count < 16) return null;
+
+                return new CameraInterfaceModel
+                {
+                    Id = int.Parse(values[0]),
+                    DeviceNo = int.Parse(values[1]),
+                    DeviceName = values[2],
+                    Name = values[3],
+                    Protocol = values[4],
+                    IPAddress = values[5],
+                    Port = int.Parse(values[6]),
+                    Gateway = values[7],
+                    Username = values[8],
+                    Password = values[9],
+                    AnonymousLogin = bool.Parse(values[10]),
+                    RemotePath = values[11],
+                    LocalDirectory = values[12],
+                    Enabled = bool.Parse(values[13]),
+                    Description = values[14],
+                    Remark = values[15]
+                };
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
 
         // ==================== CSV OPERATIONS - INTERFACES ====================
 
@@ -362,5 +529,10 @@ namespace IPCSoftware.Services.ConfigServices
 
             return value;
         }
+
+
+
+
+
     }
 }

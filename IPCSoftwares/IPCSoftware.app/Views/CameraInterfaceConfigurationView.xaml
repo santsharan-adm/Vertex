@@ -1,0 +1,388 @@
+﻿<UserControl x:Class="IPCSoftware.App.Views.CameraInterfaceConfigurationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:IPCSoftware.App.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <TextBlock Grid.Row="0" 
+                   Text="{Binding Title}" 
+                   FontSize="18" 
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,20"/>
+
+        <!-- Form -->
+        <Border Grid.Row="1" 
+                BorderBrush="#CCCCCC" 
+                BorderThickness="1" 
+                Padding="20"
+                Background="White">
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+
+                    <!-- Device Info (Read-only) -->
+                    <TextBlock Text="Device Information" 
+                               FontSize="14" 
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,10"/>
+
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Device No" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" 
+                                 Text="{Binding DeviceNo, Mode=OneWay}" 
+                                 Height="25" 
+                                 Padding="5,3"
+                                 IsReadOnly="True"
+                                 Background="#F0F0F0"/>
+
+                        <TextBlock Grid.Column="3" Text="Camera Name" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="4" 
+                                 Text="{Binding CameraName, Mode=OneWay}" 
+                                 Height="25" 
+                                 Padding="5,3"
+                                 IsReadOnly="True"
+                                 Background="#F0F0F0"/>
+                    </Grid>
+
+                    <Separator Margin="0,10,0,20"/>
+
+                    <!-- Interface Configuration -->
+                    <TextBlock Text="Interface Configuration" 
+                               FontSize="14" 
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,10"/>
+
+                    <!-- Name -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Name" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" 
+                                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
+                                 Height="25" 
+                                 Padding="5,3"/>
+                    </Grid>
+
+                    <!-- Com Protocol -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Com Protocol" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Column="1" 
+                                  ItemsSource="{Binding Protocols}"
+                                  SelectedItem="{Binding SelectedProtocol}"
+                                  Height="25"/>
+                    </Grid>
+
+                    <!-- Protocol Specific Settings -->
+                    <Border BorderBrush="#CCCCCC" 
+                            BorderThickness="1" 
+                            Padding="15"
+                            Margin="0,10,0,20"
+                            Background="#F9F9F9">
+
+                        <StackPanel>
+                            <TextBlock Text="Protocol Specific Setting" 
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,10"/>
+
+                            <!-- IP Address -->
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="135"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="IP Address" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="1" 
+                                         Text="{Binding IPAddress, UpdateSourceTrigger=PropertyChanged}" 
+                                         Height="25" 
+                                         Padding="5,3"/>
+                            </Grid>
+
+                            <!-- Port No -->
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="135"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="Port No" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="1" 
+                                         Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}" 
+                                         Height="25" 
+                                         Padding="5,3"/>
+                            </Grid>
+
+                            <!-- Gateway -->
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="135"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="Gateway" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="1" 
+                                         Text="{Binding Gateway, UpdateSourceTrigger=PropertyChanged}" 
+                                         Height="25" 
+                                         Padding="5,3"/>
+                            </Grid>
+
+                            <!-- Allow Anonymous -->
+                            <Grid Margin="0,0,0,15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="135"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="Allow Anonymous" VerticalAlignment="Center"/>
+                                <CheckBox Grid.Column="1" 
+                                          IsChecked="{Binding AllowAnonymous}"
+                                          VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <!-- FTP Server: Physical Path -->
+                            <Grid Margin="0,0,0,12" 
+                                  Visibility="{Binding IsFTPServer, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="135"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="Physical Path" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="1" 
+                                         Text="{Binding PhysicalPath, UpdateSourceTrigger=PropertyChanged}" 
+                                         Height="25" 
+                                         Padding="5,3"/>
+                            </Grid>
+
+                            <!-- FTP Client: Remote Path -->
+                            <Grid Margin="0,0,0,12" 
+                                  Visibility="{Binding IsFTPClient, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="135"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="Remote Path" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="1" 
+                                         Text="{Binding RemotePath, UpdateSourceTrigger=PropertyChanged}" 
+                                         Height="25" 
+                                         Padding="5,3"/>
+                            </Grid>
+
+                            <!-- FTP Client: Local Directory -->
+                            <Grid Margin="0,0,0,15" 
+                                  Visibility="{Binding IsFTPClient, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="135"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="Local Directory" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="1" 
+                                         Text="{Binding LocalDirectory, UpdateSourceTrigger=PropertyChanged}" 
+                                         Height="25" 
+                                         Padding="5,3"/>
+                            </Grid>
+
+                            <!-- Authentication -->
+                            <Border BorderBrush="#999999" 
+                                    BorderThickness="1" 
+                                    Padding="10"
+                                    Margin="0,10,0,0">
+
+                                <StackPanel>
+                                    <TextBlock Text="Authentication" 
+                                               FontWeight="SemiBold"
+                                               Margin="0,0,0,10"/>
+
+                                    <!-- User Name -->
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="110"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0" Text="User Name" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="1" 
+                                                 Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Height="25" 
+                                                 Padding="5,3"/>
+                                    </Grid>
+
+                                    <!-- Password -->
+                                    <Grid Margin="0,0,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="110"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0" Text="Password" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="1" 
+                                                
+                                                 Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" 
+                                                     Height="25" 
+                                                     Padding="5,3"
+                                                    />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Description -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Description" VerticalAlignment="Top" Margin="0,5,0,0"/>
+                        <TextBox Grid.Column="1" 
+                                 Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
+                                 Height="60" 
+                                 Padding="5,3" 
+                                 TextWrapping="Wrap" 
+                                 AcceptsReturn="True" 
+                                 VerticalScrollBarVisibility="Auto"/>
+                    </Grid>
+
+                    <!-- Remark -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Remark" VerticalAlignment="Top" Margin="0,5,0,0"/>
+                        <TextBox Grid.Column="1" 
+                                 Text="{Binding Remark, UpdateSourceTrigger=PropertyChanged}" 
+                                 Height="60" 
+                                 Padding="5,3" 
+                                 TextWrapping="Wrap" 
+                                 AcceptsReturn="True" 
+                                 VerticalScrollBarVisibility="Auto"/>
+                    </Grid>
+
+                    <!-- Enabled -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Enabled" VerticalAlignment="Center"/>
+                        <CheckBox Grid.Column="1" 
+                                  IsChecked="{Binding Enabled}"
+                                  VerticalAlignment="Center"/>
+                    </Grid>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,15,0,0">
+            <Button Content="Save" 
+                    Command="{Binding SaveCommand}"
+                    Width="100" 
+                    Height="30" 
+                    Margin="0,0,10,0"
+                    Background="#007ACC"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            CornerRadius="3"
+                                            Padding="15,5">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                        VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#005A9E"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#CCCCCC"/>
+                                <Setter Property="Foreground" Value="#666666"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <Button Content="Cancel" 
+                    Command="{Binding CancelCommand}"
+                    Width="100" 
+                    Height="30"
+                    Background="#F0F0F0"
+                    BorderBrush="#CCCCCC"
+                    BorderThickness="1"
+                    Cursor="Hand">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="3"
+                                            Padding="15,5">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                        VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E0E0E0"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>
