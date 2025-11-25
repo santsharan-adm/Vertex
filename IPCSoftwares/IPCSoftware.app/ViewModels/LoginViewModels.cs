@@ -125,7 +125,7 @@ namespace IPCSoftware.App.ViewModels
                 _navigation.NavigateTop(ribbonView);
 
                 // Load Dashboard
-                _navigation.NavigateMain<OEEDashboard>();
+                _navigation.NavigateMain<LandingPage>();
             }
             catch (System.Exception ex)
             {

@@ -1,0 +1,22 @@
+﻿using IPCSoftware.App;
+using IPCSoftware.App.ViewModels;
+using IPCSoftware.AppLogger.Interfaces;
+using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Services;
+using Microsoft.Extensions.DependencyInjection;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+
+namespace IPCSoftware.App.Views
+{
+    public partial class LandingPage : UserControl
+    {
+        public LandingPage()
+        {
+            InitializeComponent();
+        }
+    }
+}
+

@@ -12,7 +12,7 @@ public class MainWindowViewModel : BaseViewModel
     public ICommand SidebarItemClickCommand { get; }
     public RibbonViewModel RibbonVM { get; }
 
-    
+
 
     public MainWindowViewModel(INavigationService nav, RibbonViewModel ribbonVM)
     {
@@ -91,30 +91,31 @@ public class MainWindowViewModel : BaseViewModel
                 _nav.NavigateMain<LogListView>();
                 break;
             case "Device Config":
-                _nav.NavigateMain<DeviceListView>(); 
+                _nav.NavigateMain<DeviceListView>();
                 break;
             case "Alarm Config":
-                _nav.NavigateMain<AlarmListView>(); 
+                _nav.NavigateMain<AlarmListView>();
                 break;
-        
+
             case "User Config":
-                _nav.NavigateMain<UserListView>(); 
+                _nav.NavigateMain<UserListView>();
                 break;
-        
+
             case "Manual Operation":
-                _nav.NavigateMain<ManualOperation>(); 
+                _nav.NavigateMain<ManualOperation>();
                 break;
-        
+
             case "Mode Of Operation":
-                _nav.NavigateMain<ModeOfOperation>(); 
+                _nav.NavigateMain<ModeOfOperation>();
                 break;
-        
+
             case "PLC IO":
-                _nav.NavigateMain<PLCIOMonitor>(); 
-            case "PLC TAG Config":
-                _nav.NavigateMain<PLCTagListView>(); 
+                _nav.NavigateMain<PLCIOMonitor>();
                 break;
-        
+            case "PLC TAG Config":
+                _nav.NavigateMain<PLCTagListView>();
+                break;
+
         }
 
 

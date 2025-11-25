@@ -15,6 +15,7 @@
     <None Remove="Controls\Images\AOILogo.png" />
     <None Remove="Controls\Images\Configs.png" />
     <None Remove="Controls\Images\Dashboard2.png" />
+    <None Remove="Controls\Images\landingpage.jpg" />
     <None Remove="Controls\Images\logfolder.png" />
     <None Remove="Controls\Images\logout2.png" />
     <None Remove="Controls\Images\qrcode.png" />
@@ -54,6 +55,9 @@
     </Resource>
     <Resource Include="Controls\Images\Dashboard2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Controls\Images\landingpage.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Controls\Images\logfolder.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
