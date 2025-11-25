@@ -38,5 +38,8 @@ namespace IPCSoftware.Core.Interfaces
         void NavigateToUserList();
         void NavigateToUserConfiguration(UserConfigurationModel userToEdit, Func<Task> onSaveCallback);
 
+        // System Settings
+        void NavigateToSystemSettings();
+
     }
 }

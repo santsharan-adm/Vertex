@@ -12,7 +12,13 @@
     <None Remove="ConfigDB\users.json" />
     <None Remove="Controls\Images\alarm.png" />
     <None Remove="Controls\Images\AOILogin.jpg" />
+    <None Remove="Controls\Images\AOILogo.png" />
+    <None Remove="Controls\Images\Configs.png" />
+    <None Remove="Controls\Images\Dashboard2.png" />
+    <None Remove="Controls\Images\logfolder.png" />
+    <None Remove="Controls\Images\logout2.png" />
     <None Remove="Controls\Images\qrcode.png" />
+    <None Remove="Controls\Images\setting2.png" />
     <None Remove="Controls\Images\TestCamImage.jpg" />
   </ItemGroup>
 
@@ -39,7 +45,25 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Controls\Images\AOILogin.jpg" />
+    <Resource Include="Controls\Images\AOILogo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Controls\Images\Configs.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Controls\Images\Dashboard2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Controls\Images\logfolder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Controls\Images\logout2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Controls\Images\qrcode.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Controls\Images\setting2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Controls\Images\TestCamImage.jpg">

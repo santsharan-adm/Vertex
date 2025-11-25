@@ -84,6 +84,10 @@ namespace IPCSoftware.App.DI
             //services.AddTransient<SettingsView>();
             //services.AddTransient<LogsView>();
             //services.AddTransient<UserMgmtView>();
+            //System Settings
+            services.AddTransient<SystemSettingView>();
+            services.AddTransient<SystemSettingViewModel>();
+            services.AddTransient<IPLCService, PlcService>();
 
 
 

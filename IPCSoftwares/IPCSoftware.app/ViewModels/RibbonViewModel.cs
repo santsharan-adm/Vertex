@@ -15,6 +15,8 @@ public class RibbonViewModel : BaseViewModel
     public ICommand NavigateSettingsCommand { get; }
     public ICommand NavigateLogsCommand { get; }
     public ICommand NavigateUserMgmtCommand { get; }
+
+    
     public ICommand LogoutCommand { get; }
     public Action OnLogout { get; set; }
 
