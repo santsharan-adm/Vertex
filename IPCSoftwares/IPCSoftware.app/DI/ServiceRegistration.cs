@@ -33,6 +33,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
             services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
             services.AddSingleton<IUserManagementService, UserManagementService>();
+            services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
 
             // ========== MAIN VIEWMODELS (Singleton) ==========
             services.AddSingleton<RibbonViewModel>();
@@ -49,13 +50,18 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceDetailViewModel>();
             services.AddTransient<DeviceInterfaceConfigurationViewModel>();
 
-            // ========== ALARM CONFIGURATION VIEWMODELS (Transient) - NEW ==========
+            // ========== ALARM CONFIGURATION VIEWMODELS (Transient) ========== 
             services.AddTransient<AlarmListViewModel>();
             services.AddTransient<AlarmConfigurationViewModel>();
 
-            // ========== USER MANAGEMENT VIEWMODELS (Transient) - NEW ==========
+            // ========== USER MANAGEMENT VIEWMODELS (Transient) ========== 
             services.AddTransient<UserListViewModel>();
             services.AddTransient<UserConfigurationViewModel>();
+
+
+            // ========== PLC TAG CONFIGURATION VIEWMODELS (Transient) ========== 
+            services.AddTransient<PLCTagListViewModel>();
+            services.AddTransient<PLCTagConfigurationViewModel>();
 
             // Views
             services.AddTransient<LoginView>();
@@ -73,13 +79,17 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceDetailView>();
             services.AddTransient<DeviceInterfaceConfigurationView>();
 
-            // Alarm Configuration Views - NEW
+            // Alarm Configuration Views 
             services.AddTransient<AlarmListView>();
             services.AddTransient<AlarmConfigurationView>();
 
-            // User Management Views - NEW
+            // User Management Views 
             services.AddTransient<UserListView>();
             services.AddTransient<UserConfigurationView>();
+
+            // PLC Tag Configuration Views 
+            services.AddTransient<PLCTagListView>();
+            services.AddTransient<PLCTagConfigurationView>();
 
             //services.AddTransient<SettingsView>();
             //services.AddTransient<LogsView>();
