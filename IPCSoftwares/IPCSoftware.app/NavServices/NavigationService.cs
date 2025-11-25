@@ -307,6 +307,56 @@ namespace IPCSoftware.App.NavServices
 
             _mainContent.Content = configView;
         }
+
+        public void NavigateToPLCTagList()
+        {
+            NavigateMain<PLCTagListView>();
+        }
+
+        public void NavigateToPLCTagConfiguration(PLCTagConfigurationModel tagToEdit, Func<Task> onSaveCallback)
+        {
+            var configView = App.ServiceProvider.GetService<PLCTagConfigurationView>();
+            var configVM = App.ServiceProvider.GetService<PLCTagConfigurationViewModel>();
+
+            configView.DataContext = configVM;
+
+            if (tagToEdit == null)
+            {
+                configVM.InitializeNewTag();
+            }
+            else
+            {
+                configVM.LoadForEdit(tagToEdit);
+            }
+
+            EventHandler saveHandler = null;
+            EventHandler cancelHandler = null;
+
+            saveHandler = async (s, e) =>
+            {
+                configVM.SaveCompleted -= saveHandler;
+                configVM.CancelRequested -= cancelHandler;
+
+                if (onSaveCallback != null)
+                    await onSaveCallback();
+
+                NavigateMain<PLCTagListView>();
+            };
+
+            cancelHandler = (s, e) =>
+            {
+                configVM.SaveCompleted -= saveHandler;
+                configVM.CancelRequested -= cancelHandler;
+                NavigateMain<PLCTagListView>();
+            };
+
+            configVM.SaveCompleted += saveHandler;
+            configVM.CancelRequested += cancelHandler;
+
+            _mainContent.Content = configView;
+        }
+
+
     }
 
 

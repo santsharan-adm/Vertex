@@ -38,5 +38,9 @@ namespace IPCSoftware.Core.Interfaces
         void NavigateToUserList();
         void NavigateToUserConfiguration(UserConfigurationModel userToEdit, Func<Task> onSaveCallback);
 
+        // PLC Tag Configuration - NEW
+        void NavigateToPLCTagList();
+        void NavigateToPLCTagConfiguration(PLCTagConfigurationModel tagToEdit, Func<Task> onSaveCallback);
+
     }
 }
