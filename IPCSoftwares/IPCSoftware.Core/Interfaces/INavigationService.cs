@@ -40,6 +40,9 @@ namespace IPCSoftware.Core.Interfaces
 
         // System Settings
         void NavigateToSystemSettings();
+        // PLC Tag Configuration - NEW
+        void NavigateToPLCTagList();
+        void NavigateToPLCTagConfiguration(PLCTagConfigurationModel tagToEdit, Func<Task> onSaveCallback);
 
     }
 }

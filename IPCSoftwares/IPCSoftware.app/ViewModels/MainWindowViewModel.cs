@@ -101,6 +101,10 @@ public class MainWindowViewModel : BaseViewModel
                 _nav.NavigateMain<UserListView>(); 
                 break;
         
+            case "PLC TAG Config":
+                _nav.NavigateMain<PLCTagListView>(); 
+                break;
+        
         }
 
 

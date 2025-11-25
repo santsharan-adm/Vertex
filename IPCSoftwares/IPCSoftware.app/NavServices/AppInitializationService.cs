@@ -48,6 +48,13 @@ namespace IPCSoftware.App.NavServices
                 await alarmConfigService.InitializeAsync();
             }
 
+
+            var plcTagConfigService = App.ServiceProvider.GetService<IPLCTagConfigurationService>();
+
+            if (plcTagConfigService  != null)
+            {
+                await plcTagConfigService.InitializeAsync();
+            }
             // Add other service initializations here as needed
         }
     }
