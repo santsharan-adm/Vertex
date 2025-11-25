@@ -50,7 +50,8 @@ public class RibbonViewModel : BaseViewModel
         {
             "System Settings",
             "Manual Operation",
-            "Mode Of Operation"
+            "Mode Of Operation",
+            "PLC IO"
         });
     }
 
@@ -75,8 +76,8 @@ public class RibbonViewModel : BaseViewModel
                 "User Config",
                 "PLC TAG Config",
                 "Report Config",
-                "External Interface",
-                "PLC IO"
+                "External Interface"
+                
             });
         }
     }
