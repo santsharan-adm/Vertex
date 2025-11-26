@@ -4,6 +4,7 @@ using IPCSoftware.AppLogger.Models;
 using IPCSoftware.AppLogger.Services;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -120,8 +121,4 @@ public class SystemSettingViewModel : BaseViewModel
 
 }
 
-public class AuditLogModel
-{
-    public string Time { get; set; }
-    public string Message { get; set; }
-}
+

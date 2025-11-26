@@ -2,12 +2,12 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="Orange">
-        <TextBlock Text="Dashboard 1 Loaded"
-                   Foreground="Black"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   FontSize="14"
-                   FontWeight="Bold"/>
+    <Grid>
+
+        <Viewbox Stretch="UniformToFill">
+            <Image Source="/IPCSoftware.App;component/Controls/Images/landingpage.jpg"
+                   Stretch="UniformToFill"/>
+        </Viewbox>
+
     </Grid>
 </UserControl>

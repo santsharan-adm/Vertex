@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.App.Views;
+using IPCSoftware.AppLogger.Interfaces;
 using IPCSoftware.Shared;
 using System;
 using System.Collections.Generic;
@@ -124,7 +125,7 @@ namespace IPCSoftware.App.ViewModels
 
         public ObservableCollection<ModeItem> Modes { get; }
 
-        public ManualOperationViewModel()
+        public ManualOperationViewModel(IAppLogger logger)
         {
 
             Modes = new ObservableCollection<ModeItem>(

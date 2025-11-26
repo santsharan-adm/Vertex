@@ -15,11 +15,18 @@
     <None Remove="Controls\Images\AOILogo.png" />
     <None Remove="Controls\Images\Configs.png" />
     <None Remove="Controls\Images\Dashboard2.png" />
+    <None Remove="Controls\Images\landingpage.jpg" />
     <None Remove="Controls\Images\logfolder.png" />
     <None Remove="Controls\Images\logout2.png" />
     <None Remove="Controls\Images\qrcode.png" />
     <None Remove="Controls\Images\setting2.png" />
     <None Remove="Controls\Images\TestCamImage.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Controls\Images\landingpage.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
