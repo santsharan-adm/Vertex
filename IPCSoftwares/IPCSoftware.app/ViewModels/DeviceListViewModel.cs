@@ -93,7 +93,21 @@ namespace IPCSoftware.App.ViewModels
         private void OnConfigDevice(DeviceModel device)
         {
             if (device == null) return;
-            _nav.NavigateToDeviceDetail(device);
+
+            // Route based on device type
+            if (device.DeviceType == "PLC")
+            {
+                _nav.NavigateToDeviceDetail(device);  // Opens DeviceDetailView (PLC interfaces)
+            }
+            else if (device.DeviceType == "CCD")
+            {
+                _nav.NavigateToCameraDetail(device);  // Opens CameraDetailView (Camera interfaces)
+            }
+            else if (device.DeviceType == "Robot")
+            {
+                // TODO: Navigate to RobotDetailView when implemented
+                _nav.NavigateToDeviceDetail(device);  // Fallback to PLC view for now
+            }
         }
     }
 }

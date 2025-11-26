@@ -161,12 +161,26 @@ namespace IPCSoftware.App.NavServices
         {
             var detailView = App.ServiceProvider.GetService<DeviceDetailView>();
             var detailVM = App.ServiceProvider.GetService<DeviceDetailViewModel>();
-
+             
             detailView.DataContext = detailVM;
             await detailVM.LoadDevice(device);
 
             _mainContent.Content = detailView;
         }
+
+        // --------------- Camera DETAIL ---------------
+        public async void NavigateToCameraDetail(DeviceModel device)
+        {
+            var detailView = App.ServiceProvider.GetService<CameraDetailView>();
+            var detailVM = App.ServiceProvider.GetService<CameraDetailViewModel>();
+             
+            detailView.DataContext = detailVM;
+            await detailVM.LoadDevice(device);
+
+            _mainContent.Content = detailView;
+        }
+
+
 
         // --------------- INTERFACE CONFIG ---------------
         public void NavigateToInterfaceConfiguration(DeviceModel parentDevice,
@@ -202,6 +216,50 @@ namespace IPCSoftware.App.NavServices
                 configVM.CancelRequested -= cancelHandler;
 
                 NavigateToDeviceDetail(parentDevice);
+            };
+
+            configVM.SaveCompleted += saveHandler;
+            configVM.CancelRequested += cancelHandler;
+
+            _mainContent.Content = configView;
+        }
+
+
+        public void NavigateToCameraInterfaceConfiguration(DeviceModel parentDevice, CameraInterfaceModel cameraInterfaceToEdit, Func<Task> onSaveCallback)
+        {
+            var configView = App.ServiceProvider.GetService<CameraInterfaceConfigurationView>();
+            var configVM = App.ServiceProvider.GetService<CameraInterfaceConfigurationViewModel>();
+
+            configView.DataContext = configVM;
+
+            if (cameraInterfaceToEdit == null)
+            {
+                configVM.InitializeNewInterface(parentDevice);
+            }
+            else
+            {
+                configVM.LoadForEdit(parentDevice, cameraInterfaceToEdit);
+            }
+
+            EventHandler saveHandler = null;
+            EventHandler cancelHandler = null;
+
+            saveHandler = async (s, e) =>
+            {
+                configVM.SaveCompleted -= saveHandler;
+                configVM.CancelRequested -= cancelHandler;
+
+                if (onSaveCallback != null)
+                    await onSaveCallback();
+
+                NavigateToCameraDetail(parentDevice);  // Return to CameraDetailView
+            };
+
+            cancelHandler = (s, e) =>
+            {
+                configVM.SaveCompleted -= saveHandler;
+                configVM.CancelRequested -= cancelHandler;
+                NavigateToCameraDetail(parentDevice);  // Return to CameraDetailView
             };
 
             configVM.SaveCompleted += saveHandler;

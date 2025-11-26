@@ -16,6 +16,7 @@ namespace IPCSoftware.App.ViewModels
         private readonly IDeviceConfigurationService _deviceService;
         private readonly INavigationService _nav;
         private DeviceModel _currentDevice;
+
         private ObservableCollection<DeviceInterfaceModel> _interfaces;
         private DeviceInterfaceModel _selectedInterface;
 
