@@ -70,9 +70,9 @@
                     <ItemsControl ItemsSource="{Binding SidebarItems}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Content="{Binding}"
-                                        Margin="0 4"
-                                        Height="34"
+                                <Button Width="220" Style="{StaticResource TouchButtonBaseStyle}" Content="{Binding}"
+                                        Margin="0 4" FontSize="24"
+                                        Height="100"
                                         Foreground="White"
                                         Background="#333"
                                          CommandParameter="{Binding}"

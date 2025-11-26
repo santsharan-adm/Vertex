@@ -3,6 +3,8 @@ using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
 using System.Collections.ObjectModel;
+using System.Printing;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 public class MainWindowViewModel : BaseViewModel
@@ -51,6 +53,11 @@ public class MainWindowViewModel : BaseViewModel
     public ObservableCollection<string> SidebarItems { get; }
         = new ObservableCollection<string>();
 
+    private string existingUserControl = string.Empty;
+    private string currentRibbonKey = string.Empty;
+
+
+
     // ==============================
     // RIBBON → SIDEBAR CONNECTION
     // ==============================
@@ -59,13 +66,22 @@ public class MainWindowViewModel : BaseViewModel
           ribbonVM.ShowSidebar = LoadSidebarMenu;
       }*/
 
-    private void LoadSidebarMenu(List<string> items)
+    private void LoadSidebarMenu((string Key, List<string> Items) menu)
     {
         SidebarItems.Clear();
-        foreach (var item in items)
-            SidebarItems.Add(item);
 
-        IsSidebarOpen = !IsSidebarOpen;   // MVVM triggers animation
+        foreach (var item in menu.Items)
+            SidebarItems.Add(item);
+        if (currentRibbonKey == menu.Key)
+        {
+            IsSidebarOpen = !IsSidebarOpen;
+            return;
+        }
+
+        IsSidebarOpen = true;
+        currentRibbonKey = menu.Key;
+
+        // MVVM triggers animation
     }
 
 
@@ -73,49 +89,61 @@ public class MainWindowViewModel : BaseViewModel
     {
         // Close sidebar
         IsSidebarOpen = false;
-
-        // Navigate based on item name
-        switch (itemName)
+        if (string.IsNullOrWhiteSpace(existingUserControl))
         {
-            // Dashboard Menu
-            case "OEE Dashboard":
-                _nav.NavigateMain<OEEDashboard>();
-                break;
-
-            case "System Settings":
-                _nav.NavigateToSystemSettings();
-                break;
-
-            // Config Menu
-            case "Log Config":
-                _nav.NavigateMain<LogListView>();
-                break;
-            case "Device Config":
-                _nav.NavigateMain<DeviceListView>(); 
-                break;
-            case "Alarm Config":
-                _nav.NavigateMain<AlarmListView>(); 
-                break;
-        
-            case "User Config":
-                _nav.NavigateMain<UserListView>(); 
-                break;
-        
-            case "Manual Operation":
-                _nav.NavigateMain<ManualOperation>(); 
-                break;
-        
-            case "Mode Of Operation":
-                _nav.NavigateMain<ModeOfOperation>(); 
-                break;
-        
-            //case "PLC IO":
-            //    _nav.NavigateMain<PLCIOMonitor>(); 
-            case "PLC TAG Config":
-                _nav.NavigateMain<PLCTagListView>(); 
-                break;
-        
+            existingUserControl =  itemName;
         }
+        else if (existingUserControl == itemName)
+        {
+            return;
+        }
+        else
+        {
+            existingUserControl = itemName;
+        }
+
+            // Navigate based on item name
+            switch (itemName)
+            {
+                // Dashboard Menu
+                case "OEE Dashboard":
+                    _nav.NavigateMain<OEEDashboard>();
+                    break;
+
+                case "System Settings":
+                    _nav.NavigateToSystemSettings();
+                    break;
+
+                // Config Menu
+                case "Log Config":
+                    _nav.NavigateMain<LogListView>();
+                    break;
+                case "Device Config":
+                    _nav.NavigateMain<DeviceListView>();
+                    break;
+                case "Alarm Config":
+                    _nav.NavigateMain<AlarmListView>();
+                    break;
+
+                case "User Config":
+                    _nav.NavigateMain<UserListView>();
+                    break;
+
+                case "Manual Operation":
+                    _nav.NavigateMain<ManualOperation>();
+                    break;
+
+                case "Mode Of Operation":
+                    _nav.NavigateMain<ModeOfOperation>();
+                    break;
+
+                //case "PLC IO":
+                //    _nav.NavigateMain<PLCIOMonitor>(); 
+                case "PLC TAG Config":
+                    _nav.NavigateMain<PLCTagListView>();
+                    break;
+
+            }
 
 
     }

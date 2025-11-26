@@ -37,7 +37,7 @@
             <Button Width="52" Height="52"
             Background="Transparent"
             BorderThickness="0"
-            Command="{Binding NavigateDashboardCommand}">
+            Command="{Binding NavigateLandingPageCommand}">
                 <Border Width="48"
                 Height="48"
                 CornerRadius="24"

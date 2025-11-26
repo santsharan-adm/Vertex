@@ -1,5 +1,8 @@
 ﻿using IPCSoftware.App.Views;
+using IPCSoftware.AppLogger.Interfaces;
+using IPCSoftware.AppLogger.Models;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models;
 using Microsoft.VisualBasic.Devices;
 using System;
 using System.Collections.Generic;
@@ -7,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -27,6 +31,10 @@ namespace IPCSoftware.App.ViewModels
     public class ModeOfOperationViewModel : INotifyPropertyChanged
     {
         private OperationMode? _selectedButton;
+        private readonly IAppLogger _logger;
+
+
+        public ObservableCollection<AuditLogModel> AuditLogs { get; set; }
 
         public OperationMode? SelectedButton
         {
@@ -45,8 +53,9 @@ namespace IPCSoftware.App.ViewModels
 
         public ObservableCollection<OperationMode> Modes { get; }
 
-        public ModeOfOperationViewModel()
+        public ModeOfOperationViewModel(IAppLogger logger)
         {
+            _logger = logger;   
             Modes = new ObservableCollection<OperationMode>
             {
                 OperationMode.Auto,
@@ -56,6 +65,8 @@ namespace IPCSoftware.App.ViewModels
     OperationMode.MassRTO,
     OperationMode.Abort
             };
+
+            AuditLogs = new ObservableCollection<AuditLogModel>();
 
             // Command initializes once
             ButtonClickCommand = new RelayCommand<object>(OnButtonClicked);
@@ -67,12 +78,19 @@ namespace IPCSoftware.App.ViewModels
             {
                 // If already selected, deselect
                 if (SelectedButton == mode)
+                {
                     SelectedButton = null;
+                    AddAudit($"{mode} mode stopped!");
+                }
                 else
                 {
                     // Only allow change if current selected is null
                     if (SelectedButton == null)
+                    {
+
                         SelectedButton = mode;
+                    AddAudit($"{mode} mode started!");
+                    }
                 }
             }
         }
@@ -81,6 +99,17 @@ namespace IPCSoftware.App.ViewModels
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null!)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void AddAudit(string message)
+        {
+            _logger.LogInfo(message, LogType.Audit);
+
+            AuditLogs.Add(new AuditLogModel
+            {
+                Time = DateTime.Now.ToString("HH:mm:ss"),
+                Message = message
+            });
         }
     }
 }

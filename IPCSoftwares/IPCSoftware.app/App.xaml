@@ -5,7 +5,14 @@
              StartupUri="/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
-        <Style x:Key="RibbonButtonStyle" TargetType="Button">
+            <ResourceDictionary.MergedDictionaries>
+
+                <!-- 🔥 ADD THIS LINE -->
+                <ResourceDictionary Source="Styles/TouchButtons.xaml"/>
+
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="RibbonButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
