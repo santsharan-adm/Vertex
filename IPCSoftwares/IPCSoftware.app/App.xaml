@@ -7,8 +7,9 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
 
-                <!-- 🔥 ADD THIS LINE -->
+                <!-- Touch buttons Style -->
                 <ResourceDictionary Source="Styles/TouchButtons.xaml"/>
+                <ResourceDictionary Source="Styles/DataGridStyles.xaml"/>
 
             </ResourceDictionary.MergedDictionaries>
 

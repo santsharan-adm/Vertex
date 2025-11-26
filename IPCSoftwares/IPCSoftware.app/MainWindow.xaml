@@ -13,11 +13,11 @@
         <ContentControl x:Name="RibbonHost" Grid.Row="0"/>
 
         <!-- MAIN BODY -->
-        <Grid Grid.Row="1">
+        <!--<Grid Grid.Row="1">
 
-            <!-- ============================ -->
+            --><!-- ============================ -->
             <!--         SIDEBAR              -->
-            <!-- ============================ -->
+            <!-- ============================ --><!--
             <Border x:Name="SideMenu"
                     Width="250"
                     HorizontalAlignment="Left"
@@ -31,7 +31,7 @@
                 <Border.Style>
                     <Style TargetType="Border">
                         <Style.Triggers>
-                            <!-- OPEN SIDEBAR -->
+                            --><!-- OPEN SIDEBAR --><!--
                             <DataTrigger Binding="{Binding IsSidebarOpen}" Value="True">
                                 <DataTrigger.EnterActions>
                                     <BeginStoryboard>
@@ -82,11 +82,128 @@
                     </ItemsControl>
                 </StackPanel>
 
-            </Border>
-            <!-- MAIN CONTENT -->
+            </Border >
+            --><!-- MAIN CONTENT --><!--
             <ContentControl x:Name="MainContent"/>
 
+            --><!-- ============================ -->
+            <!--            FOOTER            -->
+            <!-- ============================ --><!--
+            <Border Grid.Row="2"
+            Background="#1E1E1E"
+         Padding="15 0"
+         HorizontalAlignment="Stretch"
+         >
+
+            <TextBlock Text="{Binding AppVersion}"
+                Foreground="White"
+                FontSize="16"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Center"/>
+
+
+
+        </Grid>-->
+
+        <!-- MAIN BODY -->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <!-- MainContent -->
+                <RowDefinition Height="40"/>
+                <!-- Footer -->
+            </Grid.RowDefinitions>
+
+            <!-- SIDEBAR - spans both rows -->
+            <Border x:Name="SideMenu"
+            Grid.RowSpan="2"
+            Width="250"
+            HorizontalAlignment="Left"
+            Background="#1E1E1E"
+            Panel.ZIndex="10">
+
+                <Border.RenderTransform>
+                    <TranslateTransform X="-250"/>
+                </Border.RenderTransform>
+
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Style.Triggers>
+                            <!-- OPEN SIDEBAR -->
+                            <DataTrigger Binding="{Binding IsSidebarOpen}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation 
+                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                        To="0"
+                                        Duration="0:0:0.25">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation 
+                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                        To="-250"
+                                        Duration="0:0:0.25">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseIn"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <StackPanel Margin="12">
+                    <ItemsControl ItemsSource="{Binding SidebarItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Width="220"
+                                Height="100"
+                                Margin="0 4"
+                                FontSize="24"
+                                Foreground="White"
+                                Background="#333"
+                                Style="{StaticResource TouchButtonBaseStyle}"
+                                Content="{Binding}"
+                                CommandParameter="{Binding}"
+                                Command="{Binding DataContext.SidebarItemClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- MAIN CONTENT (FULL AREA ABOVE FOOTER) -->
+            <ContentControl x:Name="MainContent"
+                    Grid.Row="0"/>
+
+            <!-- FOOTER -->
+            <Border Grid.Row="1"
+            Background="#1E1E1E"
+            Padding="10"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Center">
+                <TextBlock Text="{Binding AppVersion}"
+                   Foreground="White"
+                   FontSize="16"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+            </Border>
+
         </Grid>
+
     </Grid>
+   
 
 </Window>
