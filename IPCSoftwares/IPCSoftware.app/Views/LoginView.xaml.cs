@@ -24,6 +24,11 @@ namespace IPCSoftware.App.Views
             App.ServiceProvider.GetService<MainWindowViewModel>());
 
         }
+
+        private void TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }
 
