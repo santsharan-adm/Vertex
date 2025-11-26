@@ -29,7 +29,8 @@
                        Text="List Log Configuration" 
                        FontSize="18" 
                        FontWeight="SemiBold"
-                       VerticalAlignment="Center"/>
+                       VerticalAlignment="Center"
+                       Margin="80,0,0,0"/>
 
             <Button Grid.Column="1" 
                     Content="Add Interface" 
@@ -38,36 +39,19 @@
                     Background="#007ACC"
                     Foreground="White"
                     BorderThickness="0"
-                    Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            CornerRadius="3"
-                                            Padding="{TemplateBinding Padding}">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#005A9E"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
+                    Cursor="Hand"
+                    Margin="0,0,80,0"
+                    Style="{StaticResource HmiEditButton}">
+                
             </Button>
         </Grid>
 
         <!-- DataGrid -->
-        <DataGrid Grid.Row="1" 
+        <DataGrid Style="{StaticResource HmiDataGridStyle}"
+                  Grid.Row="1" 
                   ItemsSource="{Binding LogConfigurations}"
                   SelectedItem="{Binding SelectedLog}"
-                  AutoGenerateColumns="False"
+                  
                   IsReadOnly="True"
                   SelectionMode="Single"
                   CanUserAddRows="False"
@@ -81,60 +65,49 @@
                   BorderBrush="#CCCCCC"
                   AlternatingRowBackground="#F5F5F5"
                   RowHeight="30"
-                  HeadersVisibility="Column">
+                  HeadersVisibility="Column"
+                  Margin="80,0,80,0">
 
             <DataGrid.Columns>
-                <!-- Name Column -->
-                <DataGridTextColumn Header="Name" 
-                                    Binding="{Binding LogName}" 
-                                    Width="100"/>
+                <DataGridTextColumn Header="Name"
+                    Binding="{Binding LogName}"
+                    Width="1*" />
 
-                <!-- Type Column -->
-                <DataGridTextColumn Header="Type" 
-                                    Binding="{Binding LogType}" 
-                                    Width="100"/>
+                <DataGridTextColumn Header="Type"
+                    Binding="{Binding LogType}"
+                    Width="1*" />
 
-                <!-- Path Column -->
-                <DataGridTextColumn Header="Path" 
-                                    Binding="{Binding DataFolder}" 
-                                    Width="200"/>
+                <DataGridTextColumn Header="Path"
+                    Binding="{Binding DataFolder}"
+                    Width="2*" />
 
-                <!-- AutoPurge Column -->
-                <DataGridTextColumn Header="AutoPurge/Log Retention" 
-                                    Binding="{Binding AutoPurge, Converter={StaticResource BoolToVisibilityConverter}}" 
-                                    Width="150"/>
+                <DataGridTextColumn Header="Purge/Retention"
+                    Binding="{Binding AutoPurge, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Width="1*" />
 
                 <!-- Edit Button Column -->
-                <DataGridTemplateColumn Header="" Width="60">
+                <DataGridTemplateColumn Header="" Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="Edit" 
                                     Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}"
-                                    Padding="10,3"
-                                    Background="#F0F0F0"
-                                    BorderBrush="#CCCCCC"
-                                    BorderThickness="1"
-                                    Cursor="Hand"
-                                    FontSize="11"/>
+                                    
+                                    
+                                    Style="{StaticResource HmiEditButton}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
                 <!-- Delete Button Column -->
-                <DataGridTemplateColumn Header="" Width="60">
+                <DataGridTemplateColumn Header="" Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="Delete" 
                                     Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}"
-                                    Padding="10,3"
-                                    Background="#FFE5E5"
-                                    BorderBrush="#FFCCCC"
-                                    BorderThickness="1"
-                                    Foreground="#CC0000"
-                                    Cursor="Hand"
-                                    FontSize="11"/>
+                                    
+                                    Style="{StaticResource HmiEditButton}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
