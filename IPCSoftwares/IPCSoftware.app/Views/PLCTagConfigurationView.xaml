@@ -3,257 +3,242 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:IPCSoftware.App.Views"
+             xmlns:local="clr-namespace:IPCSoftware.App.Views" 
+     
+              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             Background="#F3F3F3" FontFamily="Segoe UI">
 
-        <!-- Title -->
-        <TextBlock Grid.Row="0" 
-                   Text="{Binding Title}" 
-                   FontSize="18" 
-                   FontWeight="SemiBold"
-                   Margin="0,0,0,20"/>
+    <UserControl.Resources>
+        <sys:Double x:Key="LabelFontSize">26</sys:Double>
+        <Thickness x:Key="LabelMargin">0,0,0,10</Thickness>
+        <!-- HMI TOUCH STYLES -->
+       
 
-        <!-- Form -->
-        <Border Grid.Row="1" 
-                BorderBrush="#CCCCCC" 
-                BorderThickness="1" 
-                Padding="20"
-                Background="White">
+        <Style x:Key="HmiTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="70"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel>
+        <Style x:Key="HmiComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
 
-                    <!-- Tag No -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="40"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.1" BlurRadius="20"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
 
-                        <TextBlock Grid.Column="0" Text="Tag No" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding TagNo, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+    <!-- MAIN SCALING CONTAINER -->
+    <Viewbox Stretch="Uniform">
+        <Grid Width="1920" Height="1080">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Title -->
+                <RowDefinition Height="*"/>
+                <!-- Split Content -->
+                <RowDefinition Height="Auto"/>
+                <!-- Footer -->
+            </Grid.RowDefinitions>
 
-                    <!-- Name -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+            <!-- 1. HEADER -->
+            <TextBlock Grid.Row="0" 
+                       Text="{Binding Title}" 
+                       FontSize="48" 
+                       FontWeight="Bold"
+                       Foreground="#333333"
+                       Margin="40,30,0,20"/>
 
-                        <TextBlock Grid.Column="0" Text="Name" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+            <!-- 2. CONTENT AREA (2 PANES) -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly" Margin="40,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <!-- Left: Tag Details -->
+                        <ColumnDefinition Width="60"/>
+                        <!-- Gutter -->
+                        <ColumnDefinition Width="*"/>
+                        <!-- Right: PLC/Tech Details -->
+                    </Grid.ColumnDefinitions>
 
-                    <!-- PLC No -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                    <!-- LEFT PANEL: TAG IDENTIFICATION -->
+                    <StackPanel Grid.Column="0">
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Tag Identification" FontSize="32" FontWeight="Bold"  Margin="0,0,0,30"/>
 
-                        <TextBlock Grid.Column="0" Text="PLC No" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding PLCNo, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+                                <!-- Tag No -->
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Tag No"     FontSize="{StaticResource LabelFontSize}"
+           Margin="{StaticResource LabelMargin}" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding TagNo, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"/>
+                                </StackPanel>
 
-                    <!-- Modbus Address -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <!-- Name -->
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Name" FontSize="{StaticResource LabelFontSize}"
+           Margin="{StaticResource LabelMargin}" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"/>
+                                </StackPanel>
 
-                        <TextBlock Grid.Column="0" Text="Modbus Address" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding ModbusAddress, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+                                <!-- Description -->
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Description" FontSize="{StaticResource LabelFontSize}"
+           Margin="{StaticResource LabelMargin}" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"
+                                             Height="120" TextWrapping="Wrap" AcceptsReturn="True" 
+                                             VerticalContentAlignment="Top" Padding="15"/>
+                                </StackPanel>
 
-                    <!-- Length -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <!-- Remark -->
+                                <StackPanel Margin="0,0,0,10">
+                                    <TextBlock Text="Remark" FontSize="{StaticResource LabelFontSize}"
+           Margin="{StaticResource LabelMargin}" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Remark, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"
+                                             Height="120" TextWrapping="Wrap" AcceptsReturn="True" 
+                                             VerticalContentAlignment="Top" Padding="15"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
 
-                        <TextBlock Grid.Column="0" Text="Length" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Length, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+                    <!-- RIGHT PANEL: PLC CONFIGURATION -->
+                    <StackPanel Grid.Column="2">
+                        <Border Height="600" Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="PLC Settings" FontSize="32" FontWeight="Bold" Foreground="#333333" Margin="0,0,0,30"/>
 
-                    <!-- Alg No -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <!-- PLC No & Modbus Address (Side by Side) -->
+                                <Grid Margin="0,0,0,30">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="Alg No" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Column="1" 
-                                  ItemsSource="{Binding AlgorithmTypes}"
-                                  SelectedItem="{Binding SelectedAlgorithm}"
-                                  DisplayMemberPath="DisplayName"
-                                  Height="25"/>
-                    </Grid>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock  FontSize="{StaticResource LabelFontSize}"
+           Margin="{StaticResource LabelMargin}" Text="PLC No" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding PLCNo, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
 
-                    <!-- Offset -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock FontSize="{StaticResource LabelFontSize}"
+           Margin="{StaticResource LabelMargin}" Text="Modbus Address" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding ModbusAddress, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
+                                </Grid>
 
-                        <TextBlock Grid.Column="0" Text="Offset" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Offset, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+                                <!-- Length & Alg No -->
+                                <Grid Margin="0,0,0,30">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                    <!-- Span -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock FontSize="{StaticResource LabelFontSize}"
+           Margin="{StaticResource LabelMargin}" Text="Length" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding Length, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
 
-                        <TextBlock Grid.Column="0" Text="Span" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Span, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Alg No" FontSize="{StaticResource LabelFontSize}"
+           Margin="{StaticResource LabelMargin}" Style="{StaticResource HmiLabelStyle}"/>
+                                        <ComboBox ItemsSource="{Binding AlgorithmTypes}"
+                                                  SelectedItem="{Binding SelectedAlgorithm}"
+                                                  DisplayMemberPath="DisplayName"
+                                                  Style="{StaticResource HmiComboBoxStyle}"/>
+                                    </StackPanel>
+                                </Grid>
 
-                    <!-- Description -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <!-- Offset & Span -->
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="Description" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="60" 
-                                 Padding="5,3" 
-                                 TextWrapping="Wrap" 
-                                 AcceptsReturn="True" 
-                                 VerticalScrollBarVisibility="Auto"/>
-                    </Grid>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock FontSize="{StaticResource LabelFontSize}"
+           Margin="{StaticResource LabelMargin}" Text="Offset" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding Offset, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
 
-                    <!-- Remark -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock FontSize="{StaticResource LabelFontSize}"
+           Margin="{StaticResource LabelMargin}" Text="Span" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding Span, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
+                                </Grid>
 
-                        <TextBlock Grid.Column="0" Text="Remark" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Remark, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="60" 
-                                 Padding="5,3" 
-                                 TextWrapping="Wrap" 
-                                 AcceptsReturn="True" 
-                                 VerticalScrollBarVisibility="Auto"/>
-                    </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+
+            <!-- 3. FOOTER ACTIONS -->
+            <Border Grid.Row="2" Background="White" BorderBrush="#E0E0E0" BorderThickness="0,1,0,0" Padding="30">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+
+                    <Button Content="Cancel" 
+                            Command="{Binding CancelCommand}"
+                            Width="200" Height="70"
+                            FontSize="24" FontWeight="SemiBold"
+                            Background="#F5F5F5" Foreground="#555555"
+                            BorderBrush="#CCCCCC" BorderThickness="2"
+                            Margin="0,0,30,0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+
+                    <Button Content="Save Tag" 
+                            Command="{Binding SaveCommand}"
+                            Width="250" Height="70"
+                            FontSize="24" FontWeight="Bold"
+                            Background="#007ACC" Foreground="White"
+                            BorderThickness="0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
 
                 </StackPanel>
-            </ScrollViewer>
-        </Border>
-
-        <!-- Buttons -->
-        <StackPanel Grid.Row="2" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Right" 
-                    Margin="0,15,0,0">
-            <Button Content="Save" 
-                    Command="{Binding SaveCommand}"
-                    Width="100" 
-                    Height="30" 
-                    Margin="0,0,10,0"
-                    Background="#007ACC"
-                    Foreground="White"
-                    BorderThickness="0"
-                    Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            CornerRadius="3"
-                                            Padding="15,5">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#005A9E"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#CCCCCC"/>
-                                <Setter Property="Foreground" Value="#666666"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-
-            <Button Content="Cancel" 
-                    Command="{Binding CancelCommand}"
-                    Width="100" 
-                    Height="30"
-                    Background="#F0F0F0"
-                    BorderBrush="#CCCCCC"
-                    BorderThickness="1"
-                    Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="3"
-                                            Padding="15,5">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#E0E0E0"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-        </StackPanel>
-    </Grid>
+            </Border>
+        </Grid>
+    </Viewbox>
 </UserControl>

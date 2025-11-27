@@ -30,23 +30,20 @@
                             <ContentPresenter HorizontalAlignment="Center"
                                       VerticalAlignment="Center"/>
                         </Border>
-                        <ControlTemplate.Triggers>
-
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#365DBC"/>
-                            </Trigger>
-
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#274B96"/>
-                            </Trigger>
-
-                        </ControlTemplate.Triggers>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#365DBC"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Background" Value="#274B96"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+                
         </Style>
-        
-   
+       
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         </ResourceDictionary>
 

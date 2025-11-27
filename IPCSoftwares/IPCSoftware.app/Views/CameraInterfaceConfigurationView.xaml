@@ -5,384 +5,288 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:IPCSoftware.App.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             Background="#F3F3F3" FontFamily="Segoe UI">
+
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+        <Style x:Key="HmiLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style x:Key="HmiTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
+        <Style x:Key="HmiReadOnlyTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource HmiTextBoxStyle}">
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="Background" Value="#F0F0F0"/>
+            <Setter Property="Foreground" Value="#888888"/>
+        </Style>
+
+        <Style x:Key="HmiComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
+        <Style x:Key="HmiCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="LayoutTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="2.0" ScaleY="2.0"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="40"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.1" BlurRadius="20"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Viewbox Stretch="Uniform">
+        <Grid Width="1920" Height="1080">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- Title -->
-        <TextBlock Grid.Row="0" 
-                   Text="{Binding Title}" 
-                   FontSize="18" 
-                   FontWeight="SemiBold"
-                   Margin="0,0,0,20"/>
+            <TextBlock Grid.Row="0" 
+                       Text="{Binding Title}" 
+                       FontSize="48" 
+                       FontWeight="Bold"
+                       Foreground="#333333"
+                       Margin="40,30,0,20"/>
 
-        <!-- Form -->
-        <Border Grid.Row="1" 
-                BorderBrush="#CCCCCC" 
-                BorderThickness="1" 
-                Padding="20"
-                Background="White">
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly" Margin="40,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel>
+                    <StackPanel Grid.Column="0">
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="General Information" FontSize="32" FontWeight="Bold"  Margin="0,0,0,30"/>
 
-                    <!-- Device Info (Read-only) -->
-                    <TextBlock Text="Device Information" 
-                               FontSize="14" 
-                               FontWeight="SemiBold"
-                               Margin="0,0,0,10"/>
+                                <Grid Margin="0,0,0,30">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                    <Grid Margin="0,0,0,15">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Device No" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding DeviceNo, Mode=OneWay}" 
+                                                 Style="{StaticResource HmiReadOnlyTextBoxStyle}"/>
+                                    </StackPanel>
 
-                        <TextBlock Grid.Column="0" Text="Device No" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding DeviceNo, Mode=OneWay}" 
-                                 Height="25" 
-                                 Padding="5,3"
-                                 IsReadOnly="True"
-                                 Background="#F0F0F0"/>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Camera Name" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding CameraName, Mode=OneWay}" 
+                                                 Style="{StaticResource HmiReadOnlyTextBoxStyle}"/>
+                                    </StackPanel>
+                                </Grid>
 
-                        <TextBlock Grid.Column="3" Text="Camera Name" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="4" 
-                                 Text="{Binding CameraName, Mode=OneWay}" 
-                                 Height="25" 
-                                 Padding="5,3"
-                                 IsReadOnly="True"
-                                 Background="#F0F0F0"/>
-                    </Grid>
+                                <Grid Margin="0,0,0,30">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Interface Name" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Com Protocol" Style="{StaticResource HmiLabelStyle}"/>
+                                        <ComboBox ItemsSource="{Binding Protocols}"
+                                                  SelectedItem="{Binding SelectedProtocol}"
+                                                  Style="{StaticResource HmiComboBoxStyle}"/>
+                                    </StackPanel>
+                                </Grid>
 
-                    <Separator Margin="0,10,0,20"/>
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Description" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"
+                                             Height="100" TextWrapping="Wrap" AcceptsReturn="True" 
+                                             VerticalContentAlignment="Top" Padding="15"/>
+                                </StackPanel>
 
-                    <!-- Interface Configuration -->
-                    <TextBlock Text="Interface Configuration" 
-                               FontSize="14" 
-                               FontWeight="SemiBold"
-                               Margin="0,0,0,10"/>
+                                <StackPanel Margin="0,0,0,10">
+                                    <TextBlock Text="Remark" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Remark, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"
+                                             Height="100" TextWrapping="Wrap" AcceptsReturn="True" 
+                                             VerticalContentAlignment="Top" Padding="15"/>
+                                </StackPanel>
+                                <CheckBox Content="Interface Enabled" 
+            IsChecked="{Binding Enabled}"
+            Style="{StaticResource HmiCheckBoxStyle}"
+            Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
 
-                    <!-- Name -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="2">
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Protocol Specific Setting" FontSize="32" FontWeight="Bold" Foreground="#333333" Margin="0,0,0,30"/>
 
-                        <TextBlock Grid.Column="0" Text="Name" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+                                <Grid Margin="0,0,0,30">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
 
-                    <!-- Com Protocol -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="IP Address" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding IPAddress, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
 
-                        <TextBlock Grid.Column="0" Text="Com Protocol" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Column="1" 
-                                  ItemsSource="{Binding Protocols}"
-                                  SelectedItem="{Binding SelectedProtocol}"
-                                  Height="25"/>
-                    </Grid>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Port No" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
+                                </Grid>
 
-                    <!-- Protocol Specific Settings -->
-                    <Border BorderBrush="#CCCCCC" 
-                            BorderThickness="1" 
-                            Padding="15"
-                            Margin="0,10,0,20"
-                            Background="#F9F9F9">
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Gateway" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Gateway, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"/>
+                                </StackPanel>
 
-                        <StackPanel>
-                            <TextBlock Text="Protocol Specific Setting" 
-                                       FontWeight="SemiBold"
-                                       Margin="0,0,0,10"/>
+                                <StackPanel Visibility="{Binding IsFTPServer, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,0,30">
+                                    <TextBlock Text="Physical Path (FTP Server)" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding PhysicalPath, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"/>
+                                </StackPanel>
 
-                            <!-- IP Address -->
-                            <Grid Margin="0,0,0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="135"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Column="0" Text="IP Address" VerticalAlignment="Center"/>
-                                <TextBox Grid.Column="1" 
-                                         Text="{Binding IPAddress, UpdateSourceTrigger=PropertyChanged}" 
-                                         Height="25" 
-                                         Padding="5,3"/>
-                            </Grid>
-
-                            <!-- Port No -->
-                            <Grid Margin="0,0,0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="135"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Column="0" Text="Port No" VerticalAlignment="Center"/>
-                                <TextBox Grid.Column="1" 
-                                         Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}" 
-                                         Height="25" 
-                                         Padding="5,3"/>
-                            </Grid>
-
-                            <!-- Gateway -->
-                            <Grid Margin="0,0,0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="135"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Column="0" Text="Gateway" VerticalAlignment="Center"/>
-                                <TextBox Grid.Column="1" 
-                                         Text="{Binding Gateway, UpdateSourceTrigger=PropertyChanged}" 
-                                         Height="25" 
-                                         Padding="5,3"/>
-                            </Grid>
-
-                            <!-- Allow Anonymous -->
-                            <Grid Margin="0,0,0,15">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="135"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Column="0" Text="Allow Anonymous" VerticalAlignment="Center"/>
-                                <CheckBox Grid.Column="1" 
-                                          IsChecked="{Binding AllowAnonymous}"
-                                          VerticalAlignment="Center"/>
-                            </Grid>
-
-                            <!-- FTP Server: Physical Path -->
-                            <Grid Margin="0,0,0,12" 
-                                  Visibility="{Binding IsFTPServer, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="135"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Column="0" Text="Physical Path" VerticalAlignment="Center"/>
-                                <TextBox Grid.Column="1" 
-                                         Text="{Binding PhysicalPath, UpdateSourceTrigger=PropertyChanged}" 
-                                         Height="25" 
-                                         Padding="5,3"/>
-                            </Grid>
-
-                            <!-- FTP Client: Remote Path -->
-                            <Grid Margin="0,0,0,12" 
-                                  Visibility="{Binding IsFTPClient, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="135"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Column="0" Text="Remote Path" VerticalAlignment="Center"/>
-                                <TextBox Grid.Column="1" 
-                                         Text="{Binding RemotePath, UpdateSourceTrigger=PropertyChanged}" 
-                                         Height="25" 
-                                         Padding="5,3"/>
-                            </Grid>
-
-                            <!-- FTP Client: Local Directory -->
-                            <Grid Margin="0,0,0,15" 
-                                  Visibility="{Binding IsFTPClient, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="135"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Column="0" Text="Local Directory" VerticalAlignment="Center"/>
-                                <TextBox Grid.Column="1" 
-                                         Text="{Binding LocalDirectory, UpdateSourceTrigger=PropertyChanged}" 
-                                         Height="25" 
-                                         Padding="5,3"/>
-                            </Grid>
-
-                            <!-- Authentication -->
-                            <Border BorderBrush="#999999" 
-                                    BorderThickness="1" 
-                                    Padding="10"
-                                    Margin="0,10,0,0">
-
-                                <StackPanel>
-                                    <TextBlock Text="Authentication" 
-                                               FontWeight="SemiBold"
-                                               Margin="0,0,0,10"/>
-
-                                    <!-- User Name -->
-                                    <Grid Margin="0,0,0,10">
+                                <StackPanel Visibility="{Binding IsFTPClient, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,0,30">
+                                    <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="110"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="30"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-
-                                        <TextBlock Grid.Column="0" Text="User Name" VerticalAlignment="Center"/>
-                                        <TextBox Grid.Column="1" 
-                                                 Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Height="25" 
-                                                 Padding="5,3"/>
-                                    </Grid>
-
-                                    <!-- Password -->
-                                    <Grid Margin="0,0,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="110"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <TextBlock Grid.Column="0" Text="Password" VerticalAlignment="Center"/>
-                                        <TextBox Grid.Column="1" 
-                                                
-                                                 Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" 
-                                                     Height="25" 
-                                                     Padding="5,3"
-                                                    />
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Remote Path" Style="{StaticResource HmiLabelStyle}"/>
+                                            <TextBox Text="{Binding RemotePath, UpdateSourceTrigger=PropertyChanged}" 
+                                                     Style="{StaticResource HmiTextBoxStyle}"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Local Directory" Style="{StaticResource HmiLabelStyle}"/>
+                                            <TextBox Text="{Binding LocalDirectory, UpdateSourceTrigger=PropertyChanged}" 
+                                                     Style="{StaticResource HmiTextBoxStyle}"/>
+                                        </StackPanel>
                                     </Grid>
                                 </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </Border>
 
-                    <!-- Description -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <CheckBox Content="Allow Anonymous Access" 
+                                          IsChecked="{Binding AllowAnonymous}"
+                                          Style="{StaticResource HmiCheckBoxStyle}"
+                                          Margin="0,0,0,30"/>
 
-                        <TextBlock Grid.Column="0" Text="Description" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="60" 
-                                 Padding="5,3" 
-                                 TextWrapping="Wrap" 
-                                 AcceptsReturn="True" 
-                                 VerticalScrollBarVisibility="Auto"/>
-                    </Grid>
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding AllowAnonymous}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
 
-                    <!-- Remark -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                    <Grid Margin="0,0,0,30">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="30"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Username" Style="{StaticResource HmiLabelStyle}"/>
+                                            <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" 
+                                                     Style="{StaticResource HmiTextBoxStyle}"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Password" Style="{StaticResource HmiLabelStyle}"/>
+                                            <TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" 
+                                                     Style="{StaticResource HmiTextBoxStyle}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
 
-                        <TextBlock Grid.Column="0" Text="Remark" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Remark, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="60" 
-                                 Padding="5,3" 
-                                 TextWrapping="Wrap" 
-                                 AcceptsReturn="True" 
-                                 VerticalScrollBarVisibility="Auto"/>
-                    </Grid>
+                              
 
-                    <!-- Enabled -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
 
-                        <TextBlock Grid.Column="0" Text="Enabled" VerticalAlignment="Center"/>
-                        <CheckBox Grid.Column="1" 
-                                  IsChecked="{Binding Enabled}"
-                                  VerticalAlignment="Center"/>
-                    </Grid>
+            <Border Grid.Row="2" Background="White" BorderBrush="#E0E0E0" BorderThickness="0,1,0,0" Padding="30">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+
+                    <Button Content="Cancel" 
+                            Command="{Binding CancelCommand}"
+                            Width="200" Height="70"
+                            FontSize="24" FontWeight="SemiBold"
+                            Background="#F5F5F5" Foreground="#555555"
+                            BorderBrush="#CCCCCC" BorderThickness="2"
+                            Margin="0,0,30,0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+
+                    <Button Content="Save Interface" 
+                            Command="{Binding SaveCommand}"
+                            Width="260" Height="70"
+                            FontSize="24" FontWeight="Bold"
+                            Background="#007ACC" Foreground="White"
+                            BorderThickness="0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
 
                 </StackPanel>
-            </ScrollViewer>
-        </Border>
-
-        <!-- Buttons -->
-        <StackPanel Grid.Row="2" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Right" 
-                    Margin="0,15,0,0">
-            <Button Content="Save" 
-                    Command="{Binding SaveCommand}"
-                    Width="100" 
-                    Height="30" 
-                    Margin="0,0,10,0"
-                    Background="#007ACC"
-                    Foreground="White"
-                    BorderThickness="0"
-                    Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            CornerRadius="3"
-                                            Padding="15,5">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#005A9E"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#CCCCCC"/>
-                                <Setter Property="Foreground" Value="#666666"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-
-            <Button Content="Cancel" 
-                    Command="{Binding CancelCommand}"
-                    Width="100" 
-                    Height="30"
-                    Background="#F0F0F0"
-                    BorderBrush="#CCCCCC"
-                    BorderThickness="1"
-                    Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="3"
-                                            Padding="15,5">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#E0E0E0"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-        </StackPanel>
-    </Grid>
+            </Border>
+        </Grid>
+    </Viewbox>
 </UserControl>

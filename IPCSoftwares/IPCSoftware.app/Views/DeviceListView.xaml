@@ -3,177 +3,223 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:IPCSoftware.App.Views"
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             xmlns:converters="clr-namespace:IPCSoftware.App.Converters"
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:DeviceListViewModel}"
              mc:Ignorable="d" 
-                  xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
-    xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
-    helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:DeviceListViewModel}"
-      xmlns:converters="clr-namespace:IPCSoftware.App.Converters"
-             d:DesignHeight="450" d:DesignWidth="800">  
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             Background="#F3F3F3" FontFamily="Segoe UI">
 
-        <!-- Header with Add Button -->
-        <Grid Grid.Row="0" Margin="0,0,0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+    <UserControl.Resources>
+        <converters:BooleanToYesNoConverter x:Key="BoolToYesNo"/>
+        <Style x:Key="HmiColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Height" Value="90"/>
+            <Setter Property="FontSize" Value="36"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="15,0"/>
+        </Style>
 
-            <TextBlock Grid.Column="0" 
-                       Text="Device Configuration" 
-                       FontSize="18" 
-                       FontWeight="SemiBold"
-                       VerticalAlignment="Center"/>
+        <Style x:Key="HmiCellStyle" TargetType="DataGridCell">
+            <Setter Property="FontSize" Value="32"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter VerticalAlignment="Center" 
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#CCE8FF"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
-            <Button Grid.Column="1" 
-                    Content="Add Device" 
-                    Command="{Binding AddDeviceCommand}"
-                    Padding="15,8"
-                    Background="#28A745"
-                    Foreground="White"
-                    BorderThickness="0"
-                    Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            CornerRadius="3"
-                                            Padding="{TemplateBinding Padding}">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#218838"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
+        <Style x:Key="CenterAlignedCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource HmiCellStyle}">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="LeftAlignedCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource HmiCellStyle}">
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="25,0,0,0"/>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Viewbox Stretch="Uniform">
+        <Grid Width="1920" Height="1080" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" 
+                           Text="Device Configuration" 
+                           FontSize="60" 
+                           FontWeight="Bold"
+                           Foreground="#333333"
+                           VerticalAlignment="Center"/>
+
+                <Button Grid.Column="1" 
+                        Content="+ ADD DEVICE" 
+                        Command="{Binding AddDeviceCommand}"
+                        Height="90" Width="350"
+                        FontSize="32" FontWeight="Bold"
+                        Background="#28A745"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Cursor="Hand">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
+
+            <Border Grid.Row="1" 
+                    Background="White" 
+                    CornerRadius="12" 
+                    BorderBrush="#CCCCCC" 
+                    BorderThickness="2">
+
+                <DataGrid ItemsSource="{Binding Devices}"
+                          SelectedItem="{Binding SelectedDevice}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          CanUserReorderColumns="False"
+                          CanUserResizeColumns="False"
+                          CanUserResizeRows="False"
+                          CanUserSortColumns="True"
+                          
+                          GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="#E0E0E0"
+                          VerticalGridLinesBrush="Transparent"
+                          BorderThickness="0"
+                          Background="White"
+                          
+                          RowHeight="100" 
+                          ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}"
+                          HeadersVisibility="Column">
+
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Background" Value="White"/>
+                            <Style.Triggers>
+                                <Trigger Property="AlternationIndex" Value="1">
+                                    <Setter Property="Background" Value="#FAFAFA"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#F0F0F0"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#E6F2FF"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+
+                    <DataGrid.AlternationCount>2</DataGrid.AlternationCount>
+
+                    <DataGrid.InputBindings>
+                        <MouseBinding MouseAction="LeftDoubleClick" 
+                                      Command="{Binding RowDoubleClickCommand}" 
+                                      CommandParameter="{Binding SelectedDevice}"/>
+                    </DataGrid.InputBindings>
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="No" Binding="{Binding DeviceNo}" Width="120" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
+
+                        <DataGridTextColumn Header="Name" Binding="{Binding DeviceName}" Width="250" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+
+                        <DataGridTextColumn Header="Type" Binding="{Binding DeviceType}" Width="180" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
+
+                        <DataGridTextColumn Header="Make" Binding="{Binding Make}" Width="200" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+                        <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="200" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+
+                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+
+                        <DataGridTextColumn Header="Remark" Binding="{Binding Remark}" Width="200" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+
+                        <DataGridTemplateColumn Header="Actions" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+                                        <Button Content="Config" 
+                                                Command="{Binding DataContext.ConfigDeviceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Width="110" Height="70"
+                                                Background="#17A2B8" Foreground="White"
+                                                FontSize="24" FontWeight="Bold"
+                                                BorderThickness="0" Margin="0,0,15,0">
+                                            <Button.Resources>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="CornerRadius" Value="8"/>
+                                                </Style>
+                                            </Button.Resources>
+                                        </Button>
+
+                                        <Button Content="Edit" 
+                                                Command="{Binding DataContext.EditDeviceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Width="100" Height="70"
+                                                Background="#007ACC" Foreground="White"
+                                                FontSize="24" FontWeight="Bold"
+                                                BorderThickness="0" Margin="0,0,15,0">
+                                            <Button.Resources>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="CornerRadius" Value="8"/>
+                                                </Style>
+                                            </Button.Resources>
+                                        </Button>
+
+                                        <Button Content="Delete" 
+                                                Command="{Binding DataContext.DeleteDeviceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Width="110" Height="70"
+                                                Background="#DC3545" Foreground="White"
+                                                FontSize="24" FontWeight="Bold"
+                                                BorderThickness="0">
+                                            <Button.Resources>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="CornerRadius" Value="8"/>
+                                                </Style>
+                                            </Button.Resources>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
         </Grid>
-
-        <!-- DataGrid -->
-        <DataGrid Grid.Row="1" 
-                  ItemsSource="{Binding Devices}"
-                  SelectedItem="{Binding SelectedDevice}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  SelectionMode="Single"
-                  CanUserAddRows="False"
-                  CanUserDeleteRows="False"
-                  CanUserReorderColumns="True"
-                  CanUserResizeColumns="True"
-                  CanUserResizeRows="False"
-                  CanUserSortColumns="True"
-                  GridLinesVisibility="All"
-                  BorderThickness="1"
-                  BorderBrush="#CCCCCC"
-                  AlternatingRowBackground="#F5F5F5"
-                  RowHeight="35"
-                  HeadersVisibility="Column">
-
-            <DataGrid.InputBindings>
-                <MouseBinding MouseAction="LeftDoubleClick" 
-                             Command="{Binding RowDoubleClickCommand}" 
-                             CommandParameter="{Binding SelectedDevice}"/>
-            </DataGrid.InputBindings>
-
-            <DataGrid.Columns>
-                <!-- Device No -->
-                <DataGridTextColumn Header="DeviceNo" 
-                                    Binding="{Binding DeviceNo}" 
-                                    Width="80"/>
-
-                <!-- Name -->
-                <DataGridTextColumn Header="Name" 
-                                    Binding="{Binding DeviceName}" 
-                                    Width="120"/>
-
-                <!-- Type -->
-                <DataGridTextColumn Header="Type" 
-                                    Binding="{Binding DeviceType}" 
-                                    Width="80"/>
-
-                <!-- Make -->
-                <DataGridTextColumn Header="Make" 
-                                    Binding="{Binding Make}" 
-                                    Width="120"/>
-
-                <!-- Model -->
-                <DataGridTextColumn Header="Model" 
-                                    Binding="{Binding Model}" 
-                                    Width="120"/>
-
-                <!-- Description -->
-                <DataGridTextColumn Header="Description" 
-                                    Binding="{Binding Description}" 
-                                    Width="200"/>
-
-                <!-- Remark -->
-                <DataGridTextColumn Header="Remark" 
-                                    Binding="{Binding Remark}" 
-                                    Width="150"/>
-
-                <!-- Config Button -->
-                <DataGridTemplateColumn Header="Config" Width="80">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="Config" 
-                                    Command="{Binding DataContext.ConfigDeviceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}"
-                                    Padding="10,3"
-                                    Background="#007ACC"
-                                    Foreground="White"
-                                    BorderThickness="0"
-                                    Cursor="Hand"
-                                    FontSize="11"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-
-                <!-- Edit Button -->
-                <DataGridTemplateColumn Header="" Width="60">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="Edit" 
-                                    Command="{Binding DataContext.EditDeviceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}"
-                                    Padding="10,3"
-                                    Background="#F0F0F0"
-                                    BorderBrush="#CCCCCC"
-                                    BorderThickness="1"
-                                    Cursor="Hand"
-                                    FontSize="11"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-
-                <!-- Delete Button -->
-                <DataGridTemplateColumn Header="" Width="70">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="Delete" 
-                                    Command="{Binding DataContext.DeleteDeviceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}"
-                                    Padding="10,3"
-                                    Background="#DC3545"
-                                    Foreground="White"
-                                    BorderThickness="0"
-                                    Cursor="Hand"
-                                    FontSize="11"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
-    </Grid>
+    </Viewbox>
 </UserControl>

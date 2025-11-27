@@ -101,7 +101,18 @@ namespace IPCSoftware.App.ViewModels
         public bool AllowAnonymous
         {
             get => _allowAnonymous;
-            set => SetProperty(ref _allowAnonymous, value);
+            set
+            {
+                if (SetProperty(ref _allowAnonymous, value))
+                {
+                    // If Anonymous is checked (true), clear credentials
+                    if (_allowAnonymous)
+                    {
+                        Username = string.Empty;
+                        Password = string.Empty;
+                    }
+                }
+            }
         }
 
         // Authentication (Common)

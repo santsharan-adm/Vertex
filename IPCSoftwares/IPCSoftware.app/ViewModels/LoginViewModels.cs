@@ -35,6 +35,15 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _isLoading, value);
         }
 
+
+        private bool _isUsernameFocused;
+
+        public bool IsUsernameFocused
+        {
+            get => _isUsernameFocused;
+            set => SetProperty(ref _isUsernameFocused, value);
+
+        }
         public LoginViewModel(
             IAuthService authService,
             INavigationService navigation,
@@ -46,7 +55,7 @@ namespace IPCSoftware.App.ViewModels
             _navigation = navigation;
             _dialog = dialog;
             _logger = logger;
-
+            IsUsernameFocused = true;
             LoginCommand = new RelayCommand(async () => await ExecuteLoginAsync());
         }
 

@@ -18,7 +18,6 @@ namespace IPCSoftware.Services.ConfigServices
 
         public LogConfigurationService(string dataFolderPath = null)
         {
-
             _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
 
             if (!Directory.Exists(_dataFolder))
@@ -29,16 +28,13 @@ namespace IPCSoftware.Services.ConfigServices
             _csvFilePath = Path.Combine(_dataFolder, "LogConfigurations.csv");
             _configurations = new List<LogConfigurationModel>();
 
-          //  _ = InitializeAsync();
+            //  _ = InitializeAsync();
         }
-
 
         public async Task InitializeAsync()
         {
             await LoadFromCsvAsync();
         }
-
-
 
         public async Task<List<LogConfigurationModel>> GetAllAsync()
         {
@@ -53,6 +49,7 @@ namespace IPCSoftware.Services.ConfigServices
         public async Task<LogConfigurationModel> AddAsync(LogConfigurationModel logConfig)
         {
             logConfig.Id = _nextId++;
+            NormalizeBackupSettings(logConfig);
             _configurations.Add(logConfig);
             await SaveToCsvAsync();
             return logConfig;
@@ -64,6 +61,7 @@ namespace IPCSoftware.Services.ConfigServices
             if (existing == null)
                 return false;
 
+            NormalizeBackupSettings(logConfig);
             var index = _configurations.IndexOf(existing);
             _configurations[index] = logConfig;
             await SaveToCsvAsync();
@@ -86,6 +84,54 @@ namespace IPCSoftware.Services.ConfigServices
             _configurations = configurations;
             await SaveToCsvAsync();
             return true;
+        }
+
+        /// <summary>
+        /// Normalizes backup settings based on BackupSchedule
+        /// This ensures only relevant fields are populated based on the schedule type
+        /// </summary>
+        private void NormalizeBackupSettings(LogConfigurationModel config)
+        {
+            if (config == null)
+                return;
+
+            switch (config.BackupSchedule?.ToLower())
+            {
+                case "never/manual":
+                case "never":
+                    // Reset all backup-specific values to defaults
+                    config.BackupTime = TimeSpan.Zero;
+                    config.BackupDay = 0;
+                    config.BackupDayOfWeek = null;
+                    break;
+
+                case "daily":
+                    // Only keep BackupTime, reset day-specific values
+                    config.BackupDay = 0;
+                    config.BackupDayOfWeek = null;
+                    break;
+
+                case "weekly":
+                    // Keep BackupTime and BackupDayOfWeek, reset day of month
+                    config.BackupDay = 0;
+                    if (string.IsNullOrWhiteSpace(config.BackupDayOfWeek))
+                        config.BackupDayOfWeek = "Monday";
+                    break;
+
+                case "monthly":
+                    // Keep BackupTime and BackupDay, reset day of week
+                    config.BackupDayOfWeek = null;
+                    if (config.BackupDay <= 0 || config.BackupDay > 28)
+                        config.BackupDay = 1;
+                    break;
+
+                default:
+                    // Unknown schedule, reset everything
+                    config.BackupTime = TimeSpan.Zero;
+                    config.BackupDay = 0;
+                    config.BackupDayOfWeek = null;
+                    break;
+            }
         }
 
         private async Task LoadFromCsvAsync()
@@ -123,7 +169,6 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                // Log error or handle appropriately
                 Console.WriteLine($"Error loading CSV: {ex.Message}");
             }
         }
@@ -134,8 +179,8 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 var sb = new StringBuilder();
 
-                // Header
-                sb.AppendLine("Id,LogName,LogType,DataFolder,BackupFolder,FileName,LogRetentionTime,LogRetentionFileSize,AutoPurge,BackupSchedule,BackupTime,Description,Remark,Enabled");
+                // Header - updated to include new backup fields
+                sb.AppendLine("Id,LogName,LogType,DataFolder,BackupFolder,FileName,LogRetentionTime,LogRetentionFileSize,AutoPurge,BackupSchedule,BackupTime,BackupDay,BackupDayOfWeek,Description,Remark,Enabled");
 
                 // Data rows
                 foreach (var config in _configurations)
@@ -154,6 +199,8 @@ namespace IPCSoftware.Services.ConfigServices
 
         private string ToCsvLine(LogConfigurationModel config)
         {
+            // BackupDay: only included for Monthly schedule, otherwise 0
+            // BackupDayOfWeek: only included for Weekly schedule, otherwise empty
             return $"{config.Id}," +
                    $"\"{EscapeCsv(config.LogName)}\"," +
                    $"\"{EscapeCsv(config.LogType)}\"," +
@@ -165,6 +212,8 @@ namespace IPCSoftware.Services.ConfigServices
                    $"{config.AutoPurge}," +
                    $"\"{EscapeCsv(config.BackupSchedule)}\"," +
                    $"\"{config.BackupTime}\"," +
+                   $"{config.BackupDay}," +
+                   $"\"{EscapeCsv(config.BackupDayOfWeek)}\"," +
                    $"\"{EscapeCsv(config.Description)}\"," +
                    $"\"{EscapeCsv(config.Remark)}\"," +
                    $"{config.Enabled}";
@@ -176,7 +225,8 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 var values = SplitCsvLine(line);
 
-                if (values.Count < 14)
+                // Updated to expect 16 columns (added BackupDay and BackupDayOfWeek)
+                if (values.Count < 16)
                     return null;
 
                 return new LogConfigurationModel
@@ -192,9 +242,11 @@ namespace IPCSoftware.Services.ConfigServices
                     AutoPurge = bool.Parse(values[8]),
                     BackupSchedule = values[9],
                     BackupTime = TimeSpan.Parse(values[10]),
-                    Description = values[11],
-                    Remark = values[12],
-                    Enabled = bool.Parse(values[13])
+                    BackupDay = string.IsNullOrWhiteSpace(values[11]) ? 0 : int.Parse(values[11]),
+                    BackupDayOfWeek = string.IsNullOrWhiteSpace(values[12]) ? null : values[12],
+                    Description = values[13],
+                    Remark = values[14],
+                    Enabled = bool.Parse(values[15])
                 };
             }
             catch
@@ -251,8 +303,4 @@ namespace IPCSoftware.Services.ConfigServices
             return value;
         }
     }
-
-
-
- 
 }

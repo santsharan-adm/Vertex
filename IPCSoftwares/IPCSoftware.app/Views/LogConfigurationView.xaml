@@ -5,253 +5,279 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:IPCSoftware.App.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             Background="#F3F3F3" FontFamily="Segoe UI">
 
-        <!-- Title -->
-        <TextBlock Grid.Row="0" 
-                   Text="{Binding Title}" 
-                   FontSize="18" 
-                   FontWeight="SemiBold"
-                   Margin="0,0,0,20"/>
+    <Viewbox Stretch="Uniform">
 
-        <!-- Form -->
-        <Border Grid.Row="1" 
-                BorderBrush="#CCCCCC" 
-                BorderThickness="1" 
-                Padding="20"
-                Background="White">
+        <Grid Width="1920" Height="1080">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel>
-                    <!-- Name -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="80"/>
-                        </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" 
+                       Text="{Binding Title}" 
+                       FontSize="48" 
+                       FontWeight="Bold"
+                       Foreground="#333333"
+                       Margin="40,30,0,30"/>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"  Margin="40,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="Name" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" Text="{Binding LogName, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" Padding="5,3"/>
-                    </Grid>
+                    <StackPanel Grid.Column="0">
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="General Settings" FontSize="32" FontWeight="Bold" Margin="0,0,0,30"/>
 
-                    <!-- Type -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="80"/>
-                        </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Name" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding LogName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource HmiTextBoxStyle}"/>
+                                </StackPanel>
 
-                        <TextBlock Grid.Column="0" Text="Type" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Column="1" 
-                                  ItemsSource="{Binding LogTypes}"
-                                  SelectedItem="{Binding SelectedLogType}"
-                                  Height="25"/>
-                    </Grid>
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Log Type" Style="{StaticResource HmiLabelStyle}"/>
+                                    <ComboBox ItemsSource="{Binding LogTypes}" 
+                                              SelectedItem="{Binding SelectedLogType}" 
+                                              Style="{StaticResource HmiComboBoxStyle}"/>
+                                </StackPanel>
 
-                    <!-- Data Folder -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="80"/>
-                        </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Data Folder" Style="{StaticResource HmiLabelStyle}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox Grid.Column="0" Text="{Binding DataFolder, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource HmiTextBoxStyle}"/>
 
-                        <TextBlock Grid.Column="0" Text="Data Folder" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" Text="{Binding DataFolder, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" Padding="5,3"/>
-                        <Button Grid.Column="2" Content="Browse..."
-            Command="{Binding BrowseDataFolderCommand}"
-            Width="70" Height="25" Margin="5,0,0,0"/>
-                    </Grid>
+                                        <Button Grid.Column="1" Content="Browse" 
+                                                Command="{Binding BrowseDataFolderCommand}"
+                                                Height="50" Width="120" Margin="15,0,0,0"
+                                                Background="#E1E1E1" BorderThickness="0" FontSize="20"/>
+                                    </Grid>
+                                    <TextBlock Text="Backup Folder" Style="{StaticResource HmiLabelStyle}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox Grid.Column="0" Text="{Binding BackupFolder, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource HmiTextBoxStyle}"/>
 
-                    <!-- File Name -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="80"/>
-                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="1" Content="Browse" 
+                                             Command="{Binding BrowseBackupFolderCommand}"
+                                             Height="50" Width="120" Margin="15,0,0,0"
+                                             Background="#E1E1E1" BorderThickness="0" FontSize="20"/>
+                                    </Grid>
 
-                        <TextBlock Grid.Column="0" Text="File Name" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" Text="{Binding FileName, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" Padding="5,3"/>
+                                </StackPanel>
 
-                    </Grid>
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="File Name" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding FileName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource HmiTextBoxStyle}"/>
+                                </StackPanel>
 
-                    <!-- Log Retention -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="30"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <Grid Margin="0,15,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="Log Retention" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" Text="{Binding LogRetentionDays, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" Padding="5,3" HorizontalContentAlignment="Center"/>
-                        <TextBox Grid.Column="2" Text="{Binding FileSize, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" Padding="5,3" HorizontalContentAlignment="Center" Margin="5,0,0,0"/>
-                        <TextBlock Grid.Column="3" Text="MB" VerticalAlignment="Center" Margin="5,0,0,0"/>
-                        <CheckBox Grid.Column="4" Content="Auto purge After Log retention period" 
-                                  IsChecked="{Binding AutoPurge}" 
-                                  VerticalAlignment="Center" 
-                                  Margin="10,0,0,0"/>
-                    </Grid>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Retention (Days)" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding LogRetentionDays, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}" 
+                                                 HorizontalContentAlignment="Center"/>
+                                    </StackPanel>
 
-                    <!-- Backup Schedule -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="80"/>
-                        </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Max Size (MB)" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding FileSize, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"
+                                                 HorizontalContentAlignment="Center"/>
+                                    </StackPanel>
 
-                        <TextBlock Grid.Column="0" Text="Backup Schedule" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Column="1" 
-                                  ItemsSource="{Binding BackupSchedules}"
-                                  SelectedItem="{Binding SelectedBackupSchedule}"
-                                  Height="25"/>
-                    </Grid>
+                                    <CheckBox Grid.Row="1" Grid.ColumnSpan="3"
+                                              Content="Auto purge (After Log retention period)" 
+                                              IsChecked="{Binding AutoPurge}"
+                                              Style="{StaticResource HmiCheckBoxStyle}"
+                                              Margin="0,30,0,0"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
 
-                    <!-- Time -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="80"/>
-                        </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="2">
 
-                        <TextBlock Grid.Column="0" Text="Time" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding BackupTime, StringFormat='hh\\:mm\\:ss', UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" Padding="5,3"/>
-                    </Grid>
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Backup Configuration" FontSize="32" FontWeight="Bold" Margin="0,0,0,30"/>
 
-                    <!-- Description -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="80"/>
-                        </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Schedule Frequency" Style="{StaticResource HmiLabelStyle}"/>
+                                    <ComboBox ItemsSource="{Binding BackupSchedules}"
+                                              SelectedItem="{Binding SelectedBackupSchedule}"
+                                              Style="{StaticResource HmiComboBoxStyle}"/>
+                                </StackPanel>
 
-                        <TextBlock Grid.Column="0" Text="Description" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <TextBox Grid.Column="1" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="60" Padding="5,3" TextWrapping="Wrap" 
-                                 AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
-                    </Grid>
+                                <Grid Margin="0,0,0,15">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="15"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                    <!-- Remark -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="80"/>
-                        </Grid.ColumnDefinitions>
+                                    <Button Grid.ColumnSpan="3"
+                                            Content="BACKUP NOW"
+                                            Command="{Binding BackUpCommand}"
+                                            Height="60" MaxWidth="500"
+                                            FontSize="24" FontWeight="Bold"
+                                            Background="#28A745" Foreground="White"
+                                            BorderThickness="0">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedBackupSchedule}" Value="Never/Manual">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
 
-                        <TextBlock Grid.Column="0" Text="Remark" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <TextBox Grid.Column="1" Text="{Binding Remark, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="60" Padding="5,3" TextWrapping="Wrap" 
-                                 AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
-                    </Grid>
+                                    <StackPanel Grid.Column="0">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedBackupSchedule}" Value="Daily">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding SelectedBackupSchedule}" Value="Weekly">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding SelectedBackupSchedule}" Value="Monthly">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <TextBlock Text="Time (HH:MM:SS)" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding BackupTime, StringFormat='hh\\:mm\\:ss', UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}" HorizontalContentAlignment="Center"/>
+                                    </StackPanel>
 
-                    <!-- Enabled -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="2">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedBackupSchedule}" Value="Monthly">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <TextBlock Text="Day of Month" Style="{StaticResource HmiLabelStyle}"/>
+                                        <ComboBox ItemsSource="{Binding BackupDays}"
+                                                  SelectedItem="{Binding SelectedBackupDay}"
+                                                  Style="{StaticResource HmiComboBoxStyle}"/>
+                                    </StackPanel>
 
-                        <CheckBox Grid.Column="1" Content="Enabled" IsChecked="{Binding Enabled}"/>
-                    </Grid>
-                </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedBackupSchedule}" Value="Weekly">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <TextBlock Text="Day of Week" Style="{StaticResource HmiLabelStyle}"/>
+                                        <ComboBox ItemsSource="{Binding DaysOfWeek}"
+                                                  SelectedItem="{Binding SelectedBackupDayOfWeek}"
+                                                  Style="{StaticResource HmiComboBoxStyle}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Details" FontSize="32" FontWeight="Bold" Foreground="#333333" Margin="0,0,0,30"/>
+
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Description" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"
+                                             Height="100" TextWrapping="Wrap" AcceptsReturn="True"
+                                             VerticalContentAlignment="Top" Padding="15"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Remark" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Remark, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"
+                                             Height="100" TextWrapping="Wrap" AcceptsReturn="True"
+                                             VerticalContentAlignment="Top" Padding="15"/>
+                                </StackPanel>
+
+                                <CheckBox Content="Enabled" 
+                                          IsChecked="{Binding Enabled}"
+                                          Style="{StaticResource HmiCheckBoxStyle}"
+                                          Margin="0,15,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
             </ScrollViewer>
-        </Border>
 
-        <!-- Buttons -->
-        <StackPanel Grid.Row="2" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Right" 
-                    Margin="0,15,0,0">
-            <Button Content="Save" 
-                    Command="{Binding SaveCommand}"
-                    Width="100" 
-                    Height="30" 
-                    Margin="0,0,10,0"
-                    Background="#007ACC"
-                    Foreground="White"
-                    BorderThickness="0"
-                    Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            CornerRadius="3"
-                                            Padding="15,5">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#005A9E"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#CCCCCC"/>
-                                <Setter Property="Foreground" Value="#666666"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
+            <Border Grid.Row="2" Background="White" BorderBrush="#E0E0E0" BorderThickness="0,1,0,0" Padding="25">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 
-            <Button Content="Cancel" 
-                    Command="{Binding CancelCommand}"
-                    Width="100" 
-                    Height="30"
-                    Background="#F0F0F0"
-                    BorderBrush="#CCCCCC"
-                    BorderThickness="1"
-                    Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="3"
-                                            Padding="15,5">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#E0E0E0"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-        </StackPanel>
-    </Grid>
+                    <Button Content="Cancel" 
+                            Command="{Binding CancelCommand}"
+                            Width="180" Height="70"
+                            FontSize="24" FontWeight="SemiBold"
+                            Background="#F5F5F5" Foreground="#555555"
+                            BorderBrush="#CCCCCC" BorderThickness="2"
+                            Margin="0,0,30,0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+
+                    <Button Content="Save" 
+                            Command="{Binding SaveCommand}"
+                            Width="240" Height="70"
+                            FontSize="24" FontWeight="Bold"
+                            Background="#007ACC" Foreground="White"
+                            BorderThickness="0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Viewbox>
 </UserControl>

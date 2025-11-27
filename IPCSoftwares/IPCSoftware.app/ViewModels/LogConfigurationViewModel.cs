@@ -8,9 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using IPCSoftware.Shared;
 using IPCSoftware.Core.Interfaces;
 
 namespace IPCSoftware.App.ViewModels
@@ -62,6 +60,13 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _dataFolder, value);
         }
 
+        private string _backupFolder;
+        public string BackupFolder
+        {
+            get => _backupFolder;
+            set => SetProperty(ref _backupFolder, value);
+        }
+
         private string _fileName;
         public string FileName
         {
@@ -94,7 +99,13 @@ namespace IPCSoftware.App.ViewModels
         public string SelectedBackupSchedule
         {
             get => _selectedBackupSchedule;
-            set => SetProperty(ref _selectedBackupSchedule, value);
+            set
+            {
+                if (SetProperty(ref _selectedBackupSchedule, value))
+                {
+                    OnBackupScheduleChanged();
+                }
+            }
         }
 
         private TimeSpan _backupTime;
@@ -102,6 +113,22 @@ namespace IPCSoftware.App.ViewModels
         {
             get => _backupTime;
             set => SetProperty(ref _backupTime, value);
+        }
+
+        // NEW: Day of month for monthly backup (1-28)
+        private int _selectedBackupDay;
+        public int SelectedBackupDay
+        {
+            get => _selectedBackupDay;
+            set => SetProperty(ref _selectedBackupDay, value);
+        }
+
+        // NEW: Day of week for weekly backup
+        private string _selectedBackupDayOfWeek;
+        public string SelectedBackupDayOfWeek
+        {
+            get => _selectedBackupDayOfWeek;
+            set => SetProperty(ref _selectedBackupDayOfWeek, value);
         }
 
         private string _description;
@@ -127,11 +154,14 @@ namespace IPCSoftware.App.ViewModels
 
         public ObservableCollection<string> LogTypes { get; }
         public ObservableCollection<string> BackupSchedules { get; }
+        public ObservableCollection<int> BackupDays { get; }
+        public ObservableCollection<string> DaysOfWeek { get; }
 
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
+        public ICommand BackUpCommand { get; }
         public ICommand BrowseDataFolderCommand { get; }
-
+        public ICommand BrowseBackupFolderCommand { get; }
 
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
@@ -141,13 +171,22 @@ namespace IPCSoftware.App.ViewModels
             _logService = logService;
 
             LogTypes = new ObservableCollection<string> { "Production", "Audit", "Error" };
-            BackupSchedules = new ObservableCollection<string> { "Never", "Hourly", "Daily", "Weekly", "Monthly" };
+            BackupSchedules = new ObservableCollection<string> { "Never/Manual", "Daily", "Weekly", "Monthly" };
+
+            // Days 1-28 for monthly backup
+            BackupDays = new ObservableCollection<int>(Enumerable.Range(1, 28));
+
+            // Days of week
+            DaysOfWeek = new ObservableCollection<string>
+            {
+                "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+            };
 
             SaveCommand = new RelayCommand(async () => await OnSaveAsync(), () => CanSave());
             CancelCommand = new RelayCommand(() => OnCancel());
             BrowseDataFolderCommand = new RelayCommand(() => OnBrowseDataFolder());
-
-
+            BrowseBackupFolderCommand = new RelayCommand(() => OnBrowseBackupFolder());
+            BackUpCommand = new RelayCommand(() => OnBackUp());
 
             InitializeNewLog();
         }
@@ -174,12 +213,15 @@ namespace IPCSoftware.App.ViewModels
             LogName = log.LogName;
             SelectedLogType = log.LogType ?? "Production";
             DataFolder = log.DataFolder;
+            BackupFolder = log.BackupFolder;
             FileName = log.FileName;
             LogRetentionDays = log.LogRetentionTime;
             FileSize = log.LogRetentionFileSize;
             AutoPurge = log.AutoPurge;
-            SelectedBackupSchedule = log.BackupSchedule ?? "Never";
+            SelectedBackupSchedule = log.BackupSchedule ?? "Never/Manual";
             BackupTime = log.BackupTime;
+            SelectedBackupDay = log.BackupDay > 0 ? log.BackupDay : 1;
+            SelectedBackupDayOfWeek = log.BackupDayOfWeek ?? "Monday";
             Description = log.Description;
             Remark = log.Remark;
             Enabled = log.Enabled;
@@ -190,12 +232,38 @@ namespace IPCSoftware.App.ViewModels
             _currentLog.LogName = LogName;
             _currentLog.LogType = SelectedLogType;
             _currentLog.DataFolder = DataFolder;
+            _currentLog.BackupFolder = BackupFolder;
             _currentLog.FileName = FileName;
             _currentLog.LogRetentionTime = LogRetentionDays;
             _currentLog.LogRetentionFileSize = FileSize;
             _currentLog.AutoPurge = AutoPurge;
             _currentLog.BackupSchedule = SelectedBackupSchedule;
             _currentLog.BackupTime = BackupTime;
+
+            // Reset backup-related values based on schedule type
+            switch (SelectedBackupSchedule)
+            {
+                case "Never/Manual":
+                    _currentLog.BackupDay = 0;
+                    _currentLog.BackupDayOfWeek = null;
+                    break;
+
+                case "Daily":
+                    _currentLog.BackupDay = 0;
+                    _currentLog.BackupDayOfWeek = null;
+                    break;
+
+                case "Weekly":
+                    _currentLog.BackupDay = 0;
+                    _currentLog.BackupDayOfWeek = SelectedBackupDayOfWeek;
+                    break;
+
+                case "Monthly":
+                    _currentLog.BackupDay = SelectedBackupDay;
+                    _currentLog.BackupDayOfWeek = null;
+                    break;
+            }
+
             _currentLog.Description = Description;
             _currentLog.Remark = Remark;
             _currentLog.Enabled = Enabled;
@@ -223,7 +291,6 @@ namespace IPCSoftware.App.ViewModels
             SaveCompleted?.Invoke(this, EventArgs.Empty);
         }
 
-
         private void OnBrowseDataFolder()
         {
             var dialog = new CommonOpenFileDialog
@@ -241,11 +308,60 @@ namespace IPCSoftware.App.ViewModels
         }
 
 
+        private void OnBrowseBackupFolder()
+        {
+            var dialog = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true,
+                Title = "Select Backup Folder",
+                AllowNonFileSystemItems = false,
+                Multiselect = false
+            };
+
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                BackupFolder = dialog.FileName;
+            }
+        }
+
+
+
+
         private void OnCancel()
         {
             CancelRequested?.Invoke(this, EventArgs.Empty);
         }
 
+        private void OnBackUp()
+        {
+            // Execute manual backup logic
+            // TODO: Implement backup logic
+        }
+
+        private void OnBackupScheduleChanged()
+        {
+            // Reset values when schedule changes
+            if (SelectedBackupSchedule == "Never/Manual")
+            {
+                SelectedBackupDay = 1;
+                SelectedBackupDayOfWeek = "Monday";
+            }
+            else if (SelectedBackupSchedule == "Daily")
+            {
+                SelectedBackupDay = 1;
+                SelectedBackupDayOfWeek = "Monday";
+            }
+            else if (SelectedBackupSchedule == "Weekly")
+            {
+                SelectedBackupDay = 1;
+                // Keep SelectedBackupDayOfWeek
+            }
+            else if (SelectedBackupSchedule == "Monthly")
+            {
+                // Keep SelectedBackupDay
+                SelectedBackupDayOfWeek = "Monday";
+            }
+        }
 
         private void UpdateFileName()
         {
@@ -254,8 +370,6 @@ namespace IPCSoftware.App.ViewModels
                 FileName = $"{SelectedLogType}_{DateTime.Now:yyyyMMdd}";
             }
         }
-
-
     }
-
 }
+    

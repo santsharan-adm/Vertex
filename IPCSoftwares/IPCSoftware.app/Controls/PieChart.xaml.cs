@@ -32,8 +32,7 @@ namespace IPCSoftware.App.Controls
                 {
                     new PieSliceModel { Label="OK", Value=60 },
                     new PieSliceModel { Label="Tossed", Value=25 },
-                    new PieSliceModel { Label="NG", Value=10 },
-                    new PieSliceModel { Label="Rework", Value=5 }
+                    new PieSliceModel { Label="NG", Value=10 }
                 };
                 CenterText = "87.4%";
                 DrawPie();
