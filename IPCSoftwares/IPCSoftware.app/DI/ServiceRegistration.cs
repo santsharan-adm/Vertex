@@ -106,6 +106,8 @@ namespace IPCSoftware.App.DI
             services.AddTransient<SystemSettingViewModel>();
             services.AddTransient<IPLCService, PlcService>();
             services.AddTransient<LandingPage>();
+            services.AddTransient<IPCLogsView>();
+            services.AddTransient<IPCLogsViewModel>();
 
 
 

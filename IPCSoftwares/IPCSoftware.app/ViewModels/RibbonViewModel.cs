@@ -62,7 +62,8 @@ public class RibbonViewModel : BaseViewModel
         ShowSidebar?.Invoke(new List<string>
         {
             "System Logs",
-            "Production Logs"
+            "Production Logs",
+            "IPC Logs"
         });
     }
 
