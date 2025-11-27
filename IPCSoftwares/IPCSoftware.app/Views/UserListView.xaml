@@ -21,12 +21,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Title -->
-        <TextBlock Grid.Row="0" 
-                   Text="Users" 
-                   FontSize="18" 
-                   FontWeight="SemiBold"
-                   Margin="0,0,0,15"/>
+        
 
         <!-- Search Box -->
         <Grid Grid.Row="1" Margin="0,0,0,10">
@@ -40,7 +35,7 @@
                      Padding="8,5"
                      VerticalContentAlignment="Center"
                      BorderBrush="#CCCCCC"
-                     BorderThickness="1">
+                     BorderThickness="1" Margin="82,0,30,0">
                 <TextBox.Style>
                     <Style TargetType="TextBox">
                         <Setter Property="Foreground" Value="Black"/>
@@ -50,7 +45,7 @@
                                     <Setter.Value>
                                         <VisualBrush Stretch="None" AlignmentX="Left">
                                             <VisualBrush.Visual>
-                                                <TextBlock Text="Search..." 
+                                                <TextBlock Text="Search User..." 
                                                           Foreground="#999999" 
                                                           Margin="8,0,0,0"
                                                           VerticalAlignment="Center"/>
@@ -67,39 +62,22 @@
             <Button Grid.Column="1" 
           Content="Add User" 
           Command="{Binding AddUserCommand}"
-          Padding="15,8"
+          Padding="15,15"
           Background="#007ACC"
           Foreground="White"
-          BorderThickness="0"
-          Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                  CornerRadius="3"
-                                  Padding="{TemplateBinding Padding}">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                              VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#005A9E"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
+          BorderThickness="10"
+          Cursor="Hand"
+          Margin="1,0,26,0"
+          Style="{StaticResource HmiEditButton}">
+
             </Button>
-            
-            
+
+
         </Grid>
 
         <!-- DataGrid -->
-        <DataGrid Grid.Row="2" 
+        <DataGrid Style="{StaticResource HmiDataGridStyle}"
+                  Grid.Row="2" 
                   ItemsSource="{Binding FilteredUsers}"
                   SelectedItem="{Binding SelectedUser}"
                   AutoGenerateColumns="False"
@@ -116,7 +94,8 @@
                   BorderBrush="#CCCCCC"
                   AlternatingRowBackground="#F9F9F9"
                   RowHeight="35"
-                  HeadersVisibility="Column">
+                  HeadersVisibility="Column" 
+                  Margin="83,10,25,10" >
 
             <DataGrid.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick" 
@@ -161,36 +140,26 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>-->
 
-                <!-- Edit Button -->
-                <DataGridTemplateColumn Header="" Width="60">
+                <!-- EDIT Button Column -->
+                <DataGridTemplateColumn Header="" Width="80">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Content="Edit" 
-                                    Command="{Binding DataContext.EditUserCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}"
-                                    Padding="10,3"
-                                    Background="#F0F0F0"
-                                    BorderBrush="#CCCCCC"
-                                    BorderThickness="1"
-                                    Cursor="Hand"
-                                    FontSize="11"/>
+                            <Button Content="Edit"
+                    Style="{StaticResource HmiEditButton}"
+                    Command="{Binding DataContext.EditUserCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    CommandParameter="{Binding}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <!-- Delete Button -->
-                <DataGridTemplateColumn Header="" Width="70">
+                <!-- DELETE Button Column -->
+                <DataGridTemplateColumn Header="" Width="90">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Content="Delete" 
-                                    Command="{Binding DataContext.DeleteUserCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}"
-                                    Padding="10,3"
-                                    Background="#DC3545"
-                                    Foreground="White"
-                                    BorderThickness="0"
-                                    Cursor="Hand"
-                                    FontSize="11"/>
+                            <Button Content="Delete"
+                    Style="{StaticResource HmiDeleteButton}"
+                    Command="{Binding DataContext.DeleteUserCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    CommandParameter="{Binding}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

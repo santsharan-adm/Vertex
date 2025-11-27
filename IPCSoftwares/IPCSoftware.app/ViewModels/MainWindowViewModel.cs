@@ -4,6 +4,7 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
 using System.Collections.ObjectModel;
 using System.Printing;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Input;
 
@@ -17,6 +18,8 @@ public class MainWindowViewModel : BaseViewModel
 
 
 
+    //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
+    public string AppVersion => "AOI System v1.0.3";
 
     public MainWindowViewModel(INavigationService nav, RibbonViewModel ribbonVM)
     {
