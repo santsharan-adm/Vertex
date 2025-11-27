@@ -1,8 +1,61 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace IPCSoftware.Helpers
 {
+    public static class FocusExtension
+    {
+        // 1. Define the Attached Property "IsFocused"
+        public static readonly DependencyProperty IsFocusedProperty =
+            DependencyProperty.RegisterAttached(
+                "IsFocused",
+                typeof(bool),
+                typeof(FocusExtension),
+                new UIPropertyMetadata(false, OnIsFocusedPropertyChanged));
+
+        // 2. Getters and Setters
+        public static bool GetIsFocused(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(IsFocusedProperty);
+        }
+
+        public static void SetIsFocused(DependencyObject obj, bool value)
+        {
+            obj.SetValue(IsFocusedProperty, value);
+        }
+
+        // 3. The Logic (What happens when the property changes)
+        private static void OnIsFocusedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is Control control && (bool)e.NewValue)
+            {
+                // Hook into the Loaded event to ensure visual tree is ready
+                control.Loaded += (sender, args) =>
+                {
+                    // Use Dispatcher to wait for rendering to finish (vital for Viewbox/Shadows)
+                    control.Dispatcher.BeginInvoke(DispatcherPriority.Input, new Action(() =>
+                    {
+                        control.Focus();
+                        System.Windows.Input.Keyboard.Focus(control);
+                    }));
+                };
+
+                // If the control is already loaded, trigger immediately
+                if (control.IsLoaded)
+                {
+                    control.Dispatcher.BeginInvoke(DispatcherPriority.Input, new Action(() =>
+                    {
+                        control.Focus();
+                        System.Windows.Input.Keyboard.Focus(control);
+                    }));
+                }
+            }
+        }
+    }
+
+
+
     public static class PasswordBoxHelper
     {
         public static readonly DependencyProperty BindablePasswordProperty =
@@ -92,4 +145,6 @@ namespace IPCSoftware.Helpers
             SetIsUpdating(box, false);
         }
     }
+
+
 }

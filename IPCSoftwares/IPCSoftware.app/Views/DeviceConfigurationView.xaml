@@ -5,222 +5,217 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:IPCSoftware.App.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             Background="#F3F3F3" FontFamily="Segoe UI">
 
-        <!-- Title -->
-        <TextBlock Grid.Row="0" 
-                   Text="{Binding Title}" 
-                   FontSize="18" 
-                   FontWeight="SemiBold"
-                   Margin="0,0,0,20"/>
+    <UserControl.Resources>
+        <!-- HMI TOUCH STYLES -->
+        <Style x:Key="HmiLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
 
-        <!-- Form -->
-        <Border Grid.Row="1" 
-                BorderBrush="#CCCCCC" 
-                BorderThickness="1" 
-                Padding="20"
-                Background="White">
+        <Style x:Key="HmiTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="80"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel>
+        <Style x:Key="HmiComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="90"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
 
-                    <!-- Device No -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+        <Style x:Key="HmiCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="LayoutTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="2.0" ScaleY="2.0"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-                        <TextBlock Grid.Column="0" Text="Device No" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding DeviceNo, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="40"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.1" BlurRadius="20"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
 
-                    <!-- Device Name -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+    <!-- MAIN SCALING CONTAINER -->
+    <Viewbox Stretch="Uniform">
+        <Grid Width="1920" Height="1080">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Header -->
+                <RowDefinition Height="*"/>
+                <!-- Split Content -->
+                <RowDefinition Height="Auto"/>
+                <!-- Footer -->
+            </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="Device Name" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding DeviceName, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+            <!-- 1. HEADER -->
+            <TextBlock Grid.Row="0" 
+                       Text="{Binding Title}" 
+                       FontSize="48" 
+                       FontWeight="Bold"
+                       Foreground="#333333"
+                       Margin="40,30,0,20"/>
 
-                    <!-- Device Type -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+            <!-- 2. CONTENT AREA (2 PANES) -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly" Margin="40,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <!-- Left: Identity -->
+                        <ColumnDefinition Width="60"/>
+                        <!-- Gutter -->
+                        <ColumnDefinition Width="*"/>
+                        <!-- Right: Details -->
+                    </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="Device Type" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Column="1" 
-                                  ItemsSource="{Binding DeviceTypes}"
-                                  SelectedItem="{Binding SelectedDeviceType}"
-                                  Height="25"/>
-                    </Grid>
+                    <!-- LEFT PANEL: DEVICE IDENTIFICATION -->
+                    <StackPanel Grid.Column="0">
+                        <Border Style="{StaticResource CardStyle}" Height="677">
+                            <StackPanel>
+                                <TextBlock Text="Device Identification" FontSize="36" FontWeight="Bold" Margin="0,0,0,30"/>
 
-                    <!-- Make -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <!-- Device No & Name -->
+                                <Grid Margin="0,0,0,30">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="Make" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Make, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Device No" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding DeviceNo, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
 
-                    <!-- Model -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Device Name" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding DeviceName, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
+                                </Grid>
 
-                        <TextBlock Grid.Column="0" Text="Model" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Model, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+                                <!-- Device Type -->
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Device Type" Style="{StaticResource HmiLabelStyle}"/>
+                                    <ComboBox ItemsSource="{Binding DeviceTypes}"
+                                              SelectedItem="{Binding SelectedDeviceType}"
+                                              Style="{StaticResource HmiComboBoxStyle}"/>
+                                </StackPanel>
 
-                    <!-- Description -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <!-- Make & Model -->
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="Description" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="60" 
-                                 Padding="5,3" 
-                                 TextWrapping="Wrap" 
-                                 AcceptsReturn="True" 
-                                 VerticalScrollBarVisibility="Auto"/>
-                    </Grid>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Make" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding Make, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
 
-                    <!-- Remark -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Model" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding Model, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
 
-                        <TextBlock Grid.Column="0" Text="Remark" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Remark, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="60" 
-                                 Padding="5,3" 
-                                 TextWrapping="Wrap" 
-                                 AcceptsReturn="True" 
-                                 VerticalScrollBarVisibility="Auto"/>
-                    </Grid>
+                    <!-- RIGHT PANEL: ADDITIONAL DETAILS -->
+                    <StackPanel Grid.Column="2">
+                        <Border Style="{StaticResource CardStyle}" Height="675">
+                            <StackPanel>
+                                <TextBlock Text="Additional Details" FontSize="32" FontWeight="Bold" Foreground="#333333" Margin="0,0,0,30"/>
 
-                    <!-- Enabled -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <!-- Description -->
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Description" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"
+                                             Height="120" TextWrapping="Wrap" AcceptsReturn="True" 
+                                             VerticalContentAlignment="Top" Padding="15"/>
+                                </StackPanel>
 
-                        <CheckBox Grid.Column="1" Content="Enabled" IsChecked="{Binding Enabled}"/>
-                    </Grid>
+                                <!-- Remark -->
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Remark" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Remark, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"
+                                             Height="120" TextWrapping="Wrap" AcceptsReturn="True" 
+                                             VerticalContentAlignment="Top" Padding="15"/>
+                                </StackPanel>
+
+                                <!-- Enabled -->
+                                <CheckBox Content="Device Enabled" 
+                                          IsChecked="{Binding Enabled}"
+                                          Style="{StaticResource HmiCheckBoxStyle}"
+                                          Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+
+            <!-- 3. FOOTER ACTIONS -->
+            <Border Grid.Row="2" Background="White" BorderBrush="#E0E0E0" BorderThickness="0,1,0,0" Padding="30">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+
+                    <Button Content="Cancel" 
+                            Command="{Binding CancelCommand}"
+                            Width="200" Height="70"
+                            FontSize="24" FontWeight="SemiBold"
+                            Background="#F5F5F5" Foreground="#555555"
+                            BorderBrush="#CCCCCC" BorderThickness="2"
+                            Margin="0,0,30,0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+
+                    <Button Content="Save" 
+                            Command="{Binding SaveCommand}"
+                            Width="250" Height="70"
+                            FontSize="24" FontWeight="Bold"
+                            Background="#007ACC" Foreground="White"
+                            BorderThickness="0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
 
                 </StackPanel>
-            </ScrollViewer>
-        </Border>
-
-        <!-- Buttons -->
-        <StackPanel Grid.Row="2" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Right" 
-                    Margin="0,15,0,0">
-            <Button Content="Save" 
-                    Command="{Binding SaveCommand}"
-                    Width="100" 
-                    Height="30" 
-                    Margin="0,0,10,0"
-                    Background="#007ACC"
-                    Foreground="White"
-                    BorderThickness="0"
-                    Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            CornerRadius="3"
-                                            Padding="15,5">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#005A9E"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#CCCCCC"/>
-                                <Setter Property="Foreground" Value="#666666"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-
-            <Button Content="Cancel" 
-                    Command="{Binding CancelCommand}"
-                    Width="100" 
-                    Height="30"
-                    Background="#F0F0F0"
-                    BorderBrush="#CCCCCC"
-                    BorderThickness="1"
-                    Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="3"
-                                            Padding="15,5">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#E0E0E0"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-        </StackPanel>
-    </Grid>
+            </Border>
+        </Grid>
+    </Viewbox>
 </UserControl>

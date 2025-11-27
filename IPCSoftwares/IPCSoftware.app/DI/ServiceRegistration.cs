@@ -70,6 +70,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<LoginView>();
             services.AddTransient<RibbonView>();
             services.AddTransient<OEEDashboard>();
+            services.AddTransient<OeeDashboard2>();
             services.AddTransient<DashboardView>();
 
             // Log Configuration Views

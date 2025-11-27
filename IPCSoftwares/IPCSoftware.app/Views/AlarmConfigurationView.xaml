@@ -5,294 +5,184 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:IPCSoftware.App.Views"
              mc:Ignorable="d" 
-      
-    d:DesignHeight="600" d:DesignWidth="800">
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             Background="#F3F3F3" FontFamily="Segoe UI">
 
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <UserControl.Resources>
+        <Style x:Key="HmiLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
 
-        <!-- Title -->
-        <TextBlock Grid.Row="0" 
-                   Text="{Binding Title}" 
-                   FontSize="18" 
-                   FontWeight="SemiBold"
-                   Margin="0,0,0,20"/>
+        <Style x:Key="HmiTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="70"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
 
-        <!-- Form -->
-        <Border Grid.Row="1" 
-                BorderBrush="#CCCCCC" 
-                BorderThickness="1" 
-                Padding="20"
-                Background="White">
+        <Style x:Key="HmiComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel>
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="40"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.1" BlurRadius="20"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
 
-                    <!-- Alarm No -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+    <Viewbox Stretch="Uniform">
+        <Grid Width="1920" Height="1080">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/> <RowDefinition Height="*"/>    <RowDefinition Height="Auto"/> </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="Alarm No" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding AlarmNo, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+            <TextBlock Grid.Row="0" 
+                       Text="{Binding Title}" 
+                       FontSize="48" 
+                       FontWeight="Bold"
+                       Foreground="#333333"
+                       Margin="40,30,0,20"/>
 
-                    <!-- Alarm Name -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly" Margin="40,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>   <ColumnDefinition Width="60"/>  <ColumnDefinition Width="*"/>   </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="Alarm Name" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding AlarmName, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+                    <StackPanel Grid.Column="0">
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Alarm Definition" FontSize="32" FontWeight="Bold"  Margin="0,0,0,30"/>
 
-                    <!-- Tag No -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <Grid Margin="0,0,0,30">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="Tag No" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding TagNo, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Alarm No" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding AlarmNo, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
 
-                    <!-- Name -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Alarm Name" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding AlarmName, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
+                                </Grid>
 
-                        <TextBlock Grid.Column="0" Text="Name" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Tag No" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding TagNo, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"/>
+                                </StackPanel>
 
-                    <!-- Alarm Bit -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Name" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"/>
+                                </StackPanel>
 
-                        <TextBlock Grid.Column="0" Text="Alarm Bit" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Column="1" 
-                                  ItemsSource="{Binding AlarmBits}"
-                                  Text="{Binding AlarmBit}"
-                                  IsEditable="True"
-                                  Height="25"/>
-                    </Grid>
+                                <StackPanel Margin="0,0,0,10">
+                                    <TextBlock Text="Alarm Bit" Style="{StaticResource HmiLabelStyle}"/>
+                                    <ComboBox ItemsSource="{Binding AlarmBits}"
+                                              Text="{Binding AlarmBit}"
+                                              IsEditable="True"
+                                              Style="{StaticResource HmiComboBoxStyle}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
 
-                    <!-- Alarm Text -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="2">
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Display Properties" FontSize="32" FontWeight="Bold" Foreground="#333333" Margin="0,0,0,30"/>
 
-                        <TextBlock Grid.Column="0" Text="Alarm Text" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding AlarmText, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="60" 
-                                 Padding="5,3" 
-                                 TextWrapping="Wrap" 
-                                 AcceptsReturn="True" 
-                                 VerticalScrollBarVisibility="Auto"/>
-                    </Grid>
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Severity" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Severity, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"/>
+                                </StackPanel>
 
-                    <!-- Severity -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Alarm Text" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding AlarmText, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"
+                                             Height="100" TextWrapping="Wrap" AcceptsReturn="True" 
+                                             VerticalContentAlignment="Top" Padding="15"/>
+                                </StackPanel>
 
-                        <TextBlock Grid.Column="0" Text="Severity" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Severity, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"/>
-                    </Grid>
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Description" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"
+                                             Height="100" TextWrapping="Wrap" AcceptsReturn="True" 
+                                             VerticalContentAlignment="Top" Padding="15"/>
+                                </StackPanel>
 
-                    <!-- Alarm Time -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,0,10">
+                                    <TextBlock Text="Remark" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding Remark, UpdateSourceTrigger=PropertyChanged}" 
+                                             Style="{StaticResource HmiTextBoxStyle}"
+                                             Height="100" TextWrapping="Wrap" AcceptsReturn="True" 
+                                             VerticalContentAlignment="Top" Padding="15"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
 
-                        <TextBlock Grid.Column="0" Text="Alarm Time" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding AlarmTime, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"
-                                
-                                 Background="#F0F0F0"/>
-                    </Grid>
+            <Border Grid.Row="2" Background="White" BorderBrush="#E0E0E0" BorderThickness="0,1,0,0" Padding="30">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 
-                    <!-- Alarm Reset Time -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                    <Button Content="Cancel" 
+                            Command="{Binding CancelCommand}"
+                            Width="200" Height="70"
+                            FontSize="24" FontWeight="SemiBold"
+                            Background="#F5F5F5" Foreground="#555555"
+                            BorderBrush="#CCCCCC" BorderThickness="2"
+                            Margin="0,0,30,0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
 
-                        <TextBlock Grid.Column="0" Text="Alarm Reset Time" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding AlarmResetTime, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"
-                                
-                                 Background="#F0F0F0"/>
-                    </Grid>
-
-                    <!-- Alarm Ack Time -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" Text="Alarm Ack Time" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding AlarmAckTime, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="25" 
-                                 Padding="5,3"
-                                
-                                 Background="#F0F0F0"/>
-                    </Grid>
-
-                    <!-- Description -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" Text="Description" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="60" 
-                                 Padding="5,3" 
-                                 TextWrapping="Wrap" 
-                                 AcceptsReturn="True" 
-                                 VerticalScrollBarVisibility="Auto"/>
-                    </Grid>
-
-                    <!-- Remark -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" Text="Remark" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding Remark, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="60" 
-                                 Padding="5,3" 
-                                 TextWrapping="Wrap" 
-                                 AcceptsReturn="True" 
-                                 VerticalScrollBarVisibility="Auto"/>
-                    </Grid>
+                    <Button Content="Save Alarm" 
+                            Command="{Binding SaveCommand}"
+                            Width="250" Height="70"
+                            FontSize="24" FontWeight="Bold"
+                            Background="#007ACC" Foreground="White"
+                            BorderThickness="0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
 
                 </StackPanel>
-            </ScrollViewer>
-        </Border>
-
-        <!-- Buttons -->
-        <StackPanel Grid.Row="2" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Right" 
-                    Margin="0,15,0,0">
-            <Button Content="Save" 
-                    Command="{Binding SaveCommand}"
-                    Width="100" 
-                    Height="30" 
-                    Margin="0,0,10,0"
-                    Background="#007ACC"
-                    Foreground="White"
-                    BorderThickness="0"
-                    Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            CornerRadius="3"
-                                            Padding="15,5">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#005A9E"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#CCCCCC"/>
-                                <Setter Property="Foreground" Value="#666666"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-
-            <Button Content="Cancel" 
-                    Command="{Binding CancelCommand}"
-                    Width="100" 
-                    Height="30"
-                    Background="#F0F0F0"
-                    BorderBrush="#CCCCCC"
-                    BorderThickness="1"
-                    Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="3"
-                                            Padding="15,5">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#E0E0E0"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-        </StackPanel>
-    </Grid>
+            </Border>
+        </Grid>
+    </Viewbox>
 </UserControl>

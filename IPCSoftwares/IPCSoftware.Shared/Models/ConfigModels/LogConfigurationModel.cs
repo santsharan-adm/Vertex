@@ -19,6 +19,8 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public bool AutoPurge { get; set; }
         public string BackupSchedule { get; set; }
         public TimeSpan BackupTime { get; set; }
+        public int BackupDay { get; set; }  // 1-28 for monthly backup
+        public string BackupDayOfWeek { get; set; }  // Monday-Sunday for weekly backup
         public string Description { get; set; }
         public string Remark { get; set; }
         public bool Enabled { get; set; }
@@ -29,6 +31,8 @@ namespace IPCSoftware.Shared.Models.ConfigModels
             LogRetentionTime = 30;
             LogRetentionFileSize = 4;
             BackupTime = TimeSpan.Zero;
+            BackupDay = 0;
+            BackupDayOfWeek = null;
             Enabled = false;
         }
 
@@ -47,11 +51,12 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 AutoPurge = this.AutoPurge,
                 BackupSchedule = this.BackupSchedule,
                 BackupTime = this.BackupTime,
+                BackupDay = this.BackupDay,
+                BackupDayOfWeek = this.BackupDayOfWeek,
                 Description = this.Description,
                 Remark = this.Remark,
                 Enabled = this.Enabled
             };
         }
     }
-
 }
