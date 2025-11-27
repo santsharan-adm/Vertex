@@ -14,6 +14,9 @@ public class MainWindowViewModel : BaseViewModel
 
     public ICommand SidebarItemClickCommand { get; }
     public RibbonViewModel RibbonVM { get; }
+    public ICommand CloseSidebarCommand { get; }
+
+
 
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
     public string AppVersion => "AOI System v1.0.3";
@@ -23,8 +26,10 @@ public class MainWindowViewModel : BaseViewModel
         _nav = nav;
         RibbonVM = ribbonVM;
         RibbonVM.ShowSidebar = LoadSidebarMenu;
+        RibbonVM.OnLandingPageRequested = ResetLandingState;
 
         SidebarItemClickCommand = new RelayCommand<string>(OnSidebarItemClick);
+        CloseSidebarCommand = new RelayCommand(() => IsSidebarOpen = false);
 
         UserSession.OnSessionChanged += () =>
 
@@ -34,6 +39,13 @@ public class MainWindowViewModel : BaseViewModel
             OnPropertyChanged(nameof(IsAdmin));
         };
     }
+
+    private void ResetLandingState()
+    {
+        existingUserControl = string.Empty;   // clear selected page
+        IsSidebarOpen = false;                // close sidebar if open
+    }
+
 
     // ==============================
     // RIBBON VISIBILITY PROPERTIES
@@ -107,7 +119,7 @@ public class MainWindowViewModel : BaseViewModel
             // Navigate based on item name
             switch (itemName)
             {
-                // Dashboard Menu
+                // OEEDashboard Menu
                 case "OEE Dashboard":
                     _nav.NavigateMain<OEEDashboard>();
                     break;

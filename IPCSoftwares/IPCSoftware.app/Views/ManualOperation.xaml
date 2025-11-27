@@ -18,7 +18,7 @@ xmlns:conv="clr-namespace:IPCSoftware.App.Converters" xmlns:sys="clr-namespace:S
         <!-- LOCAL Styles and custom UI sizes -->
         <sys:Double x:Key="ManualButtonFontSize">21</sys:Double>
         <sys:Double x:Key="ManualButtonMinWidth">120</sys:Double>
-        <sys:Double x:Key="ManualButtonMinHeight">70</sys:Double>
+        <sys:Double x:Key="ManualButtonMinHeight">120</sys:Double>
 
         <Style x:Key="ManualModeButtonStyle"
            TargetType="Button"
@@ -42,7 +42,9 @@ xmlns:conv="clr-namespace:IPCSoftware.App.Converters" xmlns:sys="clr-namespace:S
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-
+    <Viewbox>
+        
+   
     <Grid>
         <Grid.Resources>
             <CollectionViewSource x:Key="GroupedModes" Source="{Binding Modes}">
@@ -80,6 +82,7 @@ xmlns:conv="clr-namespace:IPCSoftware.App.Converters" xmlns:sys="clr-namespace:S
             </ItemsControl>
         </ScrollViewer>
     </Grid>
+    </Viewbox>
 </UserControl>
 
 

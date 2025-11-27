@@ -20,6 +20,9 @@ public class RibbonViewModel : BaseViewModel
     
     public ICommand LogoutCommand { get; }
     public Action OnLogout { get; set; }
+    public Action OnLandingPageRequested { get; set; }
+
+
     private (string Key, List<string> Items)? _currentMenu;
 
     public Action<(string Key, List<string> Items)> ShowSidebar { get; set; }   // NEW
@@ -143,8 +146,10 @@ public class RibbonViewModel : BaseViewModel
 
     private void OpenLandingPage()
     {
+        OnLandingPageRequested?.Invoke();  // notify MainWindowViewModel
         _nav.NavigateMain<DashboardView>();
     }
+
 
 
     private void LoadMenu(List<string> items, string functionName)
