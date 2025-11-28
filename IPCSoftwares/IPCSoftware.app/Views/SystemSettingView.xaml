@@ -4,204 +4,264 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             Background="#F5F5F5">
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             Background="#F3F3F3" FontFamily="Segoe UI">
 
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <UserControl.Resources>
+        <Style x:Key="SystemCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="15"/>
+            <Setter Property="Padding" Value="30"/>
+            <Setter Property="Margin" Value="20"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="5" Opacity="0.15"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        <!-- ===================== TOP SECTION ===================== -->
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <Style x:Key="HmiColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Height" Value="80"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="20,0"/>
+        </Style>
 
-            <!-- ================= LEFT SIDE : PLC + IPC ================= -->
-            <StackPanel HorizontalAlignment="Center"
-                        Grid.Column="0">
+        <Style x:Key="HmiCellStyle" TargetType="DataGridCell">
+            <Setter Property="FontSize" Value="26"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter VerticalAlignment="Center" 
+                                              HorizontalAlignment="Left"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#CCE8FF"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
-                <!-- PLC PANEL -->
-                <Border BorderBrush="#444"
-                        BorderThickness="1"
-                        Padding="20"
-                        CornerRadius="10"
-                        Margin="0 0 0 20"
-                        Height="100"
-                        Width="450">
-
-                    <StackPanel>
-                        <TextBlock Text="PLC"
-                                   FontWeight="Bold"
-                                   FontSize="50"
-                                   HorizontalAlignment="Center"/>
-                        <TextBlock Text="{Binding PlcDate}" FontSize="16"/>
-                        <TextBlock Text="{Binding PlcTime}" FontSize="16"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- IPC PANEL -->
-                <Border BorderBrush="#444"
-                        BorderThickness="1"
-                        Padding="20"
-                        CornerRadius="10"
-                        Margin="0 0 0 20"
-                        Height="100"
-                        Width="450">
-
-                    <StackPanel>
-                        <TextBlock Text="IPC"
-                                   FontWeight="Bold"
-                                   FontSize="50"
-                                   Margin="0 0 0 8"
-                                   HorizontalAlignment="Center"/>
-                        <TextBlock Text="{Binding IpcDate}" FontSize="16"/>
-                        <TextBlock Text="{Binding IpcTime}" FontSize="16"/>
-                    </StackPanel>
-                </Border>
-
-            </StackPanel>
-
-            <!-- ================= RIGHT SIDE : SYNC BUTTON ================= -->
-            <Button Grid.Column="1"
-                    x:Name="SyncBtn"
-                    Content="Sync"
-                    Command="{Binding SyncCommand}"
-                    Width="160"
-                    Height="80"
-                    FontSize="18"
-                    FontWeight="Bold"
-                    Foreground="White"
-                    Cursor="Hand"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Left">
-
-                <!-- ================= BUTTON TEMPLATE ================= -->
-                <Button.Template>
+        <Style x:Key="SyncButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#F1C40F"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="32"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Template">
+                <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Grid>
+                        <Border x:Name="border"
+                                CornerRadius="15"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="0">
 
-                            <Border x:Name="border"
-                                    CornerRadius="8"
-                                    BorderThickness="2"
-                                    BorderBrush="Black">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.4"/>
+                            </Border.Effect>
 
-                                <!-- ✅ SAFE SHADOW -->
-                                <Border.Effect>
-                                    <DropShadowEffect BlurRadius="8"
-                                                      ShadowDepth="3"
-                                                      Opacity="0.5"/>
-                                </Border.Effect>
+                            <Grid>
+                                <Rectangle Height="40" VerticalAlignment="Top" RadiusX="15" RadiusY="15" Margin="2">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#66FFFFFF" Offset="0"/>
+                                            <GradientStop Color="#00FFFFFF" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
 
-                                <!-- ✅ DEFAULT BACKGROUND -->
-                                <Border.Background>
-                                    <SolidColorBrush x:Name="bgBrush" Color="#2ECC71"/>
-                                </Border.Background>
-
-                                <Grid>
-                                    <!-- GLASS SHINE -->
-                                    <Rectangle Height="20"
-                                               VerticalAlignment="Top"
-                                               RadiusX="8"
-                                               RadiusY="8">
-                                        <Rectangle.Fill>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                <GradientStop Color="#66FFFFFF" Offset="0"/>
-                                                <GradientStop Color="#00FFFFFF" Offset="1"/>
-                                            </LinearGradientBrush>
-                                        </Rectangle.Fill>
-                                    </Rectangle>
-
-                                    <!-- TEXT -->
-                                    <ContentPresenter
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"/>
-                                </Grid>
-                            </Border>
-
-                        </Grid>
-
-                        <!-- ================= TEMPLATE TRIGGERS ================= -->
                         <ControlTemplate.Triggers>
-
-                            <!-- PRESS EFFECT -->
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border"
-                                        Property="RenderTransform">
+                                <Setter TargetName="border" Property="RenderTransform">
                                     <Setter.Value>
-                                        <TranslateTransform Y="2"/>
+                                        <TranslateTransform Y="4"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
-
-                            <!-- 🔵 SYNCING = BLINK BLUE -->
-                            <DataTrigger Binding="{Binding SyncState}"
-                                         Value="Syncing">
-                                <DataTrigger.EnterActions>
-                                    <BeginStoryboard x:Name="BlinkStoryboard">
-                                        <Storyboard RepeatBehavior="Forever"
-                                                    AutoReverse="True">
-                                            <ColorAnimation
-                                                Storyboard.TargetName="border"
-                                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                From="Blue"
-                                                To="LightBlue"
-                                                Duration="0:0:1"/>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </DataTrigger.EnterActions>
-
-                                <Setter TargetName="border"
-                                        Property="Background"
-                                        Value="Blue"/>
-                            </DataTrigger>
-
-                            <!-- ✅ SYNCED = GREEN -->
-                            <DataTrigger Binding="{Binding SyncState}"
-                                         Value="Synced">
-                                <Setter TargetName="border"
-                                        Property="Background"
-                                        Value="Green"/>
-                            </DataTrigger>
-
-                            <!-- 🔴 ERROR = RED -->
-                            <DataTrigger Binding="{Binding SyncState}"
-                                         Value="Error">
-                                <Setter TargetName="border"
-                                        Property="Background"
-                                        Value="Red"/>
-                            </DataTrigger>
-
                         </ControlTemplate.Triggers>
-
                     </ControlTemplate>
-                </Button.Template>
+                </Setter.Value>
+            </Setter>
 
-            </Button>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SyncState}" Value="Syncing">
+                    <Setter Property="Background" Value="#245CFF"/>
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                                From="#245CFF" To="#6699FF" Duration="0:0:0.8"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding SyncState}" Value="Synced">
+                    <Setter Property="Background" Value="#28A745"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding SyncState}" Value="Error">
+                    <Setter Property="Background" Value="#DC3545"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Viewbox Stretch="Uniform">
+        <Grid Width="1920" Height="1080" Margin="40">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" 
+                       Text="System Synchronization" 
+                       FontSize="60" 
+                       FontWeight="Bold" 
+                       Foreground="#333"
+                       Margin="0,0,0,40"/>
+
+            <Grid Grid.Row="1" Margin="0,0,0,50">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="400"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource SystemCardStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Background="#E0E0E0" CornerRadius="12" Width="140" Height="140" VerticalAlignment="Center">
+                            <TextBlock Text="PLC" FontSize="48" FontWeight="Bold" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="40,0,0,0">
+                            <TextBlock Text="{Binding PlcDate}" 
+                                       FontSize="48" 
+                                       FontWeight="Bold" 
+                                       Foreground="#333" 
+                                       Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding PlcTime}" 
+                                       FontSize="60" 
+                                       FontWeight="Bold" 
+                                       Foreground="#007ACC"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Button Grid.Column="1"
+                        x:Name="SyncBtn"
+                        Command="{Binding SyncCommand}"
+                        Content="SYNC"
+                        Width="300" Height="120"
+                        Style="{StaticResource SyncButtonStyle}"
+                        Cursor="Hand"
+                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+                <Border Grid.Column="2" Style="{StaticResource SystemCardStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Background="#E0E0E0" CornerRadius="12" Width="140" Height="140" VerticalAlignment="Center">
+                            <TextBlock Text="IPC" FontSize="48" FontWeight="Bold" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="40,0,0,0">
+                            <TextBlock Text="{Binding IpcDate}" 
+                                       FontSize="48" 
+                                       FontWeight="Bold" 
+                                       Foreground="#333" 
+                                       Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding IpcTime}" 
+                                       FontSize="60" 
+                                       FontWeight="Bold" 
+                                       Foreground="#007ACC"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Audit Trail Log" FontSize="36" FontWeight="SemiBold" Foreground="#555" Margin="10,0,0,20"/>
+
+                <Border Grid.Row="1" 
+                        Background="White" 
+                        CornerRadius="12" 
+                        BorderBrush="#CCCCCC" 
+                        BorderThickness="1">
+
+                    <DataGrid ItemsSource="{Binding AuditLogs}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              GridLinesVisibility="Horizontal"
+                              HorizontalGridLinesBrush="#E0E0E0"
+                              VerticalGridLinesBrush="Transparent"
+                              BorderThickness="0"
+                              Background="White"
+                              RowHeight="80"
+                              ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}"
+                              HeadersVisibility="Column">
+
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="Background" Value="White"/>
+                                <Style.Triggers>
+                                    <Trigger Property="AlternationIndex" Value="1">
+                                        <Setter Property="Background" Value="#FAFAFA"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                        <DataGrid.AlternationCount>2</DataGrid.AlternationCount>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Timestamp" 
+                                                Binding="{Binding Time, StringFormat='yyyy-MM-dd HH:mm:ss'}" 
+                                                Width="400" 
+                                                CellStyle="{StaticResource HmiCellStyle}"/>
+
+                            <DataGridTextColumn Header="Event Message" 
+                                                Binding="{Binding Message}" 
+                                                Width="*" 
+                                                CellStyle="{StaticResource HmiCellStyle}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </Grid>
 
         </Grid>
-
-        <!-- ===================== AUDIT TRAIL ===================== -->
-        <GroupBox Header="Audit Trail"
-                  Grid.Row="1"
-                  Margin="0 30 0 0">
-
-            <ListView ItemsSource="{Binding AuditLogs}">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Timestamp"
-                                        Width="200"
-                                        DisplayMemberBinding="{Binding Time}"/>
-                        <GridViewColumn Header="Event"
-                                        Width="500"
-                                        DisplayMemberBinding="{Binding Message}"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-
-        </GroupBox>
-
-    </Grid>
+    </Viewbox>
 </UserControl>

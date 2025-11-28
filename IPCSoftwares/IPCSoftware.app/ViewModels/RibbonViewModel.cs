@@ -95,8 +95,9 @@ public class RibbonViewModel : BaseViewModel
     {
         LoadMenu(new List<string>
         {
-            "System Logs",
-            "Production Logs"
+            "Audit Logs",
+            "Production Logs",
+            "Error Logs"
         }, nameof(OpenLogsMenu));
        /* ShowSidebar?.Invoke(new List<string>
         {

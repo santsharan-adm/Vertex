@@ -4,7 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:IPCSoftware.App.Views"
+              xmlns:helpers="clr-namespace:IPCSoftware.Helpers;assembly=IPCSoftware.Helpers"
              mc:Ignorable="d" 
+             
              d:DesignHeight="1080" d:DesignWidth="1920"
              Background="#F3F3F3" FontFamily="Segoe UI">
 
@@ -241,8 +243,19 @@
                                         </StackPanel>
                                         <StackPanel Grid.Column="2">
                                             <TextBlock Text="Password" Style="{StaticResource HmiLabelStyle}"/>
-                                            <TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" 
-                                                     Style="{StaticResource HmiTextBoxStyle}"/>
+                                            <!--<TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" 
+                                                     Style="{StaticResource HmiTextBoxStyle}"/>-->
+
+
+                                            <PasswordBox x:Name="PasswordBoxControl" Height="60"
+              FontSize="24"
+              Background="Transparent"
+              BorderThickness="2"
+              VerticalContentAlignment="Center"
+              Padding="15,0"
+              helpers:PasswordBoxHelper.BindPassword="True"
+              helpers:PasswordBoxHelper.BindablePassword="{Binding Password, Mode=TwoWay}"/>
+
                                         </StackPanel>
                                     </Grid>
                                 </StackPanel>

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IPCSoftware.AppLogger\IPCSoftware.AppLogger.csproj" />
     <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
   </ItemGroup>
 

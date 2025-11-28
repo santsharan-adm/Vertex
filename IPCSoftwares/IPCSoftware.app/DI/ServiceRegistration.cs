@@ -35,6 +35,9 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IUserManagementService, UserManagementService>();
             services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
 
+            services.AddSingleton<ILogService, LogService>();
+
+
             // ========== MAIN VIEWMODELS (Singleton) ==========
             services.AddSingleton<RibbonViewModel>();
             services.AddSingleton<MainWindowViewModel>();
@@ -73,6 +76,8 @@ namespace IPCSoftware.App.DI
             services.AddTransient<OeeDashboard2>();
             services.AddTransient<DashboardView>();
 
+            services.AddTransient<LogView>();
+
             // Log Configuration Views
             services.AddTransient<LogListView>();
             services.AddTransient<LogConfigurationView>();
@@ -103,6 +108,8 @@ namespace IPCSoftware.App.DI
             // PLC Tag Configuration Views 
             services.AddTransient<PLCTagListView>();
             services.AddTransient<PLCTagConfigurationView>();
+
+            services.AddTransient<LogViewerViewModel>();
 
             //services.AddTransient<SettingsView>();
             //services.AddTransient<LogsView>();

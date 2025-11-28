@@ -180,6 +180,18 @@ public class MainWindowViewModel : BaseViewModel
                 _nav.NavigateMain<PLCTagListView>();
                 break;
 
+            case "Audit Logs":
+                _nav.NavigateToLogs("Audit");
+                break;
+
+            case "Error Logs":
+                _nav.NavigateToLogs("Error");
+                break;
+
+            case "Production Logs":
+                _nav.NavigateToLogs("Production");
+                break;
+
         }
 
 
