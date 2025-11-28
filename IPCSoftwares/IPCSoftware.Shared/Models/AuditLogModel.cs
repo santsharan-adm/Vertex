@@ -13,4 +13,13 @@ namespace IPCSoftware.Shared.Models
 
 
     }
+        
+
+    public class LogFileInfo
+    {
+        public string FileName { get; set; }
+        public string FullPath { get; set; }
+        public DateTime LastModified { get; set; }
+        public string DisplaySize { get; set; } // e.g., "12 KB"
+    }
 }

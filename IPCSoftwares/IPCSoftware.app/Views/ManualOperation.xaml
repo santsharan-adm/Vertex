@@ -42,7 +42,7 @@ xmlns:conv="clr-namespace:IPCSoftware.App.Converters" xmlns:sys="clr-namespace:S
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <Viewbox>
+
         
    
     <Grid>
@@ -82,7 +82,7 @@ xmlns:conv="clr-namespace:IPCSoftware.App.Converters" xmlns:sys="clr-namespace:S
             </ItemsControl>
         </ScrollViewer>
     </Grid>
-    </Viewbox>
+ 
 </UserControl>
 
 

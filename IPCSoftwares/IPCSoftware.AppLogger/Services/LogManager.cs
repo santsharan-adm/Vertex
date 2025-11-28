@@ -142,13 +142,7 @@ namespace IPCSoftware.AppLogger.Services
             return _configs.FirstOrDefault(x => x.Type == type && x.Enabled);
         }
 
-        public class LogEntry
-        {
-            public DateTime Timestamp { get; set; }
-            public string Level { get; set; }
-            public string Message { get; set; }
-            public string Source { get; set; }
-        }
+       
 
         public List<LogEntry> ReadLogs(LogType type, DateTime? date = null)
         {
