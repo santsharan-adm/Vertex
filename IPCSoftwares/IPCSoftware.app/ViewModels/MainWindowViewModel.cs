@@ -110,7 +110,9 @@ public class MainWindowViewModel : BaseViewModel
                 break;
         
             case "PLC IO":
-                _nav.NavigateMain<PLCIOMonitor>(); 
+                _nav.NavigateMain<PLCIOMonitor>();
+                break;
+
             case "PLC TAG Config":
                 _nav.NavigateMain<PLCTagListView>(); 
                 break;

@@ -68,6 +68,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<RibbonView>();
             services.AddTransient<OEEDashboard>();
             services.AddTransient<DashboardView>();
+            services.AddTransient<PLCDataControl>();
 
             // Log Configuration Views
             services.AddTransient<LogListView>();

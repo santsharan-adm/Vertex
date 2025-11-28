@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="IPCSoftware.App.Views.PLCDataControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="#1E1E1E"
+             d:DesignHeight="400" d:DesignWidth="600">
+
+    <Grid Margin="20">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0">
+
+            <!-- Dashboard Title -->
+            <TextBlock Text="AOI Inspection Dashboard"
+                       FontSize="26"
+                       Foreground="White"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,20"
+                       HorizontalAlignment="Center"/>
+
+            <!-- Operating Time Card -->
+            <Border Background="#2A2A2A" CornerRadius="10" Padding="20" Margin="0,0,0,15">
+                <StackPanel>
+                    <TextBlock Text="Operating Time"
+                               Foreground="#CCCCCC"
+                               FontSize="18"/>
+                    <TextBlock x:Name="txtOperatingTime"
+                               Text="00:00:00"
+                               FontSize="34"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Downtime Card -->
+            <Border Background="#2A2A2A" CornerRadius="10" Padding="20" Margin="0,0,0,15">
+                <StackPanel>
+                    <TextBlock Text="Downtime"
+                               Foreground="#CCCCCC"
+                               FontSize="18"/>
+                    <TextBlock x:Name="txtDowntime"
+                               Text="00:00:00"
+                               FontSize="34"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Average Cycle Time Card -->
+            <Border Background="#2A2A2A" CornerRadius="10" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="Average Cycle Time"
+                               Foreground="#CCCCCC"
+                               FontSize="18"/>
+                    <TextBlock x:Name="txtAverageCycleTime"
+                               Text="0.0"
+                               FontSize="34"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+
+</UserControl>
