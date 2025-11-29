@@ -12,7 +12,7 @@
 // ===========================
 public class DashboardData
 {
-    public string OperatingTime { get; set; }   // hh:mm:ss
-    public string Downtime { get; set; }        // hh:mm:ss
-    public double AverageCycleTime { get; set; } // numeric
+    public string OperatingTime { get; set; } = string.Empty;
+    public string Downtime { get; set; } = string.Empty;
+    public double AverageCycleTime { get; set; }
 }
