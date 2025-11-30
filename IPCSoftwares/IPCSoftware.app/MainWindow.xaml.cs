@@ -1,5 +1,4 @@
-﻿using IPCSoftware.App.ViewModels;
-using IPCSoftware.App.Views;
+﻿using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
@@ -19,7 +18,9 @@ namespace IPCSoftware.App
             nav.Configure(MainContent, RibbonHost);
 
             // START WITH LOGIN ONLY
-               
+
+            
+
             nav.NavigateMain<LoginView>();
         }
 
