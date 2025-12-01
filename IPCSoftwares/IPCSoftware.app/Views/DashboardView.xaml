@@ -5,7 +5,7 @@
     <Grid>
 
         <Viewbox Stretch="UniformToFill">
-            <Image Source="/IPCSoftware.App;component/Controls/Images/landPageGrad.jpeg"
+            <Image Source="/IPCSoftware.App;component/Controls/Images/aoiLogoNew.png"
                    Stretch="UniformToFill"/>
         </Viewbox>
 

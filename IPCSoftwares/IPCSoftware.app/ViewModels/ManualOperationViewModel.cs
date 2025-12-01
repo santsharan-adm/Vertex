@@ -13,8 +13,6 @@ using System.Windows.Input;
 
 namespace IPCSoftware.App.ViewModels
 {
-
-
     public class GroupAttribute : Attribute
     {
         public string Name { get; }
@@ -96,30 +94,21 @@ namespace IPCSoftware.App.ViewModels
         YAxisJogSpeedSwitching
     }
 
-
     public class ManualOperationViewModel : INotifyPropertyChanged
     {
         private readonly Dictionary<string, ManualOperationMode?> _selectedGroupButtons
-    = new Dictionary<string, ManualOperationMode?>();
+            = new Dictionary<string, ManualOperationMode?>();
 
-        public Dictionary<string, ManualOperationMode?> SelectedGroupButtons
-    => _selectedGroupButtons;
+        public Dictionary<string, ManualOperationMode?> SelectedGroupButtons => _selectedGroupButtons;
 
-
-        private ManualOperationMode? _selectedButton;
-
-        public ManualOperationMode? SelectedButton
-        {
-            get => _selectedButton;
-            set
-            {
-                if (_selectedButton != value)
-                {
-                    _selectedButton = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        // --- FILTERED LISTS (This fixes your UI issue) ---
+        // We filter 'Modes' directly so the View only sees the buttons it needs for that specific card.
+        public IEnumerable<ModeItem> TrayModes => Modes.Where(x => x.Group == "Tray Lift");
+        public IEnumerable<ModeItem> CylinderModes => Modes.Where(x => x.Group == "Positioning Cylinder");
+        public IEnumerable<ModeItem> ConveyorModes => Modes.Where(x => x.Group == "Transport Conveyor");
+        public IEnumerable<ModeItem> XAxisModes => Modes.Where(x => x.Group == "Manual X-Axis Jog");
+        public IEnumerable<ModeItem> YAxisModes => Modes.Where(x => x.Group == "Manual Y-Axis Jog");
+        public IEnumerable<ModeItem> PositionModes => Modes.Where(x => x.Group == "Move to Position");
 
         public ICommand ButtonClickCommand { get; }
 
@@ -127,45 +116,27 @@ namespace IPCSoftware.App.ViewModels
 
         public ManualOperationViewModel(IAppLogger logger)
         {
-
+            // Populate the Master List
             Modes = new ObservableCollection<ModeItem>(
-        Enum.GetValues(typeof(ManualOperationMode))
-            .Cast<ManualOperationMode>()
-            .Select(mode =>
-            {
-                var group = mode.GetType()
-                    .GetMember(mode.ToString())[0]
-                    .GetCustomAttributes(typeof(GroupAttribute), false)
-                    .Cast<GroupAttribute>()
-                    .FirstOrDefault()?.Name ?? "Other";
+                Enum.GetValues(typeof(ManualOperationMode))
+                    .Cast<ManualOperationMode>()
+                    .Select(mode =>
+                    {
+                        var group = mode.GetType()
+                            .GetMember(mode.ToString())[0]
+                            .GetCustomAttributes(typeof(GroupAttribute), false)
+                            .Cast<GroupAttribute>()
+                            .FirstOrDefault()?.Name ?? "Other";
 
-                return new ModeItem
-                {
-                    Mode = mode,
-                    Group = group
-                };
-            }));
+                        return new ModeItem
+                        {
+                            Mode = mode,
+                            Group = group
+                        };
+                    }));
 
-           
-            // Command initializes once
             ButtonClickCommand = new RelayCommand<object>(OnButtonClicked);
         }
-
-        //private void OnButtonClicked(object? param)
-        //{
-        //    if (param is ManualOperationMode mode)
-        //    {
-        //        // If already selected, deselect
-        //        if (SelectedButton == mode)
-        //            SelectedButton = null;
-        //        else
-        //        {
-        //            // Only allow change if current selected is null
-        //            if (SelectedButton == null)
-        //                SelectedButton = mode;
-        //        }
-        //    }
-        //}
 
         private void OnButtonClicked(object? param)
         {
@@ -174,11 +145,10 @@ namespace IPCSoftware.App.ViewModels
 
             string group = GetGroup(clickedMode);
 
-            // Initialize group tracking if required
             if (!_selectedGroupButtons.ContainsKey(group))
                 _selectedGroupButtons[group] = null;
 
-            // 1️⃣ If clicking the SAME button → deselect
+            // 1. If clicking the SAME button → deselect
             if (_selectedGroupButtons[group] == clickedMode)
             {
                 _selectedGroupButtons[group] = null;
@@ -186,50 +156,17 @@ namespace IPCSoftware.App.ViewModels
                 return;
             }
 
-            // 2️⃣ If another button in the SAME group is already selected → do NOT allow switching
+            // 2. If another button in the SAME group is active → block switch (or allow switch if preferred)
+            // Your current logic blocks switching until deselect.
             if (_selectedGroupButtons[group] != null)
             {
-                // Button blocked until user deselects the currently active one
                 return;
             }
 
-            // 3️⃣ No selection in this group → allow selecting
+            // 3. No selection -> Select new
             _selectedGroupButtons[group] = clickedMode;
             OnPropertyChanged(nameof(SelectedGroupButtons));
         }
-
-
-
-        //private void OnButtonClicked(object? param)
-        //{
-        //    if (param is not ManualOperationMode clickedMode)
-        //        return;
-
-        //    // 1. If clicking the same button → deselect
-        //    if (SelectedButton == clickedMode)
-        //    {
-        //        SelectedButton = null;
-        //        return;
-        //    }
-
-        //    // If no button is selected yet → select it
-        //    if (SelectedButton == null)
-        //    {
-        //        SelectedButton = clickedMode;
-        //        return;
-        //    }
-
-        //    // Compare groups
-        //    string currentGroup = GetGroup(SelectedButton.Value);
-        //    string clickedGroup = GetGroup(clickedMode);
-
-        //    // 2. Same group → DO NOTHING
-        //    if (currentGroup == clickedGroup)
-        //        return;
-
-        //    // 3. Different group → switch green highlight to new button
-        //    SelectedButton = clickedMode;
-        //}
 
         private string GetGroup(ManualOperationMode mode)
         {
@@ -241,7 +178,6 @@ namespace IPCSoftware.App.ViewModels
 
             return attr?.Name ?? "";
         }
-
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null!)

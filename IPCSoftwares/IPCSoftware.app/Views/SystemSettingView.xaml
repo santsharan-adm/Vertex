@@ -8,6 +8,8 @@
              Background="#F3F3F3" FontFamily="Segoe UI">
 
     <UserControl.Resources>
+        <Geometry x:Key="SyncArrowGeometry">M16,12V15H22V12H25.5L21.5,8L17.5,12H21V12H16M19,20V17H13V20H9.5L13.5,24L17.5,20H14V20H19M4,2H18A2,2 0 0,1 20,4V10H18V4H4V20H11.5V22H4A2,2 0 0,1 2,20V4A2,2 0 0,1 4,2Z</Geometry>
+        <Geometry x:Key="ArrowRightGeometry">M4,10 H16 V6 L22,12 L16,18 V14 H4 Z</Geometry>
         <Style x:Key="SystemCardStyle" TargetType="Border">
             <Setter Property="Background" Value="White"/>
             <Setter Property="CornerRadius" Value="15"/>
@@ -15,7 +17,7 @@
             <Setter Property="Margin" Value="20"/>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="5" Opacity="0.15"/>
+                    <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="5" Opacity="0.1"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -59,32 +61,33 @@
         </Style>
 
         <Style x:Key="SyncButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#F1C40F"/>
+            <Setter Property="Background" Value="Gray"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontSize" Value="32"/>
+            <Setter Property="FontSize" Value="36"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="border"
-                                CornerRadius="15"
+                                CornerRadius="20" 
                                 Background="{TemplateBinding Background}"
-                                BorderThickness="0">
+                                BorderThickness="4"
+                                BorderBrush="White">
 
                             <Border.Effect>
-                                <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.4"/>
+                                <DropShadowEffect BlurRadius="15" ShadowDepth="5" Opacity="0.3"/>
                             </Border.Effect>
 
                             <Grid>
-                                <Rectangle Height="40" VerticalAlignment="Top" RadiusX="15" RadiusY="15" Margin="2">
-                                    <Rectangle.Fill>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="#66FFFFFF" Offset="0"/>
-                                            <GradientStop Color="#00FFFFFF" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Rectangle.Fill>
-                                </Rectangle>
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <ContentPresenter/>
+                                    <Path Data="{StaticResource ArrowRightGeometry}" 
+                                          Fill="White" 
+                                          Height="40" Width="40" 
+                                          Stretch="Uniform"
+                                          Margin="15,0,0,0"
+                                          VerticalAlignment="Center"/>
+                                </StackPanel>
                             </Grid>
                         </Border>
 
@@ -108,7 +111,7 @@
                         <BeginStoryboard>
                             <Storyboard RepeatBehavior="Forever" AutoReverse="True">
                                 <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
-                                                From="#245CFF" To="#6699FF" Duration="0:0:0.8"/>
+                                                From="#245CFF" To="#6699FF" Duration="0:0:0.5"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.EnterActions>
@@ -144,43 +147,9 @@
             <Grid Grid.Row="1" Margin="0,0,0,50">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="400"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-
-                <Border Grid.Column="0" Style="{StaticResource SystemCardStyle}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Border Background="#E0E0E0" CornerRadius="12" Width="140" Height="140" VerticalAlignment="Center">
-                            <TextBlock Text="PLC" FontSize="48" FontWeight="Bold" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="40,0,0,0">
-                            <TextBlock Text="{Binding PlcDate}" 
-                                       FontSize="48" 
-                                       FontWeight="Bold" 
-                                       Foreground="#333" 
-                                       Margin="0,0,0,10"/>
-                            <TextBlock Text="{Binding PlcTime}" 
-                                       FontSize="60" 
-                                       FontWeight="Bold" 
-                                       Foreground="#007ACC"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <Button Grid.Column="1"
-                        x:Name="SyncBtn"
-                        Command="{Binding SyncCommand}"
-                        Content="SYNC"
-                        Width="300" Height="120"
-                        Style="{StaticResource SyncButtonStyle}"
-                        Cursor="Hand"
-                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
                 <Border Grid.Column="2" Style="{StaticResource SystemCardStyle}">
                     <Grid>
@@ -189,20 +158,45 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <Border Background="#E0E0E0" CornerRadius="12" Width="140" Height="140" VerticalAlignment="Center">
+                        <Border Background="#F0F0F0" CornerRadius="12" Width="140" Height="140" VerticalAlignment="Center">
+                            <TextBlock Text="PLC" FontSize="48" FontWeight="Bold" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="40,0,0,0">
+                            <TextBlock Text="{Binding PlcDate, TargetNullValue='--/--/----'}" 
+                                       FontSize="48" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding PlcTime, TargetNullValue='--:--:--'}" 
+                                       FontSize="48" FontWeight="Bold" Foreground="#007ACC"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Button Grid.Column="1"
+                        x:Name="SyncBtn"
+                        Command="{Binding SyncCommand}"
+                        Content="SYNC"
+                        Width="250" Height="100"
+                        Style="{StaticResource SyncButtonStyle}"
+                        Cursor="Hand"
+                        VerticalAlignment="Center" 
+                        Margin="20,0"/>
+
+                <Border Grid.Column="0" Style="{StaticResource SystemCardStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Background="#F0F0F0" CornerRadius="12" Width="140" Height="140" VerticalAlignment="Center">
                             <TextBlock Text="IPC" FontSize="48" FontWeight="Bold" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
 
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="40,0,0,0">
                             <TextBlock Text="{Binding IpcDate}" 
-                                       FontSize="48" 
-                                       FontWeight="Bold" 
-                                       Foreground="#333" 
-                                       Margin="0,0,0,10"/>
+                                       FontSize="48" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,10"/>
                             <TextBlock Text="{Binding IpcTime}" 
-                                       FontSize="60" 
-                                       FontWeight="Bold" 
-                                       Foreground="#007ACC"/>
+                                       FontSize="48" FontWeight="Bold" Foreground="#007ACC"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -214,13 +208,14 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="Audit Trail Log" FontSize="36" FontWeight="SemiBold" Foreground="#555" Margin="10,0,0,20"/>
+                <TextBlock Text="Audit Trail Log" FontSize="36" FontWeight="SemiBold" Foreground="#555" Margin="20,0,0,20"/>
 
                 <Border Grid.Row="1" 
                         Background="White" 
                         CornerRadius="12" 
                         BorderBrush="#CCCCCC" 
-                        BorderThickness="1">
+                        BorderThickness="1"
+                        ClipToBounds="True">
 
                     <DataGrid ItemsSource="{Binding AuditLogs}"
                               AutoGenerateColumns="False"
@@ -249,7 +244,7 @@
 
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Timestamp" 
-                                                Binding="{Binding Time, StringFormat='yyyy-MM-dd HH:mm:ss'}" 
+                                                Binding="{Binding Time}" 
                                                 Width="400" 
                                                 CellStyle="{StaticResource HmiCellStyle}"/>
 

@@ -5,6 +5,7 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualBasic.Logging;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -439,12 +440,9 @@ namespace IPCSoftware.App.NavServices
             // Convert string command parameter to Enum
             if (Enum.TryParse(logType, out LogType category))
             {
-                
-
-
                 NavigateMain<LogView>();
+                _ = vm.LoadCategoryAsync(category);
                 // Navigate
-               
             }
         }
 

@@ -62,7 +62,7 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#1E4FA8"/>
+                    <Setter Property="Background" Value="#1E5FA8"/>
                     <Setter Property="Foreground" Value="White"/>
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
@@ -84,7 +84,7 @@
 
             <!-- ================= HEADER SECTION (ROW 0) ================= -->
             <!-- ZIndex ensures header stays on top of content but sidebar slides over content -->
-            <Grid Grid.Row="0" Height="140" Panel.ZIndex="100">
+            <Grid Grid.Row="0" Height="110" Panel.ZIndex="100">
                 <Grid.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                         <GradientStop Color="#1E3A8A" Offset="0"/>
@@ -150,11 +150,19 @@
                 <!-- 2. FOOTER BAR -->
                 <Border Grid.Row="1" Background="#1E4FA8">
                     <Grid>
-                        <TextBlock Text="{Binding AppVersion}" 
+                        <TextBlock Margin=" 20 0 0 0"  Text="{Binding AppVersion}" 
                                    Foreground="#AAAAAA" 
                                    FontSize="20" 
-                                   HorizontalAlignment="Center" 
+                                   HorizontalAlignment="Left" 
                                    VerticalAlignment="Center"/>
+
+                        <TextBlock Text="{Binding SystemTime}" 
+                   Foreground="#AAAAAA" 
+                                   Margin=" 0 0 20 0"
+                   FontSize="20" 
+                   FontWeight="SemiBold"
+                   HorizontalAlignment="Right" 
+                   VerticalAlignment="Center"/>
                     </Grid>
                 </Border>
 
@@ -177,8 +185,8 @@
                         Grid.RowSpan="2"
                         Width="350"
                         HorizontalAlignment="Left"
-                        Background="#1E3A8A"
-                        BorderBrush="#1E4FA8"
+                        Background="#1E4FA8"
+                        BorderBrush="#1E4FA4"
                         BorderThickness="0,0,1,0"
                         Panel.ZIndex="10">
 
@@ -188,7 +196,7 @@
                     </Border.RenderTransform>
 
                     <Border.Effect>
-                        <DropShadowEffect Color="#1E4FA8" Direction="0" ShadowDepth="0" BlurRadius="20" Opacity="0.5"/>
+                        <DropShadowEffect Color="#1E4FA7" Direction="0" ShadowDepth="0" BlurRadius="20" Opacity="0.5"/>
                     </Border.Effect>
 
                     <Border.Style>

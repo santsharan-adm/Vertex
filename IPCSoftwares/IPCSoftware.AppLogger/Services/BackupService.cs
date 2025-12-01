@@ -37,7 +37,16 @@ namespace IPCSoftware.AppLogger.Services
             if (now.Hour != config.BackupTime.Hours ||
                 now.Minute != config.BackupTime.Minutes)
                 return false;
+            return config.BackupSchedule switch
+            {
+                BackupScheduleType.Manual => false,
+                BackupScheduleType.Daily => true,
+                BackupScheduleType.Weekly => now.DayOfWeek == DayOfWeek.Monday,
+                BackupScheduleType.Monthly => now.Day == 1,
+                _ => false
+            };
 
+/*
             switch (config.BackupSchedule)
             {
                 case BackupScheduleType.Manual:
@@ -54,7 +63,8 @@ namespace IPCSoftware.AppLogger.Services
 
                 default:
                     return false;
-            }
+            }*/
+
         }
     }
 }

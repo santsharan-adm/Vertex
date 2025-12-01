@@ -29,11 +29,11 @@ namespace IPCSoftware.App.ViewModels
 
         private bool _isLoading;
 
-        public bool IsLoading
-        {
-            get => _isLoading;
-            set => SetProperty(ref _isLoading, value);
-        }
+        //public bool IsLoading
+        //{
+        //    get => _isLoading;
+        //    set => SetProperty(ref _isLoading, value);
+        //}
 
 
         private bool _isUsernameFocused;
@@ -101,7 +101,7 @@ namespace IPCSoftware.App.ViewModels
                 return;
             }
 
-            IsLoading = true;
+         //   IsLoading = true;
 
             try
             {
@@ -119,7 +119,7 @@ namespace IPCSoftware.App.ViewModels
 
                 _logger.LogInfo($"Login successful: {Username}", LogType.Audit);
 
-                // Initialize all services (loads all CSV files)
+                // Initialize all services (loads all CSV files)    
                 await AppInitializationService.InitializeAllServicesAsync();
 
                 // Set session
@@ -142,12 +142,12 @@ namespace IPCSoftware.App.ViewModels
                 _logger.LogError($"Login error: {ex.Message}", LogType.Error);
                 _dialog.ShowMessage($"Login error: {ex.Message}");
             }
-            finally
-            {
-                IsLoading = false;
-            }
+          
         }
 
 
     }
+
+
+
 }

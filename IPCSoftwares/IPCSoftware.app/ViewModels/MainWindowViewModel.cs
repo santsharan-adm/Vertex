@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Windows;
 
 using System.Windows.Input;
+using System.Windows.Threading;
 
 public class MainWindowViewModel : BaseViewModel
 {
@@ -19,6 +20,16 @@ public class MainWindowViewModel : BaseViewModel
     public ICommand MinimizeAppCommand { get; }
     public ICommand CloseAppCommand { get; }
 
+    private readonly DispatcherTimer _timer;
+
+    // Live System Time Property
+    private string _systemTime;
+    public string SystemTime
+    {
+        get => _systemTime;
+        set => SetProperty(ref _systemTime, value);
+    }
+
 
 
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
@@ -26,6 +37,16 @@ public class MainWindowViewModel : BaseViewModel
 
     public MainWindowViewModel(INavigationService nav, RibbonViewModel ribbonVM)
     {
+        _timer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(1)
+        };
+        _timer.Tick += (s, e) => SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
+        _timer.Start();
+
+        // Set initial time immediately
+        SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
+
         _nav = nav;
         RibbonVM = ribbonVM;
         RibbonVM.ShowSidebar = LoadSidebarMenu;

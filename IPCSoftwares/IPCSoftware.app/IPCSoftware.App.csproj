@@ -13,6 +13,7 @@
     <None Remove="Controls\Images\alarm.png" />
     <None Remove="Controls\Images\AOILogin.jpg" />
     <None Remove="Controls\Images\AOILogo.png" />
+    <None Remove="Controls\Images\aoiLogoNew.png" />
     <None Remove="Controls\Images\Configs.png" />
     <None Remove="Controls\Images\Dashboard2.png" />
     <None Remove="Controls\Images\landingpage.jpg" />
@@ -55,6 +56,9 @@
     </Resource>
     <Resource Include="Controls\Images\AOILogin.jpg" />
     <Resource Include="Controls\Images\AOILogo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Controls\Images\aoiLogoNew.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Controls\Images\Configs.png">
