@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IPCSoftware.AppLogger\IPCSoftware.AppLogger.csproj" />
+    <ProjectReference Include="..\IPCSoftware.CoreService\IPCSoftware.CoreService.csproj" />
     <ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
     <ProjectReference Include="..\IPCSoftware.Helpers\IPCSoftware.Helpers.csproj" />
     <ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />

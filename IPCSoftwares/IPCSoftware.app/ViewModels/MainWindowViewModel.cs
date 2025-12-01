@@ -161,7 +161,7 @@ public class MainWindowViewModel : BaseViewModel
         {
             // OEEDashboard Menu
             case "OEE Dashboard":
-                _nav.NavigateMain<OEEDashboard>();
+                _nav.NavigateMain<LiveOeeView>();
                 break;
 
             case "Machine Summary":
