@@ -40,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IPCSoftware.CoreService\IPCSoftware.CoreService.csproj" />
     <ProjectReference Include="..\IPCSoftware.Helpers\IPCSoftware.Helpers.csproj" />
     <ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
     <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
