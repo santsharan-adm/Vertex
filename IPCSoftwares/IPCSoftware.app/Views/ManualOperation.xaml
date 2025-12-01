@@ -1,280 +1,329 @@
 ﻿<UserControl x:Class="IPCSoftware.App.Views.ManualOperation"
-xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
-             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
-
- helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ManualOperationViewModel}"
-xmlns:conv="clr-namespace:IPCSoftware.App.Converters" xmlns:sys="clr-namespace:System;assembly=netstandard">
-
-    <!--<UserControl.DataContext>
-        <vm:ManualOperationViewModel/>
-    </UserControl.DataContext>-->
-
-    <UserControl.Resources>
-        <conv:EqualityConverter x:Key="EqualityConverter"/>
-        <conv:EnumToSpacedStringConverter x:Key="EnumToSpacedStringConverter"/>
-
-        <!-- LOCAL Styles and custom UI sizes -->
-        <sys:Double x:Key="ManualButtonFontSize">21</sys:Double>
-        <sys:Double x:Key="ManualButtonMinWidth">120</sys:Double>
-        <sys:Double x:Key="ManualButtonMinHeight">120</sys:Double>
-
-        <Style x:Key="ManualModeButtonStyle"
-           TargetType="Button"
-           BasedOn="{StaticResource TouchButtonBaseStyle}">
-            <Setter Property="FontSize" Value="{StaticResource ManualButtonFontSize}"/>
-            <Setter Property="MinWidth" Value="{StaticResource ManualButtonMinWidth}"/>
-            <Setter Property="MinHeight" Value="{StaticResource ManualButtonMinHeight}"/>
-
-            <Style.Triggers>
-                <DataTrigger Value="True">
-                    <DataTrigger.Binding>
-                        <MultiBinding Converter="{StaticResource EqualityConverter}">
-                            <Binding Path="DataContext.SelectedGroupButtons"
-                                 RelativeSource="{RelativeSource AncestorType=UserControl}"/>
-                            <Binding Path="Group"/>
-                            <Binding Path="Mode"/>
-                        </MultiBinding>
-                    </DataTrigger.Binding>
-                    <Setter Property="Background" Value="#0F9D58"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </UserControl.Resources>
-
-        
-   
-    <Grid>
-        <Grid.Resources>
-            <CollectionViewSource x:Key="GroupedModes" Source="{Binding Modes}">
-                <CollectionViewSource.GroupDescriptions>
-                    <PropertyGroupDescription PropertyName="Group"/>
-                </CollectionViewSource.GroupDescriptions>
-            </CollectionViewSource>
-        </Grid.Resources>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding Source={StaticResource GroupedModes}}">
-                <ItemsControl.GroupStyle>
-                    <GroupStyle>
-                        <GroupStyle.HeaderTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold"/>
-                            </DataTemplate>
-                        </GroupStyle.HeaderTemplate>
-                    </GroupStyle>
-                </ItemsControl.GroupStyle>
-
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Columns="4"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Style="{StaticResource ManualModeButtonStyle}"
-                        Content="{Binding Mode, Converter={StaticResource EnumToSpacedStringConverter}}"
-                        Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        CommandParameter="{Binding Mode}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
-    </Grid>
- 
-</UserControl>
-
-
-
-
-<!--<UserControl x:Class="IPCSoftware.App.Views.ManualOperation"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:IPCSoftware.App.Views"
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
-xmlns:sys="clr-namespace:System;assembly=mscorlib"
-xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <vm:ManualOperationViewModel/>
-    </UserControl.DataContext>
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ManualOperationViewModel}"
+             Background="#F0F2F5" FontFamily="Segoe UI">
 
     <UserControl.Resources>
+        <!-- Converters -->
         <conv:EqualityConverter x:Key="EqualityConverter"/>
-        <conv:EnumToSpacedStringConverter x:Key="EnumToSpacedStringConverter"/>
-    </UserControl.Resources>
+        <conv:EnumToSymbolConverter x:Key="EnumToSymbolConverter"/>
+        <conv:GroupVisibilityConverter x:Key="GroupVisibilityConverter"/>
 
-    <Grid>
-        <Grid.Resources>
-            <CollectionViewSource x:Key="GroupedModes"
-                              Source="{Binding Modes}">
-                <CollectionViewSource.GroupDescriptions>
-                    <PropertyGroupDescription PropertyName="Group"/>
-                </CollectionViewSource.GroupDescriptions>
-            </CollectionViewSource>
-        </Grid.Resources>
+        <!-- ================= STYLES ================= -->
 
-        <ItemsControl ItemsSource="{Binding Source={StaticResource GroupedModes}}">
-            <ItemsControl.GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}"
-                                   FontWeight="Bold"
-                                   FontSize="14"
-                                   Margin="0,10,0,5"/>
-                        </DataTemplate>
-                    </GroupStyle.HeaderTemplate>
-                </GroupStyle>
-            </ItemsControl.GroupStyle>
+        <!-- 1. Card Style -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="2" Opacity="0.1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Columns="4"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+        <!-- 2. Section Header Style -->
+        <Style x:Key="SectionHeaderStyle"  TargetType="TextBlock">
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#555"/>
+            <Setter Property="Margin" Value="5,0,0,10"/>
+        </Style>
 
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Button Content="{Binding Mode, Converter={StaticResource EnumToSpacedStringConverter}}"
-                        Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        CommandParameter="{Binding Mode}"
-                        Margin="10,5,17,17" FontSize="10" RenderTransformOrigin="0.5,0.5" Height="21" Width="124">
-                        <Button.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform/>
-                                <SkewTransform/>
-                                <RotateTransform Angle="-0.346"/>
-                                <TranslateTransform/>
-                            </TransformGroup>
-                        </Button.RenderTransform>
+        <Style x:Key="ManualModeButtonStyle" TargetType="Button">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="#E8E8E8"/>
+            <Setter Property="Foreground" Value="#444"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                CornerRadius="6"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="#CCCCCC"
+                                BorderThickness="1">
+                            <!-- Removed the Grid/Indicator logic, just content now -->
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"
+                                              Margin="10"/>
+                        </Border>
 
-                        --><!-- Same hover-free style you used --><!--
-                        <Button.Style>
-                            <Style TargetType="Button">
-
-                                --><!-- Template removing hover --><!--
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border x:Name="border"
-                                                Background="{TemplateBinding Background}">
-                                                <ContentPresenter HorizontalAlignment="Center"
-                                                              VerticalAlignment="Center"/>
-                                            </Border>
-
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsPressed" Value="True">
-                                                    <Setter TargetName="border" Property="Opacity" Value="0.85"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-
-                                --><!-- Selected mode --><!--
-                                <Style.Triggers>
-                                    <DataTrigger Value="True">
-                                        --><!--<DataTrigger.Binding>
+                        <ControlTemplate.Triggers>
+                            <!-- Hover Effect -->
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                    <Condition Value="False">
+                                        <Condition.Binding>
                                             <MultiBinding Converter="{StaticResource EqualityConverter}">
-                                                <Binding Path="DataContext.SelectedButton" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
-                                                <Binding Path="Mode"/>
-                                            </MultiBinding>
-                                        </DataTrigger.Binding>--><!--
-                                        <DataTrigger.Binding>
-                                            <MultiBinding Converter="{StaticResource EqualityConverter}">
-                                                <Binding Path="DataContext.SelectedGroupButtons"
-                 RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                <Binding Path="DataContext.SelectedGroupButtons" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
                                                 <Binding Path="Group"/>
                                                 <Binding Path="Mode"/>
                                             </MultiBinding>
-                                        </DataTrigger.Binding>
+                                        </Condition.Binding>
+                                    </Condition>
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="border" Property="Background" Value="#D6D6D6"/>
+                            </MultiDataTrigger>
 
-                                        <Setter Property="Background" Value="Green"/>
-                                        <Setter Property="Foreground" Value="White"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </Grid>
-
-
-    --><!--<Grid>
-        <ItemsControl ItemsSource="{Binding Modes}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Columns="4" Rows="7"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Button Content="{Binding Converter={StaticResource EnumToSpacedStringConverter}}" 
-        Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-        CommandParameter="{Binding}" 
-        Margin="10,5,17,17" Height="NaN" Width="NaN" FontSize="10">
-
-                        <Button.Style>
-                            <Style TargetType="Button">
-
-                                -->
-    <!-- Remove default hover highlight by replacing template -->
-    <!--
-                                <Setter Property="Template">
+                            <!-- Pressed Effect -->
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="RenderTransform">
                                     <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border x:Name="border"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                                                <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
-                                            </Border>
-
-                                            -->
-    <!-- Optional: keep small pressed effect -->
-    <!--
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsPressed" Value="True">
-                                                    <Setter TargetName="border" Property="Opacity" Value="0.85"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
+                                        <TranslateTransform Y="1"/>
                                     </Setter.Value>
                                 </Setter>
+                            </Trigger>
 
-                                -->
-    <!-- Your existing selection highlight -->
-    <!--
-                                <Style.Triggers>
-                                    <DataTrigger Value="True">
-                                        <DataTrigger.Binding>
-                                            <MultiBinding Converter="{StaticResource EqualityConverter}">
-                                                <Binding Path="DataContext.SelectedButton"
-                                     RelativeSource="{RelativeSource AncestorType=UserControl}" />
-                                                <Binding />
-                                            </MultiBinding>
-                                        </DataTrigger.Binding>
-                                        <Setter Property="Background" Value="Green"/>
-                                        <Setter Property="Foreground" Value="White"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
+                            <!-- Selected State (Green) -->
+                            <DataTrigger Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource EqualityConverter}">
+                                        <Binding Path="DataContext.SelectedGroupButtons" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                        <Binding Path="Group"/>
+                                        <Binding Path="Mode"/>
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
 
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                                <Setter TargetName="border" Property="Background" Value="#0F9D58"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <!-- Removed Indicator Setter -->
+                                <Setter TargetName="border" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#0F9D58" BlurRadius="10" ShadowDepth="0" Opacity="0.4"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </Grid>--><!--
-</UserControl>-->
+
+        <!-- Standard ItemContainerStyle for Stretching Buttons -->
+        <Style x:Key="StretchItemStyle" TargetType="ContentPresenter">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+        </Style>
+    </UserControl.Resources>
+
+    <!-- ========== MAIN LAYOUT ========== -->
+    <Viewbox Stretch="Uniform">
+        <Grid Width="1920" Height="1080" Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <!-- Left Side (Machine) -->
+                <ColumnDefinition Width="1.5*"/>
+                <!-- Right Side (Position) -->
+            </Grid.ColumnDefinitions>
+
+            <!-- ================= LEFT PANEL ================= -->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1.7*"/>
+                    <!-- Row 1: Tray & Cylinder -->
+                    <RowDefinition Height="1*"/>
+                    <!-- Row 2: Conveyor -->
+                    <RowDefinition Height="1*"/>
+                    <!-- Row 3: X Axis -->
+                
+                    <!-- Row 4: Y Axis -->
+                </Grid.RowDefinitions>
+
+                <!-- ROW 1: Tray Lift & Positioning Cylinder -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Tray Lift -->
+                    <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Tray Lift" Style="{StaticResource SectionHeaderStyle}"/>
+
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding TrayModes}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button FontSize="50" Style="{StaticResource ManualModeButtonStyle}"
+                                                Content="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
+                                                Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding Mode}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+
+                    <!-- Positioning Cylinder -->
+                    <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Pos. Cylinder" Style="{StaticResource SectionHeaderStyle}"/>
+
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding CylinderModes}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button FontSize="50" Style="{StaticResource ManualModeButtonStyle}"
+                                                Content="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
+                                                Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding Mode}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+               
+                <!-- ROW 3: Manual X-Axis -->
+                <Border Grid.Row="1" Style="{StaticResource CardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Manual X-Axis" Style="{StaticResource SectionHeaderStyle}"/>
+
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding XAxisModes}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="3"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button FontSize="40" Style="{StaticResource ManualModeButtonStyle}"
+                                            Content="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
+                                            Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding Mode}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+
+                <!-- ROW 4: Manual Y-Axis -->
+                <Border Grid.Row="2" Style="{StaticResource CardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Manual Y-Axis" Style="{StaticResource SectionHeaderStyle}"/>
+
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding YAxisModes}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="3"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button FontSize=" 40" Style="{StaticResource ManualModeButtonStyle}"
+                                            Content="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
+                                            Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding Mode}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+            </Grid>
+            <Grid Grid.Column="1" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto" MinHeight="250"/>
+                </Grid.RowDefinitions>
+                <Border Style="{StaticResource CardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Move to Position" Style="{StaticResource SectionHeaderStyle}"/>
+
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding PositionModes}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <!-- Grid-style layout for positions -->
+                                    <UniformGrid Columns="4"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource ManualModeButtonStyle}" FontSize="80"
+                             Content="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
+                             Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                             CommandParameter="{Binding Mode}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+
+                <!-- ROW 2: Transport Conveyor -->
+                <Border Grid.Row="1" Style="{StaticResource CardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Transport Conveyor"  Style="{StaticResource SectionHeaderStyle}"/>
+
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding ConveyorModes}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="4"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button FontSize ="40" Style="{StaticResource ManualModeButtonStyle}"
+                             Content="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
+                             Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                             CommandParameter="{Binding Mode}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+
+
+            </Grid>
+            <!-- ================= RIGHT PANEL (Move to Position) ================= -->
+           
+        </Grid>
+    </Viewbox>
+</UserControl>
