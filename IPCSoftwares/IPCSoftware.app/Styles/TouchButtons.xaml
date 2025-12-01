@@ -4,7 +4,7 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
     <!-- Global tunable parameters -->
-    <sys:Double x:Key="DefaultButtonFontSize">18</sys:Double>
+    <sys:Double x:Key="DefaultButtonFontSize">22</sys:Double>
     <sys:Double x:Key="DefaultButtonMinWidth">80</sys:Double>
     <sys:Double x:Key="DefaultButtonMinHeight">50</sys:Double>
     <w:Thickness x:Key="DefaultButtonMargin">10,5,10,10 </w:Thickness>
@@ -47,7 +47,7 @@
 
 
     <Style x:Key="HmiLabelStyle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontSize" Value="26"/>
         <Setter Property="Foreground" Value="#666666"/>
         <Setter Property="Margin" Value="0,0,0,5"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
@@ -55,7 +55,7 @@
 
     <Style x:Key="HmiTextBoxStyle" TargetType="TextBox">
         <Setter Property="Height" Value="50"/>
-        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontSize" Value="28"/>
         <Setter Property="Padding" Value="10,0"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="BorderBrush" Value="#CCCCCC"/>
@@ -64,7 +64,7 @@
 
     <Style x:Key="HmiComboBoxStyle" TargetType="ComboBox">
         <Setter Property="Height" Value="50"/>
-        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontSize" Value="26"/>
         <Setter Property="Padding" Value="10,0"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="BorderBrush" Value="#CCCCCC"/>
@@ -72,7 +72,7 @@
     </Style>
 
     <Style x:Key="HmiCheckBoxStyle" TargetType="CheckBox">
-        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontSize" Value="20"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="LayoutTransform">
             <Setter.Value>

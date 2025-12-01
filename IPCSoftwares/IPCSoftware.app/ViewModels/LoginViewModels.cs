@@ -1,9 +1,10 @@
 ﻿using IPCSoftware.App.NavServices;
 using IPCSoftware.App.Views;
-using IPCSoftware.AppLogger.Interfaces;
-using IPCSoftware.AppLogger.Models;
+
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
 

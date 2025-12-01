@@ -1,7 +1,7 @@
 ﻿using IPCSoftware.App;
 using IPCSoftware.App.ViewModels;
-using IPCSoftware.AppLogger.Interfaces;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;

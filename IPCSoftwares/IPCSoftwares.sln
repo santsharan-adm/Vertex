@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.Helpers", "IPCS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.Core", "IPCSoftware.Core\IPCSoftware.Core.csproj", "{2F5A4955-4437-4F66-8F13-5AA3CAF37190}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.AppLogger", "IPCSoftware.AppLogger\IPCSoftware.AppLogger.csproj", "{ACD0DB9D-FBE5-427F-ACCC-E6BC3151404B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.CoreService", "IPCSoftware.CoreService\IPCSoftware.CoreService.csproj", "{2971B56E-5800-44B4-9A68-BDF0CD17FD86}"
 EndProject
 Global
@@ -55,10 +53,6 @@ Global
 		{2F5A4955-4437-4F66-8F13-5AA3CAF37190}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F5A4955-4437-4F66-8F13-5AA3CAF37190}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F5A4955-4437-4F66-8F13-5AA3CAF37190}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ACD0DB9D-FBE5-427F-ACCC-E6BC3151404B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ACD0DB9D-FBE5-427F-ACCC-E6BC3151404B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ACD0DB9D-FBE5-427F-ACCC-E6BC3151404B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ACD0DB9D-FBE5-427F-ACCC-E6BC3151404B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2971B56E-5800-44B4-9A68-BDF0CD17FD86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2971B56E-5800-44B4-9A68-BDF0CD17FD86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2971B56E-5800-44B4-9A68-BDF0CD17FD86}.Release|Any CPU.ActiveCfg = Release|Any CPU

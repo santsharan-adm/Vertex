@@ -83,7 +83,7 @@
                            Foreground="#333333"
                            VerticalAlignment="Center"/>
 
-                <Button Grid.Column="1" 
+                <!--<Button Grid.Column="1" 
                         Content="+ ADD LOG" 
                         Command="{Binding AddInterfaceCommand}"
                         Height="90" Width="350"
@@ -97,7 +97,10 @@
                             <Setter Property="CornerRadius" Value="10"/>
                         </Style>
                     </Button.Resources>
-                </Button>
+                </Button>-->
+                
+                
+                
             </Grid>
 
             <Border Grid.Row="1" 
@@ -174,7 +177,7 @@
                                             </Button.Resources>
                                         </Button>
 
-                                        <Button Content="Delete" 
+                                        <!--<Button Content="Delete" 
                                                 Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}"
                                                 Width="160" Height="70"
@@ -186,7 +189,8 @@
                                                     <Setter Property="CornerRadius" Value="8"/>
                                                 </Style>
                                             </Button.Resources>
-                                        </Button>
+                                        </Button>-->
+                                        
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>

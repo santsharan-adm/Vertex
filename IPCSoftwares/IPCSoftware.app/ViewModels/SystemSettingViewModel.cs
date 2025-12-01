@@ -1,5 +1,6 @@
-﻿using IPCSoftware.AppLogger.Interfaces;
+﻿
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using System;

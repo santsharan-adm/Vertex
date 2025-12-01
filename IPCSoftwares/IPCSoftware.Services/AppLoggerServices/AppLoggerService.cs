@@ -1,14 +1,21 @@
-﻿using IPCSoftware.AppLogger.Interfaces;
-using IPCSoftware.AppLogger.Models;
+﻿
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Shared.Models.ConfigModels;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace IPCSoftware.AppLogger.Services
+
+namespace IPCSoftware.Services.AppLoggerServices
 {
-    public class AppLogger : IAppLogger
+    public class AppLoggerService : IAppLogger
     {
-        private readonly LogManager _logManager;
+        private readonly ILogManagerService _logManager;
 
-        public AppLogger(LogManager logManager)
+        public AppLoggerService(ILogManagerService logManager)
         {
             _logManager = logManager;
         }
@@ -44,8 +51,12 @@ namespace IPCSoftware.AppLogger.Services
             // maintenance (fileSize, purge, retention)
             _logManager.ApplyMaintenance(config, filePath);
 
-            string line = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss},{level},\"{message}\",{config.Name}";
+            string line = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss},{level},\"{message}\",{config.LogName}";
             File.AppendAllText(filePath, line + Environment.NewLine);
         }
+
+     
     }
+
+
 }

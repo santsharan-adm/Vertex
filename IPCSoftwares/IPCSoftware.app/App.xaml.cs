@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.App.DI;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
@@ -17,6 +18,19 @@ namespace IPCSoftware.App
             ServiceRegistration.RegisterServices(services);
 
             ServiceProvider = services.BuildServiceProvider();
+
+            var logConfigService = ServiceProvider.GetService<ILogConfigurationService>();
+            if (logConfigService != null )
+            {
+                await logConfigService.InitializeAsync();
+            }
+
+
+            var logManagerService= ServiceProvider.GetService<ILogManagerService>();
+            if (logManagerService != null )
+            {
+                await logManagerService.InitializeAsync();
+            }
 
 
             // Initialize UserManagementService and create default admin BEFORE showing login

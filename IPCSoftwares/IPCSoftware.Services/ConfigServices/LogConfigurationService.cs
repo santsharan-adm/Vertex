@@ -1,11 +1,14 @@
-﻿using IPCSoftware.Core.Interfaces;
+﻿
+using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using LogType = IPCSoftware.Shared.Models.ConfigModels.LogType;
 
 namespace IPCSoftware.Services.ConfigServices
 {
@@ -33,8 +36,143 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task InitializeAsync()
         {
+            if (!File.Exists(_csvFilePath))
+            {
+                await InitializeDefaultConfigurationsAsync();
+            }
+
             await LoadFromCsvAsync();
         }
+
+
+        private async Task InitializeDefaultConfigurationsAsync()
+        {
+            //try
+            //{
+            //    // Try to extract embedded resource first
+            //    if (await ExtractEmbeddedResourceAsync())
+            //    {
+            //        Console.WriteLine("Log configurations initialized from embedded resource.");
+            //        return;
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"Could not extract embedded resource: {ex.Message}. Using hardcoded defaults.");
+            //}
+
+            // Fallback to hardcoded defaults
+            await CreateHardcodedDefaultsAsync();
+        }
+
+      
+        // Extract embedded CSV resource to file system
+       
+        //private async Task<bool> ExtractEmbeddedResourceAsync()
+        //{
+        //    var assembly = Assembly.GetExecutingAssembly();
+
+        //    // Get all resource names for debugging
+        //    var resourceNames = assembly.GetManifestResourceNames();
+        //    var resourceName = resourceNames.FirstOrDefault(r =>
+        //        r.EndsWith("DefaultLogConfigurations.csv", StringComparison.OrdinalIgnoreCase));
+
+        //    if (string.IsNullOrEmpty(resourceName))
+        //        return false;
+
+        //    using (var stream = assembly.GetManifestResourceStream(resourceName))
+        //    {
+        //        if (stream == null)
+        //            return false;
+
+        //        using (var reader = new StreamReader(stream))
+        //        {
+        //            string content = await reader.ReadToEndAsync();
+
+        //            // Replace relative paths with absolute paths
+        //            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        //            content = content.Replace("Logs\\", Path.Combine(baseDir, "Logs") + Path.DirectorySeparatorChar);
+        //            content = content.Replace("Logs/", Path.Combine(baseDir, "Logs") + "/");
+
+        //            await File.WriteAllTextAsync(_csvFilePath, content, Encoding.UTF8);
+        //            return true;
+        //        }
+        //    }
+        //}
+
+
+        /// <summary>
+        /// Create hardcoded default configurations (Fallback)
+        /// </summary>
+        private async Task CreateHardcodedDefaultsAsync()
+        {
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+
+            var defaultConfigs = new List<LogConfigurationModel>
+            {
+                new LogConfigurationModel
+                {
+                    Id = 1,
+                    LogName = "Audit",
+                    LogType = LogType.Audit,
+                    DataFolder = Path.Combine(baseDir, "Logs", "Audit"),
+                    BackupFolder = Path.Combine(baseDir, "LogsBackup", "Audit"),
+                    FileName = "Audit_{yyyyMMdd}",
+                    LogRetentionTime = 90,
+                    LogRetentionFileSize = 5,
+                    AutoPurge = false,
+                    BackupSchedule = BackupScheduleType.Daily,
+                    BackupTime = new TimeSpan(02, 00, 00),
+                    BackupDay = 0,
+                    BackupDayOfWeek = null,
+                    Description = "Audit log configuration",
+                    Remark = "System audit trail logs",
+                    Enabled = true
+                },
+                new LogConfigurationModel
+                {
+                    Id = 2,
+                    LogName = "Production",
+                    LogType = LogType.Production,
+                    DataFolder = Path.Combine(baseDir, "Logs", "Production"),
+                      BackupFolder = Path.Combine(baseDir, "LogsBackup", "Production"),
+                    FileName = "Production_{yyyyMMdd}",
+                    LogRetentionTime = 30,
+                    LogRetentionFileSize = 5,
+                    AutoPurge = true,
+                    BackupSchedule = BackupScheduleType.Weekly,
+                    BackupTime = new TimeSpan(03, 00, 00),
+                    BackupDay = 0,
+                    BackupDayOfWeek = "Monday",
+                    Description = "Production log configuration",
+                    Remark = "Production system logs",
+                    Enabled = true
+                },
+                new LogConfigurationModel
+                {
+                    Id = 3,
+                    LogName = "Error",
+                    LogType = LogType.Error,
+                    DataFolder = Path.Combine(baseDir, "Logs", "Error"),
+                    BackupFolder = Path.Combine(baseDir, "LogsBackup","Error"),
+                    FileName = "Error_{yyyyMMdd}",
+                    LogRetentionTime = 60,
+                    LogRetentionFileSize = 5,
+                    AutoPurge = false,
+                    BackupSchedule = BackupScheduleType.Daily,
+                    BackupTime = new TimeSpan(04, 00, 00),
+                    BackupDay = 0,
+                    BackupDayOfWeek = null,
+                    Description = "Error log configuration",
+                    Remark = "System error logs",
+                    Enabled = true
+                }
+            };
+
+            _configurations = defaultConfigs;
+            await SaveToCsvAsync();
+        }
+            
 
         public async Task<List<LogConfigurationModel>> GetAllAsync()
         {
@@ -46,8 +184,29 @@ namespace IPCSoftware.Services.ConfigServices
             return await Task.FromResult(_configurations.FirstOrDefault(c => c.Id == id));
         }
 
+
+        /// <summary>
+        /// Get configuration by LogType
+        /// </summary>
+        public async Task<LogConfigurationModel> GetByLogTypeAsync(LogType logType)
+        {
+            return await Task.FromResult(_configurations.FirstOrDefault(c =>
+                c.LogType == logType));
+        }
+
+
         public async Task<LogConfigurationModel> AddAsync(LogConfigurationModel logConfig)
         {
+            // Prevent adding duplicate LogTypes
+            var existing = _configurations.FirstOrDefault(c =>
+                c.LogType == logConfig.LogType);
+
+            if (existing != null)
+            {
+                throw new InvalidOperationException($"Log configuration for type '{logConfig.LogType}' already exists. Use Update to modify.");
+            }
+
+
             logConfig.Id = _nextId++;
             NormalizeBackupSettings(logConfig);
             _configurations.Add(logConfig);
@@ -65,6 +224,7 @@ namespace IPCSoftware.Services.ConfigServices
             var index = _configurations.IndexOf(existing);
             _configurations[index] = logConfig;
             await SaveToCsvAsync();
+            ConfigurationChanged?.Invoke(this, EventArgs.Empty);
             return true;
         }
 
@@ -73,6 +233,8 @@ namespace IPCSoftware.Services.ConfigServices
             var config = _configurations.FirstOrDefault(c => c.Id == id);
             if (config == null)
                 return false;
+
+
 
             _configurations.Remove(config);
             await SaveToCsvAsync();
@@ -95,30 +257,29 @@ namespace IPCSoftware.Services.ConfigServices
             if (config == null)
                 return;
 
-            switch (config.BackupSchedule?.ToLower())
+            switch (config.BackupSchedule)
             {
-                case "never/manual":
-                case "never":
+                case BackupScheduleType.Manual:
                     // Reset all backup-specific values to defaults
                     config.BackupTime = TimeSpan.Zero;
                     config.BackupDay = 0;
                     config.BackupDayOfWeek = null;
                     break;
 
-                case "daily":
+                case BackupScheduleType.Daily:
                     // Only keep BackupTime, reset day-specific values
                     config.BackupDay = 0;
                     config.BackupDayOfWeek = null;
                     break;
 
-                case "weekly":
+                case BackupScheduleType.Weekly:
                     // Keep BackupTime and BackupDayOfWeek, reset day of month
                     config.BackupDay = 0;
                     if (string.IsNullOrWhiteSpace(config.BackupDayOfWeek))
                         config.BackupDayOfWeek = "Monday";
                     break;
 
-                case "monthly":
+                case BackupScheduleType.Monthly:
                     // Keep BackupTime and BackupDay, reset day of week
                     config.BackupDayOfWeek = null;
                     if (config.BackupDay <= 0 || config.BackupDay > 28)
@@ -203,14 +364,14 @@ namespace IPCSoftware.Services.ConfigServices
             // BackupDayOfWeek: only included for Weekly schedule, otherwise empty
             return $"{config.Id}," +
                    $"\"{EscapeCsv(config.LogName)}\"," +
-                   $"\"{EscapeCsv(config.LogType)}\"," +
+                   $"\"{EscapeCsv(config.LogType.ToString())}\"," +
                    $"\"{EscapeCsv(config.DataFolder)}\"," +
                    $"\"{EscapeCsv(config.BackupFolder)}\"," +
                    $"\"{EscapeCsv(config.FileName)}\"," +
                    $"{config.LogRetentionTime}," +
                    $"{config.LogRetentionFileSize}," +
                    $"{config.AutoPurge}," +
-                   $"\"{EscapeCsv(config.BackupSchedule)}\"," +
+                   $"\"{EscapeCsv(config.BackupSchedule.ToString())}\"," +
                    $"\"{config.BackupTime}\"," +
                    $"{config.BackupDay}," +
                    $"\"{EscapeCsv(config.BackupDayOfWeek)}\"," +
@@ -233,14 +394,14 @@ namespace IPCSoftware.Services.ConfigServices
                 {
                     Id = int.Parse(values[0]),
                     LogName = values[1],
-                    LogType = values[2],
+                    LogType = Enum.Parse<LogType>(values[2]),
                     DataFolder = values[3],
                     BackupFolder = values[4],
                     FileName = values[5],
                     LogRetentionTime = int.Parse(values[6]),
                     LogRetentionFileSize = int.Parse(values[7]),
                     AutoPurge = bool.Parse(values[8]),
-                    BackupSchedule = values[9],
+                    BackupSchedule = Enum.Parse <BackupScheduleType>( values[9]),
                     BackupTime = TimeSpan.Parse(values[10]),
                     BackupDay = string.IsNullOrWhiteSpace(values[11]) ? 0 : int.Parse(values[11]),
                     BackupDayOfWeek = string.IsNullOrWhiteSpace(values[12]) ? null : values[12],
@@ -302,5 +463,9 @@ namespace IPCSoftware.Services.ConfigServices
 
             return value;
         }
+
+
+
+        public event EventHandler ConfigurationChanged;
     }
 }
