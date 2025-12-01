@@ -22,4 +22,14 @@ namespace IPCSoftware.Shared.Models
         public DateTime LastModified { get; set; }
         public string DisplaySize { get; set; } // e.g., "12 KB"
     }
+
+
+    public class LogEntry
+    {
+        public DateTime Timestamp { get; set; }
+        public string Level { get; set; }
+        public string Message { get; set; }
+        public string Source { get; set; }
+    }
+
 }

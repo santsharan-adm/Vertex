@@ -1,6 +1,7 @@
 ﻿using IPCSoftware.App.Views;
-using IPCSoftware.AppLogger.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -110,12 +111,15 @@ namespace IPCSoftware.App.ViewModels
         public IEnumerable<ModeItem> YAxisModes => Modes.Where(x => x.Group == "Manual Y-Axis Jog");
         public IEnumerable<ModeItem> PositionModes => Modes.Where(x => x.Group == "Move to Position");
 
+        private readonly IAppLogger _logger;
+
         public ICommand ButtonClickCommand { get; }
 
         public ObservableCollection<ModeItem> Modes { get; }
 
         public ManualOperationViewModel(IAppLogger logger)
         {
+            _logger = logger;
             // Populate the Master List
             Modes = new ObservableCollection<ModeItem>(
                 Enum.GetValues(typeof(ManualOperationMode))
@@ -140,6 +144,8 @@ namespace IPCSoftware.App.ViewModels
 
         private void OnButtonClicked(object? param)
         {
+            _logger.LogInfo($"{param} button pressed", LogType.Production);
+
             if (param is not ManualOperationMode clickedMode)
                 return;
 
