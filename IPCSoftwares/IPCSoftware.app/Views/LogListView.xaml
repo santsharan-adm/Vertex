@@ -9,7 +9,7 @@
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:LogListViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920"
-             Background="#F3F3F3" FontFamily="Segoe UI">
+             Background="#F3F3F3">
 
     <UserControl.Resources>
         <converters:BooleanToYesNoConverter x:Key="BoolToYesNo"/>

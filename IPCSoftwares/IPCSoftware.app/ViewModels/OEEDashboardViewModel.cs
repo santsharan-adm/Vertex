@@ -1,10 +1,10 @@
 ﻿using IPCSoftware.App.Controls;
 using IPCSoftware.App.Views;
 using IPCSoftware.Shared.Models;
-using IPCSoftware.Shared;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -13,6 +13,45 @@ namespace IPCSoftware.App.ViewModels
     public class OEEDashboardViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        private bool _isDarkTheme = true;
+        public ICommand ToggleThemeCommand { get; }
+
+      
+        private string _currentThemePath = "/IPCSoftware.App;component/Styles/DarkTheme.xaml";
+
+        public string CurrentThemePath
+        {
+            get
+            {
+                return _currentThemePath;
+            }
+            set
+            {
+                _currentThemePath = value;
+                 Notify(); 
+            }
+        }
+
+
+        private void ToggleTheme()
+        {
+            _isDarkTheme = !_isDarkTheme;
+            CurrentThemePath = _isDarkTheme
+            ? "/IPCSoftware.App;component/Styles/DarkTheme.xaml"
+            : "/IPCSoftware.App;component/Styles/LightTheme.xaml";
+            //string themePath = _isDarkTheme ? "Styles/DarkTheme.xaml" : "Styles/LightTheme.xaml";
+            //SetTheme(themePath);
+        }
+
+        //private void SetTheme(string themePath)
+        //{
+        //    var newDict = new ResourceDictionary { Source = new Uri(themePath, UriKind.Relative) };
+
+        //    // Clear old theme dictionaries (assuming you only have 1 theme dict at a time)
+        //    // In a real app, you might want to tag your theme dicts to remove only them
+        //    Application.Current.Resources.MergedDictionaries.Clear();
+        //    Application.Current.Resources.MergedDictionaries.Add(newDict);
+        //}
 
         private void Notify([CallerMemberName] string prop = null)
         {
@@ -54,10 +93,19 @@ namespace IPCSoftware.App.ViewModels
                 new PieSliceModel { Label="Rework", Value=20 }
             };
 
+            // ----- SUMMARY -----
+            OperatingTime = "7h 32m";
+            Downtime = "28m";
+            GoodUnits = 1325;
+            RejectedUnits = 48;
+            Remarks = "All processes stable.";
 
 
         public OEEDashboardViewModel()
         {
+            ToggleThemeCommand = new RelayCommand(ToggleTheme);
+            // Load default theme on startup
+           // SetTheme("Styles/DarkTheme.xaml");
             // ----- HEADER -----
             CurrentDateTime = DateTime.Now.ToString("dddd, MMM dd yyyy HH:mm");
 

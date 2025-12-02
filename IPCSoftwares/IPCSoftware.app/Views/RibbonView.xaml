@@ -14,7 +14,7 @@
         <Geometry x:Key="Icon_Logout">M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z</Geometry>
 
         <Style x:Key="RibbonButtonStyle" TargetType="Button">
-            <Setter Property="Height" Value="130"/>
+            <Setter Property="Height" Value="100"/>
             <Setter Property="Width" Value="220"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
@@ -61,12 +61,41 @@
 
         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="40,0">
             <Button Command="{Binding NavigateLandingPageCommand}"
-                    Background="Transparent" BorderThickness="0" Cursor="Hand">
-                <Border Width="80" Height="80" CornerRadius="40" BorderBrush="White" BorderThickness="3">
-                    <Border.Background>
-                        <ImageBrush ImageSource="/Controls/Images/AOILogo.png" Stretch="UniformToFill"/>
-                    </Border.Background>
-                </Border>
+        Cursor="Hand"
+        ToolTip="Home">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <!-- We define the look entirely ourselves here. No default chrome. -->
+                        <Border x:Name="LogoBorder" 
+                    Width="80" Height="80" 
+                    CornerRadius="40" 
+                    BorderBrush="White" 
+                    BorderThickness="3">
+                            <Border.Background>
+                                <ImageBrush ImageSource="/Controls/Images/AOILogo.png" Stretch="UniformToFill"/>
+                            </Border.Background>
+                        </Border>
+
+                        <!-- Optional: Add visual feedback without the ugly square -->
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="LogoBorder" Property="Opacity" Value="0.8"/>
+                                <Setter TargetName="LogoBorder" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="White" BlurRadius="10" Opacity="0.5"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="LogoBorder" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.95" ScaleY="0.95" CenterX="40" CenterY="40"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
             </Button>
 
             <TextBlock Text="AOI System"

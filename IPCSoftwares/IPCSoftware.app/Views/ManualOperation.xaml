@@ -5,7 +5,7 @@
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ManualOperationViewModel}"
-             Background="#F0F2F5" FontFamily="Segoe UI">
+             Background="#F0F2F5" >
 
     <UserControl.Resources>
         <!-- Converters -->
@@ -30,9 +30,9 @@
 
         <!-- 2. Section Header Style -->
         <Style x:Key="SectionHeaderStyle"  TargetType="TextBlock">
-            <Setter Property="FontSize" Value="25"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="#555"/>
+            <Setter Property="FontSize" Value="36"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="Foreground" Value="Black"/>
             <Setter Property="Margin" Value="5,0,0,10"/>
         </Style>
 
@@ -123,7 +123,7 @@
 
     <!-- ========== MAIN LAYOUT ========== -->
     <Viewbox Stretch="Uniform">
-        <Grid Width="1920" Height="1080" Margin="20">
+        <Grid  Margin="20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <!-- Left Side (Machine) -->

@@ -117,7 +117,7 @@ namespace IPCSoftware.Services.ConfigServices
                         $"{tag.TagNo}," +
                         $"\"{EscapeCsv(tag.Name)}\"," +
                         $"{tag.PLCNo}," +
-                        $"\"{EscapeCsv(tag.ModbusAddress)}\"," +
+                        $"\"{tag.ModbusAddress}\"," +
                         $"{tag.Length}," +
                         $"{tag.AlgNo}," +  // NO QUOTES - it's an int
                         $"{tag.Offset}," +
@@ -148,7 +148,7 @@ namespace IPCSoftware.Services.ConfigServices
                     TagNo = int.Parse(values[1]),
                     Name = values[2],
                     PLCNo = int.Parse(values[3]),
-                    ModbusAddress = values[4],
+                    ModbusAddress = int.Parse(values[4]),
                     Length = int.Parse(values[5]),
                     AlgNo = int.Parse(values[6]),  // NOW PARSING AS INT
                     Offset = int.Parse(values[7]),
