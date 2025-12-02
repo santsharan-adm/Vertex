@@ -12,7 +12,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public int TagNo { get; set; }
         public string Name { get; set; }
         public int PLCNo { get; set; }
-        public string ModbusAddress { get; set; }
+        public int ModbusAddress { get; set; }
         public int Length { get; set; }
         public int AlgNo { get; set; }  // NOW INT: 1=Linear, 2=FP, 3=String
         public int Offset { get; set; }

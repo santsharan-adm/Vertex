@@ -33,6 +33,23 @@ public class MainWindowViewModel : BaseViewModel
     }
 
 
+    // In MainViewModel.cs
+    private bool _isSidebarDocked;
+    public bool IsSidebarDocked
+    {
+        get => _isSidebarDocked;
+        set
+        {
+            _isSidebarDocked = value;
+            OnPropertyChanged();
+            // If we dock, we must ensure it's open
+            if (value)
+                IsSidebarOpen = true;
+            else
+                IsSidebarOpen = false;
+        }
+    }
+
 
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
     public string AppVersion => "AOI System v1.0.3";
@@ -114,9 +131,13 @@ public class MainWindowViewModel : BaseViewModel
 
         foreach (var item in menu.Items)
             SidebarItems.Add(item);
-        if (currentRibbonKey == menu.Key)
+        if (currentRibbonKey == menu.Key )
         {
-            IsSidebarOpen = !IsSidebarOpen;
+            if (!IsSidebarDocked)
+            {
+                IsSidebarOpen = !IsSidebarOpen;
+            }
+
             return;
         }
 
@@ -144,7 +165,10 @@ public class MainWindowViewModel : BaseViewModel
     private void OnSidebarItemClick(string itemName)
     {
         // Close sidebar
-        IsSidebarOpen = false;
+        if (!IsSidebarDocked)
+        {
+          IsSidebarOpen = false;
+        }
         if (string.IsNullOrWhiteSpace(existingUserControl))
         {
             existingUserControl = itemName;

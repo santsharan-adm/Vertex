@@ -2,18 +2,15 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
+        xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
         Title="IPC HMI Software" Height="1080" Width="1920"
         WindowState="Maximized" WindowStyle="None"
-        FontFamily="Segoe UI" Background="#F3F3F3"
-        ResizeMode="NoResize">
+        Background="#F3F3F3" ResizeMode="NoResize">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <helpers:InverseBooleanConverter x:Key="InverseBoolConverter"/>
 
-        <!-- Window Control Button Style (Minimize/Close) -->
         <Style x:Key="WindowControlButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="60"/>
             <Setter Property="Height" Value="45"/>
@@ -39,7 +36,6 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Sidebar Item Button Style -->
         <Style x:Key="SidebarButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="90"/>
             <Setter Property="FontSize" Value="28"/>
@@ -54,7 +50,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="0">
+                        <Border Background="{TemplateBinding Background}">
                             <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Left" Margin="{TemplateBinding Padding}"/>
                         </Border>
                     </ControlTemplate>
@@ -72,18 +68,14 @@
         </Style>
     </Window.Resources>
 
-    <!-- Main Scale Wrapper -->
     <Viewbox Stretch="Uniform">
         <Grid Width="1920" Height="1080">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <!-- Header / Ribbon -->
                 <RowDefinition Height="*"/>
-                <!-- Main Body (Content + Sidebar) -->
+                <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
-            <!-- ================= HEADER SECTION (ROW 0) ================= -->
-            <!-- ZIndex ensures header stays on top of content but sidebar slides over content -->
             <Grid Grid.Row="0" Height="110" Panel.ZIndex="100">
                 <Grid.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
@@ -91,7 +83,6 @@
                         <GradientStop Color="#1E4FA8" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-
                 <Grid.Effect>
                     <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.3" BlurRadius="10"/>
                 </Grid.Effect>
@@ -101,25 +92,11 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Ribbon Host -->
-                <ContentControl x:Name="RibbonHost" Grid.Column="0"  VerticalAlignment="Stretch"/>
+                <ContentControl x:Name="RibbonHost" Grid.Column="0" VerticalAlignment="Stretch"/>
 
-                <!-- Window Controls (Top Right) -->
-                <StackPanel Grid.Column="1" 
-                            Orientation="Horizontal" 
-                            VerticalAlignment="Top" 
-                            HorizontalAlignment="Right">
-
-                    <Button Content="—" 
-                            Command="{Binding MinimizeAppCommand}"
-                            Style="{StaticResource WindowControlButtonStyle}"
-                            ToolTip="Minimize"/>
-
-                    <Button Content="✕" 
-                            Command="{Binding CloseAppCommand}"
-                           
-                            Background="Transparent"
-                            ToolTip="Close Application">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right">
+                    <Button Content="—" Command="{Binding MinimizeAppCommand}" Style="{StaticResource WindowControlButtonStyle}" ToolTip="Minimize"/>
+                    <Button Content="✕" Command="{Binding CloseAppCommand}" Background="Transparent" ToolTip="Close">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource WindowControlButtonStyle}">
                                 <Style.Triggers>
@@ -133,46 +110,29 @@
                 </StackPanel>
             </Grid>
 
-            <!-- ================= MAIN BODY SECTION (ROW 1) ================= -->
             <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <!-- Content -->
-                    <RowDefinition Height="60"/>
-                    <!-- Footer -->
-                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                <!-- 1. MAIN CONTENT -->
-                <ContentControl x:Name="MainContent" 
-                                Grid.Row="0" 
-                                Margin="0"/>
+                <ContentControl x:Name="MainContent" Grid.Column="1" Margin="0"/>
 
-                <!-- 2. FOOTER BAR -->
-                <Border Grid.Row="1" Background="#1E4FA8">
-                    <Grid>
-                        <TextBlock Margin=" 20 0 0 0"  Text="{Binding AppVersion}" 
-                                   Foreground="#AAAAAA" 
-                                   FontSize="20" 
-                                   HorizontalAlignment="Left" 
-                                   VerticalAlignment="Center"/>
-
-                        <TextBlock Text="{Binding SystemTime}" 
-                   Foreground="#AAAAAA" 
-                                   Margin=" 0 0 20 0"
-                   FontSize="20" 
-                   FontWeight="SemiBold"
-                   HorizontalAlignment="Right" 
-                   VerticalAlignment="Center"/>
-                    </Grid>
-                </Border>
-
-                <!-- ================= SIDEBAR LAYERS (Spans Row 0 & 1 of Body Grid) ================= -->
-
-                <!-- 3. DARK OVERLAY (Click to close sidebar) -->
-                <Border Background="#99000000"
-                        Grid.RowSpan="2"
-                        Panel.ZIndex="9"
-                        Visibility="{Binding IsSidebarOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Border Grid.Column="1" Background="#99000000" Panel.ZIndex="9">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding IsSidebarOpen}" Value="True"/>
+                                        <Condition Binding="{Binding IsSidebarDocked}" Value="False"/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseLeftButtonDown">
                             <i:InvokeCommandAction Command="{Binding CloseSidebarCommand}"/>
@@ -180,34 +140,32 @@
                     </i:Interaction.Triggers>
                 </Border>
 
-                <!-- 4. SLIDING SIDEBAR MENU -->
                 <Border x:Name="SideMenu"
-                        Grid.RowSpan="2"
                         Width="350"
-                        HorizontalAlignment="Left"
                         Background="#1E4FA8"
                         BorderBrush="#1E4FA4"
                         BorderThickness="0,0,1,0"
                         Panel.ZIndex="10">
 
-                    <!-- Transform for Animation (Starts hidden at -360) -->
-                    <Border.RenderTransform>
-                        <TranslateTransform X="-360"/>
-                    </Border.RenderTransform>
-
-                    <Border.Effect>
-                        <DropShadowEffect Color="#1E4FA7" Direction="0" ShadowDepth="0" BlurRadius="20" Opacity="0.5"/>
-                    </Border.Effect>
-
                     <Border.Style>
                         <Style TargetType="Border">
+                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                            <Setter Property="Grid.Column" Value="0"/>
+                            <Setter Property="Grid.ColumnSpan" Value="2"/>
+
                             <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSidebarOpen}" Value="False">
+                                    <Setter Property="RenderTransform">
+                                        <Setter.Value>
+                                            <TranslateTransform X="-360"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
                                 <DataTrigger Binding="{Binding IsSidebarOpen}" Value="True">
                                     <DataTrigger.EnterActions>
                                         <BeginStoryboard>
                                             <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                                                 To="0" Duration="0:0:0.3">
+                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="0" Duration="0:0:0.3">
                                                     <DoubleAnimation.EasingFunction>
                                                         <CubicEase EasingMode="EaseOut"/>
                                                     </DoubleAnimation.EasingFunction>
@@ -215,67 +173,92 @@
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </DataTrigger.EnterActions>
-                                    <DataTrigger.ExitActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                                                 To="-360" Duration="0:0:0.25">
-                                                    <DoubleAnimation.EasingFunction>
-                                                        <CubicEase EasingMode="EaseIn"/>
-                                                    </DoubleAnimation.EasingFunction>
-                                                </DoubleAnimation>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding IsSidebarDocked}" Value="True">
+                                    <Setter Property="Grid.Column" Value="0"/>
+                                    <Setter Property="Grid.ColumnSpan" Value="1"/>
+                                    <Setter Property="Effect" Value="{x:Null}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
 
-                    <!-- Sidebar Layout -->
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="120"/>
-                            <!-- Menu Header -->
                             <RowDefinition Height="*"/>
-                            <!-- Menu Items -->
                             <RowDefinition Height="100"/>
-                            <!-- Exit Button Footer -->
                         </Grid.RowDefinitions>
 
-                        <!-- Menu Header -->
                         <Border Grid.Row="0" BorderBrush="#333" BorderThickness="0,0,0,1" Margin="20,0">
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="MENU" 
-                                           Foreground="White" 
-                                           FontSize="40" 
-                                           FontWeight="Bold"/>
-                                <TextBlock Text="Navigation" 
-                                           Foreground="#888" 
-                                           FontSize="18" 
-                                           Margin="2,0,0,0"/>
-                            </StackPanel>
+                            <Grid>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="MENU" Foreground="White" FontSize="40" FontWeight="Bold"/>
+                                    <!--<TextBlock Text="Navigation" Foreground="#888" FontSize="18" Margin="2,0,0,0"/>-->
+                                </StackPanel>
+
+                                <ToggleButton IsChecked="{Binding IsSidebarDocked}"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Top"
+              Margin="0,10,0,0"
+              Width="40" Height="40"
+              ToolTip="Dock Sidebar">
+
+                                    <ToggleButton.Template>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Border x:Name="border" 
+                    Background="Transparent" 
+                    CornerRadius="5"
+                    BorderThickness="0">
+
+                                                <TextBlock x:Name="icon" 
+                           Text="📌" 
+                           FontSize="20" 
+                           Foreground="White"
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Center"/>
+                                            </Border>
+
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="border" Property="Background" Value="#33FFFFFF"/>
+                                                    <Setter Property="Cursor" Value="Hand"/>
+                                                </Trigger>
+
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter TargetName="border" Property="Background" Value="White"/>
+                                                    <Setter TargetName="icon" Property="Foreground" Value="#1E4FA8"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </ToggleButton.Template>
+                                </ToggleButton>
+                            </Grid>
                         </Border>
 
-                        <!-- Menu Items List -->
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,20,0,0">
                             <ItemsControl ItemsSource="{Binding SidebarItems}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Button Content="{Binding}" 
-                                                Style="{StaticResource SidebarButtonStyle}"
+                                        <Button Content="{Binding}" Style="{StaticResource SidebarButtonStyle}"
                                                 Command="{Binding DataContext.SidebarItemClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                 CommandParameter="{Binding}"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </ScrollViewer>
-
-                       
                     </Grid>
                 </Border>
-
             </Grid>
+
+            <Border Grid.Row="2" Background="#1E4FA8" Panel.ZIndex="100">
+                <Grid>
+                    <TextBlock Margin="20,0,0,0" Text="{Binding AppVersion}" Foreground="#AAAAAA" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding SystemTime}" Typography.NumeralAlignment="Tabular" Foreground="#AAAAAA" Margin="0,0,20,0" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
         </Grid>
     </Viewbox>
 </Window>
