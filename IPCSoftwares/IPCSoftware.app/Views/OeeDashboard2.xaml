@@ -8,10 +8,11 @@
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"             
-             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:OEEDashboardViewModel}"
              mc:Ignorable="d" 
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:OEEDashboardViewModel}"
              d:DesignHeight="1080" d:DesignWidth="1920"
-             Background="#1A1A1A" FontFamily="Segoe UI">
+             Background="#1A1A1A" >
+
 
     <UserControl.Resources>
         <conv:ResultToColorConverter x:Key="ResultToColor"/>
@@ -76,35 +77,24 @@
                         <ColumnDefinition Width="1.2*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Border Grid.Column="0"
-                            Style="{StaticResource DashboardCard}">
+                    <Border Grid.Column="0" Style="{StaticResource DashboardCard}">
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="OPERATING TIME"
-                                       Style="{StaticResource KpiLabel}" />
-
-                            <TextBlock Text="{Binding OperatingTime}"
-                                       Style="{StaticResource KpiValue}"
-                                       Foreground="#007ACC"/>
+                            <TextBlock Text="OPERATING TIME" Style="{StaticResource KpiLabel}"/>
+                            <TextBlock Text="05:42:17" Style="{StaticResource KpiValue}" Foreground="#007ACC"/>
                         </StackPanel>
                     </Border>
 
-
-                    <Border Grid.Column="1"
-                                Style="{StaticResource DashboardCard}">
+                    <Border Grid.Column="1" Style="{StaticResource DashboardCard}">
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="DOWNTIME"
-                                         Style="{StaticResource KpiLabel}" />
-
-                            <TextBlock Text="{Binding Downtime}"
-                                        Style="{StaticResource KpiValue}"
-                                        Foreground="#DC3545"/>
+                            <TextBlock Text="DOWNTIME" Style="{StaticResource KpiLabel}"/>
+                            <TextBlock Text="00:12:45" Style="{StaticResource KpiValue}" Foreground="#DC3545"/>
                         </StackPanel>
                     </Border>
 
                     <Border Grid.Column="2" Style="{StaticResource DashboardCard}">
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="AVG CYCLE (SEC)" Style="{StaticResource KpiLabel}"/>
-                            <TextBlock Text="3.2 Sec" Style="{StaticResource KpiValue}" Foreground="#FFC107"/>
+                            <TextBlock Text="2.9" Style="{StaticResource KpiValue}" Foreground="#FFC107"/>
                         </StackPanel>
                     </Border>
 
@@ -112,28 +102,32 @@
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
+                                <!--<RowDefinition Height="*"/>-->
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.2*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">
+                            <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" VerticalAlignment="Center">
                                 <TextBlock Text="Total In" Foreground="#AAA" FontSize="25" HorizontalAlignment="Center"/>
-                                <TextBlock Text="{Binding TotalUnits}" Foreground="White" FontSize="38" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="1165" Foreground="White" FontSize="38" FontWeight="Bold" HorizontalAlignment="Center"/>
                             </StackPanel>
 
                             <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="OK" Foreground="#28A745" FontSize="25" HorizontalAlignment="Center"/>
-                                <TextBlock Text="{Binding GoodUnits}" Foreground="#28A745" FontSize="38" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Good (OK)" Foreground="#28A745" FontSize="25" HorizontalAlignment="Center"/>
+                                <TextBlock Text="1140" Foreground="#28A745" FontSize="38" FontWeight="Bold" HorizontalAlignment="Center"/>
                             </StackPanel>
 
+                            <!--<StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock Text="Tossed" Foreground="Orange" FontSize="25" HorizontalAlignment="Center"/>
+                                <TextBlock Text="35" Foreground="Orange" FontSize="38" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            </StackPanel>-->
 
-
-                            <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="NG" Foreground="#DC3545" FontSize="25" HorizontalAlignment="Center"/>
-                                <TextBlock Text="{Binding RejectedUnits}" Foreground="#DC3545" FontSize="38" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <StackPanel Grid.Row="0" Grid.Column="2" VerticalAlignment="Center">
+                                <TextBlock Text="Bad (NG)" Foreground="#DC3545" FontSize="25" HorizontalAlignment="Center"/>
+                                <TextBlock Text="25" Foreground="#DC3545" FontSize="38" FontWeight="Bold" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -151,35 +145,17 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <Border Grid.Row="0" Style="{StaticResource DashboardCard}" Margin="10,10,660,142">
+                        <Border Grid.Row="0" Style="{StaticResource DashboardCard}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <StackPanel Margin="20" Orientation="Vertical" Width="350">
-
-                                    <controls:OeeProgressBar 
-                                        Label="AVAILABILITY"
-                                        Value="{Binding Availability}"
-                                        BarColor="#4CAF50"/>
-
-                                    <controls:OeeProgressBar 
-                                        Label="PERFORMANCE"
-                                         Value="{Binding Performance}"
-                                         BarColor="#2196F3"/>
-
-                                    <controls:OeeProgressBar 
-                                        Label="QUALITY"
-                                        Value="{Binding Quality}"
-                                        BarColor="#FF9800"/>
-
-                                </StackPanel>
+                                <TextBlock Text="Cycle Time Trend (Last 7 Days)" Foreground="White" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                                <controls:TrendChart Grid.Row="1" 
+                                                     Values="{Binding CycleTrend}"/>
                             </Grid>
                         </Border>
-
-
-
 
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
@@ -187,7 +163,14 @@
                                 <ColumnDefinition Width="1.2*"/>
                             </Grid.ColumnDefinitions>
 
-                            <Border Style="{StaticResource DashboardCard}" Grid.ColumnSpan="2" Margin="507,10,10,10">
+                            <Border Grid.Column="0" Style="{StaticResource DashboardCard}">
+                                <Grid>
+                                    <TextBlock Text="Efficiency Breakdown" Foreground="White" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Top"/>
+                                    <controls:PieChart Items="{Binding OEEParts}" CenterText="{Binding OEEText}" Margin="0,30,0,0"/>
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Column="1" Style="{StaticResource DashboardCard}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -255,17 +238,6 @@
                                 </Grid>
                             </Border>
                         </Grid>
-                        <Border Grid.Column="0" Style="{StaticResource DashboardCard}" Margin="488,10,10,10">
-                            <Grid>
-                                <TextBlock Text="Efficiency Breakdown" Foreground="White" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Top"/>
-                                <controls:PieChart 
-                                    Items="{Binding OeeDonut}"
-                                    CenterText="{Binding CenterOeeText}"
-                                    Width="250"
-                                    Height="250"
-                                    Margin="10"/>
-                            </Grid>
-                        </Border>
                     </Grid>
 
                     <Grid Grid.Column="1">

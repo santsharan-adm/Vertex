@@ -1,7 +1,9 @@
 ﻿using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
+
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System.Collections.ObjectModel;
 using System.Printing;
 using System.Reflection;
@@ -30,6 +32,23 @@ public class MainWindowViewModel : BaseViewModel
         set => SetProperty(ref _systemTime, value);
     }
 
+
+    // In MainViewModel.cs
+    private bool _isSidebarDocked;
+    public bool IsSidebarDocked
+    {
+        get => _isSidebarDocked;
+        set
+        {
+            _isSidebarDocked = value;
+            OnPropertyChanged();
+            // If we dock, we must ensure it's open
+            if (value)
+                IsSidebarOpen = true;
+            else
+                IsSidebarOpen = false;
+        }
+    }
 
 
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
@@ -112,9 +131,13 @@ public class MainWindowViewModel : BaseViewModel
 
         foreach (var item in menu.Items)
             SidebarItems.Add(item);
-        if (currentRibbonKey == menu.Key)
+        if (currentRibbonKey == menu.Key )
         {
-            IsSidebarOpen = !IsSidebarOpen;
+            if (!IsSidebarDocked)
+            {
+                IsSidebarOpen = !IsSidebarOpen;
+            }
+
             return;
         }
 
@@ -142,7 +165,10 @@ public class MainWindowViewModel : BaseViewModel
     private void OnSidebarItemClick(string itemName)
     {
         // Close sidebar
-        IsSidebarOpen = false;
+        if (!IsSidebarDocked)
+        {
+          IsSidebarOpen = false;
+        }
         if (string.IsNullOrWhiteSpace(existingUserControl))
         {
             existingUserControl = itemName;
@@ -161,7 +187,8 @@ public class MainWindowViewModel : BaseViewModel
         {
             // OEEDashboard Menu
             case "OEE Dashboard":
-                _nav.NavigateMain<LiveOeeView>();
+                //_nav.NavigateMain<LiveOeeView>();
+                _nav.NavigateMain<OEEDashboard>();
                 break;
 
             case "Machine Summary":
@@ -202,15 +229,15 @@ public class MainWindowViewModel : BaseViewModel
                 break;
 
             case "Audit Logs":
-                _nav.NavigateToLogs("Audit");
+                _nav.NavigateToLogs(LogType.Audit);
                 break;
 
             case "Error Logs":
-                _nav.NavigateToLogs("Error");
+                _nav.NavigateToLogs(LogType.Error);
                 break;
 
             case "Production Logs":
-                _nav.NavigateToLogs("Production");
+                _nav.NavigateToLogs(LogType.Production);
                 break;
 
         }

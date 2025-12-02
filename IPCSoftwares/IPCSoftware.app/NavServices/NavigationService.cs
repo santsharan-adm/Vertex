@@ -1,6 +1,5 @@
 ﻿using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
-using IPCSoftware.AppLogger.Models;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -432,18 +431,15 @@ namespace IPCSoftware.App.NavServices
         // Inside MainViewModel.cs
 
         // 1. Define the Navigation Command
-        public void NavigateToLogs(string logType)
+        public void NavigateToLogs(LogType logType)
         {
-            // Resolve the ViewModel from DI
+            var view = App.ServiceProvider.GetRequiredService<LogView>();
             var vm = App.ServiceProvider.GetRequiredService<LogViewerViewModel>();
+            _ = vm.LoadCategoryAsync(logType);
+            view.DataContext = vm;
 
-            // Convert string command parameter to Enum
-            if (Enum.TryParse(logType, out LogType category))
-            {
-                NavigateMain<LogView>();
-                _ = vm.LoadCategoryAsync(category);
-                // Navigate
-            }
+            _mainContent.Content = view;
+
         }
 
 

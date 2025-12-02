@@ -10,14 +10,14 @@ namespace IPCSoftware.Shared.Models.ConfigModels
     {
         public int Id { get; set; }
         public string LogName { get; set; }
-        public string LogType { get; set; }
+        public LogType LogType { get; set; }
         public string DataFolder { get; set; }
         public string BackupFolder { get; set; }
         public string FileName { get; set; }
         public int LogRetentionTime { get; set; }
         public int LogRetentionFileSize { get; set; }
         public bool AutoPurge { get; set; }
-        public string BackupSchedule { get; set; }
+        public BackupScheduleType BackupSchedule { get; set; }
         public TimeSpan BackupTime { get; set; }
         public int BackupDay { get; set; }  // 1-28 for monthly backup
         public string BackupDayOfWeek { get; set; }  // Monday-Sunday for weekly backup
@@ -59,4 +59,22 @@ namespace IPCSoftware.Shared.Models.ConfigModels
             };
         }
     }
+
+    public enum LogType
+    {
+        Production = 0,
+        Audit = 1,
+        Error = 2
+    }
+
+    public enum BackupScheduleType
+    {
+        Manual,
+        Daily,
+        Weekly,
+        Monthly
+    }
+
+
+
 }

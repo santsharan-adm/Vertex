@@ -1,270 +1,184 @@
 ﻿using IPCSoftware.App.Controls;
-using IPCSoftware.App.Helpers;
 using IPCSoftware.App.Views;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
-using IPCSoftware.Shared.Models.Messaging;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public class OEEDashboardViewModel : INotifyPropertyChanged, IDisposable
+    public class OEEDashboardViewModel : INotifyPropertyChanged
     {
-        // ================================================================
-        // BASE FIELDS
-        // ================================================================
         public event PropertyChangedEventHandler PropertyChanged;
+        private bool _isDarkTheme = true;
+        public ICommand ToggleThemeCommand { get; }
 
-        private readonly UiTcpClient _uiClient = new UiTcpClient();
-        private CancellationTokenSource _cts = new CancellationTokenSource();
+      
+        private string _currentThemePath = "/IPCSoftware.App;component/Styles/DarkTheme.xaml";
 
-        public DispatcherTimer Timer { get; }
+        public string CurrentThemePath
+        {
+            get
+            {
+                return _currentThemePath;
+            }
+            set
+            {
+                _currentThemePath = value;
+                 Notify(); 
+            }
+        }
 
-        public ICommand UnloadCommand { get; }
-        public ICommand ShowImageCommand { get; }
+
+        private void ToggleTheme()
+        {
+            _isDarkTheme = !_isDarkTheme;
+            CurrentThemePath = _isDarkTheme
+            ? "/IPCSoftware.App;component/Styles/DarkTheme.xaml"
+            : "/IPCSoftware.App;component/Styles/LightTheme.xaml";
+            //string themePath = _isDarkTheme ? "Styles/DarkTheme.xaml" : "Styles/LightTheme.xaml";
+            //SetTheme(themePath);
+        }
+
+        //private void SetTheme(string themePath)
+        //{
+        //    var newDict = new ResourceDictionary { Source = new Uri(themePath, UriKind.Relative) };
+
+        //    // Clear old theme dictionaries (assuming you only have 1 theme dict at a time)
+        //    // In a real app, you might want to tag your theme dicts to remove only them
+        //    Application.Current.Resources.MergedDictionaries.Clear();
+        //    Application.Current.Resources.MergedDictionaries.Add(newDict);
+        //}
 
         private void Notify([CallerMemberName] string prop = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        // ================================================================
-        // REAL-TIME DASHBOARD PROPERTIES
-        // ================================================================
-        private string _currentDateTime;
-        public string CurrentDateTime
+        // HEADER DATA
+        public string CurrentDateTime { get; set; }
+
+        // LEFT PANEL
+        public double Availability { get; set; }
+        public double Performance { get; set; }
+        public double Quality { get; set; }
+        public double OverallOEE { get; set; }
+
+
+        // RIGHT SUMMARY
+        public string OperatingTime { get; set; }
+        public string Downtime { get; set; }
+        public int GoodUnits { get; set; }
+        public int RejectedUnits { get; set; }
+        public string Remarks { get; set; }
+        public DispatcherTimer Timer { get; }
+        public string OEEText => "87.4%";
+        // TREND DATA
+        private List<double> _cycleTrend;
+        public List<double> CycleTrend
         {
-            get => _currentDateTime;
-            set { _currentDateTime = value; Notify(); }
+            get => _cycleTrend;
+            set { _cycleTrend = value; Notify(); }
         }
 
-        private string _availability;
-        public string Availability
-        {
-            get => _availability;
-            set { _availability = value; Notify(); }
-        }
-
-        private string _performance;
-        public string Performance
-        {
-            get => _performance;
-            set { _performance = value; Notify(); }
-        }
-
-        private string _quality;
-        public string Quality
-        {
-            get => _quality;
-            set { _quality = value; Notify(); }
-        }
-
-        public string _overallOEE;
-        public string OverallOEE
-        {
-            get => _overallOEE;
-            set
+        public ObservableCollection<PieSliceModel> OEEParts { get; set; } =
+                new ObservableCollection<PieSliceModel>
             {
-                _overallOEE = value;
-                Notify();
-
-                // update donut
-                if (double.TryParse(value, out double oee))
-                {
-                    UpdateOeeDonut(oee);
-                }
-            }
-        }
+                new PieSliceModel { Label="OK", Value=1140 },
+                new PieSliceModel { Label="Tossed", Value=35 },
+                new PieSliceModel { Label="NG", Value=25 },
+                new PieSliceModel { Label="Rework", Value=20 }
+            };
 
 
-        private string _operatingTime;
-        public string OperatingTime
-        {
-            get => _operatingTime;
-            set { _operatingTime = value; Notify(); }
-        }
 
-        private string _downtime;
-        public string Downtime
-        {
-            get => _downtime;
-            set { _downtime = value; Notify(); }
-        }
-
-        private string _goodUnits;
-        public string GoodUnits
-        {
-            get => _goodUnits;
-            set { _goodUnits = value; Notify(); Notify(nameof(RejectedUnits)); }
-        }
-
-        private string _totalUnits;
-        public string TotalUnits
-        {
-            get => _totalUnits;
-            set { _totalUnits = value; Notify(); Notify(nameof(RejectedUnits)); }
-
-
-        }
-
-        public string RejectedUnits
-        {
-            get
-            {
-                if (int.TryParse(TotalUnits, out int total) &&
-                    int.TryParse(GoodUnits, out int good))
-                {
-                    return (total - good).ToString();
-                    Debug.WriteLine($"Good={GoodUnits}, Total={TotalUnits}, Rej={RejectedUnits}");
-                }
-                return "0";
-            }
-        }
-
-
-        private string _remarks;
-        public string Remarks
-        {
-            get => _remarks;
-            set { _remarks = value; Notify(); }
-        }
-
-        // ================================================================
-        // EXTRA VISUAL ITEMS (IMAGES / PIE / ETC)
-        // ================================================================
-        public ObservableCollection<PieSliceModel> OeeDonut { get; set; }
-                = new ObservableCollection<PieSliceModel>();
-
-        private void UpdateOeeDonut(double oee)
-        {
-            OeeDonut.Clear();
-            OeeDonut.Add(new PieSliceModel { Label = "OEE", Value = oee });
-            OeeDonut.Add(new PieSliceModel { Label = "Remaining", Value = 100 - oee });
-
-            CenterOeeText = $"{oee:0.#}%";
-        }
-
-        private string _centerOeeText;
-        public string CenterOeeText
-        {
-            get => _centerOeeText;
-            set { _centerOeeText = value; Notify(); }
-        }
-
-
-        public ObservableCollection<CameraImageModel> CameraImages { get; set; }
-            = new ObservableCollection<CameraImageModel>();
-
-        // ================================================================
-        // CONSTRUCTOR
-        // ================================================================
         public OEEDashboardViewModel()
         {
-            // Commands
-            ShowImageCommand = new RelayCommand<CameraImageModel>(ShowImage);
-            UnloadCommand = new RelayCommand(() => Dispose());
+            ToggleThemeCommand = new RelayCommand(ToggleTheme);
+            // Load default theme on startup
+           // SetTheme("Styles/DarkTheme.xaml");
+            // ----- HEADER -----
+            CurrentDateTime = DateTime.Now.ToString("dddd, MMM dd yyyy HH:mm");
 
-            // CLOCK (Top Right)
-            Timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            // ----- LEFT PANEL (DUMMY LIVE VALUES) -----
+            Availability = 92.5;
+            Performance = 88.1;
+            Quality = 96.2;
+            OverallOEE = Math.Round((Availability * Performance * Quality) / 10000, 2);
+
+            // ----- SUMMARY -----
+            OperatingTime = "7h 32m";
+            Downtime = "28m";
+            GoodUnits = 1325;
+            RejectedUnits = 48;
+            Remarks = "All processes stable.";
+
+
+            {
+                ShowImageCommand = new RelayCommand<CameraImageModel>(ShowImage);
+            }
+
+
+            CycleTrend = new List<double>
+                {
+                    5.8, 6.0, 5.9, 6.1, 5.7, 6.2, 5.9, 6.3, 5.6
+                };
+
+
+
+            // ----- LIVE CLOCK UPDATE -----
+            Timer = new DispatcherTimer();
+            Timer.Interval = TimeSpan.FromSeconds(1);
             Timer.Tick += (s, e) =>
             {
                 CurrentDateTime = DateTime.Now.ToString("dddd, MMM dd yyyy HH:mm");
+                Notify(nameof(CurrentDateTime));
             };
             Timer.Start();
 
-            // TCP
-            _uiClient.DataReceived += OnDataReceived;
-            _uiClient.StartAsync("127.0.0.1", 5050);
-
-            StartPolling();
         }
+
+        public ICommand ShowImageCommand { get; }
 
         private void ShowImage(CameraImageModel img)
         {
             if (img == null) return;
-            var win = new FullImageView(img.ImagePath);
-            win.ShowDialog();
+
+            var window = new FullImageView(img.ImagePath);
+            window.ShowDialog();
         }
 
-        // ================================================================
-        // POLLING (send RequestId=4 every 1 second)
-        // ================================================================
-        private async void StartPolling()
+        private void OpenImagePopup(string path)
         {
-            while (!_cts.IsCancellationRequested)
+            App.Current.Dispatcher.Invoke(() =>
             {
-                _uiClient.Send("{\"RequestId\":4}\n");
-                await Task.Delay(1000);
-            }
-        }
+                var popup = new FullImageView(path);
+                popup.Owner = App.Current.MainWindow;
+                popup.ShowDialog();
 
-        // ================================================================
-        // DATA RECEIVED FROM CORESERVICE
-        // ================================================================
-        private void OnDataReceived(string msg)
-        {
-            try
-            {
-                var response = JsonSerializer.Deserialize<ResponsePackage>(msg);
-
-                if (response?.Parameters != null)
-                {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        UpdateDashboard(response.Parameters);
-                    });
-                }
-            }
-            catch
-            {
-                // ignore malformed incoming packets
-            }
+            });
         }
+        public ObservableCollection<CameraImageModel> CameraImages { get; set; } = new ObservableCollection<CameraImageModel>
+{
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="NG" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="TOSSED" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
 
-        // ================================================================
-        // UPDATE DASHBOARD USING SAFE STRING-ONLY LOGIC
-        // ================================================================
-        private void UpdateDashboard(Dictionary<uint, object> p)
-        {
-            if (p.TryGetValue(1u, out var a)) Availability = a?.ToString();         //Availability
-            if (p.TryGetValue(2u, out var b)) Performance = b?.ToString();          //Performance
-            if (p.TryGetValue(3u, out var c)) Quality = c?.ToString();              //
-            if (p.TryGetValue(4u, out var d)) OverallOEE = d?.ToString();
-            if (p.TryGetValue(5u, out var e)) OperatingTime = e?.ToString();
-            if (p.TryGetValue(6u, out var f)) Downtime = f?.ToString();
-            if (p.TryGetValue(7u, out var g)) GoodUnits = g?.ToString();
-            if (p.TryGetValue(8u, out var h)) TotalUnits = h?.ToString();
-            if (p.TryGetValue(9u, out var i)) Remarks = i?.ToString();              //Machine Status
-        }
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="NG" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="NG" },
 
-        // ================================================================
-        // DISPOSABLE CLEANUP
-        // ================================================================
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="TOSSED" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
+    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="NG" },
+};
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _cts.Cancel();
-                Timer?.Stop();
-                _cts.Dispose();
-            }
-        }
     }
 }

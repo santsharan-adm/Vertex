@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:IPCSoftware.App.Views"
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920"
-             Background="#F3F3F3" FontFamily="Segoe UI">
+             Background="#F3F3F3" >
 
     <Viewbox Stretch="Uniform">
 
@@ -35,20 +35,27 @@
                         <Border Style="{StaticResource CardStyle}">
                             <StackPanel>
                                 <TextBlock Text="General Settings" FontSize="32" FontWeight="Bold" Margin="0,0,0,30"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Margin="0,0,20,30" >
+                                        <TextBlock Text="Name" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding LogName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
 
-                                <StackPanel Margin="0,0,0,30">
-                                    <TextBlock Text="Name" Style="{StaticResource HmiLabelStyle}"/>
-                                    <TextBox Text="{Binding LogName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource HmiTextBoxStyle}"/>
+                                    <StackPanel Grid.Column ="1" Margin="20,0,0,30">
+                                        <TextBlock Text="Log Type" Style="{StaticResource HmiLabelStyle}"/>
+                                        <ComboBox ItemsSource="{Binding LogTypes}" 
+                                                  SelectedItem="{Binding SelectedLogType}" 
+                                                  Style="{StaticResource HmiComboBoxStyle}"/>
                                 </StackPanel>
+                                </Grid>
 
-                                <StackPanel Margin="0,0,0,30">
-                                    <TextBlock Text="Log Type" Style="{StaticResource HmiLabelStyle}"/>
-                                    <ComboBox ItemsSource="{Binding LogTypes}" 
-                                              SelectedItem="{Binding SelectedLogType}" 
-                                              Style="{StaticResource HmiComboBoxStyle}"/>
-                                </StackPanel>
 
-                                <StackPanel Margin="0,0,0,30">
+                                <StackPanel Margin="0,0,0,50">
                                     <TextBlock Text="Data Folder" Style="{StaticResource HmiLabelStyle}"/>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -62,7 +69,7 @@
                                                 Height="50" Width="120" Margin="15,0,0,0"
                                                 Background="#E1E1E1" BorderThickness="0" FontSize="20"/>
                                     </Grid>
-                                    <TextBlock Text="Backup Folder" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBlock Margin=" 0 30 0 0" Text="Backup Folder" Style="{StaticResource HmiLabelStyle}"/>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
@@ -142,14 +149,14 @@
                                             Content="BACKUP NOW"
                                             Command="{Binding BackUpCommand}"
                                             Height="60" MaxWidth="500"
-                                            FontSize="24" FontWeight="Bold"
+                                            FontSize="28" FontWeight="Bold"
                                             Background="#28A745" Foreground="White"
                                             BorderThickness="0">
                                         <Button.Style>
                                             <Style TargetType="Button">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SelectedBackupSchedule}" Value="Never/Manual">
+                                                    <DataTrigger Binding="{Binding SelectedBackupSchedule}" Value="Manual">
                                                         <Setter Property="Visibility" Value="Visible"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -236,10 +243,10 @@
                                              VerticalContentAlignment="Top" Padding="15"/>
                                 </StackPanel>
 
-                                <CheckBox Content="Enabled" 
+                                <!--<CheckBox Content="Enabled" 
                                           IsChecked="{Binding Enabled}"
                                           Style="{StaticResource HmiCheckBoxStyle}"
-                                          Margin="0,15,0,0"/>
+                                          Margin="0,15,0,0"/>-->
                             </StackPanel>
                         </Border>
                     </StackPanel>
@@ -252,7 +259,7 @@
                     <Button Content="Cancel" 
                             Command="{Binding CancelCommand}"
                             Width="180" Height="70"
-                            FontSize="24" FontWeight="SemiBold"
+                            FontSize="28" FontWeight="SemiBold"
                             Background="#F5F5F5" Foreground="#555555"
                             BorderBrush="#CCCCCC" BorderThickness="2"
                             Margin="0,0,30,0">
@@ -266,7 +273,7 @@
                     <Button Content="Save" 
                             Command="{Binding SaveCommand}"
                             Width="240" Height="70"
-                            FontSize="24" FontWeight="Bold"
+                            FontSize="28" FontWeight="Bold"
                             Background="#007ACC" Foreground="White"
                             BorderThickness="0">
                         <Button.Resources>
