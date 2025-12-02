@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              d:DesignHeight="1080" d:DesignWidth="1920"
-             Background="#F3F3F3" FontFamily="Segoe UI">
+             Background="#F3F3F3" >
 
     <UserControl.Resources>
         <Geometry x:Key="SyncArrowGeometry">M16,12V15H22V12H25.5L21.5,8L17.5,12H21V12H16M19,20V17H13V20H9.5L13.5,24L17.5,20H14V20H19M4,2H18A2,2 0 0,1 20,4V10H18V4H4V20H11.5V22H4A2,2 0 0,1 2,20V4A2,2 0 0,1 4,2Z</Geometry>

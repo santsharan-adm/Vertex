@@ -19,6 +19,7 @@ namespace IPCSoftware.App.ViewModels
         private bool _isEditMode;
         private string _title;
 
+
         public string Title
         {
             get => _title;
@@ -53,8 +54,8 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _plcNo, value);
         }
 
-        private string _modbusAddress;
-        public string ModbusAddress
+        private int _modbusAddress;
+        public int ModbusAddress
         {
             get => _modbusAddress;
             set => SetProperty(ref _modbusAddress, value);
@@ -72,7 +73,16 @@ namespace IPCSoftware.App.ViewModels
         public AlgorithmType SelectedAlgorithm
         {
             get => _selectedAlgorithm;
-            set => SetProperty(ref _selectedAlgorithm, value);
+            set
+            {
+                if (SetProperty(ref _selectedAlgorithm, value))
+                {
+                    // Trigger logic whenever selection changes
+                    UpdateAlgorithmState();
+                }
+            }
+
+            //set => SetProperty(ref _selectedAlgorithm, value);
         }
 
         private int _offset;
@@ -102,6 +112,21 @@ namespace IPCSoftware.App.ViewModels
             get => _remark;
             set => SetProperty(ref _remark, value);
         }
+
+        private bool _isOffsetSpanVisible;
+        public bool IsOffsetSpanVisible
+        {
+            get => _isOffsetSpanVisible;
+            set => SetProperty(ref _isOffsetSpanVisible, value);
+        }
+
+        private bool _isLengthEnabled;
+        public bool IsLengthEnabled
+        {
+            get => _isLengthEnabled;
+            set => SetProperty(ref _isLengthEnabled, value);
+        }
+
 
         // UPDATED: Collection of AlgorithmType objects
         public ObservableCollection<AlgorithmType> AlgorithmTypes { get; }
@@ -162,6 +187,7 @@ namespace IPCSoftware.App.ViewModels
             Span = tag.Span;
             Description = tag.Description;
             Remark = tag.Remark;
+            UpdateAlgorithmState();
         }
 
         private void SaveToModel()
@@ -208,5 +234,29 @@ namespace IPCSoftware.App.ViewModels
         {
             CancelRequested?.Invoke(this, EventArgs.Empty);
         }
+
+        private void UpdateAlgorithmState()
+        {
+            if (_selectedAlgorithm == null) return;
+
+            // Logic: 1 = Linear, 2 = FP, 3 = String
+
+            // Requirement 1: Hide Offset/Span for FP (2) and String (3)
+            // They are only visible for Linear (1)
+            IsOffsetSpanVisible = _selectedAlgorithm.Value == 1;
+
+            // Requirement 2: For FP (2), disable Length and fix to 4
+            if (_selectedAlgorithm.Value == 2)
+            {
+                Length = 4;             // Force value to 4
+                IsLengthEnabled = false; // Disable TextBox
+            }
+            else
+            {
+                IsLengthEnabled = true;  // Enable for Linear and String
+            }
+        }
+
+
     }
 }

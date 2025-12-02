@@ -8,9 +8,10 @@
               xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920"
-             Background="#F3F3F3" FontFamily="Segoe UI">
+             Background="#F3F3F3" >
 
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <sys:Double x:Key="LabelFontSize">26</sys:Double>
         <Thickness x:Key="LabelMargin">0,0,0,10</Thickness>
         <!-- HMI TOUCH STYLES -->
@@ -24,6 +25,8 @@
             <Setter Property="BorderBrush" Value="#CCCCCC"/>
             <Setter Property="BorderThickness" Value="2"/>
         </Style>
+        
+        
 
         <Style x:Key="HmiComboBoxStyle" TargetType="ComboBox">
             <Setter Property="Height" Value="60"/>
@@ -87,7 +90,7 @@
                                 <!-- Tag No -->
                                 <StackPanel Margin="0,0,0,30">
                                     <TextBlock Text="Tag No"     FontSize="{StaticResource LabelFontSize}"
-           Margin="{StaticResource LabelMargin}" Style="{StaticResource HmiLabelStyle}"/>
+                                        Margin="{StaticResource LabelMargin}" Style="{StaticResource HmiLabelStyle}"/>
                                     <TextBox Text="{Binding TagNo, UpdateSourceTrigger=PropertyChanged}" 
                                              Style="{StaticResource HmiTextBoxStyle}"/>
                                 </StackPanel>
@@ -103,7 +106,8 @@
                                 <!-- Description -->
                                 <StackPanel Margin="0,0,0,30">
                                     <TextBlock Text="Description" FontSize="{StaticResource LabelFontSize}"
-           Margin="{StaticResource LabelMargin}" Style="{StaticResource HmiLabelStyle}"/>
+                                               Margin="{StaticResource LabelMargin}" 
+                                               Style="{StaticResource HmiLabelStyle}"/>
                                     <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
                                              Style="{StaticResource HmiTextBoxStyle}"
                                              Height="120" TextWrapping="Wrap" AcceptsReturn="True" 
@@ -113,7 +117,8 @@
                                 <!-- Remark -->
                                 <StackPanel Margin="0,0,0,10">
                                     <TextBlock Text="Remark" FontSize="{StaticResource LabelFontSize}"
-           Margin="{StaticResource LabelMargin}" Style="{StaticResource HmiLabelStyle}"/>
+                                               Margin="{StaticResource LabelMargin}" 
+                                               Style="{StaticResource HmiLabelStyle}"/>
                                     <TextBox Text="{Binding Remark, UpdateSourceTrigger=PropertyChanged}" 
                                              Style="{StaticResource HmiTextBoxStyle}"
                                              Height="120" TextWrapping="Wrap" AcceptsReturn="True" 
@@ -136,17 +141,18 @@
                                         <ColumnDefinition Width="30"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-
                                     <StackPanel Grid.Column="0">
                                         <TextBlock  FontSize="{StaticResource LabelFontSize}"
-           Margin="{StaticResource LabelMargin}" Text="PLC No" Style="{StaticResource HmiLabelStyle}"/>
+                                                    Margin="{StaticResource LabelMargin}" 
+                                                    Text="PLC No" Style="{StaticResource HmiLabelStyle}"/>
                                         <TextBox Text="{Binding PLCNo, UpdateSourceTrigger=PropertyChanged}" 
                                                  Style="{StaticResource HmiTextBoxStyle}"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="2">
-                                        <TextBlock FontSize="{StaticResource LabelFontSize}"
-           Margin="{StaticResource LabelMargin}" Text="Modbus Address" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBlock FontSize="{StaticResource LabelFontSize}" 
+                                                   Margin="{StaticResource LabelMargin}" 
+                                                   Text="Modbus Address" Style="{StaticResource HmiLabelStyle}"/>
                                         <TextBox Text="{Binding ModbusAddress, UpdateSourceTrigger=PropertyChanged}" 
                                                  Style="{StaticResource HmiTextBoxStyle}"/>
                                     </StackPanel>
@@ -162,14 +168,17 @@
 
                                     <StackPanel Grid.Column="0">
                                         <TextBlock FontSize="{StaticResource LabelFontSize}"
-           Margin="{StaticResource LabelMargin}" Text="Length" Style="{StaticResource HmiLabelStyle}"/>
+                                                   Margin="{StaticResource LabelMargin}" 
+                                                   Text="Length" Style="{StaticResource HmiLabelStyle}"/>
                                         <TextBox Text="{Binding Length, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                                 Style="{StaticResource HmiTextBoxStyle}"
+                                                 IsEnabled="{Binding IsLengthEnabled}"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="2">
-                                        <TextBlock Text="Alg No" FontSize="{StaticResource LabelFontSize}"
-           Margin="{StaticResource LabelMargin}" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBlock Text="Alg No" FontSize="{StaticResource LabelFontSize}" 
+                                                   Margin="{StaticResource LabelMargin}" 
+                                                   Style="{StaticResource HmiLabelStyle}"/>
                                         <ComboBox ItemsSource="{Binding AlgorithmTypes}"
                                                   SelectedItem="{Binding SelectedAlgorithm}"
                                                   DisplayMemberPath="DisplayName"
@@ -178,7 +187,9 @@
                                 </Grid>
 
                                 <!-- Offset & Span -->
-                                <Grid Margin="0,0,0,10">
+                                <Grid Margin="0,0,0,10"
+                                      Visibility="{Binding IsOffsetSpanVisible, 
+                                    Converter={StaticResource BoolToVis}}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="30"/>
