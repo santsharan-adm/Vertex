@@ -1,6 +1,5 @@
 ﻿using IPCSoftware.App.Controls;
 using IPCSoftware.App.Views;
-using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -94,6 +93,12 @@ namespace IPCSoftware.App.ViewModels
                 new PieSliceModel { Label="Rework", Value=20 }
             };
 
+            // ----- SUMMARY -----
+            OperatingTime = "7h 32m";
+            Downtime = "28m";
+            GoodUnits = 1325;
+            RejectedUnits = 48;
+            Remarks = "All processes stable.";
 
 
         public OEEDashboardViewModel()
