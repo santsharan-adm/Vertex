@@ -7,128 +7,300 @@
              xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+           helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:OEEDashboardViewModel}"
              
              Background="#1A1A1A">
 
 
 
     <UserControl.Resources>
-        <Style x:Key="Card" TargetType="Border">
-            <Setter Property="Background" Value="#242424"/>
-            <Setter Property="CornerRadius" Value="12"/>
-            <Setter Property="Padding" Value="20"/>
+        <conv:ResultToColorConverter x:Key="ResultToColor"/>
+
+        <Style x:Key="DashboardCard" TargetType="Border">
+            <Setter Property="Background" Value="#272727"/>
+            <Setter Property="CornerRadius" Value="15"/>
+            <Setter Property="Padding" Value="25"/>
             <Setter Property="Margin" Value="10"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" BlurRadius="15" ShadowDepth="4" Opacity="0.4"/>
+                </Setter.Value>
+            </Setter>
         </Style>
-        
+
+        <Style x:Key="KpiLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#AAAAAA"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <Style x:Key="KpiValue" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="56"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
     </UserControl.Resources>
 
     <Viewbox Stretch="Uniform">
-        <Grid Width="1920" Height="1080" Margin="25">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+        <Grid Width="1920" Height="1080">
+            <Grid Margin="30">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <Border Background="#222" Padding="20" CornerRadius="10">
-                <Grid>
+                <Border Grid.Row="0" BorderBrush="#333" BorderThickness="0,0,0,2" Margin="0,0,0,20" Padding="0,0,0,10">
+                    <Grid>
+                        <TextBlock Text="AOI INSPECTION DASHBOARD"
+                                   Foreground="White"
+                                   FontSize="36"
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Center"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Ellipse Width="20" Height="20" Fill="#28A745" Margin="0,0,10,0"/>
+                            <TextBlock Text="MACHINE RUNNING" Foreground="#28A745" FontSize="24" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Row="1" Margin="0,0,0,10">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1.2*"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="OEE Dashboard - Testing Mode"
-                               Foreground="White" FontSize="32" FontWeight="Bold"/>
-
-                    <TextBlock Grid.Column="1"
-                               Text="{Binding CurrentDateTime}" 
-                               Foreground="#DDDDDD" FontSize="22" VerticalAlignment="Center"/>
-                </Grid>
-            </Border>
-
-
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2.5*"/>
-                    <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="2*"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0">
-
-                    <Border Style="{StaticResource Card}">
-                        <StackPanel>
-                            <TextBlock Text="Operating Time" Foreground="#AAAAAA" FontSize="22"/>
-                            <TextBlock Text="{Binding OperatingTime}" Foreground="White" FontSize="40" FontWeight="Bold"/>
+                    <Border Grid.Column="0" Style="{StaticResource DashboardCard}">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="OPERATING TIME" Style="{StaticResource KpiLabel}"/>
+                            <TextBlock Text="05:42:17" Style="{StaticResource KpiValue}" Foreground="#007ACC"/>
                         </StackPanel>
                     </Border>
 
-                    <Border Style="{StaticResource Card}">
-                        <StackPanel>
-                            <TextBlock Text="Downtime" Foreground="#AAAAAA" FontSize="22"/>
-                            <TextBlock Text="{Binding Downtime}" Foreground="White" FontSize="40" FontWeight="Bold"/>
+                    <Border Grid.Column="1" Style="{StaticResource DashboardCard}">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="DOWNTIME" Style="{StaticResource KpiLabel}"/>
+                            <TextBlock Text="00:12:45" Style="{StaticResource KpiValue}" Foreground="#DC3545"/>
                         </StackPanel>
                     </Border>
 
-                    <Border Style="{StaticResource Card}" MinHeight="250">
-                        <TextBlock Text="OEE Trend Chart Placeholder" Foreground="#666" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Border Grid.Column="2" Style="{StaticResource DashboardCard}">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="AVG CYCLE (SEC)" Style="{StaticResource KpiLabel}"/>
+                            <TextBlock Text="2.9" Style="{StaticResource KpiValue}" Foreground="#FFC107"/>
+                        </StackPanel>
                     </Border>
 
-                </StackPanel>
-
-
-                <StackPanel Grid.Column="1">
-
-                    <Border Style="{StaticResource Card}" MinHeight="350">
+                    <Border Grid.Column="3" Style="{StaticResource DashboardCard}">
                         <Grid>
-                          
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <!--<RowDefinition Height="*"/>-->
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.2*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="50">
-                                <TextBlock Text="AVAILABILITY:" Foreground="#AAAAAA"/>
-                                <TextBlock Text="{Binding Availability, StringFormat={}{0:P0}}" Foreground="Yellow" FontSize="28" FontWeight="Bold"/>
+                            <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock Text="Total In" Foreground="#AAA" FontSize="25" HorizontalAlignment="Center"/>
+                                <TextBlock Text="1165" Foreground="White" FontSize="38" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            </StackPanel>
 
-                                <TextBlock Text="PERFORMANCE:" Foreground="#AAAAAA" Margin="0,10,0,0"/>
-                                <TextBlock Text="{Binding Performance, StringFormat={}{0:P0}}" Foreground="#87F287" FontSize="28" FontWeight="Bold"/>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="Good (OK)" Foreground="#28A745" FontSize="25" HorizontalAlignment="Center"/>
+                                <TextBlock Text="1140" Foreground="#28A745" FontSize="38" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            </StackPanel>
 
-                                <TextBlock Text="QUALITY:" Foreground="#AAAAAA" Margin="0,10,0,0"/>
-                                <TextBlock Text="{Binding Quality, StringFormat={}{0:P0}}" Foreground="#FF6A6A" FontSize="28" FontWeight="Bold"/>
+                            <!--<StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock Text="Tossed" Foreground="Orange" FontSize="25" HorizontalAlignment="Center"/>
+                                <TextBlock Text="35" Foreground="Orange" FontSize="38" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            </StackPanel>-->
 
-                                <TextBlock Text="OVERALL OEE:" Foreground="#AAAAAA" Margin="0,10,0,0"/>
-                                <TextBlock Text="{Binding OverallOEE, StringFormat={}{0:P2}}" Foreground="Cyan" FontSize="36" FontWeight="ExtraBold"/>
-
+                            <StackPanel Grid.Row="0" Grid.Column="2" VerticalAlignment="Center">
+                                <TextBlock Text="Bad (NG)" Foreground="#DC3545" FontSize="25" HorizontalAlignment="Center"/>
+                                <TextBlock Text="25" Foreground="#DC3545" FontSize="38" FontWeight="Bold" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Grid>
                     </Border>
+                </Grid>
 
-                    <Border Style="{StaticResource Card}">
-                        <TextBlock Text="{Binding Remarks}" Foreground="White" FontSize="20" TextWrapping="Wrap"/>
-                    </Border>
-                </StackPanel>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
+                    <Grid Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                <StackPanel Grid.Column="2">
+                        <Border Grid.Row="0" Style="{StaticResource DashboardCard}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Cycle Time Trend (Last 7 Days)" Foreground="White" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                                <controls:TrendChart Grid.Row="1" 
+                                                     Values="{Binding CycleTrend}"/>
+                            </Grid>
+                        </Border>
 
-                    <Border Style="{StaticResource Card}">
-                        <StackPanel>
-                            <TextBlock Text="Good Units" Foreground="#87F287" FontSize="22" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding GoodUnits}" Foreground="White" FontSize="40" FontWeight="Bold"/>
-                        </StackPanel>
-                    </Border>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1.2*"/>
+                            </Grid.ColumnDefinitions>
 
-                    <Border Style="{StaticResource Card}">
-                        <StackPanel>
-                            <TextBlock Text="Rejected Units" Foreground="#FF6A6A" FontSize="22" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding RejectedUnits}" Foreground="White" FontSize="40" FontWeight="Bold"/>
-                        </StackPanel>
-                    </Border>
+                            <Border Grid.Column="0" Style="{StaticResource DashboardCard}">
+                                <Grid>
+                                    <TextBlock Text="Efficiency Breakdown" Foreground="White" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Top"/>
+                                    <controls:PieChart Items="{Binding OEEParts}" CenterText="{Binding OEEText}" Margin="0,30,0,0"/>
+                                </Grid>
+                            </Border>
 
-                    <Border Style="{StaticResource Card}" MinHeight="300">
-                        <TextBlock Text="Camera/Log Placeholder" Foreground="#666" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
+                            <Border Grid.Column="1" Style="{StaticResource DashboardCard}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
 
-                </StackPanel>
+                                    <TextBlock Grid.Row="0" Text="Latest Measurements" Foreground="White" FontSize="30" FontWeight="SemiBold" Margin="0,0,0,20"/>
+
+                                    <Grid Grid.Row="1" Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="PARAM" Foreground="#888" FontSize="25" FontWeight="Bold"/>
+                                        <TextBlock Grid.Column="1" Text="VALUE" Foreground="#888" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="TOLERANCE" Foreground="#888" FontSize="25" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                    </Grid>
+
+                                    <StackPanel Grid.Row="2">
+                                        <Grid Margin="0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Height" Foreground="White" FontSize="30"/>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Text="3.45 mm" Foreground="#28A745" FontSize="30" FontWeight="Bold"/>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="2" Text="±0.10" Foreground="White" FontSize="30" HorizontalAlignment="Right"/>
+                                        </Grid>
+
+                                        <Separator Background="#333"/>
+
+                                        <Grid Margin="0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Width" Foreground="White" FontSize="30"/>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Text="5.23 mm" Foreground="#DC3545" FontSize="30" FontWeight="Bold"/>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="2" Text="±0.10" Foreground="White" FontSize="30" HorizontalAlignment="Right"/>
+                                        </Grid>
+
+                                        <Separator Background="#333"/>
+
+                                        <Grid Margin="0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Offset" Foreground="White" FontSize="30"/>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Text="0.02 mm" Foreground="#28A745" FontSize="30" FontWeight="Bold"/>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="2" Text="±0.05" Foreground="White" FontSize="30" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Border Grid.Row="0" Style="{StaticResource DashboardCard}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Background="White" Padding="5" CornerRadius="5">
+                                    <Image Source="pack://application:,,,/IPCSoftware.App;component/Controls/Images/qrcode.png"
+                                           Height="120" Width="120"/>
+                                </Border>
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0,0,0">
+                                    <TextBlock Text="Active Batch Code" Foreground="#AAA" FontSize="18"/>
+                                    <TextBlock Text="XS12345F-2025" Foreground="White" FontSize="36" FontWeight="Bold" Margin="0,5,0,0"/>
+                                    <TextBlock Text="Scanned: 10:42 AM" Foreground="#AAA" FontSize="16" Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="1" Style="{StaticResource DashboardCard}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Live Inspection Feed" Foreground="White" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,15"/>
+
+                                <ItemsControl Grid.Row="1" ItemsSource="{Binding CameraImages}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Rows="4" Columns="3"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border CornerRadius="8" Margin="5" Background="#111" BorderBrush="{Binding Result, Converter={StaticResource ResultToColor}}" BorderThickness="3">
+                                                <Grid>
+                                                    <Image Source="{Binding ImagePath}" Stretch="UniformToFill">
+                                                        <i:Interaction.Behaviors>
+                                                            <helpers:ImageClickBehavior Command="{Binding DataContext.ShowImageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                                        </i:Interaction.Behaviors>
+                                                    </Image>
+
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </Border>
+
+                    </Grid>
+                </Grid>
 
             </Grid>
         </Grid>
     </Viewbox>
-
 </UserControl>
