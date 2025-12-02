@@ -46,7 +46,7 @@ namespace IPCSoftware.Core.Interfaces
         // PLC Tag Configuration - NEW
         void NavigateToPLCTagList();
 
-        void NavigateToLogs(string logType);
+        void NavigateToLogs(LogType logType);
         void NavigateToPLCTagConfiguration(PLCTagConfigurationModel tagToEdit, Func<Task> onSaveCallback);
 
     }

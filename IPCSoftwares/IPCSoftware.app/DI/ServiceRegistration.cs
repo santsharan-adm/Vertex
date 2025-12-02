@@ -1,10 +1,11 @@
 ﻿using IPCSoftware.App.NavServices;
 using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
-using IPCSoftware.AppLogger.Interfaces;
-using IPCSoftware.AppLogger.Services;
+
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
+using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,11 +24,9 @@ namespace IPCSoftware.App.DI
             //Dialog service
             services.AddSingleton<IDialogService, DialogService>();
             //AppLogger 
-            services.AddSingleton<IAppLogger, IPCSoftware.AppLogger.Services.AppLogger>();
-
-            services.AddSingleton<LogConfigService>();
-            services.AddSingleton<LogManager>();
-            services.AddSingleton<IAppLogger, IPCSoftware.AppLogger.Services.AppLogger>();
+            services.AddSingleton<IAppLogger, AppLoggerService>();
+            services.AddSingleton<ILogManagerService, LogManagerService>();
+   
 
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
@@ -42,6 +41,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<RibbonViewModel>();
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<OEEDashboardViewModel>();
+            services.AddSingleton<OeeDashboardNewViewModel>();
             services.AddSingleton<LiveOeeViewModel>();
 
             // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
@@ -75,7 +75,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<RibbonView>();
             services.AddTransient<OEEDashboard>();
             services.AddTransient<OeeDashboard2>();
-            services.AddTransient<LiveOeeView>();
+            services.AddTransient<OeeDashboardNew>();
             services.AddTransient<DashboardView>();
 
             services.AddTransient<LogView>();

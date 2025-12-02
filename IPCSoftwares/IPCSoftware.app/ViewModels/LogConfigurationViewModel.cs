@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using IPCSoftware.Core.Interfaces;
+using System.IO;
 
 namespace IPCSoftware.App.ViewModels
 {
@@ -171,7 +172,7 @@ namespace IPCSoftware.App.ViewModels
             _logService = logService;
 
             LogTypes = new ObservableCollection<string> { "Production", "Audit", "Error" };
-            BackupSchedules = new ObservableCollection<string> { "Never/Manual", "Daily", "Weekly", "Monthly" };
+            BackupSchedules = new ObservableCollection<string> { "Manual", "Daily", "Weekly", "Monthly" };
 
             // Days 1-28 for monthly backup
             BackupDays = new ObservableCollection<int>(Enumerable.Range(1, 28));
@@ -196,7 +197,7 @@ namespace IPCSoftware.App.ViewModels
             Title = "System Log Configuration - New";
             IsEditMode = false;
             _currentLog = new LogConfigurationModel();
-            FileName = $"{SelectedLogType}_{DateTime.Now:yyyyMMdd}";
+            FileName = $"{SelectedLogType}_yyyyMMdd";
             LoadFromModel(_currentLog);
         }
 
@@ -211,14 +212,14 @@ namespace IPCSoftware.App.ViewModels
         private void LoadFromModel(LogConfigurationModel log)
         {
             LogName = log.LogName;
-            SelectedLogType = log.LogType ?? "Production";
+            SelectedLogType = log.LogType.ToString() ?? "Production";
             DataFolder = log.DataFolder;
             BackupFolder = log.BackupFolder;
             FileName = log.FileName;
             LogRetentionDays = log.LogRetentionTime;
             FileSize = log.LogRetentionFileSize;
             AutoPurge = log.AutoPurge;
-            SelectedBackupSchedule = log.BackupSchedule ?? "Never/Manual";
+            SelectedBackupSchedule = log.BackupSchedule.ToString() ?? "Manual";
             BackupTime = log.BackupTime;
             SelectedBackupDay = log.BackupDay > 0 ? log.BackupDay : 1;
             SelectedBackupDayOfWeek = log.BackupDayOfWeek ?? "Monday";
@@ -230,20 +231,20 @@ namespace IPCSoftware.App.ViewModels
         private void SaveToModel()
         {
             _currentLog.LogName = LogName;
-            _currentLog.LogType = SelectedLogType;
+            _currentLog.LogType = Enum.Parse<LogType>(SelectedLogType);
             _currentLog.DataFolder = DataFolder;
             _currentLog.BackupFolder = BackupFolder;
             _currentLog.FileName = FileName;
             _currentLog.LogRetentionTime = LogRetentionDays;
             _currentLog.LogRetentionFileSize = FileSize;
             _currentLog.AutoPurge = AutoPurge;
-            _currentLog.BackupSchedule = SelectedBackupSchedule;
+            _currentLog.BackupSchedule = Enum.Parse<BackupScheduleType>( SelectedBackupSchedule);
             _currentLog.BackupTime = BackupTime;
 
             // Reset backup-related values based on schedule type
             switch (SelectedBackupSchedule)
             {
-                case "Never/Manual":
+                case "Manual":
                     _currentLog.BackupDay = 0;
                     _currentLog.BackupDayOfWeek = null;
                     break;
@@ -303,7 +304,8 @@ namespace IPCSoftware.App.ViewModels
 
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                DataFolder = dialog.FileName;
+                DataFolder = Path.Combine(dialog.FileName, "Logs", SelectedLogType);
+
             }
         }
 
@@ -320,7 +322,7 @@ namespace IPCSoftware.App.ViewModels
 
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                BackupFolder = dialog.FileName;
+                BackupFolder = Path.Combine(dialog.FileName, "LogsBackup", SelectedLogType);
             }
         }
 
@@ -341,7 +343,7 @@ namespace IPCSoftware.App.ViewModels
         private void OnBackupScheduleChanged()
         {
             // Reset values when schedule changes
-            if (SelectedBackupSchedule == "Never/Manual")
+            if (SelectedBackupSchedule == "Manual")
             {
                 SelectedBackupDay = 1;
                 SelectedBackupDayOfWeek = "Monday";
@@ -367,7 +369,7 @@ namespace IPCSoftware.App.ViewModels
         {
             if (!string.IsNullOrWhiteSpace(SelectedLogType))
             {
-                FileName = $"{SelectedLogType}_{DateTime.Now:yyyyMMdd}";
+                FileName = $"{SelectedLogType}_yyyyMMdd";
             }
         }
     }

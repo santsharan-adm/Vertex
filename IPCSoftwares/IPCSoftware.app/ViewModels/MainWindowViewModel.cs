@@ -1,7 +1,10 @@
-﻿using IPCSoftware.App.ViewModels;
+﻿using IPCSoftware.App;
+using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
+
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System.Collections.ObjectModel;
 using System.Printing;
 using System.Reflection;
@@ -161,11 +164,16 @@ public class MainWindowViewModel : BaseViewModel
         {
             // OEEDashboard Menu
             case "OEE Dashboard":
-                _nav.NavigateMain<LiveOeeView>();
+                //_nav.NavigateMain<LiveOeeView>();
+                _nav.NavigateMain<OEEDashboard>();
                 break;
 
             case "Machine Summary":
                 _nav.NavigateMain<OeeDashboard2>();
+                break;
+
+            case "KPI Monitoring":
+                _nav.NavigateMain<OeeDashboardNew>();
                 break;
 
             case "System Settings":
@@ -202,15 +210,15 @@ public class MainWindowViewModel : BaseViewModel
                 break;
 
             case "Audit Logs":
-                _nav.NavigateToLogs("Audit");
+                _nav.NavigateToLogs(LogType.Audit);
                 break;
 
             case "Error Logs":
-                _nav.NavigateToLogs("Error");
+                _nav.NavigateToLogs(LogType.Error);
                 break;
 
             case "Production Logs":
-                _nav.NavigateToLogs("Production");
+                _nav.NavigateToLogs(LogType.Production);
                 break;
 
         }
