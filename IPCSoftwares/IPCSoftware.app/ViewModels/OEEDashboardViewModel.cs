@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.App.Controls;
 using IPCSoftware.App.Views;
+using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ using System.Windows.Threading;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public class OEEDashboardViewModel : INotifyPropertyChanged
+    public class OEEDashboardViewModel : BaseViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
         private bool _isDarkTheme = true;
@@ -121,7 +122,7 @@ namespace IPCSoftware.App.ViewModels
 
 
             {
-                //ShowImageCommand = new RelayCommand<CameraImageModel>(ShowImage);
+                ShowImageCommand = new RelayCommand<CameraImageModel>(ShowImage);
             }
 
 
