@@ -41,7 +41,7 @@ public class RibbonViewModel : BaseViewModel
     }
 
     public bool IsAdmin => UserSession.Role == "Admin";
-    public string CurrentUserName => UserSession.Username ?? "Guest";
+    public string CurrentUserName => UserSession.Username.ToUpper() ?? "Guest";
   /*  private void OpenDashboardMenu()
     {
         var dict = new Dictionary<string, List<string>>();

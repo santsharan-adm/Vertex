@@ -22,7 +22,7 @@
     <None Remove="Controls\Images\logout2.png" />
     <None Remove="Controls\Images\qrcode.png" />
     <None Remove="Controls\Images\setting2.png" />
-    <None Remove="Controls\Images\TestCamImage.jpg" />
+    <None Remove="Controls\Images\TestCamImage.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -81,7 +81,13 @@
     <Resource Include="Controls\Images\setting2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Controls\Images\TestCamImage.jpg">
+    <Resource Include="Controls\Images\TestCamImage.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Controls\Images\TestCamImage22.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Controls\Images\TestCamImageOLd.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

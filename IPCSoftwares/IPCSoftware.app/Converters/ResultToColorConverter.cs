@@ -19,7 +19,7 @@ namespace IPCSoftware.App.Converters
             {
                 "OK" => new SolidColorBrush(Colors.LimeGreen),
                 "NG" => new SolidColorBrush(Colors.Red),
-                "TOSSED" => new SolidColorBrush(Colors.Orange),
+                "Unchecked" => new SolidColorBrush(Colors.Gray),
                 _ => new SolidColorBrush(Colors.Gray),
             };
         }

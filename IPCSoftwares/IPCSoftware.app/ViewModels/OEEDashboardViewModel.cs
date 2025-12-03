@@ -99,6 +99,7 @@ namespace IPCSoftware.App.ViewModels
         public OEEDashboardViewModel()
         {
             ToggleThemeCommand = new RelayCommand(ToggleTheme);
+            OpenCardDetailCommand = new RelayCommand<string>(OpenCardDetail);
             // Load default theme on startup
            // SetTheme("Styles/DarkTheme.xaml");
             // ----- HEADER -----
@@ -140,45 +141,131 @@ namespace IPCSoftware.App.ViewModels
             };
             Timer.Start();
 
+            CameraImages = GetCameraImages();
+
         }
 
         public ICommand ShowImageCommand { get; }
+        public ICommand OpenCardDetailCommand { get; }
 
+        private void OpenCardDetail(string cardType)
+        {
+            string title = "";
+            var data = new List<MetricDetailItem>();
+
+            switch (cardType)
+            {
+                case "Efficiency":
+                    title = "Efficiency Breakdown Details";
+                    data.Add(new MetricDetailItem { MetricName = "Availability", CurrentVal = "85%", WeeklyVal = "87%", MonthlyVal = "88%" });
+                    data.Add(new MetricDetailItem { MetricName = "Performance", CurrentVal = "95%", WeeklyVal = "94%", MonthlyVal = "93%" });
+                    data.Add(new MetricDetailItem { MetricName = "Quality", CurrentVal = "97%", WeeklyVal = "98%", MonthlyVal = "98%" });
+                    break;
+
+                case "OEE":
+                    title = "OEE Score Analysis";
+                    data.Add(new MetricDetailItem { MetricName = "OEE Score", CurrentVal = "78%", WeeklyVal = "80%", MonthlyVal = "82%" });
+                    data.Add(new MetricDetailItem { MetricName = "Planned Prod.", CurrentVal = "480m", WeeklyVal = "2400m", MonthlyVal = "9600m" });
+                    break;
+
+                case "CycleTime":
+                    title = "Cycle Time Trends";
+                    data.Add(new MetricDetailItem { MetricName = "Avg Cycle", CurrentVal = "2.9s", WeeklyVal = "3.1s", MonthlyVal = "3.0s" });
+                    data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "2.5s", WeeklyVal = "2.5s", MonthlyVal = "2.5s" });
+                    break;
+                case "OperatingTime":
+                    title = "Operating Time";
+                    data.Add(new MetricDetailItem { MetricName = "Avg Cycle", CurrentVal = "2.9s", WeeklyVal = "3.1s", MonthlyVal = "3.0s" });
+                    data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "2.5s", WeeklyVal = "2.5s", MonthlyVal = "2.5s" });
+                    break;
+
+                case "Downtime":
+                    title = "Downtime Analysis";
+                    data.Add(new MetricDetailItem { MetricName = "Total Stop", CurrentVal = "00:12:45", WeeklyVal = "01:30:00", MonthlyVal = "05:45:00" });
+                    data.Add(new MetricDetailItem { MetricName = "Minor Stops", CurrentVal = "00:04:15", WeeklyVal = "00:25:00", MonthlyVal = "01:40:00" });
+                    data.Add(new MetricDetailItem { MetricName = "Changeover", CurrentVal = "00:08:30", WeeklyVal = "01:05:00", MonthlyVal = "04:05:00" });
+                    break;
+
+                case "AvgCycle": // Or "CycleTime" depending on your CommandParameter
+                    title = "Cycle Time Metrics";
+                    data.Add(new MetricDetailItem { MetricName = "Current Avg", CurrentVal = "2.9s", WeeklyVal = "3.0s", MonthlyVal = "2.95s" });
+                    data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "2.5s", WeeklyVal = "2.5s", MonthlyVal = "2.5s" });
+                    data.Add(new MetricDetailItem { MetricName = "Slow Cycles", CurrentVal = "15", WeeklyVal = "85", MonthlyVal = "320" });
+                    break;
+
+                case "InFlow":
+                    title = "Input Flow Statistics";
+                    data.Add(new MetricDetailItem { MetricName = "Total Input", CurrentVal = "1165", WeeklyVal = "8150", MonthlyVal = "32500" });
+                    data.Add(new MetricDetailItem { MetricName = "Feed Rate", CurrentVal = "20/min", WeeklyVal = "19/min", MonthlyVal = "19.5/min" });
+                    break;
+
+                case "OK":
+                    title = "Production Quality (OK)";
+                    data.Add(new MetricDetailItem { MetricName = "Good Units", CurrentVal = "1140", WeeklyVal = "7980", MonthlyVal = "31850" });
+                    data.Add(new MetricDetailItem { MetricName = "Yield Rate", CurrentVal = "97.8%", WeeklyVal = "97.9%", MonthlyVal = "98.0%" });
+                    break;
+
+                case "NG":
+                    title = "Rejection Analysis (NG)";
+                    data.Add(new MetricDetailItem { MetricName = "Total Rejects", CurrentVal = "25", WeeklyVal = "170", MonthlyVal = "650" });
+                    data.Add(new MetricDetailItem { MetricName = "Reject Rate", CurrentVal = "2.1%", WeeklyVal = "2.0%", MonthlyVal = "1.9%" });
+                    data.Add(new MetricDetailItem { MetricName = "Top Defect", CurrentVal = "Scratch", WeeklyVal = "Dent", MonthlyVal = "Scratch" });
+                    break;
+
+                    // Add more cases for "OperatingTime", "Downtime", "InFlow", etc.
+            }
+
+            if (data.Count > 0)
+            {
+                // Open the Light Theme Popup
+                var win = new DashboardDetailWindow();
+                win.DataContext = new DashboardDetailViewModel(win, title, data);
+                win.ShowDialog();
+            }
+        }
         private void ShowImage(CameraImageModel img)
         {
             if (img == null) return;
+            string title = $"INSPECTION POSITION {img.Id}";
 
-            var window = new FullImageView(img.ImagePath);
+            var window = new FullImageView(img.ImagePath, title);
             window.ShowDialog();
         }
 
-        private void OpenImagePopup(string path)
+
+        private ObservableCollection<CameraImageModel> GetCameraImages()
         {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                var popup = new FullImageView(path);
-                popup.Owner = App.Current.MainWindow;
-                popup.ShowDialog();
+            var temp = new ObservableCollection<CameraImageModel>
+                        {
+                            new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.png", Result="Unchecked" },
+                            new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.png", Result="Unchecked" },
+                            new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.png", Result="Unchecked" },
+                            new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.png", Result="Unchecked" },
 
-            });
+                            new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.png", Result="Unchecked" },
+                            new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.png", Result="Unchecked" },
+                            new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.png", Result="Unchecked" },
+                            new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.png", Result="NG" },
+
+                            new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.png", Result="OK" },
+                            new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.png", Result="Unchecked" },
+                            new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.png", Result="OK" },
+                            new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.png", Result="NG" },
+                        };
+
+            // Assign IDs automatically
+            int id = 1;
+            foreach (var item in temp)
+                item.Id = id++;
+
+            return temp;
         }
-        public ObservableCollection<CameraImageModel> CameraImages { get; set; } = new ObservableCollection<CameraImageModel>
-{
-    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
-    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="NG" },
-    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="TOSSED" },
-    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
 
-    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
-    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="NG" },
-    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
-    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="NG" },
 
-    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
-    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="TOSSED" },
-    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="OK" },
-    new CameraImageModel { ImagePath="pack://application:,,,/IPCSoftware.App;component/Controls/Images/TestCamImage.jpg", Result="NG" },
-};
+
+        public ObservableCollection<CameraImageModel> CameraImages { get; set; }
+            = new ObservableCollection<CameraImageModel>();
+
 
     }
 }
