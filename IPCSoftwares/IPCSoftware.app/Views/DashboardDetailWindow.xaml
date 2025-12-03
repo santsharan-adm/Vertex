@@ -1,0 +1,93 @@
+﻿<Window x:Class="IPCSoftware.App.Views.DashboardDetailWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Details" Height="450" Width="700"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" ResizeMode="NoResize"
+        Background="#F9F9F9" BorderBrush="#CCCCCC" BorderThickness="1">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="{Binding WindowTitle}" 
+                   Foreground="#333333" 
+                   FontSize="28" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,20"/>
+
+        <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="20">
+            <Border.Effect>
+                <DropShadowEffect Color="#DDD" BlurRadius="10" Opacity="0.5"/>
+            </Border.Effect>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="METRIC" Foreground="#888" FontWeight="Bold" FontSize="14"/>
+                    <TextBlock Grid.Column="1" Text="CURRENT" Foreground="#888" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="WEEKLY" Foreground="#888" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="3" Text="MONTHLY" Foreground="#888" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+                </Grid>
+
+                <Border Grid.Row="1" Height="1" Background="#EEEEEE" Margin="0,10"/>
+
+                <ItemsControl Grid.Row="2" ItemsSource="{Binding DetailRows}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{Binding MetricName}" 
+                                           Foreground="#333" 
+                                           FontSize="18" 
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="1" Text="{Binding CurrentVal}" Foreground="#4CAF50" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="{Binding WeeklyVal}" Foreground="#1976D2" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="{Binding MonthlyVal}" Foreground="#F57C00" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </Border>
+
+        <Button Grid.Row="2" Content="❌ Close" 
+                Command="{Binding CloseCommand}"
+                Width="120" Height="45" 
+                HorizontalAlignment="Right" 
+                Margin="0,20,0,0"
+                Cursor="Hand"
+                Background="#E0E0E0" 
+                Foreground="#333" 
+                BorderThickness="0"
+                FontSize="16" FontWeight="SemiBold">
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="8"/>
+                </Style>
+            </Button.Resources>
+        </Button>
+    </Grid>
+</Window>

@@ -30,9 +30,9 @@ namespace IPCSoftware.App.ViewModels
     {
         // Tray lift
         [Group("Tray Lift")]
-        TrayLiftDown,
-        [Group("Tray Lift")]
         TrayLiftUp,
+        [Group("Tray Lift")]
+        TrayLiftDown,
 
         // Move to Position
         [Group("Move to Position")]
@@ -70,9 +70,9 @@ namespace IPCSoftware.App.ViewModels
 
         // Transport Conveyor
         [Group("Transport Conveyor")]
-        TransportConveyorForward,
-        [Group("Transport Conveyor")]
         TransportConveyorReverse,
+        [Group("Transport Conveyor")]
+        TransportConveyorForward,
         [Group("Transport Conveyor")]
         TransportConveyorStop,
         [Group("Transport Conveyor")]
@@ -80,17 +80,17 @@ namespace IPCSoftware.App.ViewModels
 
         // Manual X-Axis Jog
         [Group("Manual X-Axis Jog")]
-        ManualXAxisJogForward,
-        [Group("Manual X-Axis Jog")]
         ManualXAxisJogBackward,
+        [Group("Manual X-Axis Jog")]
+        ManualXAxisJogForward,
         [Group("Manual X-Axis Jog")]
         XAxisJogSpeedSwitching,
 
         // Manual Y-Axis Jog
         [Group("Manual Y-Axis Jog")]
-        ManualYAxisJogForward,
-        [Group("Manual Y-Axis Jog")]
         ManualYAxisJogBackward,
+        [Group("Manual Y-Axis Jog")]
+        ManualYAxisJogForward,
         [Group("Manual Y-Axis Jog")]
         YAxisJogSpeedSwitching
     }
@@ -109,7 +109,15 @@ namespace IPCSoftware.App.ViewModels
         public IEnumerable<ModeItem> ConveyorModes => Modes.Where(x => x.Group == "Transport Conveyor");
         public IEnumerable<ModeItem> XAxisModes => Modes.Where(x => x.Group == "Manual X-Axis Jog");
         public IEnumerable<ModeItem> YAxisModes => Modes.Where(x => x.Group == "Manual Y-Axis Jog");
-        public IEnumerable<ModeItem> PositionModes => Modes.Where(x => x.Group == "Move to Position");
+       // public IEnumerable<ModeItem> PositionModes => Modes.Where(x => x.Group == "Move to Position");
+
+        // 1. The Single "Home" Item
+        public ModeItem HomePositionMode =>
+            Modes.FirstOrDefault(x => x.Mode == ManualOperationMode.MoveToPos0);
+
+        // 2. The Rest of the Items (1 to 12)
+        public IEnumerable<ModeItem> GridPositionModes =>
+            Modes.Where(x => x.Group == "Move to Position" && x.Mode != ManualOperationMode.MoveToPos0);
 
         private readonly IAppLogger _logger;
 

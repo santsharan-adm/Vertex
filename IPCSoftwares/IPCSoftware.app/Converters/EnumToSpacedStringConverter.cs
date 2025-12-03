@@ -54,31 +54,31 @@ namespace IPCSoftware.App.Converters
             return mode switch
             {
                 // Tray Lift
-                ManualOperationMode.TrayLiftUp => "↑ UP",
-                ManualOperationMode.TrayLiftDown => "↓ DOWN",
+                ManualOperationMode.TrayLiftUp => "⮝ UP",
+                ManualOperationMode.TrayLiftDown => "⮟ DOWN",
 
                 // Positioning Cylinder
-                ManualOperationMode.PositioningCylinderUp => "↑ UP",
-                ManualOperationMode.PositioningCylinderDown => "↓ DOWN",
+                ManualOperationMode.PositioningCylinderUp => "⮝ UP",
+                ManualOperationMode.PositioningCylinderDown => "⮟ DOWN",
 
                 // Transport Conveyor
-                ManualOperationMode.TransportConveyorForward => "→ FWD",
-                ManualOperationMode.TransportConveyorReverse => "← REV",
+                ManualOperationMode.TransportConveyorReverse => "◀ REV",
+                ManualOperationMode.TransportConveyorForward => "▶ FWD",
                 ManualOperationMode.TransportConveyorStop => "■ STOP",
                 ManualOperationMode.TransportConveyorSpeedSwitching => "⚡ SPEED",
 
                 // X-Axis Jog
-                ManualOperationMode.ManualXAxisJogForward => "→ FWD",
-                ManualOperationMode.ManualXAxisJogBackward => "← BACK",
+                ManualOperationMode.ManualXAxisJogBackward => "◀ BACK",
+                ManualOperationMode.ManualXAxisJogForward => "▶ FWD",
                 ManualOperationMode.XAxisJogSpeedSwitching => "⚡ SPEED",
 
                 // Y-Axis Jog
-                ManualOperationMode.ManualYAxisJogForward => "↑ FWD",
-                ManualOperationMode.ManualYAxisJogBackward => "↓ BACK",
+                ManualOperationMode.ManualYAxisJogForward => "⮝ UP",
+                ManualOperationMode.ManualYAxisJogBackward => "⮟ DOWN",
                 ManualOperationMode.YAxisJogSpeedSwitching => "⚡ SPEED",
 
                 // Positions (Just numbers now)
-                ManualOperationMode.MoveToPos0 => "0",
+                ManualOperationMode.MoveToPos0 => "HOM POS",
                 ManualOperationMode.MoveToPos1 => "1",
                 ManualOperationMode.MoveToPos2 => "2",
                 ManualOperationMode.MoveToPos3 => "3",

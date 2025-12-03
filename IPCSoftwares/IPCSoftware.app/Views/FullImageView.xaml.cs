@@ -12,12 +12,12 @@ namespace IPCSoftware.App.Views
 {
     public partial class FullImageView : Window
     {
-        public FullImageView(string imagePath)
+        public FullImageView(string imagePath, string title)
         {
             InitializeComponent();
 
             // 1. Create ViewModel with Dependency
-            var viewModel = new FullImageViewModel(imagePath);
+            var viewModel = new FullImageViewModel(imagePath, title);
 
             // 2. Hook up the Close Action
             viewModel.RequestClose += () => this.Close();
