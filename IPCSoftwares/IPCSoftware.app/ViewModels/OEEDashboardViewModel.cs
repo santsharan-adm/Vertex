@@ -1,6 +1,5 @@
 ﻿using IPCSoftware.App.Controls;
 using IPCSoftware.App.Views;
-using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -94,12 +93,14 @@ namespace IPCSoftware.App.ViewModels
                 new PieSliceModel { Label="Rework", Value=20 }
             };
 
+           
 
 
         public OEEDashboardViewModel()
         {
             ToggleThemeCommand = new RelayCommand(ToggleTheme);
             OpenCardDetailCommand = new RelayCommand<string>(OpenCardDetail);
+            //ToggleThemeCommand = new RelayCommand(ToggleTheme);
             // Load default theme on startup
            // SetTheme("Styles/DarkTheme.xaml");
             // ----- HEADER -----
@@ -120,7 +121,7 @@ namespace IPCSoftware.App.ViewModels
 
 
             {
-                ShowImageCommand = new RelayCommand<CameraImageModel>(ShowImage);
+                //ShowImageCommand = new RelayCommand<CameraImageModel>(ShowImage);
             }
 
 

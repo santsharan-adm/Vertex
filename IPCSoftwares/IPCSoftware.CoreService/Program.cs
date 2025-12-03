@@ -16,9 +16,10 @@ namespace IPCSoftware.CoreService
                 .ConfigureServices(services =>
                 {
               
-                    services.AddSingleton<DashboardInitializer>();
+                    //services.AddSingleton<DashboardInitializer>();
+                    
 
-                   
+
                     services.AddHostedService<Worker>();
                 })
                 .Build();

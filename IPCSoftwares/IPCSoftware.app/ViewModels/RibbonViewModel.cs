@@ -68,7 +68,7 @@ public class RibbonViewModel : BaseViewModel
         {
             "OEE Dashboard",
             "Machine Summary",
-            "Performance KPIs"
+            "KPI Monitoring"
         }, nameof(OpenDashboardMenu));
     }
 

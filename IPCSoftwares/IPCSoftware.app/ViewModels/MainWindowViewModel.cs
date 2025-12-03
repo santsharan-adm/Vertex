@@ -1,4 +1,5 @@
-﻿using IPCSoftware.App.ViewModels;
+﻿using IPCSoftware.App;
+using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
 
 using IPCSoftware.Core.Interfaces;
@@ -193,6 +194,10 @@ public class MainWindowViewModel : BaseViewModel
 
             case "Machine Summary":
                 _nav.NavigateMain<OeeDashboard2>();
+                break;
+
+            case "KPI Monitoring":
+                _nav.NavigateMain<OeeDashboardNew>();
                 break;
 
             case "System Settings":

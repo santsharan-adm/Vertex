@@ -1,110 +1,145 @@
-﻿using NModbus;
+﻿using IPCSoftware.Shared.Models.ConfigModels;
+using NModbus;
 using System.Net.Sockets;
 
 namespace IPCSoftware.CoreService.Services.PLC
 {
     public class PlcClient
     {
-        private readonly string _ip;
-        private readonly int _port;
+        public event Action<int, Dictionary<uint, object>>? OnPlcDataReceived;
+
+        private readonly DeviceInterfaceModel _device;
+        private readonly List<PLCTagConfigurationModel> _tags;
 
         private TcpClient? _tcp;
         private IModbusMaster? _master;
 
-        // Callback: DashboardInitializer will subscribe to this
-        public Action<Dictionary<uint, object>>? OnPlcDataReceived;
+        public DeviceInterfaceModel Device => _device;
 
-        public PlcClient(string ip, int port)
+        public PlcClient(DeviceInterfaceModel device, List<PLCTagConfigurationModel> tags)
         {
-            _ip = ip;
-            _port = port;
+            _device = device;
+            _tags = tags;
         }
 
+        // ---------------------------------------------------------
+        // START POLLING ENGINE
+        // ---------------------------------------------------------
         public async Task StartAsync()
         {
             await ConnectAsync();
 
-            // Start auto-polling (background)
             _ = Task.Run(async () =>
             {
                 while (true)
                 {
-                    await PollRegistersAsync();
-                    await Task.Delay(1000); //later we will make it dynamic
+                    try
+                    {
+                        var data = await PollAllGroups();
+
+                        // DEBUG PRINT — EXACT FORMAT YOU WANT
+                        foreach (var kv in data)
+                        {
+                            Console.WriteLine($"PLC[{_device.DeviceName}] Addr {kv.Key} = {kv.Value}");
+                        }
+
+                        // Fire event for Dashboard
+                        OnPlcDataReceived?.Invoke(_device.DeviceNo, data);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"PLC[{_device.DeviceName}] Poll ERROR: {ex.Message}");
+                    }
+
+                    await Task.Delay(1000);
                 }
             });
         }
 
-        
+
+        // ---------------------------------------------------------
+        // AUTO-RECONNECT
+        // ---------------------------------------------------------
         private async Task ConnectAsync()
         {
             while (true)
             {
                 try
                 {
-                    Console.WriteLine($"PLC: Attempting to connect to {_ip}:{_port}...");
+                    Console.WriteLine($"PLC[{_device.DeviceName}] → Connecting to {_device.IPAddress}:{_device.PortNo}");
 
-                    _tcp?.Dispose();
                     _tcp = new TcpClient();
-                    await _tcp.ConnectAsync(_ip, _port);
+                    await _tcp.ConnectAsync(_device.IPAddress, _device.PortNo);
 
                     var factory = new ModbusFactory();
                     _master = factory.CreateMaster(_tcp);
 
-                    Console.WriteLine("PLC CONNECTED successfully.");
+                    Console.WriteLine($"PLC[{_device.DeviceName}] → CONNECTED");
                     return;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"PLC CONNECTION ERROR: {ex.Message}. Retrying in 5 seconds...");
-                    _tcp?.Dispose();
-                    _tcp = null;
-                    _master = null;
-
-                    await Task.Delay(5000);
+                    Console.WriteLine($"PLC[{_device.DeviceName}] → CONNECT ERROR: {ex.Message}");
+                    await Task.Delay(3000);
                 }
             }
         }
 
-       
-        private async Task PollRegistersAsync()
+
+        // ---------------------------------------------------------
+        // POLL ALL TAG GROUPS
+        // ---------------------------------------------------------
+        private async Task<Dictionary<uint, object>> PollAllGroups()
         {
+            var result = new Dictionary<uint, object>();
+
             try
             {
                 if (_master == null || _tcp == null || !_tcp.Connected)
                 {
                     await ConnectAsync();
-                    return;
+                    return result;
                 }
 
-                // MODBUS parameters
-                byte slaveId = 1;
-                ushort startAddress = 0;   // 40001
-                ushort numRegisters = 12;  // read 12 holding registers--> later fetch from config
+                // Group tags by ModbusAddress (int)
+                var groups = _tags
+                    .GroupBy(t => t.ModbusAddress)
+                    .ToList();
 
-                // NModbus READ FC03
-                ushort[] values = await Task.Run(() =>
-                    _master.ReadHoldingRegisters(slaveId, startAddress, numRegisters)
-                );
+                foreach (var g in groups)
+                {
+                    int baseAddress = g.Key;   // Key is already int
 
-                // Convert array → dictionary
-                var dict = new Dictionary<uint, object>();
+                    // Example: Modbus Holding Register 40001 → offset starts from 0
+                    ushort start = (ushort)(baseAddress - 40001);
 
-                for (uint i = 0; i < values.Length; i++)
-                    dict[40001 + i] = values[i];
+                    // Max length in case multi-register tags come later
+                    ushort len = (ushort)g.Max(t => t.Length);
 
-                // Fire callback
-                OnPlcDataReceived?.Invoke(dict);
+                    // Read the holding registers from PLC
+                    ushort[] values = _master.ReadHoldingRegisters(1, start, len);
+
+                    foreach (var tag in g)
+                    {
+                        uint address = (uint)tag.ModbusAddress;  // No parsing needed
+
+                        // For now, using only first value (1-register tags)
+                        ushort rawValue = values[0];
+
+                        result[address] = rawValue;
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"PLC Poll ERROR: {ex.Message}. Attempting reconnection...");
-                _tcp?.Dispose();
-                _tcp = null;
-                _master = null;
-
-                await Task.Delay(2000);
+                Console.WriteLine($"PLC[{_device.DeviceName}] → POLL ERROR: {ex.Message}");
+                await Task.Delay(1000);
+                await ConnectAsync();
             }
+
+            return result;
         }
+
+
     }
 }
