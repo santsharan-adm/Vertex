@@ -4,7 +4,7 @@
 
     <Grid>
 
-        <Viewbox Stretch="UniformToFill">
+        <Viewbox Margin="-8" Stretch="UniformToFill">
             <Image Source="/IPCSoftware.App;component/Controls/Images/aoiLogoNew.png"
                    Stretch="UniformToFill"/>
         </Viewbox>

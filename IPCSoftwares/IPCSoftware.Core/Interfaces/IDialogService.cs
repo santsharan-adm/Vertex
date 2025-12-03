@@ -9,5 +9,8 @@ namespace IPCSoftware.Core.Interfaces
     public interface IDialogService
     {
         void ShowMessage(string message);
+
+        bool ShowYesNo(string message, string title = "Confirm");
+
     }
 }

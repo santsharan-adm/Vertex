@@ -1,6 +1,8 @@
 ﻿using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Services;
 using IPCSoftware.Shared;
+using System.Globalization;
 using System.Windows.Input;
 
 
@@ -9,6 +11,7 @@ namespace IPCSoftware.App.ViewModels;
 public class RibbonViewModel : BaseViewModel
 {
     private readonly INavigationService _nav;
+    private readonly IDialogService _dialog;
 
     public ICommand NavigateDashboardCommand { get; }
 
@@ -27,7 +30,7 @@ public class RibbonViewModel : BaseViewModel
 
     public Action<(string Key, List<string> Items)> ShowSidebar { get; set; }   // NEW
 
-    public RibbonViewModel(INavigationService nav)
+    public RibbonViewModel(INavigationService nav, IDialogService dialog)
     {
         _nav = nav;
 
@@ -38,29 +41,12 @@ public class RibbonViewModel : BaseViewModel
 
         LogoutCommand = new RelayCommand(Logout);
         NavigateLandingPageCommand = new RelayCommand(OpenLandingPage);
+        _dialog = dialog;
     }
 
     public bool IsAdmin => UserSession.Role == "Admin";
-    public string CurrentUserName => UserSession.Username.ToUpper() ?? "Guest";
-  /*  private void OpenDashboardMenu()
-    {
-        var dict = new Dictionary<string, List<string>>();
-        string functionName = nameof(OpenDashboardMenu); // "OpenDashboardMenu"
-        string key = functionName.Replace("Open", "");   // "DashboardMenu"
+    public string CurrentUserName => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Username.ToLower()) ?? "Guest";
 
-        if (!dict.ContainsKey(key))
-        {
-            dict[key] = new List<string>
-        {
-            "OEE Dashboard",
-            "Machine Summary",
-            "Performance KPIs"
-        };
-        }
-
-        ShowSidebar?.Invoke(dict
-        );
-    }*/
 
     private void OpenDashboardMenu()
     {
@@ -138,10 +124,17 @@ public class RibbonViewModel : BaseViewModel
 
     private void Logout()
     {
-        OnLogout?.Invoke();
-        _nav.ClearTop();
-        _nav.NavigateMain<LoginView>();
-        UserSession.Clear();
+        bool confirm = _dialog.ShowYesNo("Are you sure you want to logout?", "Logout");
+
+        if (confirm)
+        {
+            // proceed delete
+            OnLogout?.Invoke();
+            _nav.ClearTop();
+            _nav.NavigateMain<LoginView>();
+            UserSession.Clear();
+        }
+       
     }
 
 

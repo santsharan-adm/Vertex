@@ -1,0 +1,43 @@
+﻿using IPCSoftware.App.ViewModels;
+using IPCSoftware.App.Views;
+using IPCSoftware.Core.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+
+namespace IPCSoftware.App.NavServices
+{
+    public class DialogService : IDialogService
+    {
+        public bool ShowYesNo(string message, string title = "Confirm")
+        {
+            // TRUE = Confirmation (Red button, Show Cancel)
+            var vm = new CustomMessageBoxViewModel(message, title, "Yes", "Cancel", true);
+            return ShowWindow(vm);
+        }
+
+        public void ShowMessage(string message)
+        {
+            // FALSE = Info (Blue button, Hide Cancel)
+            var vm = new CustomMessageBoxViewModel(message, "Information", "OK", "", false);
+            ShowWindow(vm);
+        }
+
+        // Helper method to reduce code duplication
+        private bool ShowWindow(CustomMessageBoxViewModel vm)
+        {
+            var msgBox = new CustomMessageBox();
+            if (Application.Current.MainWindow != null)
+            {
+                msgBox.Owner = Application.Current.MainWindow;
+            }
+            msgBox.Initialize(vm);
+            var result = msgBox.ShowDialog();
+            return result == true;
+        }
+    }
+
+}

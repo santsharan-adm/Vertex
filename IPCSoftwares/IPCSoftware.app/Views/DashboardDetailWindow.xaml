@@ -4,76 +4,76 @@
         Title="Details" Height="450" Width="700"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None" ResizeMode="NoResize"
-        Background="#F9F9F9" BorderBrush="#CCCCCC" BorderThickness="1">
+        AllowsTransparency="True" Background="Transparent" BorderThickness="1">
+    <Border Background="White" BorderBrush="#E0E0E0" BorderThickness="2" CornerRadius="16" Margin="10">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <TextBlock Text="{Binding WindowTitle}" 
+            <TextBlock Text="{Binding WindowTitle}" 
                    Foreground="#333333" 
                    FontSize="28" 
                    FontWeight="Bold" 
                    Margin="0,0,0,20"/>
 
-        <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="20">
-            <Border.Effect>
-                <DropShadowEffect Color="#DDD" BlurRadius="10" Opacity="0.5"/>
-            </Border.Effect>
+            <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect Color="#DDD" BlurRadius="10" Opacity="0.5"/>
+                </Border.Effect>
 
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="METRIC" Foreground="#888" FontWeight="Bold" FontSize="14"/>
-                    <TextBlock Grid.Column="1" Text="CURRENT" Foreground="#888" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
-                    <TextBlock Grid.Column="2" Text="WEEKLY" Foreground="#888" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
-                    <TextBlock Grid.Column="3" Text="MONTHLY" Foreground="#888" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
-                </Grid>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="METRIC" Foreground="#888" FontWeight="Bold" FontSize="14"/>
+                        <TextBlock Grid.Column="1" Text="CURRENT" Foreground="#888" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="2" Text="WEEKLY" Foreground="#888" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="3" Text="MONTHLY" Foreground="#888" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+                    </Grid>
 
-                <Border Grid.Row="1" Height="1" Background="#EEEEEE" Margin="0,10"/>
+                    <Border Grid.Row="1" Height="1" Background="#EEEEEE" Margin="0,10"/>
 
-                <ItemsControl Grid.Row="2" ItemsSource="{Binding DetailRows}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                    <ItemsControl Grid.Row="2" ItemsSource="{Binding DetailRows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <TextBlock Text="{Binding MetricName}" 
+                                    <TextBlock Text="{Binding MetricName}" 
                                            Foreground="#333" 
                                            FontSize="18" 
                                            FontWeight="SemiBold"
                                            VerticalAlignment="Center"/>
 
-                                <TextBlock Grid.Column="1" Text="{Binding CurrentVal}" Foreground="#4CAF50" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                <TextBlock Grid.Column="2" Text="{Binding WeeklyVal}" Foreground="#1976D2" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                <TextBlock Grid.Column="3" Text="{Binding MonthlyVal}" Foreground="#F57C00" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </Grid>
-        </Border>
+                                    <TextBlock Grid.Column="1" Text="{Binding CurrentVal}" Foreground="#4CAF50" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding WeeklyVal}" Foreground="#1976D2" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="3" Text="{Binding MonthlyVal}" Foreground="#F57C00" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
 
-        <Button Grid.Row="2" Content="❌ Close" 
+            <Button Grid.Row="2" Content="❌ Close" 
                 Command="{Binding CloseCommand}"
                 Width="120" Height="45" 
                 HorizontalAlignment="Right" 
@@ -83,11 +83,12 @@
                 Foreground="#333" 
                 BorderThickness="0"
                 FontSize="16" FontWeight="SemiBold">
-            <Button.Resources>
-                <Style TargetType="Border">
-                    <Setter Property="CornerRadius" Value="8"/>
-                </Style>
-            </Button.Resources>
-        </Button>
-    </Grid>
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="8"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </Grid>
+    </Border>
 </Window>

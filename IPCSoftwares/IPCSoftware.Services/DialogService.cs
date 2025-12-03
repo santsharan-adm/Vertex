@@ -8,11 +8,23 @@ using System.Windows;
 
 namespace IPCSoftware.Services
 {
-    public class DialogService : IDialogService
-    {
-        public void ShowMessage(string message)
-        {
-            MessageBox.Show(message);
-        }
-    }
+    //public class DialogService : IDialogService
+    //{
+    //    public void ShowMessage(string message)
+    //    {
+    //        MessageBox.Show(message);
+    //    }
+
+
+    //    public bool ShowYesNo(string message, string title = "Confirm")
+    //    {
+    //        var result = MessageBox.Show(
+    //            message,
+    //            title,
+    //            MessageBoxButton.YesNo,
+    //            MessageBoxImage.Question);
+
+    //        return result == MessageBoxResult.Yes;
+    //    }
+    //}
 }

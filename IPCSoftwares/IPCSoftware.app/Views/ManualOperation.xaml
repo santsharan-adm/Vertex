@@ -5,22 +5,19 @@
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ManualOperationViewModel}"
-             Background="#F0F2F5" >
+             Background="#F0F2F5">
 
     <UserControl.Resources>
-
         <Geometry x:Key="Icon_Up">M6,18V10H2L12,0L22,10H18V18H6Z</Geometry>
         <Geometry x:Key="Icon_Down">M18,6V14H22L12,24L2,14H6V6H18Z</Geometry>
         <Geometry x:Key="Icon_Forward">M6,6H14V2L24,12L14,22V18H6V6Z</Geometry>
         <Geometry x:Key="Icon_Backward">M18,18H10V22L0,12L10,2V6H18V18Z</Geometry>
-        <!-- Converters -->
+
         <conv:EqualityConverter x:Key="EqualityConverter"/>
         <conv:EnumToSymbolConverter x:Key="EnumToSymbolConverter"/>
         <conv:GroupVisibilityConverter x:Key="GroupVisibilityConverter"/>
+        <!--<conv:EnumToPathConverter x:Key="EnumToPathConverter"/>-->
 
-        <!-- ================= STYLES ================= -->
-
-        <!-- 1. Card Style -->
         <Style x:Key="CardStyle" TargetType="Border">
             <Setter Property="Background" Value="White"/>
             <Setter Property="CornerRadius" Value="8"/>
@@ -33,20 +30,20 @@
             </Setter>
         </Style>
 
-        <!-- 2. Section Header Style -->
-        <Style x:Key="SectionHeaderStyle"  TargetType="TextBlock">
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="30"/>
             <Setter Property="FontWeight" Value="DemiBold"/>
             <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="Margin" Value="5,0,0,10"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
         </Style>
 
         <Style x:Key="ManualModeButtonStyle" TargetType="Button">
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-    
+            <Setter Property="Height" Value="110"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="Margin" Value="5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="6"/>
             <Setter Property="FontSize" Value="24"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -60,14 +57,11 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="#CCCCCC"
                                 BorderThickness="1">
-                            <!-- Removed the Grid/Indicator logic, just content now -->
                             <ContentPresenter HorizontalAlignment="Center" 
                                               VerticalAlignment="Center"
                                               Margin="10"/>
                         </Border>
-
                         <ControlTemplate.Triggers>
-                            <!-- Hover Effect -->
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
                                     <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
@@ -84,7 +78,6 @@
                                 <Setter TargetName="border" Property="Background" Value="#D6D6D6"/>
                             </MultiDataTrigger>
 
-                            <!-- Pressed Effect -->
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="border" Property="RenderTransform">
                                     <Setter.Value>
@@ -93,7 +86,6 @@
                                 </Setter>
                             </Trigger>
 
-                            <!-- Selected State (Green) -->
                             <DataTrigger Value="True">
                                 <DataTrigger.Binding>
                                     <MultiBinding Converter="{StaticResource EqualityConverter}">
@@ -102,10 +94,8 @@
                                         <Binding Path="Mode"/>
                                     </MultiBinding>
                                 </DataTrigger.Binding>
-
                                 <Setter TargetName="border" Property="Background" Value="#0F9D58"/>
                                 <Setter Property="Foreground" Value="White"/>
-                                <!-- Removed Indicator Setter -->
                                 <Setter TargetName="border" Property="Effect">
                                     <Setter.Value>
                                         <DropShadowEffect Color="#0F9D58" BlurRadius="10" ShadowDepth="0" Opacity="0.4"/>
@@ -118,150 +108,151 @@
             </Setter>
         </Style>
 
-
-        <!-- Standard ItemContainerStyle for Stretching Buttons -->
         <Style x:Key="StretchItemStyle" TargetType="ContentPresenter">
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
+
+        <DataTemplate x:Key="SharedButtonTemplate">
+            <Button Style="{StaticResource ManualModeButtonStyle}"
+            Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+            CommandParameter="{Binding Mode}">
+                <Grid>
+                    <Path x:Name="IconPath"
+                  Stretch="Uniform"
+                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                  Width="50" Height="50"
+                  Visibility="Collapsed"/>
+
+                    <TextBlock x:Name="TextLabel"
+                       Text="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
+                       FontSize="40" FontWeight="Bold"
+                       Visibility="Visible"/>
+                </Grid>
+            </Button>
+            <!--<DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Mode}" Value="TrayLiftUp">
+                    <Setter TargetName="IconPath" Property="Visibility" Value="Visible"/>
+                    <Setter TargetName="TextLabel" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="IconPath" Property="Data" Value="{StaticResource Icon_Up}"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding Mode}" Value="TrayLiftDown">
+                    <Setter TargetName="IconPath" Property="Visibility" Value="Visible"/>
+                    <Setter TargetName="TextLabel" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="IconPath" Property="Data" Value="{StaticResource Icon_Down}"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding Mode}" Value="PositioningCylinderUp">
+                    <Setter TargetName="IconPath" Property="Visibility" Value="Visible"/>
+                    <Setter TargetName="TextLabel" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="IconPath" Property="Data" Value="{StaticResource Icon_Up}"/>
+                </DataTrigger>
+                
+                <DataTrigger Binding="{Binding Mode}" Value="PositioningCylinderUp">
+                    <Setter TargetName="IconPath" Property="Visibility" Value="Visible"/>
+                    <Setter TargetName="TextLabel" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="IconPath" Property="Data" Value="{StaticResource Icon_Up}"/>
+                </DataTrigger>
+
+            </DataTemplate.Triggers>-->
+        </DataTemplate>
+
     </UserControl.Resources>
 
-    <!-- ========== MAIN LAYOUT ========== -->
     <Viewbox Stretch="Uniform">
-        <Grid  Margin="20">
+        <Grid Margin="20">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <!-- Left Side (Machine) -->
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="1.5*"/>
-                <!-- Right Side (Position) -->
             </Grid.ColumnDefinitions>
 
-            <!-- ================= LEFT PANEL ================= -->
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1.7*"/>
-                    <!-- Row 1: Tray & Cylinder -->
-                    <RowDefinition Height="1*"/>
-                    <!-- Row 2: Conveyor -->
-                    <RowDefinition Height="1*"/>
-                    <!-- Row 3: X Axis -->
-                
-                    <!-- Row 4: Y Axis -->
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- ROW 1: Tray Lift & Positioning Cylinder -->
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Tray Lift -->
                     <Border Grid.Column="0" Style="{StaticResource CardStyle}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Text="Tray Lift" HorizontalAlignment="Center" Style="{StaticResource SectionHeaderStyle}"/>
-
-                            <ItemsControl Grid.Row="1" ItemsSource="{Binding TrayModes}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                            <TextBlock Text="Tray Lift" Style="{StaticResource SectionHeaderStyle}"/>
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding TrayModes}" 
+                                          ItemTemplate="{StaticResource SharedButtonTemplate}"
+                                          ItemContainerStyle="{StaticResource StretchItemStyle}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Columns="1"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Button FontSize="50" Style="{StaticResource ManualModeButtonStyle}"
-                                                Content="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
-                                                Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                CommandParameter="{Binding Mode}"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </Grid>
                     </Border>
 
-                    <!-- Positioning Cylinder -->
                     <Border Grid.Column="1" Style="{StaticResource CardStyle}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Text="Pos. Cylinder" HorizontalAlignment="Center" Style="{StaticResource SectionHeaderStyle}"/>
-
-                            <ItemsControl Grid.Row="1" ItemsSource="{Binding CylinderModes}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                            <TextBlock Text="Pos. Cylinder" Style="{StaticResource SectionHeaderStyle}"/>
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding CylinderModes}" 
+                                          ItemTemplate="{StaticResource SharedButtonTemplate}"
+                                          ItemContainerStyle="{StaticResource StretchItemStyle}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Columns="1"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Button FontSize="50" Style="{StaticResource ManualModeButtonStyle}"
-                                                Content="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
-                                                Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                CommandParameter="{Binding Mode}"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </Grid>
                     </Border>
                 </Grid>
 
-               
-                <!-- ROW 3: Manual X-Axis -->
                 <Border Grid.Row="1" Style="{StaticResource CardStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="Manual X-Axis" HorizontalAlignment="Center" Style="{StaticResource SectionHeaderStyle}"/>
-
-                        <ItemsControl Grid.Row="1" ItemsSource="{Binding XAxisModes}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                        <TextBlock Text="Manual X-Axis" Style="{StaticResource SectionHeaderStyle}"/>
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding XAxisModes}" 
+                                      ItemTemplate="{StaticResource SharedButtonTemplate}"
+                                      ItemContainerStyle="{StaticResource StretchItemStyle}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <UniformGrid Columns="3"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button FontSize="40" Style="{StaticResource ManualModeButtonStyle}"
-                                            Content="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
-                                            Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding Mode}"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Grid>
                 </Border>
 
-                <!-- ROW 4: Manual Y-Axis -->
                 <Border Grid.Row="2" Style="{StaticResource CardStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="Manual Y-Axis" HorizontalAlignment="Center" Style="{StaticResource SectionHeaderStyle}"/>
-
-                        <ItemsControl Grid.Row="1" ItemsSource="{Binding YAxisModes}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                        <TextBlock Text="Manual Y-Axis" Style="{StaticResource SectionHeaderStyle}"/>
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding YAxisModes}" 
+                                      ItemTemplate="{StaticResource SharedButtonTemplate}"
+                                      ItemContainerStyle="{StaticResource StretchItemStyle}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <UniformGrid Columns="3"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button FontSize=" 40" Style="{StaticResource ManualModeButtonStyle}"
-                                            Content="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
-                                            Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding Mode}"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Grid>
                 </Border>
@@ -270,18 +261,17 @@
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto" MinHeight="250"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Border Style="{StaticResource CardStyle}">
+                <Border Grid.Row="0" Style="{StaticResource CardStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-
-                        <TextBlock Text="Move to Position" HorizontalAlignment="Center" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="Move to Position" Style="{StaticResource SectionHeaderStyle}"/>
 
                         <Grid Grid.Row="1" Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
@@ -290,38 +280,42 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-
                             <Button Grid.Column="1" Grid.ColumnSpan="2"
-                        DataContext="{Binding HomePositionMode}"
-                        Style="{StaticResource ManualModeButtonStyle}" 
-                        FontSize="36" 
-                        Height="80"
-                        Content="HOME POS"
-                        Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        CommandParameter="{Binding Mode}">
+                                    Content="HOME POS"
+                                    FontWeight="Bold"
+                                    FontSize="36"
+                                    Style="{StaticResource ManualModeButtonStyle}"
+                                    DataContext="{Binding HomePositionMode}"
+                                    Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding Mode}">
+                                <Button.Resources>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ManualModeButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Value="True">
+                                                <DataTrigger.Binding>
+                                                    <MultiBinding Converter="{StaticResource EqualityConverter}">
+                                                        <Binding Path="DataContext.SelectedGroupButtons" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                        <Binding Path="Group"/>
+                                                        <Binding Path="Mode"/>
+                                                    </MultiBinding>
+                                                </DataTrigger.Binding>
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Resources>
                             </Button>
                         </Grid>
 
-                        <ItemsControl Grid.Row="2" 
-                          ItemsSource="{Binding GridPositionModes}" 
-                          ItemContainerStyle="{StaticResource StretchItemStyle}">
+                        <ItemsControl Grid.Row="2" ItemsSource="{Binding GridPositionModes}" 
+                                      ItemTemplate="{StaticResource SharedButtonTemplate}"
+                                      ItemContainerStyle="{StaticResource StretchItemStyle}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <UniformGrid Columns="4"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
-
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Style="{StaticResource ManualModeButtonStyle}" 
-                                FontSize="40"
-                                Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                CommandParameter="{Binding Mode}">
-                                        <TextBlock Text="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}" 
-                                       FontSize="40" FontWeight="Bold"/>
-                                    </Button>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Grid>
                 </Border>
@@ -332,95 +326,19 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="Transport Conveyor" HorizontalAlignment="Center" Style="{StaticResource SectionHeaderStyle}"/>
-                        <ItemsControl Grid.Row="1" ItemsSource="{Binding ConveyorModes}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                        <TextBlock Text="Transport Conveyor" Style="{StaticResource SectionHeaderStyle}"/>
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding ConveyorModes}" 
+                                      ItemTemplate="{StaticResource SharedButtonTemplate}"
+                                      ItemContainerStyle="{StaticResource StretchItemStyle}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <UniformGrid Columns="4"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button FontSize ="40" Style="{StaticResource ManualModeButtonStyle}"
-     Content="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
-     Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-     CommandParameter="{Binding Mode}"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Grid>
                 </Border>
             </Grid>
-
-
-            <!--<Grid Grid.Column="1" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto" MinHeight="250"/>
-                </Grid.RowDefinitions>
-                <Border Style="{StaticResource CardStyle}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Move to Position" HorizontalAlignment="Center" Style="{StaticResource SectionHeaderStyle}"/>
-
-                        <ItemsControl Grid.Row="1" ItemsSource="{Binding PositionModes}" ItemContainerStyle="{StaticResource StretchItemStyle}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    --><!-- Grid-style layout for positions --><!--
-                                    <UniformGrid Columns="4"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Style="{StaticResource ManualModeButtonStyle}" FontSize="80"
-                             Content="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
-                             Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                             CommandParameter="{Binding Mode}"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </Grid>
-                </Border>
-                
-                
-                
-
-                --><!-- ROW 2: Transport Conveyor --><!--
-                <Border Grid.Row="1" Style="{StaticResource CardStyle}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Transport Conveyor" HorizontalAlignment="Center"  Style="{StaticResource SectionHeaderStyle}"/>
-
-                        <ItemsControl Grid.Row="1" ItemsSource="{Binding ConveyorModes}" ItemContainerStyle="{StaticResource StretchItemStyle}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="4"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button FontSize ="40" Style="{StaticResource ManualModeButtonStyle}"
-                             Content="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
-                             Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                             CommandParameter="{Binding Mode}"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </Grid>
-                </Border>
-
-
-            </Grid>-->
-            
-            
-            <!-- ================= RIGHT PANEL (Move to Position) ================= -->
-           
         </Grid>
     </Viewbox>
 </UserControl>
