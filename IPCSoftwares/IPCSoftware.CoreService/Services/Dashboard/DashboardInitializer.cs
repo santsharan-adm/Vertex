@@ -65,7 +65,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         }
 
 
-        private ResponsePackage HandleUiRequest(RequestPackage request)
+        public ResponsePackage HandleUiRequest(RequestPackage request)
         {
             if (request.RequestId != 4)
                 return new ResponsePackage

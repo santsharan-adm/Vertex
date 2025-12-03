@@ -1,6 +1,7 @@
 ﻿using IPCSoftware.CoreService.Services;
 using IPCSoftware.CoreService.Services.Dashboard;
 using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -25,67 +26,7 @@ namespace IPCSoftware.CoreService
 
         }
 
-        //protected override Task ExecuteAsync(CancellationToken stoppingToken)
-        //{
-        //    var tagLoader = new TagConfigLoader();
 
-        //    _plcManager = new PLCClientManager(devices, tags);
-        //    //var tags = tagLoader.Load(tagConfigPath);
-
-        //    // ----------------------------------------------------------
-        //    // STEP 1: Locate IPCSoftware.App/Data folder dynamically
-        //    // ----------------------------------------------------------
-
-        //    // exePath = ...\IPCSoftware.CoreService\bin\Debug\net8.0-windows\
-        //    var exePath = AppContext.BaseDirectory;
-
-        //    // Move upward from CoreService → bin → Debug → net8 → CoreService project folder
-        //    var coreServiceFolder = Directory.GetParent(exePath)     // net8.0-windows
-        //                                    .Parent                 // Debug
-        //                                    .Parent                 // bin
-        //                                    .Parent;                // IPCSoftware.CoreService
-
-        //    // Move to solution root
-        //    var rootFolder = coreServiceFolder.Parent;               // root folder containing both projects
-
-        //    // Now point to the App project's Data folder
-        //    var appDataFolder = Path.Combine(
-        //        rootFolder.FullName,
-        //        "IPCSoftware.App",
-        //        "bin",
-        //        "Debug",
-        //        "net8.0-windows",
-        //        "Data"
-        //    );
-
-        //    var configPath = Path.Combine(appDataFolder, "DeviceInterfaces.csv");
-
-        //    Console.WriteLine("Reading PLC Config from: " + configPath);
-
-        //    // ----------------------------------------------------------
-        //    // STEP 2: Load PLC configuration CSV
-        //    // ----------------------------------------------------------
-
-        //    var loader = new DeviceConfigLoader();
-        //    _plcDevices = loader.Load(configPath);   // store globally
-
-        //    Console.WriteLine($"Loaded {_plcDevices.Count} PLC devices.");
-
-        //    // ----------------------------------------------------------
-        //    // STEP 3: Core Service startup logs
-        //    // ----------------------------------------------------------
-
-        //    _logger.LogWarning("=== WORKER EXECUTE CALLED ===");
-        //    _logger.LogInformation("Dashboard Engine Starting...");
-
-        //    // ----------------------------------------------------------
-        //    // STEP 4: Start Dashboard/PLC Engine
-        //    // ----------------------------------------------------------
-        //    _dashboard = new DashboardInitializer(_plcDevices);
-        //    _dashboard.Start();
-
-        //    return Task.CompletedTask;
-        //}
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -124,8 +65,18 @@ namespace IPCSoftware.CoreService
             _dashboard = new DashboardInitializer(_plcManager);
             _dashboard.Start();
 
+            // STEP 6: Start UI Listener (THIS WAS MISSING)
+            var uiListener = new UiListener(5050);
+
+            // IMPORTANT: Link dashboard handler
+            uiListener.OnRequestReceived = _dashboard.HandleUiRequest;
+
+            Console.WriteLine("Starting UI Listener...");
+            _ = uiListener.StartAsync();
+
             return Task.CompletedTask;
         }
+
 
 
     }

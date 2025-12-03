@@ -42,7 +42,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<OEEDashboardViewModel>();
             services.AddSingleton<OeeDashboardNewViewModel>();
-            services.AddSingleton<LiveOeeViewModel>();
+            
 
             // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
             services.AddTransient<LogListViewModel>();

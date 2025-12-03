@@ -101,23 +101,30 @@ namespace IPCSoftware.CoreService.Services.PLC
                     return result;
                 }
 
-                // Group tags by ModbusAddress
+                // Group tags by ModbusAddress (int)
                 var groups = _tags
                     .GroupBy(t => t.ModbusAddress)
                     .ToList();
 
                 foreach (var g in groups)
                 {
-                    // Example: 40001 → offset = 0
-                    ushort start = (ushort)(int.Parse(g.Key) - 40001);
+                    int baseAddress = g.Key;   // Key is already int
+
+                    // Example: Modbus Holding Register 40001 → offset starts from 0
+                    ushort start = (ushort)(baseAddress - 40001);
+
+                    // Max length in case multi-register tags come later
                     ushort len = (ushort)g.Max(t => t.Length);
 
+                    // Read the holding registers from PLC
                     ushort[] values = _master.ReadHoldingRegisters(1, start, len);
 
                     foreach (var tag in g)
                     {
-                        uint address = uint.Parse(tag.ModbusAddress);
-                        ushort rawValue = values[0];  // Each block has 1 value for now
+                        uint address = (uint)tag.ModbusAddress;  // No parsing needed
+
+                        // For now, using only first value (1-register tags)
+                        ushort rawValue = values[0];
 
                         result[address] = rawValue;
                     }
@@ -132,5 +139,7 @@ namespace IPCSoftware.CoreService.Services.PLC
 
             return result;
         }
+
+
     }
 }

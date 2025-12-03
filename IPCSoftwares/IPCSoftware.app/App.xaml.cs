@@ -25,6 +25,8 @@ namespace IPCSoftware.App
 
             ServiceProvider = services.BuildServiceProvider();
 
+
+
             TcpClient = new UiTcpClient();
 
             TcpClient.DataReceived += (json) =>
@@ -43,7 +45,7 @@ namespace IPCSoftware.App
                 {
                     // Optional: log JSON errors
                     var logger = ServiceProvider.GetService<ILogManagerService>();
-                   
+
                 }
             };
 
