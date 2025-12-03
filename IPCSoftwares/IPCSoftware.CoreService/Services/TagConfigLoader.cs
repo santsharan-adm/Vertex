@@ -20,7 +20,7 @@ namespace IPCSoftware.CoreService.Services
                         TagNo = int.Parse(r[1]),
                         Name = r[2],
                         PLCNo = int.Parse(r[3]),
-                        ModbusAddress = r[4],
+                        ModbusAddress = int.Parse(r[4]),
                         Length = int.Parse(r[5]),
                         AlgNo = int.Parse(r[6]),
                         Offset = int.Parse(r[7]),

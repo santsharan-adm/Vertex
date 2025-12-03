@@ -10,7 +10,7 @@ namespace IPCSoftware.App.Views
             InitializeComponent();
 
             // STEP 1: This runs ViewModel constructor
-            this.DataContext = new LiveOeeViewModel();
+            //this.DataContext = new LiveOeeViewModel();
         }
     }
 }

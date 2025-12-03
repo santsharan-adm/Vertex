@@ -83,10 +83,13 @@ namespace IPCSoftware.CoreService.Services.UI
                             ? OnRequestReceived(request)
                             : new ResponsePackage { ResponseId = -1 };
 
+                        // Only ONE newline terminator
                         string outJson = MessageSerializer.Serialize(response) + "\n";
 
                         Console.WriteLine("SENDING TO UI: " + outJson.Trim());
-                        await stream.WriteAsync(Encoding.UTF8.GetBytes(outJson + "\n"));
+
+                        // Write exactly ONE newline — DO NOT ADD EXTRA
+                        await stream.WriteAsync(Encoding.UTF8.GetBytes(outJson));
                     }
                 }
             }

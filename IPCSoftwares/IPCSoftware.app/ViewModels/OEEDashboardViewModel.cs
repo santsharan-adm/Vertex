@@ -93,17 +93,12 @@ namespace IPCSoftware.App.ViewModels
                 new PieSliceModel { Label="Rework", Value=20 }
             };
 
-            // ----- SUMMARY -----
-            OperatingTime = "7h 32m";
-            Downtime = "28m";
-            GoodUnits = 1325;
-            RejectedUnits = 48;
-            Remarks = "All processes stable.";
+           
 
 
         public OEEDashboardViewModel()
         {
-            ToggleThemeCommand = new RelayCommand(ToggleTheme);
+            //ToggleThemeCommand = new RelayCommand(ToggleTheme);
             // Load default theme on startup
            // SetTheme("Styles/DarkTheme.xaml");
             // ----- HEADER -----
@@ -124,7 +119,7 @@ namespace IPCSoftware.App.ViewModels
 
 
             {
-                ShowImageCommand = new RelayCommand<CameraImageModel>(ShowImage);
+                //ShowImageCommand = new RelayCommand<CameraImageModel>(ShowImage);
             }
 
 
