@@ -54,12 +54,12 @@ namespace IPCSoftware.App.Converters
             return mode switch
             {
                 // Tray Lift
-                ManualOperationMode.TrayLiftUp => "⮝ UP",
-                ManualOperationMode.TrayLiftDown => "⮟ DOWN",
+                ManualOperationMode.TrayLiftUp => "▲ UP",
+                ManualOperationMode.TrayLiftDown => "▼ DOWN",
 
                 // Positioning Cylinder
-                ManualOperationMode.PositioningCylinderUp => "⮝ UP",
-                ManualOperationMode.PositioningCylinderDown => "⮟ DOWN",
+                ManualOperationMode.PositioningCylinderUp => "▲ UP",
+                ManualOperationMode.PositioningCylinderDown => "▼ DOWN",
 
                 // Transport Conveyor
                 ManualOperationMode.TransportConveyorReverse => "◀ REV",
@@ -73,8 +73,8 @@ namespace IPCSoftware.App.Converters
                 ManualOperationMode.XAxisJogSpeedSwitching => "⚡ SPEED",
 
                 // Y-Axis Jog
-                ManualOperationMode.ManualYAxisJogForward => "⮝ UP",
-                ManualOperationMode.ManualYAxisJogBackward => "⮟ DOWN",
+                ManualOperationMode.ManualYAxisJogForward => "▲ UP",
+                ManualOperationMode.ManualYAxisJogBackward => "▼ DOWN",
                 ManualOperationMode.YAxisJogSpeedSwitching => "⚡ SPEED",
 
                 // Positions (Just numbers now)

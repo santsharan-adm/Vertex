@@ -16,6 +16,7 @@ using System.Windows.Threading;
 public class MainWindowViewModel : BaseViewModel
 {
     private readonly INavigationService _nav;
+    private readonly IDialogService _dialog;
 
     public ICommand SidebarItemClickCommand { get; }
     public RibbonViewModel RibbonVM { get; }
@@ -55,7 +56,7 @@ public class MainWindowViewModel : BaseViewModel
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
     public string AppVersion => "AOI System v1.0.3";
 
-    public MainWindowViewModel(INavigationService nav, RibbonViewModel ribbonVM)
+    public MainWindowViewModel(INavigationService nav, IDialogService dialog,RibbonViewModel ribbonVM)
     {
         _timer = new DispatcherTimer
         {
@@ -70,6 +71,7 @@ public class MainWindowViewModel : BaseViewModel
         _nav = nav;
         RibbonVM = ribbonVM;
         RibbonVM.ShowSidebar = LoadSidebarMenu;
+        RibbonVM.OnLogout = CloseSideBar; 
         RibbonVM.OnLandingPageRequested = ResetLandingState;
         CloseAppCommand = new RelayCommand(ExecuteCloseApp);
         MinimizeAppCommand = new RelayCommand(ExecuteMinimizeApp);
@@ -84,12 +86,20 @@ public class MainWindowViewModel : BaseViewModel
             OnPropertyChanged(nameof(CurrentUserName));
             OnPropertyChanged(nameof(IsAdmin));
         };
+        _dialog = dialog;
     }
 
     private void ResetLandingState()
     {
         existingUserControl = string.Empty;   // clear selected page
         IsSidebarOpen = false;                // close sidebar if open
+    }
+
+    private void CloseSideBar()
+    {
+        IsSidebarOpen = false;
+        IsSidebarDocked = false;
+
     }
 
 
@@ -159,7 +169,14 @@ public class MainWindowViewModel : BaseViewModel
 
     private void ExecuteCloseApp()
     {
-        Application.Current.Shutdown();
+        bool confirm = _dialog.ShowYesNo("Close the application?", "Confirm Exit");
+
+        if (confirm)
+        {
+            Application.Current.Shutdown();
+        }
+           
+
     }
 
 

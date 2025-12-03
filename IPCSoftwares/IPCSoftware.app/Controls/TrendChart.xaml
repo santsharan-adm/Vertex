@@ -42,15 +42,15 @@
                    Margin="0 0 0 5"/>
 
         <!-- Tooltip -->
-        <Border x:Name="TooltipBox"
+        <!--<Border x:Name="TooltipBox"
                 Visibility="Collapsed"
-                Background="#333"
+                Background="{DynamicResource PageBackgroundBrush}"
                 BorderBrush="White"
                 BorderThickness="1"
                 Padding="5"
                 CornerRadius="6">
             <TextBlock x:Name="TooltipText" Foreground="White"/>
-        </Border>
+        </Border>-->
     </Grid>
 </UserControl>
 

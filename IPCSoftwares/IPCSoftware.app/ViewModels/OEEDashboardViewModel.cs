@@ -14,23 +14,17 @@ namespace IPCSoftware.App.ViewModels
     public class OEEDashboardViewModel : BaseViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private bool _isDarkTheme = true;
+        private bool _isDarkTheme = false;
         public ICommand ToggleThemeCommand { get; }
 
       
-        private string _currentThemePath = "/IPCSoftware.App;component/Styles/DarkTheme.xaml";
+        private string _currentThemePath = "/IPCSoftware.App;component/Styles/LightTheme.xaml";
 
         public string CurrentThemePath
         {
-            get
-            {
-                return _currentThemePath;
-            }
-            set
-            {
-                _currentThemePath = value;
-                 Notify(); 
-            }
+
+            get => _currentThemePath;
+            set => SetProperty(ref _currentThemePath, value);
         }
 
 
@@ -54,10 +48,7 @@ namespace IPCSoftware.App.ViewModels
         //    Application.Current.Resources.MergedDictionaries.Add(newDict);
         //}
 
-        private void Notify([CallerMemberName] string prop = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
+      
 
         // HEADER DATA
         public string CurrentDateTime { get; set; }
@@ -82,7 +73,7 @@ namespace IPCSoftware.App.ViewModels
         public List<double> CycleTrend
         {
             get => _cycleTrend;
-            set { _cycleTrend = value; Notify(); }
+            set  => SetProperty(ref _cycleTrend, value);
         }
 
         public ObservableCollection<PieSliceModel> OEEParts { get; set; } =
@@ -125,11 +116,10 @@ namespace IPCSoftware.App.ViewModels
                 ShowImageCommand = new RelayCommand<CameraImageModel>(ShowImage);
             }
 
-
             CycleTrend = new List<double>
-                {
-                    5.8, 6.0, 5.9, 6.1, 5.7, 6.2, 5.9, 6.3, 5.6
-                };
+{
+    2.8, 2.9, 2.7, 3.0, 2.8, 2.9, 2.85, 2.75, 2.9
+};
 
 
 
@@ -139,7 +129,8 @@ namespace IPCSoftware.App.ViewModels
             Timer.Tick += (s, e) =>
             {
                 CurrentDateTime = DateTime.Now.ToString("dddd, MMM dd yyyy HH:mm");
-                Notify(nameof(CurrentDateTime));
+
+                OnPropertyChanged(nameof(CurrentDateTime));
             };
             Timer.Start();
 
@@ -165,9 +156,9 @@ namespace IPCSoftware.App.ViewModels
                     break;
 
                 case "OEE":
-                    title = "OEE Score Analysis";
+                    title = "OEE Score Statistics";
                     data.Add(new MetricDetailItem { MetricName = "OEE Score", CurrentVal = "78%", WeeklyVal = "80%", MonthlyVal = "82%" });
-                    data.Add(new MetricDetailItem { MetricName = "Planned Prod.", CurrentVal = "480m", WeeklyVal = "2400m", MonthlyVal = "9600m" });
+  
                     break;
 
                 case "CycleTime":
@@ -177,12 +168,11 @@ namespace IPCSoftware.App.ViewModels
                     break;
                 case "OperatingTime":
                     title = "Operating Time";
-                    data.Add(new MetricDetailItem { MetricName = "Avg Cycle", CurrentVal = "2.9s", WeeklyVal = "3.1s", MonthlyVal = "3.0s" });
-                    data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "2.5s", WeeklyVal = "2.5s", MonthlyVal = "2.5s" });
+                    data.Add(new MetricDetailItem { MetricName = "Operating Time", CurrentVal = "2.9", WeeklyVal = "3.1", MonthlyVal = "3.0" });
                     break;
 
                 case "Downtime":
-                    title = "Downtime Analysis";
+                    title = "Downtime Statistics";
                     data.Add(new MetricDetailItem { MetricName = "Total Stop", CurrentVal = "00:12:45", WeeklyVal = "01:30:00", MonthlyVal = "05:45:00" });
                     data.Add(new MetricDetailItem { MetricName = "Minor Stops", CurrentVal = "00:04:15", WeeklyVal = "00:25:00", MonthlyVal = "01:40:00" });
                     data.Add(new MetricDetailItem { MetricName = "Changeover", CurrentVal = "00:08:30", WeeklyVal = "01:05:00", MonthlyVal = "04:05:00" });
@@ -190,15 +180,14 @@ namespace IPCSoftware.App.ViewModels
 
                 case "AvgCycle": // Or "CycleTime" depending on your CommandParameter
                     title = "Cycle Time Metrics";
-                    data.Add(new MetricDetailItem { MetricName = "Current Avg", CurrentVal = "2.9s", WeeklyVal = "3.0s", MonthlyVal = "2.95s" });
+                    data.Add(new MetricDetailItem { MetricName = "Actual Cycle", CurrentVal = "2.9s", WeeklyVal = "3.0s", MonthlyVal = "2.95s" });
                     data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "2.5s", WeeklyVal = "2.5s", MonthlyVal = "2.5s" });
-                    data.Add(new MetricDetailItem { MetricName = "Slow Cycles", CurrentVal = "15", WeeklyVal = "85", MonthlyVal = "320" });
+                  
                     break;
 
                 case "InFlow":
-                    title = "Input Flow Statistics";
+                    title = "Input Statistics";
                     data.Add(new MetricDetailItem { MetricName = "Total Input", CurrentVal = "1165", WeeklyVal = "8150", MonthlyVal = "32500" });
-                    data.Add(new MetricDetailItem { MetricName = "Feed Rate", CurrentVal = "20/min", WeeklyVal = "19/min", MonthlyVal = "19.5/min" });
                     break;
 
                 case "OK":
@@ -208,11 +197,9 @@ namespace IPCSoftware.App.ViewModels
                     break;
 
                 case "NG":
-                    title = "Rejection Analysis (NG)";
+                    title = "Rejection Statistics (NG)";
                     data.Add(new MetricDetailItem { MetricName = "Total Rejects", CurrentVal = "25", WeeklyVal = "170", MonthlyVal = "650" });
-                    data.Add(new MetricDetailItem { MetricName = "Reject Rate", CurrentVal = "2.1%", WeeklyVal = "2.0%", MonthlyVal = "1.9%" });
-                    data.Add(new MetricDetailItem { MetricName = "Top Defect", CurrentVal = "Scratch", WeeklyVal = "Dent", MonthlyVal = "Scratch" });
-                    break;
+                           break;
 
                     // Add more cases for "OperatingTime", "Downtime", "InFlow", etc.
             }
