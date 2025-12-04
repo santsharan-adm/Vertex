@@ -26,6 +26,16 @@ namespace IPCSoftware.App.NavServices
             ShowWindow(vm);
         }
 
+        public void ShowWarning(string message)
+        {
+            // FALSE = Info (Blue button, Hide Cancel)
+            var vm = new CustomMessageBoxViewModel(message, "Warning", "OK", "", false);
+            ShowWindow(vm);
+        }
+
+
+
+
         // Helper method to reduce code duplication
         private bool ShowWindow(CustomMessageBoxViewModel vm)
         {

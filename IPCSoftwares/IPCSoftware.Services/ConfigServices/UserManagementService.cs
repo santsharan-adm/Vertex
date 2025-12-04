@@ -16,6 +16,7 @@ namespace IPCSoftware.Services.ConfigServices
         private List<UserConfigurationModel> _users;
         private int _nextId = 1;
 
+
         public UserManagementService(string dataFolderPath = null)
         {
             _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
@@ -52,7 +53,18 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task<UserConfigurationModel> AddUserAsync(UserConfigurationModel user)
         {
+            // 1. Check for Duplicate Username
+            bool usernameExists = _users.Any(u => u.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase));
+
+            if (usernameExists)
+            {
+                // Return null or throw an exception to indicate failure
+                throw new InvalidOperationException("This Username is already taken.");
+            }
+
+            // 2. ID is auto-generated, ensuring uniqueness
             user.Id = _nextId++;
+
             _users.Add(user);
             await SaveToCsvAsync();
             return user;
@@ -62,6 +74,15 @@ namespace IPCSoftware.Services.ConfigServices
         {
             var existing = _users.FirstOrDefault(u => u.Id == user.Id);
             if (existing == null) return false;
+
+            // 1. Check for Duplicate Username (excluding the current user being edited)
+            bool usernameTaken = _users.Any(u => u.Id != user.Id &&
+                                                 u.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase));
+
+            if (usernameTaken)
+            {
+                throw new InvalidOperationException("This Username is already taken by another user.");
+            }
 
             var index = _users.IndexOf(existing);
             _users[index] = user;

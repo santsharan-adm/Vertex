@@ -9,12 +9,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace IPCSoftware.App.ViewModels
 {
     public class UserConfigurationViewModel : BaseViewModel
     {
         private readonly IUserManagementService _userService;
+        private readonly IDialogService _dialog;
         private UserConfigurationModel _currentUser;
         private bool _isEditMode;
         private string _title;
@@ -82,9 +84,10 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public UserConfigurationViewModel(IUserManagementService userService)
+        public UserConfigurationViewModel(IUserManagementService userService, IDialogService dialog)
         {
             _userService = userService;
+            _dialog = dialog;
 
             Roles = new ObservableCollection<string> { "Admin", "User", "Operator", "Viewer" };
 
@@ -138,20 +141,47 @@ namespace IPCSoftware.App.ViewModels
                    !string.IsNullOrWhiteSpace(Password);
         }
 
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set => SetProperty(ref _errorMessage, value);
+
+        }
+
         private async Task OnSaveAsync()
         {
+            ErrorMessage = string.Empty;
+
             SaveToModel();
 
-            if (IsEditMode)
+            try
             {
-                await _userService.UpdateUserAsync(_currentUser);
-            }
-            else
-            {
-                await _userService.AddUserAsync(_currentUser);
-            }
+                if (IsEditMode)
+                {
+                    await _userService.UpdateUserAsync(_currentUser);
+                }
+                else
+                {
+                    await _userService.AddUserAsync(_currentUser);
+                }
 
-            SaveCompleted?.Invoke(this, EventArgs.Empty);
+                // Only close/complete if successful
+                SaveCompleted?.Invoke(this, EventArgs.Empty);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Capture the "Username taken" message and show it in the UI
+
+                _dialog.ShowWarning(ex.Message);    
+                
+                ErrorMessage = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                // Handle generic errors
+               // ErrorMessage = "An unexpected error occurred: " + ex.Message;
+            }
         }
 
         private void OnCancel()
