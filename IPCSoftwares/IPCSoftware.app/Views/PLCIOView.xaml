@@ -3,110 +3,307 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             xmlns:converters="clr-namespace:IPCSoftware.App.Converters"
+        
              mc:Ignorable="d"
-             MinWidth="800" MinHeight="500">
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             Background="#F3F3F3">
 
-    <Grid Background="#FAFAFA" Margin="10">
+	<UserControl.Resources>
+		<converters:BoolToStatusColorConverter x:Key="BoolToStatusColorConverter"/>
 
-        <!-- Main layout: Search + Tabs -->
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+		<!-- Reuse Styles from PLCTagListView for Consistency -->
+		<Style x:Key="HmiColumnHeaderStyle" TargetType="DataGridColumnHeader">
+			<Setter Property="Height" Value="80"/>
+			<Setter Property="FontSize" Value="32"/>
+			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="Foreground" Value="#333333"/>
+			<Setter Property="Background" Value="#E0E0E0"/>
+			<Setter Property="BorderBrush" Value="#CCCCCC"/>
+			<Setter Property="BorderThickness" Value="0,0,1,1"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="Padding" Value="10,0"/>
+		</Style>
 
-        <!-- Search Box -->
-        <DockPanel Grid.Row="0" LastChildFill="True" Margin="0 0 0 10">
-            <TextBlock Text="Search:" VerticalAlignment="Center" Margin="0 0 5 0"/>
-            <TextBox Width="250"
-                     Margin="0 0 20 0"
-                     VerticalAlignment="Center"
-                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
-                     
-        </DockPanel>
+		<Style x:Key="HmiCellStyle" TargetType="DataGridCell">
+			<Setter Property="FontSize" Value="28"/>
+			<Setter Property="Padding" Value="10,0"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="DataGridCell">
+						<Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                SnapsToDevicePixels="True">
+							<ContentPresenter VerticalAlignment="Center"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+			<Style.Triggers>
+				<Trigger Property="IsSelected" Value="True">
+					<Setter Property="Background" Value="#CCE8FF"/>
+					<Setter Property="Foreground" Value="Black"/>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
 
-        <!-- Tabs -->
-        <TabControl Grid.Row="1"
-                    Margin="0"
-                    FontSize="14"
-                    SelectedIndex="{Binding SelectedTabIndex}">
+		<Style x:Key="CenterAlignedCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource HmiCellStyle}">
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		</Style>
 
-            <!-- INPUT TAB -->
-            <TabItem Header="INPUTS">
-                <Grid Margin="10">
+		<Style x:Key="LeftAlignedCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource HmiCellStyle}">
+			<Setter Property="HorizontalContentAlignment" Value="Left"/>
+			<Setter Property="Padding" Value="20,0,0,0"/>
+		</Style>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+		<!-- TabItem Style for big touch targets -->
+		<Style TargetType="TabItem">
+			<Setter Property="FontSize" Value="30"/>
+			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="Height" Value="60"/>
+			<Setter Property="Padding" Value="30,0"/>
+			<Setter Property="Background" Value="#DDD"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="TabItem">
+						<Border Name="Border" Background="{TemplateBinding Background}" BorderBrush="#BBB" BorderThickness="1,1,1,0" CornerRadius="8,8,0,0" Margin="0,0,5,0">
+							<ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" Margin="10,2"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsSelected" Value="True">
+								<Setter TargetName="Border" Property="Background" Value="White"/>
+								<Setter Property="Foreground" Value="#007ACC"/>
+							</Trigger>
+							<Trigger Property="IsSelected" Value="False">
+								<Setter TargetName="Border" Property="Background" Value="#EAEAEA"/>
+								<Setter Property="Foreground" Value="#666"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
 
-                    <!-- Left Input Column -->
-                    <ListView Grid.Column="0"
-                              Margin="5"
-                              ItemsSource="{Binding FilteredInputLeft}">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="SrNo" DisplayMemberBinding="{Binding Id}" Width="60"/>
-                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
-                                <GridViewColumn Header="Status" DisplayMemberBinding="{Binding DisplayStatus}" Width="80"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
+		<!-- Mobile-Style Toggle Switch Button -->
+		<Style x:Key="ToggleSwitchStyle" TargetType="ToggleButton">
+			<Setter Property="Width" Value="120"/>
+			<Setter Property="Height" Value="50"/>
+			<Setter Property="Cursor" Value="Hand"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="ToggleButton">
+						<Grid>
+							<!-- Background Track -->
+							<Border x:Name="Track"
+                                    Background="#DC3545"
+                                    CornerRadius="25"
+                                    BorderBrush="#CCCCCC"
+                                    BorderThickness="1">
+								<TextBlock x:Name="OffText" Text="OFF" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="White" FontWeight="Bold" FontSize="18"/>
+							</Border>
 
-                    <!-- Right Input Column -->
-                    <ListView Grid.Column="1"
-                              Margin="5"
-                              ItemsSource="{Binding FilteredInputRight}">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="SrNo" DisplayMemberBinding="{Binding Id}" Width="60"/>
-                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
-                                <GridViewColumn Header="Status" DisplayMemberBinding="{Binding DisplayStatus}" Width="80"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
+							<!-- Sliding Thumb -->
+							<Border x:Name="Thumb"
+                                    Width="44" Height="44"
+                                    HorizontalAlignment="Left"
+                                    Margin="3,0,0,0"
+                                    Background="White"
+                                    CornerRadius="22">
+								<Border.Effect>
+									<DropShadowEffect Color="Black" Opacity="0.3" BlurRadius="5" ShadowDepth="1"/>
+								</Border.Effect>
+							</Border>
 
-                </Grid>
-            </TabItem>
+							<!-- ON Text (Hidden by default) -->
+							<TextBlock x:Name="OnText" Text="ON" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0" Foreground="White" FontWeight="Bold" FontSize="18" Visibility="Collapsed"/>
+						</Grid>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsChecked" Value="True">
+								<Setter TargetName="Track" Property="Background" Value="#28A745"/>
+								<Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right"/>
+								<Setter TargetName="Thumb" Property="Margin" Value="0,0,3,0"/>
+								<Setter TargetName="OffText" Property="Visibility" Value="Collapsed"/>
+								<Setter TargetName="OnText" Property="Visibility" Value="Visible"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</UserControl.Resources>
 
-            <!-- OUTPUT TAB -->
-            <TabItem Header="OUTPUTS">
-                <Grid Margin="10">
+	<Viewbox Stretch="Uniform">
+		<Grid Width="1920" Height="1080" Margin="20">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+			<!-- Header + Search -->
+			<Grid Grid.Row="0" Margin="0,0,0,20">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
 
-                    <!-- Left Output Column -->
-                    <ListView Grid.Column="0"
-                              Margin="5"
-                              ItemsSource="{Binding FilteredOutputLeft}">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="SrNo" DisplayMemberBinding="{Binding Id}" Width="60"/>
-                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
-                                <GridViewColumn Header="Status" DisplayMemberBinding="{Binding DisplayStatus}" Width="80"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
+				<TextBlock Grid.Column="0"
+                           Text="PLC I/O Monitor"
+                           FontSize="60"
+                           FontWeight="Bold"
+                           Foreground="#333333"
+                           VerticalAlignment="Center"/>
 
-                    <!-- Right Output Column -->
-                    <ListView Grid.Column="1"
-                              Margin="5"
-                              ItemsSource="{Binding FilteredOutputRight}">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="SrNo" DisplayMemberBinding="{Binding Id}" Width="60"/>
-                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
-                                <GridViewColumn Header="Status" DisplayMemberBinding="{Binding DisplayStatus}" Width="80"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
+				<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+					<TextBlock Text="Search:" FontSize="32" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#555"/>
+					<TextBox Width="400" Height="60" FontSize="30" VerticalContentAlignment="Center" Padding="5"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+				</StackPanel>
+			</Grid>
 
-                </Grid>
-            </TabItem>
+			<!-- Content Area with Tabs -->
+			<TabControl Grid.Row="1" SelectedIndex="{Binding SelectedTabIndex}" BorderThickness="0" Background="Transparent">
 
-        </TabControl>
+				<!-- ================= INPUTS TAB ================= -->
+				<TabItem Header="INPUTS">
+					<Border Background="White" CornerRadius="12" BorderBrush="#CCCCCC" BorderThickness="2" Margin="0,10,0,0">
+						<DataGrid ItemsSource="{Binding FilteredInputs}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  GridLinesVisibility="Horizontal"
+                                  HorizontalGridLinesBrush="#E0E0E0"
+                                  VerticalGridLinesBrush="Transparent"
+                                  BorderThickness="0"
+                                  Background="White"
+                                  RowHeight="90"
+                                  ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}"
+                                  HeadersVisibility="Column">
 
-    </Grid>
+							<DataGrid.RowStyle>
+								<Style TargetType="DataGridRow">
+									<Setter Property="Background" Value="White"/>
+									<Style.Triggers>
+										<Trigger Property="AlternationIndex" Value="1">
+											<Setter Property="Background" Value="#FAFAFA"/>
+										</Trigger>
+										<Trigger Property="IsMouseOver" Value="True">
+											<Setter Property="Background" Value="#F0F0F0"/>
+										</Trigger>
+										<Trigger Property="IsSelected" Value="True">
+											<Setter Property="Background" Value="#E6F2FF"/>
+										</Trigger>
+									</Style.Triggers>
+								</Style>
+							</DataGrid.RowStyle>
+							<DataGrid.AlternationCount>2</DataGrid.AlternationCount>
+
+							<DataGrid.Columns>
+								<!-- SrNo -->
+								<DataGridTextColumn Header="SrNo" Binding="{Binding Id}" Width="150" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
+
+								<!-- Name -->
+								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+
+								<!-- Status (Light Indicator) -->
+								<DataGridTemplateColumn Header="Status" Width="200">
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<Border Width="50" Height="50" CornerRadius="25"
+                                                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                    BorderBrush="#999" BorderThickness="1"
+                                                    Background="{Binding Value, Converter={StaticResource BoolToStatusColorConverter}}">
+												<Border.Effect>
+													<DropShadowEffect Color="Black" Opacity="0.3" BlurRadius="5" ShadowDepth="1"/>
+												</Border.Effect>
+											</Border>
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
+							</DataGrid.Columns>
+						</DataGrid>
+					</Border>
+				</TabItem>
+
+				<!-- ================= OUTPUTS TAB ================= -->
+				<TabItem Header="OUTPUTS">
+					<Border Background="White" CornerRadius="12" BorderBrush="#CCCCCC" BorderThickness="2" Margin="0,10,0,0">
+						<DataGrid ItemsSource="{Binding FilteredOutputs}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  GridLinesVisibility="Horizontal"
+                                  HorizontalGridLinesBrush="#E0E0E0"
+                                  VerticalGridLinesBrush="Transparent"
+                                  BorderThickness="0"
+                                  Background="White"
+                                  RowHeight="90"
+                                  ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}"
+                                  HeadersVisibility="Column">
+
+							<DataGrid.RowStyle>
+								<Style TargetType="DataGridRow">
+									<Setter Property="Background" Value="White"/>
+									<Style.Triggers>
+										<Trigger Property="AlternationIndex" Value="1">
+											<Setter Property="Background" Value="#FAFAFA"/>
+										</Trigger>
+										<Trigger Property="IsMouseOver" Value="True">
+											<Setter Property="Background" Value="#F0F0F0"/>
+										</Trigger>
+										<Trigger Property="IsSelected" Value="True">
+											<Setter Property="Background" Value="#E6F2FF"/>
+										</Trigger>
+									</Style.Triggers>
+								</Style>
+							</DataGrid.RowStyle>
+							<DataGrid.AlternationCount>2</DataGrid.AlternationCount>
+
+							<DataGrid.Columns>
+								<!-- SrNo -->
+								<DataGridTextColumn Header="SrNo" Binding="{Binding Id}" Width="150" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
+
+								<!-- Name -->
+								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+
+								<!-- Status (Light Indicator) -->
+								<DataGridTemplateColumn Header="Status" Width="200">
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<Border Width="50" Height="50" CornerRadius="25"
+                                                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                    BorderBrush="#999" BorderThickness="1"
+                                                    Background="{Binding Value, Converter={StaticResource BoolToStatusColorConverter}}">
+												<Border.Effect>
+													<DropShadowEffect Color="Black" Opacity="0.3" BlurRadius="5" ShadowDepth="1"/>
+												</Border.Effect>
+											</Border>
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
+
+								<!-- Toggle Action Button (Mobile Switch Style) -->
+								<DataGridTemplateColumn Header="Action" Width="250">
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<ToggleButton Style="{StaticResource ToggleSwitchStyle}"
+                                                          IsChecked="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                          Command="{Binding DataContext.ToggleOutputCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                          CommandParameter="{Binding}"/>
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
+							</DataGrid.Columns>
+						</DataGrid>
+					</Border>
+				</TabItem>
+
+			</TabControl>
+		</Grid>
+	</Viewbox>
 </UserControl>
