@@ -14,7 +14,10 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public int PLCNo { get; set; }
         public int ModbusAddress { get; set; }
         public int Length { get; set; }
-        public int AlgNo { get; set; }  // NOW INT: 1=Linear, 2=FP, 3=String
+        public int AlgNo { get; set; }
+        public int DataType { get; set; }   // NEW
+        public int BitNo { get; set; }      // NEW
+
         public int Offset { get; set; }
         public int Span { get; set; }
         public string Description { get; set; }
@@ -23,7 +26,10 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public PLCTagConfigurationModel()
         {
             Length = 1;
-            AlgNo = 1;  // Default to Linear scale
+            AlgNo = 0;      // default Raw (per your rule)
+            DataType = 1;   // default Int16
+            BitNo = 0;      // safe default
+
             Offset = 0;
             Span = 100;
         }
@@ -39,6 +45,10 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 ModbusAddress = this.ModbusAddress,
                 Length = this.Length,
                 AlgNo = this.AlgNo,
+
+                DataType = this.DataType,
+                BitNo = this.BitNo,
+
                 Offset = this.Offset,
                 Span = this.Span,
                 Description = this.Description,
@@ -46,4 +56,5 @@ namespace IPCSoftware.Shared.Models.ConfigModels
             };
         }
     }
+
 }

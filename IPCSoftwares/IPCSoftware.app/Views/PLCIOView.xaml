@@ -1,0 +1,112 @@
+<UserControl x:Class="IPCSoftware.App.Views.PLCIOView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             MinWidth="800" MinHeight="500">
+
+    <Grid Background="#FAFAFA" Margin="10">
+
+        <!-- Main layout: Search + Tabs -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Search Box -->
+        <DockPanel Grid.Row="0" LastChildFill="True" Margin="0 0 0 10">
+            <TextBlock Text="Search:" VerticalAlignment="Center" Margin="0 0 5 0"/>
+            <TextBox Width="250"
+                     Margin="0 0 20 0"
+                     VerticalAlignment="Center"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                     
+        </DockPanel>
+
+        <!-- Tabs -->
+        <TabControl Grid.Row="1"
+                    Margin="0"
+                    FontSize="14"
+                    SelectedIndex="{Binding SelectedTabIndex}">
+
+            <!-- INPUT TAB -->
+            <TabItem Header="INPUTS">
+                <Grid Margin="10">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left Input Column -->
+                    <ListView Grid.Column="0"
+                              Margin="5"
+                              ItemsSource="{Binding FilteredInputLeft}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="SrNo" DisplayMemberBinding="{Binding Id}" Width="60"/>
+                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                                <GridViewColumn Header="Status" DisplayMemberBinding="{Binding DisplayStatus}" Width="80"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                    <!-- Right Input Column -->
+                    <ListView Grid.Column="1"
+                              Margin="5"
+                              ItemsSource="{Binding FilteredInputRight}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="SrNo" DisplayMemberBinding="{Binding Id}" Width="60"/>
+                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                                <GridViewColumn Header="Status" DisplayMemberBinding="{Binding DisplayStatus}" Width="80"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                </Grid>
+            </TabItem>
+
+            <!-- OUTPUT TAB -->
+            <TabItem Header="OUTPUTS">
+                <Grid Margin="10">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left Output Column -->
+                    <ListView Grid.Column="0"
+                              Margin="5"
+                              ItemsSource="{Binding FilteredOutputLeft}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="SrNo" DisplayMemberBinding="{Binding Id}" Width="60"/>
+                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                                <GridViewColumn Header="Status" DisplayMemberBinding="{Binding DisplayStatus}" Width="80"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                    <!-- Right Output Column -->
+                    <ListView Grid.Column="1"
+                              Margin="5"
+                              ItemsSource="{Binding FilteredOutputRight}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="SrNo" DisplayMemberBinding="{Binding Id}" Width="60"/>
+                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                                <GridViewColumn Header="Status" DisplayMemberBinding="{Binding DisplayStatus}" Width="80"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+
+    </Grid>
+</UserControl>

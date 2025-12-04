@@ -1,10 +1,11 @@
 ﻿using IPCSoftware.App.DI;
+using IPCSoftware.App.Services;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models.Messaging;
 using Microsoft.Extensions.DependencyInjection;
-using System.Windows;
 using System.Text.Json;
+using System.Windows;
 
 namespace IPCSoftware.App
 {
@@ -49,6 +50,7 @@ namespace IPCSoftware.App
                 }
             };
 
+            TagConfigProvider.Load("Data/PLCTags.csv");
             await TcpClient.StartAsync("127.0.0.1", 5050);
 
             var logConfigService = ServiceProvider.GetService<ILogConfigurationService>();

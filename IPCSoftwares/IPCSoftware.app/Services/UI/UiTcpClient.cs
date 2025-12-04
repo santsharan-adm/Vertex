@@ -57,7 +57,7 @@ namespace IPCSoftware.App
             if (_stream == null)
                 return;
 
-            byte[] bytes = Encoding.UTF8.GetBytes(message);
+            byte[] bytes = Encoding.UTF8.GetBytes(message + "\n");
             _stream.Write(bytes, 0, bytes.Length);
         }
     }
