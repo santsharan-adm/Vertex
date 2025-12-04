@@ -1,8 +1,10 @@
 ﻿using IPCSoftware.Shared.Models;
 using IPCSoftware.App;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
 using System.Windows.Threading;
 using IPCSoftware.Shared;
 using IPCSoftware.App.Services;
@@ -24,28 +26,69 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        public ObservableCollection<IoTagModel> FilteredInputLeft { get; } = new();
-        public ObservableCollection<IoTagModel> FilteredInputRight { get; } = new();
+        // Selected Tab Index (0 = Inputs, 1 = Outputs)
+        private int _selectedTabIndex;
+        public int SelectedTabIndex
+        {
+            get => _selectedTabIndex;
+            set { _selectedTabIndex = value; OnPropertyChanged(); }
+        }
 
-        public ObservableCollection<IoTagModel> FilteredOutputLeft { get; } = new();
-        public ObservableCollection<IoTagModel> FilteredOutputRight { get; } = new();
+        // Consolidated Collections for Single DataGrid
+        public ObservableCollection<IoTagModel> FilteredInputs { get; } = new();
+        public ObservableCollection<IoTagModel> FilteredOutputs { get; } = new();
 
         private readonly List<IoTagModel> AllInputTags = new();
         private readonly List<IoTagModel> AllOutputTags = new();
 
         private readonly DispatcherTimer _timer;
-
         private readonly CoreClient _coreClient;
+
+        // Command for the Toggle Button
+        public ICommand ToggleOutputCommand { get; }
 
         public PLCIOViewModel(UiTcpClient tcpClient)
         {
-            LoadTags();   // Load from CSV or shared config
+            LoadTags();
             ApplyFilter();
+
             _coreClient = new CoreClient(App.TcpClient);
+
+            // Initialize Command
+            ToggleOutputCommand = new RelayCommand<IoTagModel>(OnToggleOutput);
+
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += TimerTick;
             _timer.Start();
+        }
+
+        private void OnToggleOutput(IoTagModel tag)
+        {
+            if (tag == null) return;
+
+            // Logic to toggle the output. 
+            // Since we don't have the full write implementation here, we assume:
+            // 1. Get current bool state
+            // 2. Invert it
+            // 3. Send write command via CoreClient (Placeholder logic below)
+
+            try
+            {
+                // Simple toggle logic for UI feedback immediately (optional)
+                // In real app, you might wait for PLC feedback
+                // bool currentState = false;
+                // if (tag.Value is bool b) currentState = b;
+
+                // Call your Write method here, e.g.:
+                // await _coreClient.WriteTagAsync(tag.Id, !currentState);
+
+                System.Diagnostics.Debug.WriteLine($"Toggling Output: {tag.Name} (ID: {tag.Id})");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error toggling output: {ex.Message}");
+            }
         }
 
         private async void TimerTick(object sender, EventArgs e)
@@ -82,18 +125,13 @@ namespace IPCSoftware.App.ViewModels
 
         private void ApplyFilter()
         {
-            FilterBySearch(AllInputTags, FilteredInputLeft, FilteredInputRight);
-            FilterBySearch(AllOutputTags, FilteredOutputLeft, FilteredOutputRight);
+            FilterList(AllInputTags, FilteredInputs);
+            FilterList(AllOutputTags, FilteredOutputs);
         }
 
-        private void FilterBySearch(
-            List<IoTagModel> source,
-            ObservableCollection<IoTagModel> left,
-            ObservableCollection<IoTagModel> right)
+        private void FilterList(List<IoTagModel> source, ObservableCollection<IoTagModel> target)
         {
-            left.Clear();
-            right.Clear();
-
+            target.Clear();
             IEnumerable<IoTagModel> filtered;
 
             if (string.IsNullOrWhiteSpace(SearchText))
@@ -103,31 +141,27 @@ namespace IPCSoftware.App.ViewModels
             else
             {
                 var s = SearchText.Trim().ToLower();
-
                 filtered = source.Where(t =>
-                    t.Name.ToLower().Contains(s)
-                    || t.Id.ToString().Contains(s));
+                    (t.Name != null && t.Name.ToLower().Contains(s)) ||
+                    t.Id.ToString().Contains(s));
             }
 
-            var list = filtered.ToList();
-            int count = list.Count;
-            int half = (count + 1) / 2;
-
-            for (int i = 0; i < half; i++)
-                left.Add(list[i]);
-
-            for (int i = half; i < count; i++)
-                right.Add(list[i]);
+            foreach (var item in filtered)
+            {
+                target.Add(item);
+            }
         }
 
         private void UpdateValues(Dictionary<int, object> dict)
         {
+            if (dict == null) return;
+
             foreach (var input in AllInputTags)
             {
                 if (dict.TryGetValue(input.Id, out var live))
                 {
                     input.Value = live;
-                    System.Diagnostics.Debug.WriteLine($"INPUT {input.Name} = {live}");
+                    // Assuming OnPropertyChanged is fired inside IoTagModel when Value is set
                 }
             }
 
@@ -136,11 +170,8 @@ namespace IPCSoftware.App.ViewModels
                 if (dict.TryGetValue(output.Id, out var live))
                 {
                     output.Value = live;
-                    System.Diagnostics.Debug.WriteLine($"OUTPUT {output.Name} = {live}");
                 }
             }
         }
-
     }
 }
-

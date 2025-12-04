@@ -49,12 +49,12 @@ namespace IPCSoftware.App.NavServices
             }
 
 
-            var plcTagConfigService = App.ServiceProvider.GetService<IPLCTagConfigurationService>();
+            //var plcTagConfigService = App.ServiceProvider.GetService<IPLCTagConfigurationService>();
 
-            if (plcTagConfigService  != null)
-            {
-                await plcTagConfigService.InitializeAsync();
-            }
+            //if (plcTagConfigService  != null)
+            //{
+            //     plcTagConfigService.InitializeAsync();
+            //}
             // Add other service initializations here as needed
         }
     }
