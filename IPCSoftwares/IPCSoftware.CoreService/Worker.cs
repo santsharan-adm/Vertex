@@ -62,17 +62,10 @@ namespace IPCSoftware.CoreService
             _plcManager = new PLCClientManager(devices, tags);
 
             // STEP 5: Start Dashboard engine
-            _dashboard = new DashboardInitializer(_plcManager);
+            _dashboard = new DashboardInitializer(_plcManager,tags);
             _dashboard.Start();
 
-            // STEP 6: Start UI Listener (THIS WAS MISSING)
-            var uiListener = new UiListener(5050);
-
-            // IMPORTANT: Link dashboard handler
-            uiListener.OnRequestReceived = _dashboard.HandleUiRequest;
-
-            Console.WriteLine("Starting UI Listener...");
-            _ = uiListener.StartAsync();
+            
 
             return Task.CompletedTask;
         }

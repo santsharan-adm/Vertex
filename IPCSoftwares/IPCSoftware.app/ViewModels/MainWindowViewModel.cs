@@ -245,8 +245,10 @@ public class MainWindowViewModel : BaseViewModel
                 _nav.NavigateMain<ModeOfOperation>();
                 break;
 
-            //case "PLC IO":
-            //    _nav.NavigateMain<PLCIOMonitor>(); 
+            case "PLC IO":
+                _nav.NavigateMain<PLCIOView>();
+                break;
+
             case "PLC TAG Config":
                 _nav.NavigateMain<PLCTagListView>();
                 break;
