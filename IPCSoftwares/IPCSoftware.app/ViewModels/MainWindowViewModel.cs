@@ -71,7 +71,7 @@ public class MainWindowViewModel : BaseViewModel
         _nav = nav;
         RibbonVM = ribbonVM;
         RibbonVM.ShowSidebar = LoadSidebarMenu;
-        RibbonVM.OnLogout = CloseSideBar; 
+        RibbonVM.OnLogout = ResetLandingState; 
         RibbonVM.OnLandingPageRequested = ResetLandingState;
         CloseAppCommand = new RelayCommand(ExecuteCloseApp);
         MinimizeAppCommand = new RelayCommand(ExecuteMinimizeApp);
@@ -93,15 +93,16 @@ public class MainWindowViewModel : BaseViewModel
     {
         existingUserControl = string.Empty;   // clear selected page
         IsSidebarOpen = false;                // close sidebar if open
+        IsSidebarDocked = false;
     }
-
+/*
     private void CloseSideBar()
     {
         IsSidebarOpen = false;
         IsSidebarDocked = false;
 
     }
-
+*/
 
     // ==============================
     // RIBBON VISIBILITY PROPERTIES
