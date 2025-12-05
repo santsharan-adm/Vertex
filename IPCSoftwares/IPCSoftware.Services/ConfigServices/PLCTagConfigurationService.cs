@@ -89,7 +89,11 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var lines = await File.ReadAllLinesAsync(_csvFilePath);
-                if (lines.Length <= 1) return;
+                if (lines.Length <= 1) 
+                {
+                    throw new FileNotFoundException("There is no data in file.");
+                    return;
+                }
 
                 _tags.Clear();
                 // Start from i=1 to skip header
