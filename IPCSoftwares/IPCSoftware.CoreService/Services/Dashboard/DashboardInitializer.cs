@@ -200,6 +200,8 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
                 await plc.WriteAsync(cfg, value);
 
+                SetCachedValue(tagId, value);
+
                 return Ok();
             }
             catch (Exception ex)
@@ -208,6 +210,15 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             }
         }
 
+
+        private void SetCachedValue(uint tagId, object value)
+        {
+            // for PLC No = 1 (or use cfg.PLCNo)
+            if (_latestPackets.TryGetValue(1, out var packet))
+            {
+                packet.Values[tagId] = value;
+            }
+        }
 
         private ResponsePackage Ok() =>
             new ResponsePackage { ResponseId = 6, Success = true };

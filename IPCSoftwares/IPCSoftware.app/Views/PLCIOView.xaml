@@ -352,7 +352,7 @@
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<ToggleButton Style="{StaticResource ToggleSwitchStyle}"
-                                                          IsChecked="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                          IsChecked="{Binding Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                           Command="{Binding DataContext.ToggleOutputCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                           CommandParameter="{Binding}"/>
 										</DataTemplate>

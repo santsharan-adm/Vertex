@@ -44,6 +44,8 @@ namespace IPCSoftware.App.ViewModels
         private readonly DispatcherTimer _timer;
         private readonly CoreClient _coreClient;
 
+        private bool _isWriting = false;
+
         // Command for the Toggle Button
         public ICommand ToggleOutputCommand { get; }
 
@@ -58,36 +60,74 @@ namespace IPCSoftware.App.ViewModels
             ToggleOutputCommand = new RelayCommand<IoTagModel>(OnToggleOutput);
 
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Interval = TimeSpan.FromMilliseconds(1500);
             _timer.Tick += TimerTick;
             _timer.Start();
         }
 
+        //private async void OnToggleOutput(IoTagModel tag)
+        //{
+        //    if (tag == null) return;
+
+
+
+        //    try
+        //    {
+        //        bool currentState = false;
+        //        if (tag.Value is bool b) currentState = b;
+
+        //        bool newValue = !currentState;
+        //        //tag.Value = newValue;
+
+        //        await _coreClient.WriteTagAsync(tag.Id, newValue);
+
+        //        System.Diagnostics.Debug.WriteLine($"Toggling Output: {tag.Name} (ID: {tag.Id})");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        System.Diagnostics.Debug.WriteLine($"Error toggling output: {ex.Message}");
+        //    }
+        //}
         private async void OnToggleOutput(IoTagModel tag)
         {
             if (tag == null) return;
 
-            
-
             try
             {
-                bool currentState = false;
-                if (tag.Value is bool b) currentState = b;
-
+                bool currentState = tag.Value is bool b && b;
                 bool newValue = !currentState;
 
-                await _coreClient.WriteTagAsync(tag.Id, newValue);
+                // lock UI updates
+                _isWriting = true;
 
-                System.Diagnostics.Debug.WriteLine($"Toggling Output: {tag.Name} (ID: {tag.Id})");
+                // optimistic UI
+                tag.Value = newValue;
+
+                // real PLC write
+                await _coreClient.WriteTagAsync(tag.Id, newValue);
             }
-            catch (Exception ex)
+            finally
             {
-                System.Diagnostics.Debug.WriteLine($"Error toggling output: {ex.Message}");
+                _isWriting = false;
             }
         }
 
+        //private async void TimerTick(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        var liveData = await _coreClient.GetIoValuesAsync();
+        //        UpdateValues(liveData);
+        //    }
+        //    catch { }
+        //}
+
         private async void TimerTick(object sender, EventArgs e)
         {
+            // skip update during write
+            if (_isWriting)
+                return;
+
             try
             {
                 var liveData = await _coreClient.GetIoValuesAsync();
