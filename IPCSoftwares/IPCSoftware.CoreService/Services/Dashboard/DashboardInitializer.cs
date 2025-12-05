@@ -1,9 +1,11 @@
-﻿using IPCSoftware.Shared.Models.ConfigModels;
-using IPCSoftware.CoreService.Services.Algorithm;
-using IPCSoftware.Shared.Models.Messaging;
+﻿using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
+using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.Shared.Models.Messaging;
 using System.Diagnostics;
+using System.Text.Json;
+
 
 namespace IPCSoftware.CoreService.Services.Dashboard
 {
@@ -17,50 +19,77 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         // latest packets per PLC (unitno)
         private readonly Dictionary<int, PlcPacket> _latestPackets = new();
 
+        private Dictionary<uint, object>? _lastValues = null;
+
         public DashboardInitializer(PLCClientManager manager, List<PLCTagConfigurationModel> tags)
         {
             _manager = manager;
             _algo = new AlgorithmAnalysisService(tags);
         }
 
-        public void Start()
+        //public async Task StartAsync()
+        //{
+        //    _ui.OnRequestReceived = HandleUiRequest;
+
+        //    // Start PLC loops
+        //    List<Task> tasks = new();
+
+        //    foreach (var client in _manager.Clients)
+        //    {
+        //        client.OnPlcDataReceived += (plcNo, values) =>
+        //        {
+        //            var final = _algo.Apply(plcNo, values)
+        //                             .ToDictionary(k => (uint)k.Key, v => v.Value);
+
+        //            _latestPackets[plcNo] = new PlcPacket
+        //            {
+        //                PlcNo = plcNo,
+        //                Values = final,
+        //                Timestamp = DateTime.Now
+        //            };
+        //        };
+
+        //        tasks.Add(client.StartAsync());
+        //    }
+
+        //    tasks.Add(_ui.StartAsync());
+
+        //    await Task.WhenAll(tasks);
+        //}
+
+        public async Task StartAsync()
         {
-            // UI listener continues working
             _ui.OnRequestReceived = HandleUiRequest;
-            _ = Task.Run(() => _ui.StartAsync());
 
-            Console.WriteLine("DashboardInitializer: Waiting for PLC data (new Modbus engine pending).");
+            // Start UI
+            var uiTask = _ui.StartAsync();
 
-            foreach (var client in _manager.Clients)
+            // Start PLC read loops
+            var plcTasks = _manager.Clients.Select(client =>
             {
                 client.OnPlcDataReceived += (plcNo, values) =>
                 {
-                    // 1) Run algorithm: get TagId → final value
-                    var finalById = _algo.Apply(plcNo, values);
+                    var final = _algo.Apply(plcNo, values)
+                                     .ToDictionary(k => (uint)k.Key, v => v.Value);
 
-                    // 2) Convert int TagId → uint key because PlcPacket.Values is Dictionary<uint,object>
-                    var finalDict = finalById.ToDictionary(
-                        kv => (uint)kv.Key,
-                        kv => kv.Value);
+                    var finalDict = final.ToDictionary(kv => (uint)kv.Key, kv => kv.Value);
 
-                    // 3) Store latest processed packet
                     _latestPackets[plcNo] = new PlcPacket
                     {
                         PlcNo = plcNo,
-                        Values = finalDict,
+                        Values = final,
                         Timestamp = DateTime.Now
                     };
 
-                    // Debug log (now TagId-based)
-                    Console.WriteLine($"Dashboard: Received {finalDict.Count} tags from PLC {plcNo}");
-                    foreach (var kv in finalDict)
-                        Console.WriteLine($"  TagId[{kv.Key}] = {kv.Value}");
+                    _lastValues = finalDict;
                 };
+                return client.StartAsync();
+            });
 
-                _ = client.StartAsync();
-            }
-
+            // Await everything
+            await Task.WhenAll(plcTasks.Append(uiTask));
         }
+
 
         private void HandlePlcPacket(int plcNo, Dictionary<uint, object> values)
         {
@@ -75,10 +104,23 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             Console.WriteLine($"Dashboard: Received {values.Count} tags from PLC {plcNo}");
         }
 
+        private PLCTagConfigurationModel? GetTagConfig(uint tagId)
+        {
+            return _algo.Tags.FirstOrDefault(t => t.Id == tagId);
+        }
 
-        public ResponsePackage HandleUiRequest(RequestPackage request)
+
+        public async Task<ResponsePackage> HandleUiRequest(RequestPackage request)
         {
             Debug.WriteLine($"[Core] HandleUiRequest called → RequestId={request.RequestId}");
+
+            //---------------------------------------------------------
+            // 6) WRITE REQUEST (RequestId = 6)
+            //---------------------------------------------------------
+            if (request.RequestId == 6)
+            {
+                return await HandleUiWrite(request);
+            }
 
             //---------------------------------------------------------
             // 1) IO REQUEST (RequestId = 5)
@@ -90,7 +132,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                     return new ResponsePackage
                     {
                         ResponseId = 5,
-                        Parameters = new Dictionary<uint, object>()
+                        Parameters = _lastValues
                     };
                 }
 
@@ -131,6 +173,57 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 Parameters = new Dictionary<uint, object>()
             };
         }
+
+        private async Task<ResponsePackage> HandleUiWrite(RequestPackage request)
+        {
+            try
+            {
+                uint tagId = 0;
+                bool value = false;
+
+                if (request.Parameters is JsonElement json)
+                {
+                    foreach (var prop in json.EnumerateObject())
+                    {
+                        tagId = uint.Parse(prop.Name);
+                        value = prop.Value.GetBoolean();
+                    }
+                }
+
+                var cfg = GetTagConfig(tagId);
+                if (cfg == null)
+                    return Error($"Tag {tagId} not found");
+
+                var plc = _manager.GetClient(cfg.PLCNo);
+                if (plc == null)
+                    return Error($"PLC {cfg.PLCNo} not connected");
+
+                await plc.WriteAsync(cfg, value);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+
+
+        private ResponsePackage Ok() =>
+            new ResponsePackage { ResponseId = 6, Success = true };
+
+        private ResponsePackage Error(string msg) =>
+            new ResponsePackage { ResponseId = 6, Success = false, ErrorMessage = msg };
+
+
+
+
+
+
+
+
+
+
 
 
 

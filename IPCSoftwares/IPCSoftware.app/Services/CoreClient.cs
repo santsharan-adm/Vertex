@@ -42,6 +42,35 @@ namespace IPCSoftware.App.Services
 
             return ConvertParameters(res.Parameters);
         }
+        //write values
+        public async Task<bool> WriteTagAsync(int tagId, bool value)
+        {
+            _responseTcs = new TaskCompletionSource<string>();
+
+            // 
+            var parameters = new Dictionary<uint, object>
+    {
+        { (uint)tagId, value }   // key = TagId, value = bool
+    };
+
+            var req = new RequestPackage
+            {
+                RequestId = 6,   // new WriteRequest
+                Parameters = parameters
+            };
+
+            string json = JsonConvert.SerializeObject(req);
+            System.Diagnostics.Debug.WriteLine("UI → Sending Write: " + json);
+            _tcpClient.Send(json);
+
+            string response = await _responseTcs.Task;
+            var res = JsonConvert.DeserializeObject<ResponsePackage>(response);
+
+            
+            return res.Success;
+        }
+
+
 
         private Dictionary<int, object> ConvertParameters(object parameters)
         {

@@ -63,25 +63,20 @@ namespace IPCSoftware.App.ViewModels
             _timer.Start();
         }
 
-        private void OnToggleOutput(IoTagModel tag)
+        private async void OnToggleOutput(IoTagModel tag)
         {
             if (tag == null) return;
 
-            // Logic to toggle the output. 
-            // Since we don't have the full write implementation here, we assume:
-            // 1. Get current bool state
-            // 2. Invert it
-            // 3. Send write command via CoreClient (Placeholder logic below)
+            
 
             try
             {
-                // Simple toggle logic for UI feedback immediately (optional)
-                // In real app, you might wait for PLC feedback
-                // bool currentState = false;
-                // if (tag.Value is bool b) currentState = b;
+                bool currentState = false;
+                if (tag.Value is bool b) currentState = b;
 
-                // Call your Write method here, e.g.:
-                // await _coreClient.WriteTagAsync(tag.Id, !currentState);
+                bool newValue = !currentState;
+
+                await _coreClient.WriteTagAsync(tag.Id, newValue);
 
                 System.Diagnostics.Debug.WriteLine($"Toggling Output: {tag.Name} (ID: {tag.Id})");
             }
