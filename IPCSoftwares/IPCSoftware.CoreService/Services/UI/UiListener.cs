@@ -10,7 +10,7 @@ namespace IPCSoftware.CoreService.Services.UI
         private readonly int _port;
         private TcpListener _listener;
 
-        public Func<RequestPackage, ResponsePackage>? OnRequestReceived;
+        public Func<RequestPackage, Task<ResponsePackage>>? OnRequestReceived;
 
         public UiListener(int port)
         {
@@ -78,10 +78,16 @@ namespace IPCSoftware.CoreService.Services.UI
                             continue;
                         }
 
-                        ResponsePackage response =
-                            OnRequestReceived != null
-                            ? OnRequestReceived(request)
-                            : new ResponsePackage { ResponseId = -1 };
+                        ResponsePackage response;
+
+                        if (OnRequestReceived != null)
+                        {
+                            response = await OnRequestReceived(request);
+                        }
+                        else
+                        {
+                            response = new ResponsePackage { ResponseId = -1 };
+                        }
 
                         // Only ONE newline terminator
                         string outJson = MessageSerializer.Serialize(response) + "\n";

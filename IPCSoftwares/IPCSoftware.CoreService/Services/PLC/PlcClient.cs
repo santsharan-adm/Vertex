@@ -141,5 +141,32 @@ namespace IPCSoftware.CoreService.Services.PLC
         }
 
 
+        public async Task WriteAsync(PLCTagConfigurationModel cfg, bool value)
+        {
+            if (_master == null || _tcp == null || !_tcp.Connected)
+                await ConnectAsync();
+
+            // Convert Modbus address → register offset
+            ushort start = (ushort)(cfg.ModbusAddress - 40001);
+
+            // Read existing register
+            ushort[] regs = _master.ReadHoldingRegisters(1, start, 1);
+            ushort regValue = regs[0];
+
+            // Bit operations
+            ushort mask = (ushort)(1 << cfg.BitNo);
+
+            if (value)
+                regValue = (ushort)(regValue | mask);  // set bit
+            else
+                regValue = (ushort)(regValue & ~mask); // clear bit
+
+            // Write modified register
+            _master.WriteSingleRegister(1, start, regValue);
+
+            Console.WriteLine($"PLC[{_device.DeviceName}] WRITE Addr={cfg.ModbusAddress} Bit={cfg.BitNo} → {value}");
+        }
+
+
     }
 }

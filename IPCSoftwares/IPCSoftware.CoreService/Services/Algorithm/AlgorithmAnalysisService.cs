@@ -9,6 +9,8 @@ namespace IPCSoftware.CoreService.Services.Algorithm
     {
         private readonly List<PLCTagConfigurationModel> _tags;
 
+        public List<PLCTagConfigurationModel> Tags => _tags;
+
         public AlgorithmAnalysisService(List<PLCTagConfigurationModel> tags)
         {
             _tags = tags;

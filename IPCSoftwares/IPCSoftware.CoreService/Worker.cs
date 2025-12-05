@@ -28,7 +28,7 @@ namespace IPCSoftware.CoreService
 
 
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             // STEP 1: Calculate correct App/Data path
             var exePath = AppContext.BaseDirectory;
@@ -61,14 +61,15 @@ namespace IPCSoftware.CoreService
             // STEP 4: Create PLC manager
             _plcManager = new PLCClientManager(devices, tags);
 
-            // STEP 5: Start Dashboard engine
-            _dashboard = new DashboardInitializer(_plcManager,tags);
-            _dashboard.Start();
+            // STEP 5: Start Dashboard engine ASYNC + AWAIT
+            _dashboard = new DashboardInitializer(_plcManager, tags);
+            await _dashboard.StartAsync();  // FIX
 
-            
-
-            return Task.CompletedTask;
+            // STEP 6: BLOCK until service stops
+            // This ensures ExecuteAsync never exits early
+            await Task.Delay(Timeout.Infinite, stoppingToken);
         }
+
 
 
 
