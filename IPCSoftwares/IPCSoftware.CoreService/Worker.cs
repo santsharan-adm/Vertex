@@ -1,4 +1,5 @@
-﻿using IPCSoftware.CoreService.Services;
+﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.CoreService.Services;
 using IPCSoftware.CoreService.Services.Dashboard;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
@@ -13,13 +14,15 @@ namespace IPCSoftware.CoreService
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
+        private readonly IPLCTagConfigurationService _tagService;
         private PLCClientManager _plcManager;
         private  DashboardInitializer _dashboard;
 
         private List<DeviceInterfaceModel> _plcDevices;
 
-        public Worker(ILogger<Worker> logger)
+        public Worker(ILogger<Worker> logger, IPLCTagConfigurationService tagService)
         {
+            _tagService = tagService;
             _logger = logger;
             //_dashboard = dashboard; 
             
@@ -55,8 +58,10 @@ namespace IPCSoftware.CoreService
             var devices = deviceLoader.Load(configPath);
 
             // STEP 3: Load modbus tag configurations
-            var tagLoader = new TagConfigLoader();
-            var tags = tagLoader.Load(plcTagPath);
+          //  var tagLoader = new TagConfigLoader();
+           // var tags = tagLoader.Load(plcTagPath);
+
+            var tags = await _tagService.GetAllTagsAsync();
 
             // STEP 4: Create PLC manager
             _plcManager = new PLCClientManager(devices, tags);

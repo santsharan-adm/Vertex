@@ -130,7 +130,7 @@
 
                     <!-- RIGHT PANEL: PLC CONFIGURATION -->
                     <StackPanel Grid.Column="2">
-                        <Border Height="600" Style="{StaticResource CardStyle}">
+                        <Border  Style="{StaticResource CardStyle}">
                             <StackPanel>
                                 <TextBlock Text="PLC Settings" FontSize="32" FontWeight="Bold" Foreground="#333333" Margin="0,0,0,30"/>
 
@@ -154,6 +154,31 @@
                                                    Margin="{StaticResource LabelMargin}" 
                                                    Text="Modbus Address" Style="{StaticResource HmiLabelStyle}"/>
                                         <TextBox Text="{Binding ModbusAddress, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
+                                </Grid>
+                                
+                                
+                                <!-- PLC No & Modbus Address (Side by Side) -->
+                                <Grid Margin="0,0,0,30">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock  FontSize="{StaticResource LabelFontSize}"
+                                                    Margin="{StaticResource LabelMargin}" 
+                                                    Text="Data Type" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding DataType, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock FontSize="{StaticResource LabelFontSize}" 
+                                                   Margin="{StaticResource LabelMargin}" 
+                                                   Text="Bit No" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding BitNo, UpdateSourceTrigger=PropertyChanged}" 
                                                  Style="{StaticResource HmiTextBoxStyle}"/>
                                     </StackPanel>
                                 </Grid>
@@ -185,6 +210,9 @@
                                                   Style="{StaticResource HmiComboBoxStyle}"/>
                                     </StackPanel>
                                 </Grid>
+                                
+                                
+                                
 
                                 <!-- Offset & Span -->
                                 <Grid Margin="0,0,0,10"
