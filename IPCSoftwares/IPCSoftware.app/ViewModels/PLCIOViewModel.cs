@@ -1,18 +1,33 @@
-﻿using IPCSoftware.Shared.Models;
-using IPCSoftware.App;
+﻿using IPCSoftware.App;
+using IPCSoftware.App.Services;
+using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Threading;
-using IPCSoftware.Shared;
-using IPCSoftware.App.Services;
 
 namespace IPCSoftware.App.ViewModels
 {
     public class PLCIOViewModel : BaseViewModel
     {
+        private readonly IPLCTagConfigurationService _tagService;
+        private readonly DispatcherTimer _timer;
+        private readonly CoreClient _coreClient;
+
+
+        // Consolidated Collections for Single DataGrid
+        public ObservableCollection<IoTagModel> FilteredInputs { get; } = new();
+        public ObservableCollection<IoTagModel> FilteredOutputs { get; } = new();
+
+        private readonly List<IoTagModel> AllInputTags = new();
+        private readonly List<IoTagModel> AllOutputTags = new();
+
+        private bool _isWriting = false;
+
         private string _searchText;
 
         public string SearchText
@@ -34,27 +49,15 @@ namespace IPCSoftware.App.ViewModels
             set { _selectedTabIndex = value; OnPropertyChanged(); }
         }
 
-        // Consolidated Collections for Single DataGrid
-        public ObservableCollection<IoTagModel> FilteredInputs { get; } = new();
-        public ObservableCollection<IoTagModel> FilteredOutputs { get; } = new();
-
-        private readonly List<IoTagModel> AllInputTags = new();
-        private readonly List<IoTagModel> AllOutputTags = new();
-
-        private readonly DispatcherTimer _timer;
-        private readonly CoreClient _coreClient;
-
-        private bool _isWriting = false;
 
         // Command for the Toggle Button
         public ICommand ToggleOutputCommand { get; }
 
-        public PLCIOViewModel(UiTcpClient tcpClient)
+        public PLCIOViewModel(UiTcpClient tcpClient, IPLCTagConfigurationService tagService)
         {
-            LoadTags();
-            ApplyFilter();
-
+            _tagService = tagService;
             _coreClient = new CoreClient(App.TcpClient);
+            InitializeAsync();
 
             // Initialize Command
             ToggleOutputCommand = new RelayCommand<IoTagModel>(OnToggleOutput);
@@ -63,6 +66,42 @@ namespace IPCSoftware.App.ViewModels
             _timer.Interval = TimeSpan.FromMilliseconds(1500);
             _timer.Tick += TimerTick;
             _timer.Start();
+        }
+
+
+        private async void InitializeAsync()
+        {
+            // 1. Fetch tags from the service (Async)
+            var configTags = await _tagService.GetAllTagsAsync();
+
+            AllInputTags.Clear();
+            AllOutputTags.Clear();
+
+            foreach (var tag in configTags)
+            {
+                var model = new IoTagModel
+                {
+                    Id = tag.Id,
+                    Name = tag.Name,
+                    Value = false // Default state
+                };
+
+                // 2. Apply your specific filtering logic
+                if (tag.Name != null)
+                {
+                    if (tag.Name.StartsWith("IO_INPUT", StringComparison.OrdinalIgnoreCase))
+                    {
+                        AllInputTags.Add(model);
+                    }
+                    else if (tag.Name.StartsWith("IO_OUTPUT", StringComparison.OrdinalIgnoreCase))
+                    {
+                        AllOutputTags.Add(model);
+                    }
+                }
+            }
+
+            // 3. Refresh the UI lists
+            ApplyFilter();
         }
 
         //private async void OnToggleOutput(IoTagModel tag)
@@ -136,27 +175,27 @@ namespace IPCSoftware.App.ViewModels
             catch { }
         }
 
-        private void LoadTags()
-        {
-            // Load from a shared TagConfig service
-            // Replace this with your own tag loading
-            var tags = TagConfigProvider.Tags;
+        //private void LoadTags()
+        //{
+        //    // Load from a shared TagConfig service
+        //    // Replace this with your own tag loading
+        //    var tags = TagConfigProvider.Tags;
 
-            foreach (var tag in tags)
-            {
-                var model = new IoTagModel
-                {
-                    Id = tag.Id,
-                    Name = tag.Name,
-                    Value = null
-                };
+        //    foreach (var tag in tags)
+        //    {
+        //        var model = new IoTagModel
+        //        {
+        //            Id = tag.Id,
+        //            Name = tag.Name,
+        //            Value = null
+        //        };
 
-                if (tag.Name.StartsWith("IO_INPUT", StringComparison.OrdinalIgnoreCase))
-                    AllInputTags.Add(model);
-                else if (tag.Name.StartsWith("IO_OUTPUT", StringComparison.OrdinalIgnoreCase))
-                    AllOutputTags.Add(model);
-            }
-        }
+        //        if (tag.Name.StartsWith("IO_INPUT", StringComparison.OrdinalIgnoreCase))
+        //            AllInputTags.Add(model);
+        //        else if (tag.Name.StartsWith("IO_OUTPUT", StringComparison.OrdinalIgnoreCase))
+        //            AllOutputTags.Add(model);
+        //    }
+        //}
 
         private void ApplyFilter()
         {

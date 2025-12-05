@@ -36,7 +36,12 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task<List<PLCTagConfigurationModel>> GetAllTagsAsync()
         {
-            return await Task.FromResult(_tags.ToList());
+            // If tags are empty, try loading again just in case
+            if (_tags.Count == 0)
+            {
+                await LoadFromCsvAsync();
+            }
+            return _tags.ToList();
         }
 
         public async Task<PLCTagConfigurationModel> GetTagByIdAsync(int id)
@@ -77,7 +82,7 @@ namespace IPCSoftware.Services.ConfigServices
         {
             if (!File.Exists(_csvFilePath))
             {
-                await SaveToCsvAsync();
+                await SaveToCsvAsync(); // Create empty file with headers
                 return;
             }
 
@@ -87,8 +92,11 @@ namespace IPCSoftware.Services.ConfigServices
                 if (lines.Length <= 1) return;
 
                 _tags.Clear();
+                // Start from i=1 to skip header
                 for (int i = 1; i < lines.Length; i++)
                 {
+                    if (string.IsNullOrWhiteSpace(lines[i])) continue;
+
                     var tag = ParseCsvLine(lines[i]);
                     if (tag != null)
                     {
@@ -100,7 +108,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading PLC tags CSV: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error loading PLC tags CSV: {ex.Message}");
             }
         }
 
@@ -109,17 +117,25 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var sb = new StringBuilder();
-                sb.AppendLine("Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgNo,Offset,Span,Description,Remark");
+                sb.AppendLine("Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark");
 
                 foreach (var tag in _tags)
                 {
+                    // For DataType, we save it as a number or string? 
+                    // To match your input CSV format, let's save it as the text representation if you prefer,
+                    // or keep it simple integers. If the input has "Bit", we should probably write "Bit" back 
+                    // OR stick to integers if your system prefers consistency. 
+                    // Below saves as Integers to be safe, unless you specifically need "Bit" in the text file.
+
                     sb.AppendLine($"{tag.Id}," +
                         $"{tag.TagNo}," +
                         $"\"{EscapeCsv(tag.Name)}\"," +
                         $"{tag.PLCNo}," +
-                        $"\"{tag.ModbusAddress}\"," +
+                        $"{tag.ModbusAddress}," +
                         $"{tag.Length}," +
-                        $"{tag.AlgNo}," +  // NO QUOTES - it's an int
+                        $"{tag.AlgNo}," +
+                        $"{tag.DataType}," + // Saving as int (e.g. 3 for Bit)
+                        $"{tag.BitNo}," +
                         $"{tag.Offset}," +
                         $"{tag.Span}," +
                         $"\"{EscapeCsv(tag.Description)}\"," +
@@ -130,8 +146,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving PLC tags CSV: {ex.Message}");
-                throw;
+                System.Diagnostics.Debug.WriteLine($"Error saving PLC tags CSV: {ex.Message}");
             }
         }
 
@@ -140,21 +155,27 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var values = SplitCsvLine(line);
+                // We expect at least 11 columns, but your CSV has 13.
                 if (values.Count < 11) return null;
 
                 return new PLCTagConfigurationModel
                 {
-                    Id = int.Parse(values[0]),
-                    TagNo = int.Parse(values[1]),
+                    Id = ParseIntSafe(values[0]),
+                    TagNo = ParseIntSafe(values[1]),
                     Name = values[2],
-                    PLCNo = int.Parse(values[3]),
-                    ModbusAddress = int.Parse(values[4]),
-                    Length = int.Parse(values[5]),
-                    AlgNo = int.Parse(values[6]),  // NOW PARSING AS INT
-                    Offset = int.Parse(values[7]),
-                    Span = int.Parse(values[8]),
-                    Description = values[9],
-                    Remark = values[10]
+                    PLCNo = ParseIntSafe(values[3]),
+                    ModbusAddress = ParseIntSafe(values[4]),
+                    Length = ParseIntSafe(values[5]),
+                    AlgNo = ParseIntSafe(values[6]),
+
+                    // FIX: Use ParseDataType instead of int.Parse
+                    DataType = ParseDataType(values[7]),
+
+                    BitNo = ParseIntSafe(values[8]),
+                    Offset = ParseIntSafe(values[9]),
+                    Span = ParseIntSafe(values[10]),
+                    Description = values.Count > 11 ? values[11] : "",
+                    Remark = values.Count > 12 ? values[12] : ""
                 };
             }
             catch
@@ -163,7 +184,38 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-     
+        // --- Helper Methods ---
+
+        private int ParseIntSafe(string s)
+        {
+            if (int.TryParse(s, out int result)) return result;
+            return 0;
+        }
+
+
+        private int ParseDataType(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return 1; // Default Int16
+
+            // Check if it's already a number
+            if (int.TryParse(s, out int result)) return result;
+
+            s = s.Trim().ToLowerInvariant();
+
+            return s switch
+            {
+                "int" => 1,
+                "int16" => 1,
+                "word" => 2,
+                "dint" => 2,
+                "bit" => 3,     // THIS FIXES YOUR ISSUE
+                "bool" => 3,
+                "fp" => 4,
+                "float" => 4,
+                "string" => 5,
+                _ => 1
+            };
+        }
 
         private List<string> SplitCsvLine(string line)
         {
@@ -202,16 +254,10 @@ namespace IPCSoftware.Services.ConfigServices
             return values;
         }
 
-
-
         private string EscapeCsv(string value)
         {
-            if (string.IsNullOrEmpty(value))
-                return string.Empty;
-
-            if (value.Contains("\""))
-                return value.Replace("\"", "\"\"");
-
+            if (string.IsNullOrEmpty(value)) return string.Empty;
+            if (value.Contains("\"")) return value.Replace("\"", "\"\"");
             return value;
         }
     }

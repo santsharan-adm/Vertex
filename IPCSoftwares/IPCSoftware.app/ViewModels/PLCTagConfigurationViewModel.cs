@@ -5,6 +5,7 @@ using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -83,6 +84,20 @@ namespace IPCSoftware.App.ViewModels
             }
 
             //set => SetProperty(ref _selectedAlgorithm, value);
+        }
+
+        private int _dataType;
+        public int DataType
+        {
+            get => _dataType;
+            set => SetProperty(ref _dataType, value);
+        }
+
+        private int _bitNo;
+        public int BitNo
+        {
+            get => _bitNo;
+            set => SetProperty(ref _bitNo, value);
         }
 
         private int _offset;
@@ -183,6 +198,9 @@ namespace IPCSoftware.App.ViewModels
             SelectedAlgorithm = AlgorithmTypes.FirstOrDefault(a => a.Value == tag.AlgNo)
                                 ?? AlgorithmTypes[0]; // Default to first (Linear scale)
 
+            DataType = tag.DataType;
+            BitNo = tag.BitNo;
+
             Offset = tag.Offset;
             Span = tag.Span;
             Description = tag.Description;
@@ -200,6 +218,8 @@ namespace IPCSoftware.App.ViewModels
 
             // Save the numeric value (1, 2, or 3)
             _currentTag.AlgNo = SelectedAlgorithm?.Value ?? 1;
+            _currentTag.DataType = DataType;
+            _currentTag.BitNo = BitNo;
 
             _currentTag.Offset = Offset;
             _currentTag.Span = Span;

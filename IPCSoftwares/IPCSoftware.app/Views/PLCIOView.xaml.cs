@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.App.Services;
 using IPCSoftware.App.ViewModels;
+using IPCSoftware.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,10 @@ namespace IPCSoftware.App.Views
 {
     public partial class PLCIOView : UserControl
     {
-        public PLCIOView()
+        public PLCIOView(IPLCTagConfigurationService tagService)
         {
             InitializeComponent();
-            DataContext = new PLCIOViewModel(App.TcpClient);
+            DataContext = new PLCIOViewModel(App.TcpClient, tagService);
 
             // Test: get one packet from PLC
             // TestPLCData();

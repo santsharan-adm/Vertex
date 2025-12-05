@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace IPCSoftware.App.Services
 {
-    public static class TagConfigProvider
+   /* public static class TagConfigProvider
     {
         // This will be assigned once at app start
         public static List<PLCTagConfigurationModel> Tags { get; set; }
@@ -15,5 +15,5 @@ namespace IPCSoftware.App.Services
         {
             Tags = _loader.Load(path);
         }
-    }
+    }*/
 }
