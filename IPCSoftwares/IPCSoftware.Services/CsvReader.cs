@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace IPCSoftware.CoreService.Services
+namespace IPCSoftware.Services
 {
     public static class CsvReader
     {

@@ -28,7 +28,7 @@ namespace IPCSoftware.App
 
 
 
-            TcpClient = new UiTcpClient();
+            //TcpClient = new UiTcpClient();
 
             TcpClient.DataReceived += (json) =>
             {
@@ -57,7 +57,7 @@ namespace IPCSoftware.App
             }
 
            // TagConfigProvider.Load("Data/PLCTags.csv");
-            await TcpClient.StartAsync("127.0.0.1", 5050);
+            //await TcpClient.StartAsync("127.0.0.1", 5050);
 
             var logConfigService = ServiceProvider.GetService<ILogConfigurationService>();
             if (logConfigService != null )

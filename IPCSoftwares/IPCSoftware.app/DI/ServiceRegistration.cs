@@ -26,7 +26,7 @@ namespace IPCSoftware.App.DI
             //AppLogger 
             services.AddSingleton<IAppLogger, AppLoggerService>();
             services.AddSingleton<ILogManagerService, LogManagerService>();
-   
+
 
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
@@ -43,7 +43,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<OEEDashboardViewModel>();
             services.AddSingleton<OeeDashboardNewViewModel>();
             services.AddSingleton<PLCIOViewModel>();
-            
+
 
             // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
             services.AddTransient<LogListViewModel>();

@@ -10,6 +10,7 @@ namespace IPCSoftware.Shared.Models
     {
         public int Value { get; set; }
         public string DisplayName { get; set; }
+        public static int AlgoNo_LinearScale { get; set; }
 
         public AlgorithmType(int value, string displayName)
         {
@@ -20,6 +21,10 @@ namespace IPCSoftware.Shared.Models
         public override string ToString()
         {
             return DisplayName;
+        }
+
+        public class AlgorithmModel
+        {
         }
     }
 }

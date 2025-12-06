@@ -1,11 +1,11 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.CoreService;
-using IPCSoftware.CoreService.Services.Dashboard;
 using IPCSoftware.Services.ConfigServices;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.WindowsServices;
-
+using Microsoft.Extensions.Logging; // Added for ILogger injection if needed
 
 namespace IPCSoftware.CoreService
 {
@@ -15,14 +15,21 @@ namespace IPCSoftware.CoreService
         {
             IHost host = Host.CreateDefaultBuilder(args)
                 .UseWindowsService()
-                .ConfigureServices(services =>
+                .ConfigureServices((hostContext, services) =>
                 {
+                    // 1. Configuration/Logging
+                    services.AddSingleton<IConfiguration>(hostContext.Configuration);
 
-                    //services.AddSingleton<DashboardInitializer>();
-
+                    // 2. Configuration Service (Resolvable by DI)
                     services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
 
+                    // 3. Hosted Services (These are the actual workers/watchers)
                     services.AddHostedService<Worker>();
+                    // services.AddHostedService<TagChangeWatcherService>(); // Add this when ready
+
+                    // 🛑 CRITICAL FIX: Removed the following lines that caused the AggregateException:
+                    // services.AddSingleton<PLCClientManager>();
+                    // services.AddSingleton<AlgorithmAnalysisService>();
                 })
                 .Build();
 
