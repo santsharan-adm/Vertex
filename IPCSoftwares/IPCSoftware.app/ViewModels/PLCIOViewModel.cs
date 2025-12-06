@@ -10,177 +10,183 @@ using System.Linq;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-public class PLCIOViewModel : BaseViewModel, IDisposable
+namespace IPCSoftware.App.ViewModels
 {
-    private readonly IPLCTagConfigurationService _tagService;
-    private readonly DispatcherTimer _timer;
-    private readonly CoreClient _coreClient;
-
-    public ObservableCollection<IoTagModel> FilteredInputs { get; } = new();
-    public ObservableCollection<IoTagModel> FilteredOutputs { get; } = new();
-
-    private readonly List<IoTagModel> AllInputTags = new();
-    private readonly List<IoTagModel> AllOutputTags = new();
-
-    private bool _isWriting = false;
-    private bool _disposed;
-
-    private string _searchText;
-    public string SearchText
+    public class PLCIOViewModel : BaseViewModel, IDisposable
     {
-        get => _searchText;
-        set
+        private readonly IPLCTagConfigurationService _tagService;
+        private readonly DispatcherTimer _timer;
+        private readonly CoreClient _coreClient;
+        private readonly UiTcpClient _tcpClient;
+
+        public ObservableCollection<IoTagModel> FilteredInputs { get; } = new();
+        public ObservableCollection<IoTagModel> FilteredOutputs { get; } = new();
+
+        private readonly List<IoTagModel> AllInputTags = new();
+        private readonly List<IoTagModel> AllOutputTags = new();
+
+        private bool _isWriting = false;
+        private bool _disposed;
+
+        private string _searchText;
+        public string SearchText
         {
-            _searchText = value;
-            OnPropertyChanged();
-            ApplyFilter();
-        }
-    }
-
-    private int _selectedTabIndex;
-    public int SelectedTabIndex
-    {
-        get => _selectedTabIndex;
-        set { _selectedTabIndex = value; OnPropertyChanged(); }
-    }
-
-    public ICommand ToggleOutputCommand { get; }
-
-    public PLCIOViewModel(UiTcpClient tcpClient, IPLCTagConfigurationService tagService)
-    {
-        _tagService = tagService;
-        _coreClient = new CoreClient(App.TcpClient);
-
-        InitializeAsync();
-
-        ToggleOutputCommand = new RelayCommand<IoTagModel>(OnToggleOutput);
-
-        _timer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromMilliseconds(1500)
-        };
-        _timer.Tick += TimerTick;
-        _timer.Start();
-    }
-
-    private async void InitializeAsync()
-    {
-        var configTags = await _tagService.GetAllTagsAsync();
-
-        AllInputTags.Clear();
-        AllOutputTags.Clear();
-
-        foreach (var tag in configTags)
-        {
-            var model = new IoTagModel
+            get => _searchText;
+            set
             {
-                Id = tag.Id,
-                Name = tag.Name,
-                Value = false
-            };
-
-            if (tag.Name != null)
-            {
-                if (tag.Name.StartsWith("IO_INPUT", StringComparison.OrdinalIgnoreCase))
-                    AllInputTags.Add(model);
-                else if (tag.Name.StartsWith("IO_OUTPUT", StringComparison.OrdinalIgnoreCase))
-                    AllOutputTags.Add(model);
+                _searchText = value;
+                OnPropertyChanged();
+                ApplyFilter();
             }
         }
 
-        ApplyFilter();
-    }
-
-    private async void OnToggleOutput(IoTagModel tag)
-    {
-        if (tag == null) return;
-
-        try
+        private int _selectedTabIndex;
+        public int SelectedTabIndex
         {
-            bool currentState = tag.Value is bool b && b;
-            bool newValue = !currentState;
-
-            _isWriting = true;
-
-            tag.Value = newValue;
-
-            await _coreClient.WriteTagAsync(tag.Id, newValue);
-        }
-        finally
-        {
-            _isWriting = false;
-        }
-    }
-
-    private async void TimerTick(object sender, EventArgs e)
-    {
-        if (_disposed || _isWriting)
-            return;
-
-        try
-        {
-            var liveData = await _coreClient.GetIoValuesAsync();
-            UpdateValues(liveData);
-        }
-        catch { }
-    }
-
-    private void ApplyFilter()
-    {
-        FilterList(AllInputTags, FilteredInputs);
-        FilterList(AllOutputTags, FilteredOutputs);
-    }
-
-    private void FilterList(List<IoTagModel> source, ObservableCollection<IoTagModel> target)
-    {
-        target.Clear();
-        IEnumerable<IoTagModel> filtered;
-
-        if (string.IsNullOrWhiteSpace(SearchText))
-        {
-            filtered = source;
-        }
-        else
-        {
-            var s = SearchText.Trim().ToLower();
-            filtered = source.Where(t =>
-                (t.Name != null && t.Name.ToLower().Contains(s)) ||
-                t.Id.ToString().Contains(s));
+            get => _selectedTabIndex;
+            set { _selectedTabIndex = value; OnPropertyChanged(); }
         }
 
-        foreach (var item in filtered)
-            target.Add(item);
-    }
+        public ICommand ToggleOutputCommand { get; }
 
-    private void UpdateValues(Dictionary<int, object> dict)
-    {
-        if (dict == null) return;
-
-        foreach (var input in AllInputTags)
+        public PLCIOViewModel(UiTcpClient tcpClient, IPLCTagConfigurationService tagService)
         {
-            if (dict.TryGetValue(input.Id, out var live))
-                input.Value = live;
+            _tagService = tagService;
+            _tcpClient = tcpClient;
+            _coreClient = new CoreClient(_tcpClient);
+
+            InitializeAsync();
+
+            ToggleOutputCommand = new RelayCommand<IoTagModel>(OnToggleOutput);
+
+            _timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(1500)
+            };
+            _timer.Tick += TimerTick;
+            _timer.Start();
         }
 
-        foreach (var output in AllOutputTags)
+        private async void InitializeAsync()
         {
-            if (dict.TryGetValue(output.Id, out var live))
-                output.Value = live;
+            var configTags = await _tagService.GetAllTagsAsync();
+
+            AllInputTags.Clear();
+            AllOutputTags.Clear();
+
+            foreach (var tag in configTags)
+            {
+                var model = new IoTagModel
+                {
+                    Id = tag.Id,
+                    Name = tag.Name,
+                    Value = false
+                };
+
+                if (tag.Name != null)
+                {
+                    if (tag.Name.StartsWith("IO_INPUT", StringComparison.OrdinalIgnoreCase))
+                        AllInputTags.Add(model);
+                    else if (tag.Name.StartsWith("IO_OUTPUT", StringComparison.OrdinalIgnoreCase))
+                        AllOutputTags.Add(model);
+                }
+            }
+
+            ApplyFilter();
+        }
+
+        private async void OnToggleOutput(IoTagModel tag)
+        {
+            if (tag == null) return;
+
+            try
+            {
+                bool currentState = tag.Value is bool b && b;
+                bool newValue = !currentState;
+
+                _isWriting = true;
+
+                tag.Value = newValue;
+
+                await _coreClient.WriteTagAsync(tag.Id, newValue);
+            }
+            finally
+            {
+                _isWriting = false;
+            }
+        }
+
+        private async void TimerTick(object sender, EventArgs e)
+        {
+            if (_disposed || _isWriting)
+                return;
+
+            try
+            {
+                var liveData = await _coreClient.GetIoValuesAsync();
+                UpdateValues(liveData);
+            }
+            catch { }
+        }
+
+        private void ApplyFilter()
+        {
+            FilterList(AllInputTags, FilteredInputs);
+            FilterList(AllOutputTags, FilteredOutputs);
+        }
+
+        private void FilterList(List<IoTagModel> source, ObservableCollection<IoTagModel> target)
+        {
+            target.Clear();
+            IEnumerable<IoTagModel> filtered;
+
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                filtered = source;
+            }
+            else
+            {
+                var s = SearchText.Trim().ToLower();
+                filtered = source.Where(t =>
+                    (t.Name != null && t.Name.ToLower().Contains(s)) ||
+                    t.Id.ToString().Contains(s));
+            }
+
+            foreach (var item in filtered)
+                target.Add(item);
+        }
+
+        private void UpdateValues(Dictionary<int, object> dict)
+        {
+            if (dict == null) return;
+
+            foreach (var input in AllInputTags)
+            {
+                if (dict.TryGetValue(input.Id, out var live))
+                    input.Value = live;
+            }
+
+            foreach (var output in AllOutputTags)
+            {
+                if (dict.TryGetValue(output.Id, out var live))
+                    output.Value = live;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            _disposed = true;
+
+            _timer.Stop();
+            _timer.Tick -= TimerTick;
+            GC.SuppressFinalize(this);
+        }
+
+        ~PLCIOViewModel()
+        {
+            Dispose();
         }
     }
 
-    public void Dispose()
-    {
-        if (_disposed) return;
-        _disposed = true;
-
-        _timer.Stop();
-        _timer.Tick -= TimerTick;
-        GC.SuppressFinalize(this);
-    }
-
-    ~PLCIOViewModel()
-    {
-        Dispose();
-    }
 }

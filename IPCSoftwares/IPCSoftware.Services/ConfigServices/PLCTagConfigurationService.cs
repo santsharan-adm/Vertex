@@ -51,6 +51,18 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task<PLCTagConfigurationModel> AddTagAsync(PLCTagConfigurationModel tag)
         {
+            // --- VALIDATION: Check for Duplicates ---
+            if (_tags.Any(t => t.TagNo == tag.TagNo))
+            {
+                throw new InvalidOperationException($"A tag with TagNo {tag.TagNo} already exists.");
+            }
+
+            if (_tags.Any(t => t.Name.Equals(tag.Name, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new InvalidOperationException($"A tag with Name '{tag.Name}' already exists.");
+            }
+
+            // Assign ID and Add
             tag.Id = _nextId++;
             _tags.Add(tag);
             await SaveToCsvAsync();
@@ -61,6 +73,17 @@ namespace IPCSoftware.Services.ConfigServices
         {
             var existing = _tags.FirstOrDefault(t => t.Id == tag.Id);
             if (existing == null) return false;
+
+            // --- VALIDATION: Check for Duplicates (excluding self) ---
+            if (_tags.Any(t => t.Id != tag.Id && t.TagNo == tag.TagNo))
+            {
+                throw new InvalidOperationException($"A tag with TagNo {tag.TagNo} already exists.");
+            }
+
+            if (_tags.Any(t => t.Id != tag.Id && t.Name.Equals(tag.Name, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new InvalidOperationException($"A tag with Name '{tag.Name}' already exists.");
+            }
 
             var index = _tags.IndexOf(existing);
             _tags[index] = tag;
@@ -82,21 +105,17 @@ namespace IPCSoftware.Services.ConfigServices
         {
             if (!File.Exists(_csvFilePath))
             {
-                await SaveToCsvAsync(); // Create empty file with headers
+                await SaveToCsvAsync();
                 return;
             }
 
             try
             {
                 var lines = await File.ReadAllLinesAsync(_csvFilePath);
-                if (lines.Length <= 1) 
-                {
-                    throw new FileNotFoundException("There is no data in file.");
-                    return;
-                }
+                if (lines.Length <= 1) return;
 
                 _tags.Clear();
-                // Start from i=1 to skip header
+
                 for (int i = 1; i < lines.Length; i++)
                 {
                     if (string.IsNullOrWhiteSpace(lines[i])) continue;
@@ -104,9 +123,19 @@ namespace IPCSoftware.Services.ConfigServices
                     var tag = ParseCsvLine(lines[i]);
                     if (tag != null)
                     {
-                        _tags.Add(tag);
-                        if (tag.Id >= _nextId)
-                            _nextId = tag.Id + 1;
+                        // --- VALIDATION: Skip duplicates when loading from file ---
+                        bool isDuplicate = _tags.Any(t => t.Id == tag.Id || t.TagNo == tag.TagNo || t.Name == tag.Name);
+
+                        if (!isDuplicate)
+                        {
+                            _tags.Add(tag);
+                            if (tag.Id >= _nextId)
+                                _nextId = tag.Id + 1;
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Skipped duplicate tag from CSV: {tag.Name} ({tag.TagNo})");
+                        }
                     }
                 }
             }
@@ -116,21 +145,15 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
+
         private async Task SaveToCsvAsync()
         {
             try
             {
                 var sb = new StringBuilder();
-                sb.AppendLine("Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark");
-
+                sb.AppendLine("Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark,CanWrite");
                 foreach (var tag in _tags)
                 {
-                    // For DataType, we save it as a number or string? 
-                    // To match your input CSV format, let's save it as the text representation if you prefer,
-                    // or keep it simple integers. If the input has "Bit", we should probably write "Bit" back 
-                    // OR stick to integers if your system prefers consistency. 
-                    // Below saves as Integers to be safe, unless you specifically need "Bit" in the text file.
-
                     sb.AppendLine($"{tag.Id}," +
                         $"{tag.TagNo}," +
                         $"\"{EscapeCsv(tag.Name)}\"," +
@@ -138,12 +161,13 @@ namespace IPCSoftware.Services.ConfigServices
                         $"{tag.ModbusAddress}," +
                         $"{tag.Length}," +
                         $"{tag.AlgNo}," +
-                        $"{tag.DataType}," + // Saving as int (e.g. 3 for Bit)
+                        $"{tag.DataType}," +
                         $"{tag.BitNo}," +
                         $"{tag.Offset}," +
                         $"{tag.Span}," +
                         $"\"{EscapeCsv(tag.Description)}\"," +
-                        $"\"{EscapeCsv(tag.Remark)}\"");
+                        $"\"{EscapeCsv(tag.Remark)}\"," +
+                        $"{tag.CanWrite}"); // Append Boolean (True/False)
                 }
 
                 await File.WriteAllTextAsync(_csvFilePath, sb.ToString(), Encoding.UTF8);
@@ -179,7 +203,8 @@ namespace IPCSoftware.Services.ConfigServices
                     Offset = ParseIntSafe(values[9]),
                     Span = ParseIntSafe(values[10]),
                     Description = values.Count > 11 ? values[11] : "",
-                    Remark = values.Count > 12 ? values[12] : ""
+                    Remark = values.Count > 12 ? values[12] : "",
+                    CanWrite = values.Count > 13 ? ParseBoolSafe(values[13]) : false
                 };
             }
             catch
@@ -196,23 +221,28 @@ namespace IPCSoftware.Services.ConfigServices
             return 0;
         }
 
+        private bool ParseBoolSafe(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return false;
+            if (bool.TryParse(s, out bool result)) return result;
+            // Handle numeric boolean (1 = true)
+            if (int.TryParse(s, out int iResult)) return iResult > 0;
+            return false;
+        }
 
         private int ParseDataType(string s)
         {
-            if (string.IsNullOrWhiteSpace(s)) return 1; // Default Int16
-
-            // Check if it's already a number
+            if (string.IsNullOrWhiteSpace(s)) return 1;
             if (int.TryParse(s, out int result)) return result;
 
             s = s.Trim().ToLowerInvariant();
-
             return s switch
             {
                 "int" => 1,
                 "int16" => 1,
                 "word" => 2,
                 "dint" => 2,
-                "bit" => 3,     // THIS FIXES YOUR ISSUE
+                "bit" => 3,
                 "bool" => 3,
                 "fp" => 4,
                 "float" => 4,
@@ -235,13 +265,9 @@ namespace IPCSoftware.Services.ConfigServices
                 {
                     if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
                     {
-                        currentValue.Append('"');
-                        i++;
+                        currentValue.Append('"'); i++;
                     }
-                    else
-                    {
-                        inQuotes = !inQuotes;
-                    }
+                    else inQuotes = !inQuotes;
                 }
                 else if (c == ',' && !inQuotes)
                 {

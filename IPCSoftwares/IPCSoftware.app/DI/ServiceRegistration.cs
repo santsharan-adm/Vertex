@@ -26,7 +26,8 @@ namespace IPCSoftware.App.DI
             //AppLogger 
             services.AddSingleton<IAppLogger, AppLoggerService>();
             services.AddSingleton<ILogManagerService, LogManagerService>();
-   
+            services.AddSingleton<UiTcpClient>();
+
 
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
@@ -42,7 +43,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<OEEDashboardViewModel>();
             services.AddSingleton<OeeDashboardNewViewModel>();
-            services.AddSingleton<PLCIOViewModel>();
+        
             
 
             // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
@@ -78,7 +79,9 @@ namespace IPCSoftware.App.DI
             services.AddTransient<OeeDashboard2>();
             services.AddTransient<OeeDashboardNew>();
             services.AddTransient<DashboardView>();
+
             services.AddTransient<PLCIOView>();
+            services.AddTransient<PLCIOViewModel>();
 
             services.AddTransient<LogView>();
 
@@ -114,6 +117,10 @@ namespace IPCSoftware.App.DI
             services.AddTransient<PLCTagConfigurationView>();
 
             services.AddTransient<LogViewerViewModel>();
+
+            //Tag Control
+            services.AddTransient<TagControlView>();
+            services.AddTransient<TagControlViewModel>();
 
             //services.AddTransient<SettingsView>();
             //services.AddTransient<LogsView>();

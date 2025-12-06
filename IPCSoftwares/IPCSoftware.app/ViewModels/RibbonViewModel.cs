@@ -65,7 +65,8 @@ public class RibbonViewModel : BaseViewModel
             "System Settings",
             "Manual Operation",
             "Mode Of Operation",
-            "PLC IO"
+            "PLC IO",
+            "Tag Control"
         }, nameof(OpenSettingsMenu));
 
       /*  ShowSidebar?.Invoke(new Dictionary<string, List<string>> List<string>

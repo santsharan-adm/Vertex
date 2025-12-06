@@ -13,13 +13,9 @@ namespace IPCSoftware.App.Views
 {
     public partial class PLCIOView : UserControl
     {
-        public PLCIOView(IPLCTagConfigurationService tagService)
+        public PLCIOView()
         {
             InitializeComponent();
-            DataContext = new PLCIOViewModel(App.TcpClient, tagService);
-
-            // Test: get one packet from PLC
-            // TestPLCData();
 
         }
 

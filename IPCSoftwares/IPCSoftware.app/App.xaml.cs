@@ -28,7 +28,7 @@ namespace IPCSoftware.App
 
 
 
-            TcpClient = new UiTcpClient();
+            TcpClient = ServiceProvider.GetService<UiTcpClient>();
 
             TcpClient.DataReceived += (json) =>
             {

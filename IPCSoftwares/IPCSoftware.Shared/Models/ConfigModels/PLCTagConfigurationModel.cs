@@ -23,6 +23,8 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public string Description { get; set; }
         public string Remark { get; set; }
 
+        public bool CanWrite { get; set; }
+
         public PLCTagConfigurationModel()
         {
             Length = 1;
@@ -32,6 +34,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
 
             Offset = 0;
             Span = 100;
+            CanWrite = false; 
         }
 
         public PLCTagConfigurationModel Clone()
@@ -52,7 +55,8 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 Offset = this.Offset,
                 Span = this.Span,
                 Description = this.Description,
-                Remark = this.Remark
+                Remark = this.Remark,
+                CanWrite = this.CanWrite
             };
         }
     }
