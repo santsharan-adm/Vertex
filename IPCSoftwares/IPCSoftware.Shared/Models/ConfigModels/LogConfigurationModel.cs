@@ -64,7 +64,8 @@ namespace IPCSoftware.Shared.Models.ConfigModels
     {
         Production = 0,
         Audit = 1,
-        Error = 2
+        Error = 2,
+        System = 3
     }
 
     public enum BackupScheduleType

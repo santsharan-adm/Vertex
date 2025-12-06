@@ -34,6 +34,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
 
             Offset = 0;
             Span = 100;
+            CanWrite = false; 
         }
 
         public PLCTagConfigurationModel Clone()

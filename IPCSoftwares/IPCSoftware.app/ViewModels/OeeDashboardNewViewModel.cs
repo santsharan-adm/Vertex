@@ -8,6 +8,7 @@ namespace IPCSoftware.App.ViewModels
 {
     public class OeeDashboardNewViewModel : INotifyPropertyChanged
     {
+        private readonly UiTcpClient _tcpClient;
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
@@ -165,8 +166,9 @@ namespace IPCSoftware.App.ViewModels
         // ================================================================
         // 3. TCP CLIENT BINDING
         // ================================================================
-        public OeeDashboardNewViewModel()
+        public OeeDashboardNewViewModel(UiTcpClient tcpClient)
         {
+            _tcpClient = tcpClient; 
             App.ResponseReceived += OnResponseReceived;
             StartPolling();
         }
@@ -175,7 +177,7 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                App.TcpClient.Send("{\"RequestId\":4}\n");
+                _tcpClient.Send("{\"RequestId\":4}\n");
             }
             catch
             {

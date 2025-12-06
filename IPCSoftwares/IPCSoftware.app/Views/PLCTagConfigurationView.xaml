@@ -25,8 +25,16 @@
             <Setter Property="BorderBrush" Value="#CCCCCC"/>
             <Setter Property="BorderThickness" Value="2"/>
         </Style>
-        
-        
+
+        <Style x:Key="HmiCheckBoxStyle" TargetType="CheckBox">
+           
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="LayoutTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="3.0" ScaleY="3.0"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <Style x:Key="HmiComboBoxStyle" TargetType="ComboBox">
             <Setter Property="Height" Value="60"/>
@@ -238,6 +246,11 @@
                                                  Style="{StaticResource HmiTextBoxStyle}"/>
                                     </StackPanel>
                                 </Grid>
+
+                                    <CheckBox Content="Can Write" FontSize="12" HorizontalAlignment="Left" Height="30"  Width="200"
+                                    IsChecked="{Binding CanWrite}"
+                                    Style="{StaticResource HmiCheckBoxStyle}"/>
+                         
 
                             </StackPanel>
                         </Border>
