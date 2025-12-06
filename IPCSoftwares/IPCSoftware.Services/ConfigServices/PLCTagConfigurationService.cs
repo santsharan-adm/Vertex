@@ -16,22 +16,16 @@ namespace IPCSoftware.Services.ConfigServices
         private readonly TagConfigLoader _tagLoader = new TagConfigLoader(); // Use the dedicated loader
 
         // FIX: Constructor uses IConfiguration for path resolution
-        public PLCTagConfigurationService(IConfiguration configuration)
+        public PLCTagConfigurationService(string dataFolderPath = null)
         {
-            // Use GetValue<T> extension method 
-            string dataFolderName = configuration.GetValue<string>("Config:DataFolder") ?? "Data";
-            string tagFileName = configuration.GetValue<string>("Config:PlcTagsFileName") ?? "PLCTags.csv";
-
-            var appRootPath = AppContext.BaseDirectory;
-            var appDataFolder = Path.Combine(appRootPath, dataFolderName);
-
-            _dataFolder = appDataFolder;
-            _csvFilePath = Path.Combine(_dataFolder, tagFileName);
+            _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
 
             if (!Directory.Exists(_dataFolder))
             {
                 Directory.CreateDirectory(_dataFolder);
             }
+
+            _csvFilePath = Path.Combine(_dataFolder, "PLCTags.csv");
 
             _tags = new List<PLCTagConfigurationModel>();
         }

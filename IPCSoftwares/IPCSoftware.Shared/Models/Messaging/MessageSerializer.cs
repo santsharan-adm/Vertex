@@ -1,17 +1,19 @@
-﻿using System.Text.Json;
+﻿
+using Newtonsoft.Json;
 
 namespace IPCSoftware.Shared.Models.Messaging
 {
+ 
     public static class MessageSerializer
     {
         public static string Serialize<T>(T obj)
         {
-            return JsonSerializer.Serialize(obj);
+            return JsonConvert.SerializeObject(obj);
         }
 
         public static T? Deserialize<T>(string json)
         {
-            return JsonSerializer.Deserialize<T>(json);
+            return JsonConvert.DeserializeObject<T>(json);
         }
     }
 }

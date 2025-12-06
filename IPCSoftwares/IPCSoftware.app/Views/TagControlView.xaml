@@ -6,6 +6,7 @@
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:TagControlViewModel}"
+                    Unloaded="UserControl_Unloaded"
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920"
              Background="#F3F3F3">

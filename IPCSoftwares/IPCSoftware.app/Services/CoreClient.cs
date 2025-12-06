@@ -38,12 +38,13 @@ namespace IPCSoftware.App.Services
             _tcpClient.Send(json);
 
             string response = await _responseTcs.Task;
-            var res = JsonConvert.DeserializeObject<ResponsePackage>(response);
+            var res = JsonConvert.DeserializeObject<ResponsePackage>(response);// here we get data from Core service TCP Server
 
             return ConvertParameters(res.Parameters);
         }
         //write values
-        public async Task<bool> WriteTagAsync(int tagId, bool value)
+
+        public async Task<bool> WriteTagAsync(int tagId, object value)
         {
             _responseTcs = new TaskCompletionSource<string>();
 

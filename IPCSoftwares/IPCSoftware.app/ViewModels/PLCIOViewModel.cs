@@ -17,7 +17,7 @@ namespace IPCSoftware.App.ViewModels
         private readonly IPLCTagConfigurationService _tagService;
         private readonly DispatcherTimer _timer;
         private readonly CoreClient _coreClient;
-        private readonly UiTcpClient _tcpClient;
+     
 
         public ObservableCollection<IoTagModel> FilteredInputs { get; } = new();
         public ObservableCollection<IoTagModel> FilteredOutputs { get; } = new();
@@ -52,8 +52,8 @@ namespace IPCSoftware.App.ViewModels
         public PLCIOViewModel(UiTcpClient tcpClient, IPLCTagConfigurationService tagService)
         {
             _tagService = tagService;
-            _tcpClient = tcpClient;
-            _coreClient = new CoreClient(_tcpClient);
+         
+            _coreClient = new CoreClient(tcpClient);
 
             InitializeAsync();
 
@@ -85,10 +85,10 @@ namespace IPCSoftware.App.ViewModels
 
                 if (tag.Name != null)
                 {
-                    if (tag.Name.StartsWith("IO_INPUT", StringComparison.OrdinalIgnoreCase))
                         AllInputTags.Add(model);
-                    else if (tag.Name.StartsWith("IO_OUTPUT", StringComparison.OrdinalIgnoreCase))
-                        AllOutputTags.Add(model);
+                    //if (tag.Name.StartsWith("IO_INPUT", StringComparison.OrdinalIgnoreCase))
+                    //else if (tag.Name.StartsWith("IO_OUTPUT", StringComparison.OrdinalIgnoreCase))
+                    //    AllOutputTags.Add(model);
                 }
             }
 
@@ -108,13 +108,15 @@ namespace IPCSoftware.App.ViewModels
 
                 tag.Value = newValue;
 
-                await _coreClient.WriteTagAsync(tag.Id, newValue);
+                //await _coreClient.WriteTagAsync(tag.Id, newValue);
             }
             finally
             {
                 _isWriting = false;
             }
         }
+
+
 
         private async void TimerTick(object sender, EventArgs e)
         {
@@ -183,10 +185,7 @@ namespace IPCSoftware.App.ViewModels
             GC.SuppressFinalize(this);
         }
 
-        ~PLCIOViewModel()
-        {
-            Dispose();
-        }
+      
     }
 
 }

@@ -1,10 +1,11 @@
 ﻿using IPCSoftware.Shared.Models.ConfigModels;
 using NModbus;
-using System.Net.Sockets;
-using System.Threading.Tasks;
 using System.Linq;
-using System.Threading; // Added for Interlocked
 using System.Net; // Added for IPAddress
+using System.Net.Sockets;
+using System.Text;
+using System.Threading; // Added for Interlocked
+using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Services.PLC
 {
@@ -193,7 +194,9 @@ namespace IPCSoftware.CoreService.Services.PLC
         // ---------------------------------------------------------
         // WRITE LOGIC (Required for Bit/Control operations)
         // ---------------------------------------------------------
-        public async Task WriteAsync(PLCTagConfigurationModel cfg, bool value)
+
+
+        public async Task WriteAsync(PLCTagConfigurationModel cfg, object value)
         {
             if (!IsConnected)
                 throw new InvalidOperationException($"Cannot write to PLC {_device.DeviceName}: Connection is unavailable.");
@@ -201,25 +204,200 @@ namespace IPCSoftware.CoreService.Services.PLC
             try
             {
                 ushort start = (ushort)(cfg.ModbusAddress - 40001);
-                ushort[] regs = await _master!.ReadHoldingRegistersAsync(1, start, 1);
-                ushort regValue = regs[0];
 
-                ushort mask = (ushort)(1 << cfg.BitNo);
+                // Use cfg.DataType to determine how to write
+                switch (cfg.DataType)
+                {
+                    case 1: // Int16 (-32768 to 32767)
+                        short int16Value = ConvertToInt16(value);
+                        await _master!.WriteSingleRegisterAsync(1, start, (ushort)int16Value);
+                        Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} → {int16Value} (Int16) SUCCESS");
+                        break;
 
-                if (value)
-                    regValue = (ushort)(regValue | mask);  // set bit
-                else
-                    regValue = (ushort)(regValue & ~mask); // clear bit
+                    case 2: // UInt16/Integer (0 to 65535) or DWord/UInt32
+                        if (cfg.Length == 1)
+                        {
+                            // Single register - UInt16
+                            ushort uint16Value = ConvertToUInt16(value);
+                            await _master!.WriteSingleRegisterAsync(1, start, uint16Value);
+                            Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} → {uint16Value} (UInt16) SUCCESS");
+                        }
+                        else if (cfg.Length == 2)
+                        {
+                            // Double register - UInt32 or Int32
+                            uint uint32Value = ConvertToUInt32(value);
+                            ushort[] dwordRegs = UInt32ToRegisters(uint32Value);
+                            await _master!.WriteMultipleRegistersAsync(1, start, dwordRegs);
+                            Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} → {uint32Value} (UInt32) SUCCESS");
+                        }
+                        break;
 
-                await _master.WriteSingleRegisterAsync(1, start, regValue);
+                    case 3: // Boolean (bit manipulation)
+                        bool boolValue = ConvertToBool(value);
+                        ushort[] regs = await _master!.ReadHoldingRegistersAsync(1, start, 1);
+                        ushort regValue = regs[0];
+                        ushort mask = (ushort)(1 << cfg.BitNo);
 
-                Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} Bit={cfg.BitNo} → {value} SUCCESS");
+                        if (boolValue)
+                            regValue = (ushort)(regValue | mask);
+                        else
+                            regValue = (ushort)(regValue & ~mask);
+
+                        await _master.WriteSingleRegisterAsync(1, start, regValue);
+                        Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} Bit={cfg.BitNo} → {boolValue} SUCCESS");
+                        break;
+
+                    case 4: // Float (Real - IEEE 754)
+                        float floatValue = ConvertToFloat(value);
+                        ushort[] floatRegs = FloatToRegisters(floatValue);
+                        await _master!.WriteMultipleRegistersAsync(1, start, floatRegs);
+                        Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} → {floatValue} (Float) SUCCESS");
+                        break;
+
+                    case 5: // String
+                        string stringValue = value?.ToString() ?? "";
+                        var stringRegs = StringToRegisters(stringValue, cfg.Length);
+                        await _master!.WriteMultipleRegistersAsync(1, start, stringRegs);
+                        Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} → \"{stringValue}\" (String) SUCCESS");
+                        break;
+
+                    default:
+                        throw new ArgumentException($"Unsupported DataType: {cfg.DataType}");
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE ERROR] Failed to write Tag {cfg.Name}. Message: {ex.Message}");
-                throw; // Re-throw for DashboardInitializer to handle
+                throw;
             }
         }
+
+        // Conversion helpers
+        private short ConvertToInt16(object value)
+        {
+            return value switch
+            {
+                short s => s,
+                int i => (short)i,
+                long l => (short)l,
+                ushort us => (short)us,
+                uint ui => (short)ui,
+                float f => (short)f,
+                double d => (short)d,
+                string str => short.Parse(str),
+                _ => Convert.ToInt16(value)
+            };
+        }
+
+        private ushort ConvertToUInt16(object value)
+        {
+            return value switch
+            {
+                ushort us => us,
+                short s => (ushort)s,
+                int i => (ushort)i,
+                long l => (ushort)l,
+                uint ui => (ushort)ui,
+                float f => (ushort)f,
+                double d => (ushort)d,
+                string str => ushort.Parse(str),
+                _ => Convert.ToUInt16(value)
+            };
+        }
+
+        private uint ConvertToUInt32(object value)
+        {
+            return value switch
+            {
+                uint ui => ui,
+                int i => (uint)i,
+                long l => (uint)l,
+                ushort us => us,
+                short s => (uint)s,
+                float f => (uint)f,
+                double d => (uint)d,
+                string str => uint.Parse(str),
+                _ => Convert.ToUInt32(value)
+            };
+        }
+
+        private bool ConvertToBool(object value)
+        {
+            return value switch
+            {
+                bool b => b,
+                int i => i != 0,
+                long l => l != 0,
+                string str => bool.Parse(str),
+                _ => Convert.ToBoolean(value)
+            };
+        }
+
+        private float ConvertToFloat(object value)
+        {
+            return value switch
+            {
+                float f => f,
+                double d => (float)d,
+                int i => (float)i,
+                long l => (float)l,
+                string str => float.Parse(str),
+                _ => Convert.ToSingle(value)
+            };
+        }
+
+        // Register conversion methods
+        private ushort[] UInt32ToRegisters(uint value)
+        {
+            // Split 32-bit into two 16-bit registers
+            // High word first, then low word (Big Endian)
+            return new ushort[]
+            {
+        (ushort)((value >> 16) & 0xFFFF), // High word
+        (ushort)(value & 0xFFFF)           // Low word
+            };
+        }
+
+        private ushort[] FloatToRegisters(float value)
+        {
+            // Convert float to IEEE 754 format (4 bytes = 2 registers)
+            byte[] bytes = BitConverter.GetBytes(value);
+
+            // Arrange bytes into registers (check your PLC's byte order)
+            return new ushort[]
+            {
+        (ushort)((bytes[1] << 8) | bytes[0]), // First register
+        (ushort)((bytes[3] << 8) | bytes[2])  // Second register
+            };
+        }
+
+        private ushort[] StringToRegisters(string text, int maxLength)
+        {
+            // Convert string to bytes
+            byte[] stringBytes = Encoding.UTF8.GetBytes(text);
+
+            // Pad or truncate to exact length needed (2 bytes per register)
+            byte[] paddedBytes = new byte[maxLength * 2];
+            Array.Copy(stringBytes, 0, paddedBytes, 0, Math.Min(stringBytes.Length, paddedBytes.Length));
+
+            var registers = new ushort[maxLength];
+
+            for (int i = 0; i < maxLength; i++)
+            {
+                int byteIndex = i * 2;
+                byte byte1 = paddedBytes[byteIndex];
+                byte byte2 = paddedBytes[byteIndex + 1];
+
+                // FIXED: Correct byte order to match reading
+                // Try LOW-HIGH order first (most common for strings)
+                registers[i] = (ushort)((byte2 << 8) | byte1);
+
+                // If still scrambled, swap to:
+                // registers[i] = (ushort)((byte1 << 8) | byte2);
+            }
+
+            return registers;
+        }
+
     }
 }
