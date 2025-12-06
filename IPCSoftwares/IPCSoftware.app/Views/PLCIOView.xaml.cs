@@ -23,43 +23,9 @@ namespace IPCSoftware.App.Views
 
         }
 
-        //private async void TestPLCData()
-        //{
-        //    var client = new CoreClient(App.TcpClient);
-        //    var data = await client.GetIoValuesAsync();
-
-        //    // Print to Output Window
-        //    foreach (var kv in data)
-        //    {
-        //        System.Diagnostics.Debug.WriteLine($"TagId[{kv.Key}] = {kv.Value}");
-        //    }
-        //}
-        //private async void UserControl_Loaded(object sender, RoutedEventArgs e)
-        //{
-        //    await TestRequest();
-        //}
-
-        //private async Task TestRequest()
-        //{
-        //    try
-        //    {
-        //        System.Diagnostics.Debug.WriteLine(">> Sending RequestId=5");
-
-        //        var client = new CoreClient(App.TcpClient);
-        //        var result = await client.GetIoValuesAsync();
-
-        //        System.Diagnostics.Debug.WriteLine(">> Response received");
-
-        //        foreach (var kv in result)
-        //        {
-        //            System.Diagnostics.Debug.WriteLine($"TagId[{kv.Key}] = {kv.Value}");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Diagnostics.Debug.WriteLine(">> ERROR: " + ex.Message);
-        //    }
-        //}
-
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            (DataContext as IDisposable)?.Dispose();
+        }
     }
 }
