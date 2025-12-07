@@ -5,6 +5,7 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Windows;
 
@@ -58,7 +59,9 @@ namespace IPCSoftware.App
             }
 
             // TagConfigProvider.Load("Data/PLCTags.csv");
-            await TcpClient.StartAsync("127.0.0.1", 5050);
+
+
+          
 
             var logConfigService = ServiceProvider.GetService<ILogConfigurationService>();
             if (logConfigService != null)
@@ -86,6 +89,35 @@ namespace IPCSoftware.App
             {
                 await authService.EnsureDefaultUserExistsAsync();
             }
+
+            /*while (!await TcpClient.StartAsync("127.0.0.1", 5050))
+            {
+                await Task.Delay(2000);
+            }*/
+            await ConnnectUItcp();
+
+            TcpClient.UiConnected += async connected =>
+            {
+                if (connected)
+                    Console.WriteLine("✅  Connected");
+                else
+                {
+                    await ConnnectUItcp();
+                    Console.WriteLine("❌  Disconnected");
+                }
+            };
+
+
+            
+        }
+        public async Task ConnnectUItcp()
+        {
+
+            while (!await TcpClient.StartAsync("127.0.0.1", 5050))
+            {
+                await Task.Delay(2000);
+            }
+
         }
     }
 }

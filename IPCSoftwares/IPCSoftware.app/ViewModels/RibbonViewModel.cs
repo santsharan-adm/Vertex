@@ -1,7 +1,9 @@
 ﻿using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System.Globalization;
 using System.Windows.Input;
 
@@ -12,6 +14,7 @@ public class RibbonViewModel : BaseViewModel
 {
     private readonly INavigationService _nav;
     private readonly IDialogService _dialog;
+    private readonly IAppLogger _logger;
 
     public ICommand NavigateDashboardCommand { get; }
 
@@ -30,8 +33,9 @@ public class RibbonViewModel : BaseViewModel
 
     public Action<(string Key, List<string> Items)> ShowSidebar { get; set; }   // NEW
 
-    public RibbonViewModel(INavigationService nav, IDialogService dialog)
+    public RibbonViewModel(INavigationService nav, IAppLogger logger, IDialogService dialog)
     {
+        _logger = logger;
         _nav = nav;
 
         NavigateDashboardCommand = new RelayCommand(OpenDashboardMenu);
@@ -42,7 +46,7 @@ public class RibbonViewModel : BaseViewModel
         LogoutCommand = new RelayCommand(Logout);
         NavigateLandingPageCommand = new RelayCommand(OpenLandingPage);
         _dialog = dialog;
-    }
+    }   
 
     public bool IsAdmin => UserSession.Role == "Admin";
     public string CurrentUserName => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Username.ToLower()) ?? "Guest";
@@ -84,7 +88,8 @@ public class RibbonViewModel : BaseViewModel
         {
             "Audit Logs",
             "Production Logs",
-            "Error Logs"
+            "Error Logs",
+            "Diagnostics Logs"
         }, nameof(OpenLogsMenu));
        /* ShowSidebar?.Invoke(new List<string>
         {
@@ -129,6 +134,7 @@ public class RibbonViewModel : BaseViewModel
 
         if (confirm)
         {
+            _logger.LogInfo($"Logout Sucess: {CurrentUserName}", LogType.Audit);
             // proceed delete
             OnLogout?.Invoke();
             _nav.ClearTop();

@@ -168,7 +168,30 @@ namespace IPCSoftware.Services.ConfigServices
                     Description = "Error log configuration",
                     Remark = "System error logs",
                     Enabled = true
+                },
+
+                new LogConfigurationModel
+                {
+                    Id = 3,
+                    LogName = "Diagnostics",
+                    LogType = LogType.Diagnostics,
+                    DataFolder = Path.Combine(baseDir, "Logs", "Diagnostics"),
+                    BackupFolder = Path.Combine(baseDir, "LogsBackup","Diagnostics"),
+                    FileName = "Diagnostics_{yyyyMMdd}",
+                    LogRetentionTime = 60,
+                    LogRetentionFileSize = 5,
+                    AutoPurge = false,
+                    BackupSchedule = BackupScheduleType.Daily,
+                    BackupTime = new TimeSpan(04, 00, 00),
+                    BackupDay = 0,
+                    BackupDayOfWeek = null,
+                    Description = "Diagnostics log configuration",
+                    Remark = "Diagnostics error logs",
+                    Enabled = true
                 }
+
+
+
             };
 
             _configurations = defaultConfigs;

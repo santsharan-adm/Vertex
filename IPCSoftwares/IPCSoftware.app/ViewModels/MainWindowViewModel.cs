@@ -3,6 +3,7 @@ using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
 
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System.Collections.ObjectModel;
@@ -12,11 +13,13 @@ using System.Windows;
 
 using System.Windows.Input;
 using System.Windows.Threading;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 public class MainWindowViewModel : BaseViewModel
 {
     private readonly INavigationService _nav;
     private readonly IDialogService _dialog;
+    private readonly IAppLogger  _logger;
 
     public ICommand SidebarItemClickCommand { get; }
     public RibbonViewModel RibbonVM { get; }
@@ -56,7 +59,7 @@ public class MainWindowViewModel : BaseViewModel
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
     public string AppVersion => "AOI System v1.0.3";
 
-    public MainWindowViewModel(INavigationService nav, IDialogService dialog,RibbonViewModel ribbonVM)
+    public MainWindowViewModel(INavigationService nav, IAppLogger logger, IDialogService dialog,RibbonViewModel ribbonVM)
     {
         _timer = new DispatcherTimer
         {
@@ -94,6 +97,8 @@ public class MainWindowViewModel : BaseViewModel
         existingUserControl = string.Empty;   // clear selected page
         IsSidebarOpen = false;                // close sidebar if open
         IsSidebarDocked = false;
+
+      
     }
 /*
     private void CloseSideBar()
@@ -267,6 +272,9 @@ public class MainWindowViewModel : BaseViewModel
 
             case "Production Logs":
                 _nav.NavigateToLogs(LogType.Production);
+                break;
+            case "Diagnostics Logs":
+                _nav.NavigateToLogs(LogType.Diagnostics);
                 break;
 
         }
