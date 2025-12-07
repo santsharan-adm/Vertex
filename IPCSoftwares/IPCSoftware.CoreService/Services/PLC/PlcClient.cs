@@ -1,10 +1,11 @@
 ﻿using IPCSoftware.Shared.Models.ConfigModels;
 using NModbus;
-using System.Net.Sockets;
-using System.Threading.Tasks;
 using System.Linq;
-using System.Threading; // Added for Interlocked
 using System.Net; // Added for IPAddress
+using System.Net.Sockets;
+using System.Text;
+using System.Threading; // Added for Interlocked
+using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Services.PLC
 {
@@ -190,9 +191,6 @@ namespace IPCSoftware.CoreService.Services.PLC
             Console.WriteLine($"PLCClient[{_device.DeviceName}] [INFO] Tags updated to {myNewTags.Count} tags.");
         }
 
-        // ---------------------------------------------------------
-        // WRITE LOGIC (Required for Bit/Control operations)
-        // ---------------------------------------------------------
         public async Task WriteAsync(PLCTagConfigurationModel cfg, object value)
         {
             if (!IsConnected)
@@ -202,46 +200,37 @@ namespace IPCSoftware.CoreService.Services.PLC
             {
                 ushort start = (ushort)(cfg.ModbusAddress - 40001);
 
-                switch (value)
+                // Convert value to registers based on DataType
+                ushort[] registers = ConvertValueToRegisters(value, cfg);
+
+                // Write to PLC
+                if (cfg.DataType == DataType_Bit)
                 {
-                    case bool boolVal:
-                        // Bit manipulation for boolean
-                        ushort[] regs = await _master!.ReadHoldingRegistersAsync(1, start, 1);
-                        ushort regValue = regs[0];
-                        ushort mask = (ushort)(1 << cfg.BitNo);
+                    // Special case: Bit manipulation
+                    ushort[] existingRegs = await _master!.ReadHoldingRegistersAsync(1, start, 1);
+                    ushort regValue = existingRegs[0];
+                    ushort mask = (ushort)(1 << cfg.BitNo);
 
-                        if (boolVal)
-                            regValue = (ushort)(regValue | mask);
-                        else
-                            regValue = (ushort)(regValue & ~mask);
+                    bool boolValue = Convert.ToBoolean(value);
+                    if (boolValue)
+                        regValue = (ushort)(regValue | mask);
+                    else
+                        regValue = (ushort)(regValue & ~mask);
 
-                        await _master.WriteSingleRegisterAsync(1, start, regValue);
-                        Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} Bit={cfg.BitNo} → {boolVal} SUCCESS");
-                        break;
-
-                    case int intVal:
-                    case ushort ushortVal:
-                        // Direct register write for numbers
-                        ushort numValue = value is int i ? (ushort)i : (ushort)value;
-                        await _master!.WriteSingleRegisterAsync(1, start, numValue);
-                        Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} → {numValue} SUCCESS");
-                        break;
-
-                    case string strVal:
-                        // Multiple register write for strings
-                        var registers = StringToRegisters(strVal, cfg.Length);
-                        await _master!.WriteMultipleRegistersAsync(1, start, registers);
-                        Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} → \"{strVal}\" SUCCESS");
-                        break;
-
-                    case double doubleVal:
-                        // Convert double to ushort (you might want more sophisticated conversion)
-                        await _master!.WriteSingleRegisterAsync(1, start, (ushort)doubleVal);
-                        Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} → {doubleVal} SUCCESS");
-                        break;
-
-                    default:
-                        throw new ArgumentException($"Unsupported value type: {value.GetType().Name}");
+                    await _master.WriteSingleRegisterAsync(1, start, regValue);
+                    Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} Bit={cfg.BitNo} → {boolValue} SUCCESS");
+                }
+                else if (registers.Length == 1)
+                {
+                    // Single register write
+                    await _master!.WriteSingleRegisterAsync(1, start, registers[0]);
+                    Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} → {value} SUCCESS");
+                }
+                else
+                {
+                    // Multiple register write
+                    await _master!.WriteMultipleRegistersAsync(1, start, registers);
+                    Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} → {value} SUCCESS");
                 }
             }
             catch (Exception ex)
@@ -251,19 +240,112 @@ namespace IPCSoftware.CoreService.Services.PLC
             }
         }
 
-        private ushort[] StringToRegisters(string text, int maxLength)
+        /// <summary>
+        /// Converts a value to Modbus registers based on the tag's DataType.
+        /// This is the REVERSE of ConvertData() - it prepares data for writing to PLC.
+        /// </summary>
+        private ushort[] ConvertValueToRegisters(object value, PLCTagConfigurationModel tag)
         {
-            text = text.PadRight(maxLength * 2, '\0').Substring(0, maxLength * 2);
-            var registers = new ushort[maxLength];
-
-            for (int i = 0; i < maxLength; i++)
+            try
             {
-                byte highByte = (byte)text[i * 2];
-                byte lowByte = (byte)text[i * 2 + 1];
-                registers[i] = (ushort)((highByte << 8) | lowByte);
-            }
+                byte[] byteArray;
+                ushort[] registers;
 
-            return registers;
+                switch (tag.DataType)
+                {
+                    case DataType_Bit:
+                        // Bit writes are handled separately in WriteAsync
+                        // Return dummy register - actual bit manipulation happens in WriteAsync
+                        bool boolVal = Convert.ToBoolean(value);
+                        return new ushort[] { (ushort)(boolVal ? 1 : 0) };
+
+                    case DataType_String:
+                        // Convert string to ASCII bytes
+                        string strValue = value?.ToString() ?? "";
+                        byteArray = Encoding.ASCII.GetBytes(strValue);
+
+                        // Pad to required length (2 bytes per register)
+                        int requiredBytes = tag.Length * 2;
+                        if (byteArray.Length < requiredBytes)
+                        {
+                            byte[] padded = new byte[requiredBytes];
+                            Array.Copy(byteArray, padded, byteArray.Length);
+                            byteArray = padded;
+                        }
+                        else if (byteArray.Length > requiredBytes)
+                        {
+                            Array.Resize(ref byteArray, requiredBytes);
+                        }
+
+                        // Convert bytes to registers
+                        registers = new ushort[tag.Length];
+                        for (int i = 0; i < tag.Length; i++)
+                        {
+                            // BitConverter.ToUInt16 reads Little Endian from byte array
+                            registers[i] = BitConverter.ToUInt16(byteArray, i * 2);
+                        }
+                        return registers;
+
+                    case DataType_Int16:
+                        // 16-bit signed integer
+                        short int16Value = Convert.ToInt16(value);
+                        byteArray = BitConverter.GetBytes(int16Value);
+                        return new ushort[] { BitConverter.ToUInt16(byteArray, 0) };
+
+                    case DataType_Word32:
+                        // 32-bit integer (2 registers)
+                        int int32Value = Convert.ToInt32(value);
+                        byteArray = BitConverter.GetBytes(int32Value);
+
+                        // Convert to 2 registers
+                        registers = new ushort[2];
+                        registers[0] = BitConverter.ToUInt16(byteArray, 0); // Low word
+                        registers[1] = BitConverter.ToUInt16(byteArray, 2); // High word
+
+                        // CRITICAL: Swap words for Big Endian Modbus
+                        // This is the REVERSE of the swap in ConvertData()
+                        ushort temp = registers[0];
+                        registers[0] = registers[1];
+                        registers[1] = temp;
+
+                        return registers;
+
+                    case DataType_FP:
+                        // 32-bit floating point (2 registers)
+                        float floatValue = Convert.ToSingle(value);
+                        byteArray = BitConverter.GetBytes(floatValue);
+
+                        // Convert to 2 registers
+                        registers = new ushort[2];
+                        registers[0] = BitConverter.ToUInt16(byteArray, 0); // Low word
+                        registers[1] = BitConverter.ToUInt16(byteArray, 2); // High word
+
+                        // CRITICAL: Swap words for Big Endian Modbus
+                        // This is the REVERSE of the swap in ConvertData()
+                        temp = registers[0];
+                        registers[0] = registers[1];
+                        registers[1] = temp;
+
+                        return registers;
+
+                    default:
+                        // Default: treat as UInt16
+                        ushort uint16Value = Convert.ToUInt16(value);
+                        return new ushort[] { uint16Value };
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[WRITE_ERROR] Failed to convert value for Tag {tag.Name} (Type {tag.DataType}): {ex.Message}");
+                throw;
+            }
         }
+
+        // DataType constants (add these to match your ConvertData logic)
+        private const int DataType_Bit = 3;
+        private const int DataType_String = 5;
+        private const int DataType_Int16 = 1;
+        private const int DataType_Word32 = 2;
+        private const int DataType_FP = 4;
     }
 }

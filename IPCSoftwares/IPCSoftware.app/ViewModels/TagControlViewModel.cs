@@ -26,7 +26,20 @@ namespace IPCSoftware.App.ViewModels
         private bool _disposed;
 
         public ObservableCollection<WritableTagItem> WritableTags { get; } = new();
-        public ObservableCollection<IoTagModel> FilteredInputs { get; } = new();
+        public ObservableCollection<WritableTagItem> AllInputs { get; } = new();
+
+        private string _searchText;
+
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged();
+                ApplyFilter();
+            }
+        }
 
         public ICommand WriteCommand { get; }
 
@@ -44,7 +57,7 @@ namespace IPCSoftware.App.ViewModels
 
             _timer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(5000)
+                Interval = TimeSpan.FromMilliseconds(100)
             };
             _timer.Tick += TimerTick;
             _timer.Start();
@@ -65,35 +78,58 @@ namespace IPCSoftware.App.ViewModels
         }
 
 
+        private void ApplyFilter()
+        {
+            // We are modifying the UI collection, so we clear it first
+            WritableTags.Clear();
+
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                // Case 1: No Search - Add everything from Master List to UI List
+                foreach (var item in AllInputs)
+                {
+                    WritableTags.Add(item);
+                }
+            }
+            else
+            {
+                // Case 2: Search Active - Filter Master List and add matches to UI List
+                var s = SearchText.Trim().ToLower();
+
+                var matches = AllInputs.Where(t =>
+                    (t.Model.Name != null && t.Model.Name.ToLower().Contains(s)) ||
+                    t.Model.TagNo.ToString().Contains(s) // Searching by TagNo (what is shown in Grid)
+                );
+
+                foreach (var item in matches)
+                {
+                    WritableTags.Add(item);
+                }
+            }
+        }
+
 
         private async void InitializeAsync()
         {
             var allTags = await _tagService.GetAllTagsAsync();
 
+            // 1. Clear both lists
             WritableTags.Clear();
-            //  FilteredInputs.Clear();
+            AllInputs.Clear();
 
-            // Filter only tags where CanWrite is true
+            // 2. Filter for writable tags only
             var writable = allTags.Where(t => t.CanWrite).ToList();
 
+            // 3. Populate the Master List (AllInputs)
             foreach (var tag in writable)
             {
-                WritableTags.Add(new WritableTagItem(tag));
-                /*  var model = new IoTagModel
-                  {
-                      Id = tag.Id,
-                      Name = tag.Name,
-                      Value = string.Empty,
-                  };
-
-                  if (tag.Name != null)
-                  {
-                      FilteredInputs.Add(model);
-                  }*/
+                var item = new WritableTagItem(tag);
+                AllInputs.Add(item);
             }
+
+            // 4. Populate UI list (WritableTags) based on current filter
+            ApplyFilter();
         }
-
-
 
 
 
@@ -102,26 +138,51 @@ namespace IPCSoftware.App.ViewModels
             if (item == null) return;
 
             // 1. Validate Input
-            //  if (/*!ValidateInput(item, out object parsedValue)*/)
-            //{
-            //    _dialog.ShowWarning($"Invalid format for {item.DataTypeDisplay}.\n\nAllowed values:\n{GetValidationMessage(item.Model.DataType)}");
-            //    return;
-            //}
+            if (!ValidateInput(item, out object parsedValue))
+            {
+                _dialog.ShowWarning($"Invalid format for {item.DataTypeDisplay}...");
+                return;
+            }
+
+            // [STEP 1] PAUSE THE TIMER
+            // Stop reading background data so we don't overwrite our new value with old data
+            _timer.Stop();
 
             try
             {
-                ValidateInput(item, out object parsedValue);
                 bool success = await _coreClient.WriteTagAsync(item.Model.TagNo, parsedValue);
-                //await _coreClient.WriteTagAsync(item.Model.Id, item.InputValue);
-                // 2. Send to PLC (Simulated call to CoreClient)
-                // In a real scenario: await _coreClient.WriteTagAsync(item.Model.TagNo, parsedValue);
 
-                // Since CoreClient might not have a generic Write method exposed yet, we debug print:
+                if (success)
+                {
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        // [STEP 2] OPTIMISTIC UPDATE
+                        // Manually set the DisplayValue to what we just wrote.
+                        // This gives the user instant feedback that it worked.
+                  
 
+                        // Clear the input box
+                        item.InputValue = null;
+                    });
+
+                    // [STEP 3] SETTLE DELAY
+                    // Give the PLC a moment (e.g., 500ms) to update its internal memory
+                    // before we start asking it for values again.
+                    await Task.Delay(50);
+                }
             }
             catch (Exception ex)
             {
                 _dialog.ShowWarning($"Failed to write to PLC: {ex.Message}");
+            }
+            finally
+            {
+                // [STEP 4] RESUME TIMER
+                // Always restart the timer, even if the write failed
+                if (!_disposed)
+                {
+                    _timer.Start();
+                }
             }
         }
 
@@ -181,19 +242,13 @@ namespace IPCSoftware.App.ViewModels
         {
             if (dict == null) return;
 
-            foreach (var input in WritableTags)
+            foreach (var input in AllInputs)
             {
                 if (dict.TryGetValue(input.Model.Id, out var live))
-                    input.InputValue = live;
+                {
+                    input.DisplayValue = live;
+                }
             }
-            /* foreach (var input in WritableTags)
-             {
-
-                 if (dict.TryGetValue(input.Model.Id, out var live) && live != null)
-                 {
-                     input.InputValue = live.ToString();
-                 }
-             }*/
         }
 
         private string GetValidationMessage(int dataType)
@@ -238,27 +293,36 @@ namespace IPCSoftware.App.ViewModels
         {
             Model = model;
         }
-        private object _value;
-        public object InputValue
+        private object _displayValue;
+        public object DisplayValue
         {
-            get => _value;
-            set
-            {
-                _value = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(DisplayStatus));
-            }
+            get => _displayValue;
+            set => SetProperty(ref _displayValue, value);
+            //set { _selectedTabIndex = value; OnPropertyChanged(); }
+            //set
+            //{
+            //    _value = value;
+            //    OnPropertyChanged();
+            //    OnPropertyChanged(nameof(DisplayStatus));
+            //}
         }
 
-        public string DisplayStatus
+        private object _inputValue;
+        public object InputValue
         {
-            get
-            {
-                if (InputValue is bool b)
-                    return b ? "ON" : "OFF";
-                return InputValue?.ToString();
-            }
+            get => _inputValue;
+            set => SetProperty(ref _inputValue, value);
+            //set
+            //{
+            //    _inputValue = value;
+            //    OnPropertyChanged();
+            //    OnPropertyChanged(nameof(DisplayStatus));
+            //}
         }
+
+
+
+      
 
 
         private string GetDataTypeName(int typeId)

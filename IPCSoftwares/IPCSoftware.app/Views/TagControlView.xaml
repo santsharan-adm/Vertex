@@ -57,6 +57,12 @@
                    FontSize="48" FontWeight="Bold" Foreground="#333"
                    Margin="0,0,0,20"/>
 
+        <StackPanel HorizontalAlignment="Right"  Orientation="Horizontal" VerticalAlignment="Center">
+            <TextBlock Text="Search:" FontSize="32" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#555"/>
+            <TextBox Width="400" Height="60" FontSize="30" VerticalContentAlignment="Center" Padding="5"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
         <!-- DataGrid -->
         <Border Grid.Row="1" Background="White" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1">
             <DataGrid ItemsSource="{Binding WritableTags}"
@@ -88,7 +94,7 @@
                     <DataGridTextColumn Header="Tag No" Binding="{Binding Model.TagNo}" Width="150"/>
 
                     <!-- 2. Tag Name -->
-                    <DataGridTextColumn Header="Tag Name" Binding="{Binding Model.Name}" Width="300">
+                    <DataGridTextColumn Header="Tag Name"  Binding="{Binding Model.Name}" Width="300">
                         <DataGridTextColumn.CellStyle>
                             <Style TargetType="DataGridCell" BasedOn="{StaticResource HmiCellStyle}">
                                 <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -99,14 +105,17 @@
 
                     <!-- 3. Data Type -->
                     <DataGridTextColumn Header="Data Type" Binding="{Binding DataTypeDisplay}" Width="Auto" Foreground="#666"/>
+                    <DataGridTextColumn Header="Current Value" Binding="{Binding DisplayValue, TargetNullValue=''}"  Width="300" Foreground="#666"/>
 
                     <!-- 4. Textbox (Value Input) -->
                     <DataGridTemplateColumn Header="Value to Write" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBox Text="{Binding InputValue, UpdateSourceTrigger=PropertyChanged}"
+                                <TextBox Text="{Binding InputValue, 
+                                                UpdateSourceTrigger=PropertyChanged, 
+                                                TargetNullValue=''}" 
                                          FontSize="24"
-                                         Width="Auto"
+                                         Width="300"
                                          VerticalContentAlignment="Center"
                                          Padding="10"
                                          Height="50"
