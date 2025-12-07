@@ -1,6 +1,7 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Configuration;
+using System.Configuration;
 using System.IO;
 using System.Text;
 
@@ -9,6 +10,7 @@ namespace IPCSoftware.Services.ConfigServices
 {
     public class PLCTagConfigurationService : IPLCTagConfigurationService
     {
+        private readonly IConfiguration _configuration;
         private readonly string _dataFolder;
         private readonly string _csvFilePath;
         private List<PLCTagConfigurationModel> _tags;
@@ -16,9 +18,28 @@ namespace IPCSoftware.Services.ConfigServices
         private readonly TagConfigLoader _tagLoader = new TagConfigLoader(); // Use the dedicated loader
 
         // FIX: Constructor uses IConfiguration for path resolution
-        public PLCTagConfigurationService(string dataFolderPath = null)
+        /*   public PLCTagConfigurationService(string dataFolderPath = null)
+           {
+               _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+
+               if (!Directory.Exists(_dataFolder))
+               {
+                   Directory.CreateDirectory(_dataFolder);
+               }
+
+               _csvFilePath = Path.Combine(_dataFolder, "PLCTags.csv");
+
+               _tags = new List<PLCTagConfigurationModel>();
+           }
+   */
+            
+        public PLCTagConfigurationService(IConfiguration configuration)
         {
+
+            _configuration = configuration;
+            string dataFolderPath = _configuration.GetValue<string>("Config:DataFolder");
             _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+
 
             if (!Directory.Exists(_dataFolder))
             {
@@ -29,6 +50,7 @@ namespace IPCSoftware.Services.ConfigServices
 
             _tags = new List<PLCTagConfigurationModel>();
         }
+
 
         public async Task InitializeAsync()
         {
@@ -118,24 +140,26 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var sb = new StringBuilder();
-                // Ensure the header includes the new CanWrite column (14 columns total)
+                // Header
                 sb.AppendLine("Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark,CanWrite");
 
                 foreach (var tag in _tags)
                 {
+                    // CHANGE HERE: Removed the \" before and after the function calls.
+                    // We trust EscapeCsv to add quotes ONLY if necessary.
                     sb.AppendLine($"{tag.Id}," +
                         $"{tag.TagNo}," +
-                        $"\"{EscapeCsv(tag.Name)}\"," + // EscapeCsv is now defined
+                        $"{EscapeCsv(tag.Name)}," +         // <--- Was $"\"{EscapeCsv(tag.Name)}\","
                         $"{tag.PLCNo}," +
                         $"{tag.ModbusAddress}," +
                         $"{tag.Length}," +
                         $"{tag.AlgNo}," +
-                        $"{tag.DataType}," +
+                        $"{GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
                         $"{tag.BitNo}," +
                         $"{tag.Offset}," +
                         $"{tag.Span}," +
-                        $"\"{EscapeCsv(tag.Description)}\"," + // EscapeCsv is now defined
-                        $"\"{EscapeCsv(tag.Remark)}\"," + // EscapeCsv is now defined
+                        $"{EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
+                        $"{EscapeCsv(tag.Remark)}," +       // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
                         $"{tag.CanWrite}");
                 }
 
@@ -147,37 +171,35 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-        // FIX 3: Re-introduce the missing helper method
         private string EscapeCsv(string value)
         {
-            if (string.IsNullOrEmpty(value)) return string.Empty;
-            // Check if the value contains quotes or a comma, and escape accordingly
+            if (string.IsNullOrEmpty(value)) return "";
+
+            // ONLY add quotes if the value contains a comma or a quote
             if (value.Contains("\"") || value.Contains(","))
+            {
+                // Double up any existing quotes and wrap the whole thing in quotes
                 return "\"" + value.Replace("\"", "\"\"") + "\"";
+            }
+
+            // Otherwise, return the clean string without quotes
             return value;
         }
 
-        // Placeholder methods must be defined here to avoid further errors
-        // NOTE: These should be implemented fully, but we add them to resolve current compilation issues.
-
-        private List<string> SplitCsvLine(string line)
+        // You likely need this helper to save "Int16" instead of "1" back to the CSV
+        private string GetDataTypeString(int typeId)
         {
-            // Placeholder: Logic is needed here to split CSV line, considering quotes
-            return new List<string>();
+            return typeId switch
+            {
+                1 => "Int16",
+                2 => "Word",
+                3 => "Bit",
+                4 => "Float",
+                5 => "String",
+                _ => "Int16"
+            };
         }
 
-        private int ParseIntSafe(string s)
-        {
-            if (int.TryParse(s, out int result)) return result;
-            return 0;
-        }
 
-        private int ParseDataType(string s)
-        {
-            // Placeholder: Logic is needed here to convert type string to int
-            if (string.IsNullOrWhiteSpace(s)) return 1;
-            if (int.TryParse(s, out int result)) return result;
-            return 1; // Default
-        }
     }
 }

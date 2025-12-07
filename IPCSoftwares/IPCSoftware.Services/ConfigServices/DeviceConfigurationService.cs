@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +12,7 @@ namespace IPCSoftware.Services.ConfigServices
 {
     public class DeviceConfigurationService : IDeviceConfigurationService
     {
+        private readonly IConfiguration _configuration;
         private readonly string _dataFolder;
         private readonly string _devicesCsvPath;
         private readonly string _interfacesCsvPath;
@@ -24,8 +26,10 @@ namespace IPCSoftware.Services.ConfigServices
         private int _nextDeviceId = 1;
         private int _nextInterfaceId = 1;
 
-        public DeviceConfigurationService(string dataFolderPath = null)
+        public DeviceConfigurationService(IConfiguration configuration)
         {
+            _configuration = configuration;
+            string dataFolderPath = _configuration.GetValue<string>("Config:DataFolder");
             _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
 
             if (!Directory.Exists(_dataFolder))
@@ -49,12 +53,27 @@ namespace IPCSoftware.Services.ConfigServices
             await LoadCameraInterfacesFromCsvAsync();
         }
 
+
+
         // ==================== DEVICE OPERATIONS ====================
 
         public async Task<List<DeviceModel>> GetAllDevicesAsync()
         {
             return await Task.FromResult(_devices.ToList());
         }
+
+        public async Task<List<DeviceInterfaceModel>> GetPlcDevicesAsync()
+        {
+            if (_interfaces.Count == 0)
+            {
+                await LoadInterfacesFromCsvAsync();
+            }
+            return _interfaces.ToList();
+        }
+
+
+
+
 
         public async Task<DeviceModel> GetDeviceByIdAsync(int id)
         {

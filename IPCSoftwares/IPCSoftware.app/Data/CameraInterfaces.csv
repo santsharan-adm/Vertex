@@ -1,0 +1,2 @@
+﻿Id,DeviceNo,DeviceName,Name,Protocol,IPAddress,Port,Gateway,Username,Password,AnonymousLogin,RemotePath,LocalDirectory,Enabled,Description,Remark
+1,4,"Camera 1","New Camera","FTP-Server","11.11.1.11",21,"","","",False,"","",False,"",""
