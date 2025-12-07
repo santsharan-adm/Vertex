@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.App;
 using IPCSoftware.App.Services;
+using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
@@ -85,10 +86,11 @@ namespace IPCSoftware.App.ViewModels
 
                 if (tag.Name != null)
                 {
-                    if (tag.Name.StartsWith("IO_INPUT", StringComparison.OrdinalIgnoreCase))
+                    AllInputTags.Add(model);
+                    /*if (tag.Name.StartsWith("IO_INPUT", StringComparison.OrdinalIgnoreCase))
                         AllInputTags.Add(model);
                     else if (tag.Name.StartsWith("IO_OUTPUT", StringComparison.OrdinalIgnoreCase))
-                        AllOutputTags.Add(model);
+                        AllOutputTags.Add(model);*/
                 }
             }
 

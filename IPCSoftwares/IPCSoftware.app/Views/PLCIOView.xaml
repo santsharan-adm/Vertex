@@ -210,9 +210,10 @@
 
 								<!-- Name -->
 								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+								<DataGridTextColumn Header="Status" Binding="{Binding Value}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
 
 								<!-- Status (Light Indicator) -->
-								<DataGridTemplateColumn Header="Status" Width="200">
+								<!--<DataGridTemplateColumn Header="Status" Width="200">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<Border Width="50" Height="50" CornerRadius="25"
@@ -225,8 +226,9 @@
 											</Border>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>
-							</DataGrid.Columns>
+								</DataGridTemplateColumn>-->
+						
+                            </DataGrid.Columns>
 						</DataGrid>
 					</Border>
 				</TabItem>

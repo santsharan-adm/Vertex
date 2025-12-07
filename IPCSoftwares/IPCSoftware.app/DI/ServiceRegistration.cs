@@ -1,4 +1,6 @@
 ﻿using IPCSoftware.App.NavServices;
+using IPCSoftware.App.Services;
+using IPCSoftware.App.Services.UI;
 using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
 
@@ -26,7 +28,7 @@ namespace IPCSoftware.App.DI
             //AppLogger 
             services.AddSingleton<IAppLogger, AppLoggerService>();
             services.AddSingleton<ILogManagerService, LogManagerService>();
-            services.AddSingleton<UiTcpClient>();
+           
 
 
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
@@ -43,6 +45,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<OEEDashboardViewModel>();
             services.AddSingleton<OeeDashboardNewViewModel>();
+            services.AddSingleton<UiTcpClient>();
         
             
 
@@ -130,7 +133,17 @@ namespace IPCSoftware.App.DI
             services.AddTransient<SystemSettingViewModel>();
             services.AddTransient<IPLCService, PlcService>();
 
+            // --- New Registration in ServiceRegistration.cs ---
 
+          //  // Define the constants used for the network client
+          //  const string IpAddress = "127.0.0.1";
+          //  const int Port = 5050; // Or whatever port you are using
+
+          //  // Register UiTcpClient with a factory method to supply constructor arguments
+          ////  services.AddSingleton<UiTcpClient>(s => new UiTcpClient(IpAddress, Port));
+
+          //  // Register CoreClient (which consumes UiTcpClient)
+            services.AddSingleton<CoreClient>();
 
 
         }

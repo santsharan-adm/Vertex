@@ -193,7 +193,7 @@ namespace IPCSoftware.CoreService.Services.PLC
         // ---------------------------------------------------------
         // WRITE LOGIC (Required for Bit/Control operations)
         // ---------------------------------------------------------
-        public async Task WriteAsync(PLCTagConfigurationModel cfg, bool value)
+        public async Task WriteAsync(PLCTagConfigurationModel cfg, object value)
         {
             if (!IsConnected)
                 throw new InvalidOperationException($"Cannot write to PLC {_device.DeviceName}: Connection is unavailable.");
@@ -201,25 +201,69 @@ namespace IPCSoftware.CoreService.Services.PLC
             try
             {
                 ushort start = (ushort)(cfg.ModbusAddress - 40001);
-                ushort[] regs = await _master!.ReadHoldingRegistersAsync(1, start, 1);
-                ushort regValue = regs[0];
 
-                ushort mask = (ushort)(1 << cfg.BitNo);
+                switch (value)
+                {
+                    case bool boolVal:
+                        // Bit manipulation for boolean
+                        ushort[] regs = await _master!.ReadHoldingRegistersAsync(1, start, 1);
+                        ushort regValue = regs[0];
+                        ushort mask = (ushort)(1 << cfg.BitNo);
 
-                if (value)
-                    regValue = (ushort)(regValue | mask);  // set bit
-                else
-                    regValue = (ushort)(regValue & ~mask); // clear bit
+                        if (boolVal)
+                            regValue = (ushort)(regValue | mask);
+                        else
+                            regValue = (ushort)(regValue & ~mask);
 
-                await _master.WriteSingleRegisterAsync(1, start, regValue);
+                        await _master.WriteSingleRegisterAsync(1, start, regValue);
+                        Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} Bit={cfg.BitNo} → {boolVal} SUCCESS");
+                        break;
 
-                Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} Bit={cfg.BitNo} → {value} SUCCESS");
+                    case int intVal:
+                    case ushort ushortVal:
+                        // Direct register write for numbers
+                        ushort numValue = value is int i ? (ushort)i : (ushort)value;
+                        await _master!.WriteSingleRegisterAsync(1, start, numValue);
+                        Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} → {numValue} SUCCESS");
+                        break;
+
+                    case string strVal:
+                        // Multiple register write for strings
+                        var registers = StringToRegisters(strVal, cfg.Length);
+                        await _master!.WriteMultipleRegistersAsync(1, start, registers);
+                        Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} → \"{strVal}\" SUCCESS");
+                        break;
+
+                    case double doubleVal:
+                        // Convert double to ushort (you might want more sophisticated conversion)
+                        await _master!.WriteSingleRegisterAsync(1, start, (ushort)doubleVal);
+                        Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE] Addr={cfg.ModbusAddress} → {doubleVal} SUCCESS");
+                        break;
+
+                    default:
+                        throw new ArgumentException($"Unsupported value type: {value.GetType().Name}");
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"PLC[{_device.DeviceName}] [WRITE ERROR] Failed to write Tag {cfg.Name}. Message: {ex.Message}");
-                throw; // Re-throw for DashboardInitializer to handle
+                throw;
             }
+        }
+
+        private ushort[] StringToRegisters(string text, int maxLength)
+        {
+            text = text.PadRight(maxLength * 2, '\0').Substring(0, maxLength * 2);
+            var registers = new ushort[maxLength];
+
+            for (int i = 0; i < maxLength; i++)
+            {
+                byte highByte = (byte)text[i * 2];
+                byte lowByte = (byte)text[i * 2 + 1];
+                registers[i] = (ushort)((highByte << 8) | lowByte);
+            }
+
+            return registers;
         }
     }
 }

@@ -6,9 +6,11 @@
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:TagControlViewModel}"
+                    Unloaded="UserControl_Unloaded"
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920"
              Background="#F3F3F3">
+
 
     <UserControl.Resources>
         <!-- Reusing your HMI Styles for consistency -->
@@ -96,7 +98,7 @@
                     </DataGridTextColumn>
 
                     <!-- 3. Data Type -->
-                    <DataGridTextColumn Header="Data Type" Binding="{Binding DataTypeDisplay}" Width="200" Foreground="#666"/>
+                    <DataGridTextColumn Header="Data Type" Binding="{Binding DataTypeDisplay}" Width="Auto" Foreground="#666"/>
 
                     <!-- 4. Textbox (Value Input) -->
                     <DataGridTemplateColumn Header="Value to Write" Width="*">
@@ -104,7 +106,7 @@
                             <DataTemplate>
                                 <TextBox Text="{Binding InputValue, UpdateSourceTrigger=PropertyChanged}"
                                          FontSize="24"
-                                         Width=" 100"
+                                         Width="Auto"
                                          VerticalContentAlignment="Center"
                                          Padding="10"
                                          Height="50"

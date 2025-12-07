@@ -1,4 +1,6 @@
-﻿using IPCSoftware.Shared.Models.Messaging;
+﻿using IPCSoftware.App.Services;
+using IPCSoftware.App.Services.UI;
+using IPCSoftware.Shared.Models.Messaging;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
