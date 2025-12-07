@@ -16,12 +16,14 @@ namespace IPCSoftware.CoreService
     {
         private readonly ILogger<Worker> _logger;
         private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _deviceService;
         private readonly IConfiguration _configuration;
 
         // Removed _plcManager and _dashboard fields; they will be local or managed by DashboardInitializer
 
-        public Worker(ILogger<Worker> logger, IPLCTagConfigurationService tagService, IConfiguration configuration)
+        public Worker(ILogger<Worker> logger, IPLCTagConfigurationService tagService, IDeviceConfigurationService deviceService, IConfiguration configuration)
         {
+            _deviceService = deviceService;
             _tagService = tagService;
             _logger = logger;
             _configuration = configuration;
@@ -34,16 +36,18 @@ namespace IPCSoftware.CoreService
                 // STEP 1 & 2: Calculate Paths and Load Configuration (Logic retained)
                 // Assuming path calculation and DeviceConfigLoader logic runs successfully here...
 
-                string dataFolderName = _configuration.GetValue<string>("Config:DataFolder") ?? "Data";
+              /*  string dataFolderName = _configuration.GetValue<string>("Config:DataFolder") ?? "Data";
                 string deviceFileName = _configuration.GetValue<string>("Config:DeviceInterfacesFileName") ?? "DeviceInterfaces.csv";
-                string tagFileName = _configuration.GetValue<string>("Config:PlcTagsFileName") ?? "PLCTags.csv";
+                //string tagFileName = _configuration.GetValue<string>("Config:PlcTagsFileName") ?? "PLCTags.csv";
 
                 var appRootPath = AppContext.BaseDirectory;
                 var appDataFolder = Path.Combine(appRootPath, dataFolderName);
                 var configPath = Path.Combine(appDataFolder, deviceFileName);
 
                 var deviceLoader = new DeviceConfigLoader();
-                var devices = deviceLoader.Load(configPath);
+                var devices = deviceLoader.Load(configPath);*/
+
+                var devices = await _deviceService.GetPlcDevicesAsync();
                 _logger.LogInformation($"Loaded {devices.Count} PLC devices.");
 
                 // STEP 3: Load modbus tag configurations (via service)

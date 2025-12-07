@@ -22,6 +22,7 @@ namespace IPCSoftware.CoreService
 
                     // 2. Configuration Service (Resolvable by DI)
                     services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+                    services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
 
                     // 3. Hosted Services (These are the actual workers/watchers)
                     services.AddHostedService<Worker>();
@@ -34,6 +35,9 @@ namespace IPCSoftware.CoreService
                 .Build();
 
             host.Run();
+
+
+
         }
     }
 }

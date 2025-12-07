@@ -9,14 +9,17 @@ using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.ComponentModel.Design.Serialization;
 
 namespace IPCSoftware.App.DI
 {
     public static class ServiceRegistration
     {
-        public static void RegisterServices(IServiceCollection services)
+        public static void RegisterServices(IServiceCollection services/*, IConfiguration configuration*/)
         {
+            //services.AddSingleton<IConfiguration>(configuration);
             //Auth service
             services.AddSingleton<IAuthService, AuthService>();
             //Credentials
@@ -28,7 +31,7 @@ namespace IPCSoftware.App.DI
             //AppLogger 
             services.AddSingleton<IAppLogger, AppLoggerService>();
             services.AddSingleton<ILogManagerService, LogManagerService>();
-           
+
 
 
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
@@ -46,8 +49,9 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<OEEDashboardViewModel>();
             services.AddSingleton<OeeDashboardNewViewModel>();
             services.AddSingleton<UiTcpClient>();
-        
-            
+
+
+
 
             // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
             services.AddTransient<LogListViewModel>();
@@ -135,14 +139,14 @@ namespace IPCSoftware.App.DI
 
             // --- New Registration in ServiceRegistration.cs ---
 
-          //  // Define the constants used for the network client
-          //  const string IpAddress = "127.0.0.1";
-          //  const int Port = 5050; // Or whatever port you are using
+            //  // Define the constants used for the network client
+            //  const string IpAddress = "127.0.0.1";
+            //  const int Port = 5050; // Or whatever port you are using
 
-          //  // Register UiTcpClient with a factory method to supply constructor arguments
-          ////  services.AddSingleton<UiTcpClient>(s => new UiTcpClient(IpAddress, Port));
+            //  // Register UiTcpClient with a factory method to supply constructor arguments
+            ////  services.AddSingleton<UiTcpClient>(s => new UiTcpClient(IpAddress, Port));
 
-          //  // Register CoreClient (which consumes UiTcpClient)
+            //  // Register CoreClient (which consumes UiTcpClient)
             services.AddSingleton<CoreClient>();
 
 
