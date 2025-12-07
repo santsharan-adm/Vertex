@@ -38,6 +38,19 @@ namespace IPCSoftware.CoreService.Services.PLC
 
         public List<PlcClient> GetAllClients() => Clients;
 
+
+        public void UpdateTags(List<PLCTagConfigurationModel> allNewTags)
+        {
+            // Store the new comprehensive list (if needed)
+            // Interlocked.Exchange(ref _allTags, allNewTags); 
+
+            // Iterate through all running clients and tell them to update their subset of tags
+            foreach (var client in Clients)
+            {
+                client.UpdateTags(allNewTags);
+            }
+            Console.WriteLine($"PLCClientManager notified {Clients.Count} clients of tag update.");
+        }
         public PlcClient GetClient(int plcNo)
         {
             return Clients.FirstOrDefault(c => c.Device.DeviceNo == plcNo);

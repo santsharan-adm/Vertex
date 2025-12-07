@@ -2,7 +2,7 @@
 using System.Linq;
 using IPCSoftware.Shared.Models.ConfigModels;
 
-namespace IPCSoftware.CoreService.Services
+namespace IPCSoftware.Services
 {
     public class DeviceConfigLoader
     {

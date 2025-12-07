@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+
 
 namespace IPCSoftware.Core.Interfaces
 {
@@ -15,5 +17,8 @@ namespace IPCSoftware.Core.Interfaces
         Task<PLCTagConfigurationModel> AddTagAsync(PLCTagConfigurationModel tag);
         Task<bool> UpdateTagAsync(PLCTagConfigurationModel tag);
         Task<bool> DeleteTagAsync(int id);
+
+      // Add the method required by TagChangeWatcherService
+        Task<List<PLCTagConfigurationModel>> ReloadTagsAsync();
     }
 }

@@ -53,6 +53,7 @@
 
                 <Button Command="{Binding YesCommand}"
                         Content="{Binding YesText}"
+                        IsDefault="True"
                         Background="{Binding YesButtonBrush}" 
                         Width="160" Height="70"
                         FontSize="22" FontWeight="Bold" Cursor="Hand"

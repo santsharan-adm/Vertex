@@ -105,6 +105,9 @@ namespace IPCSoftware.CoreService.Services.UI
             }
         }
 
+
+
+
         private string ExtractMessage(ref StringBuilder sb)
         {
             string text = sb.ToString();

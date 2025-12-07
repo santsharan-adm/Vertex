@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace IPCSoftware.App.ViewModels
 {
@@ -19,7 +20,7 @@ namespace IPCSoftware.App.ViewModels
         private PLCTagConfigurationModel _currentTag;
         private bool _isEditMode;
         private string _title;
-
+        private readonly IDialogService _dialog;
 
         public string Title
         {
@@ -142,6 +143,15 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _isLengthEnabled, value);
         }
 
+        private bool _canWrite;
+        public bool CanWrite
+        {
+            get => _canWrite;
+            set => SetProperty(ref _canWrite, value);
+        }
+
+
+
 
         // UPDATED: Collection of AlgorithmType objects
         public ObservableCollection<AlgorithmType> AlgorithmTypes { get; }
@@ -152,10 +162,10 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public PLCTagConfigurationViewModel(IPLCTagConfigurationService tagService)
+        public PLCTagConfigurationViewModel(IPLCTagConfigurationService tagService, IDialogService dialog)
         {
             _tagService = tagService;
-
+            _dialog = dialog;
             // Initialize algorithm types with Value and DisplayName
             AlgorithmTypes = new ObservableCollection<AlgorithmType>
             {
@@ -205,6 +215,7 @@ namespace IPCSoftware.App.ViewModels
             Span = tag.Span;
             Description = tag.Description;
             Remark = tag.Remark;
+            CanWrite = tag.CanWrite;
             UpdateAlgorithmState();
         }
 
@@ -225,6 +236,7 @@ namespace IPCSoftware.App.ViewModels
             _currentTag.Span = Span;
             _currentTag.Description = Description;
             _currentTag.Remark = Remark;
+            _currentTag.CanWrite = CanWrite;
         }
 
         private bool CanSave()
@@ -237,8 +249,9 @@ namespace IPCSoftware.App.ViewModels
         private async Task OnSaveAsync()
         {
             SaveToModel();
-
-            if (IsEditMode)
+            try
+            {
+                if (IsEditMode)
             {
                 await _tagService.UpdateTagAsync(_currentTag);
             }
@@ -248,6 +261,18 @@ namespace IPCSoftware.App.ViewModels
             }
 
             SaveCompleted?.Invoke(this, EventArgs.Empty);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Capture the "Username taken" message and show it in the UI
+
+                _dialog.ShowWarning(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Handle generic errors
+                // ErrorMessage = "An unexpected error occurred: " + ex.Message;
+            }
         }
 
         private void OnCancel()

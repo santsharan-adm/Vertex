@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.App; // UiTcpClient namespace
+using IPCSoftware.App.Services.UI;
 using IPCSoftware.Shared.Models.Messaging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -43,26 +44,26 @@ namespace IPCSoftware.App.Services
             return ConvertParameters(res.Parameters);
         }
         //write values
-        public async Task<bool> WriteTagAsync(int tagId, bool value)
+
+
+
+
+        public async Task<bool> WriteTagAsync(int tagId, object value)
         {
             _responseTcs = new TaskCompletionSource<string>();
-
             // 
             var parameters = new Dictionary<uint, object>
-    {
-        { (uint)tagId, value }   // key = TagId, value = bool
-    };
-
+{
+    { (uint)tagId, value }   // key = TagId, value = bool
+};
             var req = new RequestPackage
             {
                 RequestId = 6,   // new WriteRequest
                 Parameters = parameters
             };
-
             string json = JsonConvert.SerializeObject(req);
             System.Diagnostics.Debug.WriteLine("UI → Sending Write: " + json);
             _tcpClient.Send(json);
-
             string response = await _responseTcs.Task;
             var res = JsonConvert.DeserializeObject<ResponsePackage>(response);
 

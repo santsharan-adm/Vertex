@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.App
+namespace IPCSoftware.App.Services.UI
 {
     public class UiTcpClient
     {
@@ -60,5 +60,7 @@ namespace IPCSoftware.App
             byte[] bytes = Encoding.UTF8.GetBytes(message + "\n");
             _stream.Write(bytes, 0, bytes.Length);
         }
+
+
     }
 }

@@ -179,14 +179,25 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             try
             {
                 uint tagId = 0;
-                bool value = false;
+                object value = null;
 
                 if (request.Parameters is JsonElement json)
                 {
                     foreach (var prop in json.EnumerateObject())
                     {
                         tagId = uint.Parse(prop.Name);
-                        value = prop.Value.GetBoolean();
+
+                        // Handle different value types
+                        value = prop.Value.ValueKind switch
+                        {
+                            JsonValueKind.True => true,
+                            JsonValueKind.False => false,
+                            JsonValueKind.String => prop.Value.GetString(),
+                            JsonValueKind.Number => prop.Value.TryGetInt32(out int intVal)
+                                ? intVal
+                                : prop.Value.GetDouble(),
+                            _ => prop.Value.ToString()
+                        };
                     }
                 }
 
@@ -209,7 +220,6 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 return Error(ex.Message);
             }
         }
-
 
         private void SetCachedValue(uint tagId, object value)
         {

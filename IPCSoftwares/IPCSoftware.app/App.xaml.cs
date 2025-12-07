@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.App.DI;
 using IPCSoftware.App.Services;
+using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models.Messaging;
@@ -20,7 +21,7 @@ namespace IPCSoftware.App
         protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            
+
             var services = new ServiceCollection();
             ServiceRegistration.RegisterServices(services);
 
@@ -28,7 +29,7 @@ namespace IPCSoftware.App
 
 
 
-            TcpClient = new UiTcpClient();
+            TcpClient = ServiceProvider.GetService<UiTcpClient>();
 
             TcpClient.DataReceived += (json) =>
             {
@@ -56,18 +57,18 @@ namespace IPCSoftware.App
                 await tagService.InitializeAsync();
             }
 
-           // TagConfigProvider.Load("Data/PLCTags.csv");
+            // TagConfigProvider.Load("Data/PLCTags.csv");
             await TcpClient.StartAsync("127.0.0.1", 5050);
 
             var logConfigService = ServiceProvider.GetService<ILogConfigurationService>();
-            if (logConfigService != null )
+            if (logConfigService != null)
             {
                 await logConfigService.InitializeAsync();
             }
 
 
-            var logManagerService= ServiceProvider.GetService<ILogManagerService>();
-            if (logManagerService != null )
+            var logManagerService = ServiceProvider.GetService<ILogManagerService>();
+            if (logManagerService != null)
             {
                 await logManagerService.InitializeAsync();
             }

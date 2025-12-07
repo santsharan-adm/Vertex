@@ -5,65 +5,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:PLCIOViewModel}"
+              Unloaded="UserControl_Unloaded"
              xmlns:converters="clr-namespace:IPCSoftware.App.Converters"
-			 Unloaded="UserControl_Unloaded"
-             mc:Ignorable="d"
+ mc:Ignorable="d"
              d:DesignHeight="1080" d:DesignWidth="1920"
              Background="#F3F3F3">
 
 	<UserControl.Resources>
 		<converters:BoolToStatusColorConverter x:Key="BoolToStatusColorConverter"/>
-
-		<!-- Big ScrollBar Style for Touch -->
-		<Style x:Key="BigScrollBarThumb" TargetType="{x:Type Thumb}">
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type Thumb}">
-						<Border Background="#888888" CornerRadius="8"/>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-
-		<Style x:Key="TouchScrollBar" TargetType="{x:Type ScrollBar}">
-			<Setter Property="Width" Value="80"/>
-			<Setter Property="MinWidth" Value="40"/>
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type ScrollBar}">
-						<Grid>
-							<Border Background="#E0E0E0" CornerRadius="8" Margin="5"/>
-							<Track x:Name="PART_Track" IsDirectionReversed="True" Margin="5">
-								<Track.Thumb>
-									<Thumb Style="{StaticResource BigScrollBarThumb}" Width="30"/>
-								</Track.Thumb>
-							</Track>
-						</Grid>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-			<Style.Triggers>
-				<Trigger Property="Orientation" Value="Horizontal">
-					<Setter Property="Height" Value="75"/>
-					<Setter Property="MinHeight" Value="40"/>
-					<Setter Property="Width" Value="Auto"/>
-					<Setter Property="Template">
-						<Setter.Value>
-							<ControlTemplate TargetType="{x:Type ScrollBar}">
-								<Grid>
-									<Border Background="#E0E0E0" CornerRadius="8" Margin="5"/>
-									<Track x:Name="PART_Track" IsDirectionReversed="False" Margin="5">
-										<Track.Thumb>
-											<Thumb Style="{StaticResource BigScrollBarThumb}" Height="30"/>
-										</Track.Thumb>
-									</Track>
-								</Grid>
-							</ControlTemplate>
-						</Setter.Value>
-					</Setter>
-				</Trigger>
-			</Style.Triggers>
-		</Style>
 
 		<!-- Reuse Styles from PLCTagListView for Consistency -->
 		<Style x:Key="HmiColumnHeaderStyle" TargetType="DataGridColumnHeader">
@@ -141,10 +91,10 @@
 			</Setter>
 		</Style>
 
-		<!-- Mobile-Style Toggle Switch Button - BIGGER for Touch -->
+		<!-- Mobile-Style Toggle Switch Button -->
 		<Style x:Key="ToggleSwitchStyle" TargetType="ToggleButton">
-			<Setter Property="Width" Value="160"/>
-			<Setter Property="Height" Value="70"/>
+			<Setter Property="Width" Value="120"/>
+			<Setter Property="Height" Value="50"/>
 			<Setter Property="Cursor" Value="Hand"/>
 			<Setter Property="Template">
 				<Setter.Value>
@@ -153,32 +103,32 @@
 							<!-- Background Track -->
 							<Border x:Name="Track"
                                     Background="#DC3545"
-                                    CornerRadius="35"
+                                    CornerRadius="25"
                                     BorderBrush="#CCCCCC"
-                                    BorderThickness="2">
-								<TextBlock x:Name="OffText" Text="OFF" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0" Foreground="White" FontWeight="Bold" FontSize="22"/>
+                                    BorderThickness="1">
+								<TextBlock x:Name="OffText" Text="OFF" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="White" FontWeight="Bold" FontSize="18"/>
 							</Border>
 
 							<!-- Sliding Thumb -->
 							<Border x:Name="Thumb"
-                                    Width="60" Height="60"
+                                    Width="44" Height="44"
                                     HorizontalAlignment="Left"
-                                    Margin="5,0,0,0"
+                                    Margin="3,0,0,0"
                                     Background="White"
-                                    CornerRadius="30">
+                                    CornerRadius="22">
 								<Border.Effect>
 									<DropShadowEffect Color="Black" Opacity="0.3" BlurRadius="5" ShadowDepth="1"/>
 								</Border.Effect>
 							</Border>
 
 							<!-- ON Text (Hidden by default) -->
-							<TextBlock x:Name="OnText" Text="ON" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,0,0" Foreground="White" FontWeight="Bold" FontSize="22" Visibility="Collapsed"/>
+							<TextBlock x:Name="OnText" Text="ON" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0" Foreground="White" FontWeight="Bold" FontSize="18" Visibility="Collapsed"/>
 						</Grid>
 						<ControlTemplate.Triggers>
 							<Trigger Property="IsChecked" Value="True">
 								<Setter TargetName="Track" Property="Background" Value="#28A745"/>
 								<Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right"/>
-								<Setter TargetName="Thumb" Property="Margin" Value="0,0,5,0"/>
+								<Setter TargetName="Thumb" Property="Margin" Value="0,0,3,0"/>
 								<Setter TargetName="OffText" Property="Visibility" Value="Collapsed"/>
 								<Setter TargetName="OnText" Property="Visibility" Value="Visible"/>
 							</Trigger>
@@ -232,14 +182,9 @@
                                   VerticalGridLinesBrush="Transparent"
                                   BorderThickness="0"
                                   Background="White"
-                                  
                                   RowHeight="90"
                                   ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}"
                                   HeadersVisibility="Column">
-
-							<DataGrid.Resources>
-								<Style TargetType="ScrollBar" BasedOn="{StaticResource TouchScrollBar}"/>
-							</DataGrid.Resources>
 
 							<DataGrid.RowStyle>
 								<Style TargetType="DataGridRow">
@@ -260,19 +205,20 @@
 							<DataGrid.AlternationCount>2</DataGrid.AlternationCount>
 
 							<DataGrid.Columns>
-								<!-- SrNo - BIGGER -->
-								<DataGridTextColumn Header="S.No" Binding="{Binding Id}" Width="250" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
+								<!-- SrNo -->
+								<DataGridTextColumn Header="SrNo" Binding="{Binding Id}" Width="150" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
 
 								<!-- Name -->
-								<DataGridTextColumn Header="Tag Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
+								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+								<DataGridTextColumn Header="Status" Binding="{Binding Value}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
 
-								<!-- Status (Light Indicator) - BIGGER -->
-								<DataGridTemplateColumn Header="Status" Width="300">
+								<!-- Status (Light Indicator) -->
+								<!--<DataGridTemplateColumn Header="Status" Width="200">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<Border Width="60" Height="60" CornerRadius="30"
+											<Border Width="50" Height="50" CornerRadius="25"
                                                     HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                    BorderBrush="#999" BorderThickness="2"
+                                                    BorderBrush="#999" BorderThickness="1"
                                                     Background="{Binding Value, Converter={StaticResource BoolToStatusColorConverter}}">
 												<Border.Effect>
 													<DropShadowEffect Color="Black" Opacity="0.3" BlurRadius="5" ShadowDepth="1"/>
@@ -280,8 +226,9 @@
 											</Border>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>
-							</DataGrid.Columns>
+								</DataGridTemplateColumn>-->
+						
+                            </DataGrid.Columns>
 						</DataGrid>
 					</Border>
 				</TabItem>
@@ -302,10 +249,6 @@
                                   ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}"
                                   HeadersVisibility="Column">
 
-							<DataGrid.Resources>
-								<Style TargetType="ScrollBar" BasedOn="{StaticResource TouchScrollBar}"/>
-							</DataGrid.Resources>
-
 							<DataGrid.RowStyle>
 								<Style TargetType="DataGridRow">
 									<Setter Property="Background" Value="White"/>
@@ -325,19 +268,19 @@
 							<DataGrid.AlternationCount>2</DataGrid.AlternationCount>
 
 							<DataGrid.Columns>
-								<!-- SrNo - BIGGER -->
-								<DataGridTextColumn Header="S. No" Binding="{Binding Id}" Width="250" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
+								<!-- SrNo -->
+								<DataGridTextColumn Header="SrNo" Binding="{Binding Id}" Width="150" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
 
 								<!-- Name -->
-								<DataGridTextColumn Header="Tag Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
+								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
 
-								<!-- Status (Light Indicator) - BIGGER -->
-								<DataGridTemplateColumn Header="Status" Width="300">
+								<!-- Status (Light Indicator) -->
+								<DataGridTemplateColumn Header="Status" Width="200">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<Border Width="60" Height="60" CornerRadius="30"
+											<Border Width="50" Height="50" CornerRadius="25"
                                                     HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                    BorderBrush="#999" BorderThickness="2"
+                                                    BorderBrush="#999" BorderThickness="1"
                                                     Background="{Binding Value, Converter={StaticResource BoolToStatusColorConverter}}">
 												<Border.Effect>
 													<DropShadowEffect Color="Black" Opacity="0.3" BlurRadius="5" ShadowDepth="1"/>
@@ -347,12 +290,12 @@
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
 
-								<!-- Toggle Action Button (Mobile Switch Style) - BIGGER -->
-								<DataGridTemplateColumn Header="Action" Width="350">
+								<!-- Toggle Action Button (Mobile Switch Style) -->
+								<DataGridTemplateColumn Header="Action" Width="250">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<ToggleButton Style="{StaticResource ToggleSwitchStyle}"
-                                                          IsChecked="{Binding Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                          IsChecked="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                           Command="{Binding DataContext.ToggleOutputCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                           CommandParameter="{Binding}"/>
 										</DataTemplate>

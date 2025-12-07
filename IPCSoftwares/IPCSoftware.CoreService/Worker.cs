@@ -1,9 +1,10 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.CoreService.Services;
+using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.Dashboard;
 using IPCSoftware.CoreService.Services.PLC;
-using IPCSoftware.CoreService.Services.UI;
-using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Threading;
@@ -15,68 +16,76 @@ namespace IPCSoftware.CoreService
     {
         private readonly ILogger<Worker> _logger;
         private readonly IPLCTagConfigurationService _tagService;
-        private PLCClientManager _plcManager;
-        private  DashboardInitializer _dashboard;
+        private readonly IConfiguration _configuration;
 
-        private List<DeviceInterfaceModel> _plcDevices;
+        // Removed _plcManager and _dashboard fields; they will be local or managed by DashboardInitializer
 
-        public Worker(ILogger<Worker> logger, IPLCTagConfigurationService tagService)
+        public Worker(ILogger<Worker> logger, IPLCTagConfigurationService tagService, IConfiguration configuration)
         {
             _tagService = tagService;
             _logger = logger;
-            //_dashboard = dashboard; 
-            
-
+            _configuration = configuration;
         }
-
-
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // STEP 1: Calculate correct App/Data path
-            var exePath = AppContext.BaseDirectory;
+            try
+            {
+                // STEP 1 & 2: Calculate Paths and Load Configuration (Logic retained)
+                // Assuming path calculation and DeviceConfigLoader logic runs successfully here...
 
-            var root = Directory.GetParent(exePath)     // net8.0-windows
-                                .Parent                 // Debug
-                                .Parent                 // bin
-                                .Parent;                // IPCSoftware.CoreService
+                string dataFolderName = _configuration.GetValue<string>("Config:DataFolder") ?? "Data";
+                string deviceFileName = _configuration.GetValue<string>("Config:DeviceInterfacesFileName") ?? "DeviceInterfaces.csv";
+                string tagFileName = _configuration.GetValue<string>("Config:PlcTagsFileName") ?? "PLCTags.csv";
 
-            var appDataFolder = Path.Combine(root.Parent.FullName,
-                                             "IPCSoftware.App",
-                                             "bin",
-                                             "Debug",
-                                             "net8.0-windows",
-                                             "Data");
+                var appRootPath = AppContext.BaseDirectory;
+                var appDataFolder = Path.Combine(appRootPath, dataFolderName);
+                var configPath = Path.Combine(appDataFolder, deviceFileName);
 
-            var configPath = Path.Combine(appDataFolder, "DeviceInterfaces.csv");
-            var plcTagPath = Path.Combine(appDataFolder, "PLCTags.csv");
+                var deviceLoader = new DeviceConfigLoader();
+                var devices = deviceLoader.Load(configPath);
+                _logger.LogInformation($"Loaded {devices.Count} PLC devices.");
 
-            Console.WriteLine("Reading PLC Config from: " + configPath);
+                // STEP 3: Load modbus tag configurations (via service)
+                var tags = await _tagService.GetAllTagsAsync();
+                _logger.LogInformation($"Loaded {tags.Count} Modbus tags.");
 
-            // STEP 2: Load device interfaces
-            var deviceLoader = new DeviceConfigLoader();
-            var devices = deviceLoader.Load(configPath);
+                // STEP 4: Initialize PLC manager and AlgorithmService MANUALLY
+                // These instances are now created by the Worker, not the DI container.
+                var plcManager = new PLCClientManager(devices, tags);
+                var algoService = new AlgorithmAnalysisService(tags);
 
-            // STEP 3: Load modbus tag configurations
-          //  var tagLoader = new TagConfigLoader();
-           // var tags = tagLoader.Load(plcTagPath);
+                // --- CRITICAL FIX: Make instances accessible to the Watcher Service ---
+                // We must use a static holder to share these instances with other services 
+                // that rely on DI (like TagChangeWatcherService).
+                SharedServiceHost.Initialize(plcManager, algoService);
 
-            var tags = await _tagService.GetAllTagsAsync();
+                // STEP 5: Start Dashboard engine
+                var dashboard = new DashboardInitializer(plcManager, tags);
+                await dashboard.StartAsync();
 
-            // STEP 4: Create PLC manager
-            _plcManager = new PLCClientManager(devices, tags);
-
-            // STEP 5: Start Dashboard engine ASYNC + AWAIT
-            _dashboard = new DashboardInitializer(_plcManager, tags);
-            await _dashboard.StartAsync();  // FIX
-
-            // STEP 6: BLOCK until service stops
-            // This ensures ExecuteAsync never exits early
-            await Task.Delay(Timeout.Infinite, stoppingToken);
+                // STEP 6: BLOCK until service stops
+                await Task.Delay(Timeout.Infinite, stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "FATAL ERROR during Core Service initialization.");
+                throw;
+            }
         }
+    }
+}
 
+// NEW: A simple static class to hold the runtime-initialized services
+// This must be placed in a shared file or the same file for now.
+public static class SharedServiceHost
+{
+    public static PLCClientManager? PlcManager { get; private set; }
+    public static AlgorithmAnalysisService? AlgorithmService { get; private set; }
 
-
-
+    public static void Initialize(PLCClientManager manager, AlgorithmAnalysisService algo)
+    {
+        PlcManager = manager;
+        AlgorithmService = algo;
     }
 }
