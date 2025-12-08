@@ -12,6 +12,8 @@ namespace IPCSoftware.Services
         private const int DataType_Bit = 3;
         private const int DataType_FP = 4;
         private const int DataType_String = 5;
+        private const int DataType_UInt16 = 6;
+        private const int DataType_UInt32 = 7;
 
         public List<PLCTagConfigurationModel> Load(string filePath)
         {
@@ -88,7 +90,7 @@ namespace IPCSoftware.Services
                 "dint" => 2,
 
                 // NEW Mappings for 32-bit Word (Code 2)
-                "uint" => 2,     // New from your CSV (Unsigned Int)
+                //"uint" => 2,     // New from your CSV (Unsigned Int)
                 "dword" => 2,    // New from your CSV (Double Word / Int32)
                 "int32" => 2,
 
@@ -105,6 +107,9 @@ namespace IPCSoftware.Services
 
                 // Existing Mapping (String - Code 5)
                 "string" => 5,
+                "uint" => 6,     // New from your CSV (Unsigned Int)
+                "uint16" => 6,     // New from your CSV (Unsigned Int)
+                "uint32" => 7,     // New from your CSV (Unsigned Int)
 
                 _ => 1 // Default to Int16 for safety
             };
@@ -136,10 +141,12 @@ namespace IPCSoftware.Services
             {
                 case DataType_Int16: // 16-bit (1 register)
                 case DataType_Bit:   // 1-bit (1 register)
+                case DataType_UInt16:   // 1-bit (1 register)
                     return 1;
 
                 case DataType_Word32: // 32-bit (2 registers)
                 case DataType_FP:     // Float (32-bit, 2 registers)
+                case DataType_UInt32:   // 1-bit (1 register)
                     return 2;
 
                 case DataType_String:
