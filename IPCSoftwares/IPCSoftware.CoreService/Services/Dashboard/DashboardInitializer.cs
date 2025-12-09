@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.CoreService.Services.Algorithm;
+using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -15,16 +16,18 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         private readonly UiListener _ui = new UiListener(5050);
         private readonly AlgorithmAnalysisService _algo;
         private readonly OeeEngine _oee = new OeeEngine();
+        private readonly CCDTriggerService _ccdTrigger; // 1. Add field
 
         // latest packets per PLC (unitno)
         private readonly Dictionary<int, PlcPacket> _latestPackets = new();
 
         private Dictionary<uint, object>? _lastValues = null;
 
-        public DashboardInitializer(PLCClientManager manager, List<PLCTagConfigurationModel> tags)
+        public DashboardInitializer(PLCClientManager manager, List<PLCTagConfigurationModel> tags, CCDTriggerService ccdTrigger)
         {
             _manager = manager;
             _algo = new AlgorithmAnalysisService(tags);
+            _ccdTrigger = ccdTrigger;
         }
 
         //public async Task StartAsync()
@@ -57,6 +60,46 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         //    await Task.WhenAll(tasks);
         //}
 
+        //public async Task StartAsync()
+        //{
+        //    _ui.OnRequestReceived = HandleUiRequest;
+
+        //    // Start UI
+        //    var uiTask = _ui.StartAsync();
+
+        //    // Start PLC read loops
+        //    var plcTasks = _manager.Clients.Select(client =>
+        //    {
+        //        client.OnPlcDataReceived += (plcNo, values) =>
+        //        {
+        //            var processedData = _algo.Apply(plcNo, values);
+
+        //            // B. CHECK FOR TRIGGERS (This is where the magic happens)
+        //            // We call this immediately after processing values, but before updating UI
+        //            _ccdTrigger.ProcessTriggers(processedData);
+
+        //            var final = _algo.Apply(plcNo, values)
+        //                             .ToDictionary(k => (uint)k.Key, v => v.Value);
+
+        //            var finalDict = final.ToDictionary(kv => (uint)kv.Key, kv => kv.Value);
+
+        //            _latestPackets[plcNo] = new PlcPacket
+        //            {
+        //                PlcNo = plcNo,
+        //                Values = final,
+        //                Timestamp = DateTime.Now
+        //            };
+
+        //            _lastValues = finalDict;
+        //        };
+        //        return client.StartAsync();
+        //    });
+
+        //    // Await everything
+        //    await Task.WhenAll(plcTasks.Append(uiTask));
+        //}
+
+
         public async Task StartAsync()
         {
             _ui.OnRequestReceived = HandleUiRequest;
@@ -69,11 +112,18 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             {
                 client.OnPlcDataReceived += (plcNo, values) =>
                 {
-                    var final = _algo.Apply(plcNo, values)
-                                     .ToDictionary(k => (uint)k.Key, v => v.Value);
+                    // A. Process Raw Data -> Typed Values (Int/Bool/String)
+                    // processedData is Dictionary<int, object> where int is Tag ID
+                    var processedData = _algo.Apply(plcNo, values);
 
-                    var finalDict = final.ToDictionary(kv => (uint)kv.Key, kv => kv.Value);
+                    // B. CHECK FOR TRIGGERS (This is where the magic happens)
+                    // We call this immediately after processing values, but before updating UI
+                  _ccdTrigger.ProcessTriggers(processedData, _manager);
 
+                    // C. Prepare for UI (Convert int Key to uint Key for compatibility)
+                    var final = processedData.ToDictionary(k => (uint)k.Key, v => v.Value);
+
+                    // D. Update Cache
                     _latestPackets[plcNo] = new PlcPacket
                     {
                         PlcNo = plcNo,
@@ -81,7 +131,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                         Timestamp = DateTime.Now
                     };
 
-                    _lastValues = finalDict;
+                    _lastValues = final;
                 };
                 return client.StartAsync();
             });

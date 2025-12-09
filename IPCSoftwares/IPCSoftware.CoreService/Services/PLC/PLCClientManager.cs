@@ -56,4 +56,9 @@ namespace IPCSoftware.CoreService.Services.PLC
             return Clients.FirstOrDefault(c => c.Device.DeviceNo == plcNo);
         }
     }
+
+    public class CameraClientManager
+    {
+
+    }
 }

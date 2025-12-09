@@ -6,6 +6,8 @@ using IPCSoftware.App.Views;
 
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Core.Interfaces.CCD;
+using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
@@ -31,6 +33,8 @@ namespace IPCSoftware.App.DI
             //AppLogger 
             services.AddSingleton<IAppLogger, AppLoggerService>();
             services.AddSingleton<ILogManagerService, LogManagerService>();
+            services.AddSingleton<CCDTriggerService>();
+
 
 
 
@@ -39,6 +43,10 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
             services.AddSingleton<IUserManagementService, UserManagementService>();
             services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+
+
+            // CCD Serive
+            services.AddSingleton<ICycleManagerService, CycleManagerService>();
 
             services.AddSingleton<ILogService, LogService>();
 

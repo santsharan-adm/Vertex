@@ -1,18 +1,34 @@
 ﻿using IPCSoftware.App.Controls;
+using IPCSoftware.App.Services;
+using IPCSoftware.App.Services.UI;
 using IPCSoftware.App.Views;
+using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public class OEEDashboardViewModel : BaseViewModel
+    public class OEEDashboardViewModel : BaseViewModel, IDisposable
     {
+        private readonly IPLCTagConfigurationService _tagService;
+        private readonly DispatcherTimer _timer;
+        private readonly CoreClient _coreClient;
+        private readonly IDialogService _dialog;
+
+        private bool _disposed;
+        private string _lastLoadedImagePath = string.Empty; // Track last loaded image to prevent reloading
+
+
         public event PropertyChangedEventHandler PropertyChanged;
         private bool _isDarkTheme = false;
         public ICommand ToggleThemeCommand { get; }
@@ -20,12 +36,46 @@ namespace IPCSoftware.App.ViewModels
       
         private string _currentThemePath = "/IPCSoftware.App;component/Styles/LightTheme.xaml";
 
+        private HashSet<int> allowedTagNos = new HashSet<int>
+                                                {
+                                                    15, 16, 17, 18, 19, 20
+                                                };
+
+
         public string CurrentThemePath
         {
 
             get => _currentThemePath;
             set => SetProperty(ref _currentThemePath, value);
         }
+
+       
+
+        /*     private short okNgStatus;
+             public short OkNgStatus
+             {
+                 get => okNgStatus;
+                 set => SetProperty(ref okNgStatus, value);
+             }
+     */
+
+
+        private string _qrCodeText = "Waiting for scan...";
+        public string QRCodeText
+        {
+            get => _qrCodeText;
+            set => SetProperty(ref _qrCodeText, value);
+        }
+
+        private ImageSource _qrCodeImage;
+        public ImageSource QrCodeImage
+        {
+            get => _qrCodeImage;
+            set => SetProperty(ref _qrCodeImage, value);
+        }
+
+        private Dictionary<int, Action<object>> _tagValueMap;
+
 
 
         private void ToggleTheme()
@@ -85,11 +135,173 @@ namespace IPCSoftware.App.ViewModels
                 new PieSliceModel { Label="Rework", Value=20 }
             };
 
-           
 
 
-        public OEEDashboardViewModel()
+
+
+        private async void TimerTick(object sender, EventArgs e)
         {
+            if (_disposed)
+                return;
+
+            try
+            {
+                var liveData = await _coreClient.GetIoValuesAsync();
+                UpdateValues(liveData);
+                CheckForLatestQrImage();
+            }
+            catch { }
+        }
+
+        private void CheckForLatestQrImage()
+        {
+            try
+            {
+                // Ensure directory exists
+                string folderPath = ConstantValues.QrCodeImagePath;
+                if (!Directory.Exists(folderPath)) return;
+
+                var directory = new DirectoryInfo(folderPath);
+
+                // Find files starting with "0" (e.g., 0_timestamp.bmp)
+                // Filter for valid image extensions if needed
+                var latestFile = directory.GetFiles("0*.*")
+                                          .Where(f => IsImageFile(f.Extension))
+                                          .OrderByDescending(f => f.LastWriteTime)
+                                          .FirstOrDefault();
+
+                // If a file exists and it's different from the last one we showed
+                if (latestFile != null && latestFile.FullName != _lastLoadedImagePath)
+                {
+                    _lastLoadedImagePath = latestFile.FullName;
+                    UpdateQrImage(_lastLoadedImagePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error checking for QR image: {ex.Message}");
+            }
+        }
+
+        private bool IsImageFile(string extension)
+        {
+            var ext = extension.ToLower();
+            return ext == ".bmp" || ext == ".png" || ext == ".jpg" || ext == ".jpeg";
+        }
+
+        private void UpdateValues(Dictionary<int, object> dict)
+        {
+
+
+            if (dict == null) return;
+
+            foreach (var kvp in dict)
+            {
+                if (_tagValueMap.TryGetValue(kvp.Key, out var setter))
+                {
+                    setter(kvp.Value);
+                }
+            }
+
+            // Existing UI list update (keep this if needed)
+            foreach (var input in AllInputs)
+            {
+                if (dict.TryGetValue(input.Model.Id, out var live))
+                {
+                    input.DisplayValue = live;
+                }
+            }
+        }
+
+        public void UpdateQrImage(string imagePath)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(imagePath) || !File.Exists(imagePath)) return;
+
+                // Load image in memory so we don't lock the file (allows overwriting later)
+                byte[] imageBytes = File.ReadAllBytes(imagePath);
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.StreamSource = new MemoryStream(imageBytes);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
+
+                    QrCodeImage = bitmap;
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading QR image: {ex.Message}");
+            }
+        }
+
+        public ObservableCollection<WritableTagItem> AllInputs { get; } = new();
+
+
+        private void InitializeTagMap()
+        {
+            _tagValueMap = new Dictionary<int, Action<object>>
+            {
+                [16] = v => QRCodeText = v?.ToString()
+                //[17] = v => OkNgStatus = Convert.ToInt32(v),
+                //[18] = v => CameraStatus = Convert.ToBoolean(v)
+                //[19] = v => CameraStatus = Convert.ToBoolean(v)
+                //[20] = v => CameraStatus = Convert.ToBoolean(v)
+            };
+        }
+
+
+        private async void InitializeAsync()
+        {
+            InitializeTagMap();
+            var allTags = await _tagService.GetAllTagsAsync();
+
+            AllInputs.Clear();
+            var writableFilteredTags = allTags
+                .Where(t => t.CanWrite && allowedTagNos.Contains(t.TagNo))
+                .ToList();
+
+            foreach (var tag in writableFilteredTags)
+            {
+                AllInputs.Add(new WritableTagItem(tag));
+            }
+        }
+
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            _disposed = true;
+
+            _timer.Stop();
+            _timer.Tick -= TimerTick;
+            GC.SuppressFinalize(this);
+        }
+
+
+
+        public OEEDashboardViewModel(IPLCTagConfigurationService tagService, UiTcpClient tcpClient, IDialogService dialog)
+        {
+            _tagService = tagService;
+            _coreClient = new CoreClient(tcpClient);
+            _dialog = dialog;
+
+
+            InitializeAsync();
+
+            _timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(1000)
+            };
+            _timer.Tick += TimerTick;
+            _timer.Start();
+
+
             ToggleThemeCommand = new RelayCommand(ToggleTheme);
             OpenCardDetailCommand = new RelayCommand<string>(OpenCardDetail);
             //ToggleThemeCommand = new RelayCommand(ToggleTheme);
@@ -117,9 +329,9 @@ namespace IPCSoftware.App.ViewModels
             }
 
             CycleTrend = new List<double>
-{
-    2.8, 2.9, 2.7, 3.0, 2.8, 2.9, 2.85, 2.75, 2.9
-};
+                            {
+                                2.8, 2.9, 2.7, 3.0, 2.8, 2.9, 2.85, 2.75, 2.9
+                            };
 
 
 
@@ -257,4 +469,54 @@ namespace IPCSoftware.App.ViewModels
 
 
     }
+
+    public class WritableTagItem : BaseViewModel
+    {
+        public PLCTagConfigurationModel Model { get; }
+
+        //private string _inputValue;
+        //public string InputValue
+        //{
+        //    get => _inputValue;
+        //    set => SetProperty(ref _inputValue, value);
+        //}
+
+        public string DataTypeDisplay => GetDataTypeName(Model.DataType);
+
+        public WritableTagItem(PLCTagConfigurationModel model)
+        {
+            Model = model;
+        }
+        private object _displayValue;
+        public object DisplayValue
+        {
+            get => _displayValue;
+            set => SetProperty(ref _displayValue, value);
+        }
+
+
+        private object _inputValue;
+        public object InputValue
+        {
+            get => _inputValue;
+            set => SetProperty(ref _inputValue, value);
+
+        }
+
+
+        private string GetDataTypeName(int typeId)
+        {
+            return typeId switch
+            {
+                1 => "Int16",
+                2 => "Int32",
+                3 => "Boolean",
+                4 => "Float",
+                5 => "String",
+                _ => "Unknown"
+            };
+        }
+    }
+
+
 }

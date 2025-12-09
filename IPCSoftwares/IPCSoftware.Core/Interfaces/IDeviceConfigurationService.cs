@@ -14,6 +14,7 @@ namespace IPCSoftware.Core.Interfaces
         // Device operations
         Task<List<DeviceModel>> GetAllDevicesAsync();
         Task<List<DeviceInterfaceModel>> GetPlcDevicesAsync();
+        Task<List<CameraInterfaceModel>> GetCameraDevicesAsync();
         Task<DeviceModel> GetDeviceByIdAsync(int id);
         Task<DeviceModel> AddDeviceAsync(DeviceModel device);
         Task<bool> UpdateDeviceAsync(DeviceModel device);
