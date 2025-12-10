@@ -109,15 +109,15 @@ namespace IPCSoftware.CoreService.Services.CCD
                     // 3. WRITE BACK TO PLC (Reset Bit to 0)
                     // This happens ONLY after processing is done.
                     var allTags = _tagService.GetAllTagsAsync().GetAwaiter().GetResult();
-                    var _triggerTag = allTags.FirstOrDefault(t => t.Id == ConstantValues.TRIGGER_TAG_ID);
+                    var _triggerTag = allTags.FirstOrDefault(t => t.Id == ConstantValues.Return_TAG_ID);
                     if (_triggerTag != null)
                     {
                         var client = _plcManager.GetClient(_triggerTag.PLCNo);
                         if (client != null)
                         {
                             // Write FALSE (0) to Tag 15
-                            await client.WriteAsync(_triggerTag, false);
-                            Console.WriteLine("[CCD Monitor] PLC Trigger Bit Reset to 0.");
+                            await client.WriteAsync(_triggerTag, true);
+                            Console.WriteLine("[CCD Monitor] PLC Trigger Bit Reset to 1.");
                         }
                     }
                 }
