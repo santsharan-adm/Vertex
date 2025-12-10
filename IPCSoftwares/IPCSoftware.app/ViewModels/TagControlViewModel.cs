@@ -268,6 +268,8 @@ namespace IPCSoftware.App.ViewModels
                 3 => "True/False or 1/0",
                 4 => "Decimal number (e.g., 12.34)",
                 5 => "Text string",
+                6 => "Unsigned Integer 16 bit (-32768 to 32767)",
+                7 => "Unsigned Integer 32 bit (−2,147,483,648 to 2,147,483,647)",
                 _ => "Unknown type"
             };
         }
@@ -284,5 +286,68 @@ namespace IPCSoftware.App.ViewModels
     }
 
     // Helper Wrapper Class
-   
+    public class WritableTagItem : BaseViewModel
+    {
+        public PLCTagConfigurationModel Model { get; }
+
+        //private string _inputValue;
+        //public string InputValue
+        //{
+        //    get => _inputValue;
+        //    set => SetProperty(ref _inputValue, value);
+        //}
+
+        public string DataTypeDisplay => GetDataTypeName(Model.DataType);
+
+        public WritableTagItem(PLCTagConfigurationModel model)
+        {
+            Model = model;
+        }
+        private object _displayValue;
+        public object DisplayValue
+        {
+            get => _displayValue;
+            set => SetProperty(ref _displayValue, value);
+            //set { _selectedTabIndex = value; OnPropertyChanged(); }
+            //set
+            //{
+            //    _value = value;
+            //    OnPropertyChanged();
+            //    OnPropertyChanged(nameof(DisplayStatus));
+            //}
+        }
+
+        private object _inputValue;
+        public object InputValue
+        {
+            get => _inputValue;
+            set => SetProperty(ref _inputValue, value);
+            //set
+            //{
+            //    _inputValue = value;
+            //    OnPropertyChanged();
+            //    OnPropertyChanged(nameof(DisplayStatus));
+            //}
+        }
+
+
+
+      
+
+
+        private string GetDataTypeName(int typeId)
+        {
+            return typeId switch
+            {
+                1 => "Int16",
+                2 => "Int32",
+                3 => "Boolean",
+                4 => "Float",
+                5 => "String",
+                6 => "UInt16",
+                7 => "UInt32",
+                _ => "Unknown"
+            };
+        }
+    }
 }

@@ -1,13 +1,13 @@
 ﻿Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark,CanWrite
-1,1,CD_COM_PULSE_PLC,1,40001,1,1,Bit,0,0,0,Heart beat signal1,Pulse PLC to IPC,False
+1,1,CD_COM_PULSE_PLC,1,40000,1,1,Bit,0,0,0,Heart beat signal1,Pulse PLC to IPC,True
 2,2,CD_COM_PULSE_IPC,1,40015,1,0,Bit,0,0,0,Heart beat signal2,Pulse IPC to PLC,True
 3,3,SYS_DATA_B1,1,40015,1,0,Bit,1,0,0,System Data B1,,True
-4,4,SYS_DATA_B2,1,40019,1,0,Int16,0,0,0,System Data B2,,True
-5,5,SYS_DATA_B3,1,40020,1,0,Int16,0,0,0,System Data B3,,True
-6,6,SYS_DATA_B4,1,40021,1,0,Int16,0,0,0,System Data B4,,True
-7,7,SYS_DATA_B5,1,40022,1,0,Int16,0,0,0,System Data B5,,True
-8,8,SYS_DATA_B6,1,40023,1,0,Int16,0,0,0,System Data B6,,True
-9,9,SYS_DATA_B7,1,40024,1,0,Int16,0,0,0,System Data B7,,True
+4,4,SYS_DATA_B2,1,40019,1,0,UInt16,0,0,0,System Data B2,,True
+5,5,SYS_DATA_B3,1,40020,1,0,UInt16,0,0,0,System Data B3,,True
+6,6,SYS_DATA_B4,1,40021,1,0,UInt16,0,0,0,System Data B4,,True
+7,7,SYS_DATA_B5,1,40022,1,0,UInt16,0,0,0,System Data B5,,True
+8,8,SYS_DATA_B6,1,40023,1,0,UInt16,0,0,0,System Data B6,,True
+9,9,SYS_DATA_B7,1,40024,1,0,UInt16,0,0,0,System Data B7,,True
 10,10,CD_DATA_A1,1,40050,1,0,Bit,0,0,0,Control Data A1,,True
 11,11,CD_DATA_B1,1,40055,1,0,Bit,0,0,0,Control Data B1,,True
 12,12,CD_DATA_B2,1,40055,1,0,Bit,1,0,0,Control Data B2,,True
@@ -15,29 +15,29 @@
 14,14,CD_DATA_B4,1,40055,1,0,Bit,3,0,0,Control Data B4,,True
 15,15,CD_DATA_B5,1,40055,1,0,Bit,4,0,0,Control Data B5,,True
 16,16,PD_DATA_2DCode,1,40500,20,0,String,0,0,0,Production Data B1 (2D Code)," (string, length defined in meeting). Reserve 50 character",True
-17,17,PD_DATA_B2,1,40520,1,0,Int16,0,0,0,Production Data B2 (Judgment),"Storing data read from CCD (1????OK, 2????NG)",True
+17,17,PD_DATA_B2,1,40520,1,0,UInt32,0,0,0,Production Data B2 (Judgment),"Storing data read from CCD (1????OK, 2????NG)",True
 18,18,PD_DATA_B3,1,40522,2,0,Float,0,0,0,Stores data read from CCDs,,True
 19,19,PD_DATA_B4,1,40524,2,0,Float,0,0,0,,,True
 20,20,PD_DATA_B5,1,40526,2,0,Float,0,0,0,,,True
 21,21,CTL_CYCLETIME_A1,1,40100,1,0,Bit,0,0,0,Cycle Time A1,Signal PLC to IPC,True
 22,22,PD_CYCLETIME,1,40102,1,0,Int16,0,0,0,Cycle Time,,True
 23,23,CTL_CYCLETIME_B1,1,40105,1,0,Bit,0,0,0,Cycle Time B1,Signal IPC to PLC,True
-24,24,PD_UPTIME,1,40150,2,0,Word,0,0,0,Up Time,,True
-25,25,PD_ALARM_STOPTIME,1,40152,2,0,Word,0,0,0,Alsrm stop time,,True
-26,26,PD_DOWNTIME,1,40154,2,0,Word,0,0,0,Down time,,True
-27,27,PD_OEE_A1,1,40156,1,0,Int16,0,0,0,OEE A1 (Actual Production),,True
-28,28,PD_OEE_A2,1,40157,1,0,Int16,0,0,0,OEE A2 (Good Products),,True
-29,29,PD_OEE_A3,1,40158,1,0,Int16,0,0,0,OEE A3 (Defective Products),,True
+24,24,PD_UPTIME,1,40150,2,0,UInt32,0,0,0,Up Time,,True
+25,25,PD_ALARM_STOPTIME,1,40152,2,0,UInt32,0,0,0,Alsrm stop time,,True
+26,26,PD_DOWNTIME,1,40154,2,0,UInt32,0,0,0,Down time,,True
+27,27,PD_OEE_A1,1,40156,1,0,UInt16,0,0,0,OEE A1 (Actual Production),,True
+28,28,PD_OEE_A2,1,40157,1,0,UInt16,0,0,0,OEE A2 (Good Products),,True
+29,29,PD_OEE_A3,1,40158,1,0,UInt16,0,0,0,OEE A3 (Defective Products),,True
 30,30,ALM_ALARM_A1,1,40200,1,0,Bit,0,0,0,Alarm A1,,True
-31,31,PD_ALARMS1,1,40201,1,0,Int16,0,0,0,PD_ALARMS1,"16 Bit, for 16 alarms",True
-32,32,PD_ALARMS2,1,40202,1,0,Int16,0,0,0,PD_ALARMS2,"16 Bit, for 16 alarms",True
-33,33,PD_ALARMS3,1,40203,1,0,Int16,0,0,0,PD_ALARMS3,"16 Bit, for 16 alarms",True
-34,34,PD_ALARMS4,1,40204,1,0,Int16,0,0,0,PD_ALARMS4,"16 Bit, for 16 alarms",True
-35,35,PD_ALARMS5,1,40205,1,0,Int16,0,0,0,PD_ALARMS5,"16 Bit, for 16 alarms",True
-36,36,PD_ALARMS6,1,40206,1,0,Int16,0,0,0,PD_ALARMS6,"16 Bit, for 16 alarms",True
-37,37,PD_ALARMS7,1,40207,1,0,Int16,0,0,0,PD_ALARMS7,"16 Bit, for 16 alarms",True
+31,31,PD_ALARMS1,1,40201,1,0,UInt16,0,0,0,PD_ALARMS1,"16 Bit, for 16 alarms",True
+32,32,PD_ALARMS2,1,40202,1,0,UInt16,0,0,0,PD_ALARMS2,"16 Bit, for 16 alarms",True
+33,33,PD_ALARMS3,1,40203,1,0,UInt16,0,0,0,PD_ALARMS3,"16 Bit, for 16 alarms",True
+34,34,PD_ALARMS4,1,40204,1,0,UInt16,0,0,0,PD_ALARMS4,"16 Bit, for 16 alarms",True
+35,35,PD_ALARMS5,1,40205,1,0,UInt16,0,0,0,PD_ALARMS5,"16 Bit, for 16 alarms",True
+36,36,PD_ALARMS6,1,40206,1,0,UInt16,0,0,0,PD_ALARMS6,"16 Bit, for 16 alarms",True
+37,37,PD_ALARMS7,1,40207,1,0,UInt16,0,0,0,PD_ALARMS7,"16 Bit, for 16 alarms",True
 38,38,ALM_Alarm B1,1,40208,1,0,Bit,0,0,0,Alarm B1,IPC to PLC,True
-39,39,ALM_Alarm B2,1,40208,1,0,Bit,0,0,0,Alarm B2,IPC to PLC,True
+39,39,ALM_Alarm B2,1,40208,1,0,Bit,1,0,0,Alarm B2,IPC to PLC,True
 40,40,CTL_MANUAL_A1,1,40220,1,0,Bit,0,0,0,Manual Control A1,,True
 41,41,CTL_MANUAL_A2,1,40220,1,0,Bit,1,0,0,Manual Control A2,,True
 42,42,CTL_MANUAL_A3,1,40220,1,0,Bit,2,0,0,Manual Control A3,,True
@@ -112,48 +112,48 @@
 111,111,SYS_PARAMETER_A2,1,40300,1,0,Bit,1,0,0,System Parameter A2,,True
 112,112,SYS_PARAMETER_A3,1,40300,1,0,Bit,2,0,0,System Parameter A3,,True
 113,113,SYS_PARAMETER_A4,1,40300,1,0,Bit,3,0,0,System Parameter A4,,True
-114,114,SYS_PARAMETER_A5,1,40302,2,0,Word,0,0,0,System Parameter A5,,True
-115,115,SYS_PARAMETER_A6,1,40304,2,0,Word,0,0,0,System Parameter A6,,True
-116,116,SYS_PARAMETER_A7,1,40306,2,0,Word,0,0,0,System Parameter A7,,True
-117,117,SYS_PARAMETER_A8,1,40308,2,0,Word,0,0,0,System Parameter A8,,True
-118,118,SYS_PARAMETER_A9,1,40310,2,0,Word,0,0,0,System Parameter A9,,True
-119,119,SYS_PARAMETER_A10,1,40312,2,0,Word,0,0,0,System Parameter A10,,True
-120,120,SYS_PARAMETER_A11,1,40314,2,0,Word,0,0,0,System Parameter A11,,True
-121,121,SYS_PARAMETER_A12,1,40316,2,0,Word,0,0,0,System Parameter A12,,True
-122,122,SYS_PARAMETER_A13,1,40318,2,0,Word,0,0,0,System Parameter A13,,True
-123,123,SYS_PARAMETER_A14,1,40320,2,0,Word,0,0,0,System Parameter A14,,True
-124,124,SYS_PARAMETER_A15,1,40322,2,0,Word,0,0,0,System Parameter A15,,True
-125,125,SYS_PARAMETER_A16,1,40324,2,0,Word,0,0,0,System Parameter A16,,True
-126,126,SYS_PARAMETER_A17,1,40326,2,0,Word,0,0,0,System Parameter A17,,True
-127,127,SYS_PARAMETER_A18,1,40328,2,0,Word,0,0,0,System Parameter A18,,True
-128,128,SYS_PARAMETER_A19,1,40330,2,0,Word,0,0,0,System Parameter A19,,True
-129,129,SYS_PARAMETER_A20,1,40332,2,0,Word,0,0,0,System Parameter A20,,True
-130,130,SYS_PARAMETER_A21,1,40334,2,0,Word,0,0,0,System Parameter A21,,True
-131,131,SYS_PARAMETER_A22,1,40336,2,0,Word,0,0,0,System Parameter A22,,True
-132,132,SYS_PARAMETER_A23,1,40338,2,0,Word,0,0,0,System Parameter A23,,True
-133,133,SYS_PARAMETER_A24,1,40340,2,0,Word,0,0,0,System Parameter A24,,True
-134,134,SYS_PARAMETER_A25,1,40342,2,0,Word,0,0,0,System Parameter A25,,True
-135,135,SYS_PARAMETER_A26,1,40344,2,0,Word,0,0,0,System Parameter A26,,True
-136,136,SYS_PARAMETER_A27,1,40346,2,0,Word,0,0,0,System Parameter A27,,True
-137,137,SYS_PARAMETER_A28,1,40348,2,0,Word,0,0,0,System Parameter A28,,True
-138,138,SYS_PARAMETER_A29,1,40350,2,0,Word,0,0,0,System Parameter A29,,True
-139,139,SYS_PARAMETER_A30,1,40352,2,0,Word,0,0,0,System Parameter A30,,True
-140,140,SYS_PARAMETER_A31,1,40354,2,0,Word,0,0,0,System Parameter A31,,True
-141,141,SYS_PARAMETER_A32,1,40356,2,0,Word,0,0,0,System Parameter A32,,True
-142,142,SYS_PARAMETER_A33,1,40358,2,0,Word,0,0,0,System Parameter A33,,True
-143,143,SYS_PARAMETER_A34,1,40360,2,0,Word,0,0,0,System Parameter A34,,True
-144,144,SYS_PARAMETER_A35,1,40362,2,0,Word,0,0,0,System Parameter A35,,True
-145,145,SYS_PARAMETER_A36,1,40364,2,0,Word,0,0,0,System Parameter A36,,True
-146,146,SYS_PARAMETER_A37,1,40366,2,0,Word,0,0,0,System Parameter A37,,True
-147,147,SYS_PARAMETER_A38,1,40368,2,0,Word,0,0,0,System Parameter A38,,True
-148,148,SYS_PARAMETER_A39,1,40370,2,0,Word,0,0,0,System Parameter A39,,True
-149,149,SYS_PARAMETER_A40,1,40372,2,0,Word,0,0,0,System Parameter A40,,True
-150,150,SYS_PARAMETER_A41,1,40374,2,0,Word,0,0,0,System Parameter A41,,True
-151,151,SYS_PARAMETER_A42,1,40376,2,0,Word,0,0,0,System Parameter A42,,True
-152,152,SYS_PARAMETER_A43,1,40378,2,0,Word,0,0,0,System Parameter A43,,True
-153,153,SYS_PARAMETER_A44,1,40380,2,0,Word,0,0,0,System Parameter A44,,True
-154,154,SYS_PARAMETER_B1,1,40450,2,0,Word,0,0,0,System Parameter B1,,True
-155,155,SYS_PARAMETER_B2,1,40452,2,0,Word,0,0,0,System Parameter B2,,True
+114,114,SYS_PARAMETER_A5,1,40302,2,0,UInt32,0,0,0,System Parameter A5,,True
+115,115,SYS_PARAMETER_A6,1,40304,2,0,UInt32,0,0,0,System Parameter A6,,True
+116,116,SYS_PARAMETER_A7,1,40306,2,0,UInt32,0,0,0,System Parameter A7,,True
+117,117,SYS_PARAMETER_A8,1,40308,2,0,UInt32,0,0,0,System Parameter A8,,True
+118,118,SYS_PARAMETER_A9,1,40310,2,0,UInt32,0,0,0,System Parameter A9,,True
+119,119,SYS_PARAMETER_A10,1,40312,2,0,UInt32,0,0,0,System Parameter A10,,True
+120,120,SYS_PARAMETER_A11,1,40314,2,0,UInt32,0,0,0,System Parameter A11,,True
+121,121,SYS_PARAMETER_A12,1,40316,2,0,UInt32,0,0,0,System Parameter A12,,True
+122,122,SYS_PARAMETER_A13,1,40318,2,0,UInt32,0,0,0,System Parameter A13,,True
+123,123,SYS_PARAMETER_A14,1,40320,2,0,UInt32,0,0,0,System Parameter A14,,True
+124,124,SYS_PARAMETER_A15,1,40322,2,0,UInt32,0,0,0,System Parameter A15,,True
+125,125,SYS_PARAMETER_A16,1,40324,2,0,UInt32,0,0,0,System Parameter A16,,True
+126,126,SYS_PARAMETER_A17,1,40326,2,0,UInt32,0,0,0,System Parameter A17,,True
+127,127,SYS_PARAMETER_A18,1,40328,2,0,UInt32,0,0,0,System Parameter A18,,True
+128,128,SYS_PARAMETER_A19,1,40330,2,0,UInt32,0,0,0,System Parameter A19,,True
+129,129,SYS_PARAMETER_A20,1,40332,2,0,UInt32,0,0,0,System Parameter A20,,True
+130,130,SYS_PARAMETER_A21,1,40334,2,0,UInt32,0,0,0,System Parameter A21,,True
+131,131,SYS_PARAMETER_A22,1,40336,2,0,UInt32,0,0,0,System Parameter A22,,True
+132,132,SYS_PARAMETER_A23,1,40338,2,0,UInt32,0,0,0,System Parameter A23,,True
+133,133,SYS_PARAMETER_A24,1,40340,2,0,UInt32,0,0,0,System Parameter A24,,True
+134,134,SYS_PARAMETER_A25,1,40342,2,0,UInt32,0,0,0,System Parameter A25,,True
+135,135,SYS_PARAMETER_A26,1,40344,2,0,UInt32,0,0,0,System Parameter A26,,True
+136,136,SYS_PARAMETER_A27,1,40346,2,0,UInt32,0,0,0,System Parameter A27,,True
+137,137,SYS_PARAMETER_A28,1,40348,2,0,UInt32,0,0,0,System Parameter A28,,True
+138,138,SYS_PARAMETER_A29,1,40350,2,0,UInt32,0,0,0,System Parameter A29,,True
+139,139,SYS_PARAMETER_A30,1,40352,2,0,UInt32,0,0,0,System Parameter A30,,True
+140,140,SYS_PARAMETER_A31,1,40354,2,0,UInt32,0,0,0,System Parameter A31,,True
+141,141,SYS_PARAMETER_A32,1,40356,2,0,UInt32,0,0,0,System Parameter A32,,True
+142,142,SYS_PARAMETER_A33,1,40358,2,0,UInt32,0,0,0,System Parameter A33,,True
+143,143,SYS_PARAMETER_A34,1,40360,2,0,UInt32,0,0,0,System Parameter A34,,True
+144,144,SYS_PARAMETER_A35,1,40362,2,0,UInt32,0,0,0,System Parameter A35,,True
+145,145,SYS_PARAMETER_A36,1,40364,2,0,UInt32,0,0,0,System Parameter A36,,True
+146,146,SYS_PARAMETER_A37,1,40366,2,0,UInt32,0,0,0,System Parameter A37,,True
+147,147,SYS_PARAMETER_A38,1,40368,2,0,UInt32,0,0,0,System Parameter A38,,True
+148,148,SYS_PARAMETER_A39,1,40370,2,0,UInt32,0,0,0,System Parameter A39,,True
+149,149,SYS_PARAMETER_A40,1,40372,2,0,UInt32,0,0,0,System Parameter A40,,True
+150,150,SYS_PARAMETER_A41,1,40374,2,0,UInt32,0,0,0,System Parameter A41,,True
+151,151,SYS_PARAMETER_A42,1,40376,2,0,UInt32,0,0,0,System Parameter A42,,True
+152,152,SYS_PARAMETER_A43,1,40378,2,0,UInt32,0,0,0,System Parameter A43,,True
+153,153,SYS_PARAMETER_A44,1,40380,2,0,UInt32,0,0,0,System Parameter A44,,True
+154,154,SYS_PARAMETER_B1,1,40450,2,0,Float,0,0,0,System Parameter B1,,True
+155,155,SYS_PARAMETER_B2,1,40452,2,0,Float,0,0,0,System Parameter B2,,True
 156,156,IO_INPUT1,1,40250,1,0,Bit,0,0,0,Inputs1,,True
 157,157,IO_INPUT2,1,40250,1,0,Bit,1,0,0,Inputs2,,True
 158,158,IO_INPUT3,1,40250,1,0,Bit,2,0,0,Inputs3,,True
@@ -474,3 +474,4 @@
 473,473,IO_OUTPUT158,1,40269,1,0,Bit,13,0,0,Outputs 158,,True
 474,474,IO_OUTPUT159,1,40269,1,0,Bit,14,0,0,Outputs 159,,True
 475,475,IO_OUTPUT160,1,40269,1,0,Bit,15,0,0,Outputs 160,,True
+476,476,CD_COM_PULSE_PLC2,1,40000,1,1,Bit,1,0,0,Heart beat signal1,Pulse PLC to IPC,True
