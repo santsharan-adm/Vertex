@@ -18,10 +18,15 @@ namespace IPCSoftware.CoreService.Services.Algorithm
         private const int AlgoNo_Raw = 0;
         private const int AlgoNo_LinearScale = 1;
         private const int DataType_Int16 = 1;
+        private const int DataType_UInt16 = 6;
         private const int DataType_Word32 = 2; // DWord, Int32, Word
+        private const int DataType_UInt32 = 7;
         private const int DataType_Bit = 3;
         private const int DataType_FP = 4; // Real, Float
         private const int DataType_String = 5;
+
+
+
 
         public AlgorithmAnalysisService(List<PLCTagConfigurationModel> tags)
         {
@@ -92,7 +97,8 @@ namespace IPCSoftware.CoreService.Services.Algorithm
 
             // --- CRITICAL FIX: WORD SWAPPING ---
             // This is required for Big Endian Modbus slaves transmitting 32-bit values.
-            bool requiresSwap = (tag.DataType == DataType_Word32 || tag.DataType == DataType_FP) && registers.Length >= 2;
+          //  bool requiresSwap = (tag.DataType == DataType_Word32 || tag.DataType == DataType_FP) && registers.Length >= 2;
+            bool requiresSwap = (tag.DataType == DataType_Word32) && registers.Length >= 2;
 
             if (requiresSwap)
             {
@@ -125,20 +131,39 @@ namespace IPCSoftware.CoreService.Services.Algorithm
                         return false;
 
                     case DataType_String:
-                        return Encoding.ASCII.GetString(byteArray, 0, byteArray.Length).TrimEnd('\0');
+                        var swapped = SwapEveryTwoBytes(byteArray);
+                        return Encoding.ASCII.GetString(swapped, 0, swapped.Length).TrimEnd('\0');
+                        //return Encoding.ASCII.GetString(byteArray, 0, byteArray.Length).TrimEnd('\0');
 
                     case DataType_Int16:
                         return BitConverter.ToInt16(byteArray, 0);
+                    case DataType_UInt16:
+                        return BitConverter.ToUInt16(byteArray, 0);
 
                     case DataType_Word32:
                         // This now receives the correctly ordered byte array
                         if (byteArray.Length < 4) throw new InvalidOperationException("Insufficient bytes for 32-bit Word.");
                         return BitConverter.ToInt32(byteArray, 0);
 
+                    case DataType_UInt32:
+                        // This now receives the correctly ordered byte array
+                        if (byteArray.Length < 4) throw new InvalidOperationException("Insufficient bytes for 32-bit Word.");
+
+                        //Span<byte> swapped = stackalloc byte[4];
+                        //swapped[0] = byteArray[2];
+                        //swapped[1] = byteArray[3];
+                        //swapped[2] = byteArray[0];
+                        //swapped[3] = byteArray[1];
+
+                        return BitConverter.ToUInt32(byteArray, 0);
+
                     case DataType_FP:
                         // This now receives the correctly ordered byte array
                         if (byteArray.Length < 4) throw new InvalidOperationException("Insufficient bytes for Floating Point.");
-                        return BitConverter.ToSingle(byteArray, 0);
+                        //return BitConverter.ToSingle(byteArray, 0);
+
+                        float val = BitConverter.ToSingle(byteArray, 0);
+                        return val;
 
                     default:
                         return registers[0];
@@ -150,6 +175,33 @@ namespace IPCSoftware.CoreService.Services.Algorithm
                 return null;
             }
         }
+
+
+        float BytesToFloat(byte[] bytes)
+        {
+            // BitConverter expects system endianness (little-endian on x86/x64)
+            // Reverse for proper interpretation
+            byte[] tmp = (byte[])bytes.Clone();
+            Array.Reverse(tmp); // now DCBA -> BitConverter reads little-endian = ABCD
+            return BitConverter.ToSingle(tmp, 0);
+        }
+
+        byte[] SwapEveryTwoBytes(byte[] src)
+        {
+            if (src == null) throw new ArgumentNullException(nameof(src));
+            if ((src.Length & 1) != 0)
+                throw new ArgumentException("Length must be even to swap 16-bit words.", nameof(src));
+
+            var dst = new byte[src.Length];
+            for (int i = 0; i < src.Length; i += 2)
+            {
+                dst[i] = src[i + 1];
+                dst[i + 1] = src[i];
+            }
+            return dst;
+        }
+
+
         // --- Algorithm Application (Scaling) ---
         private object ApplyScaling(object rawTypedValue, PLCTagConfigurationModel tag)
         {

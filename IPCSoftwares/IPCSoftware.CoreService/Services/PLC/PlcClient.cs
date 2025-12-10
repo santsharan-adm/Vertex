@@ -155,7 +155,8 @@ namespace IPCSoftware.CoreService.Services.PLC
                 foreach (var g in groups)
                 {
                     int baseAddress = g.Key;
-                    ushort startOffset = (ushort)(baseAddress - 40001);
+                  //  ushort startOffset = (ushort)(baseAddress - 40001);
+                    ushort startOffset = (ushort)(baseAddress - 40000);
                     ushort maxLength = (ushort)g.Max(t => t.Length);
 
                     // Read the holding registers from the PLC.
@@ -198,7 +199,8 @@ namespace IPCSoftware.CoreService.Services.PLC
 
             try
             {
-                ushort start = (ushort)(cfg.ModbusAddress - 40001);
+               // ushort start = (ushort)(cfg.ModbusAddress - 40001);
+                ushort start = (ushort)(cfg.ModbusAddress - 40000);
 
                 // Convert value to registers based on DataType
                 ushort[] registers = ConvertValueToRegisters(value, cfg);
@@ -292,6 +294,13 @@ namespace IPCSoftware.CoreService.Services.PLC
                         byteArray = BitConverter.GetBytes(int16Value);
                         return new ushort[] { BitConverter.ToUInt16(byteArray, 0) };
 
+                    case DataType_UInt16:
+                        // 16-bit signed integer
+                        ushort uint16Value = Convert.ToUInt16(value);
+                        byteArray = BitConverter.GetBytes(uint16Value);
+                        return new ushort[] { BitConverter.ToUInt16(byteArray, 0) };
+
+
                     case DataType_Word32:
                         // 32-bit integer (2 registers)
                         int int32Value = Convert.ToInt32(value);
@@ -304,9 +313,27 @@ namespace IPCSoftware.CoreService.Services.PLC
 
                         // CRITICAL: Swap words for Big Endian Modbus
                         // This is the REVERSE of the swap in ConvertData()
-                        ushort temp = registers[0];
-                        registers[0] = registers[1];
-                        registers[1] = temp;
+                        //ushort temp = registers[0];
+                        //registers[0] = registers[1];
+                        //registers[1] = temp;
+
+                        return registers;
+
+                    case DataType_UInt32:
+                        // 32-bit integer (2 registers)
+                        uint uint32Value = Convert.ToUInt32(value);
+                        byteArray = BitConverter.GetBytes(uint32Value);
+
+                        // Convert to 2 registers
+                        registers = new ushort[2];
+                        registers[0] = BitConverter.ToUInt16(byteArray, 0); // Low word
+                        registers[1] = BitConverter.ToUInt16(byteArray, 2); // High word
+
+                        // CRITICAL: Swap words for Big Endian Modbus
+                        // This is the REVERSE of the swap in ConvertData()
+                        //ushort temp2 = registers[0];
+                        //registers[0] = registers[1];
+                        //registers[1] = temp2;
 
                         return registers;
 
@@ -322,16 +349,16 @@ namespace IPCSoftware.CoreService.Services.PLC
 
                         // CRITICAL: Swap words for Big Endian Modbus
                         // This is the REVERSE of the swap in ConvertData()
-                        temp = registers[0];
-                        registers[0] = registers[1];
-                        registers[1] = temp;
+                        //temp = registers[0];
+                        //registers[0] = registers[1];
+                        //registers[1] = temp;
 
                         return registers;
 
                     default:
                         // Default: treat as UInt16
-                        ushort uint16Value = Convert.ToUInt16(value);
-                        return new ushort[] { uint16Value };
+                        ushort uint16Value2 = Convert.ToUInt16(value);
+                        return new ushort[] { uint16Value2 };
                 }
             }
             catch (Exception ex)
@@ -347,5 +374,10 @@ namespace IPCSoftware.CoreService.Services.PLC
         private const int DataType_Int16 = 1;
         private const int DataType_Word32 = 2;
         private const int DataType_FP = 4;
+        private const int DataType_UInt16 = 6;
+        private const int DataType_UInt32 = 7;
+
+
+
     }
 }

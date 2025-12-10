@@ -218,6 +218,14 @@ namespace IPCSoftware.App.ViewModels
                     result = input;
                     return true;
 
+                case 6: // UINT
+                    if (ushort.TryParse(input, out ushort sVal2)) { result = sVal2; return true; }
+                    if (uint.TryParse(input, out uint iVal2) && iVal2 >= ushort.MinValue && iVal2 <= ushort.MaxValue) { result = (ushort)iVal2; return true; }
+                    break;
+                case 7: // unsigned Word / Dint (Int32)
+                    if (int.TryParse(input, out int intVal2)) { result = intVal2; return true; }
+                    break;
+
                 default: // Fallback to Int
                     if (int.TryParse(input, out int defVal)) { result = defVal; return true; }
                     break;

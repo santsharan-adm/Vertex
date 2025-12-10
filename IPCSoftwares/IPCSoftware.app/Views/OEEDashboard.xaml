@@ -396,7 +396,7 @@
                             <ItemsControl Grid.Row="1" ItemsSource="{Binding CameraImages}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <UniformGrid Rows="3" Columns="4"/>
+                                        <UniformGrid Rows="4" Columns="3"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
