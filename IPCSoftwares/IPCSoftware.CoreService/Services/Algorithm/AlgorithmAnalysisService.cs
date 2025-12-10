@@ -25,6 +25,9 @@ namespace IPCSoftware.CoreService.Services.Algorithm
         private const int DataType_FP = 4; // Real, Float
         private const int DataType_String = 5;
 
+
+
+
         public AlgorithmAnalysisService(List<PLCTagConfigurationModel> tags)
         {
             _tags = tags;
@@ -139,6 +142,18 @@ namespace IPCSoftware.CoreService.Services.Algorithm
                         // This now receives the correctly ordered byte array
                         if (byteArray.Length < 4) throw new InvalidOperationException("Insufficient bytes for 32-bit Word.");
                         return BitConverter.ToInt32(byteArray, 0);
+                    case DataType_UInt32:
+                        // This now receives the correctly ordered byte array
+                        if (byteArray.Length < 4) throw new InvalidOperationException("Insufficient bytes for 32-bit Word.");
+
+                        //Span<byte> swapped = stackalloc byte[4];
+                        //swapped[0] = byteArray[2];
+                        //swapped[1] = byteArray[3];
+                        //swapped[2] = byteArray[0];
+                        //swapped[3] = byteArray[1];
+
+                        return BitConverter.ToUInt32(byteArray, 0);
+
                     case DataType_UInt32:
                         // This now receives the correctly ordered byte array
                         if (byteArray.Length < 4) throw new InvalidOperationException("Insufficient bytes for 32-bit Word.");

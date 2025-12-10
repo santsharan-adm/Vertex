@@ -108,7 +108,6 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-
         private async void InitializeAsync()
         {
             var allTags = await _tagService.GetAllTagsAsync();
@@ -130,6 +129,7 @@ namespace IPCSoftware.App.ViewModels
             // 4. Populate UI list (WritableTags) based on current filter
             ApplyFilter();
         }
+
 
 
 

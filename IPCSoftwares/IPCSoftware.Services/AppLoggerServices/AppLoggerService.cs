@@ -38,21 +38,29 @@ namespace IPCSoftware.Services.AppLoggerServices
 
         private void WriteLog(string level, string message, LogType type)
         {
+            try
+            {
+                var config = _logManager.GetConfig(type);
+                if (config == null || !config.Enabled)
+                    return;
+
+                // resolve file
+                string filePath = _logManager.ResolveLogFile(type);
+                if (filePath == null)
+                    return;
+
+                // maintenance (fileSize, purge, retention)
+                _logManager.ApplyMaintenance(config, filePath);
+
+                string line = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss},{level},\"{message}\",{config.LogName}";
+                File.AppendAllText(filePath, line + Environment.NewLine);
+            }
+            catch (Exception ex)
+            {
+
+            }
             // resolve config
-            var config = _logManager.GetConfig(type);
-            if (config == null || !config.Enabled)
-                return;
-
-            // resolve file
-            string filePath = _logManager.ResolveLogFile(type);
-            if (filePath == null)
-                return;
-
-            // maintenance (fileSize, purge, retention)
-            _logManager.ApplyMaintenance(config, filePath);
-
-            string line = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss},{level},\"{message}\",{config.LogName}";
-            File.AppendAllText(filePath, line + Environment.NewLine);
+            
         }
 
      

@@ -297,6 +297,13 @@ namespace IPCSoftware.CoreService.Services.PLC
                         byteArray = BitConverter.GetBytes(uint16Value);
                         return new ushort[] { BitConverter.ToUInt16(byteArray, 0) };
 
+                    case DataType_UInt16:
+                        // 16-bit signed integer
+                        ushort uint16Value = Convert.ToUInt16(value);
+                        byteArray = BitConverter.GetBytes(uint16Value);
+                        return new ushort[] { BitConverter.ToUInt16(byteArray, 0) };
+
+
                     case DataType_Word32:
                         // 32-bit integer (2 registers)
                         int int32Value = Convert.ToInt32(value);

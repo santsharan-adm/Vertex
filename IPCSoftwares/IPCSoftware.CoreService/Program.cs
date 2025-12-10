@@ -1,5 +1,7 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.CoreService;
+using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.Services.ConfigServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +25,10 @@ namespace IPCSoftware.CoreService
                     // 2. Configuration Service (Resolvable by DI)
                     services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
                     services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
+                    services.AddSingleton<ICycleManagerService, CycleManagerService>();
+                    services.AddSingleton<CCDTriggerService>();
+                    services.AddSingleton<CameraFtpService>();
+
 
                     // 3. Hosted Services (These are the actual workers/watchers)
                     services.AddHostedService<Worker>();

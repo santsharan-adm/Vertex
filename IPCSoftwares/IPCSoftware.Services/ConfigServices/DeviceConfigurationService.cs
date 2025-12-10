@@ -71,6 +71,15 @@ namespace IPCSoftware.Services.ConfigServices
             return _interfaces.ToList();
         }
 
+        public async Task<List<CameraInterfaceModel>> GetCameraDevicesAsync()
+        {
+            if (_cameraInterfaces.Count == 0)
+            {
+                await LoadCameraInterfacesFromCsvAsync();
+            }
+            return _cameraInterfaces.ToList();
+        }
+
 
 
 

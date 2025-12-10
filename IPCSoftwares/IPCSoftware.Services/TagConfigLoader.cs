@@ -1,6 +1,6 @@
 ﻿using IPCSoftware.Shared.Models.ConfigModels;
 using System.Collections.Generic;
-using System.Linq; 
+using System.Linq;
 
 namespace IPCSoftware.Services
 {
