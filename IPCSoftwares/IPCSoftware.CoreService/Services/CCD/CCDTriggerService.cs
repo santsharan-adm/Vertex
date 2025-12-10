@@ -2,6 +2,7 @@
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.Services.AppLoggerServices;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
 using Newtonsoft.Json;
@@ -24,9 +25,9 @@ namespace IPCSoftware.CoreService.Services.CCD
         private bool _lastTriggerState = false;
 
         // Configuration
-        private const string TEMP_IMAGE_FOLDER = @"D:\Repos\Vertex\IPCSoftwares\CCD";
-        private const int TRIGGER_TAG_ID = 15;
-        private const int QR_DATA_TAG_ID = 16;
+        private const string TEMP_IMAGE_FOLDER = ConstantValues.TempImgFolder;
+        //private const int TRIGGER_TAG_ID = 15;
+        //private const int QR_DATA_TAG_ID = 16;
 
         private const int IMAGE_WAIT_TIMEOUT_SECONDS = 10; // Wait up to 10s
         private const int POLLING_INTERVAL_MS = 500;
@@ -53,7 +54,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             // 1. Extract Trigger State (Tag 15)
             bool currentTriggerState = false;
 
-            if (tagValues.TryGetValue(TRIGGER_TAG_ID, out object triggerObj))
+            if (tagValues.TryGetValue(ConstantValues.TRIGGER_TAG_ID, out object triggerObj))
             {
                 if (triggerObj is bool bVal) currentTriggerState = bVal;
                 else if (triggerObj is int iVal) currentTriggerState = iVal > 0;
@@ -64,12 +65,12 @@ namespace IPCSoftware.CoreService.Services.CCD
             {
                 // 3. Extract QR Code (Tag 16) - needed if this is the start of a cycle
                 string currentQrCode = string.Empty;
-                if (tagValues.TryGetValue(QR_DATA_TAG_ID, out object qrObj))
+                if (tagValues.TryGetValue(ConstantValues.QR_DATA_TAG_ID, out object qrObj))
                 {
                     currentQrCode = qrObj?.ToString() ?? string.Empty;
                 }
 
-                Console.WriteLine($"[CCD Monitor] Rising Edge Detected on Tag {TRIGGER_TAG_ID}.");
+                Console.WriteLine($"[CCD Monitor] Rising Edge Detected on Tag {ConstantValues.TRIGGER_TAG_ID}.");
                 _ = ExecuteWorkflowAsync(currentQrCode);
             }
 
@@ -108,7 +109,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                     // 3. WRITE BACK TO PLC (Reset Bit to 0)
                     // This happens ONLY after processing is done.
                     var allTags = _tagService.GetAllTagsAsync().GetAwaiter().GetResult();
-                    var _triggerTag = allTags.FirstOrDefault(t => t.Id == TRIGGER_TAG_ID);
+                    var _triggerTag = allTags.FirstOrDefault(t => t.Id == ConstantValues.TRIGGER_TAG_ID);
                     if (_triggerTag != null)
                     {
                         var client = _plcManager.GetClient(_triggerTag.PLCNo);

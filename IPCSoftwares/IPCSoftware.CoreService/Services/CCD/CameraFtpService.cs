@@ -52,7 +52,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 //string ftpUsername = _configuration.GetValue<string>("Camera:FtpUsername") ?? "admin";
                 //  string ftpPassword = _configuration.GetValue<string>("Camera:FtpPassword") ?? "admin";
             //    string downloadFolder = camera.LocalDirectory;// _configuration.GetValue<string>("Camera:DownloadFolder") ?? "CameraFiles";
-                _pollingIntervalSeconds = ConstantValues.PollingInterval;// _configuration.GetValue<int>("Camera:PollingIntervalSeconds", 30);
+                _pollingIntervalSeconds = ConstantValues.PollingIntervalFTP;// _configuration.GetValue<int>("Camera:PollingIntervalSeconds", 30);
 
                 // Setup download path
               //  var appRootPath = AppContext.BaseDirectory;

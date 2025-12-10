@@ -155,8 +155,8 @@ namespace IPCSoftware.CoreService.Services.PLC
                 foreach (var g in groups)
                 {
                     int baseAddress = g.Key;
-                  //  ushort startOffset = (ushort)(baseAddress - 40001);
-                    ushort startOffset = (ushort)(baseAddress - 40000);
+                    ushort startOffset = (ushort)(baseAddress - 40001);
+                   // ushort startOffset = (ushort)(baseAddress - 40000);
                     ushort maxLength = (ushort)g.Max(t => t.Length);
 
                     // Read the holding registers from the PLC.
@@ -199,8 +199,8 @@ namespace IPCSoftware.CoreService.Services.PLC
 
             try
             {
-               // ushort start = (ushort)(cfg.ModbusAddress - 40001);
-                ushort start = (ushort)(cfg.ModbusAddress - 40000);
+                ushort start = (ushort)(cfg.ModbusAddress - 40001);
+               // ushort start = (ushort)(cfg.ModbusAddress - 40000);
 
                 // Convert value to registers based on DataType
                 ushort[] registers = ConvertValueToRegisters(value, cfg);
