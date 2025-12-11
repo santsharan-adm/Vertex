@@ -196,8 +196,6 @@ namespace IPCSoftware.Services.ConfigServices
                 3 => "Bit",
                 4 => "Float",
                 5 => "String",
-                6 => "UInt16",
-                7=> "UInt32",
                 _ => "Int16"
             };
         }

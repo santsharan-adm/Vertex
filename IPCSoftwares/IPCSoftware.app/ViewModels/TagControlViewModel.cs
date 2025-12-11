@@ -218,14 +218,6 @@ namespace IPCSoftware.App.ViewModels
                     result = input;
                     return true;
 
-                case 6: // UINT
-                    if (ushort.TryParse(input, out ushort sVal2)) { result = sVal2; return true; }
-                    if (uint.TryParse(input, out uint iVal2) && iVal2 >= ushort.MinValue && iVal2 <= ushort.MaxValue) { result = (ushort)iVal2; return true; }
-                    break;
-                case 7: // unsigned Word / Dint (Int32)
-                    if (int.TryParse(input, out int intVal2)) { result = intVal2; return true; }
-                    break;
-
                 default: // Fallback to Int
                     if (int.TryParse(input, out int defVal)) { result = defVal; return true; }
                     break;
@@ -283,4 +275,68 @@ namespace IPCSoftware.App.ViewModels
         }
     }
    
+
+    // Helper Wrapper Class
+    public class WritableTagItem : BaseViewModel
+    {
+        public PLCTagConfigurationModel Model { get; }
+
+        //private string _inputValue;
+        //public string InputValue
+        //{
+        //    get => _inputValue;
+        //    set => SetProperty(ref _inputValue, value);
+        //}
+
+        public string DataTypeDisplay => GetDataTypeName(Model.DataType);
+
+        public WritableTagItem(PLCTagConfigurationModel model)
+        {
+            Model = model;
+        }
+        private object _displayValue;
+        public object DisplayValue
+        {
+            get => _displayValue;
+            set => SetProperty(ref _displayValue, value);
+            //set { _selectedTabIndex = value; OnPropertyChanged(); }
+            //set
+            //{
+            //    _value = value;
+            //    OnPropertyChanged();
+            //    OnPropertyChanged(nameof(DisplayStatus));
+            //}
+        }
+
+        private object _inputValue;
+        public object InputValue
+        {
+            get => _inputValue;
+            set => SetProperty(ref _inputValue, value);
+            //set
+            //{
+            //    _inputValue = value;
+            //    OnPropertyChanged();
+            //    OnPropertyChanged(nameof(DisplayStatus));
+            //}
+        }
+
+
+
+      
+
+
+        private string GetDataTypeName(int typeId)
+        {
+            return typeId switch
+            {
+                1 => "Int16",
+                2 => "Int32",
+                3 => "Boolean",
+                4 => "Float",
+                5 => "String",
+                _ => "Unknown"
+            };
+        }
+    }
 }
