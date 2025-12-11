@@ -274,6 +274,7 @@ namespace IPCSoftware.App.ViewModels
             GC.SuppressFinalize(this);
         }
     }
+   
 
     // Helper Wrapper Class
     public class WritableTagItem : BaseViewModel

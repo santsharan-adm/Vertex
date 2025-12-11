@@ -34,7 +34,7 @@ namespace IPCSoftware.App.ViewModels
 
         //normal variables
         private bool _disposed;
-        private string _lastLoadedImagePath = string.Empty; 
+        private string _lastLoadedImagePath = string.Empty;
         private bool _isDarkTheme = false;
 
         private Dictionary<int, Action<object>> _tagValueMap;
@@ -112,14 +112,14 @@ namespace IPCSoftware.App.ViewModels
         public List<double> CycleTrend
         {
             get => _cycleTrend;
-            set  => SetProperty(ref _cycleTrend, value);
+            set => SetProperty(ref _cycleTrend, value);
         }
 
 
 
         #endregion
 
-      
+
         public ObservableCollection<WritableTagItem> AllInputs { get; } = new();
 
         public OEEDashboardViewModel(IPLCTagConfigurationService tagService, UiTcpClient tcpClient, IDialogService dialog)
@@ -132,13 +132,13 @@ namespace IPCSoftware.App.ViewModels
             InitializeAsync();
             InitializeCameraGrid();
 
-          
+
 
             ToggleThemeCommand = new RelayCommand(ToggleTheme);
             OpenCardDetailCommand = new RelayCommand<string>(OpenCardDetail);
             //ToggleThemeCommand = new RelayCommand(ToggleTheme);
             // Load default theme on startup
-           // SetTheme("Styles/DarkTheme.xaml");
+            // SetTheme("Styles/DarkTheme.xaml");
             // ----- HEADER -----
             CurrentDateTime = DateTime.Now.ToString("dddd, MMM dd yyyy HH:mm");
 
@@ -156,9 +156,9 @@ namespace IPCSoftware.App.ViewModels
             Remarks = "All processes stable.";
 
 
-            
-                ShowImageCommand = new RelayCommand<CameraImageItem>(ShowImage);
-            
+
+            ShowImageCommand = new RelayCommand<CameraImageItem>(ShowImage);
+
 
             CycleTrend = new List<double>
                             {
@@ -184,7 +184,7 @@ namespace IPCSoftware.App.ViewModels
             };
             Timer.Start();
 
-           
+
 
         }
 
@@ -247,7 +247,7 @@ namespace IPCSoftware.App.ViewModels
             if (img == null) return;
             string title = $"INSPECTION POSITION {img.StationNumber}"; // Use StationNumber or Id
             var window = new FullImageView(img.ImagePath, title);
-             window.ShowDialog();
+            window.ShowDialog();
         }
 
         private void OpenCardDetail(string cardType)
@@ -267,7 +267,7 @@ namespace IPCSoftware.App.ViewModels
                 case "OEE":
                     title = "OEE Score Statistics";
                     data.Add(new MetricDetailItem { MetricName = "OEE Score", CurrentVal = "78%", WeeklyVal = "80%", MonthlyVal = "82%" });
-  
+
                     break;
 
                 case "CycleTime":
@@ -291,7 +291,7 @@ namespace IPCSoftware.App.ViewModels
                     title = "Cycle Time Metrics";
                     data.Add(new MetricDetailItem { MetricName = "Actual Cycle", CurrentVal = "2.9s", WeeklyVal = "3.0s", MonthlyVal = "2.95s" });
                     data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "2.5s", WeeklyVal = "2.5s", MonthlyVal = "2.5s" });
-                  
+
                     break;
 
                 case "InFlow":
@@ -308,7 +308,7 @@ namespace IPCSoftware.App.ViewModels
                 case "NG":
                     title = "Rejection Statistics (NG)";
                     data.Add(new MetricDetailItem { MetricName = "Total Rejects", CurrentVal = "25", WeeklyVal = "170", MonthlyVal = "650" });
-                           break;
+                    break;
 
                     // Add more cases for "OperatingTime", "Downtime", "InFlow", etc.
             }
@@ -338,7 +338,7 @@ namespace IPCSoftware.App.ViewModels
             }
             catch (Exception ex)
             {
-                
+
             }
         }
 
@@ -484,8 +484,6 @@ namespace IPCSoftware.App.ViewModels
         }
         #endregion
 
+
     }
-
-
-
 }
