@@ -6,18 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace IPCSoftware.App.Views
 {
     public partial class FullImageView : Window
     {
-        public FullImageView(string imagePath, string title)
+        public FullImageView(ImageSource img, string title)
         {
             InitializeComponent();
 
             // 1. Create ViewModel with Dependency
-            var viewModel = new FullImageViewModel(imagePath, title);
+            var viewModel = new FullImageViewModel(img, title);
 
             // 2. Hook up the Close Action
             viewModel.RequestClose += () => this.Close();

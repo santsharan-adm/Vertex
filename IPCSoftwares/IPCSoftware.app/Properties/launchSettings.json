@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "IPCSoftware.App": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "CONFIG_DIR": "C:\\Users\\benny.kurian\\source\\repos\\Vertex2\\IPCSoftwares\\IPCSoftware.App\\"
+      }
+    }
+  }

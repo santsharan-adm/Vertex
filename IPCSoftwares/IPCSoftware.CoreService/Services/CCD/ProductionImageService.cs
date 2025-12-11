@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IPCSoftware.Shared.Models;
+using System;
 using System.Collections.Generic;
 using System.Drawing; // NuGet: System.Drawing.Common
 using System.Drawing.Imaging;
@@ -11,8 +12,8 @@ namespace IPCSoftware.CoreService.Services.CCD
     public class ProductionImageService
     {
         // Base directory for production images
-        private const string BASE_OUTPUT_DIR = @"D:\Repos\Vertex\IPCSoftwares\ProductionImages";
-        private const string METADATA_STYLE = "METADATASTYLE003";
+    
+
 
         /// <summary>
         /// Processes a temp image, adds metadata, and moves both raw and processed versions to the production folder.
@@ -37,8 +38,8 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                 // 2. Construct Folder Name
                 // Format: uniqueString_DateOfToday
-                string folderName = $"{uniqueDataString}_{dateStr}";
-                string targetFolder = Path.Combine(BASE_OUTPUT_DIR, folderName);
+                string folderName = $"{uniqueDataString}_{dateStr}".Replace("\0", "_");
+                string targetFolder = Path.Combine(ConstantValues.BASE_OUTPUT_DIR, folderName);
 
                 // Create directory if it doesn't exist
                 if (!Directory.Exists(targetFolder))
@@ -104,17 +105,17 @@ namespace IPCSoftware.CoreService.Services.CCD
             List<byte> dataBuilder = new List<byte>(fileData);
 
             // Append Style
-            dataBuilder.AddRange(Encoding.ASCII.GetBytes(METADATA_STYLE));
+            dataBuilder.AddRange(Encoding.ASCII.GetBytes(ConstantValues.METADATA_STYLE));
 
             // Append Client Meta
-            if (METADATA_STYLE != "METADATASTYLE002")
+            if (ConstantValues.METADATA_STYLE != "METADATASTYLE002")
             {
                 dataBuilder.AddRange(Encoding.ASCII.GetBytes(clientMeta));
                 dataBuilder.Add(0x90); // Terminator
             }
 
             // Append Vendor Meta
-            if (METADATA_STYLE != "METADATASTYLE001")
+            if (ConstantValues.METADATA_STYLE != "METADATASTYLE001")
             {
                 dataBuilder.AddRange(Encoding.ASCII.GetBytes(vendorMeta));
                 dataBuilder.Add(0x80); // Terminator

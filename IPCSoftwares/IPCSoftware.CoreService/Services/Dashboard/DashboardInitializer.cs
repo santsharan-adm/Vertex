@@ -98,14 +98,30 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         //    // Await everything
         //    await Task.WhenAll(plcTasks.Append(uiTask));
         //}
-
-
+        //private FileSystemWatcher _watcher;
+        //private string _watchFolder;
         public async Task StartAsync()
         {
             _ui.OnRequestReceived = HandleUiRequest;
 
             // Start UI
             var uiTask = _ui.StartAsync();
+
+            //_watcher = new FileSystemWatcher(_watchFolder)
+
+            //{
+
+            //    EnableRaisingEvents = true,
+
+            //    IncludeSubdirectories = false,
+
+            //    NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.CreationTime
+
+            //};
+
+
+
+            //_watcher.Created += OnCreated;
 
             // Start PLC read loops
             var plcTasks = _manager.Clients.Select(client =>
@@ -140,6 +156,13 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             await Task.WhenAll(plcTasks.Append(uiTask));
         }
 
+        //private void OnCreated(object sender, FileSystemEventArgs e)
+        //{
+        //    //e.FullPath
+
+            
+
+        //}
 
         private void HandlePlcPacket(int plcNo, Dictionary<uint, object> values)
         {

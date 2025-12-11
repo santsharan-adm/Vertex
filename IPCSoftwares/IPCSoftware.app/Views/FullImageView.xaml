@@ -78,6 +78,7 @@
 
             <Border Grid.Column="0" Background="#F8F9FA" BorderBrush="#EEE" BorderThickness="0,0,1,0">
                 <Grid>
+                    
                     <Image Source="{Binding ImagePath}"
                            Stretch="Uniform"
                            VerticalAlignment="Center"
