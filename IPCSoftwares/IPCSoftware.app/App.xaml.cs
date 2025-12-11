@@ -39,10 +39,35 @@ namespace IPCSoftware.App
                 // You have access to hostContext here:
                 .ConfigureAppConfiguration((hostContext, config) =>
                 {
-                    var env = hostContext.HostingEnvironment; // IHostEnvironment
-                                                              // Add extra config sources if you want
-                    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
+                    var env = hostContext.HostingEnvironment?.EnvironmentName ?? "Production";
+
+                    // Read the environment variable (use the exact name you set)
+                    var sharedConfigDir = Environment.GetEnvironmentVariable("CONFIG_DIR");
+
+                    // Fallback to the app’s base directory if the shared dir is not available
+                    var baseDir = AppContext.BaseDirectory;
+                    var configDir = !string.IsNullOrWhiteSpace(sharedConfigDir) && Directory.Exists(sharedConfigDir)
+                                    ? sharedConfigDir
+                                    : baseDir;
+
+                    // 🔒 Deterministic: remove defaults and set base path
+                    config.Sources.Clear();
+                    config.SetBasePath(configDir);
+
+                    // Load shared JSON (fail-fast on the base file)
+                    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                    config.AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true);
+
+                    // Keep env vars + cmd line
+                    config.AddEnvironmentVariables();
+                    config.AddCommandLine(e.Args);
+
+                    // Log to verify where config is read from
+                    System.Diagnostics.Debug.WriteLine($"[WPF] Config base path: {configDir}");
+                    System.Diagnostics.Debug.WriteLine($"[WPF] Environment: {env}");
+
+
                 })
                 .ConfigureServices((hostContext, services) =>
                 {

@@ -16,6 +16,42 @@ namespace IPCSoftware.CoreService
         public static void Main(string[] args)
         {
             IHost host = Host.CreateDefaultBuilder(args)
+                        .ConfigureAppConfiguration((context, config) =>
+                        {
+
+                            var env = context.HostingEnvironment?.EnvironmentName ?? "Production";
+
+                            // Read env var (case-insensitive on Windows)
+                            var sharedConfigDir = Environment.GetEnvironmentVariable("CONFIG_DIR");
+
+                            // Fallback to the app's base dir if not set/invalid
+                            var baseDir = AppContext.BaseDirectory;
+                            var configDir = !string.IsNullOrWhiteSpace(sharedConfigDir) && Directory.Exists(sharedConfigDir)
+                                            ? sharedConfigDir
+                                            : baseDir;
+
+                            // 🔒 Make it deterministic
+                            config.Sources.Clear();
+                            config.SetBasePath(configDir);
+
+                            // ✅ Force load from the base path (shared folder if present)
+                            // Set optional:false for base so we fail fast if missing in dev
+                            config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+                            // Environment-specific (Development/Production/etc.)
+                            config.AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true);
+
+                           
+
+                            config.AddEnvironmentVariables();
+                            config.AddCommandLine(args);
+
+                            // Optional: log where we're loading from (handy for diagnostics)
+                            System.Console.WriteLine($"[CoreService] Config base path: {configDir}");
+                            System.Console.WriteLine($"[CoreService] Environment: {env}");
+
+                        })
+
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
                 {
