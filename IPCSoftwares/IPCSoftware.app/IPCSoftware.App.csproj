@@ -98,30 +98,30 @@
     <Resource Include="Controls\Images\TestCamImageOLd.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Content Include="Data\AlarmConfigurations.csv">
+    <Resource Include="Data\AlarmConfigurations.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\CameraInterfaces.csv">
+    </Resource>
+    <Resource Include="Data\CameraInterfaces.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\DeviceInterfaces.csv">
+    </Resource>
+    <Resource Include="Data\DeviceInterfaces.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\Devices.csv">
+    </Resource>
+    <Resource Include="Data\Devices.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\LogConfigurations.csv">
+    </Resource>
+    <Resource Include="Data\LogConfigurations.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\PLCTags.csv">
+    </Resource>
+    <Resource Include="Data\PLCTags.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\PLCTagsOld.csv">
+    </Resource>
+    <Resource Include="Data\PLCTagsOld.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\Users.csv">
+    </Resource>
+    <Resource Include="Data\Users.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </Resource>
   </ItemGroup>
 
 </Project>
