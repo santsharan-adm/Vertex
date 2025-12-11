@@ -19,10 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.Core", "IPCSoft
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.CoreService", "IPCSoftware.CoreService\IPCSoftware.CoreService.csproj", "{2971B56E-5800-44B4-9A68-BDF0CD17FD86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.TestProject1", "IPCSoftware.TestProject1\IPCSoftware.TestProject1.csproj", "{E76289C0-7D82-4306-9EFB-6665DB200D7E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject2", "TestProject2\TestProject2.csproj", "{4AF12BD7-D6B4-4171-BBDD-48A3031F0874}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,14 +57,6 @@ Global
 		{2971B56E-5800-44B4-9A68-BDF0CD17FD86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2971B56E-5800-44B4-9A68-BDF0CD17FD86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2971B56E-5800-44B4-9A68-BDF0CD17FD86}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E76289C0-7D82-4306-9EFB-6665DB200D7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E76289C0-7D82-4306-9EFB-6665DB200D7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E76289C0-7D82-4306-9EFB-6665DB200D7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E76289C0-7D82-4306-9EFB-6665DB200D7E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4AF12BD7-D6B4-4171-BBDD-48A3031F0874}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4AF12BD7-D6B4-4171-BBDD-48A3031F0874}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4AF12BD7-D6B4-4171-BBDD-48A3031F0874}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4AF12BD7-D6B4-4171-BBDD-48A3031F0874}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
