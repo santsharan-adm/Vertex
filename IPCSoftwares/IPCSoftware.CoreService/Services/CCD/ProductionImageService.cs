@@ -38,7 +38,7 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                 // 2. Construct Folder Name
                 // Format: uniqueString_DateOfToday
-                string folderName = $"{uniqueDataString}_{dateStr}";
+                string folderName = $"{uniqueDataString}_{dateStr}".Replace("\0", "_");
                 string targetFolder = Path.Combine(ConstantValues.BASE_OUTPUT_DIR, folderName);
 
                 // Create directory if it doesn't exist
