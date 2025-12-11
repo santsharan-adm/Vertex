@@ -1,5 +1,6 @@
 ﻿
 
+using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Configuration;
@@ -163,7 +164,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                         break;
 
                     // Filter for image/video files
-                    if (IsMediaFile(file))
+                    if (FileTypeHelper.IsImageFile(file))
                     {
                         await DownloadAndProcessFileAsync(file);
                     }
@@ -243,13 +244,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             await Task.CompletedTask;
         }
 
-        private bool IsMediaFile(string fileName)
-        {
-            string ext = Path.GetExtension(fileName).ToLowerInvariant();
-            return ext == ".jpg" || ext == ".jpeg" || ext == ".png" ||
-                   ext == ".bmp" || ext == ".tiff" || ext == ".tif" ;
-        }
-
+  
         /// <summary>
         /// Manually trigger a camera file check (useful for testing or on-demand checks)
         /// </summary>

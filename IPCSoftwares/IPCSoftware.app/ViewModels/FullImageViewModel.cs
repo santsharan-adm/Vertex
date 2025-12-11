@@ -6,15 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace IPCSoftware.App.ViewModels
 {
     public partial class FullImageViewModel :BaseViewModel
     {
 
-        private string _imagePath;
+        private ImageSource _imagePath;
 
-        public string ImagePath
+        public ImageSource ImagePath
         {
             get => _imagePath;
             set => SetProperty(ref _imagePath, value);
@@ -57,7 +58,7 @@ namespace IPCSoftware.App.ViewModels
         public ICommand CloseCommand { get; }
 
         // Constructor Injection: Pass the dependency here!
-        public FullImageViewModel(string imagePath, string measurementName)
+        public FullImageViewModel(ImageSource imagePath, string measurementName)
         {
             ImagePath = imagePath;
             MeasurementTitle = measurementName; // Store it
