@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.App.ViewModels;
+using IPCSoftware.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace IPCSoftware.App.Views
 {
     public partial class FullImageView : Window
     {
-        public FullImageView(ImageSource img, string title)
+        public FullImageView(CameraImageItem img, string title)
         {
             InitializeComponent();
 

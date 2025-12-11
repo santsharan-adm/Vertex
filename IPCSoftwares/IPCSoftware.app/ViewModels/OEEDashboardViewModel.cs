@@ -6,6 +6,7 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -20,25 +21,33 @@ namespace IPCSoftware.App.ViewModels
 {
     public class OEEDashboardViewModel : BaseViewModel, IDisposable
     {
-        // Di variables
+        // --- DI Services ---
         private readonly IPLCTagConfigurationService _tagService;
-        private readonly DispatcherTimer _timer;
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
 
+        // --- Timers ---
+        // 1. For Live Data (TCP Polling) - e.g. OEE, Machine Status
+        private readonly DispatcherTimer _liveDataTimer;
+        // 2. For Cycle Sync (JSON Polling) - e.g. Images, Inspection Results
+        private readonly DispatcherTimer _uiSyncTimer;
 
-        //command variables
+        // --- JSON State Sync Variables ---
+        private readonly string _jsonStatePath;
+        private DateTime _lastJsonWriteTime;
+
+
+        // --- Commands ---
         public ICommand ToggleThemeCommand { get; }
         public ICommand ShowImageCommand { get; }
         public ICommand OpenCardDetailCommand { get; }
 
-        //normal variables
+        // --- Member Variables ---
         private bool _disposed;
-        private string _lastLoadedImagePath = string.Empty;
         private bool _isDarkTheme = false;
-
         private Dictionary<int, Action<object>> _tagValueMap;
 
+        // Filter for Writable Tags (Settings/Inputs)
         private HashSet<int> allowedTagNos = new HashSet<int>
         {
             15, 16, 17, 18, 19, 20
@@ -46,12 +55,12 @@ namespace IPCSoftware.App.ViewModels
 
         // Map Grid Index(0-11) to Physical Station Number(1-12)
         private readonly int[] _visualToStationMap = new int[]
-        {
+       {
             1, 2, 3,
-            6, 5, 4,
+            4, 5, 6,    // Changed to Linear Order
             7, 8, 9,
-            12, 11, 10
-        };
+            10, 11, 12  // Changed to Linear Order
+       };
 
         private string _currentThemePath = "/IPCSoftware.App;component/Styles/LightTheme.xaml";
         public string CurrentThemePath
@@ -70,7 +79,7 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref okNgStatus, value);
         }
 
-        private string _qrCodeText = "Waiting for scan...";
+        private string _qrCodeText = "Waiting for start...";
         public string QRCodeText
         {
             get => _qrCodeText;
@@ -83,14 +92,18 @@ namespace IPCSoftware.App.ViewModels
             get => _qrCodeImage;
             set => SetProperty(ref _qrCodeImage, value);
         }
+
+        // The Collection for the 12 Grid Stations
         public ObservableCollection<CameraImageItem> CameraImages { get; } = new ObservableCollection<CameraImageItem>();
+
+        // The Collection for User Inputs (Writable Tags)
+        public ObservableCollection<WritableTagItem> AllInputs { get; } = new();
+
 
         #endregion
 
 
         #region Hrd coded value
-        // HEADER DATA
-        public string CurrentDateTime { get; set; }
 
         // LEFT PANEL
         public double Availability { get; set; }
@@ -114,13 +127,8 @@ namespace IPCSoftware.App.ViewModels
             get => _cycleTrend;
             set => SetProperty(ref _cycleTrend, value);
         }
-
-
-
         #endregion
 
-
-        public ObservableCollection<WritableTagItem> AllInputs { get; } = new();
 
         public OEEDashboardViewModel(IPLCTagConfigurationService tagService, UiTcpClient tcpClient, IDialogService dialog)
         {
@@ -128,67 +136,50 @@ namespace IPCSoftware.App.ViewModels
             _coreClient = new CoreClient(tcpClient);
             _dialog = dialog;
 
+            // Path to shared state file
+            _jsonStatePath = Path.Combine(ConstantValues.QrCodeImagePath, "CurrentCycleState.json");
 
-            InitializeAsync();
-            InitializeCameraGrid();
+            // Initialize Lists
+            InitializeAsync();      // Writable Tags
+            InitializeCameraGrid(); // Camera Grid placeholders
 
-
-
+            // --- COMMANDS ---
             ToggleThemeCommand = new RelayCommand(ToggleTheme);
             OpenCardDetailCommand = new RelayCommand<string>(OpenCardDetail);
-            //ToggleThemeCommand = new RelayCommand(ToggleTheme);
-            // Load default theme on startup
-            // SetTheme("Styles/DarkTheme.xaml");
-            // ----- HEADER -----
-            CurrentDateTime = DateTime.Now.ToString("dddd, MMM dd yyyy HH:mm");
+            ShowImageCommand = new RelayCommand<CameraImageItem>(ShowImage);
 
-            // ----- LEFT PANEL (DUMMY LIVE VALUES) -----
+            DummyData();
+            // 1. Live Data Timer (1000ms) - Gets OEE, IOs, Status from Core Service via TCP
+            _liveDataTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1000) };
+            _liveDataTimer.Tick += LiveDataTimerTick;
+            _liveDataTimer.Start();
+
+            // 2. UI Sync Timer (200ms) - Gets Images and Station Data from JSON (Cycle Synced)
+            _uiSyncTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
+            _uiSyncTimer.Tick += UiSyncTick;
+            _uiSyncTimer.Start();
+
+            // Force initial sync
+            SyncUiWithJson();
+        }
+
+        #region Data Intilization
+
+        private void DummyData()
+        {
+            // --- DUMMY / INITIAL DATA ---
             Availability = 92.5;
             Performance = 88.1;
             Quality = 96.2;
             OverallOEE = Math.Round((Availability * Performance * Quality) / 10000, 2);
-
-            // ----- SUMMARY -----
             OperatingTime = "7h 32m";
             Downtime = "28m";
             GoodUnits = 1325;
             RejectedUnits = 48;
             Remarks = "All processes stable.";
-
-
-
-            ShowImageCommand = new RelayCommand<CameraImageItem>(ShowImage);
-
-
-            CycleTrend = new List<double>
-                            {
-                                2.8, 2.9, 2.7, 3.0, 2.8, 2.9, 2.85, 2.75, 2.9
-                            };
-
-            _timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(1000)
-            };
-            _timer.Tick += TimerTick;
-            _timer.Start();
-
-
-            // ----- LIVE CLOCK UPDATE -----
-            Timer = new DispatcherTimer();
-            Timer.Interval = TimeSpan.FromSeconds(1);
-            Timer.Tick += (s, e) =>
-            {
-                CurrentDateTime = DateTime.Now.ToString("dddd, MMM dd yyyy HH:mm");
-
-                OnPropertyChanged(nameof(CurrentDateTime));
-            };
-            Timer.Start();
-
-
-
+            CycleTrend = new List<double> { 2.8, 2.9, 2.7, 3.0, 2.8, 2.9, 2.85, 2.75, 2.9 };
         }
 
-        #region Data Intilization
         private async void InitializeAsync()
         {
             InitializeTagMap();
@@ -208,12 +199,15 @@ namespace IPCSoftware.App.ViewModels
         private void InitializeCameraGrid()
         {
             // Populate the collection with 12 empty items
+            CameraImages.Clear();
             for (int i = 0; i < 12; i++)
             {
                 CameraImages.Add(new CameraImageItem
                 {
                     StationNumber = _visualToStationMap[i],
-                    Result = "Unchecked" // Default border color logic
+                    Result = "Unchecked",
+                    ImagePath = null,
+                    ValX = 0, ValY = 0, ValZ = 0// Default border color logic
                 });
             }
         }
@@ -222,12 +216,180 @@ namespace IPCSoftware.App.ViewModels
         {
             _tagValueMap = new Dictionary<int, Action<object>>
             {
-                [16] = v => QRCodeText = v?.ToString()
+               // [16] = v => QRCodeText = v?.ToString()
                 //[17] = v => OkNgStatus = Convert.ToInt32(v),
                 //[18] = v => CameraStatus = Convert.ToBoolean(v)
                 //[19] = v => CameraStatus = Convert.ToBoolean(v)
                 //[20] = v => CameraStatus = Convert.ToBoolean(v)
             };
+        }
+
+        #endregion
+
+
+        #region Timer Loops
+
+        // Loop 1: Live Data (TCP)
+        private async void LiveDataTimerTick(object sender, EventArgs e)
+        {
+            if (_disposed) return;
+            try
+            {
+                // Fetch dictionary of all current IO values from Core Service
+                var liveData = await _coreClient.GetIoValuesAsync();
+
+                // Update properties mapped in _tagValueMap
+                UpdateValues(liveData);
+
+                // NOTE: If you need to update Header/Summary values from liveData manually (without map):
+                // if (liveData.ContainsKey(99)) OverallOEE = Convert.ToDouble(liveData[99]);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Live Data Error: {ex.Message}");
+            }
+        }
+
+        // Loop 2: Cycle Sync (JSON)
+        private void UiSyncTick(object sender, EventArgs e)
+        {
+            if (_disposed) return;
+            SyncUiWithJson();
+        }
+
+        #endregion
+
+
+        #region Logic Methods
+
+        private void UpdateValues(Dictionary<int, object> dict)
+        {
+            if (dict == null) return;
+
+            foreach (var kvp in dict)
+            {
+                if (_tagValueMap.TryGetValue(kvp.Key, out var setter))
+                {
+                    setter(kvp.Value);
+                }
+            }
+        }
+
+        private void SyncUiWithJson()
+        {
+            try
+            {
+                // 1. Check if JSON file exists
+                if (!File.Exists(_jsonStatePath))
+                {
+                    // CASE: File Deleted by Service (Reset Cycle)
+                    if (_lastJsonWriteTime != DateTime.MinValue)
+                    {
+                        ResetDashboard();
+                        _lastJsonWriteTime = DateTime.MinValue;
+                    }
+                    return;
+                }
+
+                // 2. Check if file has been modified
+                DateTime currentWriteTime = File.GetLastWriteTime(_jsonStatePath);
+                if (currentWriteTime == _lastJsonWriteTime) return; // No changes
+
+                // 3. Read content
+                string jsonContent = string.Empty;
+                for (int k = 0; k < 3; k++) // Retry for lock
+                {
+                    try { jsonContent = File.ReadAllText(_jsonStatePath); break; }
+                    catch { System.Threading.Thread.Sleep(50); }
+                }
+
+                if (string.IsNullOrEmpty(jsonContent)) return;
+
+                // 4. Deserialize
+                var state = JsonConvert.DeserializeObject<CycleStateModel>(jsonContent);
+                if (state == null) return;
+
+                // 5. Update UI Properties
+                // We use JSON for Batch ID to keep it in sync with the images
+                QRCodeText = state.BatchId;
+
+                // If the QR Image is stored as Station 0 in JSON:
+                if (state.Stations.ContainsKey(0))
+                {
+                    var qrData = state.Stations[0];
+                    // Load QR Image if changed
+                    // Note: We don't have a check for LastLoadedFilePath for QR code separate var, 
+                    // but we can check the source string
+                    if (QrCodeImage == null || (QrCodeImage is BitmapImage bmp && bmp.UriSource?.LocalPath != qrData.ImagePath))
+                    {
+                        Application.Current.Dispatcher.Invoke(() => QrCodeImage = LoadBitmapSafe(qrData.ImagePath));
+                    }
+                }
+
+                // 6. Update Grid Items (Stations 1-12)
+                foreach (var kvp in state.Stations)
+                {
+                    int stationNo = kvp.Key;
+                    if (stationNo == 0) continue; // Skip QR
+
+                    var data = kvp.Value;
+                    var uiItem = CameraImages.FirstOrDefault(x => x.StationNumber == stationNo);
+
+                    if (uiItem != null)
+                    {
+                        // Update Image
+                        if (uiItem.LastLoadedFilePath != data.ImagePath)
+                        {
+                            uiItem.LastLoadedFilePath = data.ImagePath;
+                            uiItem.ImagePath = LoadBitmapSafe(data.ImagePath);
+                        }
+
+                        // Update Data (X, Y, Z, Status)
+                        uiItem.Result = data.Status;
+                        uiItem.ValX = data.X;
+                        uiItem.ValY = data.Y;
+                        uiItem.ValZ = data.Z;
+                    }
+                }
+
+                _lastJsonWriteTime = currentWriteTime;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Sync Error: {ex.Message}");
+            }
+        }
+
+        private void ResetDashboard()
+        {
+            QRCodeText = "Waiting for Scan...";
+            QrCodeImage = null; // Clear QR Image
+
+            foreach (var item in CameraImages)
+            {
+                item.ImagePath = null;
+                item.LastLoadedFilePath = null;
+                item.Result = "Unchecked";
+                item.ValX = 0;
+                item.ValY = 0;
+                item.ValZ = 0;
+            }
+        }
+
+        private BitmapImage LoadBitmapSafe(string path)
+        {
+            if (string.IsNullOrEmpty(path) || !File.Exists(path)) return null;
+            try
+            {
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.UriSource = new Uri(path);
+                bitmap.EndInit();
+                bitmap.Freeze();
+                return bitmap;
+            }
+            catch { return null; }
         }
 
         #endregion
@@ -246,7 +408,7 @@ namespace IPCSoftware.App.ViewModels
         {
             if (img == null) return;
             string title = $"INSPECTION POSITION {img.StationNumber}"; // Use StationNumber or Id
-            var window = new FullImageView(img.ImagePath, title);
+            var window = new FullImageView(img, title);
             window.ShowDialog();
         }
 
@@ -325,161 +487,18 @@ namespace IPCSoftware.App.ViewModels
         #endregion
 
 
-        private async void TimerTick(object sender, EventArgs e)
-        {
-            if (_disposed)
-                return;
-            try
-            {
-                var liveData = await _coreClient.GetIoValuesAsync();
-                UpdateValues(liveData);
-                CheckForLatestQrImage();
-                CheckForInspectionImages();
-            }
-            catch (Exception ex)
-            {
-
-            }
-        }
-
-
-
-        private void UpdateValues(Dictionary<int, object> dict)
-        {
-            if (dict == null) return;
-
-            foreach (var kvp in dict)
-            {
-                if (_tagValueMap.TryGetValue(kvp.Key, out var setter))
-                {
-                    setter(kvp.Value);
-                }
-            }
-        }
-
-
-
-        private void CheckForLatestQrImage()
-        {
-            try
-            {
-                // Ensure directory exists
-                string folderPath = ConstantValues.QrCodeImagePath;
-                if (!Directory.Exists(folderPath)) return;
-
-                var directory = new DirectoryInfo(folderPath);
-
-                // Find files starting with "0" (e.g., 0_timestamp.bmp)
-                // Filter for valid image extensions if needed
-                var latestFile = directory.GetFiles("0*.*")
-                                          .Where(f => FileTypeHelper.IsImageFile(f.Extension))
-                                          .OrderByDescending(f => f.LastWriteTime)
-                                          .FirstOrDefault();
-
-                // If a file exists and it's different from the last one we showed
-                if (latestFile != null && latestFile.FullName != _lastLoadedImagePath)
-                {
-                    _lastLoadedImagePath = latestFile.FullName;
-                    UpdateQrImage(_lastLoadedImagePath);
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error checking for QR image: {ex.Message}");
-            }
-        }
-
-
-
-        public void UpdateQrImage(string imagePath)
-        {
-            var bitmap = LoadBitmapSafe(imagePath);
-            if (bitmap != null)
-            {
-                Application.Current.Dispatcher.Invoke(() => QrCodeImage = bitmap);
-            }
-        }
-
-
-
-        private BitmapImage? LoadBitmapSafe(string path)
-        {
-            try
-            {
-                if (!File.Exists(path)) return null;
-                byte[] imageBytes = File.ReadAllBytes(path);
-
-                var bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.StreamSource = new MemoryStream(imageBytes);
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.EndInit();
-                bitmap.Freeze();
-                return bitmap;
-            }
-            catch { return null; }
-        }
-
-
-
-        private void CheckForInspectionImages()
-        {
-            try
-            {
-                string folderPath = ConstantValues.QrCodeImagePath;
-                if (!Directory.Exists(folderPath)) return;
-
-                var directory = new DirectoryInfo(folderPath);
-
-                // Get all potential image files once to avoid disk hammering
-                var allFiles = directory.GetFiles("*_raw.bmp"); // Or just *.bmp depending on your save logic
-
-                // Loop through our visual grid slots
-                for (int i = 0; i < CameraImages.Count; i++)
-                {
-                    var item = CameraImages[i];
-                    int targetStation = item.StationNumber; // e.g., 6
-
-                    // Find latest file for this specific station (starts with "6_")
-                    var latestForStation = allFiles
-                        .Where(f => f.Name.StartsWith($"{targetStation}_"))
-                        .OrderByDescending(f => f.LastWriteTime)
-                        .FirstOrDefault();
-
-                    if (latestForStation != null && latestForStation.FullName != item.LastLoadedFilePath)
-                    {
-                        // Found a new image! Update the item.
-                        item.LastLoadedFilePath = latestForStation.FullName;
-
-                        // Load Bitmap safely
-                        var bitmap = LoadBitmapSafe(item.LastLoadedFilePath);
-
-                        // Update UI on Dispatcher
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            item.ImagePath = bitmap;
-                            // Optionally parse Result from filename if needed, e.g., "OK" or "NG"
-                            item.Result = "OK"; // Defaulting to Green border for now
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error scanning inspection images: {ex.Message}");
-            }
-        }
-
-
-
         #region Dispose
         public void Dispose()
         {
             if (_disposed) return;
             _disposed = true;
 
-            _timer.Stop();
-            _timer.Tick -= TimerTick;
+            _liveDataTimer.Stop();
+            _liveDataTimer.Tick -= LiveDataTimerTick;
+
+            _uiSyncTimer.Stop();
+            _uiSyncTimer.Tick -= UiSyncTick;
+
             GC.SuppressFinalize(this);
         }
         #endregion

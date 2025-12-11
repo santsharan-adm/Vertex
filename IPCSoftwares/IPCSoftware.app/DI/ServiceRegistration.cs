@@ -54,7 +54,7 @@ namespace IPCSoftware.App.DI
             // ========== MAIN VIEWMODELS (Singleton) ==========
             services.AddSingleton<RibbonViewModel>();
             services.AddSingleton<MainWindowViewModel>();
-            services.AddSingleton<OEEDashboardViewModel>();
+            services.AddTransient<OEEDashboardViewModel>();
             services.AddSingleton<OeeDashboardNewViewModel>();
             services.AddSingleton<UiTcpClient>();
 

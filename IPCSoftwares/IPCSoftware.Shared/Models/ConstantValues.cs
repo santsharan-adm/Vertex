@@ -11,16 +11,23 @@ namespace IPCSoftware.Shared.Models
 
         public const int PollingIntervalFTP = 2;
 
-        public static string QrCodeImagePath = @"D:\CCD\UI";
-        public const string TempImgFolder = @"D:\CCD";
+        public static string QrCodeImagePath = @"D:\Repos\Vertex\IPCSoftwares\CCD\UI";
+        public const string TempImgFolder = @"D:\Repos\Vertex\IPCSoftwares\CCD";
 
         public  const int TRIGGER_TAG_ID = 10;
         public  const int Return_TAG_ID = 15;
         public const int QR_DATA_TAG_ID = 16;
         //confirmation id=15--->true
 
-        public const string BASE_OUTPUT_DIR = @"D:\ProductionImages";
+        public const string BASE_OUTPUT_DIR = @"D:\Repos\Vertex\IPCSoftwares\ProductionImages";
         public const string METADATA_STYLE = "METADATASTYLE003";
+
+
+        public const int TAG_QR_DATA = 16;
+        public const int TAG_STATUS = 17; // 1=OK, 2=NG
+        public const int TAG_X = 18;
+        public const int TAG_Y = 19;
+        public const int TAG_Z = 20;
 
     }
 

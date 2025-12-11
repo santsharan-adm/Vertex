@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
@@ -29,21 +30,21 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _measurementTitle, value);
         }
 
-        private string _xValue = "3.45";
-        private string _yValue = "5.23"; // Logic to determine color can be added later
-      private string _zValue = "0.02";
+        private double _xValue = 0;
+        private double _yValue = 0; // Logic to determine color can be added later
+      private double _zValue = 0;
 
-        public string XValue
+        public double XValue
         {
             get => _xValue;
             set => SetProperty(ref _xValue, value);
         }
-        public string YValue
+        public double YValue
         {
             get => _yValue;
             set => SetProperty(ref _yValue, value);
         }
-        public string ZValue
+        public double ZValue
         {
             get => _zValue;
             set => SetProperty(ref _zValue, value);
@@ -58,9 +59,12 @@ namespace IPCSoftware.App.ViewModels
         public ICommand CloseCommand { get; }
 
         // Constructor Injection: Pass the dependency here!
-        public FullImageViewModel(ImageSource imagePath, string measurementName)
+        public FullImageViewModel(CameraImageItem item, string measurementName)
         {
-            ImagePath = imagePath;
+            ImagePath = item.ImagePath;
+            XValue = item.ValX;
+            YValue = item.ValY;
+            ZValue = item.ValZ;
             MeasurementTitle = measurementName; // Store it
             CloseCommand = new RelayCommand(Close);
         }

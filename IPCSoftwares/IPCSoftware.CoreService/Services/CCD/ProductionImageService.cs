@@ -21,12 +21,12 @@ namespace IPCSoftware.CoreService.Services.CCD
         /// <param name="tempFilePath">Full path to the source file (e.g. inside CCD folder)</param>
         /// <param name="uniqueDataString">The 40-char unique string</param>
         /// <param name="stNo">Station Number (1-12)</param>
-        public void ProcessAndMoveImage(string tempFilePath, string uniqueDataString, int stNo, bool qrCodeFile = false)
+        public string ProcessAndMoveImage(string tempFilePath, string uniqueDataString, int stNo, bool qrCodeFile = false)
         {
             if (!File.Exists(tempFilePath))
             {
                 Console.WriteLine($"[Error] Source file not found: {tempFilePath}");
-                return;
+                return string.Empty;
             }
 
             try
@@ -72,19 +72,24 @@ namespace IPCSoftware.CoreService.Services.CCD
                 File.Copy(tempFilePath, rawUIDestPath, true);
                 Console.WriteLine($"[Info] Raw image saved: {rawDestPath}");
 
-                // 8. Cleanup (Delete from Temp/CCD)
-                // Uncomment the line below when ready to delete source files
-                 File.Delete(tempFilePath); 
-                // Console.WriteLine($"[Info] Temp file deleted: {tempFilePath}");
+                // 8. Cleanup Temp File
+                try
+                {
+                    File.Delete(tempFilePath);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Warning] Could not delete temp file: {ex.Message}");
+                }
 
-                Console.WriteLine($"✅ Cycle Complete for St {stNo}");
+                return rawUIDestPath;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Exception] Workflow failed: {ex.Message}");
+                Console.WriteLine($"[Exception] Image Workflow failed: {ex.Message}");
+                return string.Empty;
             }
         }
-
 
         private void ProcessImageInternal(string inputPath, string outputPath, string clientMeta, string vendorMeta)
         {

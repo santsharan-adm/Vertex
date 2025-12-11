@@ -9,6 +9,8 @@ namespace IPCSoftware.Core.Interfaces.CCD
 {
     public  interface ICycleManagerService
     {
-        void HandleIncomingImage(string tempImagePath, string qrCodeString = null);
+        // void HandleIncomingImage(string tempImagePath, string qrCodeString = null);
+        void HandleIncomingData(string tempImagePath, Dictionary<string, object> stationData, string qrString = null);
     }
 }
+    
