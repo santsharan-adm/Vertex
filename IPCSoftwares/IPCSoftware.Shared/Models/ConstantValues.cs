@@ -29,6 +29,17 @@ namespace IPCSoftware.Shared.Models
         public const int TAG_Y = 19;
         public const int TAG_Z = 20;
 
+
+
+        public const int TAG_CycleTime= 22;
+        public const int TAG_UpTime = 24;
+        public const int TAG_DownTime = 26;
+        public const int TAG_InFlow= 27;
+        public const int TAG_OK= 28;
+        public const int TAG_NG= 29;
+
+
+
     }
 
 

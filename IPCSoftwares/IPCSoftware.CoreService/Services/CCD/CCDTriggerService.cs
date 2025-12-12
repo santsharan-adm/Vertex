@@ -71,7 +71,13 @@ namespace IPCSoftware.CoreService.Services.CCD
                 var stationData = new Dictionary<string, object>();
 
                 // Fetch X, Y, Z, Status from tag dictionary
-                stationData["Status"] = tagValues.ContainsKey(ConstantValues.TAG_STATUS) ? tagValues[ConstantValues.TAG_STATUS].ToString() : "OK";
+              //  stationData["Status"] = tagValues.ContainsKey(ConstantValues.TAG_STATUS) ? tagValues[ConstantValues.TAG_STATUS].ToString() : "OK";
+                var rawStatus = tagValues.ContainsKey(ConstantValues.TAG_STATUS)
+                ? tagValues[ConstantValues.TAG_STATUS]
+                : null;
+                stationData["Status"] = MapStatus(rawStatus);
+
+
                 stationData["X"] = tagValues.ContainsKey(ConstantValues.TAG_X) ? tagValues[ConstantValues.TAG_X] : 0.0;
                 stationData["Y"] = tagValues.ContainsKey(ConstantValues.TAG_Y) ? tagValues[ConstantValues.TAG_Y] : 0.0;
                 stationData["Z"] = tagValues.ContainsKey(ConstantValues.TAG_Z) ? tagValues[ConstantValues.TAG_Z] : 0.0;
@@ -85,6 +91,20 @@ namespace IPCSoftware.CoreService.Services.CCD
      
 
         }
+        private string MapStatus(object rawStatus)
+        {
+            if (rawStatus == null)
+                return "Unchecked";
+
+            switch (rawStatus.ToString())
+            {
+                case "0": return "Unchecked";
+                case "1": return "OK";
+                case "2": return "NG";
+                default: return "Unchecked"; // fallback
+            }
+        }
+
 
         private async Task ExecuteWorkflowAsync(string qrCode, Dictionary<string, object> data)
         {

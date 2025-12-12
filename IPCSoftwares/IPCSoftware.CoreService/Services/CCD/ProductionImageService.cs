@@ -53,7 +53,12 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                 // 4. Define Full Output Paths
                 string rawDestPath = Path.Combine(targetFolder, $"{fileNameBase}_raw.bmp");
-                string rawUIDestPath = Path.Combine(Path.GetDirectoryName(tempFilePath), "UI", $"{fileNameBase}_raw.bmp");
+                //string rawUIDestPath = Path.Combine(Path.GetDirectoryName(tempFilePath), "UI", $"{fileNameBase}_raw.bmp");
+                string rawUIDestPath = Path.Combine(ConstantValues.QrCodeImagePath, $"{fileNameBase}_raw.bmp");
+                if (!Directory.Exists(ConstantValues.QrCodeImagePath))
+                {
+                    Directory.CreateDirectory(ConstantValues.QrCodeImagePath);
+                }
                 string procDestPath = Path.Combine(targetFolder, $"{fileNameBase}_processed.bmp");
 
                 // 5. Prepare Metadata Strings
@@ -64,7 +69,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 {
                   ProcessImageInternal(tempFilePath, procDestPath, clientMetadata, vendorMetadata);
                 }
-                // 6. Process Image (Read Temp -> Add Meta -> Save to Processed Path)
+                // 6. Process I mage (Read Temp -> Add Meta -> Save to Processed Path)
 
                 // 7. Copy Raw Image to Production Path
                 // We use Copy instead of Move so we don't lock the file if logic fails halfway

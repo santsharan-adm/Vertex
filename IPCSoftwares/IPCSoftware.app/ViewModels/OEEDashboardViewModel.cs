@@ -112,11 +112,50 @@ namespace IPCSoftware.App.ViewModels
         public double OverallOEE { get; set; }
 
 
-        // RIGHT SUMMARY
-        public string OperatingTime { get; set; }
-        public string Downtime { get; set; }
-        public int GoodUnits { get; set; }
-        public int RejectedUnits { get; set; }
+        private string _operatingTime = "0h 0m";
+        public string OperatingTime
+        {
+            get => _operatingTime;
+            set => SetProperty(ref _operatingTime, value);
+        }
+
+        private string _downtime = "0m";
+        public string Downtime
+        {
+            get => _downtime;
+            set => SetProperty(ref _downtime, value);
+        }
+
+        private int _goodUnits = 0;
+        public int GoodUnits
+        {
+            get => _goodUnits;
+            set => SetProperty(ref _goodUnits, value);
+        }
+
+        private int _rejectedUnits = 0;
+        public int RejectedUnits
+        {
+            get => _rejectedUnits;
+            set => SetProperty(ref _rejectedUnits, value);
+        }
+
+        private int _inFlow = 0; // Total Input
+        public int InFlow
+        {
+            get => _inFlow;
+            set => SetProperty(ref _inFlow, value);
+        }
+
+        private int _cycleTime = 0; // Total Input
+        public int CycleTime
+        {
+            get => _cycleTime;
+            set => SetProperty(ref _cycleTime, value);
+        }
+
+
+
         public string Remarks { get; set; }
         public DispatcherTimer Timer { get; }
         public string OEEText => "87.4%";
@@ -168,14 +207,14 @@ namespace IPCSoftware.App.ViewModels
         private void DummyData()
         {
             // --- DUMMY / INITIAL DATA ---
-            Availability = 92.5;
-            Performance = 88.1;
-            Quality = 96.2;
+           // Availability = 92.5;
+           // Performance = 88.1;
+           // Quality = 96.2;
             OverallOEE = Math.Round((Availability * Performance * Quality) / 10000, 2);
-            OperatingTime = "7h 32m";
-            Downtime = "28m";
-            GoodUnits = 1325;
-            RejectedUnits = 48;
+           // OperatingTime = "7h 32m";
+          //  Downtime = "28m";
+          //  GoodUnits = 1325;
+          //  RejectedUnits = 48;
             Remarks = "All processes stable.";
             CycleTrend = new List<double> { 2.8, 2.9, 2.7, 3.0, 2.8, 2.9, 2.85, 2.75, 2.9 };
         }
@@ -212,15 +251,44 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        private void InitializeTagMap()
+     /*   private void InitializeTagMap()
         {
             _tagValueMap = new Dictionary<int, Action<object>>
             {
+                
                // [16] = v => QRCodeText = v?.ToString()
                 //[17] = v => OkNgStatus = Convert.ToInt32(v),
                 //[18] = v => CameraStatus = Convert.ToBoolean(v)
                 //[19] = v => CameraStatus = Convert.ToBoolean(v)
                 //[20] = v => CameraStatus = Convert.ToBoolean(v)
+            };
+        }
+*/
+
+
+        private void InitializeTagMap()
+        {
+            _tagValueMap = new Dictionary<int, Action<object>>
+            {
+                // Mapping Actual PLC Tags to UI Properties
+
+                // Tag 24: UpTime (Operating Time)
+                [ConstantValues.TAG_UpTime] = v => OperatingTime = v.ToString(),
+
+                // Tag 26: DownTime
+                [ConstantValues.TAG_DownTime] = v => Downtime = v.ToString(),
+
+                // Tag 28: Good Units (OK)
+                [ConstantValues.TAG_OK] = v => GoodUnits = Convert.ToInt32(v),
+
+                // Tag 29: Rejected Units (NG)
+                [ConstantValues.TAG_NG] = v => RejectedUnits = Convert.ToInt32(v),
+
+                // Tag 27: InFlow (Total)
+                [ConstantValues.TAG_InFlow] = v => InFlow = Convert.ToInt32(v),
+
+                // Tag 22: Cycle Time (Optional: Update trend or display)
+                [ConstantValues.TAG_CycleTime] = v => CycleTime = Convert.ToInt32(v)
             };
         }
 

@@ -13,6 +13,7 @@ namespace IPCSoftware.CoreService.Services.CCD
     public class CycleManagerService : ICycleManagerService
     {
         private readonly ProductionImageService _imageService;
+        //private readonly IConfiguration _configuration;
 
         // State Variables
         private string _activeBatchId = string.Empty;
