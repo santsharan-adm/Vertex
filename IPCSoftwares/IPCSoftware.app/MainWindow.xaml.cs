@@ -2,7 +2,7 @@
 using IPCSoftware.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
-
+using IPCSoftware.App.ViewModels;
 namespace IPCSoftware.App
 {
     public partial class MainWindow : Window

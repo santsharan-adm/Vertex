@@ -57,7 +57,7 @@ namespace IPCSoftware.App.ViewModels
 
             _timer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(100)
+                Interval = TimeSpan.FromMilliseconds(2000)
             };
             _timer.Tick += TimerTick;
             _timer.Start();

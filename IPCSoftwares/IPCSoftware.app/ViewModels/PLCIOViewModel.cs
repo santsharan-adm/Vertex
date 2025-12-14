@@ -72,6 +72,8 @@ namespace IPCSoftware.App.ViewModels
         {
             var configTags = await _tagService.GetAllTagsAsync();
 
+            await SendInitialIoRequest();
+
             AllInputTags.Clear();
             AllOutputTags.Clear();
 
@@ -95,6 +97,26 @@ namespace IPCSoftware.App.ViewModels
             }
 
             ApplyFilter();
+        }
+
+        private async Task SendInitialIoRequest()
+        {
+            try
+            {
+                // Call the GetIoValuesAsync method once. It uses RequestId=5.
+                // Even if polling is off, the first request ensures the socket is active.
+                var data = await _coreClient.GetIoValuesAsync();
+
+                // You would typically process 'data' here, but for now, we just check success.
+                System.Windows.MessageBox.Show("Initial Connection Test SUCCESS (Request 5 response received).", "Connection Status");
+
+                // After successful initial request, the DispatcherTimer will handle subsequent requests.
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Initial Connection Test FAILED: {ex.Message}", "Connection Status");
+                // Log the failure to your logger here
+            }
         }
 
         private async void OnToggleOutput(IoTagModel tag)

@@ -7,7 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.WindowsServices;
-using Microsoft.Extensions.Logging; // Added for ILogger injection if needed
+using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using IPCSoftware.CoreService.Services.UI; // <-- UiListener is here!
 
 namespace IPCSoftware.CoreService
 {
@@ -20,38 +23,22 @@ namespace IPCSoftware.CoreService
                 IHost host = Host.CreateDefaultBuilder(args)
                             .ConfigureAppConfiguration((context, config) =>
                             {
-
                                 var env = context.HostingEnvironment?.EnvironmentName ?? "Production";
-
-                                // Read env var (case-insensitive on Windows)
                                 var sharedConfigDir = Environment.GetEnvironmentVariable("CONFIG_DIR");
-
-                                // Fallback to the app's base dir if not set/invalid
                                 var baseDir = AppContext.BaseDirectory;
                                 var configDir = !string.IsNullOrWhiteSpace(sharedConfigDir) && Directory.Exists(sharedConfigDir)
                                                 ? sharedConfigDir
                                                 : baseDir;
 
-                                // 🔒 Make it deterministic
                                 config.Sources.Clear();
                                 config.SetBasePath(configDir);
-
-                                // ✅ Force load from the base path (shared folder if present)
-                                // Set optional:false for base so we fail fast if missing in dev
                                 config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
-                                // Environment-specific (Development/Production/etc.)
                                 config.AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true);
-
-
-
                                 config.AddEnvironmentVariables();
                                 config.AddCommandLine(args);
 
-                                // Optional: log where we're loading from (handy for diagnostics)
                                 System.Console.WriteLine($"[CoreService] Config base path: {configDir}");
                                 System.Console.WriteLine($"[CoreService] Environment: {env}");
-
                             })
 
                     .UseWindowsService()
@@ -67,14 +54,30 @@ namespace IPCSoftware.CoreService
                         services.AddSingleton<CCDTriggerService>();
                         services.AddSingleton<CameraFtpService>();
 
+                        // 🚨 CRITICAL DI FIX (Step 50): Use a Factory method to inject the port into UiListener.
+                        services.AddSingleton<UiListener>(sp =>
+                        {
+                            var config = sp.GetRequiredService<IConfiguration>();
+                            // Read port from configuration, default to a standard port if missing
+                            int port = config.GetValue<int>("CoreServiceSettings:UiPort", 5050);
+                            return new UiListener(port);
+                        });
+                        // Register the SAME instance as the IMessagePublisher interface.
+                        services.AddSingleton<IMessagePublisher>(provider => provider.GetRequiredService<UiListener>());
 
-                        // 3. Hosted Services (These are the actual workers/watchers)
+
+                        // Assuming you can inject IConfiguration to get the data path:
+                        services.AddSingleton<IAlarmConfigurationService>(sp =>
+                        {
+                            var config = sp.GetRequiredService<IConfiguration>();
+                            string dataFolder = config.GetValue<string>("Config:DataFolder");
+                            return new AlarmConfigurationService(dataFolder);
+                        });
+
+                        // 3. Hosted Services
                         services.AddHostedService<Worker>();
-                        // services.AddHostedService<TagChangeWatcherService>(); // Add this when ready
 
-                        // 🛑 CRITICAL FIX: Removed the following lines that caused the AggregateException:
-                        // services.AddSingleton<PLCClientManager>();
-                        // services.AddSingleton<AlgorithmAnalysisService>();
+                        // Removed unused singletons
                     })
                     .Build();
 
@@ -84,18 +87,12 @@ namespace IPCSoftware.CoreService
 
             catch (Exception ex)
             {
-                // Fallback logging if the Host fails to build or crash immediately
-                // utilizing standard Console or EventLog since DI might not be ready
                 Console.WriteLine($"[CRITICAL] Application startup failed: {ex.Message}");
                 Console.WriteLine(ex.StackTrace);
-
-                // If running as a service, exit code 1 indicates failure to Windows SCM
                 Environment.Exit(1);
             }
         }
 
-
-
-
+        
     }
 }

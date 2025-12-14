@@ -9,9 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ConfigDB\**" />
+    <EmbeddedResource Remove="ConfigDB\**" />
+    <None Remove="ConfigDB\**" />
+    <Page Remove="ConfigDB\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="appsettings.Development.json" />
     <None Remove="appsettings.json" />
-    <None Remove="ConfigDB\users.json" />
     <None Remove="Controls\Images\alarm.png" />
     <None Remove="Controls\Images\AOILogin.jpg" />
     <None Remove="Controls\Images\AOILogo.png" />
@@ -67,9 +73,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="ConfigDB\users.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Controls\Images\alarm.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -126,9 +129,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Data\PLCTags.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Data\PLCTagsOld.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Data\Users.csv">

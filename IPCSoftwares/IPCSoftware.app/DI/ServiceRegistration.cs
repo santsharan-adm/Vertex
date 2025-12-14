@@ -57,6 +57,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<OEEDashboardViewModel>();
             services.AddSingleton<OeeDashboardNewViewModel>();
             services.AddSingleton<UiTcpClient>();
+            services.AddSingleton<AlarmViewModel>();
 
 
 
@@ -115,6 +116,7 @@ namespace IPCSoftware.App.DI
             // Alarm Configuration Views 
             services.AddTransient<AlarmListView>();
             services.AddTransient<AlarmConfigurationView>();
+            services.AddTransient<AlarmView>();
 
             // User Management Views 
             services.AddTransient<UserListView>();
