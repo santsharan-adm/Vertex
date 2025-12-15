@@ -1,6 +1,7 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,6 @@ namespace IPCSoftware.Services.ConfigServices
 {
     public class DeviceConfigurationService : IDeviceConfigurationService
     {
-        private readonly IConfiguration _configuration;
         private readonly string _dataFolder;
         private readonly string _devicesCsvPath;
         private readonly string _interfacesCsvPath;
@@ -26,10 +26,11 @@ namespace IPCSoftware.Services.ConfigServices
         private int _nextDeviceId = 1;
         private int _nextInterfaceId = 1;
 
-        public DeviceConfigurationService(IConfiguration configuration)
+        public DeviceConfigurationService(IOptions<ConfigSettings> configSettings)
         {
-            _configuration = configuration;
-            string dataFolderPath = _configuration.GetValue<string>("Config:DataFolder");
+            var config = configSettings.Value;
+            string dataFolderPath = config.DataFolder;
+            //   string dataFolderPath = _configuration.GetValue<string>("Config:DataFolder");
             _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
 
             if (!Directory.Exists(_dataFolder))
@@ -37,9 +38,9 @@ namespace IPCSoftware.Services.ConfigServices
                 Directory.CreateDirectory(_dataFolder);
             }
 
-            _devicesCsvPath = Path.Combine(_dataFolder, "Devices.csv");
-            _interfacesCsvPath = Path.Combine(_dataFolder, "DeviceInterfaces.csv");
-            _cameraInterfacesCsvPath = Path.Combine(_dataFolder, "CameraInterfaces.csv");
+            _devicesCsvPath = Path.Combine(_dataFolder, config.DeviceFileName /* "Devices.csv"*/);
+            _interfacesCsvPath = Path.Combine(_dataFolder, config.DeviceInterfacesFileName /* "DeviceInterfaces.csv"*/);
+            _cameraInterfacesCsvPath = Path.Combine(_dataFolder,config.CameraInterfacesFileName  /* "CameraInterfaces.csv"*/);
 
             _devices = new List<DeviceModel>();
             _interfaces = new List<DeviceInterfaceModel>();

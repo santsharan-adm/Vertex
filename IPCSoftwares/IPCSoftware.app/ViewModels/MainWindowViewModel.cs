@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.App;
+using IPCSoftware.App.Services;
 using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
 
@@ -6,6 +7,7 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Printing;
 using System.Reflection;
@@ -17,9 +19,11 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 public class MainWindowViewModel : BaseViewModel
 {
+
     private readonly INavigationService _nav;
     private readonly IDialogService _dialog;
     private readonly IAppLogger  _logger;
+    private readonly CoreClient _coreClient;
 
     public ICommand SidebarItemClickCommand { get; }
     public RibbonViewModel RibbonVM { get; }
@@ -56,17 +60,36 @@ public class MainWindowViewModel : BaseViewModel
     }
 
 
+    public bool _isConnected;
+    public bool IsConnected
+    {
+        get => _isConnected;
+        set => SetProperty(ref _isConnected, value);
+    }
+
+    public bool _timeSynched;
+    public bool TimeSynched
+    {
+        get => _timeSynched;
+        set => SetProperty(ref _timeSynched, value);
+    }
+
+
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
     public string AppVersion => "AOI System v1.0.3";
 
-    public MainWindowViewModel(INavigationService nav, IAppLogger logger, IDialogService dialog,RibbonViewModel ribbonVM)
+    public MainWindowViewModel(INavigationService nav, CoreClient coreClient,
+        IAppLogger logger, IDialogService dialog,RibbonViewModel ribbonVM)
     {
+        _coreClient = coreClient;
         _timer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
         };
-        _timer.Tick += (s, e) => SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
+        _timer.Tick += LiveDataTimerTick; 
         _timer.Start();
+
+
 
         // Set initial time immediately
         SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
@@ -92,6 +115,19 @@ public class MainWindowViewModel : BaseViewModel
         _dialog = dialog;
     }
 
+    private async void LiveDataTimerTick(object sender, EventArgs e)
+    {
+        SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
+        var boolDict = await _coreClient.GetIoValuesAsync(1);
+        if (boolDict != null && boolDict.TryGetValue(1, out object pulseObj))
+        {
+            var json = JsonConvert.SerializeObject(pulseObj);
+            var pulseResult = JsonConvert.DeserializeObject<List<bool>>(json);
+            IsConnected = pulseResult[0];
+            TimeSynched = pulseResult[1];
+
+        }
+    }
     private void ResetLandingState()
     {
         existingUserControl = string.Empty;   // clear selected page

@@ -1,5 +1,5 @@
 ﻿Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark,CanWrite
-1,1,CD_COM_PULSE_PLC,1,40001,1,1,Bit,0,0,0,Heart beat signal1,Pulse PLC to IPC,False
+1,1,CD_COM_PULSE_PLC,1,40001,1,1,Bit,0,0,0,Heart beat signal1,Pulse PLC to IPC,True
 2,2,CD_COM_PULSE_IPC,1,40015,1,0,Bit,0,0,0,Heart beat signal2,Pulse IPC to PLC,True
 3,3,SYS_DATA_B1,1,40015,1,0,Bit,1,0,0,System Data B1,,True
 4,4,SYS_DATA_B2,1,40019,1,0,Int16,0,0,0,System Data B2,,True
@@ -474,3 +474,4 @@
 473,473,IO_OUTPUT158,1,40269,1,0,Bit,13,0,0,Outputs 158,,True
 474,474,IO_OUTPUT159,1,40269,1,0,Bit,14,0,0,Outputs 159,,True
 475,475,IO_OUTPUT160,1,40269,1,0,Bit,15,0,0,Outputs 160,,True
+476,476,CD_COM_PULSE_PIPC,1,40001,1,1,Bit,1,0,0,Heart beat signal1,Pulse PLC to IPC,True

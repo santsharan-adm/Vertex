@@ -125,7 +125,7 @@ namespace IPCSoftware.App.ViewModels
 
             try
             {
-                var liveData = await _coreClient.GetIoValuesAsync();
+                var liveData = await _coreClient.GetIoValuesAsync(5);
                 UpdateValues(liveData);
             }
             catch { }

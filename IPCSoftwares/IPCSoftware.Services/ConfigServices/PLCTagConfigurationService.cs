@@ -4,49 +4,34 @@ using Microsoft.Extensions.Configuration;
 using System.Configuration;
 using System.IO;
 using System.Text;
+using Microsoft.Extensions.Options;
 
 
 namespace IPCSoftware.Services.ConfigServices
 {
     public class PLCTagConfigurationService : IPLCTagConfigurationService
     {
-        private readonly IConfiguration _configuration;
+        //private readonly IConfiguration _configuration;
         private readonly string _dataFolder;
         private readonly string _csvFilePath;
         private List<PLCTagConfigurationModel> _tags;
         private int _nextId = 1;
         private readonly TagConfigLoader _tagLoader = new TagConfigLoader(); // Use the dedicated loader
-
-        // FIX: Constructor uses IConfiguration for path resolution
-        /*   public PLCTagConfigurationService(string dataFolderPath = null)
-           {
-               _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
-
-               if (!Directory.Exists(_dataFolder))
-               {
-                   Directory.CreateDirectory(_dataFolder);
-               }
-
-               _csvFilePath = Path.Combine(_dataFolder, "PLCTags.csv");
-
-               _tags = new List<PLCTagConfigurationModel>();
-           }
-   */
             
-        public PLCTagConfigurationService(IConfiguration configuration)
+        public PLCTagConfigurationService(IOptions<ConfigSettings> configSettings )
         {
+            //    _configuration = configuration;
+            //  string dataFolderPath = _configuration.GetValue<string>("Config:DataFolder");
+            var config = configSettings.Value;
+            string dataFolderPath = config.DataFolder;
 
-            _configuration = configuration;
-            string dataFolderPath = _configuration.GetValue<string>("Config:DataFolder");
             _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
-
-
             if (!Directory.Exists(_dataFolder))
             {
                 Directory.CreateDirectory(_dataFolder);
             }
 
-            _csvFilePath = Path.Combine(_dataFolder, "PLCTags.csv");
+            _csvFilePath = Path.Combine(_dataFolder, config.PlcTagsFileName /*"PLCTags.csv"*/);
 
             _tags = new List<PLCTagConfigurationModel>();
         }

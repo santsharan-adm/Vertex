@@ -127,7 +127,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="X" FontSize="18" Foreground="#333" VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="{Binding XValue}" FontSize="18" FontWeight="Bold" Foreground="#28A745"/>
+                            <TextBlock Text="{Binding XValue, StringFormat=F2}" FontSize="18" FontWeight="Bold" Foreground="#28A745"/>
                             <TextBlock Text=" mm" FontSize="14" FontWeight="SemiBold" Foreground="#28A745" VerticalAlignment="Bottom" Margin="2,0,0,2"/>
                         </StackPanel>
                         <TextBlock Grid.Column="2" Text="3 - 4" FontSize="16" Foreground="#555" HorizontalAlignment="Right" VerticalAlignment="Center"/>
@@ -142,7 +142,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Y" FontSize="18" Foreground="#333" VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="{Binding YValue}" FontSize="18" FontWeight="Bold" Foreground="#DC3545"/>
+                            <TextBlock Text="{Binding YValue, StringFormat=F2}" FontSize="18" FontWeight="Bold" Foreground="#DC3545"/>
                             <TextBlock Text=" mm" FontSize="14" FontWeight="SemiBold" Foreground="#DC3545" VerticalAlignment="Bottom" Margin="2,0,0,2"/>
                         </StackPanel>
                         <TextBlock Grid.Column="2" Text="3 - 4" FontSize="16" Foreground="#555" HorizontalAlignment="Right" VerticalAlignment="Center"/>
@@ -157,7 +157,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Z" FontSize="18" Foreground="#333" VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="{Binding ZValue}" FontSize="18" FontWeight="Bold" Foreground="#28A745"/>
+                            <TextBlock Text="{Binding ZValue, StringFormat=F2}" FontSize="18" FontWeight="Bold" Foreground="#28A745"/>
                             <TextBlock Text=" mm" FontSize="14" FontWeight="SemiBold" Foreground="#28A745" VerticalAlignment="Bottom" Margin="2,0,0,2"/>
                         </StackPanel>
                         <TextBlock Grid.Column="2" Text="0 - 0.5" FontSize="16" Foreground="#555" HorizontalAlignment="Right" VerticalAlignment="Center"/>

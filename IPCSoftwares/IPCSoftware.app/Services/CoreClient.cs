@@ -24,13 +24,13 @@ namespace IPCSoftware.App.Services
             _responseTcs?.TrySetResult(json);
         }
 
-        public async Task<Dictionary<int, object>> GetIoValuesAsync()
+        public async Task<Dictionary<int, object>> GetIoValuesAsync(int reqId )
         {
             _responseTcs = new TaskCompletionSource<string>();
 
             var req = new RequestPackage
             {
-                RequestId = 5,
+                RequestId = reqId,
                 Parameters = null
             };
 
@@ -82,7 +82,7 @@ namespace IPCSoftware.App.Services
                 foreach (var kv in jobj)
                     dict[int.Parse(kv.Key)] = kv.Value.ToObject<object>();
             }
-            else if (parameters is Dictionary<uint, object> d2)
+            else if (parameters is Dictionary<int, object> d2)
             {
                 foreach (var kv in d2)
                     dict[(int)kv.Key] = kv.Value;

@@ -1,10 +1,12 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,29 +21,23 @@ namespace IPCSoftware.CoreService.Services.CCD
         private readonly ICycleManagerService _cycleManager;
         private  PLCClientManager _plcManager; // 1. Inject PLC Manager
         private readonly IPLCTagConfigurationService  _tagService; // 2. Store Tag Config
-
-
+        private readonly string  _tempImageFolder; 
         // State tracking
         private bool _lastTriggerState = false;
-
-        // Configuration
-        private const string TEMP_IMAGE_FOLDER = ConstantValues.TempImgFolder;
-        //private const int TRIGGER_TAG_ID = 15;
-        //private const int QR_DATA_TAG_ID = 16;
 
         private const int IMAGE_WAIT_TIMEOUT_SECONDS = 10; // Wait up to 10s
         private const int POLLING_INTERVAL_MS = 500;
 
-        public CCDTriggerService(ICycleManagerService cycleManager,  IPLCTagConfigurationService tagService)
+        public CCDTriggerService
+            (ICycleManagerService cycleManager,
+            IPLCTagConfigurationService tagService,
+            IOptions<CcdSettings> ccdSettings
+            )
         {
+            var ccd = ccdSettings.Value;
+            _tempImageFolder = ccd.TempImgFolder;
             _tagService = tagService;
-
             _cycleManager = cycleManager;
-         //   _plcManager = plcManager;
-           
-
-            // Find the configuration for the Trigger Tag (ID 15) so we can write back to it later
-        
         }
 
         /// <summary>
@@ -158,9 +154,9 @@ namespace IPCSoftware.CoreService.Services.CCD
             DateTime start = DateTime.Now;
             while ((DateTime.Now - start).TotalSeconds < 10)
             {
-                if (!Directory.Exists(TEMP_IMAGE_FOLDER)) return null;
+                if (!Directory.Exists(_tempImageFolder)) return null;
 
-                var file = new DirectoryInfo(TEMP_IMAGE_FOLDER)
+                var file = new DirectoryInfo(_tempImageFolder)
                     .GetFiles("*.bmp")
                     .OrderByDescending(f => f.LastWriteTime)
                     .FirstOrDefault();

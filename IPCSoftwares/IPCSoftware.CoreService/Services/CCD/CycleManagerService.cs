@@ -1,6 +1,8 @@
 ﻿using IPCSoftware.Core.Interfaces.CCD;
+using IPCSoftware.Services;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -35,10 +37,12 @@ namespace IPCSoftware.CoreService.Services.CCD
             12, 11, 10  // Row 4 (Left)
         };
 
-        public CycleManagerService()
+        public CycleManagerService(IOptions<CcdSettings> ccdSettng, ProductionImageService imageService)
         {
-            _imageService = new ProductionImageService();
-            _stateFilePath = Path.Combine(ConstantValues.QrCodeImagePath, "CurrentCycleState.json");
+            var ccd = ccdSettng.Value;
+            _imageService = imageService;
+            _stateFilePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
+           // _stateFilePath = Path.Combine(ConstantValues.QrCodeImagePath, "CurrentCycleState.json");
         }
 
      
@@ -189,7 +193,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             _activeBatchId = string.Empty;
             _currentSequenceStep = 0;
 
-            string folder = ConstantValues.QrCodeImagePath;
+            string folder = Path.GetDirectoryName(_stateFilePath);  //ConstantValues.QrCodeImagePath;
 
             if (Directory.Exists(folder))
             {
@@ -200,10 +204,10 @@ namespace IPCSoftware.CoreService.Services.CCD
                 }
 
                 // (Optional) delete all subdirectories
-                foreach (var dir in Directory.GetDirectories(folder))
-                {
-                    Directory.Delete(dir, true); // true = delete recursively
-                }
+                //foreach (var dir in Directory.GetDirectories(folder))
+                //{
+                //    Directory.Delete(dir, true); // true = delete recursively
+                //}
             }
 
             Console.WriteLine("[System] Cycle Reset — Folder cleared completely.");

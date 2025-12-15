@@ -3,9 +3,12 @@ using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.CoreService.Services.Dashboard;
+using IPCSoftware.Services;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -86,6 +89,9 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _qrCodeText, value);
         }
 
+
+     
+
         private ImageSource _qrCodeImage;
         public ImageSource QrCodeImage
         {
@@ -106,21 +112,45 @@ namespace IPCSoftware.App.ViewModels
         #region Hrd coded value
 
         // LEFT PANEL
-        public double Availability { get; set; }
-        public double Performance { get; set; }
-        public double Quality { get; set; }
-        public double OverallOEE { get; set; }
 
 
-        private string _operatingTime = "0h 0m";
-        public string OperatingTime
+        private double _quality = 0;
+        public double Quality
+        {
+            get => _quality;
+            set => SetProperty(ref _quality, value);
+        }
+
+        private double _availability = 0;
+        public double Availability
+        {
+            get => _availability;
+            set => SetProperty(ref _availability, value);
+        }
+
+        private double _performance = 0;
+        public double Performance
+        {
+            get => _performance;
+            set => SetProperty(ref _performance, value);
+        }
+
+        private double _overallOEE = 0;
+        public double OverallOEE
+        {
+            get => _overallOEE;
+            set => SetProperty(ref _overallOEE, value);
+        }
+
+        private int _operatingTime = 0;
+        public int OperatingTime
         {
             get => _operatingTime;
             set => SetProperty(ref _operatingTime, value);
         }
 
-        private string _downtime = "0m";
-        public string Downtime
+        private int _downtime = 0;
+        public int Downtime
         {
             get => _downtime;
             set => SetProperty(ref _downtime, value);
@@ -154,8 +184,6 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _cycleTime, value);
         }
 
-
-
         public string Remarks { get; set; }
         public DispatcherTimer Timer { get; }
         public string OEEText => "87.4%";
@@ -169,14 +197,17 @@ namespace IPCSoftware.App.ViewModels
         #endregion
 
 
-        public OEEDashboardViewModel(IPLCTagConfigurationService tagService, UiTcpClient tcpClient, IDialogService dialog)
+        public OEEDashboardViewModel(IPLCTagConfigurationService tagService, IOptions<CcdSettings> ccdSettng, UiTcpClient tcpClient, IDialogService dialog)
         {
+            var ccd = ccdSettng.Value;
             _tagService = tagService;
             _coreClient = new CoreClient(tcpClient);
             _dialog = dialog;
 
+
             // Path to shared state file
-            _jsonStatePath = Path.Combine(ConstantValues.QrCodeImagePath, "CurrentCycleState.json");
+            _jsonStatePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
+            // _jsonStatePath = Path.Combine(ConstantValues.QrCodeImagePath, "CurrentCycleState.json");
 
             // Initialize Lists
             InitializeAsync();      // Writable Tags
@@ -189,7 +220,7 @@ namespace IPCSoftware.App.ViewModels
 
             DummyData();
             // 1. Live Data Timer (1000ms) - Gets OEE, IOs, Status from Core Service via TCP
-            _liveDataTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1000) };
+            _liveDataTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
             _liveDataTimer.Tick += LiveDataTimerTick;
             _liveDataTimer.Start();
 
@@ -207,21 +238,21 @@ namespace IPCSoftware.App.ViewModels
         private void DummyData()
         {
             // --- DUMMY / INITIAL DATA ---
-           // Availability = 92.5;
-           // Performance = 88.1;
-           // Quality = 96.2;
+            // Availability = 92.5;
+            // Performance = 88.1;
+            // Quality = 96.2;
             OverallOEE = Math.Round((Availability * Performance * Quality) / 10000, 2);
-           // OperatingTime = "7h 32m";
-          //  Downtime = "28m";
-          //  GoodUnits = 1325;
-          //  RejectedUnits = 48;
+            // OperatingTime = "7h 32m";
+            //  Downtime = "28m";
+            //  GoodUnits = 1325;
+            //  RejectedUnits = 48;
             Remarks = "All processes stable.";
             CycleTrend = new List<double> { 2.8, 2.9, 2.7, 3.0, 2.8, 2.9, 2.85, 2.75, 2.9 };
         }
 
         private async void InitializeAsync()
         {
-            InitializeTagMap();
+            //  InitializeTagMap();
             var allTags = await _tagService.GetAllTagsAsync();
 
             AllInputs.Clear();
@@ -246,24 +277,26 @@ namespace IPCSoftware.App.ViewModels
                     StationNumber = _visualToStationMap[i],
                     Result = "Unchecked",
                     ImagePath = null,
-                    ValX = 0, ValY = 0, ValZ = 0// Default border color logic
+                    ValX = 0,
+                    ValY = 0,
+                    ValZ = 0// Default border color logic
                 });
             }
         }
 
-     /*   private void InitializeTagMap()
-        {
-            _tagValueMap = new Dictionary<int, Action<object>>
-            {
-                
-               // [16] = v => QRCodeText = v?.ToString()
-                //[17] = v => OkNgStatus = Convert.ToInt32(v),
-                //[18] = v => CameraStatus = Convert.ToBoolean(v)
-                //[19] = v => CameraStatus = Convert.ToBoolean(v)
-                //[20] = v => CameraStatus = Convert.ToBoolean(v)
-            };
-        }
-*/
+        /*   private void InitializeTagMap()
+           {
+               _tagValueMap = new Dictionary<int, Action<object>>
+               {
+
+                  // [16] = v => QRCodeText = v?.ToString()
+                   //[17] = v => OkNgStatus = Convert.ToInt32(v),
+                   //[18] = v => CameraStatus = Convert.ToBoolean(v)
+                   //[19] = v => CameraStatus = Convert.ToBoolean(v)
+                   //[20] = v => CameraStatus = Convert.ToBoolean(v)
+               };
+           }
+   */
 
 
         private void InitializeTagMap()
@@ -273,10 +306,10 @@ namespace IPCSoftware.App.ViewModels
                 // Mapping Actual PLC Tags to UI Properties
 
                 // Tag 24: UpTime (Operating Time)
-                [ConstantValues.TAG_UpTime] = v => OperatingTime = v.ToString(),
+                //  [ConstantValues.TAG_UpTime] = v => OperatingTime = v.ToString(),
 
                 // Tag 26: DownTime
-                [ConstantValues.TAG_DownTime] = v => Downtime = v.ToString(),
+                //  [ConstantValues.TAG_DownTime] = v => Downtime = v.ToString(),
 
                 // Tag 28: Good Units (OK)
                 [ConstantValues.TAG_OK] = v => GoodUnits = Convert.ToInt32(v),
@@ -303,11 +336,33 @@ namespace IPCSoftware.App.ViewModels
             if (_disposed) return;
             try
             {
-                // Fetch dictionary of all current IO values from Core Service
-                var liveData = await _coreClient.GetIoValuesAsync();
+                var resultDict = await _coreClient.GetIoValuesAsync(4);
+               
 
-                // Update properties mapped in _tagValueMap
-                UpdateValues(liveData);
+                if (resultDict != null && resultDict.TryGetValue(4, out object oeeObj))
+                {
+                    // Deserialization: Convert object (which might be JObject/JsonElement) to OeeResult
+                    var json = JsonConvert.SerializeObject(oeeObj);
+                    var oeeResult = JsonConvert.DeserializeObject<OeeResult>(json);
+
+                    if (oeeResult != null)
+                    {
+                        // Map OEE Result to View Model Properties
+                        // Assuming percentages are 0.0-1.0 in backend, display as % (0-100) or keep as is depending on UI converter.
+                        // Assuming UI expects 0-100 based on previous dummy data "92.5".
+                        Availability = Math.Round(oeeResult.Availability * 100, 1);
+                        Performance = Math.Round(oeeResult.Performance * 100, 1);
+                        Quality = Math.Round(oeeResult.Quality * 100, 1);
+                        OverallOEE = Math.Round(oeeResult.OverallOEE * 100, 1);
+
+                        OperatingTime = oeeResult.OperatingTime;
+                        Downtime = oeeResult.Downtime;
+                        GoodUnits = oeeResult.OKParts;
+                        RejectedUnits = oeeResult.NGParts;
+                        CycleTime = oeeResult.CycleTime;
+                        InFlow = oeeResult.TotalParts;
+                    }
+                }
 
                 // NOTE: If you need to update Header/Summary values from liveData manually (without map):
                 // if (liveData.ContainsKey(99)) OverallOEE = Convert.ToDouble(liveData[99]);
@@ -317,6 +372,8 @@ namespace IPCSoftware.App.ViewModels
                 System.Diagnostics.Debug.WriteLine($"Live Data Error: {ex.Message}");
             }
         }
+
+
 
         // Loop 2: Cycle Sync (JSON)
         private void UiSyncTick(object sender, EventArgs e)

@@ -1,7 +1,11 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.CoreService;
+using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
+using IPCSoftware.CoreService.Services.Dashboard;
+using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.Services;
 using IPCSoftware.Services.ConfigServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,28 +57,29 @@ namespace IPCSoftware.CoreService
                                 System.Console.WriteLine($"[CoreService] Environment: {env}");
 
                             })
-
                     .UseWindowsService()
                     .ConfigureServices((hostContext, services) =>
                     {
-                        // 1. Configuration/Logging
-                        services.AddSingleton<IConfiguration>(hostContext.Configuration);
+                     //   services.Configure<AppConfigSettings>(hostContext.Configuration);
+                        services.Configure<ConfigSettings>(hostContext.Configuration.GetSection("Config"));
+                        services.Configure<CcdSettings>(hostContext.Configuration.GetSection("CCD"));
 
+                        // 1. Configuration/Logging
+                     //   services.AddSingleton<IConfiguration>(hostContext.Configuration);
                         // 2. Configuration Service (Resolvable by DI)
                         services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
                         services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
                         services.AddSingleton<ICycleManagerService, CycleManagerService>();
+                        services.AddSingleton<AlgorithmAnalysisService>();
+                        services.AddSingleton<DashboardInitializer>();
+                        services.AddSingleton<OeeEngine>();
+                        services.AddSingleton<SystemMonitorService>();
                         services.AddSingleton<CCDTriggerService>();
+                        services.AddSingleton < PLCClientManager>();
                         services.AddSingleton<CameraFtpService>();
-
-
-                        // 3. Hosted Services (These are the actual workers/watchers)
+                        services.AddTransient<ProductionImageService>();
                         services.AddHostedService<Worker>();
-                        // services.AddHostedService<TagChangeWatcherService>(); // Add this when ready
 
-                        // 🛑 CRITICAL FIX: Removed the following lines that caused the AggregateException:
-                        // services.AddSingleton<PLCClientManager>();
-                        // services.AddSingleton<AlgorithmAnalysisService>();
                     })
                     .Build();
 

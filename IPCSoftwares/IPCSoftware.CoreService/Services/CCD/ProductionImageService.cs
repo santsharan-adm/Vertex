@@ -1,4 +1,6 @@
-﻿using IPCSoftware.Shared.Models;
+﻿using IPCSoftware.Services;
+using IPCSoftware.Shared.Models;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Drawing; // NuGet: System.Drawing.Common
@@ -11,9 +13,12 @@ namespace IPCSoftware.CoreService.Services.CCD
 {
     public class ProductionImageService
     {
-        // Base directory for production images
-    
+        private readonly CcdSettings _ccd;
 
+        public ProductionImageService(IOptions<CcdSettings> ccdOptions)
+        {
+            _ccd = ccdOptions.Value;
+        }
 
         /// <summary>
         /// Processes a temp image, adds metadata, and moves both raw and processed versions to the production folder.
@@ -39,7 +44,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 // 2. Construct Folder Name
                 // Format: uniqueString_DateOfToday
                 string folderName = $"{uniqueDataString}_{dateStr}".Replace("\0", "_");
-                string targetFolder = Path.Combine(ConstantValues.BASE_OUTPUT_DIR, folderName);
+                string targetFolder = Path.Combine(_ccd.BaseOutputDir, folderName);
 
                 // Create directory if it doesn't exist
                 if (!Directory.Exists(targetFolder))
@@ -54,10 +59,10 @@ namespace IPCSoftware.CoreService.Services.CCD
                 // 4. Define Full Output Paths
                 string rawDestPath = Path.Combine(targetFolder, $"{fileNameBase}_raw.bmp");
                 //string rawUIDestPath = Path.Combine(Path.GetDirectoryName(tempFilePath), "UI", $"{fileNameBase}_raw.bmp");
-                string rawUIDestPath = Path.Combine(ConstantValues.QrCodeImagePath, $"{fileNameBase}_raw.bmp");
-                if (!Directory.Exists(ConstantValues.QrCodeImagePath))
+                string rawUIDestPath = Path.Combine(_ccd.QrCodeImagePath, $"{fileNameBase}_raw.bmp");
+                if (!Directory.Exists(_ccd.QrCodeImagePath))
                 {
-                    Directory.CreateDirectory(ConstantValues.QrCodeImagePath);
+                    Directory.CreateDirectory(_ccd.QrCodeImagePath);
                 }
                 string procDestPath = Path.Combine(targetFolder, $"{fileNameBase}_processed.bmp");
 
@@ -115,17 +120,17 @@ namespace IPCSoftware.CoreService.Services.CCD
             List<byte> dataBuilder = new List<byte>(fileData);
 
             // Append Style
-            dataBuilder.AddRange(Encoding.ASCII.GetBytes(ConstantValues.METADATA_STYLE));
+            dataBuilder.AddRange(Encoding.ASCII.GetBytes(_ccd.MetadataStyle));
 
             // Append Client Meta
-            if (ConstantValues.METADATA_STYLE != "METADATASTYLE002")
+            if (_ccd.MetadataStyle != "METADATASTYLE002")
             {
                 dataBuilder.AddRange(Encoding.ASCII.GetBytes(clientMeta));
                 dataBuilder.Add(0x90); // Terminator
             }
 
             // Append Vendor Meta
-            if (ConstantValues.METADATA_STYLE != "METADATASTYLE001")
+            if (_ccd.MetadataStyle != "METADATASTYLE001")
             {
                 dataBuilder.AddRange(Encoding.ASCII.GetBytes(vendorMeta));
                 dataBuilder.Add(0x80); // Terminator

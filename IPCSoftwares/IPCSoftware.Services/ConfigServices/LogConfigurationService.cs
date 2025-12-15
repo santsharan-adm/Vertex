@@ -1,6 +1,7 @@
 ﻿
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,8 +20,10 @@ namespace IPCSoftware.Services.ConfigServices
         private List<LogConfigurationModel> _configurations;
         private int _nextId = 1;
 
-        public LogConfigurationService(string dataFolderPath = null)
+        public LogConfigurationService(IOptions<ConfigSettings> configSettings)
         {
+            var config = configSettings.Value;
+            string dataFolderPath = config.DataFolder;
             _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
 
             if (!Directory.Exists(_dataFolder))
@@ -28,7 +31,7 @@ namespace IPCSoftware.Services.ConfigServices
                 Directory.CreateDirectory(_dataFolder);
             }
 
-            _csvFilePath = Path.Combine(_dataFolder, "LogConfigurations.csv");
+            _csvFilePath = Path.Combine(_dataFolder, config.LogConfigFileName /* "LogConfigurations.csv"*/);
             _configurations = new List<LogConfigurationModel>();
 
             //  _ = InitializeAsync();
@@ -66,41 +69,7 @@ namespace IPCSoftware.Services.ConfigServices
             // Fallback to hardcoded defaults
             await CreateHardcodedDefaultsAsync();
         }
-
       
-        // Extract embedded CSV resource to file system
-       
-        //private async Task<bool> ExtractEmbeddedResourceAsync()
-        //{
-        //    var assembly = Assembly.GetExecutingAssembly();
-
-        //    // Get all resource names for debugging
-        //    var resourceNames = assembly.GetManifestResourceNames();
-        //    var resourceName = resourceNames.FirstOrDefault(r =>
-        //        r.EndsWith("DefaultLogConfigurations.csv", StringComparison.OrdinalIgnoreCase));
-
-        //    if (string.IsNullOrEmpty(resourceName))
-        //        return false;
-
-        //    using (var stream = assembly.GetManifestResourceStream(resourceName))
-        //    {
-        //        if (stream == null)
-        //            return false;
-
-        //        using (var reader = new StreamReader(stream))
-        //        {
-        //            string content = await reader.ReadToEndAsync();
-
-        //            // Replace relative paths with absolute paths
-        //            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-        //            content = content.Replace("Logs\\", Path.Combine(baseDir, "Logs") + Path.DirectorySeparatorChar);
-        //            content = content.Replace("Logs/", Path.Combine(baseDir, "Logs") + "/");
-
-        //            await File.WriteAllTextAsync(_csvFilePath, content, Encoding.UTF8);
-        //            return true;
-        //        }
-        //    }
-        //}
 
 
         /// <summary>
@@ -189,9 +158,6 @@ namespace IPCSoftware.Services.ConfigServices
                     Remark = "Diagnostics error logs",
                     Enabled = true
                 }
-
-
-
             };
 
             _configurations = defaultConfigs;
