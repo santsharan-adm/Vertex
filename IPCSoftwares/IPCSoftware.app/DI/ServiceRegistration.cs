@@ -7,7 +7,11 @@ using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
+using IPCSoftware.CoreService;
+using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
+using IPCSoftware.CoreService.Services.Dashboard;
+using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
@@ -21,6 +25,18 @@ namespace IPCSoftware.App.DI
     {
         public static void RegisterServices(IServiceCollection services/*, IConfiguration configuration*/)
         {
+           // services.AddHostedService<Worker>();
+            services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+            services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
+            services.AddSingleton<ICycleManagerService, CycleManagerService>();
+            services.AddSingleton<AlgorithmAnalysisService>();
+            services.AddSingleton<DashboardInitializer>();
+            services.AddSingleton<OeeEngine>();
+            services.AddSingleton<SystemMonitorService>();
+            services.AddSingleton<CCDTriggerService>();
+            services.AddSingleton<PLCClientManager>();
+            services.AddSingleton<CameraFtpService>();
+            services.AddTransient<ProductionImageService>();
             //services.AddSingleton<IConfiguration>(configuration);
             //Auth service
             services.AddSingleton<IAuthService, AuthService>();
@@ -33,20 +49,18 @@ namespace IPCSoftware.App.DI
             //AppLogger 
             services.AddSingleton<IAppLogger, AppLoggerService>();
             services.AddSingleton<ILogManagerService, LogManagerService>();
-            services.AddSingleton<CCDTriggerService>();
-
-
+          
 
 
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
-            services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
+           // services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
             services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
             services.AddSingleton<IUserManagementService, UserManagementService>();
-            services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+          //  services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
 
 
             // CCD Serive
-            services.AddSingleton<ICycleManagerService, CycleManagerService>();
+           // services.AddSingleton<ICycleManagerService, CycleManagerService>();
 
             services.AddSingleton<ILogService, LogService>();
 
@@ -54,8 +68,8 @@ namespace IPCSoftware.App.DI
             // ========== MAIN VIEWMODELS (Singleton) ==========
             services.AddSingleton<RibbonViewModel>();
             services.AddSingleton<MainWindowViewModel>();
-            services.AddSingleton<OEEDashboardViewModel>();
-            services.AddSingleton<OeeDashboardNewViewModel>();
+            services.AddTransient<OEEDashboardViewModel>();
+        //    services.AddSingleton<OeeDashboardNewViewModel>();
             services.AddSingleton<UiTcpClient>();
 
 
@@ -91,8 +105,8 @@ namespace IPCSoftware.App.DI
             services.AddTransient<LoginView>();
             services.AddTransient<RibbonView>();
             services.AddTransient<OEEDashboard>();
-            services.AddTransient<OeeDashboard2>();
-            services.AddTransient<OeeDashboardNew>();
+       
+      
             services.AddTransient<DashboardView>();
 
             services.AddTransient<PLCIOView>();

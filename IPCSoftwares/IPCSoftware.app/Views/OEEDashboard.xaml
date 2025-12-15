@@ -7,6 +7,7 @@
              xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+                  Unloaded="UserControl_Unloaded"
              helpers:ThemeManager.ThemeSource="{Binding CurrentThemePath}"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:OEEDashboardViewModel}"
              Background="{DynamicResource PageBackgroundBrush}">
@@ -18,7 +19,9 @@
             </ResourceDictionary.MergedDictionaries>
 
             <conv:ResultToColorConverter x:Key="ResultToColor"/>
-
+            <!-- Register the new converter -->
+            <conv:OeeToGeometryConverter x:Key="OeeToGeometry"/>
+            <conv:OeeToColorConverter x:Key="OeeToColor"/>
             <Style x:Key="DashboardCard" TargetType="Border">
                 <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
                 <Setter Property="CornerRadius" Value="12"/>
@@ -97,8 +100,8 @@
                             </Button.Resources>
                         </Button>
 
-                        <Ellipse Width="16" Height="16" Fill="{DynamicResource SuccessBrush}" Margin="0,0,8,0"/>
-                        <TextBlock Text="MACHINE RUNNING" Foreground="{DynamicResource SuccessBrush}" FontSize="20" FontWeight="Bold"/>
+                        <Ellipse Width="16" Height="16" Fill="{DynamicResource TableHeaderBrush}" Margin="0,0,8,0"/>
+                        <TextBlock Text="MACHINE STATUS" Foreground="{DynamicResource TableHeaderBrush}" FontSize="20" FontWeight="Bold"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -120,7 +123,7 @@
                     </Border.InputBindings>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Foreground="White" Text="OPERATING TIME" Style="{StaticResource KpiLabel}"/>
-                        <TextBlock Foreground="White" Text="05:42" Style="{StaticResource KpiValue}" />
+                        <TextBlock Foreground="White"  Text="{Binding OperatingTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource KpiValue}" />
                     </StackPanel>
                 </Border>
 
@@ -130,7 +133,7 @@
                     </Border.InputBindings>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Foreground="White" Text="DOWNTIME" Style="{StaticResource KpiLabel}"/>
-                        <TextBlock Foreground="White" Text="00:12" Style="{StaticResource KpiValue}" />
+                        <TextBlock Foreground="White" Text="{Binding Downtime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource KpiValue}" />
                     </StackPanel>
                 </Border>
 
@@ -140,7 +143,7 @@
                     </Border.InputBindings>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Foreground="White" Text="AVG CYCLE (SEC)" Style="{StaticResource KpiLabel}"/>
-                        <TextBlock Text="2.9" Style="{StaticResource KpiValue}" Foreground="White"/>
+                        <TextBlock Text="{Binding CycleTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource KpiValue}" Foreground="White"/>
                     </StackPanel>
                 </Border>
 
@@ -150,7 +153,7 @@
                     </Border.InputBindings>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="IN FLOW" Foreground="White" Style="{StaticResource KpiLabel}"/>
-                        <TextBlock Text="1165" Foreground="White" Style="{StaticResource KpiValue}"/>
+                        <TextBlock Text="{Binding InFlow, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Foreground="White" Style="{StaticResource KpiValue}"/>
                     </StackPanel>
                 </Border>
 
@@ -160,7 +163,7 @@
                     </Border.InputBindings>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="OK" Foreground="White" Style="{StaticResource KpiLabel}"/>
-                        <TextBlock Text="1140" Foreground="White" Style="{StaticResource KpiValue}"/>
+                        <TextBlock Text="{Binding GoodUnits, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Foreground="White" Style="{StaticResource KpiValue}"/>
                     </StackPanel>
                 </Border>
 
@@ -170,7 +173,7 @@
                     </Border.InputBindings>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="NG" Foreground="White" Style="{StaticResource KpiLabel}"/>
-                        <TextBlock Text="25" Foreground="White" Style="{StaticResource KpiValue}"/>
+                        <TextBlock Text="{Binding RejectedUnits, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Foreground="White" Style="{StaticResource KpiValue}"/>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -214,8 +217,8 @@
                                                 <ColumnDefinition Width="60"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Text="Availability" FontSize="20" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="Medium" VerticalAlignment="Center"/>
-                                            <ProgressBar Grid.Column="1" Value="85" Maximum="100" Foreground="{DynamicResource InfoBrush}" Style="{StaticResource RoundedProgressBarStyle}"/>
-                                            <TextBlock Grid.Column="2" Text="85%" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="SemiBold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                            <ProgressBar Grid.Column="1" Value="{Binding Availability }" Maximum="100" Foreground="{DynamicResource InfoBrush}" Style="{StaticResource RoundedProgressBarStyle}"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Availability, StringFormat={}{0}%}" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="SemiBold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Margin="0,8">
@@ -225,8 +228,8 @@
                                                 <ColumnDefinition Width="60"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Text="Performance" FontSize="20" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="Medium" VerticalAlignment="Center"/>
-                                            <ProgressBar Grid.Column="1" Value="95" Maximum="100" Foreground="{DynamicResource WarningBrush}" Style="{StaticResource RoundedProgressBarStyle}"/>
-                                            <TextBlock Grid.Column="2" Text="95%" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="SemiBold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                            <ProgressBar Grid.Column="1" Value="{Binding Performance}" Maximum="100" Foreground="{DynamicResource WarningBrush}" Style="{StaticResource RoundedProgressBarStyle}"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Performance, StringFormat={}{0}%}" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="SemiBold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Margin="0,8">
@@ -236,8 +239,8 @@
                                                 <ColumnDefinition Width="60"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Text="Quality" FontSize="20" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="Medium" VerticalAlignment="Center"/>
-                                            <ProgressBar Grid.Column="1" Value="97" Maximum="100" Foreground="{DynamicResource SuccessBrush}" Style="{StaticResource RoundedProgressBarStyle}"/>
-                                            <TextBlock Grid.Column="2" Text="97%" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="SemiBold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                            <ProgressBar Grid.Column="1" Value="{Binding Quality}" Maximum="100" Foreground="{DynamicResource SuccessBrush}" Style="{StaticResource RoundedProgressBarStyle}"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Quality, StringFormat={}{0}%}" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="SemiBold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                         </Grid>
                                     </StackPanel>
                                 </Viewbox>
@@ -250,26 +253,31 @@
                             </Border.InputBindings>
 
                             <Viewbox Stretch="Uniform">
-                                
+
                                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="500">
                                     <TextBlock Text="OEE"  Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="0,0,0,15"/>
 
                                     <Grid Width="200" Height="200" Margin="0,10">
+                                        <!-- Background Circle -->
                                         <Ellipse Fill="{DynamicResource BorderBrush}" />
-                                        <Path StrokeThickness="20" HorizontalAlignment="Center" VerticalAlignment="Center" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
-                                            <Path.Data>
-                                                <PathGeometry Figures="M 100,10 A 90,90 0 1 1 10,100" />
-                                            </Path.Data>
-                                            <Path.Stroke>
-                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                                    <GradientStop Color="#4CAF50" Offset="0"/>
-                                                    <GradientStop Color="#8BC34A" Offset="1"/>
-                                                </LinearGradientBrush>
-                                            </Path.Stroke>
+
+                                        <!-- Dynamic Arc -->
+                                        <!-- Data is bound to OverallOEE using the converter -->
+                                        <Path StrokeThickness="20" 
+                                              HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center" 
+                                              StrokeStartLineCap="Round" 
+                                              StrokeEndLineCap="Round"
+                                              Data="{Binding OverallOEE, Converter={StaticResource OeeToGeometry}}"
+                                              Stroke="{Binding OverallOEE, Converter={StaticResource OeeToColor}}">
                                         </Path>
+
+                                        <!-- Inner Circle Mask -->
                                         <Ellipse Width="150" Height="150" Fill="{DynamicResource CardBackgroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                        <!-- Text Value -->
                                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <TextBlock Text="78" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="72" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                                            <TextBlock Text="{Binding OverallOEE}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="72" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,5,0,0"/>
                                             <TextBlock Text="%" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,-10,0,0"/>
                                         </StackPanel>
                                     </Grid>

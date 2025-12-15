@@ -1,36 +1,50 @@
-﻿using IPCSoftware.Shared.Models.ConfigModels;
+﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Services;
+using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace IPCSoftware.CoreService.Services.PLC
 {
     public class PLCClientManager
     {
-        private readonly List<DeviceInterfaceModel> _devices;
-        private readonly List<PLCTagConfigurationModel> _allTags;
+     
+
+        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _deviceService;
+        private readonly ConfigSettings _config;
+
 
         public List<PlcClient> Clients { get; private set; } = new();
 
         public PLCClientManager(
-            List<DeviceInterfaceModel> devices,
-            List<PLCTagConfigurationModel> tags)
+            IDeviceConfigurationService deviceService,
+            IPLCTagConfigurationService tagService, IOptions<ConfigSettings> config)
         {
-            _devices = devices;
-            _allTags = tags;
-
-            InitializeClients();
+        _config = config.Value;
+            _tagService = tagService;
+            _deviceService = deviceService;
+           _ =  InitializeClients();
         }
 
-        private void InitializeClients()
+
+
+
+        private async Task InitializeClients()
         {
-            foreach (var dev in _devices)
+            var allTags = await _tagService.GetAllTagsAsync();
+            var devices = await _deviceService.GetPlcDevicesAsync();
+            foreach (var dev in devices)
             {
                 // Assign tags belonging to this PLCNo
-                var myTags = _allTags
+                var myTags = allTags
                     .Where(t => t.PLCNo == dev.DeviceNo)
                     .ToList();
 
-                var client = new PlcClient(dev, myTags);
+              
+                var client = new PlcClient(dev, myTags, _config);
 
                 Clients.Add(client);
             }

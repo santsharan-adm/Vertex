@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,8 +17,11 @@ namespace IPCSoftware.Services.ConfigServices
         private List<AlarmConfigurationModel> _alarms;
         private int _nextId = 1;
 
-        public AlarmConfigurationService(string dataFolderPath = null)
+        public AlarmConfigurationService(IOptions<ConfigSettings> configSettings )
         {
+            var config = configSettings.Value;
+            string dataFolderPath = config.DataFolder;
+
             _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
 
             if (!Directory.Exists(_dataFolder))
@@ -25,7 +29,7 @@ namespace IPCSoftware.Services.ConfigServices
                 Directory.CreateDirectory(_dataFolder);
             }
 
-            _csvFilePath = Path.Combine(_dataFolder, "AlarmConfigurations.csv");
+            _csvFilePath = Path.Combine(_dataFolder, config.AlarmConfigFileName/* "AlarmConfigurations.csv"*/);
             _alarms = new List<AlarmConfigurationModel>();
         }
 

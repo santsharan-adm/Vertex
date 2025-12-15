@@ -9,6 +9,7 @@ using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
@@ -20,25 +21,32 @@ namespace IPCSoftware.CoreService
         private readonly ILogger<Worker> _logger;
         private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceService;
-        private readonly IConfiguration _configuration;
+        private readonly ConfigSettings _configuration;
         private readonly CCDTriggerService _ccdTrigger;
         private readonly CameraFtpService _cameraFtpService;
-
-
+        private readonly DashboardInitializer _dashboard;
+        private readonly AlgorithmAnalysisService _algo;
+        private readonly PLCClientManager _plcManager;
 
         // Removed _plcManager and _dashboard fields; they will be local or managed by DashboardInitializer
 
         public Worker(ILogger<Worker> logger, 
             IPLCTagConfigurationService tagService,
+            AlgorithmAnalysisService algo,
+            DashboardInitializer dashboard,
             CCDTriggerService ccdTrigger,
             IDeviceConfigurationService deviceService, 
-            IConfiguration configuration,
-            CameraFtpService cameraFtpService)
+            IOptions<ConfigSettings> configuration,
+            CameraFtpService cameraFtpService,
+            PLCClientManager plcManger)
         {
             _deviceService = deviceService;
             _tagService = tagService;
             _logger = logger;
-            _configuration = configuration;
+            _algo = algo;
+            _plcManager = plcManger;   
+            _dashboard = dashboard;
+            _configuration = configuration.Value;
             _ccdTrigger = ccdTrigger;
             _cameraFtpService = cameraFtpService;
 
@@ -74,14 +82,15 @@ namespace IPCSoftware.CoreService
 
                 // STEP 4: Initialize PLC manager and AlgorithmService MANUALLY
                 // These instances are now created by the Worker, not the DI container.
-                var plcManager = new PLCClientManager(devices, tags);
+               // var plcManager = new PLCClientManager(devices, tags);
 
-                var algoService = new AlgorithmAnalysisService(tags);
+
+            //    var algoService = new AlgorithmAnalysisService(tags);
 
                 // --- CRITICAL FIX: Make instances accessible to the Watcher Service ---
                 // We must use a static holder to share these instances with other services 
                 // that rely on DI (like TagChangeWatcherService).
-                SharedServiceHost.Initialize(plcManager, algoService);
+                SharedServiceHost.Initialize(_plcManager, _algo);
 
 
                 CameraInterfaceModel myCamera = cameras.FirstOrDefault();
@@ -109,8 +118,8 @@ namespace IPCSoftware.CoreService
 
 
                 // STEP 5: Start Dashboard engine
-                var dashboard = new DashboardInitializer(plcManager, tags, _ccdTrigger);
-                await dashboard.StartAsync();
+             //   _dashboard.(plcManager, tags, _ccdTrigger);
+                await _dashboard.StartAsync();
 
                 // STEP 6: Start Camera FTP Service
               //  var myCamera = cameras[0]; // new CameraInterfaceModel();

@@ -11,6 +11,7 @@
 *.sln.docstates
 *.env
 obj/
+*.bmp
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -192,6 +193,10 @@ DocProject/Help/*.hhk
 DocProject/Help/*.hhp
 DocProject/Help/Html2
 DocProject/Help/html
+
+/IPCSoftwares/ProductionImages/
+/IPCSoftwares/CCD/
+
 
 # Click-Once directory
 publish/
@@ -417,3 +422,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+/IPCSoftwares/CCD/UI
+*.bmp
+*.bmp

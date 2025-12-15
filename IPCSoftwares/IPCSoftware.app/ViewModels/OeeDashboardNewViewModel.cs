@@ -1,4 +1,4 @@
-﻿using IPCSoftware.App.Services;
+﻿/*using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.Shared.Models.Messaging;
 using System.Collections.Generic;
@@ -21,8 +21,8 @@ namespace IPCSoftware.App.ViewModels
         // ================================================================
         // RAW PLC VALUES (from CoreService)
         // ================================================================
-        private Dictionary<uint, object>? _rawValues;
-        public Dictionary<uint, object>? RawValues
+        private Dictionary<int, object>? _rawValues;
+        public Dictionary<int, object>? RawValues
         {
             get => _rawValues;
             set
@@ -213,7 +213,7 @@ namespace IPCSoftware.App.ViewModels
         // ================================================================
         // UI MAPPING
         // ================================================================
-        private void UpdateDashboardFromRaw(Dictionary<uint, object> values)
+        private void UpdateDashboardFromRaw(Dictionary<int, object> values)
         {
             if (values == null || values.Count == 0)
                 return;
@@ -241,3 +241,4 @@ namespace IPCSoftware.App.ViewModels
         
     }
 }
+*/
