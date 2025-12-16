@@ -7,6 +7,7 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.Shared.Models.Messaging;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Printing;
@@ -30,6 +31,32 @@ public class MainWindowViewModel : BaseViewModel
     public ICommand CloseSidebarCommand { get; }
     public ICommand MinimizeAppCommand { get; }
     public ICommand CloseAppCommand { get; }
+
+    // --- ALARM BANNER COMMANDS & PROPERTIES ---
+    public ICommand CloseAlarmBannerCommand { get; }
+
+    private bool _isAlarmBannerVisible;
+    public bool IsAlarmBannerVisible
+    {
+        get => _isAlarmBannerVisible;
+        set => SetProperty(ref _isAlarmBannerVisible, value);
+    }
+
+    private string _alarmBannerMessage;
+    public string AlarmBannerMessage
+    {
+        get => _alarmBannerMessage;
+        set => SetProperty(ref _alarmBannerMessage, value);
+    }
+
+    private string _alarmBannerColor = "#D32F2F"; // Default Red
+    public string AlarmBannerColor
+    {
+        get => _alarmBannerColor;
+        set => SetProperty(ref _alarmBannerColor, value);
+    }
+    // ------------------------------------------
+
 
     private readonly DispatcherTimer _timer;
 
@@ -82,49 +109,81 @@ public class MainWindowViewModel : BaseViewModel
         IAppLogger logger, IDialogService dialog,RibbonViewModel ribbonVM)
     {
         _coreClient = coreClient;
+        _dialog = dialog;
+        _logger = logger;
+        _nav = nav;
         _timer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
         };
         _timer.Tick += LiveDataTimerTick; 
-        _timer.Start();
-
-
+        _timer.Start(); 
+        // 3. Subscribe to Alarm Events
+        _coreClient.OnAlarmMessageReceived += OnAlarmReceived;
 
         // Set initial time immediately
         SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
 
-        _nav = nav;
         RibbonVM = ribbonVM;
         RibbonVM.ShowSidebar = LoadSidebarMenu;
         RibbonVM.OnLogout = ResetLandingState; 
         RibbonVM.OnLandingPageRequested = ResetLandingState;
+
         CloseAppCommand = new RelayCommand(ExecuteCloseApp);
         MinimizeAppCommand = new RelayCommand(ExecuteMinimizeApp);
-
         SidebarItemClickCommand = new RelayCommand<string>(OnSidebarItemClick);
         CloseSidebarCommand = new RelayCommand(() => IsSidebarOpen = false);
 
+        CloseAlarmBannerCommand = new RelayCommand(() => IsAlarmBannerVisible = false);
         UserSession.OnSessionChanged += () =>
-
         {
             OnPropertyChanged(nameof(IsRibbonVisible));
             OnPropertyChanged(nameof(CurrentUserName));
             OnPropertyChanged(nameof(IsAdmin));
         };
-        _dialog = dialog;
+    }
+
+    private void OnAlarmReceived(AlarmMessage msg)
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            if (msg.MessageType == AlarmMessageType.Raised)
+            {
+                // Format message
+                AlarmBannerMessage = $"⚠️ ALARM {msg.AlarmInstance.AlarmNo}: {msg.AlarmInstance.AlarmText}";
+
+                // Set color based on severity (Optional logic)
+                if (msg.AlarmInstance.Severity == "High") AlarmBannerColor = "#D32F2F"; // Red
+                else if (msg.AlarmInstance.Severity == "Warning") AlarmBannerColor = "#F57C00"; // Orange
+                else AlarmBannerColor = "#1976D2"; // Blue
+
+                IsAlarmBannerVisible = true; // SHOW BANNER
+            }
+            // Optional: Auto-hide on Clear?
+            // else if (msg.MessageType == AlarmMessageType.Cleared) { IsAlarmBannerVisible = false; }
+        });
     }
 
     private async void LiveDataTimerTick(object sender, EventArgs e)
     {
-        SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
-        var boolDict = await _coreClient.GetIoValuesAsync(1);
-        if (boolDict != null && boolDict.TryGetValue(1, out object pulseObj))
+        try
         {
-            var json = JsonConvert.SerializeObject(pulseObj);
-            var pulseResult = JsonConvert.DeserializeObject<List<bool>>(json);
-            IsConnected = pulseResult[0];
-            TimeSynched = pulseResult[1];
+
+            SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
+            var boolDict = await _coreClient.GetIoValuesAsync(1);
+            if (boolDict == null)
+                return;
+            if (boolDict != null && boolDict.TryGetValue(1, out object pulseObj))
+            {
+                var json = JsonConvert.SerializeObject(pulseObj);
+                var pulseResult = JsonConvert.DeserializeObject<List<bool>>(json);
+                IsConnected = pulseResult[0];
+                TimeSynched = pulseResult[1];
+
+            }
+        }
+        catch(Exception ex)
+        { 
 
         }
     }
@@ -297,6 +356,9 @@ public class MainWindowViewModel : BaseViewModel
             case "PLC TAG Config":
                 _nav.NavigateMain<PLCTagListView>();
                 break;
+
+            case "Alarm View": 
+                _nav.NavigateMain<AlarmView>(); break;
 
             case "Audit Logs":
                 _nav.NavigateToLogs(LogType.Audit);

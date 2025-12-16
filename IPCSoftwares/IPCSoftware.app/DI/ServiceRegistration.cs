@@ -8,10 +8,12 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.CoreService;
+using IPCSoftware.CoreService.Alarm;
 using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.CoreService.Services.Dashboard;
 using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
@@ -37,6 +39,16 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<PLCClientManager>();
             services.AddSingleton<CameraFtpService>();
             services.AddTransient<ProductionImageService>();
+            services.AddSingleton<AlarmService>();
+
+            services.AddSingleton<UiListener>(sp =>
+            {
+                return new UiListener(5050);
+            });
+            // When someone asks for IMessagePublisher, give them the EXISTING UiListener
+            services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
+
+
             //services.AddSingleton<IConfiguration>(configuration);
             //Auth service
             services.AddSingleton<IAuthService, AuthService>();
@@ -95,6 +107,11 @@ namespace IPCSoftware.App.DI
             // ========== USER MANAGEMENT VIEWMODELS (Transient) ========== 
             services.AddTransient<UserListViewModel>();
             services.AddTransient<UserConfigurationViewModel>();
+
+            // ========== Alaram VIEWMODELS (Transient) ========== 
+            services.AddTransient<AlarmView>();
+            services.AddTransient<AlarmViewModel>();
+            services.AddSingleton<AlarmService>();
 
 
             // ========== PLC TAG CONFIGURATION VIEWMODELS (Transient) ========== 

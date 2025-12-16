@@ -1,4 +1,5 @@
-﻿using IPCSoftware.CoreService.Services.Algorithm;
+﻿using IPCSoftware.CoreService.Alarm;
+using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
@@ -20,6 +21,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         private readonly OeeEngine _oee ;
         private readonly SystemMonitorService _systemMonitor;
         private readonly CCDTriggerService _ccdTrigger; // 1. Add field
+        private readonly AlarmService _alarmService;
 
         // latest packets per PLC (unitno)
         private readonly Dictionary<int, PlcPacket> _latestPackets = new();
@@ -30,9 +32,12 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             AlgorithmAnalysisService algo,
             OeeEngine oee,
             SystemMonitorService systemMonitor,
-          
+          UiListener ui,
+          AlarmService alarmService,
             CCDTriggerService ccdTrigger)
         {
+            _ui = ui;
+            _alarmService = alarmService;   
             _systemMonitor = systemMonitor;
             _oee = oee;
             _manager = manager;
@@ -47,7 +52,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             _ui.OnRequestReceived = HandleUiRequest;
 
             // Start UI
-            var uiTask = _ui.StartAsync();
+           // var uiTask = _ui.StartAsync();
             // Start PLC read loops
             var plcTasks = _manager.Clients.Select(client =>
             {
@@ -63,6 +68,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                     _oee.ProcessCycleTimeLogic(processedData);
                     _oee.Calculate(processedData);
                     _systemMonitor.Process(processedData);
+                    _alarmService.ProcessTagData(processedData);
 
                     // C. Prepare for UI (Convert int Key to uint Key for compatibility)
                     var final = processedData.ToDictionary(k => (int)k.Key, v => v.Value);
@@ -81,7 +87,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             });
 
             // Await everything
-            await Task.WhenAll(plcTasks.Append(uiTask));
+            await Task.WhenAll(plcTasks);
         }
 
         private void HandlePlcPacket(int plcNo, Dictionary<int, object> values)
@@ -113,6 +119,10 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             if (request.RequestId == 6)
             {
                 return await HandleUiWrite(request);
+            }
+            if (request.RequestId == 7)
+            {
+                return await HandleAlarmRequest(request);
             }
 
             //---------------------------------------------------------
@@ -235,6 +245,42 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 return Error(ex.Message);
             }
         }
+
+
+        private async Task<ResponsePackage> HandleAlarmRequest(RequestPackage request)
+        {
+            if (request.Parameters is JsonElement json)
+            {
+                try
+                {
+                    if (json.TryGetProperty("Action", out var actionElement) && actionElement.GetString() == "Acknowledge")
+                    {
+                        int alarmNo = json.GetProperty("AlarmNo").GetInt32();
+                        string userName = json.GetProperty("UserName").GetString() ?? "WebClient";
+
+                        bool success = await _alarmService.AcknowledgeAlarm(alarmNo, userName);
+
+                        if (success) return OkAlarm(alarmNo);
+                        else return ErrorAlarm($"Failed to acknowledge Alarm {alarmNo}. Not active or already ack'd.");
+                    }
+                    return ErrorAlarm("Unknown alarm action.");
+                }
+                catch (Exception ex) { return ErrorAlarm($"Error processing alarm request: {ex.Message}"); }
+            }
+            return ErrorAlarm("Invalid alarm request parameters.");
+        }
+
+
+        private ResponsePackage OkAlarm(int alarmNo) =>
+                                new ResponsePackage
+                                {
+                                    ResponseId = 7,
+                                    Success = true,
+                                    Parameters = new Dictionary<int, object> { { 0, $"ACKNOWLEDGED:{alarmNo}" } }
+                                };
+
+        private ResponsePackage ErrorAlarm(string msg) =>
+            new ResponsePackage { ResponseId = 7, Success = false, ErrorMessage = msg, Parameters = null };
 
         private void SetCachedValue(int tagId, object value)
         {

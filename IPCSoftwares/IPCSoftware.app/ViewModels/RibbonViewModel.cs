@@ -70,7 +70,8 @@ public class RibbonViewModel : BaseViewModel
             "Manual Operation",
             "Mode Of Operation",
             "PLC IO",
-            "Tag Control"
+            "Tag Control",
+             "Alarm View"
         }, nameof(OpenSettingsMenu));
 
       /*  ShowSidebar?.Invoke(new Dictionary<string, List<string>> List<string>
