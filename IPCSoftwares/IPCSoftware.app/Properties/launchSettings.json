@@ -5,6 +5,7 @@
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development",
         "CONFIG_DIR": "D:\\Repos\\Vertex\\IPCSoftwares\\IPCSoftware.app"
+
       }
     }
   }
