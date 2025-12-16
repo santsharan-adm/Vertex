@@ -18,7 +18,6 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <helpers:InverseBooleanConverter x:Key="InverseBoolConverter"/>
 
-        <!-- Window Control Button Style (Minimize, Close) -->
         <Style x:Key="WindowControlButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="60"/>
             <Setter Property="Height" Value="45"/>
@@ -44,7 +43,6 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Sidebar Navigation Button Style -->
         <Style x:Key="SidebarButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="90"/>
             <Setter Property="FontSize" Value="28"/>
@@ -77,24 +75,14 @@
         </Style>
     </Window.Resources>
 
-    <!-- 
-        Global Viewbox:
-        UPDATED: Set base resolution to 1920x1080.
-        The Viewbox will scale this DOWN for smaller screens (maintaining proportions),
-        instead of scaling a small grid UP (which made buttons huge).
-    -->
     <Viewbox Stretch="Uniform">
         <Grid Width="1920" Height="1080">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <!-- Header (Height defined by child Grid) -->
                 <RowDefinition Height="*"/>
-                <!-- Main Content -->
                 <RowDefinition Height="60"/>
-                <!-- Footer -->
             </Grid.RowDefinitions>
 
-            <!-- ================= HEADER (Row 0) ================= -->
             <Grid Grid.Row="0" Height="110" Panel.ZIndex="100">
                 <Grid.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
@@ -111,10 +99,8 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Ribbon Host -->
                 <ContentControl x:Name="RibbonHost" Grid.Column="0" VerticalAlignment="Stretch"/>
 
-                <!-- Window Controls (Min/Close) -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right">
                     <Button Content="—" 
                             Command="{Binding MinimizeAppCommand}" 
@@ -155,17 +141,79 @@
                 </StackPanel>
             </Grid>
 
-            <!-- ================= BODY (Row 1) ================= -->
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Main Content Area -->
                 <ContentControl x:Name="MainContent" Grid.Column="1" Margin="0"/>
 
-                <!-- Overlay for Sidebar (Click to close) -->
+                <Border Grid.Column="0" Grid.ColumnSpan="2"
+                        VerticalAlignment="Bottom"
+                        Panel.ZIndex="999"
+                        Background="{Binding AlarmBannerColor}"
+                        BorderThickness="0,2,0,0"
+                        BorderBrush="#B71C1C">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Height" Value="0"/>
+                            <Setter Property="Visibility" Value="Collapsed"/>
+
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAlarmBannerVisible}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="0" To="70" Duration="0:0:0.4">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseOut"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="⚠️" FontSize="32" Foreground="White" VerticalAlignment="Center" Margin="30,0">
+                            <TextBlock.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.3" Duration="0:0:0.5"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </TextBlock.Triggers>
+                        </TextBlock>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="CRITICAL SYSTEM ALARM" Foreground="White" Opacity="0.8" FontSize="12" FontWeight="Bold" />
+                            <TextBlock Text="{Binding AlarmBannerMessage}" Foreground="White" FontSize="24" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="2" 
+                                Command="{Binding CloseAlarmBannerCommand}"
+                                Content="✕"
+                                Width="60" 
+                                Background="Transparent" BorderThickness="0"
+                                Foreground="White" FontSize="24" FontWeight="Bold"
+                                Cursor="Hand" Margin="0,0,20,0"/>
+                    </Grid>
+                </Border>
+
+
                 <Border Grid.Column="1" Background="#99000000" Panel.ZIndex="9">
                     <Border.Style>
                         <Style TargetType="Border">
@@ -188,7 +236,6 @@
                     </i:Interaction.Triggers>
                 </Border>
 
-                <!-- Sidebar Menu -->
                 <Border x:Name="SideMenu"
                         Width="310"
                         Background="#1E4FA8"
@@ -201,7 +248,6 @@
                             <Setter Property="Grid.Column" Value="0"/>
                             <Setter Property="Grid.ColumnSpan" Value="2"/>
                             <Style.Triggers>
-                                <!-- Animation: Slide In/Out -->
                                 <DataTrigger Binding="{Binding IsSidebarOpen}" Value="False">
                                     <Setter Property="RenderTransform">
                                         <Setter.Value>
@@ -222,7 +268,6 @@
                                         </BeginStoryboard>
                                     </DataTrigger.EnterActions>
                                 </DataTrigger>
-                                <!-- Docked State -->
                                 <DataTrigger Binding="{Binding IsSidebarDocked}" Value="True">
                                     <Setter Property="Grid.Column" Value="0"/>
                                     <Setter Property="Grid.ColumnSpan" Value="1"/>
@@ -239,14 +284,12 @@
                             <RowDefinition Height="100"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Sidebar Header -->
                         <Border Grid.Row="0" BorderBrush="#333" BorderThickness="0,0,0,1" Margin="10,0">
                             <Grid>
                                 <StackPanel VerticalAlignment="Center">
                                     <TextBlock Text="MENU" Foreground="White" FontSize="30" FontWeight="Bold"/>
                                 </StackPanel>
 
-                                <!-- Dock/Undock Toggle -->
                                 <ToggleButton IsChecked="{Binding IsSidebarDocked}"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Top"
@@ -275,7 +318,6 @@
                             </Grid>
                         </Border>
 
-                        <!-- Navigation Items -->
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" Margin="0,20,0,0">
                             <ItemsControl ItemsSource="{Binding SidebarItems}">
                                 <ItemsControl.ItemTemplate>

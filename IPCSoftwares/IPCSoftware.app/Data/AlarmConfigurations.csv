@@ -1,2 +1,2 @@
 ﻿Id,AlarmNo,AlarmName,TagNo,Name,AlarmBit,AlarmText,Severity,AlarmTime,AlarmResetTime,AlarmAckTime,Description,Remark
-1,2,"Shubham Alaram",45,"Shubham Name","Bit 3","Alaram Text","Error","","","","Alaram Description","Shubham Bansal"
+1,101,HighTemp,31,PD_ALARMS1,0,High Temperature Zone 1,High,,,,,

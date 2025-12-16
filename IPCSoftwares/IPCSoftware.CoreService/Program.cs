@@ -1,10 +1,12 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.CoreService;
+using IPCSoftware.CoreService.Alarm;
 using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.CoreService.Services.Dashboard;
 using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
 using IPCSoftware.Services.ConfigServices;
 using Microsoft.Extensions.Configuration;
@@ -70,9 +72,19 @@ namespace IPCSoftware.CoreService
                         services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
                         services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
                         services.AddSingleton<ICycleManagerService, CycleManagerService>();
+                        services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
                         services.AddSingleton<AlgorithmAnalysisService>();
                         services.AddSingleton<DashboardInitializer>();
                         services.AddSingleton<OeeEngine>();
+                        services.AddSingleton<AlarmService>();
+
+                        services.AddSingleton<UiListener>(sp =>
+                        {
+                            return new UiListener(5050);
+                        });
+                        // When someone asks for IMessagePublisher, give them the EXISTING UiListener
+                        services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
+
                         services.AddSingleton<SystemMonitorService>();
                         services.AddSingleton<CCDTriggerService>();
                         services.AddSingleton < PLCClientManager>();

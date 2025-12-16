@@ -4,7 +4,12 @@ using IPCSoftware.Shared.Models.ConfigModels;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks; // Ensure this is present for Task
+using System.Windows;
 using System.Windows.Interop;
+using System.Threading.Tasks;
+using System;
+
+using IPCSoftware.Shared.Models.Messaging;
 
 namespace IPCSoftware.App.Services.UI
 {
@@ -23,6 +28,9 @@ namespace IPCSoftware.App.Services.UI
 
         public event Action<string> DataReceived;
         public event Action<bool> UiConnected;
+
+        // This event is defined here but only raised in CoreClient.cs
+        public event Action<AlarmMessage> AlarmMessageReceived;
 
         public UiTcpClient(IDialogService dialog, IAppLogger logger)
         {
@@ -44,7 +52,9 @@ namespace IPCSoftware.App.Services.UI
                 // _hasShownError = false;
 
                 // Background read loop
+                Application.Current?.Dispatcher.Invoke(() => UiConnected?.Invoke(true));
                 _ = Task.Run(ReadLoop);
+                UiConnected?.Invoke(true);
                 return true;
             }
             catch (Exception ex)
@@ -63,8 +73,12 @@ namespace IPCSoftware.App.Services.UI
                 // Show error only once
                 if (!_hasShownError)
                 {
-                    _dialog.ShowWarning($"TCP ERROR: {ex.Message}. Retrying...");
-                    _hasShownError = true;
+                    // CRITICAL FIX: Marshaling the Dialog call to the UI Thread (STA)
+                    //Application.Current?.Dispatcher.Invoke(() =>
+                    //{
+                    //    _dialog.ShowWarning($"TCP ERROR: {ex.Message}. Retrying...");
+                    //});
+                  //  _hasShownError = true;
                 }
                 return false;
             }
@@ -78,36 +92,41 @@ namespace IPCSoftware.App.Services.UI
             {
                 while (IsConnected)
                 {
-                    // 1. Read bytes into the buffer
                     int read = await _stream.ReadAsync(buffer, 0, buffer.Length);
                     if (read <= 0)
                         break;
 
-                    // 2. Append the new data to the accumulator
                     string dataChunk = Encoding.UTF8.GetString(buffer, 0, read);
                     _messageAccumulator.Append(dataChunk);
 
-                    // 3. Process accumulated data and extract complete messages
+                    // Process accumulated data and extract complete messages
                     while (true)
                     {
                         string currentBuffer = _messageAccumulator.ToString();
                         int newlineIndex = currentBuffer.IndexOf('\n');
 
-                        // Check if a complete message is available
                         if (newlineIndex >= 0)
                         {
-                            // Extract the complete message (excluding the '\n')
-                            string completeMessage = currentBuffer.Substring(0, newlineIndex);
+                            string rawMessage = currentBuffer.Substring(0, newlineIndex);
+                            string completeMessage = rawMessage.Trim(); // ✅ Trim off the \r for parsing
 
-                            // 4. Send the complete message for UI processing
+                            // 4. Send the complete, cleaned message for UI processing
                             DataReceived?.Invoke(completeMessage);
 
-                            // 5. Remove the processed message (and the '\n') from the accumulator
-                            _messageAccumulator.Remove(0, newlineIndex + 1);
+                            // 5. CRITICAL FIX: Remove the length of the JSON + delimiters (\r\n)
+                            int charsToRemove = newlineIndex + 1; // Start by including the '\n'
+
+                            // Check if the character before '\n' is '\r'.
+                            if (newlineIndex > 0 && currentBuffer[newlineIndex - 1] == '\r')
+                            {
+                                charsToRemove++; // If \r is present, remove one more character.
+                            }
+
+                            _messageAccumulator.Remove(0, charsToRemove); // ⬅️ Correct removal length
                         }
                         else
                         {
-                            // No more complete messages in the buffer, go back to reading the stream
+                            // No more complete messages in the buffer
                             break;
                         }
                     }
@@ -116,7 +135,6 @@ namespace IPCSoftware.App.Services.UI
             catch (Exception ex)
             {
                 Console.WriteLine($"Read error: {ex.Message}");
-                // Optional: Log read errors using your IAppLogger if desired
             }
             finally
             {
@@ -124,7 +142,6 @@ namespace IPCSoftware.App.Services.UI
                 Cleanup();
             }
         }
-
         public void Send(string message)
         {
             if (_stream == null || !IsConnected)
