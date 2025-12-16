@@ -15,14 +15,20 @@ namespace IPCSoftware.Shared.Models
         public int Id { get; set; }
         public string Name { get; set; }
 
+        // Inside IoTagModel.cs
+
         public object Value
         {
             get => _value;
             set
             {
-                _value = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(DisplayStatus));
+                // ➡️ CRITICAL REFINEMENT: Only proceed if the value has actually changed
+                if (!Equals(_value, value))
+                {
+                    _value = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(DisplayStatus));
+                }
             }
         }
 
