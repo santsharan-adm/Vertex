@@ -50,11 +50,10 @@ namespace IPCSoftware.App.ViewModels
 
         public ICommand ToggleOutputCommand { get; }
 
-        public PLCIOViewModel(UiTcpClient tcpClient, IPLCTagConfigurationService tagService)
+        public PLCIOViewModel(CoreClient coreClient, IPLCTagConfigurationService tagService)
         {
             _tagService = tagService;
-            _tcpClient = tcpClient;
-            _coreClient = new CoreClient(_tcpClient);
+            _coreClient = coreClient;
 
             InitializeAsync();
 

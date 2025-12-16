@@ -197,11 +197,12 @@ namespace IPCSoftware.App.ViewModels
         #endregion
 
 
-        public OEEDashboardViewModel(IPLCTagConfigurationService tagService, IOptions<CcdSettings> ccdSettng, UiTcpClient tcpClient, IDialogService dialog)
+        public OEEDashboardViewModel(IPLCTagConfigurationService tagService, 
+            IOptions<CcdSettings> ccdSettng, CoreClient coreClient, IDialogService dialog)
         {
             var ccd = ccdSettng.Value;
             _tagService = tagService;
-            _coreClient = new CoreClient(tcpClient);
+            _coreClient = coreClient;
             _dialog = dialog;
 
 

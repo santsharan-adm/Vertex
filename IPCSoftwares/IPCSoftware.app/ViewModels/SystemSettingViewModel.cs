@@ -1,4 +1,5 @@
 ﻿
+using IPCSoftware.App.ViewModels;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;

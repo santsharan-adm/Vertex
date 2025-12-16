@@ -123,7 +123,7 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public AlarmConfigurationViewModel(IAlarmConfigurationService alarmService)
+        public AlarmConfigurationViewModel(IAlarmConfigurationService alarmService):base()
         {
             _alarmService = alarmService;
 
