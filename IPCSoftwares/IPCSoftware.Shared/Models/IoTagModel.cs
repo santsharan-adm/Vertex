@@ -20,9 +20,12 @@ namespace IPCSoftware.Shared.Models
             get => _value;
             set
             {
-                _value = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(DisplayStatus));
+                if (!Equals(_value, value))
+                {
+                    _value = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(DisplayStatus));
+                }
             }
         }
 
