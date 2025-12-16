@@ -179,6 +179,39 @@
                         </Style>
                     </Border.Style>
 
+                    <!--<Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="⚠️" FontSize="32" Foreground="White" VerticalAlignment="Center" Margin="30,0">
+                            <TextBlock.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.3" Duration="0:0:0.5"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </TextBlock.Triggers>
+                        </TextBlock>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="CRITICAL SYSTEM ALARM" Foreground="White" Opacity="0.8" FontSize="12" FontWeight="Bold" />
+                            <TextBlock Text="{Binding AlarmBannerTotalMessage}" Foreground="White" FontSize="24" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="2" 
+                                Command="{Binding CloseAlarmBannerCommand}"
+                                Content="✕"
+                                Width="60" 
+                                Background="Transparent" BorderThickness="0"
+                                Foreground="White" FontSize="24" FontWeight="Bold"
+                                Cursor="Hand" Margin="0,0,20,0"/>
+                    </Grid>-->
+
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -200,16 +233,32 @@
 
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="CRITICAL SYSTEM ALARM" Foreground="White" Opacity="0.8" FontSize="12" FontWeight="Bold" />
-                            <TextBlock Text="{Binding AlarmBannerMessage}" Foreground="White" FontSize="24" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="{Binding AlarmBannerTotalMessage}" Foreground="White" FontSize="24" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
                         </StackPanel>
 
-                        <Button Grid.Column="2" 
-                                Command="{Binding CloseAlarmBannerCommand}"
-                                Content="✕"
-                                Width="60" 
-                                Background="Transparent" BorderThickness="0"
-                                Foreground="White" FontSize="24" FontWeight="Bold"
-                                Cursor="Hand" Margin="0,0,20,0"/>
+                        <StackPanel Grid.Column="2" 
+                Orientation="Horizontal" 
+                VerticalAlignment="Center" 
+                Margin="0,0,20,0">
+
+                            <!--<Button Content="ACK"
+                Command="{Binding AcknowledgeCommand}" 
+                
+                CommandParameter="{Binding CurrentAlarm}" 
+                
+                Background="#FFC107" BorderThickness="0"
+                Foreground="Black" FontSize="14" FontWeight="Bold"
+                Width="80" Height="40"
+                Margin="0,0,10,0"
+                Cursor="Hand"/>-->
+
+                            <Button Command="{Binding CloseAlarmBannerCommand}"
+                Content="✕"
+                Width="40" 
+                Background="Transparent" BorderThickness="0"
+                Foreground="White" FontSize="24" FontWeight="Bold"
+                Cursor="Hand"/>
+                        </StackPanel>
                     </Grid>
                 </Border>
 

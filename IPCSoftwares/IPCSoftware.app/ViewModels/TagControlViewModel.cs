@@ -43,10 +43,10 @@ namespace IPCSoftware.App.ViewModels
 
         public ICommand WriteCommand { get; }
 
-        public TagControlViewModel(IPLCTagConfigurationService tagService, UiTcpClient tcpClient, IDialogService dialog)
+        public TagControlViewModel(IPLCTagConfigurationService tagService, CoreClient coreClient, IDialogService dialog)
         {
             _tagService = tagService;
-            _coreClient = new CoreClient(tcpClient);
+            _coreClient = coreClient; // ⬅️ ASSIGN THE INJECTED SINGLETON INSTANCE
             _dialog = dialog;
 
             WriteCommand = new RelayCommand<WritableTagItem>(async (item) => await OnWriteAsync(item));

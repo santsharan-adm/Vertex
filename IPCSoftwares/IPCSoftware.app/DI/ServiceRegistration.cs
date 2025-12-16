@@ -110,7 +110,7 @@ namespace IPCSoftware.App.DI
 
             // ========== Alaram VIEWMODELS (Transient) ========== 
             services.AddTransient<AlarmView>();
-            services.AddTransient<AlarmViewModel>();
+            services.AddSingleton<AlarmViewModel>();
             services.AddSingleton<AlarmService>();
 
 

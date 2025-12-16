@@ -25,6 +25,9 @@ public class MainWindowViewModel : BaseViewModel
     private readonly IDialogService _dialog;
     private readonly IAppLogger  _logger;
     private readonly CoreClient _coreClient;
+    private readonly AlarmViewModel _alarmVM;
+
+    public ICommand AcknowledgeBannerAlarmCommand { get; }
 
     public ICommand SidebarItemClickCommand { get; }
     public RibbonViewModel RibbonVM { get; }
@@ -106,12 +109,13 @@ public class MainWindowViewModel : BaseViewModel
     public string AppVersion => "AOI System v1.0.3";
 
     public MainWindowViewModel(INavigationService nav, CoreClient coreClient,
-        IAppLogger logger, IDialogService dialog,RibbonViewModel ribbonVM)
+        IAppLogger logger, IDialogService dialog,RibbonViewModel ribbonVM, AlarmViewModel alarmVM)
     {
         _coreClient = coreClient;
         _dialog = dialog;
         _logger = logger;
         _nav = nav;
+        _alarmVM = alarmVM;
         _timer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
@@ -134,6 +138,8 @@ public class MainWindowViewModel : BaseViewModel
         SidebarItemClickCommand = new RelayCommand<string>(OnSidebarItemClick);
         CloseSidebarCommand = new RelayCommand(() => IsSidebarOpen = false);
 
+        AcknowledgeBannerAlarmCommand = new RelayCommand(ExecuteAcknowledgeBannerAlarm, CanExecuteAcknowledgeBannerAlarm);
+
         CloseAlarmBannerCommand = new RelayCommand(() => IsAlarmBannerVisible = false);
         UserSession.OnSessionChanged += () =>
         {
@@ -143,25 +149,83 @@ public class MainWindowViewModel : BaseViewModel
         };
     }
 
+    private bool CanExecuteAcknowledgeBannerAlarm()
+    {
+        // Enable the button only if there is at least one UNACKNOWLEDGED alarm
+        // The command is only active if the banner is visible AND there are alarms to ack.
+        return ActiveAlarmCount > 0 && IsAlarmBannerVisible;
+    }
+
+    private async void ExecuteAcknowledgeBannerAlarm()
+    {
+        // 1. Find the latest unacknowledged alarm (the one currently displayed)
+        var latestUnackedAlarm = _alarmVM.ActiveAlarms
+            .Where(a => a.AlarmAckTime == null)
+            .OrderByDescending(a => a.AlarmTime)
+            .FirstOrDefault();
+
+        if (latestUnackedAlarm != null)
+        {
+            // 2. Call the Acknowledge logic in the AlarmViewModel
+            // This relies on the core logic being available in AlarmViewModel (Action 2.2)
+            await _alarmVM.AcknowledgeAlarmRequestAsync(latestUnackedAlarm);
+        }
+    }
+
     private void OnAlarmReceived(AlarmMessage msg)
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
-            if (msg.MessageType == AlarmMessageType.Raised)
+            // Find the latest unacknowledged alarm to put in the detailed message
+            var latestUnackedAlarm = _alarmVM.ActiveAlarms
+                .Where(a => a.AlarmAckTime == null)
+                .OrderByDescending(a => a.AlarmTime)
+                .FirstOrDefault();
+
+            // 1. Update the Count based on the UNACKNOWLEDGED alarms in the shared collection
+            ActiveAlarmCount = _alarmVM.ActiveAlarms.Count(a => a.AlarmAckTime == null);
+
+            // 2. Set Banner details (message and color) based on the LATEST alarm
+            if (latestUnackedAlarm != null)
             {
-                // Format message
-                AlarmBannerMessage = $"⚠️ ALARM {msg.AlarmInstance.AlarmNo}: {msg.AlarmInstance.AlarmText}";
+                AlarmBannerMessage = $"⚠️ ALARM {latestUnackedAlarm.AlarmNo}: {latestUnackedAlarm.AlarmText}";
 
-                // Set color based on severity (Optional logic)
-                if (msg.AlarmInstance.Severity == "High") AlarmBannerColor = "#D32F2F"; // Red
-                else if (msg.AlarmInstance.Severity == "Warning") AlarmBannerColor = "#F57C00"; // Orange
+                // Set color based on severity (using the latest unacknowledged alarm)
+                if (latestUnackedAlarm.Severity == "High") AlarmBannerColor = "#D32F2F"; // Red
+                else if (latestUnackedAlarm.Severity == "Warning") AlarmBannerColor = "#F57C00"; // Orange
                 else AlarmBannerColor = "#1976D2"; // Blue
-
-                IsAlarmBannerVisible = true; // SHOW BANNER
             }
-            // Optional: Auto-hide on Clear?
-            // else if (msg.MessageType == AlarmMessageType.Cleared) { IsAlarmBannerVisible = false; }
+            else
+            {
+                // If count is zero, reset the message
+                AlarmBannerMessage = "No Critical Alarms";
+                AlarmBannerColor = "#1976D2"; // Blue/Neutral
+            }
+
+
+            // 3. Control Visibility: Show if there is any unacknowledged alarm
+            // This ensures the banner reappears if a new alarm is raised after being manually closed.
+            IsAlarmBannerVisible = ActiveAlarmCount > 0;
         });
+    }
+
+    public string AlarmBannerTotalMessage =>
+     ActiveAlarmCount > 0
+     ? ActiveAlarmCount == 1
+         ? AlarmBannerMessage // Only one alarm, show the detailed message
+         : $"Critical System Alarms ({ActiveAlarmCount}) | {AlarmBannerMessage}" // Multiple alarms, show count + latest message
+     : "No Active Alarms";
+
+    private int _activeAlarmCount;
+    public int ActiveAlarmCount
+    {
+        get => _activeAlarmCount;
+        set
+        {
+            SetProperty(ref _activeAlarmCount, value);
+            // Recalculate the Banner Message when the count changes
+            OnPropertyChanged(nameof(AlarmBannerTotalMessage));
+        }
     }
 
     private async void LiveDataTimerTick(object sender, EventArgs e)
