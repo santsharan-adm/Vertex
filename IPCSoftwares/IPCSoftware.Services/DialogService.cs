@@ -1,0 +1,30 @@
+﻿using IPCSoftware.Core.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+
+namespace IPCSoftware.Services
+{
+    //public class DialogService : IDialogService
+    //{
+    //    public void ShowMessage(string message)
+    //    {
+    //        MessageBox.Show(message);
+    //    }
+
+
+    //    public bool ShowYesNo(string message, string title = "Confirm")
+    //    {
+    //        var result = MessageBox.Show(
+    //            message,
+    //            title,
+    //            MessageBoxButton.YesNo,
+    //            MessageBoxImage.Question);
+
+    //        return result == MessageBoxResult.Yes;
+    //    }
+    //}
+}

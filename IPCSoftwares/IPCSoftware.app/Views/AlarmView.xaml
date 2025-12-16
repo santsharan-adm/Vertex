@@ -1,0 +1,79 @@
+<UserControl x:Class="IPCSoftware.App.Views.AlarmView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers" 
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels" 
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:AlarmViewModel}" >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Active Alarms" FontSize="18" FontWeight="Bold" Margin="10,5"/>
+
+        <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding ActiveAlarms}" 
+                  AutoGenerateColumns="False" 
+                  IsReadOnly="True"
+                  RowBackground="White"
+                  AlternatingRowBackground="#F0F0F0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Alarm No" Binding="{Binding AlarmNo}" Width="80"/>
+
+                <DataGridTextColumn Header="Severity" Binding="{Binding Severity}" Width="100">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Severity}" Value="High">
+                                    <Setter Property="Background" Value="Red"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Severity}" Value="Medium">
+                                    <Setter Property="Background" Value="Orange"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="Message" Binding="{Binding AlarmText}" Width="*"/>
+                <DataGridTextColumn Header="Raised At" Binding="{Binding AlarmTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="150"/>
+                <DataGridTextColumn Header="Ack At" Binding="{Binding AlarmAckTime, StringFormat='HH:mm:ss'}" Width="100"/>
+                <DataGridTextColumn Header="Ack By" Binding="{Binding AcknowledgedByUser}" Width="100"/>
+
+                <DataGridTemplateColumn Header="Action" Width="120">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Acknowledge"
+                                    Command="{Binding DataContext.AcknowledgeCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                    CommandParameter="{Binding}"
+                                    Margin="5">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding AlarmAckTime}" Value="{x:Null}">
+                                                <Setter Property="Background" Value="Green"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding AlarmAckTime, TargetNullValue=True}" Value="False">
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                                <Setter Property="Content" Value="Acknowledged"/>
+                                                <Setter Property="Background" Value="LightGray"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

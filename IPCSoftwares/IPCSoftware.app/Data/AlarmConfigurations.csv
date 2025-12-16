@@ -1,0 +1,2 @@
+﻿Id,AlarmNo,AlarmName,TagNo,Name,AlarmBit,AlarmText,Severity,AlarmTime,AlarmResetTime,AlarmAckTime,Description,Remark
+1,101,HighTemp,31,PD_ALARMS1,0,High Temperature Zone 1,High,,,,,
