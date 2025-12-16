@@ -1,0 +1,196 @@
+﻿<UserControl x:Class="IPCSoftware.App.Views.UserConfigurationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:IPCSoftware.App.Views"
+              xmlns:helpers="clr-namespace:IPCSoftware.Helpers;assembly=IPCSoftware.Helpers"
+             mc:Ignorable="d" 
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             Background="#F3F3F3">
+
+    <UserControl.Resources>
+        <!-- HMI TOUCH STYLES (Ideally move these to your Dictionary) -->
+        <Style x:Key="HmiLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="35"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style x:Key="HmiTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="90"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
+        <Style x:Key="HmiComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="80"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
+        <Style x:Key="HmiCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="LayoutTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="2.0" ScaleY="2.0"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.1" BlurRadius="20"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <!-- MAIN SCALING CONTAINER -->
+    <Viewbox Stretch="Uniform">
+        <Grid Width="1920" Height="1080">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Header -->
+                <RowDefinition Height="*"/>
+                <!-- Centered Form -->
+            </Grid.RowDefinitions>
+
+            <!-- 1. HEADER -->
+            <TextBlock Grid.Row="0" 
+                       Text="{Binding Title}" 
+                       FontSize="48"    
+                       FontWeight="Bold"
+                       Foreground="#333333"
+                       Margin="40,30,0,0"/>
+
+            <!-- 2. CENTERED FORM CARD -->
+            <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                <Border Width="1600" Padding="60" Style="{StaticResource CardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Form Fields Grid (2 Columns for balanced look) -->
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="60"/>
+                                <!-- Gutter -->
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- LEFT COLUMN -->
+                            <!-- First Name -->
+                            <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,40">
+                                <TextBlock Text="First Name" Style="{StaticResource HmiLabelStyle}"/>
+                                <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" 
+                                         Style="{StaticResource HmiTextBoxStyle}"/>
+                            </StackPanel>
+
+                            <!-- User Name -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,40">
+                                <TextBlock Text="User Name" Style="{StaticResource HmiLabelStyle}"/>
+                                <TextBox Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}" 
+                                         Style="{StaticResource HmiTextBoxStyle}"/>
+                            </StackPanel>
+
+                            <!-- Role -->
+                            <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,40">
+                                <TextBlock Text="Role" Style="{StaticResource HmiLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding Roles}"
+                                          SelectedItem="{Binding SelectedRole}"
+                                          Style="{StaticResource HmiComboBoxStyle}"/>
+                            </StackPanel>
+
+
+                            <!-- RIGHT COLUMN -->
+                            <!-- Last Name -->
+                            <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,40">
+                                <TextBlock Text="Last Name" Style="{StaticResource HmiLabelStyle}"/>
+                                <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" 
+                                         Style="{StaticResource HmiTextBoxStyle}"/>
+                            </StackPanel>
+
+                            <!-- Password -->
+                            <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,40">
+                                <TextBlock Text="Password" Style="{StaticResource HmiLabelStyle}"/>
+                                <!--<TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" 
+                                         Style="{StaticResource HmiTextBoxStyle}"/>-->
+
+
+                                <PasswordBox x:Name="PasswordBoxControl" Height="90"
+              FontSize="30"
+              Background="Transparent"
+              BorderThickness="2"
+              VerticalContentAlignment="Center"
+              Padding="15,0"
+              helpers:PasswordBoxHelper.BindPassword="True"
+              helpers:PasswordBoxHelper.BindablePassword="{Binding Password, Mode=TwoWay}"/>
+
+                            </StackPanel>
+
+                            <!-- Active Checkbox -->
+                            <StackPanel Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Margin="0,15,0,0">
+                                <CheckBox Content="Active" 
+                                          IsChecked="{Binding IsActive}"
+                                          Style="{StaticResource HmiCheckBoxStyle}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Action Buttons -->
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,40,0,0">
+
+                            <Button Content="Cancel" 
+                                    Command="{Binding CancelCommand}"
+                                    Width="200" Height="90"
+                                    FontSize="24" FontWeight="SemiBold"
+                                    Background="#F5F5F5" Foreground="#555555"
+                                    BorderBrush="#CCCCCC" BorderThickness="2"
+                                    Margin="0,0,30,0">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="8"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+
+                            <Button Content="Save" 
+                                    Command="{Binding SaveCommand}"
+                                    Width="250" Height="90"
+                                    FontSize="24" FontWeight="Bold"
+                                    Background="#007ACC" Foreground="White"
+                                    BorderThickness="0">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="8"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Viewbox>
+</UserControl>

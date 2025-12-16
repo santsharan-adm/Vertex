@@ -1,0 +1,344 @@
+﻿<UserControl x:Class="IPCSoftware.App.Views.ManualOperation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ManualOperationViewModel}"
+             Background="#F0F2F5">
+
+    <UserControl.Resources>
+        <Geometry x:Key="Icon_Up">M6,18V10H2L12,0L22,10H18V18H6Z</Geometry>
+        <Geometry x:Key="Icon_Down">M18,6V14H22L12,24L2,14H6V6H18Z</Geometry>
+        <Geometry x:Key="Icon_Forward">M6,6H14V2L24,12L14,22V18H6V6Z</Geometry>
+        <Geometry x:Key="Icon_Backward">M18,18H10V22L0,12L10,2V6H18V18Z</Geometry>
+
+        <conv:EqualityConverter x:Key="EqualityConverter"/>
+        <conv:EnumToSymbolConverter x:Key="EnumToSymbolConverter"/>
+        <conv:GroupVisibilityConverter x:Key="GroupVisibilityConverter"/>
+        <!--<conv:EnumToPathConverter x:Key="EnumToPathConverter"/>-->
+
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="2" Opacity="0.1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+
+        <Style x:Key="ManualModeButtonStyle" TargetType="Button">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Height" Value="110"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="#E8E8E8"/>
+            <Setter Property="Foreground" Value="#444"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                CornerRadius="6"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="#CCCCCC"
+                                BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"
+                                              Margin="10"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                    <Condition Value="False">
+                                        <Condition.Binding>
+                                            <MultiBinding Converter="{StaticResource EqualityConverter}">
+                                                <Binding Path="DataContext.SelectedGroupButtons" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                <Binding Path="Group"/>
+                                                <Binding Path="Mode"/>
+                                            </MultiBinding>
+                                        </Condition.Binding>
+                                    </Condition>
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="border" Property="Background" Value="#D6D6D6"/>
+                            </MultiDataTrigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <TranslateTransform Y="1"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+
+                            <DataTrigger Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource EqualityConverter}">
+                                        <Binding Path="DataContext.SelectedGroupButtons" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                        <Binding Path="Group"/>
+                                        <Binding Path="Mode"/>
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter TargetName="border" Property="Background" Value="#0F9D58"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter TargetName="border" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#0F9D58" BlurRadius="10" ShadowDepth="0" Opacity="0.4"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="StretchItemStyle" TargetType="ContentPresenter">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+        </Style>
+
+        <DataTemplate x:Key="SharedButtonTemplate">
+            <Button Style="{StaticResource ManualModeButtonStyle}"
+            Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+            CommandParameter="{Binding Mode}">
+                <Grid>
+                    <Path x:Name="IconPath"
+                  Stretch="Uniform"
+                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                  Width="50" Height="50"
+                  Visibility="Collapsed"/>
+
+                    <TextBlock x:Name="TextLabel"
+                       Text="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
+                       FontSize="40" FontWeight="Bold"
+                       Visibility="Visible"/>
+                </Grid>
+            </Button>
+            <!--<DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Mode}" Value="TrayLiftUp">
+                    <Setter TargetName="IconPath" Property="Visibility" Value="Visible"/>
+                    <Setter TargetName="TextLabel" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="IconPath" Property="Data" Value="{StaticResource Icon_Up}"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding Mode}" Value="TrayLiftDown">
+                    <Setter TargetName="IconPath" Property="Visibility" Value="Visible"/>
+                    <Setter TargetName="TextLabel" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="IconPath" Property="Data" Value="{StaticResource Icon_Down}"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding Mode}" Value="PositioningCylinderUp">
+                    <Setter TargetName="IconPath" Property="Visibility" Value="Visible"/>
+                    <Setter TargetName="TextLabel" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="IconPath" Property="Data" Value="{StaticResource Icon_Up}"/>
+                </DataTrigger>
+                
+                <DataTrigger Binding="{Binding Mode}" Value="PositioningCylinderUp">
+                    <Setter TargetName="IconPath" Property="Visibility" Value="Visible"/>
+                    <Setter TargetName="TextLabel" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="IconPath" Property="Data" Value="{StaticResource Icon_Up}"/>
+                </DataTrigger>
+
+            </DataTemplate.Triggers>-->
+        </DataTemplate>
+
+    </UserControl.Resources>
+
+    <Viewbox Stretch="Uniform">
+        <Grid Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="1.5*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Tray Lift" Style="{StaticResource SectionHeaderStyle}"/>
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding TrayModes}" 
+                                          ItemTemplate="{StaticResource SharedButtonTemplate}"
+                                          ItemContainerStyle="{StaticResource StretchItemStyle}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Pos. Cylinder" Style="{StaticResource SectionHeaderStyle}"/>
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding CylinderModes}" 
+                                          ItemTemplate="{StaticResource SharedButtonTemplate}"
+                                          ItemContainerStyle="{StaticResource StretchItemStyle}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <Border Grid.Row="1" Style="{StaticResource CardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Manual X-Axis" Style="{StaticResource SectionHeaderStyle}"/>
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding XAxisModes}" 
+                                      ItemTemplate="{StaticResource SharedButtonTemplate}"
+                                      ItemContainerStyle="{StaticResource StretchItemStyle}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="3"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="2" Style="{StaticResource CardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Manual Y-Axis" Style="{StaticResource SectionHeaderStyle}"/>
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding YAxisModes}" 
+                                      ItemTemplate="{StaticResource SharedButtonTemplate}"
+                                      ItemContainerStyle="{StaticResource StretchItemStyle}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="3"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Style="{StaticResource CardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Move to Position" Style="{StaticResource SectionHeaderStyle}"/>
+
+                        <Grid Grid.Row="1" Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="1" Grid.ColumnSpan="2"
+                                    Content="HOME POS"
+                                    FontWeight="Bold"
+                                    FontSize="36"
+                                    Style="{StaticResource ManualModeButtonStyle}"
+                                    DataContext="{Binding HomePositionMode}"
+                                    Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding Mode}">
+                                <Button.Resources>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ManualModeButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Value="True">
+                                                <DataTrigger.Binding>
+                                                    <MultiBinding Converter="{StaticResource EqualityConverter}">
+                                                        <Binding Path="DataContext.SelectedGroupButtons" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                        <Binding Path="Group"/>
+                                                        <Binding Path="Mode"/>
+                                                    </MultiBinding>
+                                                </DataTrigger.Binding>
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </Grid>
+
+                        <ItemsControl Grid.Row="2" ItemsSource="{Binding GridPositionModes}" 
+                                      ItemTemplate="{StaticResource SharedButtonTemplate}"
+                                      ItemContainerStyle="{StaticResource StretchItemStyle}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="4"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="1" Style="{StaticResource CardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Transport Conveyor" Style="{StaticResource SectionHeaderStyle}"/>
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding ConveyorModes}" 
+                                      ItemTemplate="{StaticResource SharedButtonTemplate}"
+                                      ItemContainerStyle="{StaticResource StretchItemStyle}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="4"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Viewbox>
+</UserControl>
