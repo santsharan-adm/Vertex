@@ -1,0 +1,434 @@
+﻿using IPCSoftware.Services.ConfigServices;
+using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models.ConfigModels;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using IPCSoftware.Core.Interfaces;
+using System.IO;
+
+namespace IPCSoftware.App.ViewModels
+{
+    public class LogConfigurationViewModel : BaseViewModel
+    {
+        private readonly ILogConfigurationService _logService;
+        private LogConfigurationModel _currentLog;
+        private bool _isEditMode;
+        private string _title;
+
+        public string Title
+        {
+            get => _title;
+            set => SetProperty(ref _title, value);
+        }
+
+        public bool IsEditMode
+        {
+            get => _isEditMode;
+            set => SetProperty(ref _isEditMode, value);
+        }
+
+        private string _logName;
+        public string LogName
+        {
+            get => _logName;
+            set => SetProperty(ref _logName, value);
+        }
+
+        private string _selectedLogType;
+        public string SelectedLogType
+        {
+            get => _selectedLogType;
+            set
+            {
+                if (SetProperty(ref _selectedLogType, value))
+                {
+                    UpdateFileName();
+                }
+            }
+        }
+
+        private string _dataFolder;
+        public string DataFolder
+        {
+            get => _dataFolder;
+            set => SetProperty(ref _dataFolder, value);
+        }
+
+        private string _backupFolder;
+        public string BackupFolder
+        {
+            get => _backupFolder;
+            set => SetProperty(ref _backupFolder, value);
+        }
+
+        private string _fileName;
+        public string FileName
+        {
+            get => _fileName;
+            set => SetProperty(ref _fileName, value);
+        }
+
+        private int _logRetentionDays;
+        public int LogRetentionDays
+        {
+            get => _logRetentionDays;
+            set => SetProperty(ref _logRetentionDays, value);
+        }
+
+        private int _fileSize;
+        public int FileSize
+        {
+            get => _fileSize;
+            set => SetProperty(ref _fileSize, value);
+        }
+
+        private bool _autoPurge;
+        public bool AutoPurge
+        {
+            get => _autoPurge;
+            set => SetProperty(ref _autoPurge, value);
+        }
+
+        private string _selectedBackupSchedule;
+        public string SelectedBackupSchedule
+        {
+            get => _selectedBackupSchedule;
+            set
+            {
+                if (SetProperty(ref _selectedBackupSchedule, value))
+                {
+                    OnBackupScheduleChanged();
+                }
+            }
+        }
+
+        private TimeSpan _backupTime;
+        public TimeSpan BackupTime
+        {
+            get => _backupTime;
+            set => SetProperty(ref _backupTime, value);
+        }
+
+        private int _selectedBackupDay;
+        public int SelectedBackupDay
+        {
+            get => _selectedBackupDay;
+            set => SetProperty(ref _selectedBackupDay, value);
+        }
+
+        private string _selectedBackupDayOfWeek;
+        public string SelectedBackupDayOfWeek
+        {
+            get => _selectedBackupDayOfWeek;
+            set => SetProperty(ref _selectedBackupDayOfWeek, value);
+        }
+
+        private string _description;
+        public string Description
+        {
+            get => _description;
+            set => SetProperty(ref _description, value);
+        }
+
+        private string _remark;
+        public string Remark
+        {
+            get => _remark;
+            set => SetProperty(ref _remark, value);
+        }
+
+        private bool _enabled;
+        public bool Enabled
+        {
+            get => _enabled;
+            set => SetProperty(ref _enabled, value);
+        }
+
+        public ObservableCollection<string> LogTypes { get; }
+        public ObservableCollection<string> BackupSchedules { get; }
+        public ObservableCollection<int> BackupDays { get; }
+        public ObservableCollection<string> DaysOfWeek { get; }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+        public ICommand BackUpCommand { get; }
+        public ICommand BrowseDataFolderCommand { get; }
+        public ICommand BrowseBackupFolderCommand { get; }
+
+        public event EventHandler SaveCompleted;
+        public event EventHandler CancelRequested;
+
+        public LogConfigurationViewModel(ILogConfigurationService logService)
+        {
+            try
+            {
+                _logService = logService;
+
+                LogTypes = new ObservableCollection<string> { "Production", "Audit", "Error" };
+                BackupSchedules = new ObservableCollection<string> { "Manual", "Daily", "Weekly", "Monthly" };
+                BackupDays = new ObservableCollection<int>(Enumerable.Range(1, 28));
+                DaysOfWeek = new ObservableCollection<string>
+                {
+                    "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+                };
+
+                SaveCommand = new RelayCommand(async () => await OnSaveAsync(), () => CanSave());
+                CancelCommand = new RelayCommand(() => OnCancel());
+                BrowseDataFolderCommand = new RelayCommand(() => OnBrowseDataFolder());
+                BrowseBackupFolderCommand = new RelayCommand(() => OnBrowseBackupFolder());
+                BackUpCommand = new RelayCommand(() => OnBackUp());
+
+                InitializeNewLog();
+            }
+            catch (Exception)
+            {
+                // Exception swallowed to prevent application crash
+            }
+        }
+
+        public void InitializeNewLog()
+        {
+            try
+            {
+                Title = "System Log Configuration - New";
+                IsEditMode = false;
+                _currentLog = new LogConfigurationModel();
+                FileName = $"{SelectedLogType}_yyyyMMdd";
+                LoadFromModel(_currentLog);
+            }
+            catch (Exception)
+            {
+                // Exception swallowed to prevent application crash
+            }
+        }
+
+        public void LoadForEdit(LogConfigurationModel log)
+        {
+            try
+            {
+                Title = "System Log Configuration - Edit";
+                IsEditMode = true;
+                _currentLog = log.Clone();
+                LoadFromModel(_currentLog);
+            }
+            catch (Exception)
+            {
+                // Exception swallowed to prevent application crash
+            }
+        }
+
+        private void LoadFromModel(LogConfigurationModel log)
+        {
+            try
+            {
+                LogName = log.LogName;
+                SelectedLogType = log.LogType.ToString() ?? "Production";
+                DataFolder = log.DataFolder;
+                BackupFolder = log.BackupFolder;
+                FileName = log.FileName;
+                LogRetentionDays = log.LogRetentionTime;
+                FileSize = log.LogRetentionFileSize;
+                AutoPurge = log.AutoPurge;
+                SelectedBackupSchedule = log.BackupSchedule.ToString() ?? "Manual";
+                BackupTime = log.BackupTime;
+                SelectedBackupDay = log.BackupDay > 0 ? log.BackupDay : 1;
+                SelectedBackupDayOfWeek = log.BackupDayOfWeek ?? "Monday";
+                Description = log.Description;
+                Remark = log.Remark;
+                Enabled = log.Enabled;
+            }
+            catch (Exception)
+            {
+                // Exception swallowed to prevent application crash
+            }
+        }
+
+        private void SaveToModel()
+        {
+            try
+            {
+                _currentLog.LogName = LogName;
+                _currentLog.LogType = Enum.Parse<LogType>(SelectedLogType);
+                _currentLog.DataFolder = DataFolder;
+                _currentLog.BackupFolder = BackupFolder;
+                _currentLog.FileName = FileName;
+                _currentLog.LogRetentionTime = LogRetentionDays;
+                _currentLog.LogRetentionFileSize = FileSize;
+                _currentLog.AutoPurge = AutoPurge;
+                _currentLog.BackupSchedule = Enum.Parse<BackupScheduleType>(SelectedBackupSchedule);
+                _currentLog.BackupTime = BackupTime;
+
+                switch (SelectedBackupSchedule)
+                {
+                    case "Manual":
+                    case "Daily":
+                        _currentLog.BackupDay = 0;
+                        _currentLog.BackupDayOfWeek = null;
+                        break;
+
+                    case "Weekly":
+                        _currentLog.BackupDay = 0;
+                        _currentLog.BackupDayOfWeek = SelectedBackupDayOfWeek;
+                        break;
+
+                    case "Monthly":
+                        _currentLog.BackupDay = SelectedBackupDay;
+                        _currentLog.BackupDayOfWeek = null;
+                        break;
+                }
+
+                _currentLog.Description = Description;
+                _currentLog.Remark = Remark;
+                _currentLog.Enabled = Enabled;
+            }
+            catch (Exception)
+            {
+                // Exception swallowed to prevent application crash
+            }
+        }
+
+        private bool CanSave()
+        {
+            return !string.IsNullOrWhiteSpace(LogName) &&
+                   !string.IsNullOrWhiteSpace(SelectedLogType);
+        }
+
+        private async Task OnSaveAsync()
+        {
+            try
+            {
+                SaveToModel();
+
+                if (IsEditMode)
+                {
+                    await _logService.UpdateAsync(_currentLog);
+                }
+                else
+                {
+                    await _logService.AddAsync(_currentLog);
+                }
+
+                SaveCompleted?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception)
+            {
+                // Exception swallowed to prevent application crash
+            }
+        }
+
+        private void OnBrowseDataFolder()
+        {
+            try
+            {
+                var dialog = new CommonOpenFileDialog
+                {
+                    IsFolderPicker = true,
+                    Title = "Select Data Folder",
+                    AllowNonFileSystemItems = false,
+                    Multiselect = false
+                };
+
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    DataFolder = Path.Combine(dialog.FileName, "Logs", SelectedLogType);
+                }
+            }
+            catch (Exception)
+            {
+                // Exception swallowed to prevent application crash
+            }
+        }
+
+        private void OnBrowseBackupFolder()
+        {
+            try
+            {
+                var dialog = new CommonOpenFileDialog
+                {
+                    IsFolderPicker = true,
+                    Title = "Select Backup Folder",
+                    AllowNonFileSystemItems = false,
+                    Multiselect = false
+                };
+
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    BackupFolder = Path.Combine(dialog.FileName, "LogsBackup", SelectedLogType);
+                }
+            }
+            catch (Exception)
+            {
+                // Exception swallowed to prevent application crash
+            }
+        }
+
+        private void OnCancel()
+        {
+            try
+            {
+                CancelRequested?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception)
+            {
+                // Exception swallowed to prevent application crash
+            }
+        }
+
+        private void OnBackUp()
+        {
+            try
+            {
+                // Manual backup logic placeholder
+            }
+            catch (Exception)
+            {
+                // Exception swallowed to prevent application crash
+            }
+        }
+
+        private void OnBackupScheduleChanged()
+        {
+            try
+            {
+                if (SelectedBackupSchedule == "Manual" || SelectedBackupSchedule == "Daily")
+                {
+                    SelectedBackupDay = 1;
+                    SelectedBackupDayOfWeek = "Monday";
+                }
+                else if (SelectedBackupSchedule == "Weekly")
+                {
+                    SelectedBackupDay = 1;
+                }
+                else if (SelectedBackupSchedule == "Monthly")
+                {
+                    SelectedBackupDayOfWeek = "Monday";
+                }
+            }
+            catch (Exception)
+            {
+                // Exception swallowed to prevent application crash
+            }
+        }
+
+        private void UpdateFileName()
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(SelectedLogType))
+                {
+                    FileName = $"{SelectedLogType}_yyyyMMdd";
+                }
+            }
+            catch (Exception)
+            {
+                // Exception swallowed to prevent application crash
+            }
+        }
+    }
+}

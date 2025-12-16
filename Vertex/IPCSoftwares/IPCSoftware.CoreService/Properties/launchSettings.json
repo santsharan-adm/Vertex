@@ -1,0 +1,13 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "IPCSoftware.CoreService": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "CONFIG_DIR": "C:\\Users\\benny.kurian\\source\\repos\\Vertex2\\IPCSoftwares\\IPCSoftware.App\\"
+      }
+    }
+  }
+}

@@ -1,0 +1,3 @@
+﻿Id,FirstName,LastName,UserName,Password,Role,IsActive
+1,"System","Administrator","ADMIN","1","Admin",True
+2,"admin","dd1","admin2","1","User",True
