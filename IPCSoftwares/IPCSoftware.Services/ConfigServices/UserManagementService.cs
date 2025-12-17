@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.Services.ConfigServices
 {
-    public class UserManagementService : IUserManagementService
+    public class UserManagementService :BaseService, IUserManagementService
     {
         private readonly string _dataFolder;
         private readonly string _csvFilePath;
@@ -18,7 +19,8 @@ namespace IPCSoftware.Services.ConfigServices
         private int _nextId = 1;
 
 
-        public UserManagementService(IOptions<ConfigSettings> configSettings)
+        public UserManagementService(IOptions<ConfigSettings> configSettings,
+            IAppLogger logger) : base(logger)
         {
             var config = configSettings.Value;
             string dataFolderPath = config.DataFolder;
@@ -35,7 +37,14 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task InitializeAsync()
         {
-            await LoadFromCsvAsync();
+            try
+            {
+             await LoadFromCsvAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         public async Task<List<UserConfigurationModel>> GetAllUsersAsync()
@@ -56,63 +65,87 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task<UserConfigurationModel> AddUserAsync(UserConfigurationModel user)
         {
-            // 1. Check for Duplicate Username
-            bool usernameExists = _users.Any(u => u.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase));
-
-            if (usernameExists)
+            try
             {
-                // Return null or throw an exception to indicate failure
-                throw new InvalidOperationException("This Username is already taken.");
+                bool usernameExists = _users.Any(u => u.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase));
+
+                if (usernameExists)
+                {
+                    // Return null or throw an exception to indicate failure
+                    throw new InvalidOperationException("This Username is already taken.");
+                }
+
+                // 2. ID is auto-generated, ensuring uniqueness
+                user.Id = _nextId++;
+
+                _users.Add(user);
+                await SaveToCsvAsync();
+                return user;
             }
-
-            // 2. ID is auto-generated, ensuring uniqueness
-            user.Id = _nextId++;
-
-            _users.Add(user);
-            await SaveToCsvAsync();
-            return user;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                throw;
+            }
+            // 1. Check for Duplicate Username
         }
 
         public async Task<bool> UpdateUserAsync(UserConfigurationModel user)
         {
-            var existing = _users.FirstOrDefault(u => u.Id == user.Id);
-            if (existing == null) return false;
-
-            // 1. Check for Duplicate Username (excluding the current user being edited)
-            bool usernameTaken = _users.Any(u => u.Id != user.Id &&
-                                                 u.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase));
-
-            if (usernameTaken)
+            try
             {
-                throw new InvalidOperationException("This Username is already taken by another user.");
-            }
+                var existing = _users.FirstOrDefault(u => u.Id == user.Id);
+                if (existing == null) return false;
 
-            var index = _users.IndexOf(existing);
-            _users[index] = user;
-            await SaveToCsvAsync();
-            return true;
+                // 1. Check for Duplicate Username (excluding the current user being edited)
+                bool usernameTaken = _users.Any(u => u.Id != user.Id &&
+                                                     u.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase));
+
+                if (usernameTaken)
+                {
+                    throw new InvalidOperationException("This Username is already taken by another user.");
+                }
+
+                var index = _users.IndexOf(existing);
+                _users[index] = user;
+                await SaveToCsvAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
 
         public async Task<bool> DeleteUserAsync(int id)
         {
-            var user = _users.FirstOrDefault(u => u.Id == id);
-            if (user == null) return false;
+            try
+            {
+                var user = _users.FirstOrDefault(u => u.Id == id);
+                if (user == null) return false;
 
-            _users.Remove(user);
-            await SaveToCsvAsync();
-            return true;
+                _users.Remove(user);
+                await SaveToCsvAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
 
         private async Task LoadFromCsvAsync()
         {
+            try
+            {
             if (!File.Exists(_csvFilePath))
             {
                 await SaveToCsvAsync();
                 return;
             }
 
-            try
-            {
                 var lines = await File.ReadAllLinesAsync(_csvFilePath);
                 if (lines.Length <= 1) return;
 
@@ -130,7 +163,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading users CSV: {ex.Message}");
+                _logger.LogError($"Error loading users CSV: {ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -156,7 +189,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving users CSV: {ex.Message}");
+                _logger.LogError($"Error saving users CSV: {ex.Message}", LogType.Diagnostics);
                 throw;
             }
         }

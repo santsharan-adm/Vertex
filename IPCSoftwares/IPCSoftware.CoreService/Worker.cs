@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.CoreService.Services;
 using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
@@ -19,7 +20,7 @@ namespace IPCSoftware.CoreService
 {
     public class Worker : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
+        private readonly IAppLogger _logger;
         private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceService;
         private readonly ConfigSettings _configuration;
@@ -32,7 +33,7 @@ namespace IPCSoftware.CoreService
 
         // Removed _plcManager and _dashboard fields; they will be local or managed by DashboardInitializer
 
-        public Worker(ILogger<Worker> logger, 
+        public Worker(IAppLogger logger, 
             IPLCTagConfigurationService tagService,
             AlgorithmAnalysisService algo,
             DashboardInitializer dashboard,
@@ -62,21 +63,24 @@ namespace IPCSoftware.CoreService
             {
                 var devices = await _deviceService.GetPlcDevicesAsync();
                 var cameras = _deviceService.GetCameraDevicesAsync().GetAwaiter().GetResult();
-                _logger.LogInformation($"Loaded {devices.Count} PLC devices.");
-                _logger.LogInformation($"Loaded {cameras.Count} cameras devices.");
+                _logger.LogInfo($"Loaded {devices.Count} PLC devices.", LogType.Diagnostics);
+                _logger.LogInfo($"Loaded {cameras.Count} cameras devices.", LogType.Diagnostics);
                 var tags = await _tagService.GetAllTagsAsync();
-                _logger.LogInformation($"Loaded {tags.Count} Modbus tags.");
+                _logger.LogInfo($"Loaded {tags.Count} Modbus tags.", LogType.Diagnostics);
                 SharedServiceHost.Initialize(_plcManager, _algo);
 
                 // --- START UI LISTENER (TCP SERVER) ---
-                Console.WriteLine("Starting UI Listener in background...");
+                _logger.LogInfo("Starting UI Listener in background...", LogType.Diagnostics);
                 _ = Task.Run(async () =>
-                {
+                {   
                     try { await _uiListener.StartAsync(); }
-                    catch (Exception ex) { Console.WriteLine($"UI Listener Startup Error: {ex.Message}"); }
+                    catch (Exception ex) 
+                    { 
+                        _logger.LogError($"UI Listener Startup Error: {ex.Message}", LogType.Diagnostics);
+                    }
                 });
 
-                CameraInterfaceModel myCamera = cameras.FirstOrDefault();
+               /* CameraInterfaceModel myCamera = cameras.FirstOrDefault();
 
                 if (myCamera?.Enabled == true)
                 {
@@ -90,22 +94,23 @@ namespace IPCSoftware.CoreService
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Camera FTP Service failed: {ex}");
+                            _logger.LogError($"Camera FTP Service failed: {ex}", LogType.Diagnostics );
                         }
                     });
                 }
                 else
                 {
-                    Console.WriteLine("Camera FTP Service is disabled in configuration.");
-                }
+                   
+                    _logger.LogError("Camera FTP Service is disabled in configuration.", LogType.Diagnostics);
+                }*/
 
                 await _dashboard.StartAsync();
                 await Task.Delay(Timeout.Infinite, stoppingToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "FATAL ERROR during Core Service initialization.");
-               // throw;
+                _logger.LogError($"FATAL ERROR during Core Service initialization: {ex.Message}", LogType.Diagnostics);
+                throw;
             }
 
             finally

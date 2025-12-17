@@ -15,9 +15,6 @@ namespace IPCSoftware.App.ViewModels
         private readonly IAuthService _authService;
         private readonly INavigationService _navigation;
         private readonly IDialogService _dialog;
-        private readonly IAppLogger _logger;
-
-
 
         public ICommand LoginCommand { get; }
 
@@ -49,50 +46,15 @@ namespace IPCSoftware.App.ViewModels
             IAuthService authService,
             INavigationService navigation,
             IDialogService dialog,
-            IAppLogger logger,
-            MainWindowViewModel? mainWindowViewModel)
+            MainWindowViewModel? mainWindowViewModel,
+            IAppLogger logger) : base(logger)
         {
             _authService = authService;
             _navigation = navigation;
             _dialog = dialog;
-            _logger = logger;
             IsUsernameFocused = true;
             LoginCommand = new RelayCommand(async () => await ExecuteLoginAsync());
         }
-
-       /* private void ExecuteLogin()
-        {
-
-
-            _logger.LogInfo($"Login attempt: {Username}", LogType.Audit);
-
-            var result = _authService.Login(Username, Password);
-            if (!result.Success)
-            {
-                _logger.LogError($"Login failed: {Username}", LogType.Error);
-                _dialog.ShowMessage("Invalid username or password.");
-                return;
-            }
-
-            _logger.LogInfo($"Login successful: {Username}", LogType.Audit);
-
-             AppInitializationService.InitializeAllServicesAsync();
-
-            // Set session
-            UserSession.Username = Username;
-            UserSession.Role = result.Role;
-
-            // Create Ribbon
-            var ribbonVM = App.ServiceProvider.GetService<RibbonViewModel>();
-            var ribbonView = new RibbonView { DataContext = ribbonVM };
-
-            // Load Ribbon
-            _navigation.NavigateTop(ribbonView);
-
-            // Load Dashboard
-            _navigation.NavigateMain<OEEDashboard>();
-        }
-*/
 
         private async Task ExecuteLoginAsync()
         {

@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -32,7 +33,10 @@ namespace IPCSoftware.App.ViewModels
             public ICommand AddInterfaceCommand { get; }
             public ICommand RefreshCommand { get; }
 
-            public LogListViewModel(ILogConfigurationService logService, INavigationService nav)
+            public LogListViewModel(
+                ILogConfigurationService logService, 
+                INavigationService nav, 
+                IAppLogger logger) : base(logger)
             {
                 _logService = logService;
                 _nav = nav;

@@ -1,11 +1,14 @@
-﻿using IPCSoftware.Shared.Models.ConfigModels;
+﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace IPCSoftware.Services
 {
-    public class TagConfigLoader
+    public class TagConfigLoader: BaseService
     {
+        public TagConfigLoader(IAppLogger logger) : base(logger)
+        { }
         // Constants matching definitions in AlgorithmAnalysisService/Requirements
         private const int DataType_Int16 = 1;
         private const int DataType_Word32 = 2;
@@ -17,6 +20,9 @@ namespace IPCSoftware.Services
 
         public List<PLCTagConfigurationModel> Load(string filePath)
         {
+            try
+            {
+           
             var rows = CsvReader.Read(filePath);
             var tags = new List<PLCTagConfigurationModel>();
 
@@ -61,13 +67,19 @@ namespace IPCSoftware.Services
 
                     tags.Add(tag);
                 }
-                catch
+                catch(Exception ex) 
                 {
-                    // skip bad rows
+                        _logger.LogError(ex.Message, LogType.Diagnostics);
                 }
             }
 
             return tags;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return null;
+            }
         }
 
         // --- Existing Helper Methods (Simplified for context) ---
@@ -117,17 +129,25 @@ namespace IPCSoftware.Services
 
         private int ParseBitNo(string dataTypeText, string bitValue)
         {
-            // Logic to extract BitNo (0-15) only if dataTypeText is "Bit"
-            if (!string.Equals(dataTypeText, "Bit", StringComparison.OrdinalIgnoreCase))
-                return 0;
-
-            if (int.TryParse(bitValue, out int bitNo))
+            try
             {
-                // Enforce range 0 to 15
-                return Math.Clamp(bitNo, 0, 15);
-            }
+                if (!string.Equals(dataTypeText, "Bit", StringComparison.OrdinalIgnoreCase))
+                    return 0;
 
-            return 0;
+                if (int.TryParse(bitValue, out int bitNo))
+                {
+                    // Enforce range 0 to 15
+                    return Math.Clamp(bitNo, 0, 15);
+                }
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return 0;
+            }
+            // Logic to extract BitNo (0-15) only if dataTypeText is "Bit"
         }
 
         // --- NEW Helper Methods ---
@@ -163,9 +183,17 @@ namespace IPCSoftware.Services
         /// </summary>
         private bool ParseBoolean(string s)
         {
-            if (string.IsNullOrWhiteSpace(s)) return false;
-            s = s.Trim().ToLowerInvariant();
-            return s == "true" || s == "1";
+            try
+            {
+                if (string.IsNullOrWhiteSpace(s)) return false;
+                s = s.Trim().ToLowerInvariant();
+                return s == "true" || s == "1";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
     }
 }

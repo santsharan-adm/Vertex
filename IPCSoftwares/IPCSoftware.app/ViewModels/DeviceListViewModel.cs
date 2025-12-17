@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -37,7 +38,9 @@ namespace IPCSoftware.App.ViewModels
         public ICommand ConfigDeviceCommand { get; }  // Opens device detail with interfaces
         public ICommand RowDoubleClickCommand { get; }
 
-        public DeviceListViewModel(IDeviceConfigurationService deviceService, INavigationService nav)
+        public DeviceListViewModel(
+            IDeviceConfigurationService deviceService, 
+            INavigationService nav, IAppLogger logger) : base(logger)
         {
             _deviceService = deviceService;
             _nav = nav;

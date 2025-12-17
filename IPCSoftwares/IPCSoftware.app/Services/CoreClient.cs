@@ -1,5 +1,8 @@
 ﻿using IPCSoftware.App; // UiTcpClient namespace
 using IPCSoftware.App.Services.UI;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Services;
+using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.App.Services
 {
-    public class CoreClient
+    public class CoreClient : BaseService
     {
         private readonly UiTcpClient _tcpClient;
         private TaskCompletionSource<string> _responseTcs;
@@ -16,7 +19,8 @@ namespace IPCSoftware.App.Services
 
         public event Action<AlarmMessage> OnAlarmMessageReceived;
 
-        public CoreClient(UiTcpClient client)
+        public CoreClient(UiTcpClient client,
+            IAppLogger logger) : base(logger)
         {
             _tcpClient = client;
             _tcpClient.DataReceived += OnDataReceived;
@@ -34,7 +38,8 @@ namespace IPCSoftware.App.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[CoreClient] Error parsing incoming JSON: {ex.Message}. Raw Data: '{json.Trim()}'");
+              _logger.LogError($"[CoreClient] Error parsing incoming JSON: {ex.Message}. " +
+                  $"Raw Data: '{json.Trim()}'", LogType.Diagnostics);
                 return;
             }
 
@@ -58,6 +63,7 @@ namespace IPCSoftware.App.Services
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"[CoreClient] Error converting JSON to AlarmMessage: {ex.Message}");
+                 _logger.LogError($"[CoreClient] Error converting JSON to AlarmMessage: {ex.Message}", LogType.Diagnostics);
                 }
                 return;
             }
@@ -69,34 +75,50 @@ namespace IPCSoftware.App.Services
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine($"[CoreClient] Received unidentified JSON: {json.Trim()}");
+               _logger.LogWarning($"[CoreClient] Received unidentified JSON: {json.Trim()}", LogType.Diagnostics);
             }
         }
 
 
         public async Task<Dictionary<int, object>> GetIoValuesAsync(int reqId)
         {
-            var req = new RequestPackage { RequestId = reqId, Parameters = null };
-            string jsonResponse = await SendRequestAsync(req);
+            try
+            {
+                var req = new RequestPackage { RequestId = reqId, Parameters = null };
+                string jsonResponse = await SendRequestAsync(req);
 
-            if (string.IsNullOrEmpty(jsonResponse)) return new Dictionary<int, object>();
+                if (string.IsNullOrEmpty(jsonResponse)) return new Dictionary<int, object>();
 
-            var res = JsonConvert.DeserializeObject<ResponsePackage>(jsonResponse);
-            return ConvertParameters(res.Parameters);
+                var res = JsonConvert.DeserializeObject<ResponsePackage>(jsonResponse);
+                return ConvertParameters(res.Parameters);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                throw;
+            }
         }
 
 
         public async Task<bool> WriteTagAsync(int tagId, object value)
         {
-            var parameters = new Dictionary<int, object> { { (int)tagId, value } };
-            var req = new RequestPackage { RequestId = 6, Parameters = parameters };
+            try
+            {
+                var parameters = new Dictionary<int, object> { { (int)tagId, value } };
+                var req = new RequestPackage { RequestId = 6, Parameters = parameters };
 
-            string jsonResponse = await SendRequestAsync(req);
+                string jsonResponse = await SendRequestAsync(req);
 
-            if (string.IsNullOrEmpty(jsonResponse)) return false;
+                if (string.IsNullOrEmpty(jsonResponse)) return false;
 
-            var res = JsonConvert.DeserializeObject<ResponsePackage>(jsonResponse);
-            return res.Success;
+                var res = JsonConvert.DeserializeObject<ResponsePackage>(jsonResponse);
+                return res.Success;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                throw;
+            }
         }
 
         public async Task<bool> AcknowledgeAlarmAsync(int alarmNo, string userName)
@@ -125,7 +147,7 @@ namespace IPCSoftware.App.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ack Error: {ex.Message}");
+               _logger.LogError($"Ack Error: {ex.Message}", LogType.Diagnostics);
                 return false;
             }
         }
@@ -134,7 +156,7 @@ namespace IPCSoftware.App.Services
         {
             if (_tcpClient == null || !_tcpClient.IsConnected)
             {
-                System.Diagnostics.Debug.WriteLine("CoreClient: Cannot send request, client disconnected.");
+            _logger.LogError("CoreClient: Cannot send request, client disconnected.", LogType.Diagnostics);
                 return null;
             }
 
@@ -144,6 +166,7 @@ namespace IPCSoftware.App.Services
             try
             {
                 System.Diagnostics.Debug.WriteLine("UI -> Sending: " + json);
+                _logger.LogInfo("UI -> Sending: " + json, LogType.Diagnostics);
 
                 // Using .Send() as per your existing code pattern
                 _tcpClient.Send(json);
@@ -156,13 +179,13 @@ namespace IPCSoftware.App.Services
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("CoreClient: Request timed out.");
+                    _logger.LogError("CoreClient: Request timed out.", LogType.Diagnostics);
                     return null;
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"CoreClient: Send Error: {ex.Message}");
+                _logger.LogError($"CoreClient: Send Error: {ex.Message}", LogType.Diagnostics);
                 return null;
             }
         }
@@ -170,20 +193,28 @@ namespace IPCSoftware.App.Services
 
         private Dictionary<int, object> ConvertParameters(object parameters)
         {
-            var dict = new Dictionary<int, object>();
-
-            if (parameters is JObject jobj)
+            try
             {
-                foreach (var kv in jobj)
-                    dict[int.Parse(kv.Key)] = kv.Value.ToObject<object>();
-            }
-            else if (parameters is Dictionary<int, object> d2)
-            {
-                foreach (var kv in d2)
-                    dict[(int)kv.Key] = kv.Value;
-            }
+                var dict = new Dictionary<int, object>();
 
-            return dict;
+                if (parameters is JObject jobj)
+                {
+                    foreach (var kv in jobj)
+                        dict[int.Parse(kv.Key)] = kv.Value.ToObject<object>();
+                }
+                else if (parameters is Dictionary<int, object> d2)
+                {
+                    foreach (var kv in d2)
+                        dict[(int)kv.Key] = kv.Value;
+                }
+
+                return dict;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                throw;
+            }
         }
     }
 }

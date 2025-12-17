@@ -3,7 +3,7 @@
 
 namespace IPCSoftware.App.ViewModels
 {
-    internal class DashboardViewModel : BaseViewModel
+    /*internal class DashboardViewModel : BaseViewModel
     {
-    }
+    }*/
 }

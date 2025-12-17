@@ -1,5 +1,7 @@
-﻿using IPCSoftware.Services;
+﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Services;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -11,11 +13,12 @@ using System.Text;
 
 namespace IPCSoftware.CoreService.Services.CCD
 {
-    public class ProductionImageService
+    public class ProductionImageService : BaseService
     {
         private readonly CcdSettings _ccd;
 
-        public ProductionImageService(IOptions<CcdSettings> ccdOptions)
+        public ProductionImageService(IOptions<CcdSettings> ccdOptions,
+            IAppLogger logger) : base(logger)
         {
             _ccd = ccdOptions.Value;
         }
@@ -28,14 +31,15 @@ namespace IPCSoftware.CoreService.Services.CCD
         /// <param name="stNo">Station Number (1-12)</param>
         public string ProcessAndMoveImage(string tempFilePath, string uniqueDataString, int stNo, bool qrCodeFile = false)
         {
-            if (!File.Exists(tempFilePath))
-            {
-                Console.WriteLine($"[Error] Source file not found: {tempFilePath}");
-                return string.Empty;
-            }
-
             try
             {
+                if (!File.Exists(tempFilePath))
+                {
+                    Console.WriteLine($"[Error] Source file not found: {tempFilePath}");
+                    _logger.LogInfo($"[Error] Source file not found: {tempFilePath}", LogType.Diagnostics);
+                    return string.Empty;
+                }
+
                 // 1. Generate Time Data (Date of Today and Current Time)
                 DateTime now = DateTime.Now;
                 string dateStr = now.ToString("dd-MM-yyyy");       // e.g. 08-12-2025
@@ -81,6 +85,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 File.Copy(tempFilePath, rawDestPath, true);
                 File.Copy(tempFilePath, rawUIDestPath, true);
                 Console.WriteLine($"[Info] Raw image saved: {rawDestPath}");
+                _logger.LogInfo($"[Info] Raw image saved: {rawDestPath}", LogType.Diagnostics);
 
                 // 8. Cleanup Temp File
                 try
@@ -90,6 +95,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 catch (Exception ex)
                 {
                     Console.WriteLine($"[Warning] Could not delete temp file: {ex.Message}");
+                    _logger.LogError($"[Warning] Could not delete temp file: {ex.Message}", LogType.Diagnostics);
                 }
 
                 return rawUIDestPath;
@@ -97,67 +103,76 @@ namespace IPCSoftware.CoreService.Services.CCD
             catch (Exception ex)
             {
                 Console.WriteLine($"[Exception] Image Workflow failed: {ex.Message}");
+                _logger.LogError($"[Exception] Image Workflow failed: {ex.Message}", LogType.Diagnostics);
                 return string.Empty;
             }
         }
 
         private void ProcessImageInternal(string inputPath, string outputPath, string clientMeta, string vendorMeta)
         {
-            // 1. Load Image to Memory
-            byte[] fileData;
-            using (var ms = new MemoryStream())
+            try
             {
-                // We open the file stream directly to ensure we don't lock it for long
-                using (var fs = new FileStream(inputPath, FileMode.Open, FileAccess.Read))
-                using (var img = Image.FromStream(fs))
+                // 1. Load Image to Memory
+                byte[] fileData;
+                using (var ms = new MemoryStream())
                 {
-                    img.Save(ms, ImageFormat.Bmp);
+                    // We open the file stream directly to ensure we don't lock it for long
+                    using (var fs = new FileStream(inputPath, FileMode.Open, FileAccess.Read))
+                    using (var img = Image.FromStream(fs))
+                    {
+                        img.Save(ms, ImageFormat.Bmp);
+                    }
+                    fileData = ms.ToArray();
                 }
-                fileData = ms.ToArray();
+
+                // 2. Build Data Array
+                List<byte> dataBuilder = new List<byte>(fileData);
+
+                // Append Style
+                dataBuilder.AddRange(Encoding.ASCII.GetBytes(_ccd.MetadataStyle));
+
+                // Append Client Meta
+                if (_ccd.MetadataStyle != "METADATASTYLE002")
+                {
+                    dataBuilder.AddRange(Encoding.ASCII.GetBytes(clientMeta));
+                    dataBuilder.Add(0x90); // Terminator
+                }
+
+                // Append Vendor Meta
+                if (_ccd.MetadataStyle != "METADATASTYLE001")
+                {
+                    dataBuilder.AddRange(Encoding.ASCII.GetBytes(vendorMeta));
+                    dataBuilder.Add(0x80); // Terminator
+                }
+
+                // 3. Calculate Hash
+                byte[] finalData = dataBuilder.ToArray();
+                byte[] hash;
+                using (MD5 md5 = MD5.Create())
+                {
+                    hash = md5.ComputeHash(finalData);
+                }
+
+                // 4. Write to Production Path
+                using (FileStream fs = new FileStream(outputPath, FileMode.Create, FileAccess.Write))
+                {
+                    fs.Write(finalData, 0, finalData.Length);
+
+                    // Write Length (2 bytes)
+                    short metaLen = (short)(finalData.Length - fileData.Length);
+                    fs.Write(BitConverter.GetBytes(metaLen), 0, 2);
+
+                    // Write Hash (16 bytes)
+                    fs.Write(hash, 0, hash.Length);
+                }
+
+                Console.WriteLine($"[Info] Processed image saved: {outputPath}");
+                _logger.LogInfo($"[Info] Processed image saved: {outputPath}", LogType.Diagnostics);
             }
-
-            // 2. Build Data Array
-            List<byte> dataBuilder = new List<byte>(fileData);
-
-            // Append Style
-            dataBuilder.AddRange(Encoding.ASCII.GetBytes(_ccd.MetadataStyle));
-
-            // Append Client Meta
-            if (_ccd.MetadataStyle != "METADATASTYLE002")
+            catch (Exception ex)
             {
-                dataBuilder.AddRange(Encoding.ASCII.GetBytes(clientMeta));
-                dataBuilder.Add(0x90); // Terminator
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
-
-            // Append Vendor Meta
-            if (_ccd.MetadataStyle != "METADATASTYLE001")
-            {
-                dataBuilder.AddRange(Encoding.ASCII.GetBytes(vendorMeta));
-                dataBuilder.Add(0x80); // Terminator
-            }
-
-            // 3. Calculate Hash
-            byte[] finalData = dataBuilder.ToArray();
-            byte[] hash;
-            using (MD5 md5 = MD5.Create())
-            {
-                hash = md5.ComputeHash(finalData);
-            }
-
-            // 4. Write to Production Path
-            using (FileStream fs = new FileStream(outputPath, FileMode.Create, FileAccess.Write))
-            {
-                fs.Write(finalData, 0, finalData.Length);
-
-                // Write Length (2 bytes)
-                short metaLen = (short)(finalData.Length - fileData.Length);
-                fs.Write(BitConverter.GetBytes(metaLen), 0, 2);
-
-                // Write Hash (16 bytes)
-                fs.Write(hash, 0, hash.Length);
-            }
-
-            Console.WriteLine($"[Info] Processed image saved: {outputPath}");
         }
     }
 

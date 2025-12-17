@@ -1,6 +1,10 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Services;
+using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
 using System.Collections.Concurrent; // Needed for thread-safe stream management
+using System.ComponentModel.Design;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -9,7 +13,7 @@ using System.Threading.Tasks;       // Needed for Task
 namespace IPCSoftware.CoreService.Services.UI
 {
     // 🚨 FINAL STRUCTURAL FIX: UiListener must implement IMessagePublisher
-    public class UiListener : IMessagePublisher
+    public class UiListener : BaseService, IMessagePublisher
     {
         private readonly int _port;
         private TcpListener _listener;
@@ -19,26 +23,27 @@ namespace IPCSoftware.CoreService.Services.UI
 
         public Func<RequestPackage, Task<ResponsePackage>>? OnRequestReceived;
 
-        public UiListener(int port)
+        public UiListener(int port,IAppLogger logger) : base (logger)
         {
             _port = port;
         }
 
         public async Task StartAsync()
         {
-            Console.WriteLine("Starting UI Listener...");
+            _logger.LogInfo("Starting UI Listener...",LogType.Diagnostics);
 
             try
             {
                 _listener = new TcpListener(IPAddress.Any, _port);
                 _listener.Start();
 
-                Console.WriteLine($"UI Listener started on port {_port}");
+                _logger.LogInfo($"UI Listener started on port {_port}",LogType.Diagnostics);
 
                 while (true)
                 {
                     var client = await _listener.AcceptTcpClientAsync();
                     Console.WriteLine("UI CLIENT CONNECTED");
+                    _logger.LogInfo("UI CLIENT CONNECTED",LogType.Diagnostics);
 
                     // Assign a unique ID to track this client's stream
                     Guid clientId = Guid.NewGuid();
@@ -52,7 +57,7 @@ namespace IPCSoftware.CoreService.Services.UI
             }
             catch (Exception ex)
             {
-                Console.WriteLine("ERROR IN UILISTENER: " + ex.Message);
+                _logger.LogError($"ERROR IN UILISTENER:{ ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -66,6 +71,7 @@ namespace IPCSoftware.CoreService.Services.UI
             StringBuilder sb = new StringBuilder();
 
             Console.WriteLine("UI client connected");
+            _logger.LogInfo("UI client connected", LogType.Diagnostics);
 
             try
             {
@@ -89,7 +95,7 @@ namespace IPCSoftware.CoreService.Services.UI
                         }
                         catch
                         {
-                            Console.WriteLine("Invalid JSON from UI: " + json);
+                            _logger.LogError("Invalid JSON from UI: " + json, LogType.Diagnostics);
                             continue;
                         }
 
@@ -107,13 +113,14 @@ namespace IPCSoftware.CoreService.Services.UI
                         // Response path: Delimiter is already correctly handled here
                         string outJson = MessageSerializer.Serialize(response) + "\n";
                         Console.WriteLine("SENDING TO UI: " + outJson.Trim());
+                        _logger.LogInfo("SENDING TO UI: " + outJson.Trim(), LogType.Diagnostics);
                         await stream.WriteAsync(Encoding.UTF8.GetBytes(outJson));
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("UI listener error: " + ex.Message);
+                _logger.LogError("UI listener error: " + ex.Message, LogType.Diagnostics);
             }
             finally
             {
@@ -136,7 +143,7 @@ namespace IPCSoftware.CoreService.Services.UI
 
             byte[] bytes = Encoding.UTF8.GetBytes(outJson);
 
-            Console.WriteLine($"ALARM PUSHING TO UI ({_activeStreams.Count} clients): {outJson.Trim()}");
+            _logger.LogInfo($"ALARM PUSHING TO UI ({_activeStreams.Count} clients): {outJson.Trim()}", LogType.Diagnostics);
 
             // Send to all connected streams
             foreach (var pair in _activeStreams.ToList()) // Use ToList() for thread safety during iteration
@@ -152,13 +159,13 @@ namespace IPCSoftware.CoreService.Services.UI
                 catch (IOException ex) when (ex.InnerException is SocketException se && se.SocketErrorCode == SocketError.ConnectionReset)
                 {
                     // The client disconnected while we were writing. Clean up this client.
-                    Console.WriteLine($"Client {clientId} disconnected during alarm push. Removing.");
+                    _logger.LogError($"Client {clientId} disconnected during alarm push. Removing.", LogType.Diagnostics);
                     _activeStreams.TryRemove(clientId, out _);
                     stream.Dispose();
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Alarm push error to client {clientId}: {ex.Message}");
+                    _logger.LogError($"Alarm push error to client {clientId}: {ex.Message}", LogType.Diagnostics);
                     // General exception, try to remove and dispose to prevent future failures
                     _activeStreams.TryRemove(clientId, out _);
                     stream.Dispose();

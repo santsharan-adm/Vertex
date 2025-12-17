@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
@@ -8,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace IPCSoftware.CoreService.Services.PLC
 {
-    public class PLCClientManager
+    public class PLCClientManager:BaseService
     {
      
 
@@ -21,7 +22,8 @@ namespace IPCSoftware.CoreService.Services.PLC
 
         public PLCClientManager(
             IDeviceConfigurationService deviceService,
-            IPLCTagConfigurationService tagService, IOptions<ConfigSettings> config)
+            IPLCTagConfigurationService tagService, IOptions<ConfigSettings> config,
+            IAppLogger logger) : base(logger)
         {
         _config = config.Value;
             _tagService = tagService;
@@ -34,19 +36,26 @@ namespace IPCSoftware.CoreService.Services.PLC
 
         private async Task InitializeClients()
         {
-            var allTags = await _tagService.GetAllTagsAsync();
-            var devices = await _deviceService.GetPlcDevicesAsync();
-            foreach (var dev in devices)
+            try
             {
-                // Assign tags belonging to this PLCNo
-                var myTags = allTags
-                    .Where(t => t.PLCNo == dev.DeviceNo)
-                    .ToList();
+                var allTags = await _tagService.GetAllTagsAsync();
+                var devices = await _deviceService.GetPlcDevicesAsync();
+                foreach (var dev in devices)
+                {
+                    // Assign tags belonging to this PLCNo
+                    var myTags = allTags
+                        .Where(t => t.PLCNo == dev.DeviceNo)
+                        .ToList();
 
               
-                var client = new PlcClient(dev, myTags, _config);
+                    var client = new PlcClient(dev, myTags, _config, _logger);
 
-                Clients.Add(client);
+                    Clients.Add(client);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
@@ -64,6 +73,7 @@ namespace IPCSoftware.CoreService.Services.PLC
                 client.UpdateTags(allNewTags);
             }
             Console.WriteLine($"PLCClientManager notified {Clients.Count} clients of tag update.");
+            _logger.LogError($"PLCClientManager notified {Clients.Count} clients of tag update.", LogType.Diagnostics);
         }
         public PlcClient GetClient(int plcNo)
         {
@@ -71,8 +81,5 @@ namespace IPCSoftware.CoreService.Services.PLC
         }
     }
 
-    public class CameraClientManager
-    {
-
-    }
+   
 }

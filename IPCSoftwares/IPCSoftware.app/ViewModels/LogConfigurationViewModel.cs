@@ -11,6 +11,7 @@ using System.Windows.Input;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using IPCSoftware.Core.Interfaces;
 using System.IO;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 
 namespace IPCSoftware.App.ViewModels
 {
@@ -167,7 +168,7 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public LogConfigurationViewModel(ILogConfigurationService logService)
+        public LogConfigurationViewModel(ILogConfigurationService logService, IAppLogger logger) : base(logger)
         {
             _logService = logService;
 

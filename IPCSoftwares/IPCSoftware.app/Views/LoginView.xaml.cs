@@ -13,15 +13,11 @@ namespace IPCSoftware.App.Views
 {
     public partial class LoginView : UserControl
     {
-        public LoginView()
+        public LoginView(LoginViewModel vm)
         {
             InitializeComponent();
-            DataContext = new LoginViewModel(
-            App.ServiceProvider.GetService<IAuthService>(),
-            App.ServiceProvider.GetService<INavigationService>(),
-            App.ServiceProvider.GetService<IDialogService>(),
-            App.ServiceProvider.GetService<IAppLogger>(),
-            App.ServiceProvider.GetService<MainWindowViewModel>());
+            DataContext = vm;
+           
 
         }
 

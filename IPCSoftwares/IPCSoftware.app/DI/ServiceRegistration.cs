@@ -27,7 +27,8 @@ namespace IPCSoftware.App.DI
     {
         public static void RegisterServices(IServiceCollection services/*, IConfiguration configuration*/)
         {
-           // services.AddHostedService<Worker>();
+            // services.AddHostedService<Worker>();
+            services.AddSingleton<IAppLogger, AppLoggerService>();
             services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
             services.AddSingleton<ICycleManagerService, CycleManagerService>();
@@ -41,9 +42,14 @@ namespace IPCSoftware.App.DI
             services.AddTransient<ProductionImageService>();
             services.AddSingleton<AlarmService>();
 
-            services.AddSingleton<UiListener>(sp =>
+           /* services.AddSingleton<UiListener>(sp =>
             {
                 return new UiListener(5050);
+            });*/
+            services.AddSingleton<UiListener>(sp =>
+            {
+                var logger = sp.GetRequiredService<IAppLogger>();
+                return new UiListener(5050, logger);
             });
             // When someone asks for IMessagePublisher, give them the EXISTING UiListener
             services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
@@ -59,7 +65,7 @@ namespace IPCSoftware.App.DI
             //Dialog service
             services.AddSingleton<IDialogService, DialogService>();
             //AppLogger 
-            services.AddSingleton<IAppLogger, AppLoggerService>();
+      
             services.AddSingleton<ILogManagerService, LogManagerService>();
           
 
@@ -103,6 +109,9 @@ namespace IPCSoftware.App.DI
             // ========== ALARM CONFIGURATION VIEWMODELS (Transient) ========== 
             services.AddTransient<AlarmListViewModel>();
             services.AddTransient<AlarmConfigurationViewModel>();
+            services.AddTransient< BackupService>();
+            services.AddTransient<TagConfigLoader>();
+
 
             // ========== USER MANAGEMENT VIEWMODELS (Transient) ========== 
             services.AddTransient<UserListViewModel>();
@@ -119,7 +128,6 @@ namespace IPCSoftware.App.DI
             services.AddTransient<PLCTagConfigurationViewModel>();
 
             // Views
-            services.AddTransient<LoginView>();
             services.AddTransient<RibbonView>();
             services.AddTransient<OEEDashboard>();
        
@@ -163,6 +171,9 @@ namespace IPCSoftware.App.DI
             services.AddTransient<PLCTagConfigurationView>();
 
             services.AddTransient<LogViewerViewModel>();
+
+            services.AddTransient<LoginViewModel>();
+            services.AddTransient<LoginView>();
 
             //Tag Control
             services.AddTransient<TagControlView>();

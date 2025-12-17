@@ -14,7 +14,6 @@ public class RibbonViewModel : BaseViewModel
 {
     private readonly INavigationService _nav;
     private readonly IDialogService _dialog;
-    private readonly IAppLogger _logger;
 
     public ICommand NavigateDashboardCommand { get; }
 
@@ -23,7 +22,7 @@ public class RibbonViewModel : BaseViewModel
     public ICommand NavigateUserMgmtCommand { get; }
     public ICommand NavigateLandingPageCommand { get; }
 
-    
+
     public ICommand LogoutCommand { get; }
     public Action OnLogout { get; set; }
     public Action OnLandingPageRequested { get; set; }
@@ -33,9 +32,11 @@ public class RibbonViewModel : BaseViewModel
 
     public Action<(string Key, List<string> Items)> ShowSidebar { get; set; }   // NEW
 
-    public RibbonViewModel(INavigationService nav, IAppLogger logger, IDialogService dialog)
+    public RibbonViewModel(
+        INavigationService nav,
+        IDialogService dialog,
+        IAppLogger logger) : base(logger)
     {
-        _logger = logger;
         _nav = nav;
 
         NavigateDashboardCommand = new RelayCommand(OpenDashboardMenu);
@@ -46,7 +47,7 @@ public class RibbonViewModel : BaseViewModel
         LogoutCommand = new RelayCommand(Logout);
         NavigateLandingPageCommand = new RelayCommand(OpenLandingPage);
         _dialog = dialog;
-    }   
+    }
 
     public bool IsAdmin => UserSession.Role == "Admin";
     public string CurrentUserName => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Username.ToLower()) ?? "Guest";
@@ -74,13 +75,13 @@ public class RibbonViewModel : BaseViewModel
              "Alarm View"
         }, nameof(OpenSettingsMenu));
 
-      /*  ShowSidebar?.Invoke(new Dictionary<string, List<string>> List<string>
-        {
-            "System Settings",
-            "Manual Operation",
-            "Mode Of Operation",
-            "PLC IO"
-        });*/
+        /*  ShowSidebar?.Invoke(new Dictionary<string, List<string>> List<string>
+          {
+              "System Settings",
+              "Manual Operation",
+              "Mode Of Operation",
+              "PLC IO"
+          });*/
     }
 
     private void OpenLogsMenu()
@@ -92,11 +93,11 @@ public class RibbonViewModel : BaseViewModel
             "Error Logs",
             "Diagnostics Logs"
         }, nameof(OpenLogsMenu));
-       /* ShowSidebar?.Invoke(new List<string>
-        {
-            "System Logs",
-            "Production Logs"
-        });*/
+        /* ShowSidebar?.Invoke(new List<string>
+         {
+             "System Logs",
+             "Production Logs"
+         });*/
     }
 
     private void OpenUserMgtMenu()
@@ -114,18 +115,6 @@ public class RibbonViewModel : BaseViewModel
                         "Report Config",
                         "External Interface"
                 }, nameof(OpenUserMgtMenu));
-
-            /*  ShowSidebar?.Invoke(new List<string>
-              {
-                  "Log Config",
-                  "Device Config",
-                  "Alarm Config",
-                  "User Config",
-                  "PLC TAG Config",
-                  "Report Config",
-                  "External Interface"
-
-              });*/
         }
     }
 
@@ -142,7 +131,7 @@ public class RibbonViewModel : BaseViewModel
             _nav.NavigateMain<LoginView>();
             UserSession.Clear();
         }
-       
+
     }
 
 
@@ -158,10 +147,10 @@ public class RibbonViewModel : BaseViewModel
     {
         string key = functionName.Replace("Open", "");  // "OpenDashboardMenu" → "DashboardMenu"
 
-      /*  if (_currentMenu?.Key == key)
-            return;*/ // Do nothing if user clicked same button again
+        /*  if (_currentMenu?.Key == key)
+              return;*/ // Do nothing if user clicked same button again
 
-       // _currentMenu = (key, items);
+        // _currentMenu = (key, items);
 
         // Send menu to sidebar
         ShowSidebar?.Invoke((key, items));

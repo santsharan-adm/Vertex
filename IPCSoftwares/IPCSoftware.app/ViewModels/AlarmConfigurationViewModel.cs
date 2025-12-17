@@ -1,6 +1,8 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -123,7 +125,9 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public AlarmConfigurationViewModel(IAlarmConfigurationService alarmService):base()
+        public AlarmConfigurationViewModel
+            (IAlarmConfigurationService alarmService, 
+            IAppLogger logger) : base(logger)
         {
             _alarmService = alarmService;
 

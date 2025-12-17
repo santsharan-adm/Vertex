@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.CoreService;
 using IPCSoftware.CoreService.Alarm;
@@ -8,6 +9,7 @@ using IPCSoftware.CoreService.Services.Dashboard;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
+using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,6 +72,9 @@ namespace IPCSoftware.CoreService
                      //   services.AddSingleton<IConfiguration>(hostContext.Configuration);
                         // 2. Configuration Service (Resolvable by DI)
                         services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+                        services.AddSingleton<IAppLogger, AppLoggerService>();
+                        services.AddSingleton<ILogManagerService, LogManagerService>();
+                        services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
                         services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
                         services.AddSingleton<ICycleManagerService, CycleManagerService>();
                         services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
@@ -77,11 +82,19 @@ namespace IPCSoftware.CoreService
                         services.AddSingleton<DashboardInitializer>();
                         services.AddSingleton<OeeEngine>();
                         services.AddSingleton<AlarmService>();
+                        services.AddTransient<TagConfigLoader>();
+                        services.AddTransient<BackupService>();
 
-                        services.AddSingleton<UiListener>(sp =>
+                     /*   services.AddSingleton<UiListener>(sp =>
                         {
                             return new UiListener(5050);
+                        });*/
+                        services.AddSingleton<UiListener>(sp =>
+                        {
+                            var logger = sp.GetRequiredService<IAppLogger>();
+                            return new UiListener(5050, logger);
                         });
+
                         // When someone asks for IMessagePublisher, give them the EXISTING UiListener
                         services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
 

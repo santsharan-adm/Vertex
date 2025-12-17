@@ -1,17 +1,19 @@
-﻿using IPCSoftware.Shared.Models.ConfigModels;
+﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Services;
+using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.Shared.Models.Messaging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IPCSoftware.Shared.Models.Messaging;
-using IPCSoftware.Core.Interfaces;
 
 
 namespace IPCSoftware.CoreService.Alarm
 {
-    public class AlarmService
+    public class AlarmService : BaseService
     {
         // Stores alarm definitions loaded from the config file
         private  List<AlarmConfigurationModel> _alarmDefinitions;
@@ -24,7 +26,8 @@ namespace IPCSoftware.CoreService.Alarm
         // private readonly IMessagePublisher _publisher; 
 
         public AlarmService(IAlarmConfigurationService alarmConfigService,
-            IMessagePublisher publisher)
+            IMessagePublisher publisher,
+            IAppLogger logger) : base(logger)
         {
             _alarmConfigService = alarmConfigService;
         
@@ -35,8 +38,15 @@ namespace IPCSoftware.CoreService.Alarm
 
         private async Task InitializeAlarms()
         {
-            await _alarmConfigService.InitializeAsync();
-            _alarmDefinitions = await _alarmConfigService.GetAllAlarmsAsync();
+            try
+            {
+                await _alarmConfigService.InitializeAsync();
+                _alarmDefinitions = await _alarmConfigService.GetAllAlarmsAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
 
         }
 
@@ -47,40 +57,47 @@ namespace IPCSoftware.CoreService.Alarm
         /// <param name="processedData">Dictionary of Tag ID (int) and its final processed Value (object).</param>
         public void ProcessTagData(Dictionary<int, object> processedData)
         {
-            // Group the alarm definitions by the TagNo they monitor
-            var alarmsByTag = _alarmDefinitions.GroupBy(a => a.TagNo);
-
-            foreach (var group in alarmsByTag)
+            try
             {
-                int tagId = group.Key;
+                // Group the alarm definitions by the TagNo they monitor
+                var alarmsByTag = _alarmDefinitions.GroupBy(a => a.TagNo);
 
-                // Check if the current PLC scan contains the monitored tag
-                if (!processedData.TryGetValue(tagId, out var newValue))
+                foreach (var group in alarmsByTag)
                 {
-                    continue; // Skip if the tag data isn't in this scan
-                }
+                    int tagId = group.Key;
 
-                foreach (var config in group)
-                {
-                    // 1. EVALUATE CONDITION
-                    bool isAlarmConditionMet = CheckAlarmCondition(config, newValue);
-
-                    // 2. CHECK ALARM STATE
-                    bool isActive = _activeAlarms.ContainsKey(config.AlarmNo);
-
-                    if (isAlarmConditionMet && !isActive)
+                    // Check if the current PLC scan contains the monitored tag
+                    if (!processedData.TryGetValue(tagId, out var newValue))
                     {
-                        // Condition Met (True) and Alarm is NOT Active -> RAISE ALARM
-                        RaiseAlarm(config);
+                        continue; // Skip if the tag data isn't in this scan
                     }
-                    else if (!isAlarmConditionMet && isActive)
+
+                    foreach (var config in group)
                     {
-                        // Condition NOT Met (False) and Alarm IS Active -> CLEAR ALARM
-                        // NOTE: If you need to enforce Acknowledgement before clearing, the logic changes here.
-                        // For now, simple clear on reset.
-                        ClearAlarm(config.AlarmNo);
+                        // 1. EVALUATE CONDITION
+                        bool isAlarmConditionMet = CheckAlarmCondition(config, newValue);
+
+                        // 2. CHECK ALARM STATE
+                        bool isActive = _activeAlarms.ContainsKey(config.AlarmNo);
+
+                        if (isAlarmConditionMet && !isActive)
+                        {
+                            // Condition Met (True) and Alarm is NOT Active -> RAISE ALARM
+                            RaiseAlarm(config);
+                        }
+                        else if (!isAlarmConditionMet && isActive)
+                        {
+                            // Condition NOT Met (False) and Alarm IS Active -> CLEAR ALARM
+                            // NOTE: If you need to enforce Acknowledgement before clearing, the logic changes here.
+                            // For now, simple clear on reset.
+                            ClearAlarm(config.AlarmNo);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
@@ -88,118 +105,152 @@ namespace IPCSoftware.CoreService.Alarm
 
         private bool CheckAlarmCondition(AlarmConfigurationModel config, object newValue)
         {
-            // Case 1: The tag itself is a Boolean (if you have dedicated Boolean alarm tags)
-            if (newValue is bool boolValue)
+            try
             {
-                return boolValue == true;
-            }
-
-            // Case 2: The tag is numeric (INT) and AlarmBit specifies a specific bit index (0-15).
-            // This is the CRITICAL logic for your 16-bit alarm registers.
-            if (int.TryParse(config.AlarmBit, out int bitIndex))
-            {
-                // A valid bit index is usually 0 through 15 for a 16-bit INT.
-                if (bitIndex >= 0 && bitIndex <= 15)
+                // Case 1: The tag itself is a Boolean (if you have dedicated Boolean alarm tags)
+                if (newValue is bool boolValue)
                 {
-                    // Try to handle 16-bit unsigned or signed integers
-                    if (newValue is ushort ushortValue)
+                    return boolValue == true;
+                }
+
+                // Case 2: The tag is numeric (INT) and AlarmBit specifies a specific bit index (0-15).
+                // This is the CRITICAL logic for your 16-bit alarm registers.
+                if (int.TryParse(config.AlarmBit, out int bitIndex))
+                {
+                    // A valid bit index is usually 0 through 15 for a 16-bit INT.
+                    if (bitIndex >= 0 && bitIndex <= 15)
                     {
-                        // Check if the specified bit is set
-                        return ((ushortValue >> bitIndex) & 0x01) == 1;
-                    }
-                    if (newValue is short shortValue)
-                    {
-                        return (((ushort)shortValue >> bitIndex) & 0x01) == 1;
-                    }
-                    // For safety, handle as a generic integer if 16-bit types are boxed as 32-bit int
-                    if (newValue is int intValue)
-                    {
-                        return (((uint)intValue >> bitIndex) & 0x01) == 1;
+                        // Try to handle 16-bit unsigned or signed integers
+                        if (newValue is ushort ushortValue)
+                        {
+                            // Check if the specified bit is set
+                            return ((ushortValue >> bitIndex) & 0x01) == 1;
+                        }
+                        if (newValue is short shortValue)
+                        {
+                            return (((ushort)shortValue >> bitIndex) & 0x01) == 1;
+                        }
+                        // For safety, handle as a generic integer if 16-bit types are boxed as 32-bit int
+                        if (newValue is int intValue)
+                        {
+                            return (((uint)intValue >> bitIndex) & 0x01) == 1;
+                        }
                     }
                 }
-            }
 
-            // Case 3: Fallback (If AlarmBit is not a valid index, but we assume the value must be non-zero to trigger)
-            // This catches tags where the value itself represents the condition status (e.g., AlarmBit="1").
-            if (newValue is IConvertible convertibleValue)
-            {
-                try
+                // Case 3: Fallback (If AlarmBit is not a valid index, but we assume the value must be non-zero to trigger)
+                // This catches tags where the value itself represents the condition status (e.g., AlarmBit="1").
+                if (newValue is IConvertible convertibleValue)
                 {
-                    double numericValue = convertibleValue.ToDouble(null);
-                    return numericValue != 0.0;
+                    try
+                    {
+                        double numericValue = convertibleValue.ToDouble(null);
+                        return numericValue != 0.0;
+                    }
+                    catch { } // Ignore conversion errors for non-numeric types
                 }
-                catch { } // Ignore conversion errors for non-numeric types
-            }
 
-            return false;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
 
         private async Task RaiseAlarm(AlarmConfigurationModel config)
         {
-            var newInstance = new AlarmInstanceModel
+            try
             {
-                InstanceId = Guid.NewGuid(),
-                AlarmNo = config.AlarmNo,
-                AlarmText = config.AlarmText,
-                Severity = config.Severity,
-                AlarmTime = DateTime.Now,
-                // New alarms start as Active
-            };
-
-            if (_activeAlarms.TryAdd(config.AlarmNo, newInstance))
-            {
-                Console.WriteLine($"*** ALARM RAISED: {config.AlarmText} (Tag {config.TagNo}) ***");
-                Console.WriteLine($"\n*** ALARM RAISED *** No: {config.AlarmNo} | Tag: {config.TagNo} | Bit: {config.AlarmBit} | Text: {config.AlarmText}");
-                Console.ResetColor();
-                // ⚠️ Publish the new AlarmInstanceModel via your Messaging system
-                // _publisher.Publish(new AlarmMessage { AlarmInstance = newInstance });
-                await _publisher.PublishAsync(new AlarmMessage
+                var newInstance = new AlarmInstanceModel
                 {
-                    AlarmInstance = newInstance,
-                    MessageType = AlarmMessageType.Raised
-                });
+                    InstanceId = Guid.NewGuid(),
+                    AlarmNo = config.AlarmNo,
+                    AlarmText = config.AlarmText,
+                    Severity = config.Severity,
+                    AlarmTime = DateTime.Now,
+                    // New alarms start as Active
+                };
+
+                if (_activeAlarms.TryAdd(config.AlarmNo, newInstance))
+                {
+                    Console.WriteLine($"*** ALARM RAISED: {config.AlarmText} (Tag {config.TagNo}) ***");
+                    _logger.LogInfo($"*** ALARM RAISED: {config.AlarmText} (Tag {config.TagNo}) ***", LogType.Diagnostics);
+                    Console.WriteLine($"\n*** ALARM RAISED *** No: {config.AlarmNo} | Tag: {config.TagNo} | Bit: {config.AlarmBit} | Text: {config.AlarmText}");
+                    _logger.LogInfo($"\n*** ALARM RAISED *** No: {config.AlarmNo} | Tag: {config.TagNo} | Bit: {config.AlarmBit} | Text: {config.AlarmText}", LogType.Diagnostics);
+                    Console.ResetColor();
+                    // ⚠️ Publish the new AlarmInstanceModel via your Messaging system
+                    // _publisher.Publish(new AlarmMessage { AlarmInstance = newInstance });
+                    await _publisher.PublishAsync(new AlarmMessage
+                    {
+                        AlarmInstance = newInstance,
+                        MessageType = AlarmMessageType.Raised
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
         public async Task ClearAlarm(int alarmNo)
         {
-            if (_activeAlarms.TryRemove(alarmNo, out var clearedInstance))
+            try
             {
-                clearedInstance.AlarmResetTime = DateTime.Now;
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"--- ALARM CLEARED: {clearedInstance.AlarmText} ---");
-                Console.ResetColor();
-
-                // ⚠️ Publish the cleared AlarmInstanceModel via your Messaging system
-                // _publisher.Publish(new AlarmMessage { AlarmInstance = clearedInstance });
-
-                await _publisher.PublishAsync(new AlarmMessage
+                if (_activeAlarms.TryRemove(alarmNo, out var clearedInstance))
                 {
-                    AlarmInstance = clearedInstance,
-                    MessageType = AlarmMessageType.Cleared
-                });
+                    clearedInstance.AlarmResetTime = DateTime.Now;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"--- ALARM CLEARED: {clearedInstance.AlarmText} ---");
+                    _logger.LogInfo ($"--- ALARM CLEARED: {clearedInstance.AlarmText} ---", LogType.Diagnostics);
+                    Console.ResetColor();
 
-                // NOTE: to store history krishna will save 'clearedInstance' to a database here.
+                    // ⚠️ Publish the cleared AlarmInstanceModel via your Messaging system
+                    // _publisher.Publish(new AlarmMessage { AlarmInstance = clearedInstance });
+
+                    await _publisher.PublishAsync(new AlarmMessage
+                    {
+                        AlarmInstance = clearedInstance,
+                        MessageType = AlarmMessageType.Cleared
+                    });
+
+                    // NOTE: to store history krishna will save 'clearedInstance' to a database here.
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
         // This method will be called from the UI via the UI Listener
         public async Task<bool> AcknowledgeAlarm(int alarmNo, string userName)
         {
-            if (_activeAlarms.TryGetValue(alarmNo, out var alarm))
+            try
             {
-                // Only acknowledge if not already acknowledged
-                if (alarm.AlarmAckTime == null)
+                if (_activeAlarms.TryGetValue(alarmNo, out var alarm))
                 {
-                    alarm.AlarmAckTime = DateTime.Now;
-                    alarm.AcknowledgedByUser = userName;
-                    Console.WriteLine($"--- ALARM ACKNOWLEDGED: {alarm.AlarmText} by {userName} ---");
-                    // ⚠️ Publish the acknowledged AlarmInstanceModel
-                    // _publisher.Publish(new AlarmMessage { AlarmInstance = alarm });
-                    return true;
+                    // Only acknowledge if not already acknowledged
+                    if (alarm.AlarmAckTime == null)
+                    {
+                        alarm.AlarmAckTime = DateTime.Now;
+                        alarm.AcknowledgedByUser = userName;
+                        Console.WriteLine($"--- ALARM ACKNOWLEDGED: {alarm.AlarmText} by {userName} ---");
+                        _logger.LogInfo($"--- ALARM ACKNOWLEDGED: {alarm.AlarmText} by {userName} ---", LogType.Diagnostics);
+                        // ⚠️ Publish the acknowledged AlarmInstanceModel
+                        // _publisher.Publish(new AlarmMessage { AlarmInstance = alarm });
+                        return true;
+                    }
                 }
+                return false;
             }
-            return false;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
     }
 }

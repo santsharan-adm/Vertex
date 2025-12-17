@@ -1,14 +1,16 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 
 namespace IPCSoftware.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService : BaseService, IAuthService
     {
         private readonly IUserManagementService _userService;
 
-        public AuthService(IUserManagementService userService)
+        public AuthService(IUserManagementService userService,
+            IAppLogger logger) : base(logger)
         {
             _userService = userService;
         }
@@ -37,7 +39,7 @@ namespace IPCSoftware.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Login error: {ex.Message}");
+                _logger.LogError($"Login error: {ex.Message}", LogType.Diagnostics);
                 return (false, null);
             }
         }
@@ -71,7 +73,8 @@ namespace IPCSoftware.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error ensuring default user: {ex.Message}");
+                _logger.LogError("Error ensuring default user: {ex.Message}", LogType.Diagnostics);
+        
             }
         }
 

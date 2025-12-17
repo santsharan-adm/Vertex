@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -84,7 +85,10 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public UserConfigurationViewModel(IUserManagementService userService, IDialogService dialog)
+        public UserConfigurationViewModel(
+            IUserManagementService userService, 
+            IDialogService dialog,
+        IAppLogger logger) : base(logger)
         {
             _userService = userService;
             _dialog = dialog;

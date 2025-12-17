@@ -46,7 +46,7 @@ namespace IPCSoftware.App.ViewModels
         public ICommand BackCommand { get; }
 
         public CameraDetailViewModel(IDeviceConfigurationService deviceService,
-            INavigationService nav, IAppLogger logger)/* : base (logger)*/
+            INavigationService nav, IAppLogger logger) : base (logger)
         {
             _deviceService = deviceService;
             _nav = nav;

@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,7 +45,27 @@ namespace IPCSoftware.Services.AppLoggerServices
         // Public APIs
         public void LogInfo(string message, LogType type) => EnqueueLog("INFO", message, type);
         public void LogWarning(string message, LogType type) => EnqueueLog("WARN", message, type);
-        public void LogError(string message, LogType type) => EnqueueLog("ERROR", message, type);
+        //public void LogError(string message, LogType type) => EnqueueLog("ERROR", message, type);
+
+        public void LogError(
+        string message,
+        LogType type,
+        [CallerMemberName] string memberName = "",
+        [CallerFilePath] string filePath = "",
+        [CallerLineNumber] int lineNumber = 0)
+        {
+            string finalMessage = message;
+
+            // Add caller info ONLY for Diagnostics
+            if (type == LogType.Diagnostics)
+            {
+                string className = Path.GetFileNameWithoutExtension(filePath);
+                finalMessage = $"[{className}.{memberName}() Line:{lineNumber}] : {message}";
+            }
+
+            EnqueueLog("ERROR", finalMessage, type);
+        }
+
 
         private void EnqueueLog(string level, string message, LogType type)
         {

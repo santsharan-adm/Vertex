@@ -1,8 +1,10 @@
-﻿using IPCSoftware.CoreService.Alarm;
+﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.CoreService.Alarm;
 using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
+using IPCSoftware.Services;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
 using Microsoft.Extensions.FileSystemGlobbing.Internal.PatternContexts;
@@ -13,10 +15,10 @@ using System.Text.Json;
 
 namespace IPCSoftware.CoreService.Services.Dashboard
 {
-    public class DashboardInitializer
+    public class DashboardInitializer : BaseService
     {
         private readonly PLCClientManager _manager;
-        private readonly UiListener _ui = new UiListener(5050);
+        private readonly UiListener _ui ;
         private readonly AlgorithmAnalysisService _algo;
         private readonly OeeEngine _oee ;
         private readonly SystemMonitorService _systemMonitor;
@@ -34,7 +36,8 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             SystemMonitorService systemMonitor,
           UiListener ui,
           AlarmService alarmService,
-            CCDTriggerService ccdTrigger)
+            CCDTriggerService ccdTrigger,
+            IAppLogger logger) : base(logger)
         {
             _ui = ui;
             _alarmService = alarmService;   
@@ -49,45 +52,52 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
         public async Task StartAsync()
         {
-            _ui.OnRequestReceived = HandleUiRequest;
-
-            // Start UI
-           // var uiTask = _ui.StartAsync();
-            // Start PLC read loops
-            var plcTasks = _manager.Clients.Select(client =>
+            try
             {
-                client.OnPlcDataReceived += (plcNo, values) =>
+                _ui.OnRequestReceived = HandleUiRequest;
+
+                // Start UI
+               // var uiTask = _ui.StartAsync();
+                // Start PLC read loops
+                var plcTasks = _manager.Clients.Select(client =>
                 {
-                    // A. Process Raw Data -> Typed Values (Int/Bool/String)
-                    // processedData is Dictionary<int, object> where int is Tag ID
-                    var processedData = _algo.Apply(plcNo, values);
-
-                    // B. CHECK FOR TRIGGERS (This is where the magic happens)
-                    // We call this immediately after processing values, but before updating UI
-                  _ccdTrigger.ProcessTriggers(processedData, _manager);
-                    _oee.ProcessCycleTimeLogic(processedData);
-                    _oee.Calculate(processedData);
-                    _systemMonitor.Process(processedData);
-                    _alarmService.ProcessTagData(processedData);
-
-                    // C. Prepare for UI (Convert int Key to uint Key for compatibility)
-                    var final = processedData.ToDictionary(k => (int)k.Key, v => v.Value);
-
-                    // D. Update Cache
-                    _latestPackets[plcNo] = new PlcPacket
+                    client.OnPlcDataReceived += (plcNo, values) =>
                     {
-                        PlcNo = plcNo,
-                        Values = final,
-                        Timestamp = DateTime.Now
+                        // A. Process Raw Data -> Typed Values (Int/Bool/String)
+                        // processedData is Dictionary<int, object> where int is Tag ID
+                        var processedData = _algo.Apply(plcNo, values);
+
+                        // B. CHECK FOR TRIGGERS (This is where the magic happens)
+                        // We call this immediately after processing values, but before updating UI
+                      _ccdTrigger.ProcessTriggers(processedData, _manager);
+                        _oee.ProcessCycleTimeLogic(processedData);
+                        _oee.Calculate(processedData);
+                        _systemMonitor.Process(processedData);
+                        _alarmService.ProcessTagData(processedData);
+
+                        // C. Prepare for UI (Convert int Key to uint Key for compatibility)
+                        var final = processedData.ToDictionary(k => (int)k.Key, v => v.Value);
+
+                        // D. Update Cache
+                        _latestPackets[plcNo] = new PlcPacket
+                        {
+                            PlcNo = plcNo,
+                            Values = final,
+                            Timestamp = DateTime.Now
+                        };
+
+                        _lastValues = final;
                     };
+                    return client.StartAsync();
+                });
 
-                    _lastValues = final;
-                };
-                return client.StartAsync();
-            });
-
-            // Await everything
-            await Task.WhenAll(plcTasks);
+                // Await everything
+                await Task.WhenAll(plcTasks);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void HandlePlcPacket(int plcNo, Dictionary<int, object> values)
@@ -111,92 +121,105 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
         public async Task<ResponsePackage> HandleUiRequest(RequestPackage request)
         {
-            Debug.WriteLine($"[Core] HandleUiRequest called → RequestId={request.RequestId}");
+            try
+            {
+                Debug.WriteLine($"[Core] HandleUiRequest called → RequestId={request.RequestId}");
+                _logger.LogInfo($"[Core] HandleUiRequest called → RequestId={request.RequestId}",LogType.Diagnostics);
 
-            //---------------------------------------------------------
-            // 6) WRITE REQUEST (RequestId = 6)
-            //---------------------------------------------------------
-            if (request.RequestId == 6)
-            {
-                return await HandleUiWrite(request);
-            }
-            if (request.RequestId == 7)
-            {
-                return await HandleAlarmRequest(request);
-            }
-
-            //---------------------------------------------------------
-            // 1) IO REQUEST (RequestId = 5)
-            //---------------------------------------------------------
-            if (request.RequestId == 5)
-            {
-                if (!_latestPackets.TryGetValue(1, out var packet))
+                //---------------------------------------------------------
+                // 6) WRITE REQUEST (RequestId = 6)
+                //---------------------------------------------------------
+                if (request.RequestId == 6)
                 {
+                    return await HandleUiWrite(request);
+                }
+                if (request.RequestId == 7)
+                {
+                    return await HandleAlarmRequest(request);
+                }
+
+                //---------------------------------------------------------
+                // 1) IO REQUEST (RequestId = 5)
+                //---------------------------------------------------------
+                if (request.RequestId == 5)
+                {
+                    if (!_latestPackets.TryGetValue(1, out var packet))
+                    {
+                        return new ResponsePackage
+                        {
+                            ResponseId = 5,
+                            Parameters = _lastValues
+                        };
+                    }
+
                     return new ResponsePackage
                     {
                         ResponseId = 5,
-                        Parameters = _lastValues
+                        Parameters = packet.Values // Dictionary<uint, object>
                     };
                 }
 
-                return new ResponsePackage
+                //---------------------------------------------------------
+                // 2) OEE REQUEST (RequestId = 4)
+                //---------------------------------------------------------
+                if (request.RequestId == 4)
                 {
-                    ResponseId = 5,
-                    Parameters = packet.Values // Dictionary<uint, object>
-                };
-            }
-
-            //---------------------------------------------------------
-            // 2) OEE REQUEST (RequestId = 4)
-            //---------------------------------------------------------
-            if (request.RequestId == 4)
-            {
-                if (!_latestPackets.TryGetValue(1, out var packet))
-                {
+                    if (!_latestPackets.TryGetValue(1, out var packet))
+                    {
+                        return new ResponsePackage
+                        {
+                            ResponseId = 4,
+                            Parameters = new Dictionary<int, object>()
+                        };
+                    }
+                //    _oee.ProcessCycleTimeLogic(packet.Values);
                     return new ResponsePackage
                     {
                         ResponseId = 4,
-                        Parameters = new Dictionary<int, object>()
+                        Parameters =_oee.Calculate( packet.Values)
                     };
                 }
-            //    _oee.ProcessCycleTimeLogic(packet.Values);
-                return new ResponsePackage
-                {
-                    ResponseId = 4,
-                    Parameters =_oee.Calculate( packet.Values)
-                };
-            }
 
 
-            if (request.RequestId == 1)
-            {
-                if (!_latestPackets.TryGetValue(1, out var packet))
+                if (request.RequestId == 1)
                 {
-                    return new ResponsePackage
+                    if (!_latestPackets.TryGetValue(1, out var packet))
                     {
+                        return new ResponsePackage
+                        {
+                            ResponseId = 1,
+                            Parameters = new Dictionary<int, object>()
+                        };
+                    }
+                //    _oee.ProcessCycleTimeLogic(packet.Values);
+                    return new ResponsePackage
+                    {   
                         ResponseId = 1,
-                        Parameters = new Dictionary<int, object>()
+                        Parameters = _systemMonitor.Process(packet.Values)
                     };
                 }
-            //    _oee.ProcessCycleTimeLogic(packet.Values);
+
+
+
+
+                //---------------------------------------------------------
+                // 3) UNKNOWN REQUEST
+                //---------------------------------------------------------
                 return new ResponsePackage
-                {   
-                    ResponseId = 1,
-                    Parameters = _systemMonitor.Process(packet.Values)
+                {
+                    ResponseId = -1,
+                    Parameters = new Dictionary<int, object>()
                 };
             }
-
-
-
-
-            //---------------------------------------------------------
-            // 3) UNKNOWN REQUEST
-            //---------------------------------------------------------
-            return new ResponsePackage
+            catch (Exception ex)
             {
-                ResponseId = -1,
-                Parameters = new Dictionary<int, object>()
-            };
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return new ResponsePackage
+                {
+                    ResponseId = -1,
+                    Parameters = new Dictionary<int, object>()
+                };
+            }
         }
 
         private async Task<ResponsePackage> HandleUiWrite(RequestPackage request)
@@ -242,6 +265,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
                 return Error(ex.Message);
             }
         }
@@ -249,25 +273,33 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
         private async Task<ResponsePackage> HandleAlarmRequest(RequestPackage request)
         {
-            if (request.Parameters is JsonElement json)
+            try
             {
-                try
+                if (request.Parameters is JsonElement json)
                 {
-                    if (json.TryGetProperty("Action", out var actionElement) && actionElement.GetString() == "Acknowledge")
+                    try
                     {
-                        int alarmNo = json.GetProperty("AlarmNo").GetInt32();
-                        string userName = json.GetProperty("UserName").GetString() ?? "WebClient";
+                        if (json.TryGetProperty("Action", out var actionElement) && actionElement.GetString() == "Acknowledge")
+                        {
+                            int alarmNo = json.GetProperty("AlarmNo").GetInt32();
+                            string userName = json.GetProperty("UserName").GetString() ?? "WebClient";
 
-                        bool success = await _alarmService.AcknowledgeAlarm(alarmNo, userName);
+                            bool success = await _alarmService.AcknowledgeAlarm(alarmNo, userName);
 
-                        if (success) return OkAlarm(alarmNo);
-                        else return ErrorAlarm($"Failed to acknowledge Alarm {alarmNo}. Not active or already ack'd.");
+                            if (success) return OkAlarm(alarmNo);
+                            else return ErrorAlarm($"Failed to acknowledge Alarm {alarmNo}. Not active or already ack'd.");
+                        }
+                        return ErrorAlarm("Unknown alarm action.");
                     }
-                    return ErrorAlarm("Unknown alarm action.");
+                    catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); return ErrorAlarm($"Error processing alarm request: {ex.Message}"); }
                 }
-                catch (Exception ex) { return ErrorAlarm($"Error processing alarm request: {ex.Message}"); }
+                return ErrorAlarm("Invalid alarm request parameters.");
             }
-            return ErrorAlarm("Invalid alarm request parameters.");
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return ErrorAlarm($"Error processing alarm request: {ex.Message}.");
+            }
         }
 
 
