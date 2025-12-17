@@ -161,41 +161,55 @@ namespace IPCSoftware.App.ViewModels
 
         private void LoadFromModel(AlarmConfigurationModel alarm)
         {
-            AlarmNo = alarm.AlarmNo;
-            AlarmName = alarm.AlarmName;
-            TagNo = alarm.TagNo;
-            Name = alarm.Name;
-            AlarmBit = alarm.AlarmBit;
-            AlarmText = alarm.AlarmText;
-            Severity = alarm.Severity ?? "Error";
-            AlarmTime = alarm.AlarmTime?.ToString("dd-MMM-yyyy HH:mm:ss") ?? string.Empty;
-            AlarmResetTime = alarm.AlarmResetTime?.ToString("dd-MMM-yyyy HH:mm:ss") ?? string.Empty;
-            AlarmAckTime = alarm.AlarmAckTime?.ToString("dd-MMM-yyyy HH:mm:ss") ?? string.Empty;
-            Description = alarm.Description;
-            Remark = alarm.Remark;
+            try
+            {
+                AlarmNo = alarm.AlarmNo;
+                AlarmName = alarm.AlarmName;
+                TagNo = alarm.TagNo;
+                Name = alarm.Name;
+                AlarmBit = alarm.AlarmBit;
+                AlarmText = alarm.AlarmText;
+                Severity = alarm.Severity ?? "Error";
+                AlarmTime = alarm.AlarmTime?.ToString("dd-MMM-yyyy HH:mm:ss") ?? string.Empty;
+                AlarmResetTime = alarm.AlarmResetTime?.ToString("dd-MMM-yyyy HH:mm:ss") ?? string.Empty;
+                AlarmAckTime = alarm.AlarmAckTime?.ToString("dd-MMM-yyyy HH:mm:ss") ?? string.Empty;
+                Description = alarm.Description;
+                Remark = alarm.Remark;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void SaveToModel()
         {
-            _currentAlarm.AlarmNo = AlarmNo;
-            _currentAlarm.AlarmName = AlarmName;
-            _currentAlarm.TagNo = TagNo;
-            _currentAlarm.Name = Name;
-            _currentAlarm.AlarmBit = AlarmBit;
-            _currentAlarm.AlarmText = AlarmText;
-            _currentAlarm.Severity = Severity;
-            _currentAlarm.Description = Description;
-            _currentAlarm.Remark = Remark;
+            try
+            {
+                _currentAlarm.AlarmNo = AlarmNo;
+                _currentAlarm.AlarmName = AlarmName;
+                _currentAlarm.TagNo = TagNo;
+                _currentAlarm.Name = Name;
+                _currentAlarm.AlarmBit = AlarmBit;
+                _currentAlarm.AlarmText = AlarmText;
+                _currentAlarm.Severity = Severity;
+                _currentAlarm.Description = Description;
+                _currentAlarm.Remark = Remark;
 
-            // Parse time fields if needed (or keep as entered)
-            if (!string.IsNullOrEmpty(AlarmTime) && DateTime.TryParse(AlarmTime, out var alarmTime))
-                _currentAlarm.AlarmTime = alarmTime;
+                // Parse time fields if needed (or keep as entered)
+                if (!string.IsNullOrEmpty(AlarmTime) && DateTime.TryParse(AlarmTime, out var alarmTime))
+                    _currentAlarm.AlarmTime = alarmTime;
 
-            if (!string.IsNullOrEmpty(AlarmResetTime) && DateTime.TryParse(AlarmResetTime, out var resetTime))
-                _currentAlarm.AlarmResetTime = resetTime;
+                if (!string.IsNullOrEmpty(AlarmResetTime) && DateTime.TryParse(AlarmResetTime, out var resetTime))
+                    _currentAlarm.AlarmResetTime = resetTime;
 
-            if (!string.IsNullOrEmpty(AlarmAckTime) && DateTime.TryParse(AlarmAckTime, out var ackTime))
-                _currentAlarm.AlarmAckTime = ackTime;
+                if (!string.IsNullOrEmpty(AlarmAckTime) && DateTime.TryParse(AlarmAckTime, out var ackTime))
+                    _currentAlarm.AlarmAckTime = ackTime;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private bool CanSave()
@@ -206,18 +220,25 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task OnSaveAsync()
         {
-            SaveToModel();
-
-            if (IsEditMode)
+            try
             {
-                await _alarmService.UpdateAlarmAsync(_currentAlarm);
-            }
-            else
-            {
-                await _alarmService.AddAlarmAsync(_currentAlarm);
-            }
+                SaveToModel();
 
-            SaveCompleted?.Invoke(this, EventArgs.Empty);
+                if (IsEditMode)
+                {
+                    await _alarmService.UpdateAlarmAsync(_currentAlarm);
+                }
+                else
+                {
+                    await _alarmService.AddAlarmAsync(_currentAlarm);
+                }
+
+                SaveCompleted?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void OnCancel()

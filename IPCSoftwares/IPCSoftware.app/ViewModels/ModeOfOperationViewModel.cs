@@ -74,24 +74,31 @@ namespace IPCSoftware.App.ViewModels
 
         private void OnButtonClicked(object? param)
         {
-            if (param is OperationMode mode)
+            try
             {
-                // If already selected, deselect
-                if (SelectedButton == mode)
+                if (param is OperationMode mode)
                 {
-                    SelectedButton = null;
-                    AddAudit($"{mode} mode stopped!");
-                }
-                else
-                {
-                    // Only allow change if current selected is null
-                    if (SelectedButton == null)
+                    // If already selected, deselect
+                    if (SelectedButton == mode)
                     {
+                        SelectedButton = null;
+                        AddAudit($"{mode} mode stopped!");
+                    }
+                    else
+                    {
+                        // Only allow change if current selected is null
+                        if (SelectedButton == null)
+                        {
 
-                        SelectedButton = mode;
-                    AddAudit($"{mode} mode started!");
+                            SelectedButton = mode;
+                        AddAudit($"{mode} mode started!");
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 

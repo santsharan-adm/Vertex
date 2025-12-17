@@ -185,11 +185,10 @@ namespace IPCSoftware.App.ViewModels
 
             // CONSOLIDATED COMMAND INITIALIZATION
             AcknowledgeCommand = new RelayCommand<AlarmInstanceModel>(
-     // Execute method needs to wrap the async Task method
-     execute: async (alarm) => await AcknowledgeAlarmRequestAsync(alarm),
-     // CanExecute remains the same
-     canExecute: CanExecuteAcknowledge
- );
+             // Execute method needs to wrap the async Task method
+                     execute: async (alarm) => await AcknowledgeAlarmRequestAsync(alarm),
+             // CanExecute remains the same
+                     canExecute: CanExecuteAcknowledge);
 
             // Initialize subscriptions and data load
             _coreClient.OnAlarmMessageReceived += HandleIncomingAlarmMessage;
@@ -236,19 +235,26 @@ namespace IPCSoftware.App.ViewModels
 
         public async Task AcknowledgeAlarmRequestAsync(AlarmInstanceModel alarm)
         {
-            if (alarm == null) return;
-
-            // 1. Call the CoreClient to send the acknowledgement
-            bool success = await _coreClient.AcknowledgeAlarmAsync(alarm.AlarmNo, Environment.UserName);
-
-            if (success)
+            try
             {
-                // 2. OPTIMISTIC UI UPDATE
-                Application.Current.Dispatcher.Invoke(() =>
+                if (alarm == null) return;
+
+                // 1. Call the CoreClient to send the acknowledgement
+                bool success = await _coreClient.AcknowledgeAlarmAsync(alarm.AlarmNo, Environment.UserName);
+
+                if (success)
                 {
-                    alarm.AlarmAckTime = DateTime.Now;
-                    alarm.AcknowledgedByUser = Environment.UserName;
-                });
+                    // 2. OPTIMISTIC UI UPDATE
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        alarm.AlarmAckTime = DateTime.Now;
+                        alarm.AcknowledgedByUser = Environment.UserName;
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
@@ -265,42 +271,49 @@ namespace IPCSoftware.App.ViewModels
         // --- Message Handler Logic (Crucial for real-time updates) ---
         private void HandleIncomingAlarmMessage(AlarmMessage message)
         {
-            // Always ensure UI updates are on the dispatcher thread in WPF
-            Application.Current.Dispatcher.Invoke(() =>
+            try
             {
-                // System.Windows.MessageBox.Show($"[E] ALARM VIEWMODEL HIT. MessageType: {message.MessageType}", "AlarmViewModel Handler");
-
-                var alarmInstance = message.AlarmInstance;
-                var existingAlarm = ActiveAlarms.FirstOrDefault(a => a.AlarmNo == alarmInstance.AlarmNo);
-
-                switch (message.MessageType)
+                // Always ensure UI updates are on the dispatcher thread in WPF
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    case AlarmMessageType.Raised:
-                        if (existingAlarm == null)
-                        {
-                            ActiveAlarms.Add(alarmInstance);
-                            // Also update the banner to show the new, critical alarm
-                            CurrentBannerAlarm = alarmInstance;
-                        }
-                        break;
+                    // System.Windows.MessageBox.Show($"[E] ALARM VIEWMODEL HIT. MessageType: {message.MessageType}", "AlarmViewModel Handler");
 
-                    case AlarmMessageType.Acknowledged:
-                        if (existingAlarm != null)
-                        {
-                            // Update the runtime fields based on the message payload (for remote acknowledgements)
-                            existingAlarm.AlarmAckTime = alarmInstance.AlarmAckTime;
-                            existingAlarm.AcknowledgedByUser = alarmInstance.AcknowledgedByUser;
-                        }
-                        break;
+                    var alarmInstance = message.AlarmInstance;
+                    var existingAlarm = ActiveAlarms.FirstOrDefault(a => a.AlarmNo == alarmInstance.AlarmNo);
 
-                    case AlarmMessageType.Cleared:
-                        if (existingAlarm != null)
-                        {
-                            ActiveAlarms.Remove(existingAlarm);
-                        }
-                        break;
-                }
-            });
+                    switch (message.MessageType)
+                    {
+                        case AlarmMessageType.Raised:
+                            if (existingAlarm == null)
+                            {
+                                ActiveAlarms.Add(alarmInstance);
+                                // Also update the banner to show the new, critical alarm
+                                CurrentBannerAlarm = alarmInstance;
+                            }
+                            break;
+
+                        case AlarmMessageType.Acknowledged:
+                            if (existingAlarm != null)
+                            {
+                                // Update the runtime fields based on the message payload (for remote acknowledgements)
+                                existingAlarm.AlarmAckTime = alarmInstance.AlarmAckTime;
+                                existingAlarm.AcknowledgedByUser = alarmInstance.AcknowledgedByUser;
+                            }
+                            break;
+
+                        case AlarmMessageType.Cleared:
+                            if (existingAlarm != null)
+                            {
+                                ActiveAlarms.Remove(existingAlarm);
+                            }
+                            break;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
     }
 }

@@ -202,45 +202,59 @@ namespace IPCSoftware.App.ViewModels
 
         private void LoadFromModel(PLCTagConfigurationModel tag)
         {
-            TagNo = tag.TagNo;
-            Name = tag.Name;
-            PLCNo = tag.PLCNo;
-            ModbusAddress = tag.ModbusAddress;
-            Length = tag.Length;
+            try
+            {
+                TagNo = tag.TagNo;
+                Name = tag.Name;
+                PLCNo = tag.PLCNo;
+                ModbusAddress = tag.ModbusAddress;
+                Length = tag.Length;
 
-            // Map int AlgNo to AlgorithmType object
-            SelectedAlgorithm = AlgorithmTypes.FirstOrDefault(a => a.Value == tag.AlgNo)
-                                ?? AlgorithmTypes[0]; // Default to first (Linear scale)
+                // Map int AlgNo to AlgorithmType object
+                SelectedAlgorithm = AlgorithmTypes.FirstOrDefault(a => a.Value == tag.AlgNo)
+                                    ?? AlgorithmTypes[0]; // Default to first (Linear scale)
 
-            DataType = tag.DataType;
-            BitNo = tag.BitNo;
+                DataType = tag.DataType;
+                BitNo = tag.BitNo;
 
-            Offset = tag.Offset;
-            Span = tag.Span;
-            Description = tag.Description;
-            Remark = tag.Remark;
-            CanWrite = tag.CanWrite;
-            UpdateAlgorithmState();
+                Offset = tag.Offset;
+                Span = tag.Span;
+                Description = tag.Description;
+                Remark = tag.Remark;
+                CanWrite = tag.CanWrite;
+                UpdateAlgorithmState();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void SaveToModel()
         {
-            _currentTag.TagNo = TagNo;
-            _currentTag.Name = Name;
-            _currentTag.PLCNo = PLCNo;
-            _currentTag.ModbusAddress = ModbusAddress;
-            _currentTag.Length = Length;
+            try
+            {
+                _currentTag.TagNo = TagNo;
+                _currentTag.Name = Name;
+                _currentTag.PLCNo = PLCNo;
+                _currentTag.ModbusAddress = ModbusAddress;
+                _currentTag.Length = Length;
 
-            // Save the numeric value (1, 2, or 3)
-            _currentTag.AlgNo = SelectedAlgorithm?.Value ?? 1;
-            _currentTag.DataType = DataType;
-            _currentTag.BitNo = BitNo;
+                // Save the numeric value (1, 2, or 3)
+                _currentTag.AlgNo = SelectedAlgorithm?.Value ?? 1;
+                _currentTag.DataType = DataType;
+                _currentTag.BitNo = BitNo;
 
-            _currentTag.Offset = Offset;
-            _currentTag.Span = Span;
-            _currentTag.Description = Description;
-            _currentTag.Remark = Remark;
-            _currentTag.CanWrite = CanWrite;
+                _currentTag.Offset = Offset;
+                _currentTag.Span = Span;
+                _currentTag.Description = Description;
+                _currentTag.Remark = Remark;
+                _currentTag.CanWrite = CanWrite;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private bool CanSave()
@@ -255,16 +269,17 @@ namespace IPCSoftware.App.ViewModels
             SaveToModel();
             try
             {
-                if (IsEditMode)
-            {
-                await _tagService.UpdateTagAsync(_currentTag);
-            }
-            else
-            {
-                await _tagService.AddTagAsync(_currentTag);
-            }
 
-            SaveCompleted?.Invoke(this, EventArgs.Empty);
+                if (IsEditMode)
+                {
+                    await _tagService.UpdateTagAsync(_currentTag);
+                }
+                else
+                {
+                    await _tagService.AddTagAsync(_currentTag);
+                }
+
+                SaveCompleted?.Invoke(this, EventArgs.Empty);
             }
             catch (InvalidOperationException ex)
             {
@@ -274,8 +289,7 @@ namespace IPCSoftware.App.ViewModels
             }
             catch (Exception ex)
             {
-                // Handle generic errors
-                // ErrorMessage = "An unexpected error occurred: " + ex.Message;
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 

@@ -152,41 +152,62 @@ namespace IPCSoftware.App.ViewModels
 
         public void LoadForEdit(DeviceModel parentDevice, DeviceInterfaceModel deviceInterface)
         {
+            try
+            {
             _parentDevice = parentDevice;
             Title = $"Edit Interface - {parentDevice.DeviceName}";
             IsEditMode = true;
             _currentInterface = deviceInterface.Clone();
             LoadFromModel(_currentInterface);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void LoadFromModel(DeviceInterfaceModel deviceInterface)
         {
-            DeviceNo = deviceInterface.DeviceNo;
-            DeviceName = deviceInterface.DeviceName;
-            UnitNo = deviceInterface.UnitNo;
-            Name = deviceInterface.Name;
-            SelectedComProtocol = deviceInterface.ComProtocol ?? "Modbus Ethernet";
-            IPAddress = deviceInterface.IPAddress;
-            PortNo = deviceInterface.PortNo;
-            Gateway = deviceInterface.Gateway;
-            Description = deviceInterface.Description;
-            Remark = deviceInterface.Remark;
-            Enabled = deviceInterface.Enabled;
+            try
+            {
+                DeviceNo = deviceInterface.DeviceNo;
+                DeviceName = deviceInterface.DeviceName;
+                UnitNo = deviceInterface.UnitNo;
+                Name = deviceInterface.Name;
+                SelectedComProtocol = deviceInterface.ComProtocol ?? "Modbus Ethernet";
+                IPAddress = deviceInterface.IPAddress;
+                PortNo = deviceInterface.PortNo;
+                Gateway = deviceInterface.Gateway;
+                Description = deviceInterface.Description;
+                Remark = deviceInterface.Remark;
+                Enabled = deviceInterface.Enabled;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void SaveToModel()
         {
-            _currentInterface.DeviceNo = DeviceNo;
-            _currentInterface.DeviceName = DeviceName;
-            _currentInterface.UnitNo = UnitNo;
-            _currentInterface.Name = Name;
-            _currentInterface.ComProtocol = SelectedComProtocol;
-            _currentInterface.IPAddress = IPAddress;
-            _currentInterface.PortNo = PortNo;
-            _currentInterface.Gateway = Gateway;
-            _currentInterface.Description = Description;
-            _currentInterface.Remark = Remark;
-            _currentInterface.Enabled = Enabled;
+            try
+            {
+                _currentInterface.DeviceNo = DeviceNo;
+                _currentInterface.DeviceName = DeviceName;
+                _currentInterface.UnitNo = UnitNo;
+                _currentInterface.Name = Name;
+                _currentInterface.ComProtocol = SelectedComProtocol;
+                _currentInterface.IPAddress = IPAddress;
+                _currentInterface.PortNo = PortNo;
+                _currentInterface.Gateway = Gateway;
+                _currentInterface.Description = Description;
+                _currentInterface.Remark = Remark;
+                _currentInterface.Enabled = Enabled;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private bool CanSave()
@@ -197,18 +218,25 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task OnSaveAsync()
         {
-            SaveToModel();
-
-            if (IsEditMode)
+            try
             {
-                await _deviceService.UpdateInterfaceAsync(_currentInterface);
-            }
-            else
-            {
-                await _deviceService.AddInterfaceAsync(_currentInterface);
-            }
+                SaveToModel();
 
-            SaveCompleted?.Invoke(this, EventArgs.Empty);
+                if (IsEditMode)
+                {
+                    await _deviceService.UpdateInterfaceAsync(_currentInterface);
+                }
+                else
+                {
+                    await _deviceService.AddInterfaceAsync(_currentInterface);
+                }
+
+                SaveCompleted?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void OnCancel()

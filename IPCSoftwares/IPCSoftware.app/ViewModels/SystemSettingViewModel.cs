@@ -4,6 +4,7 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -92,11 +93,18 @@ public class SystemSettingViewModel : BaseViewModel
 
     private void LoadPlcTime()
     {
-        var plcDt = _plc.ReadPlcDateTime();
-        if (plcDt != null)
+        try
         {
-            PlcDate = plcDt.Value.ToString("dd-MMM-yyyy");
-            PlcTime = plcDt.Value.ToString("HH:mm:ss");
+            var plcDt = _plc.ReadPlcDateTime();
+            if (plcDt != null)
+            {
+                PlcDate = plcDt.Value.ToString("dd-MMM-yyyy");
+                PlcTime = plcDt.Value.ToString("HH:mm:ss");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
         }
     }
 
@@ -132,7 +140,9 @@ public class SystemSettingViewModel : BaseViewModel
         catch (Exception ex)
         {
             SyncState = "Error";
-            AddAudit($"PLC sync exception: {ex.Message}");
+            //AddAudit($"PLC sync exception: {ex.Message}");
+           _logger.LogError(ex.Message, LogType.Diagnostics);
+            
         }
 
         // Reset button state after a few seconds

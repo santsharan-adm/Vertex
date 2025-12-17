@@ -152,34 +152,41 @@ namespace IPCSoftware.App.ViewModels
 
         private void OnButtonClicked(object? param)
         {
-            _logger.LogInfo($"{param} button pressed", LogType.Production);
-
-            if (param is not ManualOperationMode clickedMode)
-                return;
-
-            string group = GetGroup(clickedMode);
-
-            if (!_selectedGroupButtons.ContainsKey(group))
-                _selectedGroupButtons[group] = null;
-
-            // 1. If clicking the SAME button → deselect
-            if (_selectedGroupButtons[group] == clickedMode)
+            try
             {
-                _selectedGroupButtons[group] = null;
+                _logger.LogInfo($"{param} button pressed", LogType.Audit);
+
+                if (param is not ManualOperationMode clickedMode)
+                    return;
+
+                string group = GetGroup(clickedMode);
+
+                if (!_selectedGroupButtons.ContainsKey(group))
+                    _selectedGroupButtons[group] = null;
+
+                // 1. If clicking the SAME button → deselect
+                if (_selectedGroupButtons[group] == clickedMode)
+                {
+                    _selectedGroupButtons[group] = null;
+                    OnPropertyChanged(nameof(SelectedGroupButtons));
+                    return;
+                }
+
+                // 2. If another button in the SAME group is active → block switch (or allow switch if preferred)
+                // Your current logic blocks switching until deselect.
+                if (_selectedGroupButtons[group] != null)
+                {
+                    return;
+                }
+
+                // 3. No selection -> Select new
+                _selectedGroupButtons[group] = clickedMode;
                 OnPropertyChanged(nameof(SelectedGroupButtons));
-                return;
             }
-
-            // 2. If another button in the SAME group is active → block switch (or allow switch if preferred)
-            // Your current logic blocks switching until deselect.
-            if (_selectedGroupButtons[group] != null)
+            catch (Exception ex)
             {
-                return;
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
-
-            // 3. No selection -> Select new
-            _selectedGroupButtons[group] = clickedMode;
-            OnPropertyChanged(nameof(SelectedGroupButtons));
         }
 
         private string GetGroup(ManualOperationMode mode)

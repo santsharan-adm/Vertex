@@ -52,11 +52,18 @@ namespace IPCSoftware.App.ViewModels
 
             private async Task LoadDataAsync()
             {
-                var logs = await _logService.GetAllAsync();
-                LogConfigurations.Clear();
-                foreach (var log in logs)
+                try
                 {
-                    LogConfigurations.Add(log);
+                    var logs = await _logService.GetAllAsync();
+                        LogConfigurations.Clear();
+                        foreach (var log in logs)
+                        {
+                            LogConfigurations.Add(log);
+                        }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message, LogType.Diagnostics);
                 }
             }
 
@@ -74,20 +81,27 @@ namespace IPCSoftware.App.ViewModels
 
             private async void OnDelete(LogConfigurationModel log)
             {
-                if (log == null) return;
-
-                var result = System.Windows.MessageBox.Show(
-                   $"Are you sure you want to delete '{SelectedLog.LogName}'?",
-                   "Confirm Delete",
-                   System.Windows.MessageBoxButton.YesNo,
-                   System.Windows.MessageBoxImage.Question);
-
-                if (result == System.Windows.MessageBoxResult.Yes)
+                try
                 {
+                    if (log == null) return;
 
-                    // TODO: Add confirmation dialog using IDialogService
-                    await _logService.DeleteAsync(log.Id);
-                    await LoadDataAsync();
+                        var result = System.Windows.MessageBox.Show(
+                           $"Are you sure you want to delete '{SelectedLog.LogName}'?",
+                           "Confirm Delete",
+                           System.Windows.MessageBoxButton.YesNo,
+                           System.Windows.MessageBoxImage.Question);
+
+                        if (result == System.Windows.MessageBoxResult.Yes)
+                        {
+
+                            // TODO: Add confirmation dialog using IDialogService
+                            await _logService.DeleteAsync(log.Id);
+                            await LoadDataAsync();
+                        }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message, LogType.Diagnostics);
                 }
             }
 

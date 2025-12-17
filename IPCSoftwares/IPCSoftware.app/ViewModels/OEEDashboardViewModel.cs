@@ -258,35 +258,49 @@ namespace IPCSoftware.App.ViewModels
 
         private async void InitializeAsync()
         {
-            //  InitializeTagMap();
-            var allTags = await _tagService.GetAllTagsAsync();
-
-            AllInputs.Clear();
-            var writableFilteredTags = allTags
-                .Where(t => t.CanWrite && allowedTagNos.Contains(t.TagNo))
-                .ToList();
-
-            foreach (var tag in writableFilteredTags)
+            try
             {
-                AllInputs.Add(new WritableTagItem(tag));
+                //  InitializeTagMap();
+                var allTags = await _tagService.GetAllTagsAsync();
+
+                AllInputs.Clear();
+                var writableFilteredTags = allTags
+                    .Where(t => t.CanWrite && allowedTagNos.Contains(t.TagNo))
+                    .ToList();
+
+                foreach (var tag in writableFilteredTags)
+                {
+                    AllInputs.Add(new WritableTagItem(tag));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
         private void InitializeCameraGrid()
         {
-            // Populate the collection with 12 empty items
-            CameraImages.Clear();
-            for (int i = 0; i < 12; i++)
+            try
             {
-                CameraImages.Add(new CameraImageItem
+                // Populate the collection with 12 empty items
+                CameraImages.Clear();
+                for (int i = 0; i < 12; i++)
                 {
-                    StationNumber = _visualToStationMap[i],
-                    Result = "Unchecked",
-                    ImagePath = null,
-                    ValX = 0,
-                    ValY = 0,
-                    ValZ = 0// Default border color logic
-                });
+                    CameraImages.Add(new CameraImageItem
+                    {
+                        StationNumber = _visualToStationMap[i],
+                        Result = "Unchecked",
+                        ImagePath = null,
+                        ValX = 0,
+                        ValY = 0,
+                        ValZ = 0// Default border color logic
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
@@ -375,7 +389,7 @@ namespace IPCSoftware.App.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Live Data Error: {ex.Message}");
+                _logger.LogError("Live Data Error: " + ex.Message, LogType.Diagnostics);
             }
         }
 
@@ -487,7 +501,7 @@ namespace IPCSoftware.App.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Sync Error: {ex.Message}");
+               _logger.LogError($"Sync Error: {ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -520,7 +534,7 @@ namespace IPCSoftware.App.ViewModels
                 bitmap.Freeze();
                 return bitmap;
             }
-            catch { return null; }
+            catch { throw; }
         }
 
         #endregion
@@ -537,81 +551,95 @@ namespace IPCSoftware.App.ViewModels
 
         private void ShowImage(CameraImageItem img)
         {
-            if (img == null) return;
-            string title = $"INSPECTION POSITION {img.StationNumber}"; // Use StationNumber or Id
-            var window = new FullImageView(img, title);
-            window.ShowDialog();
+            try
+            {
+                if (img == null) return;
+                string title = $"INSPECTION POSITION {img.StationNumber}"; // Use StationNumber or Id
+                var window = new FullImageView(img, title);
+                window.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void OpenCardDetail(string cardType)
         {
-            string title = "";
-            var data = new List<MetricDetailItem>();
-
-            switch (cardType)
+            try
             {
-                case "Efficiency":
-                    title = "Efficiency Breakdown Details";
-                    data.Add(new MetricDetailItem { MetricName = "Availability", CurrentVal = "85%", WeeklyVal = "87%", MonthlyVal = "88%" });
-                    data.Add(new MetricDetailItem { MetricName = "Performance", CurrentVal = "95%", WeeklyVal = "94%", MonthlyVal = "93%" });
-                    data.Add(new MetricDetailItem { MetricName = "Quality", CurrentVal = "97%", WeeklyVal = "98%", MonthlyVal = "98%" });
-                    break;
+                string title = "";
+                var data = new List<MetricDetailItem>();
 
-                case "OEE":
-                    title = "OEE Score Statistics";
-                    data.Add(new MetricDetailItem { MetricName = "OEE Score", CurrentVal = "78%", WeeklyVal = "80%", MonthlyVal = "82%" });
+                switch (cardType)
+                {
+                    case "Efficiency":
+                        title = "Efficiency Breakdown Details";
+                        data.Add(new MetricDetailItem { MetricName = "Availability", CurrentVal = "85%", WeeklyVal = "87%", MonthlyVal = "88%" });
+                        data.Add(new MetricDetailItem { MetricName = "Performance", CurrentVal = "95%", WeeklyVal = "94%", MonthlyVal = "93%" });
+                        data.Add(new MetricDetailItem { MetricName = "Quality", CurrentVal = "97%", WeeklyVal = "98%", MonthlyVal = "98%" });
+                        break;
 
-                    break;
+                    case "OEE":
+                        title = "OEE Score Statistics";
+                        data.Add(new MetricDetailItem { MetricName = "OEE Score", CurrentVal = "78%", WeeklyVal = "80%", MonthlyVal = "82%" });
 
-                case "CycleTime":
-                    title = "Cycle Time Trends";
-                    data.Add(new MetricDetailItem { MetricName = "Avg Cycle", CurrentVal = "2.9s", WeeklyVal = "3.1s", MonthlyVal = "3.0s" });
-                    data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "2.5s", WeeklyVal = "2.5s", MonthlyVal = "2.5s" });
-                    break;
-                case "OperatingTime":
-                    title = "Operating Time";
-                    data.Add(new MetricDetailItem { MetricName = "Operating Time", CurrentVal = "2.9", WeeklyVal = "3.1", MonthlyVal = "3.0" });
-                    break;
+                        break;
 
-                case "Downtime":
-                    title = "Downtime Statistics";
-                    data.Add(new MetricDetailItem { MetricName = "Total Stop", CurrentVal = "00:12:45", WeeklyVal = "01:30:00", MonthlyVal = "05:45:00" });
-                    data.Add(new MetricDetailItem { MetricName = "Minor Stops", CurrentVal = "00:04:15", WeeklyVal = "00:25:00", MonthlyVal = "01:40:00" });
-                    data.Add(new MetricDetailItem { MetricName = "Changeover", CurrentVal = "00:08:30", WeeklyVal = "01:05:00", MonthlyVal = "04:05:00" });
-                    break;
+                    case "CycleTime":
+                        title = "Cycle Time Trends";
+                        data.Add(new MetricDetailItem { MetricName = "Avg Cycle", CurrentVal = "2.9s", WeeklyVal = "3.1s", MonthlyVal = "3.0s" });
+                        data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "2.5s", WeeklyVal = "2.5s", MonthlyVal = "2.5s" });
+                        break;
+                    case "OperatingTime":
+                        title = "Operating Time";
+                        data.Add(new MetricDetailItem { MetricName = "Operating Time", CurrentVal = "2.9", WeeklyVal = "3.1", MonthlyVal = "3.0" });
+                        break;
 
-                case "AvgCycle": // Or "CycleTime" depending on your CommandParameter
-                    title = "Cycle Time Metrics";
-                    data.Add(new MetricDetailItem { MetricName = "Actual Cycle", CurrentVal = "2.9s", WeeklyVal = "3.0s", MonthlyVal = "2.95s" });
-                    data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "2.5s", WeeklyVal = "2.5s", MonthlyVal = "2.5s" });
+                    case "Downtime":
+                        title = "Downtime Statistics";
+                        data.Add(new MetricDetailItem { MetricName = "Total Stop", CurrentVal = "00:12:45", WeeklyVal = "01:30:00", MonthlyVal = "05:45:00" });
+                        data.Add(new MetricDetailItem { MetricName = "Minor Stops", CurrentVal = "00:04:15", WeeklyVal = "00:25:00", MonthlyVal = "01:40:00" });
+                        data.Add(new MetricDetailItem { MetricName = "Changeover", CurrentVal = "00:08:30", WeeklyVal = "01:05:00", MonthlyVal = "04:05:00" });
+                        break;
 
-                    break;
+                    case "AvgCycle": // Or "CycleTime" depending on your CommandParameter
+                        title = "Cycle Time Metrics";
+                        data.Add(new MetricDetailItem { MetricName = "Actual Cycle", CurrentVal = "2.9s", WeeklyVal = "3.0s", MonthlyVal = "2.95s" });
+                        data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "2.5s", WeeklyVal = "2.5s", MonthlyVal = "2.5s" });
 
-                case "InFlow":
-                    title = "Input Statistics";
-                    data.Add(new MetricDetailItem { MetricName = "Total Input", CurrentVal = "1165", WeeklyVal = "8150", MonthlyVal = "32500" });
-                    break;
+                        break;
 
-                case "OK":
-                    title = "Production Quality (OK)";
-                    data.Add(new MetricDetailItem { MetricName = "Good Units", CurrentVal = "1140", WeeklyVal = "7980", MonthlyVal = "31850" });
-                    data.Add(new MetricDetailItem { MetricName = "Yield Rate", CurrentVal = "97.8%", WeeklyVal = "97.9%", MonthlyVal = "98.0%" });
-                    break;
+                    case "InFlow":
+                        title = "Input Statistics";
+                        data.Add(new MetricDetailItem { MetricName = "Total Input", CurrentVal = "1165", WeeklyVal = "8150", MonthlyVal = "32500" });
+                        break;
 
-                case "NG":
-                    title = "Rejection Statistics (NG)";
-                    data.Add(new MetricDetailItem { MetricName = "Total Rejects", CurrentVal = "25", WeeklyVal = "170", MonthlyVal = "650" });
-                    break;
+                    case "OK":
+                        title = "Production Quality (OK)";
+                        data.Add(new MetricDetailItem { MetricName = "Good Units", CurrentVal = "1140", WeeklyVal = "7980", MonthlyVal = "31850" });
+                        data.Add(new MetricDetailItem { MetricName = "Yield Rate", CurrentVal = "97.8%", WeeklyVal = "97.9%", MonthlyVal = "98.0%" });
+                        break;
 
-                    // Add more cases for "OperatingTime", "Downtime", "InFlow", etc.
+                    case "NG":
+                        title = "Rejection Statistics (NG)";
+                        data.Add(new MetricDetailItem { MetricName = "Total Rejects", CurrentVal = "25", WeeklyVal = "170", MonthlyVal = "650" });
+                        break;
+
+                        // Add more cases for "OperatingTime", "Downtime", "InFlow", etc.
+                }
+
+                if (data.Count > 0)
+                {
+                    // Open the Light Theme Popup
+                    var win = new DashboardDetailWindow();
+                    win.DataContext = new DashboardDetailViewModel(win, title, data);
+                    win.ShowDialog();
+                }
             }
-
-            if (data.Count > 0)
+            catch (Exception ex)
             {
-                // Open the Light Theme Popup
-                var win = new DashboardDetailWindow();
-                win.DataContext = new DashboardDetailViewModel(win, title, data);
-                win.ShowDialog();
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
@@ -621,16 +649,23 @@ namespace IPCSoftware.App.ViewModels
         #region Dispose
         public void Dispose()
         {
-            if (_disposed) return;
-            _disposed = true;
+            try
+            {
+                if (_disposed) return;
+                _disposed = true;
 
-            _liveDataTimer.Stop();
-            _liveDataTimer.Tick -= LiveDataTimerTick;
+                _liveDataTimer.Stop();
+                _liveDataTimer.Tick -= LiveDataTimerTick;
 
-            _uiSyncTimer.Stop();
-            _uiSyncTimer.Tick -= UiSyncTick;
+                _uiSyncTimer.Stop();
+                _uiSyncTimer.Tick -= UiSyncTick;
 
-            GC.SuppressFinalize(this);
+                GC.SuppressFinalize(this);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
         #endregion
 

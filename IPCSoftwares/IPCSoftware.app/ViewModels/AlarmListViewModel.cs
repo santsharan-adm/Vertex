@@ -76,70 +76,105 @@ namespace IPCSoftware.App.ViewModels
 
         public async Task LoadDataAsync()
         {
-            var alarms = await _alarmService.GetAllAlarmsAsync();
-            Alarms.Clear();
-            FilteredAlarms.Clear();
-
-            foreach (var alarm in alarms)
+            try
             {
-                Alarms.Add(alarm);
-                FilteredAlarms.Add(alarm);
+                var alarms = await _alarmService.GetAllAlarmsAsync();
+                Alarms.Clear();
+                FilteredAlarms.Clear();
+
+                foreach (var alarm in alarms)
+                {
+                    Alarms.Add(alarm);
+                    FilteredAlarms.Add(alarm);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
         private void ApplyFilter()
         {
-            FilteredAlarms.Clear();
-
-            if (string.IsNullOrWhiteSpace(FilterText))
+            try
             {
-                foreach (var alarm in Alarms)
+                FilteredAlarms.Clear();
+
+                if (string.IsNullOrWhiteSpace(FilterText))
                 {
-                    FilteredAlarms.Add(alarm);
+                    foreach (var alarm in Alarms)
+                    {
+                        FilteredAlarms.Add(alarm);
+                    }
+                }
+                else
+                {
+                    var filtered = Alarms.Where(a =>
+                        a.AlarmNo.ToString().Contains(FilterText, StringComparison.OrdinalIgnoreCase) ||
+                        (a.AlarmName?.Contains(FilterText, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                        (a.AlarmText?.Contains(FilterText, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                        (a.Severity?.Contains(FilterText, StringComparison.OrdinalIgnoreCase) ?? false)
+                    );
+
+                    foreach (var alarm in filtered)
+                    {
+                        FilteredAlarms.Add(alarm);
+                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                var filtered = Alarms.Where(a =>
-                    a.AlarmNo.ToString().Contains(FilterText, StringComparison.OrdinalIgnoreCase) ||
-                    (a.AlarmName?.Contains(FilterText, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                    (a.AlarmText?.Contains(FilterText, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                    (a.Severity?.Contains(FilterText, StringComparison.OrdinalIgnoreCase) ?? false)
-                );
-
-                foreach (var alarm in filtered)
-                {
-                    FilteredAlarms.Add(alarm);
-                }
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
         // NEW - Add Alarm
         private void OnAddAlarm()
         {
-            _nav.NavigateToAlarmConfiguration(null, async () =>
+            try
             {
-                await LoadDataAsync();
-            });
+                _nav.NavigateToAlarmConfiguration(null, async () =>
+                {
+                    await LoadDataAsync();
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void OnEditAlarm(AlarmConfigurationModel alarm)
         {
-            if (alarm == null) return;
-
-            _nav.NavigateToAlarmConfiguration(alarm, async () =>
+            try
             {
-                await LoadDataAsync();
-            });
+                if (alarm == null) return;
+
+                _nav.NavigateToAlarmConfiguration(alarm, async () =>
+                {
+                    await LoadDataAsync();
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private async void OnDeleteAlarm(AlarmConfigurationModel alarm)
         {
-            if (alarm == null) return;
+            try
+            {
+                if (alarm == null) return;
 
-            // TODO: Add confirmation dialog
-            await _alarmService.DeleteAlarmAsync(alarm.Id);
-            await LoadDataAsync();
+                // TODO: Add confirmation dialog
+                await _alarmService.DeleteAlarmAsync(alarm.Id);
+                await LoadDataAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private bool CanAcknowledgeAlarm()
