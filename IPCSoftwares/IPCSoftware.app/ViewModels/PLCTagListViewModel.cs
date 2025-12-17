@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
@@ -34,7 +35,10 @@ namespace IPCSoftware.App.ViewModels
         public ICommand EditTagCommand { get; }
         public ICommand DeleteTagCommand { get; }
 
-        public PLCTagListViewModel(IPLCTagConfigurationService tagService, INavigationService nav)
+        public PLCTagListViewModel(
+            IPLCTagConfigurationService tagService, 
+            INavigationService nav,
+            IAppLogger logger) : base(logger)
         {
             _tagService = tagService;
             _nav = nav;

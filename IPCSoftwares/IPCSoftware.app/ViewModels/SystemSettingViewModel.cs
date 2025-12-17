@@ -13,13 +13,13 @@ using System.Windows.Threading; // Required for Timer
 public class SystemSettingViewModel : BaseViewModel
 {
     private readonly IPLCService _plc;
-    private readonly IAppLogger _logger;
     private readonly DispatcherTimer _clockTimer; // Timer for Live Clock
 
-    public SystemSettingViewModel(IPLCService plcService, IAppLogger logger)
+    public SystemSettingViewModel(
+        IPLCService plcService,
+        IAppLogger logger) : base(logger)
     {
         _plc = plcService;
-        _logger = logger;
         AuditLogs = new ObservableCollection<AuditLogModel>();
 
         SyncCommand = new RelayCommand(async () => await SyncTime());

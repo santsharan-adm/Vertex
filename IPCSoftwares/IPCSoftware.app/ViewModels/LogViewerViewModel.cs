@@ -42,7 +42,9 @@ namespace IPCSoftware.App.ViewModels
         public ICommand RefreshCommand { get; }
 
         // Constructor
-        public LogViewerViewModel(ILogService logService)
+        public LogViewerViewModel(
+            ILogService logService,
+            IAppLogger logger) : base(logger)
         {
             _logService = logService;
         //  /*  RefreshCommand = new */ Task.Run(async () => await LoadFilesAsync(_currentCategory));

@@ -1,4 +1,5 @@
-﻿using IPCSoftware.Shared;
+﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
@@ -11,7 +12,7 @@ using System.Windows.Media;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public partial class FullImageViewModel :BaseViewModel
+    public partial class FullImageViewModel :ObservableObjectVM
     {
 
         private ImageSource _imagePath;
@@ -59,7 +60,8 @@ namespace IPCSoftware.App.ViewModels
         public ICommand CloseCommand { get; }
 
         // Constructor Injection: Pass the dependency here!
-        public FullImageViewModel(CameraImageItem item, string measurementName)
+        public FullImageViewModel(CameraImageItem item, 
+            string measurementName) 
         {
             ImagePath = item.ImagePath;
             XValue = item.ValX;

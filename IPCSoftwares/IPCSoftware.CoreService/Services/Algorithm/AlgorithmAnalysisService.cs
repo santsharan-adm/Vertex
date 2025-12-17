@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Services.Algorithm
 {
-    public class AlgorithmAnalysisService
+    public class AlgorithmAnalysisService : BaseService
     {
         // Removed 'readonly' keyword for dynamic update support
         private List<PLCTagConfigurationModel> _tags;
@@ -32,7 +33,10 @@ namespace IPCSoftware.CoreService.Services.Algorithm
 
 
 
-        public AlgorithmAnalysisService(IPLCTagConfigurationService tagService, IOptions<ConfigSettings> config)
+        public AlgorithmAnalysisService(
+            IPLCTagConfigurationService tagService, 
+            IOptions<ConfigSettings> config,
+            IAppLogger logger) : base(logger)
         {
             _tagService = tagService;
             _swapBytes = config.Value.SwapBytes;
@@ -82,6 +86,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
                     // --- DEBUG OUTPUT ---
                     string algoName = tag.AlgNo == 1 ? "Scaled" : "Raw";
                     Console.WriteLine($"[ALGO_DEBUG] Tag: {tag.Name} (ID:{tag.Id}) | Value: {finalValue} | Type: {tag.DataType} | Algo: {algoName}");
+                    _logger.LogInfo($"[ALGO_DEBUG] Tag: {tag.Name} (ID:{tag.Id}) | Value: {finalValue} | Type: {tag.DataType} | Algo: {algoName}", LogType.Diagnostics);
                     // --- END DEBUG OUTPUT ---
 
                     // Add using Tag Id (for Dashboard cache)
@@ -95,7 +100,9 @@ namespace IPCSoftware.CoreService.Services.Algorithm
         // --- Data Type Conversion and Extraction ---
         private object ConvertData(object rawModbusObj, PLCTagConfigurationModel tag)
         {
-            ushort[] registers;
+            try
+            {
+                ushort[] registers;
 
             if (rawModbusObj is ushort singleReg) registers = new ushort[] { singleReg };
             else if (rawModbusObj is ushort[] regArray) registers = regArray.Take(tag.Length).ToArray();
@@ -137,8 +144,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
             }
             byte[] byteArray = bytes.ToArray();
 
-            try
-            {
+           
                 switch (tag.DataType)
                 {
                     case DataType_Bit:
@@ -180,6 +186,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
             catch (Exception ex)
             {
                 Console.WriteLine($"[ALGO_ERROR] Failed to convert data for Tag {tag.Name} (Type {tag.DataType}): {ex.Message}");
+                _logger.LogError($"[ALGO_ERROR] Failed to convert data for Tag {tag.Name} (Type {tag.DataType}): {ex.Message}", LogType.Diagnostics);
                 return null;
             }
         }
@@ -190,23 +197,31 @@ namespace IPCSoftware.CoreService.Services.Algorithm
         // --- Algorithm Application (Scaling) ---
         private object ApplyScaling(object rawTypedValue, PLCTagConfigurationModel tag)
         {
-            if (tag.AlgNo == AlgoNo_Raw)
+            try
             {
+                if (tag.AlgNo == AlgoNo_Raw)
+                {
+                    return rawTypedValue;
+                }
+
+                if (tag.AlgNo == AlgoNo_LinearScale)
+                {
+                    // Rule: Linear Scale only applies to Int16 (1) and Word32 (2)
+                    if (tag.DataType == DataType_Int16 || tag.DataType == DataType_Word32)
+                    {
+                        double rawNumericValue = Convert.ToDouble(rawTypedValue);
+                        return LinearScale(rawNumericValue, tag);
+                    }
+                }
+
+                // Fallback for types that shouldn't be scaled (Bit, String, FP)
                 return rawTypedValue;
             }
-
-            if (tag.AlgNo == AlgoNo_LinearScale)
+            catch (Exception ex)
             {
-                // Rule: Linear Scale only applies to Int16 (1) and Word32 (2)
-                if (tag.DataType == DataType_Int16 || tag.DataType == DataType_Word32)
-                {
-                    double rawNumericValue = Convert.ToDouble(rawTypedValue);
-                    return LinearScale(rawNumericValue, tag);
-                }
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return rawTypedValue;
             }
-
-            // Fallback for types that shouldn't be scaled (Bit, String, FP)
-            return rawTypedValue;
         }
 
 

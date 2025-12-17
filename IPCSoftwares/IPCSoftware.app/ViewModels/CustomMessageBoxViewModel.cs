@@ -1,6 +1,7 @@
 ﻿using IPCSoftware.App.Helpers;
 // Adjust these namespaces to match your project structure
 using IPCSoftware.App.ViewModels;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using System;
 using System.Windows.Input;
@@ -8,7 +9,7 @@ using System.Windows.Media;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public class CustomMessageBoxViewModel : BaseViewModel
+    public class CustomMessageBoxViewModel : ObservableObjectVM
     {
         private string _title;
         private string _message;
@@ -23,7 +24,9 @@ namespace IPCSoftware.App.ViewModels
         public ICommand NoCommand { get; }
 
         // Constructor
-        public CustomMessageBoxViewModel(string message, string title, string yesText, string noText, bool isConfirmation)
+        public CustomMessageBoxViewModel(string message,
+            string title, string yesText, string noText, 
+            bool isConfirmation) 
         {
             _message = message;
             _title = title;

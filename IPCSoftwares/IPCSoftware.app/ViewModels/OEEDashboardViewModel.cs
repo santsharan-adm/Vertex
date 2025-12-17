@@ -3,6 +3,7 @@ using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.CoreService.Services.Dashboard;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
@@ -197,8 +198,12 @@ namespace IPCSoftware.App.ViewModels
         #endregion
 
 
-        public OEEDashboardViewModel(IPLCTagConfigurationService tagService, 
-            IOptions<CcdSettings> ccdSettng, CoreClient coreClient, IDialogService dialog)
+        public OEEDashboardViewModel(
+            IPLCTagConfigurationService tagService, 
+            IOptions<CcdSettings> ccdSettng, 
+            CoreClient coreClient, 
+            IDialogService dialog,
+            IAppLogger logger) : base(logger)
         {
             var ccd = ccdSettng.Value;
             _tagService = tagService;

@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
@@ -181,7 +182,9 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public CameraInterfaceConfigurationViewModel(IDeviceConfigurationService deviceService)
+        public CameraInterfaceConfigurationViewModel
+            (IDeviceConfigurationService deviceService,
+            IAppLogger logger) : base(logger)
         {
             _deviceService = deviceService;
 

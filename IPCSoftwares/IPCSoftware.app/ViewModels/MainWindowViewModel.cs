@@ -23,7 +23,6 @@ public class MainWindowViewModel : BaseViewModel
 
     private readonly INavigationService _nav;
     private readonly IDialogService _dialog;
-    private readonly IAppLogger  _logger;
     private readonly CoreClient _coreClient;
     private readonly AlarmViewModel _alarmVM;
 
@@ -110,12 +109,16 @@ public class MainWindowViewModel : BaseViewModel
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
     public string AppVersion => "AOI System v1.0.3";
 
-    public MainWindowViewModel(INavigationService nav, CoreClient coreClient,
-        IAppLogger logger, IDialogService dialog,RibbonViewModel ribbonVM, AlarmViewModel alarmVM)
+    public MainWindowViewModel(
+        INavigationService nav, 
+        CoreClient coreClient,
+        IDialogService dialog,
+        RibbonViewModel ribbonVM, 
+        AlarmViewModel alarmVM,
+        IAppLogger logger) : base(logger)
     {
         _coreClient = coreClient;
         _dialog = dialog;
-        _logger = logger;
         _nav = nav;
         _alarmVM = alarmVM;
         _timer = new DispatcherTimer

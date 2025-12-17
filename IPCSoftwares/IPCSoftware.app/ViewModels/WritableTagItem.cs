@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public class WritableTagItem : BaseViewModel
+    public class WritableTagItem : ObservableObjectVM
     {
         public PLCTagConfigurationModel Model { get; }
 

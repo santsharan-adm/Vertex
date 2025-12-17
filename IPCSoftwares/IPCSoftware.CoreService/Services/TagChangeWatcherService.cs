@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using IPCSoftware.Core.Interfaces;
 using System;
 using System.Collections.Generic;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Shared.Models.ConfigModels;
 
 // Note: Ensure SharedServiceHost is defined and accessible.
 // Note: Ensure IPCSoftware.CoreService.Services.PLC and .Algorithm namespaces are referenced.
@@ -15,7 +17,7 @@ namespace IPCSoftware.CoreService.Services.Config
 {
     public class TagChangeWatcherService : BackgroundService
     {
-        private readonly ILogger<TagChangeWatcherService> _logger;
+        private readonly IAppLogger _logger;
         private readonly IPLCTagConfigurationService _tagService;
         private readonly FileSystemWatcher _watcher;
         private readonly string _tagFilePath;
@@ -24,7 +26,7 @@ namespace IPCSoftware.CoreService.Services.Config
         // CRITICAL FIX: Removed PLCClientManager and AlgorithmAnalysisService from the constructor.
         // We now rely on the Worker to build and store them in SharedServiceHost.
         public TagChangeWatcherService(
-            ILogger<TagChangeWatcherService> logger,
+            IAppLogger logger,
             IConfiguration configuration,
             IPLCTagConfigurationService tagService)
         {
@@ -54,12 +56,14 @@ namespace IPCSoftware.CoreService.Services.Config
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Tag Change Watcher started, monitoring: {path}", _tagFilePath);
+            _logger.LogInfo($"Tag Change Watcher started, monitoring: {_tagFilePath}", LogType.Diagnostics);
             return Task.CompletedTask;
         }
 
         private void OnTagFileChanged(object sender, FileSystemEventArgs e)
         {
+            try
+            {
             // Debounce: Prevents multiple rapid reloads often triggered by file saving.
             _reloadTimer?.Dispose();
             // Using Task.Run to ensure the heavy I/O operation doesn't block the timer thread
@@ -67,11 +71,16 @@ namespace IPCSoftware.CoreService.Services.Config
             {
                 await ReloadConfiguration();
             }, null, 500, Timeout.Infinite); // Wait 500ms before reloading
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private async Task ReloadConfiguration()
         {
-            _logger.LogWarning("PLCTags.csv file change detected. Attempting configuration reload...");
+            _logger.LogWarning("PLCTags.csv file change detected. Attempting configuration reload...", LogType.Diagnostics);
 
             // 1. Check if the core services (PLC Manager/Algo Service) have been initialized by the Worker.
             var manager = SharedServiceHost.PlcManager;
@@ -79,7 +88,7 @@ namespace IPCSoftware.CoreService.Services.Config
 
             if (manager == null || algoService == null)
             {
-                _logger.LogWarning("Initialization incomplete. Cannot reload configuration yet.");
+                _logger.LogWarning("Initialization incomplete. Cannot reload configuration yet.", LogType.Diagnostics);
                 return;
             }
 
@@ -92,12 +101,12 @@ namespace IPCSoftware.CoreService.Services.Config
                 manager.UpdateTags(newTags);
                 algoService.UpdateTags(newTags);
 
-                _logger.LogInformation("Configuration reloaded successfully. {count} tags updated.", newTags.Count);
+                _logger.LogInfo($"Configuration reloaded successfully. {newTags.Count} tags updated.", LogType.Diagnostics);
             }
             catch (Exception ex)
             {
                 // Log and continue running the service.
-                _logger.LogError(ex, "Failed to reload PLC tag configuration from CSV.");
+                _logger.LogError( $"Failed to reload PLC tag configuration from CSV: {ex.Message}.", LogType.Diagnostics);
             }
         }
 

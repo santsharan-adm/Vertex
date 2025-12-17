@@ -1,30 +1,16 @@
 ﻿// OeeEngine.cs
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.Services;
+using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.ConfigModels;
 using Newtonsoft.Json.Linq;
 
 namespace IPCSoftware.CoreService.Services.Dashboard
 {
-    public class OeeResult
-    {
-        public double Availability { get; set; }
-        public double Performance { get; set; }
-        public double Quality { get; set; }
-        public double OverallOEE { get; set; }
-
-        public int OperatingTime { get; set; }
-        public int Downtime { get; set; }
-
-        public int OKParts { get; set; }
-        public int NGParts { get; set; }
-        public int CycleTime { get; set; }
-        public int TotalParts { get; set; }
-    }
-
-
-
-    public class OeeEngine
+    public class OeeEngine : BaseService
     {
         private readonly IPLCTagConfigurationService _tagService;
         private readonly PLCClientManager _plcManager;
@@ -32,7 +18,10 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         private bool _lastCycleTimeTriggerState = false;
         private int _lastCycleTime = 1;
 
-        public OeeEngine(IPLCTagConfigurationService tagService, PLCClientManager plcManager)
+        public OeeEngine(
+            IPLCTagConfigurationService tagService, 
+            PLCClientManager plcManager,
+            IAppLogger logger) : base(logger)
         {
             _tagService = tagService;
             _plcManager = plcManager;
@@ -40,92 +29,108 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
         public void ProcessCycleTimeLogic(Dictionary<int, object> tagValues)
         {
-            // 1. Check A1 Bit (Tag 21)
-            bool currentA1State = GetBoolState(tagValues, ConstantValues.TAG_CTL_CYCLETIME_A1);
-
-            // 2. Rising Edge Detection (0 -> 1)
-            if (currentA1State && !_lastCycleTimeTriggerState)
+            try
             {
-                _lastCycleTime = GetInt(tagValues, ConstantValues.TAG_CycleTime);
-                Console.WriteLine($"[CycleTime] A1 Trigger Detected (Tag {ConstantValues.TAG_CTL_CYCLETIME_A1})");
+                // 1. Check A1 Bit (Tag 21)
+                bool currentA1State = GetBoolState(tagValues, ConstantValues.TAG_CTL_CYCLETIME_A1);
 
-                // Note: The Cycle Time Value (Tag 22) is already read in 'tagValues' 
-                // because the AlgorithmService processes the whole packet.
+                // 2. Rising Edge Detection (0 -> 1)
+                if (currentA1State && !_lastCycleTimeTriggerState)
+                {
+                    _lastCycleTime = GetInt(tagValues, ConstantValues.TAG_CycleTime);
+                    Console.WriteLine($"[CycleTime] A1 Trigger Detected (Tag {ConstantValues.TAG_CTL_CYCLETIME_A1})");
+                    _logger.LogInfo($"[CycleTime] A1 Trigger Detected (Tag {ConstantValues.TAG_CTL_CYCLETIME_A1})", LogType.Diagnostics);
 
-                // 3. Send Acknowledgement B1 (Tag 23)
+                    // Note: The Cycle Time Value (Tag 22) is already read in 'tagValues' 
+                    // because the AlgorithmService processes the whole packet.
 
-                _ = WriteTagAsync(ConstantValues.TAG_CTL_CYCLETIME_B1, true);
+                    // 3. Send Acknowledgement B1 (Tag 23)
+
+                    _ = WriteTagAsync(ConstantValues.TAG_CTL_CYCLETIME_B1, true);
+                }
+               /* else if (!currentA1State && _lastCycleTimeTriggerState)
+                {
+                    // Falling edge of A1 -> Reset B1 to ready for next
+                    _ = WriteTagAsync(ConstantValues.TAG_CTL_CYCLETIME_B1, false);
+                }*/
+
+                _lastCycleTimeTriggerState = currentA1State;
             }
-           /* else if (!currentA1State && _lastCycleTimeTriggerState)
+            catch (Exception ex)
             {
-                // Falling edge of A1 -> Reset B1 to ready for next
-                _ = WriteTagAsync(ConstantValues.TAG_CTL_CYCLETIME_B1, false);
-            }*/
-
-            _lastCycleTimeTriggerState = currentA1State;
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         public Dictionary<int, object> Calculate(Dictionary<int, object> values)
         {
-            OeeResult r = new OeeResult();
-
-            // 1. Extract Raw Values using ConstantValues IDs
-            int operatingMin = GetInt(values, ConstantValues.TAG_UpTime);
-            int downTimeMin = GetInt(values, ConstantValues.TAG_DownTime);
-            int totalParts = GetInt(values, ConstantValues.TAG_InFlow);
-            int okParts = GetInt(values, ConstantValues.TAG_OK);
-            int ngParts = GetInt(values, ConstantValues.TAG_NG);
-            int idealCycle = GetInt(values, ConstantValues.TAG_CycleTime); // Seconds per part
-            int actualCycleTime = GetInt(values, ConstantValues.TAG_CycleTime); // Seconds per part
-
-            // 2. Availability (A) Calculation
-            // Formula: Uptime / (Uptime + Alarm Stop + Downtime)
-            // Code assumes downTimeMin includes Alarm Stop
-            double totalTimeMin = operatingMin + downTimeMin;
-
-            r.Availability = 0.0;
-            if (totalTimeMin > 0)
+            try
             {
-                r.Availability = (double)operatingMin / totalTimeMin;
-            }
+                OeeResult r = new OeeResult();
 
-            // 3. Quality (Q) Calculation
-            // Formula: Good Count / Total Count
-            // Note: Yield = Good / Total * 100 (Code returns decimal 0-1)
-            r.Quality = 0.0;
-            if (totalParts > 0)
-            {
-                r.Quality = (double)okParts / (double)totalParts;
-            }
+                // 1. Extract Raw Values using ConstantValues IDs
+                int operatingMin = GetInt(values, ConstantValues.TAG_UpTime);
+                int downTimeMin = GetInt(values, ConstantValues.TAG_DownTime);
+                int totalParts = GetInt(values, ConstantValues.TAG_InFlow);
+                int okParts = GetInt(values, ConstantValues.TAG_OK);
+                int ngParts = GetInt(values, ConstantValues.TAG_NG);
+                int idealCycle = GetInt(values, ConstantValues.TAG_CycleTime); // Seconds per part
+                int actualCycleTime = GetInt(values, ConstantValues.TAG_CycleTime); // Seconds per part
 
-            // 4. Performance (P) Calculation
-            // Formula: (Ideal Cycle Time * Total Production) / Uptime
-            // Unit Sync: CycleTime is Seconds, Uptime is Minutes -> Convert Uptime to Seconds
-            r.Performance = 0.0;
-            if (operatingMin > 0 && idealCycle > 0)
-            {
-                double operatingSeconds = (double)operatingMin * 60.0;
+                // 2. Availability (A) Calculation
+                // Formula: Uptime / (Uptime + Alarm Stop + Downtime)
+                // Code assumes downTimeMin includes Alarm Stop
+                double totalTimeMin = operatingMin + downTimeMin;
 
-                if (operatingSeconds > 0)
+                r.Availability = 0.0;
+                if (totalTimeMin > 0)
                 {
-                    r.Performance = ((double)idealCycle * totalParts) / operatingSeconds;
+                    r.Availability = (double)operatingMin / totalTimeMin;
                 }
+
+                // 3. Quality (Q) Calculation
+                // Formula: Good Count / Total Count
+                // Note: Yield = Good / Total * 100 (Code returns decimal 0-1)
+                r.Quality = 0.0;
+                if (totalParts > 0)
+                {
+                    r.Quality = (double)okParts / (double)totalParts;
+                }
+
+                // 4. Performance (P) Calculation
+                // Formula: (Ideal Cycle Time * Total Production) / Uptime
+                // Unit Sync: CycleTime is Seconds, Uptime is Minutes -> Convert Uptime to Seconds
+                r.Performance = 0.0;
+                if (operatingMin > 0 && idealCycle > 0)
+                {
+                    double operatingSeconds = (double)operatingMin * 60.0;
+
+                    if (operatingSeconds > 0)
+                    {
+                        r.Performance = ((double)idealCycle * totalParts) / operatingSeconds;
+                    }
+                }
+
+                // 5. Overall OEE
+                // Formula: A * P * Q
+                r.OverallOEE = r.Availability * r.Performance * r.Quality;
+
+                // 6. Raw values pass-through for UI
+                r.OKParts = okParts;
+                r.NGParts = ngParts;
+                r.OperatingTime = operatingMin;
+                r.Downtime = downTimeMin;
+                r.TotalParts = totalParts;
+                r.CycleTime = _lastCycleTime;
+
+                // Return as dictionary with ID 4 (OEE_DATA)
+                return new Dictionary<int, object> { { 4, r } };
             }
-
-            // 5. Overall OEE
-            // Formula: A * P * Q
-            r.OverallOEE = r.Availability * r.Performance * r.Quality;
-
-            // 6. Raw values pass-through for UI
-            r.OKParts = okParts;
-            r.NGParts = ngParts;
-            r.OperatingTime = operatingMin;
-            r.Downtime = downTimeMin;
-            r.TotalParts = totalParts;
-            r.CycleTime = _lastCycleTime;
-
-            // Return as dictionary with ID 4 (OEE_DATA)
-            return new Dictionary<int, object> { { 4, r } };
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                throw;
+            }
         }
 
         // Helper to safely extract int from dictionary using Tag ID
@@ -133,7 +138,9 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         {
             if (values != null && values.TryGetValue((int)tagId, out object val))
             {
-                try { return Convert.ToInt32(val); } catch { return 0; }
+                try { return Convert.ToInt32(val); }
+                catch (Exception ex)
+                { _logger.LogError(ex.Message, LogType.Diagnostics); return 0; }
             }
             return 0;
         }
@@ -162,12 +169,14 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                     {
                         await client.WriteAsync(tag, value);
                         Console.WriteLine($"[CycleTime] Ack Tag {tagNo} set to {value}");
+                        _logger.LogInfo($"[CycleTime] Ack Tag {tagNo} set to {value}", LogType.Diagnostics);
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[Error] CycleTime Write Tag {tagNo}: {ex.Message}");
+                _logger.LogError($"[Error] CycleTime Write Tag {tagNo}: {ex.Message}", LogType.Diagnostics);
             }
         }
 

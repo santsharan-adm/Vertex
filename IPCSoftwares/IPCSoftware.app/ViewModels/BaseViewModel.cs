@@ -12,11 +12,11 @@ namespace IPCSoftware.App.ViewModels
 {
     public class BaseViewModel : ObservableObjectVM
     {
-       // protected readonly IAppLogger _logger;
+        protected readonly IAppLogger _logger;
 
-        public BaseViewModel (/*IAppLogger logger*/)
+        public BaseViewModel (IAppLogger logger)
         {
-              // _logger = logger;
+               _logger = logger;
         }
 
 

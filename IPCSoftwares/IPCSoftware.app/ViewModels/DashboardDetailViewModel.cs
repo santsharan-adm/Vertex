@@ -1,4 +1,5 @@
-﻿using IPCSoftware.Shared;
+﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Windows;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public class DashboardDetailViewModel : BaseViewModel
+    public class DashboardDetailViewModel : ObservableObjectVM
     {
          private string _cardTitle;
 
@@ -36,7 +37,8 @@ namespace IPCSoftware.App.ViewModels
         // We need a reference to the window to close it
         private Window _window;
 
-        public DashboardDetailViewModel(Window window, string title, List<MetricDetailItem> data)
+        public DashboardDetailViewModel(Window window, 
+            string title, List<MetricDetailItem> data)
         {
             _window = window;
             WindowTitle = title;

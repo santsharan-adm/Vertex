@@ -1,4 +1,5 @@
-﻿using IPCSoftware.Services;
+﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Services;
 using IPCSoftware.Shared.Models.ConfigModels;
 using NModbus;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace IPCSoftware.CoreService.Services.PLC
     {
         private readonly bool _swapBytes; // Configurable Flag
         private readonly int _modbusAddress; // Configurable 
+        private readonly IAppLogger _logger;
 
 
         // Event to notify the DashboardInitializer when new, raw data registers are ready.
@@ -32,14 +34,17 @@ namespace IPCSoftware.CoreService.Services.PLC
         // Define a standard timeout value for use in ConnectAsync
         private const int ConnectionTimeoutMs = 5000;
 
-        public PlcClient(DeviceInterfaceModel device, List<PLCTagConfigurationModel> tags, ConfigSettings config)
+        public PlcClient(
+            DeviceInterfaceModel device,
+            List<PLCTagConfigurationModel> tags,
+            ConfigSettings config,
+            IAppLogger logger) 
         {
-
+            _logger = logger;
             _device = device;
             _tags = tags;
             _swapBytes = config.SwapBytes;
             _modbusAddress = config.DefaultModBusAddress;
-            
         }
 
         // --- Graceful Disconnection Logic ---
@@ -53,7 +58,7 @@ namespace IPCSoftware.CoreService.Services.PLC
                 _tcp.Dispose();
                 _tcp = null;
             }
-            Console.WriteLine($"PLC[{_device.DeviceName}] [WARN] → DISCONNECTED. State Reset.");
+            _logger.LogWarning($"PLC[{_device.DeviceName}] [WARN] → DISCONNECTED. State Reset.", LogType.Diagnostics);
         }
 
 
@@ -65,6 +70,7 @@ namespace IPCSoftware.CoreService.Services.PLC
             return Task.Run(async () =>
             {
                 Console.WriteLine($"PLC[{_device.DeviceName}] [INFO] Polling Task Starting."); // NEW DEBUG LOG
+                _logger.LogInfo($"PLC[{_device.DeviceName}] [INFO] Polling Task Starting.", LogType.Diagnostics); // NEW DEBUG LOG
 
                 while (true) // This loop runs indefinitely
                 {
@@ -84,12 +90,14 @@ namespace IPCSoftware.CoreService.Services.PLC
                             OnPlcDataReceived?.Invoke(_device.DeviceNo, data);
                             // NEW DEBUG LOG: Confirming data dispatched
                             Console.WriteLine($"PLC[{_device.DeviceName}] [DATA] Polling successful. Dispatched {data.Count} raw register groups.");
+                            _logger.LogInfo($"PLC[{_device.DeviceName}] [DATA] Polling successful. " +
+                                $"Dispatched {data.Count} raw register groups.", LogType.Diagnostics);
                         }
                     }
                     catch (Exception ex)
                     {
                         // CATCH-ALL for communication issues or polling exceptions
-                        Console.WriteLine($"PLC[{_device.DeviceName}] [ERROR] Polling Cycle FAILED. Retrying in 3s. Exception: {ex.Message}");
+                    _logger.LogError($"PLC[{_device.DeviceName}] [ERROR] Polling Cycle FAILED. Retrying in 3s. Exception: {ex.Message}", LogType.Diagnostics);
                         Disconnect(); // Ensures clean retry in next loop
 
                         // NEW DEBUG LOG: Logging stack trace for silent failure investigation
@@ -117,6 +125,7 @@ namespace IPCSoftware.CoreService.Services.PLC
                 try
                 {
                     Console.WriteLine($"PLC[{_device.DeviceName}] [ATTEMPT] → Attempting connection to {_device.IPAddress}:{_device.PortNo}");
+                    _logger.LogInfo($"PLC[{_device.DeviceName}] [ATTEMPT] → Attempting connection to {_device.IPAddress}:{_device.PortNo}", LogType.Diagnostics);
 
                     _tcp = new TcpClient();
 
@@ -125,6 +134,7 @@ namespace IPCSoftware.CoreService.Services.PLC
 
                     if (await Task.WhenAny(connectTask, Task.Delay(ConnectionTimeoutMs)) != connectTask)
                     {
+                        _logger.LogWarning($"PLC[{_device.DeviceName}] [ATTEMPT] → Attempting connection to {_device.IPAddress}:{_device.PortNo}", LogType.Diagnostics);
                         throw new TimeoutException($"Connection attempt timed out after {ConnectionTimeoutMs}ms.");
                     }
 
@@ -132,13 +142,14 @@ namespace IPCSoftware.CoreService.Services.PLC
 
                     var factory = new ModbusFactory();
                     _master = factory.CreateMaster(_tcp);
-
+                    _logger.LogInfo($"PLC[{_device.DeviceName}] [SUCCESS] → CONNECTED.", LogType.Diagnostics);
                     Console.WriteLine($"PLC[{_device.DeviceName}] [SUCCESS] → CONNECTED.");
                     return;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"PLC[{_device.DeviceName}] [ERROR] → CONNECT ERROR. Retrying in 3s. Message: {ex.Message}");
+                    _logger.LogError($"PLC[{_device.DeviceName}] [ERROR] → CONNECT ERROR. Retrying in 3s. Message: {ex.Message}", LogType.Diagnostics);
 
                     Disconnect();
 
@@ -176,12 +187,14 @@ namespace IPCSoftware.CoreService.Services.PLC
 
                     // NEW DEBUG LOG: Confirming successful Modbus read
                     Console.WriteLine($"PLC[{_device.DeviceName}] [DEBUG] Read Addr {baseAddress}, Len {maxLength} successful.");
+                   _logger.LogInfo($"PLC[{_device.DeviceName}] [DEBUG] Read Addr {baseAddress}, Len {maxLength} successful.", LogType.Diagnostics);
                 }
             }
             catch (Exception ex)
             {
                 // This exception will be caught by the outer StartAsync loop's CATCH-ALL.
                 Console.WriteLine($"PLC[{_device.DeviceName}] [CRITICAL] Modbus Read Failed! Message: {ex.Message}");
+                _logger.LogError($"PLC[{_device.DeviceName}] [CRITICAL] Modbus Read Failed! Message: {ex.Message}", LogType.Diagnostics);
                 // Rethrow to break the polling cycle and force a Disconnect/Reconnect sequence
                 throw;
             }
@@ -201,6 +214,7 @@ namespace IPCSoftware.CoreService.Services.PLC
             // Thread-safe replacement of the internal list
             Interlocked.Exchange(ref _tags, myNewTags);
             Console.WriteLine($"PLCClient[{_device.DeviceName}] [INFO] Tags updated to {myNewTags.Count} tags.");
+            _logger.LogInfo($"PLCClient[{_device.DeviceName}] [INFO] Tags updated to {myNewTags.Count} tags.", LogType.Diagnostics);
         }
 
 
@@ -231,10 +245,12 @@ namespace IPCSoftware.CoreService.Services.PLC
                     await _master!.WriteMultipleRegistersAsync(1, start, registers);
                 }
                 Console.WriteLine($"PLC[{_device.DeviceName}] Written {cfg.Name}: {value}");
+                _logger.LogInfo($"PLC[{_device.DeviceName}] Written {cfg.Name}: {value}", LogType.Diagnostics);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"PLC[{_device.DeviceName}] Write Error: {ex.Message}");
+                _logger.LogError($"PLC[{_device.DeviceName}] Write Error: {ex.Message}", LogType.Diagnostics);
                 throw;
             }
         }

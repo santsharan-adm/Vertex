@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -55,7 +56,10 @@ namespace IPCSoftware.App.ViewModels
         public ICommand EditUserCommand { get; }
         public ICommand DeleteUserCommand { get; }
 
-        public UserListViewModel(IUserManagementService userService, INavigationService nav)
+        public UserListViewModel(
+            IUserManagementService userService, 
+            INavigationService nav,
+        IAppLogger logger) : base(logger)
         {
             _userService = userService;
             _nav = nav;

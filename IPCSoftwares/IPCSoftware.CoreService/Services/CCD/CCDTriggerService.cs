@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.Services;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Services.CCD
 {
-    public class CCDTriggerService
+    public class CCDTriggerService : BaseService
     {
         private readonly ICycleManagerService _cycleManager;
         private  PLCClientManager _plcManager; // 1. Inject PLC Manager
@@ -32,7 +33,8 @@ namespace IPCSoftware.CoreService.Services.CCD
             (ICycleManagerService cycleManager,
             IPLCTagConfigurationService tagService,
             IOptions<CcdSettings> ccdSettings
-            )
+            ,
+            IAppLogger logger) : base(logger)
         {
             var ccd = ccdSettings.Value;
             _tempImageFolder = ccd.TempImgFolder;
@@ -46,44 +48,52 @@ namespace IPCSoftware.CoreService.Services.CCD
         /// <param name="tagValues">The dictionary of processed tag values</param>
         public void ProcessTriggers(Dictionary<int, object> tagValues, PLCClientManager manager)
         {
-            _plcManager = manager;
-            // 1. Extract Trigger State (Tag 15)
-            bool currentTriggerState = false;
-
-            if (tagValues.TryGetValue(ConstantValues.TRIGGER_TAG_ID, out object triggerObj))
+            try
             {
-                if (triggerObj is bool bVal) currentTriggerState = bVal;
-                else if (triggerObj is int iVal) currentTriggerState = iVal > 0;
-            }
+                _plcManager = manager;
+                // 1. Extract Trigger State (Tag 15)
+                bool currentTriggerState = false;
 
-            // 2. Rising Edge Detection (False -> True)
-            if (currentTriggerState && !_lastTriggerState)
+                if (tagValues.TryGetValue(ConstantValues.TRIGGER_TAG_ID, out object triggerObj))
+                {
+                    if (triggerObj is bool bVal) currentTriggerState = bVal;
+                    else if (triggerObj is int iVal) currentTriggerState = iVal > 0;
+                }
+
+                // 2. Rising Edge Detection (False -> True)
+                if (currentTriggerState && !_lastTriggerState)
+                {
+                    Console.WriteLine($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID}");
+                    _logger.LogInfo($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID}", LogType.Diagnostics);
+
+                    // 3. Gather Data
+                    string qrCode = tagValues.ContainsKey(ConstantValues.QR_DATA_TAG_ID) ? tagValues[ConstantValues.QR_DATA_TAG_ID]?.ToString() : null;
+
+                    var stationData = new Dictionary<string, object>();
+
+                    // Fetch X, Y, Z, Status from tag dictionary
+                  //  stationData["Status"] = tagValues.ContainsKey(ConstantValues.TAG_STATUS) ? tagValues[ConstantValues.TAG_STATUS].ToString() : "OK";
+                    var rawStatus = tagValues.ContainsKey(ConstantValues.TAG_STATUS)
+                    ? tagValues[ConstantValues.TAG_STATUS]
+                    : null;
+                    stationData["Status"] = MapStatus(rawStatus);
+
+
+                    stationData["X"] = tagValues.ContainsKey(ConstantValues.TAG_X) ? tagValues[ConstantValues.TAG_X] : 0.0;
+                    stationData["Y"] = tagValues.ContainsKey(ConstantValues.TAG_Y) ? tagValues[ConstantValues.TAG_Y] : 0.0;
+                    stationData["Z"] = tagValues.ContainsKey(ConstantValues.TAG_Z) ? tagValues[ConstantValues.TAG_Z] : 0.0;
+
+                    // 4. Execute Async Workflow
+                    _ = ExecuteWorkflowAsync(qrCode, stationData);
+                }
+
+                // 4. Update State
+                _lastTriggerState = currentTriggerState;
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID}");
-
-                // 3. Gather Data
-                string qrCode = tagValues.ContainsKey(ConstantValues.QR_DATA_TAG_ID) ? tagValues[ConstantValues.QR_DATA_TAG_ID]?.ToString() : null;
-
-                var stationData = new Dictionary<string, object>();
-
-                // Fetch X, Y, Z, Status from tag dictionary
-              //  stationData["Status"] = tagValues.ContainsKey(ConstantValues.TAG_STATUS) ? tagValues[ConstantValues.TAG_STATUS].ToString() : "OK";
-                var rawStatus = tagValues.ContainsKey(ConstantValues.TAG_STATUS)
-                ? tagValues[ConstantValues.TAG_STATUS]
-                : null;
-                stationData["Status"] = MapStatus(rawStatus);
-
-
-                stationData["X"] = tagValues.ContainsKey(ConstantValues.TAG_X) ? tagValues[ConstantValues.TAG_X] : 0.0;
-                stationData["Y"] = tagValues.ContainsKey(ConstantValues.TAG_Y) ? tagValues[ConstantValues.TAG_Y] : 0.0;
-                stationData["Z"] = tagValues.ContainsKey(ConstantValues.TAG_Z) ? tagValues[ConstantValues.TAG_Z] : 0.0;
-
-                // 4. Execute Async Workflow
-                _ = ExecuteWorkflowAsync(qrCode, stationData);
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
-
-            // 4. Update State
-            _lastTriggerState = currentTriggerState;
      
 
         }
@@ -120,62 +130,80 @@ namespace IPCSoftware.CoreService.Services.CCD
                 catch (Exception ex)
                 {
                     Console.WriteLine($"[Error] Processing: {ex.Message}");
+                    _logger.LogError($"[Error] Processing: {ex.Message}", LogType.Diagnostics);
                 }
             }
             else
             {
                 Console.WriteLine("[Error] Triggered but No Image found.");
+                _logger.LogInfo("[Error] Triggered but No Image found.", LogType.Diagnostics);
             }
         }
 
         private async Task WriteAckToPlcAsync()
         {
-            var allTags = await _tagService.GetAllTagsAsync();
-            var ackTag = allTags.FirstOrDefault(t => t.TagNo == ConstantValues.Return_TAG_ID); // Look for TagNo 15
-
-            if (ackTag != null)
+            try
             {
-                var client = _plcManager.GetClient(ackTag.PLCNo);
-                if (client != null)
-                {
-                    // Write TRUE to 15 to tell PLC we are done
-                    await client.WriteAsync(ackTag, true);
-                    Console.WriteLine($"[CCD] Ack sent to Tag {ConstantValues.Return_TAG_ID}");
+                var allTags = await _tagService.GetAllTagsAsync();
+                var ackTag = allTags.FirstOrDefault(t => t.TagNo == ConstantValues.Return_TAG_ID); // Look for TagNo 15
 
-                    // PLC Logic: When PLC sees 15=True, it will set 10=False. 
-                    // Then PLC logic likely resets 15 to False later, or we toggle it.
-                    // Assuming Pulse behavior here.
+                if (ackTag != null)
+                {
+                    var client = _plcManager.GetClient(ackTag.PLCNo);
+                    if (client != null)
+                    {
+                        // Write TRUE to 15 to tell PLC we are done
+                        await client.WriteAsync(ackTag, true);
+                        Console.WriteLine($"[CCD] Ack sent to Tag {ConstantValues.Return_TAG_ID}");
+                        _logger.LogInfo ($"[CCD] Ack sent to Tag {ConstantValues.Return_TAG_ID}", LogType.Diagnostics);
+
+                        // PLC Logic: When PLC sees 15=True, it will set 10=False. 
+                        // Then PLC logic likely resets 15 to False later, or we toggle it.
+                        // Assuming Pulse behavior here.
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
         private async Task<string> WaitForImageAsync()
         {
-            DateTime start = DateTime.Now;
-            while ((DateTime.Now - start).TotalSeconds < 10)
+            try
             {
-                if (!Directory.Exists(_tempImageFolder)) return null;
-
-                var file = new DirectoryInfo(_tempImageFolder)
-                    .GetFiles("*.bmp")
-                    .OrderByDescending(f => f.LastWriteTime)
-                    .FirstOrDefault();
-
-                // Simple check: Ensure file is not locked
-                if (file != null)
+                DateTime start = DateTime.Now;
+                while ((DateTime.Now - start).TotalSeconds < 10)
                 {
-                    try
+                    if (!Directory.Exists(_tempImageFolder)) return null;
+
+                    var file = new DirectoryInfo(_tempImageFolder)
+                        .GetFiles("*.bmp")
+                        .OrderByDescending(f => f.LastWriteTime)
+                        .FirstOrDefault();
+
+                    // Simple check: Ensure file is not locked
+                    if (file != null)
                     {
-                        using (var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+                        try
                         {
-                            if (stream.Length > 0) return file.FullName;
+                            using (var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+                            {
+                                if (stream.Length > 0) return file.FullName;
+                            }
                         }
+                        catch { /* Locked, retry */ }
                     }
-                    catch { /* Locked, retry */ }
+                    await Task.Delay(200);
                 }
-                await Task.Delay(200);
+                return null;
             }
-            return null;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return null;
+            }
         }
 
 

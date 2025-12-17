@@ -2,6 +2,7 @@
 using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using System;
@@ -50,7 +51,10 @@ namespace IPCSoftware.App.ViewModels
 
         public ICommand ToggleOutputCommand { get; }
 
-        public PLCIOViewModel(CoreClient coreClient, IPLCTagConfigurationService tagService)
+        public PLCIOViewModel(
+            CoreClient coreClient, 
+            IPLCTagConfigurationService tagService,
+            IAppLogger logger) : base(logger)
         {
             _tagService = tagService;
             _coreClient = coreClient;

@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
@@ -55,7 +56,10 @@ namespace IPCSoftware.App.ViewModels
         public ICommand DeleteAlarmCommand { get; }
         public ICommand AcknowledgeAlarmCommand { get; }
 
-        public AlarmListViewModel(IAlarmConfigurationService alarmService, INavigationService nav)
+        public AlarmListViewModel
+            (IAlarmConfigurationService alarmService, 
+            INavigationService nav,
+            IAppLogger logger) : base(logger)
         {
             _alarmService = alarmService;
             _nav = nav;

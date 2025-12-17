@@ -1,25 +1,30 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System.Configuration;
 using System.IO;
 using System.Text;
-using Microsoft.Extensions.Options;
 
 
 namespace IPCSoftware.Services.ConfigServices
 {
-    public class PLCTagConfigurationService : IPLCTagConfigurationService
+    public class PLCTagConfigurationService : BaseService, IPLCTagConfigurationService
     {
         //private readonly IConfiguration _configuration;
         private readonly string _dataFolder;
         private readonly string _csvFilePath;
         private List<PLCTagConfigurationModel> _tags;
         private int _nextId = 1;
-        private readonly TagConfigLoader _tagLoader = new TagConfigLoader(); // Use the dedicated loader
+        private readonly TagConfigLoader _tagLoader ; // Use the dedicated loader
             
-        public PLCTagConfigurationService(IOptions<ConfigSettings> configSettings )
+        public PLCTagConfigurationService(
+            IOptions<ConfigSettings> configSettings,
+            TagConfigLoader tagConfigLoader,
+            IAppLogger logger) : base(logger) 
         {
+            _tagLoader = tagConfigLoader;
             //    _configuration = configuration;
             //  string dataFolderPath = _configuration.GetValue<string>("Config:DataFolder");
             var config = configSettings.Value;
@@ -39,23 +44,46 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task InitializeAsync()
         {
-            await LoadTagsInternalAsync();
+            try
+            {
+             await LoadTagsInternalAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         public async Task<List<PLCTagConfigurationModel>> GetAllTagsAsync()
         {
-            if (_tags.Count == 0)
+            try
             {
-                await LoadTagsInternalAsync();
+                if (_tags.Count == 0)
+                {
+                    await LoadTagsInternalAsync();
+                }
+                return _tags.ToList();
             }
-            return _tags.ToList();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                throw;
+            }
         }
 
         // FIX CS0535: IMPLEMENT THE REQUIRED METHOD FOR DYNAMIC RELOAD
         public async Task<List<PLCTagConfigurationModel>> ReloadTagsAsync()
         {
-            await LoadTagsInternalAsync();
-            return _tags.ToList();
+            try
+            {
+                await LoadTagsInternalAsync();
+                return _tags.ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return null;
+            }
         }
 
         public async Task<PLCTagConfigurationModel> GetTagByIdAsync(int id)
@@ -65,43 +93,67 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task<PLCTagConfigurationModel> AddTagAsync(PLCTagConfigurationModel tag)
         {
-            tag.Id = _nextId++;
-            _tags.Add(tag);
-            await SaveToCsvAsync();
-            return tag;
+            try
+            {
+                tag.Id = _nextId++;
+                _tags.Add(tag);
+                await SaveToCsvAsync();
+                return tag;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                throw;
+            }
         }
 
         public async Task<bool> UpdateTagAsync(PLCTagConfigurationModel tag)
         {
-            var existing = _tags.FirstOrDefault(t => t.Id == tag.Id);
-            if (existing == null) return false;
+            try
+            {
+                var existing = _tags.FirstOrDefault(t => t.Id == tag.Id);
+                if (existing == null) return false;
 
-            var index = _tags.IndexOf(existing);
-            _tags[index] = tag;
-            await SaveToCsvAsync();
-            return true;
+                var index = _tags.IndexOf(existing);
+                _tags[index] = tag;
+                await SaveToCsvAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
 
         public async Task<bool> DeleteTagAsync(int id)
         {
-            var tag = _tags.FirstOrDefault(t => t.Id == id);
-            if (tag == null) return false;
+            try
+            {
+                var tag = _tags.FirstOrDefault(t => t.Id == id);
+                if (tag == null) return false;
 
-            _tags.Remove(tag);
-            await SaveToCsvAsync();
-            return true;
+                _tags.Remove(tag);
+                await SaveToCsvAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
 
         private async Task LoadTagsInternalAsync()
         {
+            try
+            {
             if (!File.Exists(_csvFilePath))
             {
                 await SaveToCsvAsync();
                 return;
             }
 
-            try
-            {
                 // FIX: Use the dedicated TagConfigLoader (now accessible via using directive)
                 var reloadedTags = _tagLoader.Load(_csvFilePath);
 
@@ -116,7 +168,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error loading PLC tags CSV: {ex.Message}");
+               _logger.LogError($"Error loading PLC tags CSV: {ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -152,7 +204,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error saving PLC tags CSV: {ex.Message}");
+                _logger.LogError($"Error saving PLC tags CSV: {ex.Message}", LogType.Diagnostics);
             }
         }
 

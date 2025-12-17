@@ -10,15 +10,16 @@ using System.Threading.Tasks;
 using System;
 
 using IPCSoftware.Shared.Models.Messaging;
+using IPCSoftware.Services;
 
 namespace IPCSoftware.App.Services.UI
 {
-    public class UiTcpClient
+    public class UiTcpClient: BaseService
     {
         private TcpClient _client;
         private NetworkStream _stream;
         private readonly IDialogService _dialog;
-        private readonly IAppLogger _logger;
+      
         private bool _hasShownError = false;
 
         // NEW: Persistent buffer for accumulating message fragments
@@ -32,9 +33,9 @@ namespace IPCSoftware.App.Services.UI
         // This event is defined here but only raised in CoreClient.cs
         public event Action<AlarmMessage> AlarmMessageReceived;
 
-        public UiTcpClient(IDialogService dialog, IAppLogger logger)
+        public UiTcpClient(IDialogService dialog,
+            IAppLogger logger):base(logger)
         {
-            _logger = logger;
             _dialog = dialog;
         }
 
@@ -53,7 +54,7 @@ namespace IPCSoftware.App.Services.UI
 
                 // Background read loop
                 Application.Current?.Dispatcher.Invoke(() => UiConnected?.Invoke(true));
-                _ = Task.Run(ReadLoop);
+                _ = Task.Run(ReadLoop); 
                 UiConnected?.Invoke(true);
                 return true;
             }
@@ -67,7 +68,7 @@ namespace IPCSoftware.App.Services.UI
                                     $"ExceptionType={ex.GetType().Name} | " +
                                     $"Message={ex.Message.Replace(',', ';')} | ";
 
-                _logger.LogError(logMessage, LogType.Diagnostics);
+                _logger.LogError(ex.Message, LogType.Diagnostics);
 
 
                 // Show error only once
@@ -135,6 +136,7 @@ namespace IPCSoftware.App.Services.UI
             catch (Exception ex)
             {
                 Console.WriteLine($"Read error: {ex.Message}");
+                _logger.LogError($"Read error: {ex.Message}", LogType.Diagnostics);
             }
             finally
             {
@@ -147,6 +149,7 @@ namespace IPCSoftware.App.Services.UI
             if (_stream == null || !IsConnected)
             {
                 Console.WriteLine("Cannot send: Not connected");
+                _logger.LogInfo("Cannot send: Not connected", LogType.Diagnostics);
                 return;
             }
 
@@ -158,6 +161,7 @@ namespace IPCSoftware.App.Services.UI
             catch (Exception ex)
             {
                 Console.WriteLine($"Send error: {ex.Message}");
+                _logger.LogError($"Send error: {ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -173,7 +177,10 @@ namespace IPCSoftware.App.Services.UI
                 // Clear the buffer on cleanup so old data doesn't mix with new connections
                 _messageAccumulator.Clear();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Dispose error: {ex.Message}", LogType.Diagnostics);
+            }
 
             _stream = null;
             _client = null;
