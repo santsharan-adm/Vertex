@@ -119,22 +119,36 @@ namespace IPCSoftware.App.ViewModels
 
         private void LoadFromModel(UserConfigurationModel user)
         {
-            FirstName = user.FirstName;
-            LastName = user.LastName;
-            UserName = user.UserName;
-            Password = user.Password;
-            SelectedRole = user.Role ?? "User";
-            IsActive = user.IsActive;
+            try
+            {
+                FirstName = user.FirstName;
+                LastName = user.LastName;
+                UserName = user.UserName;
+                Password = user.Password;
+                SelectedRole = user.Role ?? "User";
+                IsActive = user.IsActive;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void SaveToModel()
         {
-            _currentUser.FirstName = FirstName;
-            _currentUser.LastName = LastName;
-            _currentUser.UserName = UserName;
-            _currentUser.Password = Password;
-            _currentUser.Role = SelectedRole;
-            _currentUser.IsActive = IsActive;
+            try
+            {
+                _currentUser.FirstName = FirstName;
+                _currentUser.LastName = LastName;
+                _currentUser.UserName = UserName;
+                _currentUser.Password = Password;
+                _currentUser.Role = SelectedRole;
+                _currentUser.IsActive = IsActive;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private bool CanSave()
@@ -177,12 +191,14 @@ namespace IPCSoftware.App.ViewModels
             {
                 // Capture the "Username taken" message and show it in the UI
 
+                _logger.LogError(ex.Message, LogType.Diagnostics);
                 _dialog.ShowWarning(ex.Message);    
                 
                 ErrorMessage = ex.Message;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
                 // Handle generic errors
                // ErrorMessage = "An unexpected error occurred: " + ex.Message;
             }

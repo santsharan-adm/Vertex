@@ -55,81 +55,104 @@ public class RibbonViewModel : BaseViewModel
 
     private void OpenDashboardMenu()
     {
-        LoadMenu(new List<string>
+        try
         {
-            "OEE Dashboard",
-            "Machine Summary",
-            "KPI Monitoring"
-        }, nameof(OpenDashboardMenu));
+            LoadMenu(new List<string>
+            {
+                "OEE Dashboard",
+                "Machine Summary",
+                "KPI Monitoring"
+            }, nameof(OpenDashboardMenu));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+        }
     }
 
     private void OpenSettingsMenu()
     {
-        LoadMenu(new List<string>
+        try
         {
-            "System Settings",
-            "Manual Operation",
-            "Mode Of Operation",
-            "PLC IO",
-            "Tag Control",
-             "Alarm View"
-        }, nameof(OpenSettingsMenu));
-
-        /*  ShowSidebar?.Invoke(new Dictionary<string, List<string>> List<string>
-          {
-              "System Settings",
-              "Manual Operation",
-              "Mode Of Operation",
-              "PLC IO"
-          });*/
+            LoadMenu(new List<string>
+            {
+                "System Settings",
+                "Manual Operation",
+                "Mode Of Operation",
+                "PLC IO",
+                "Tag Control",
+                 "Alarm View"
+            }, nameof(OpenSettingsMenu));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+        }
     }
 
     private void OpenLogsMenu()
     {
-        LoadMenu(new List<string>
+        try
         {
-            "Audit Logs",
-            "Production Logs",
-            "Error Logs",
-            "Diagnostics Logs"
-        }, nameof(OpenLogsMenu));
-        /* ShowSidebar?.Invoke(new List<string>
-         {
-             "System Logs",
-             "Production Logs"
-         });*/
+            LoadMenu(new List<string>
+            {
+                "Audit Logs",
+                "Production Logs",
+                "Error Logs",
+                "Diagnostics Logs"
+            }, nameof(OpenLogsMenu));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+        }
+     
     }
 
     private void OpenUserMgtMenu()
     {
-
-        if (IsAdmin)
+        try
         {
-            LoadMenu(new List<string>
-                {
-                    "Log Config",
-                        "Device Config",
-                        "Alarm Config",
-                        "User Config",
-                        "PLC TAG Config",
-                        "Report Config",
-                        "External Interface"
-                }, nameof(OpenUserMgtMenu));
+            if (IsAdmin)
+            {
+                LoadMenu(new List<string>
+                    {
+                        "Log Config",
+                            "Device Config",
+                            "Alarm Config",
+                            "User Config",
+                            "PLC TAG Config",
+                            "Report Config",
+                            "External Interface"
+                    }, nameof(OpenUserMgtMenu));
+            }
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+        }
+
     }
 
     private void Logout()
     {
-        bool confirm = _dialog.ShowYesNo("Are you sure you want to logout?", "Logout");
-
-        if (confirm)
+        try
         {
-            _logger.LogInfo($"Logout Sucess: {CurrentUserName}", LogType.Audit);
-            // proceed delete
-            OnLogout?.Invoke();
-            _nav.ClearTop();
-            _nav.NavigateMain<LoginView>();
-            UserSession.Clear();
+            bool confirm = _dialog.ShowYesNo("Are you sure you want to logout?", "Logout");
+
+            if (confirm)
+            {
+                _logger.LogInfo($"Logout Sucess: {CurrentUserName}", LogType.Audit);
+                // proceed delete
+                OnLogout?.Invoke();
+                _nav.ClearTop();
+                _nav.NavigateMain<LoginView>();
+                UserSession.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
         }
 
     }
@@ -146,13 +169,6 @@ public class RibbonViewModel : BaseViewModel
     private void LoadMenu(List<string> items, string functionName)
     {
         string key = functionName.Replace("Open", "");  // "OpenDashboardMenu" → "DashboardMenu"
-
-        /*  if (_currentMenu?.Key == key)
-              return;*/ // Do nothing if user clicked same button again
-
-        // _currentMenu = (key, items);
-
-        // Send menu to sidebar
         ShowSidebar?.Invoke((key, items));
     }
 }

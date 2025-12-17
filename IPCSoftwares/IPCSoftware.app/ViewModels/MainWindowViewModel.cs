@@ -163,55 +163,69 @@ public class MainWindowViewModel : BaseViewModel
 
     private async void ExecuteAcknowledgeBannerAlarm()
     {
-        // 1. Find the latest unacknowledged alarm (the one currently displayed)
-        var latestUnackedAlarm = _alarmVM.ActiveAlarms
-            .Where(a => a.AlarmAckTime == null)
-            .OrderByDescending(a => a.AlarmTime)
-            .FirstOrDefault();
-
-        if (latestUnackedAlarm != null)
+        try
         {
-            // 2. Call the Acknowledge logic in the AlarmViewModel
-            // This relies on the core logic being available in AlarmViewModel (Action 2.2)
-            await _alarmVM.AcknowledgeAlarmRequestAsync(latestUnackedAlarm);
+            // 1. Find the latest unacknowledged alarm (the one currently displayed)
+            var latestUnackedAlarm = _alarmVM.ActiveAlarms
+                .Where(a => a.AlarmAckTime == null)
+                .OrderByDescending(a => a.AlarmTime)
+                .FirstOrDefault();
+
+            if (latestUnackedAlarm != null)
+            {
+                // 2. Call the Acknowledge logic in the AlarmViewModel
+                // This relies on the core logic being available in AlarmViewModel (Action 2.2)
+                await _alarmVM.AcknowledgeAlarmRequestAsync(latestUnackedAlarm);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
         }
     }
 
     private void OnAlarmReceived(AlarmMessage msg)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        try
         {
-            var latestUnackedAlarm = _alarmVM.ActiveAlarms
-              .Where(a => a.AlarmAckTime == null)
-              .OrderByDescending(a => a.AlarmTime)
-              .FirstOrDefault();
-
-            // 1. Update the Count based on the UNACKNOWLEDGED alarms in the shared collection
-            ActiveAlarmCount = _alarmVM.ActiveAlarms.Count(a => a.AlarmAckTime == null);
-
-            if (latestUnackedAlarm != null)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                // Format message
-               // AlarmBannerMessage = $"⚠️ ALARM {msg.AlarmInstance.AlarmNo}: {msg.AlarmInstance.AlarmText}";
-                AlarmBannerMessage = $"⚠️ ALARM {latestUnackedAlarm.AlarmNo}: {latestUnackedAlarm.AlarmText}";
+                var latestUnackedAlarm = _alarmVM.ActiveAlarms
+                  .Where(a => a.AlarmAckTime == null)
+                  .OrderByDescending(a => a.AlarmTime)
+                  .FirstOrDefault();
 
-                // Set color based on severity (using the latest unacknowledged alarm)
-                if (latestUnackedAlarm.Severity == "High") AlarmBannerColor = "#D32F2F"; // Red
-                else if (latestUnackedAlarm.Severity == "Warning") AlarmBannerColor = "#F57C00"; // Orange
-                else AlarmBannerColor = "#1976D2"; // Blue
+                // 1. Update the Count based on the UNACKNOWLEDGED alarms in the shared collection
+                ActiveAlarmCount = _alarmVM.ActiveAlarms.Count(a => a.AlarmAckTime == null);
+
+                if (latestUnackedAlarm != null)
+                {
+                    // Format message
+                   // AlarmBannerMessage = $"⚠️ ALARM {msg.AlarmInstance.AlarmNo}: {msg.AlarmInstance.AlarmText}";
+                    AlarmBannerMessage = $"⚠️ ALARM {latestUnackedAlarm.AlarmNo}: {latestUnackedAlarm.AlarmText}";
+
+                    // Set color based on severity (using the latest unacknowledged alarm)
+                    if (latestUnackedAlarm.Severity == "High") AlarmBannerColor = "#D32F2F"; // Red
+                    else if (latestUnackedAlarm.Severity == "Warning") AlarmBannerColor = "#F57C00"; // Orange
+                    else AlarmBannerColor = "#1976D2"; // Blue
 
                
-            }
-            else
-            {
-                // If count is zero, reset the message
-                AlarmBannerMessage = "No Critical Alarms";
-                AlarmBannerColor = "#1976D2"; // Blue/Neutral
-            }
-            // 3. Control Visibility: Show if there is any unacknowledged alarm
-            // This ensures the banner reappears if a new alarm is raised after being manually closed.
-            IsAlarmBannerVisible = ActiveAlarmCount > 0;
-        });
+                }
+                else
+                {
+                    // If count is zero, reset the message
+                    AlarmBannerMessage = "No Critical Alarms";
+                    AlarmBannerColor = "#1976D2"; // Blue/Neutral
+                }
+                // 3. Control Visibility: Show if there is any unacknowledged alarm
+                // This ensures the banner reappears if a new alarm is raised after being manually closed.
+                IsAlarmBannerVisible = ActiveAlarmCount > 0;
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+        }
     }
 
     public string AlarmBannerTotalMessage => ActiveAlarmCount > 0
@@ -250,7 +264,8 @@ public class MainWindowViewModel : BaseViewModel
         }
         catch(Exception ex )
         {
-
+           _logger.LogError(ex.Message, LogType.Diagnostics);
+            
         }
     }
     private void ResetLandingState()
@@ -294,22 +309,29 @@ public class MainWindowViewModel : BaseViewModel
 
     private void LoadSidebarMenu((string Key, List<string> Items) menu)
     {
-        SidebarItems.Clear();
-
-        foreach (var item in menu.Items)
-            SidebarItems.Add(item);
-        if (currentRibbonKey == menu.Key )
+        try
         {
-            if (!IsSidebarDocked)
+            SidebarItems.Clear();
+
+            foreach (var item in menu.Items)
+                SidebarItems.Add(item);
+            if (currentRibbonKey == menu.Key )
             {
-                IsSidebarOpen = !IsSidebarOpen;
+                if (!IsSidebarDocked)
+                {
+                    IsSidebarOpen = !IsSidebarOpen;
+                }
+
+                return;
             }
 
-            return;
+            IsSidebarOpen = true;
+            currentRibbonKey = menu.Key;
         }
-
-        IsSidebarOpen = true;
-        currentRibbonKey = menu.Key;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+        }
 
         // MVVM triggers animation
     }
@@ -338,99 +360,106 @@ public class MainWindowViewModel : BaseViewModel
 
     private void OnSidebarItemClick(string itemName)
     {
-        // Close sidebar
-        if (!IsSidebarDocked)
+        try
         {
-          IsSidebarOpen = false;
+            // Close sidebar
+            if (!IsSidebarDocked)
+            {
+              IsSidebarOpen = false;
+            }
+            if (string.IsNullOrWhiteSpace(existingUserControl))
+            {
+                existingUserControl = itemName;
+            }
+            else if (existingUserControl == itemName)
+            {
+                return;
+            }
+            else
+            {
+                existingUserControl = itemName;
+            }
+
+            // Navigate based on item name
+            switch (itemName)
+            {
+                // OEEDashboard Menu
+                case "OEE Dashboard":
+                    //_nav.NavigateMain<LiveOeeView>();
+                    _nav.NavigateMain<OEEDashboard>();
+                    break;
+
+                case "Machine Summary":
+                    _nav.NavigateMain<OeeDashboard2>();
+                    break;
+
+                case "KPI Monitoring":
+                    _nav.NavigateMain<OeeDashboardNew>();
+                    break;
+
+                case "System Settings":
+                    _nav.NavigateToSystemSettings();
+                    break;
+
+                // Config Menu
+                case "Log Config":
+                    _nav.NavigateMain<LogListView>();
+                    break;
+                case "Device Config":
+                    _nav.NavigateMain<DeviceListView>();
+                    break;
+                case "Alarm Config":
+                    _nav.NavigateMain<AlarmListView>();
+                    break;
+
+                case "User Config":
+                    _nav.NavigateMain<UserListView>();
+                    break;
+
+                case "Manual Operation":
+                    _nav.NavigateMain<ManualOperation>();
+                    break;
+
+                case "Mode Of Operation":
+                    _nav.NavigateMain<ModeOfOperation>();
+                    break;
+
+                case "PLC IO":
+                    _nav.NavigateMain<PLCIOView>();
+                    break;
+
+                case "Tag Control":
+                    _nav.NavigateMain<TagControlView>();
+                    break;
+
+                case "PLC TAG Config":
+                    _nav.NavigateMain<PLCTagListView>();
+                    break;
+
+                case "Alarm View": 
+                    _nav.NavigateMain<AlarmView>(); break;
+
+                case "Audit Logs":
+                    _nav.NavigateToLogs(LogType.Audit);
+                    break;
+
+                case "Error Logs":
+                    _nav.NavigateToLogs(LogType.Error);
+                    break;
+
+                case "Production Logs":
+                    _nav.NavigateToLogs(LogType.Production);
+                    break;
+                case "Diagnostics Logs":
+                    _nav.NavigateToLogs(LogType.Diagnostics);
+                    break;
         }
-        if (string.IsNullOrWhiteSpace(existingUserControl))
+        }
+        catch (Exception ex)
         {
-            existingUserControl = itemName;
-        }
-        else if (existingUserControl == itemName)
-        {
-            return;
-        }
-        else
-        {
-            existingUserControl = itemName;
+            _logger.LogError(ex.Message, LogType.Diagnostics);
         }
 
-        // Navigate based on item name
-        switch (itemName)
-        {
-            // OEEDashboard Menu
-            case "OEE Dashboard":
-                //_nav.NavigateMain<LiveOeeView>();
-                _nav.NavigateMain<OEEDashboard>();
-                break;
-
-            case "Machine Summary":
-                _nav.NavigateMain<OeeDashboard2>();
-                break;
-
-            case "KPI Monitoring":
-                _nav.NavigateMain<OeeDashboardNew>();
-                break;
-
-            case "System Settings":
-                _nav.NavigateToSystemSettings();
-                break;
-
-            // Config Menu
-            case "Log Config":
-                _nav.NavigateMain<LogListView>();
-                break;
-            case "Device Config":
-                _nav.NavigateMain<DeviceListView>();
-                break;
-            case "Alarm Config":
-                _nav.NavigateMain<AlarmListView>();
-                break;
-
-            case "User Config":
-                _nav.NavigateMain<UserListView>();
-                break;
-
-            case "Manual Operation":
-                _nav.NavigateMain<ManualOperation>();
-                break;
-
-            case "Mode Of Operation":
-                _nav.NavigateMain<ModeOfOperation>();
-                break;
-
-            case "PLC IO":
-                _nav.NavigateMain<PLCIOView>();
-                break;
-
-            case "Tag Control":
-                _nav.NavigateMain<TagControlView>();
-                break;
-
-            case "PLC TAG Config":
-                _nav.NavigateMain<PLCTagListView>();
-                break;
-
-            case "Alarm View": 
-                _nav.NavigateMain<AlarmView>(); break;
-
-            case "Audit Logs":
-                _nav.NavigateToLogs(LogType.Audit);
-                break;
-
-            case "Error Logs":
-                _nav.NavigateToLogs(LogType.Error);
-                break;
-
-            case "Production Logs":
-                _nav.NavigateToLogs(LogType.Production);
-                break;
-            case "Diagnostics Logs":
-                _nav.NavigateToLogs(LogType.Diagnostics);
-                break;
-
-        }
 
 
 

@@ -60,48 +60,83 @@ namespace IPCSoftware.App.ViewModels
 
         public async Task LoadDevice(DeviceModel device)
         {
-            CurrentDevice = device;
-            OnPropertyChanged(nameof(PageTitle));
-            await LoadCameraInterfacesAsync();
+            try
+            {
+                CurrentDevice = device;
+                OnPropertyChanged(nameof(PageTitle));
+                await LoadCameraInterfacesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private async Task LoadCameraInterfacesAsync()
         {
-            if (CurrentDevice == null) return;
-
-            var cameraInterfaces = await _deviceService.GetCameraInterfacesByDeviceNoAsync(CurrentDevice.DeviceNo);
-            CameraInterfaces.Clear();
-            foreach (var camInterface in cameraInterfaces)
+            try
             {
-                CameraInterfaces.Add(camInterface);
+                if (CurrentDevice == null) return;
+
+                var cameraInterfaces = await _deviceService.GetCameraInterfacesByDeviceNoAsync(CurrentDevice.DeviceNo);
+                CameraInterfaces.Clear();
+                foreach (var camInterface in cameraInterfaces)
+                {
+                    CameraInterfaces.Add(camInterface);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
         private void OnAddInterface()
         {
-            _nav.NavigateToCameraInterfaceConfiguration(CurrentDevice, null, async () =>
+            try
             {
-                await LoadCameraInterfacesAsync();
-            });
+                _nav.NavigateToCameraInterfaceConfiguration(CurrentDevice, null, async () =>
+                {
+                    await LoadCameraInterfacesAsync();
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void OnEditInterface(CameraInterfaceModel cameraInterface)
         {
-            if (cameraInterface == null) return;
-
-            _nav.NavigateToCameraInterfaceConfiguration(CurrentDevice, cameraInterface, async () =>
+            try
             {
-                await LoadCameraInterfacesAsync();
-            });
+                if (cameraInterface == null) return;
+
+                _nav.NavigateToCameraInterfaceConfiguration(CurrentDevice, cameraInterface, async () =>
+                {
+                    await LoadCameraInterfacesAsync();
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private async void OnDeleteInterface(CameraInterfaceModel cameraInterface)
         {
-            if (cameraInterface == null) return;
+            try
+            {
+                if (cameraInterface == null) return;
 
-            // TODO: Add confirmation dialog
-            await _deviceService.DeleteCameraInterfaceAsync(cameraInterface.Id);
-            await LoadCameraInterfacesAsync();
+                // TODO: Add confirmation dialog
+                await _deviceService.DeleteCameraInterfaceAsync(cameraInterface.Id);
+                await LoadCameraInterfacesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void OnBack()
