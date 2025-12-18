@@ -10,6 +10,8 @@ using System.Windows.Input;
 
 namespace IPCSoftware.App.ViewModels
 {
+    /// ViewModel responsible for handling the login process of the application.
+    /// Handles authentication, session initialization, and navigation to main views.
     public class LoginViewModel : BaseViewModel
     {
         private readonly IAuthService _authService;
