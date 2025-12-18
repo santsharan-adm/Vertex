@@ -425,3 +425,4 @@ FodyWeavers.xsd
 /IPCSoftwares/CCD/UI
 *.bmp
 *.bmp
+IPCSoftwares/IPCSoftware.app/appsettings.Development.json
