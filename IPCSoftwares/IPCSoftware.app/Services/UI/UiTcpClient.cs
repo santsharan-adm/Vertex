@@ -56,6 +56,7 @@ namespace IPCSoftware.App.Services.UI
                 Application.Current?.Dispatcher.Invoke(() => UiConnected?.Invoke(true));
                 _ = Task.Run(ReadLoop); 
                 UiConnected?.Invoke(true);
+                _hasShownError = false;
                 return true;
             }
             catch (Exception ex)
@@ -75,11 +76,11 @@ namespace IPCSoftware.App.Services.UI
                 if (!_hasShownError)
                 {
                     // CRITICAL FIX: Marshaling the Dialog call to the UI Thread (STA)
-                    //Application.Current?.Dispatcher.Invoke(() =>
-                    //{
-                    //    _dialog.ShowWarning($"TCP ERROR: {ex.Message}. Retrying...");
-                    //});
-                  //  _hasShownError = true;
+                    Application.Current?.Dispatcher.Invoke(() =>
+                    {
+                        _dialog.ShowWarning($"TCP ERROR: {ex.Message}. Retrying...");
+                    });
+                    _hasShownError = true;
                 }
                 return false;
             }
@@ -144,6 +145,7 @@ namespace IPCSoftware.App.Services.UI
                 Cleanup();
             }
         }
+
         public void Send(string message)
         {
             if (_stream == null || !IsConnected)

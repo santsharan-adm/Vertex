@@ -1,5 +1,8 @@
-﻿using IPCSoftware.App.Services; // Ensure CoreClient is accessible
+﻿using IPCSoftware.App.NavServices;
+using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
+using IPCSoftware.App.Views; // For ManualOperation View reference
+using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
@@ -8,10 +11,7 @@ using IPCSoftware.Shared.Models.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -27,184 +27,260 @@ namespace IPCSoftware.App.ViewModels
         MassRTO
     }
 
+    // Wrapper for Button UI State
+    public class ModeButtonItem : ObservableObjectVM
+    {
+        public OperationMode Mode { get; set; }
+        public string Name { get; set; }
+
+        private bool _isEnabled;
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            set => SetProperty(ref _isEnabled, value);
+        }
+
+        private bool _isActive;
+        public bool IsActive
+        {
+            get => _isActive;
+            set => SetProperty(ref _isActive, value);
+        }
+
+        // Colors
+        public string BaseColor { get; set; } = "#E0E0E0";    // Normal
+        public string ActiveColor { get; set; } = "#00FF00";  // Blinking/Active
+    }
+
     public class ModeOfOperationViewModel : BaseViewModel, IDisposable
     {
         private readonly CoreClient _coreClient;
+        private readonly INavigationService _navService;
         private readonly DispatcherTimer _feedbackTimer;
 
         // --- TAG CONFIGURATION ---
-        private readonly Dictionary<OperationMode, int> _writeTagMap = new()
+        private readonly Dictionary<OperationMode, int> _tagMap = new()
         {
             { OperationMode.Auto,       11 },
             { OperationMode.DryRun,     12 },
             { OperationMode.CycleStop,  13 },
-            { OperationMode.MassRTO,    14 },
-            { OperationMode.Manual,     15 }
+            { OperationMode.MassRTO,    14 }/*,
+            { OperationMode.Manual,     15 }*/
         };
 
-        // Status IDs (Reading)
-        private readonly Dictionary<OperationMode, int> _readStatusMap = new()
-        {
-            { OperationMode.Auto,       11 },
-            { OperationMode.DryRun,     12 },
-            { OperationMode.CycleStop,  13 },
-            { OperationMode.MassRTO,    14 },
-            { OperationMode.Manual,     15 }
-        };
+        // --- Properties ---
+        public ObservableCollection<ModeButtonItem> ModeButtons { get; }
+        public ObservableCollection<AuditLogModel> AuditLogs { get; set; } = new();
 
-        private OperationMode? _selectedButton;
-        public OperationMode? SelectedButton
+        private bool _isMachineHome;
+        public bool IsMachineHome
         {
-            get => _selectedButton;
-            set
-            {
-                if (_selectedButton != value)
-                {
-                    _selectedButton = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _isMachineHome;
+            set => SetProperty(ref _isMachineHome, value);
         }
 
-        public ObservableCollection<AuditLogModel> AuditLogs { get; set; }
-        public ObservableCollection<OperationMode> Modes { get; }
         public ICommand ButtonClickCommand { get; }
 
-        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient) : base(logger)
+        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService) : base(logger)
         {
             _coreClient = coreClient;
+            _navService = navService;
 
-            Modes = new ObservableCollection<OperationMode>
+            // Initialize Buttons with Client Specific Colors
+            ModeButtons = new ObservableCollection<ModeButtonItem>
             {
-                OperationMode.Auto,
-                OperationMode.DryRun,
-                OperationMode.Manual,
-                OperationMode.CycleStop,
-                OperationMode.MassRTO
+                new ModeButtonItem
+                {
+                    Mode = OperationMode.Auto,
+                    Name = "Auto Run",
+                    IsEnabled = true,
+                    BaseColor = "#008B8B",   // Dark Aqua Blue
+                    ActiveColor = "#00FFFF"  // Bright Aqua Blue
+                },
+                new ModeButtonItem
+                {
+                    Mode = OperationMode.DryRun,
+                    Name = "Dry Run",
+                    IsEnabled = true,
+                    BaseColor = "#8B008B",   // Dark Magenta
+                    ActiveColor = "#FF00FF"  // Bright Magenta
+                },
+                new ModeButtonItem
+                {
+                    Mode = OperationMode.Manual,
+                    Name = "Manual",
+                    IsEnabled = true,
+                    BaseColor = "#607D8B",   // Blue Grey
+                    ActiveColor = "#4CAF50"  // Green
+                },
+                new ModeButtonItem
+                {
+                    Mode = OperationMode.CycleStop,
+                    Name = "Cycle Stop",
+                    IsEnabled = false,       // Initially Disabled
+                    BaseColor = "#5D4037",   // Dark Brown
+                    ActiveColor = "#D7CCC8"  // Bright Brown/Beige
+                },
+                new ModeButtonItem
+                {
+                    Mode = OperationMode.MassRTO,
+                    Name = "Mass RTO",
+                    IsEnabled = true,
+                    BaseColor = "#795548",
+                    ActiveColor = "#FF5722"
+                }
             };
 
-            AuditLogs = new ObservableCollection<AuditLogModel>();
-            ButtonClickCommand = new RelayCommand<object>(OnButtonClicked);
+            ButtonClickCommand = new RelayCommand<ModeButtonItem>(OnButtonClicked);
 
-            // Start polling for feedback
             _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
             _feedbackTimer.Tick += FeedbackLoop_Tick;
             _feedbackTimer.Start();
         }
 
-        /// <summary>
-        /// USER ACTION: Sends Toggle Command (1 or 0)
-        /// </summary>
-        private async void OnButtonClicked(object? param)
+        private async void OnButtonClicked(ModeButtonItem item)
         {
             try
             {
-                if (param is OperationMode mode)
+                // 1. Manual Screen Logic
+                if (item.Mode == OperationMode.Manual)
                 {
-                    // INTERLOCK LOGIC:
-                    // If a mode is currently active (SelectedButton != null) 
-                    // AND the user clicked a DIFFERENT mode button...
-                    if (SelectedButton.HasValue && SelectedButton.Value != mode)
-                    {
-                        // ...Block the action. User must turn off the current mode first.
-                        _logger.LogWarning($"Interlock: Cannot start {mode} because {SelectedButton} is currently active.", LogType.Audit   );
-                        return;
-                    }
+                    // "When Manual mode is selected then Manual Screen should open else it should not open"
+                    // Only navigate if enabled (handled by UpdateUiLogic)
+                    _logger.LogInfo("Navigating to Manual Screen", LogType.Audit);
+                    _navService.NavigateMain<ManualOperation>();
+                    return;
+                }
 
-                    if (_writeTagMap.TryGetValue(mode, out int tagId))
-                    {
-                        // TOGGLE LOGIC:
-                        // If the clicked mode IS the currently active mode -> Write 0 (Turn Off)
-                        // If no mode is active (allowed by Interlock check) -> Write 1 (Turn On)
-                        bool isTurningOff = (SelectedButton == mode);
-                        int valueToSend = isTurningOff ? 0 : 1;
+                // 2. Cycle Stop Logic
+                if (item.Mode == OperationMode.CycleStop)
+                {
+                    _logger.LogInfo("Operator pressed Cycle Stop. Reseting Auto/Dry...", LogType.Audit);
 
-                        _logger.LogInfo($"User Request: Set {mode} to {valueToSend} (Tag {tagId})", LogType.Audit);
+                    // Client Req: "When cycle stop is pressed auto and dry mode should be zero"
+                    // We send stop command (1) to CycleStop Tag, AND 0 to Auto/Dry tags to unlatch them.
+                    await WriteTagToPlc(_tagMap[OperationMode.CycleStop], 1);
+                    await WriteTagToPlc(_tagMap[OperationMode.Auto], 0);
+                    await WriteTagToPlc(_tagMap[OperationMode.DryRun], 0);
 
-                        await WriteTagToPlc(tagId, valueToSend);
+                    AddAudit("Cycle Stop Initiated. Waiting for Home...");
+                    return;
+                }
 
-                        string action = isTurningOff ? "stopped" : "started";
-                        AddAudit($"Operator {action} {mode} mode.");
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"No Tag ID configured for {mode}", LogType.Audit);
-                    }
+                // 3. Auto / Dry Run / Mass RTO Toggle Logic
+                if (_tagMap.TryGetValue(item.Mode, out int tagId))
+                {
+                    // Toggle: If Active -> Send 0 (Stop). If Inactive -> Send 1 (Start).
+                    int valueToSend = item.IsActive ? 0 : 1;
+
+                    _logger.LogInfo($"Requesting {item.Mode}: {valueToSend}", LogType.Audit);
+                    await WriteTagToPlc(tagId, valueToSend);
+
+                    string action = valueToSend == 1 ? "started" : "stopped";
+                    AddAudit($"Operator {action} {item.Name}.");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error in button click: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"Button Click Error: {ex.Message}", LogType.Diagnostics);
             }
         }
 
-        /// <summary>
-        /// FEEDBACK LOOP: Polling PLC Status to update UI Color
-        /// </summary>
         private async void FeedbackLoop_Tick(object? sender, EventArgs e)
         {
             try
             {
-                // 1. Request IO Values (Using ID 5 for General IOs)
                 var liveData = await _coreClient.GetIoValuesAsync(5);
-
                 if (liveData == null) return;
 
-                // 2. Determine which mode is active on the PLC
-                OperationMode? activeModeFromPlc = null;
+                bool anyActive = false;
 
-                foreach (var kvp in _readStatusMap)
+                // 1. Update status of all buttons from PLC
+                foreach (var btn in ModeButtons)
                 {
-                    OperationMode mode = kvp.Key;
-                    int readTagId = kvp.Value;
-
-                    if (liveData.TryGetValue(readTagId, out object? val))
+                    if (_tagMap.TryGetValue(btn.Mode, out int tagId))
                     {
-                        // Check if bit is High (1 or True)
-                        if (Convert.ToBoolean(val) == true)
+                        if (liveData.TryGetValue(tagId, out object? val))
                         {
-                            activeModeFromPlc = mode;
-                            break;
+                            bool state = Convert.ToBoolean(val);
+                            btn.IsActive = state;
+                            if (state) anyActive = true;
                         }
                     }
                 }
 
-                // 3. Update UI only if state changed (Reduces flicker)
-                if (SelectedButton != activeModeFromPlc)
-                {
-                    SelectedButton = activeModeFromPlc;
-                }
+                // 2. Update Home Indication
+                // "Home position means value of all tag should be zero"
+                IsMachineHome = !anyActive;
+
+                // 3. Enforce Interlocks (Enable/Disable logic)
+                UpdateUiLogic();
             }
             catch (Exception ex)
             {
-                // Suppress excessive loop logs
-              _logger.LogError($"Feedback Loop Error: {ex.Message}", LogType.Diagnostics);
+                // Suppress loop errors
+                System.Diagnostics.Debug.WriteLine($"Feedback Error: {ex.Message}");
             }
         }
 
+        private void UpdateUiLogic()
+        {
+            var autoBtn = GetBtn(OperationMode.Auto);
+            var dryBtn = GetBtn(OperationMode.DryRun);
+            var manualBtn = GetBtn(OperationMode.Manual);
+            var stopBtn = GetBtn(OperationMode.CycleStop);
+            var rtoBtn = GetBtn(OperationMode.MassRTO);
+
+            // Client Req: "If Auto Mode or Dry Run is selected then Cycle Stop should be enabled 
+            // and remaining buttons should be in disabled state"
+            bool isRunning = autoBtn.IsActive || dryBtn.IsActive;
+            bool isCycleStopping = stopBtn.IsActive;
+
+            if (isCycleStopping)
+            {
+                // Cycle Stop is active -> Disable everything until it finishes (Home condition achieved)
+                // "Cycle Stop button will return to home after completing the running cycle"
+                // The PLC will turn off the CycleStop bit when done, triggering the 'else' block below.
+                autoBtn.IsEnabled = false;
+                dryBtn.IsEnabled = false;
+                manualBtn.IsEnabled = false;
+                rtoBtn.IsEnabled = false;
+                stopBtn.IsEnabled = false;
+            }
+            else if (isRunning)
+            {
+                // Auto or Dry is ON
+                autoBtn.IsEnabled = autoBtn.IsActive; // Can stop itself
+                dryBtn.IsEnabled = dryBtn.IsActive;   // Can stop itself
+                manualBtn.IsEnabled = false;          // Disabled during run
+                rtoBtn.IsEnabled = false;             // Disabled during run
+
+                stopBtn.IsEnabled = true;             // Cycle Stop ENABLED
+            }
+            else
+            {
+                // Home Condition (Nothing active)
+                autoBtn.IsEnabled = true;
+                dryBtn.IsEnabled = true;
+                manualBtn.IsEnabled = true;
+                rtoBtn.IsEnabled = true;
+
+                stopBtn.IsEnabled = false;            // Disabled at Home
+            }
+        }
+
+        private ModeButtonItem GetBtn(OperationMode mode) => ModeButtons.First(b => b.Mode == mode);
+
         private async Task WriteTagToPlc(int tagId, object value)
         {
-            try
-            {
-                await _coreClient.WriteTagAsync(tagId, value);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Write Error: {ex.Message}", LogType.Diagnostics);
-            }
+            try { await _coreClient.WriteTagAsync(tagId, value); }
+            catch (Exception ex) { _logger.LogError($"Write Error: {ex.Message}", LogType.Diagnostics); }
         }
 
         private void AddAudit(string message)
         {
             if (AuditLogs.Count > 100) AuditLogs.RemoveAt(0);
-
-            AuditLogs.Add(new AuditLogModel
-            {
-                Time = DateTime.Now.ToString("HH:mm:ss"),
-                Message = message
-            });
-
-            // Log to file as well
+            AuditLogs.Add(new AuditLogModel { Time = DateTime.Now.ToString("HH:mm:ss"), Message = message });
             _logger.LogInfo(message, LogType.Audit);
         }
 

@@ -53,7 +53,7 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <TextBlock Text="Manual Tag Control" 
+        <TextBlock Text="Diagnostic" 
                    FontSize="48" FontWeight="Bold" Foreground="#333"
                    Margin="0,0,0,20"/>
 

@@ -88,6 +88,16 @@ namespace IPCSoftware.App.ViewModels
             //set => SetProperty(ref _selectedAlgorithm, value);
         }
 
+
+        private string _selectedIOType;
+        public string SelectedIOType
+        {
+            get => _selectedIOType;
+            set => SetProperty(ref _selectedIOType, value);
+            
+        }
+
+        public ObservableCollection<string> IOTypes { get; }
         private int _dataType;
         public int DataType
         {
@@ -170,6 +180,14 @@ namespace IPCSoftware.App.ViewModels
         {
             _tagService = tagService;
             _dialog = dialog;
+
+
+            IOTypes = new ObservableCollection<string>
+            {
+                "Input",
+                "Output"
+            };
+
             // Initialize algorithm types with Value and DisplayName
             AlgorithmTypes = new ObservableCollection<AlgorithmType>
             {
