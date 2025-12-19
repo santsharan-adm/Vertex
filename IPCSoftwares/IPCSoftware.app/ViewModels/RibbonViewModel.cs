@@ -80,7 +80,7 @@ public class RibbonViewModel : BaseViewModel
                 "Manual Operation",
                 "Mode Of Operation",
                 "PLC IO",
-                "Tag Control",
+                "Diagnostic",
                  "Alarm View"
             }, nameof(OpenSettingsMenu));
         }

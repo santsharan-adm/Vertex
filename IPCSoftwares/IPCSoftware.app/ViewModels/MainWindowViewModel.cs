@@ -428,7 +428,7 @@ public class MainWindowViewModel : BaseViewModel
                     _nav.NavigateMain<PLCIOView>();
                     break;
 
-                case "Tag Control":
+                case "Diagnostic":
                     _nav.NavigateMain<TagControlView>();
                     break;
 
