@@ -159,11 +159,11 @@ namespace IPCSoftware.App.DI
             services.AddTransient<UserListView>();
             services.AddTransient<UserConfigurationView>();
 
-            services.AddTransient<ModeOfOperation>();
+            services.AddSingleton<ModeOfOperation>();
             services.AddTransient<ManualOperation>();
             services.AddTransient<PLCIOMonitor>();
 
-            services.AddTransient<ModeOfOperationViewModel>();
+            services.AddSingleton<ModeOfOperationViewModel>();
             services.AddTransient<ManualOperationViewModel>();
             services.AddTransient<PlcIoMonitorViewModel>();
             // PLC Tag Configuration Views 
