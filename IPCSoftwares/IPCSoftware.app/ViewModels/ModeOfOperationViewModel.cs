@@ -33,7 +33,6 @@ namespace IPCSoftware.App.ViewModels
         private readonly DispatcherTimer _feedbackTimer;
 
         // --- TAG CONFIGURATION ---
-        // Added 'Manual' with Tag ID 15
         private readonly Dictionary<OperationMode, int> _writeTagMap = new()
         {
             { OperationMode.Auto,       11 },
@@ -43,7 +42,7 @@ namespace IPCSoftware.App.ViewModels
             { OperationMode.Manual,     15 }
         };
 
-        // Status IDs (Reading) - Assumed to match Writing IDs based on your setup
+        // Status IDs (Reading)
         private readonly Dictionary<OperationMode, int> _readStatusMap = new()
         {
             { OperationMode.Auto,       11 },
@@ -71,11 +70,9 @@ namespace IPCSoftware.App.ViewModels
         public ObservableCollection<OperationMode> Modes { get; }
         public ICommand ButtonClickCommand { get; }
 
-        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient) : base(logger) // Removed 'base(logger)' if BaseViewModel uses Static Log
+        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient) : base(logger)
         {
             _coreClient = coreClient;
-            // Note: If BaseViewModel uses Static Log.cs, we don't need to pass 'logger' to base.
-            // If it uses constructor injection, pass it. Assuming Static based on previous context.
 
             Modes = new ObservableCollection<OperationMode>
             {
@@ -104,11 +101,21 @@ namespace IPCSoftware.App.ViewModels
             {
                 if (param is OperationMode mode)
                 {
+                    // INTERLOCK LOGIC:
+                    // If a mode is currently active (SelectedButton != null) 
+                    // AND the user clicked a DIFFERENT mode button...
+                    if (SelectedButton.HasValue && SelectedButton.Value != mode)
+                    {
+                        // ...Block the action. User must turn off the current mode first.
+                        _logger.LogWarning($"Interlock: Cannot start {mode} because {SelectedButton} is currently active.", LogType.Audit   );
+                        return;
+                    }
+
                     if (_writeTagMap.TryGetValue(mode, out int tagId))
                     {
                         // TOGGLE LOGIC:
-                        // If the clicked mode IS the currently Selected (Green) mode -> Write 0 (Turn Off)
-                        // If it is a different mode (Gray) -> Write 1 (Turn On)
+                        // If the clicked mode IS the currently active mode -> Write 0 (Turn Off)
+                        // If no mode is active (allowed by Interlock check) -> Write 1 (Turn On)
                         bool isTurningOff = (SelectedButton == mode);
                         int valueToSend = isTurningOff ? 0 : 1;
 
@@ -121,7 +128,7 @@ namespace IPCSoftware.App.ViewModels
                     }
                     else
                     {
-                       _logger.LogWarning($"No Tag ID configured for {mode}", LogType.Audit);
+                        _logger.LogWarning($"No Tag ID configured for {mode}", LogType.Audit);
                     }
                 }
             }
@@ -157,8 +164,6 @@ namespace IPCSoftware.App.ViewModels
                         if (Convert.ToBoolean(val) == true)
                         {
                             activeModeFromPlc = mode;
-                            // Assuming mutual exclusivity (only 1 can be true), we break on first find.
-                            // If Manual (15) and Auto (11) can be on together, logic needs adjustment.
                             break;
                         }
                     }
@@ -168,18 +173,12 @@ namespace IPCSoftware.App.ViewModels
                 if (SelectedButton != activeModeFromPlc)
                 {
                     SelectedButton = activeModeFromPlc;
-
-                    if (activeModeFromPlc.HasValue)
-                    {
-                        // Optional: Log confirmation from PLC
-                        // AddAudit($"PLC Confirmed Mode: {activeModeFromPlc}"); 
-                    }
                 }
             }
             catch (Exception ex)
             {
                 // Suppress excessive loop logs
-            _logger.LogError($"Feedback Loop Error: {ex.Message}", LogType.Diagnostics);
+              _logger.LogError($"Feedback Loop Error: {ex.Message}", LogType.Diagnostics);
             }
         }
 
