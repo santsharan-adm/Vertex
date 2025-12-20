@@ -184,50 +184,6 @@ public class MainWindowViewModel : BaseViewModel
         }
     }
 
-    private void OnAlarmReceived(AlarmMessage msg)
-    {
-        try
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                var latestUnackedAlarm = _alarmVM.ActiveAlarms
-                  .Where(a => a.AlarmAckTime == null)
-                  .OrderByDescending(a => a.AlarmTime)
-                  .FirstOrDefault();
-
-                // 1. Update the Count based on the UNACKNOWLEDGED alarms in the shared collection
-                ActiveAlarmCount = _alarmVM.ActiveAlarms.Count(a => a.AlarmAckTime == null);
-
-                if (latestUnackedAlarm != null)
-                {
-                    // Format message
-                   // AlarmBannerMessage = $"⚠️ ALARM {msg.AlarmInstance.AlarmNo}: {msg.AlarmInstance.AlarmText}";
-                    AlarmBannerMessage = $"⚠️ ALARM {latestUnackedAlarm.AlarmNo}: {latestUnackedAlarm.AlarmText}";
-
-                    // Set color based on severity (using the latest unacknowledged alarm)
-                    if (latestUnackedAlarm.Severity == "High") AlarmBannerColor = "#D32F2F"; // Red
-                    else if (latestUnackedAlarm.Severity == "Warning") AlarmBannerColor = "#F57C00"; // Orange
-                    else AlarmBannerColor = "#1976D2"; // Blue
-
-               
-                }
-                else
-                {
-                    // If count is zero, reset the message
-                    AlarmBannerMessage = "No Critical Alarms";
-                    AlarmBannerColor = "#1976D2"; // Blue/Neutral
-                }
-                // 3. Control Visibility: Show if there is any unacknowledged alarm
-                // This ensures the banner reappears if a new alarm is raised after being manually closed.
-                IsAlarmBannerVisible = ActiveAlarmCount > 0;
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message, LogType.Diagnostics);
-        }
-    }
-
     public string AlarmBannerTotalMessage => ActiveAlarmCount > 0
         ? ActiveAlarmCount == 1
         ? AlarmBannerMessage // Only one alarm, show the detailed message
@@ -245,6 +201,51 @@ public class MainWindowViewModel : BaseViewModel
             OnPropertyChanged(nameof(AlarmBannerTotalMessage));
         }
     }
+
+    private void OnAlarmReceived(AlarmMessage msg)
+    {
+        try
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // 1. Identify the latest alarm first
+                var latestUnackedAlarm = _alarmVM.ActiveAlarms
+                    .Where(a => a.AlarmAckTime == null)
+                    .OrderByDescending(a => a.AlarmTime)
+                    .FirstOrDefault();
+
+                // 2. PREPARE THE DATA FIRST
+                // We set the text and color BEFORE we update the count.
+                if (latestUnackedAlarm != null)
+                {
+                    AlarmBannerMessage = $"⚠️ ALARM {latestUnackedAlarm.AlarmNo}: {latestUnackedAlarm.AlarmText}";
+
+                    if (latestUnackedAlarm.Severity == "High") AlarmBannerColor = "#D32F2F";
+                    else if (latestUnackedAlarm.Severity == "Warning") AlarmBannerColor = "#F57C00";
+                    else AlarmBannerColor = "#1976D2";
+                }
+                else
+                {
+                    AlarmBannerMessage = "No Critical Alarms";
+                    AlarmBannerColor = "#1976D2";
+                }
+
+                // 3. TRIGGER THE REFRESH LAST
+                // Setting this property triggers OnPropertyChanged(nameof(AlarmBannerTotalMessage))
+                // Because the message was set above, the banner will now show the correct text.
+                ActiveAlarmCount = _alarmVM.ActiveAlarms.Count(a => a.AlarmAckTime == null);
+
+                // 4. Control Visibility
+                IsAlarmBannerVisible = ActiveAlarmCount > 0;
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+        }
+    }
+
+
 
     private async void LiveDataTimerTick(object sender, EventArgs e)
     {
