@@ -1,32 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel; // ⬅️ REQUIRED for INotifyPropertyChanged
-using System.Linq;
-using System.Runtime.CompilerServices; // ⬅️ RECOMMENDED for [CallerMemberName]
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace IPCSoftware.Shared.Models.ConfigModels
 {
-    // ➡️ 1. INHERIT OR IMPLEMENT INotifyPropertyChanged
     public class AlarmInstanceModel : INotifyPropertyChanged
     {
-        // ... (Existing properties - InstanceId, AlarmNo, AlarmText, Severity, AlarmTime, AlarmResetTime - can stay as auto-properties if they don't change after creation) ...
         public Guid InstanceId { get; set; }
         public int AlarmNo { get; set; }
         public string AlarmText { get; set; }
         public string Severity { get; set; }
         public DateTime AlarmTime { get; set; }
-        public DateTime? AlarmResetTime { get; set; }
 
+        // REMOVED the auto-property: public DateTime? AlarmResetTime { get; set; } 
 
-        // --- Runtime State Fields (Must be Observable) ---
-
-        // ➡️ 2. BACKING FIELDS for the observable properties
         private DateTime? _alarmAckTime;
         private string _acknowledgedByUser;
+        private DateTime? _alarmResetTime; // Backing field
 
-        // ➡️ 3. Observable Setter for AlarmAckTime
         public DateTime? AlarmAckTime
         {
             get => _alarmAckTime;
@@ -35,12 +25,11 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 if (_alarmAckTime != value)
                 {
                     _alarmAckTime = value;
-                    OnPropertyChanged(); // ⬅️ CRITICAL FIX
+                    OnPropertyChanged();
                 }
             }
         }
 
-        // ➡️ 4. Observable Setter for AcknowledgedByUser
         public string AcknowledgedByUser
         {
             get => _acknowledgedByUser;
@@ -49,14 +38,26 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 if (_acknowledgedByUser != value)
                 {
                     _acknowledgedByUser = value;
-                    OnPropertyChanged(); // ⬅️ CRITICAL FIX
+                    OnPropertyChanged();
                 }
             }
         }
 
-        // ➡️ 5. INotifyPropertyChanged Implementation (If not using a BaseModel)
-        public event PropertyChangedEventHandler PropertyChanged;
+        // KEEP ONLY THIS ONE for Reset Time
+        public DateTime? AlarmResetTime
+        {
+            get => _alarmResetTime;
+            set
+            {
+                if (_alarmResetTime != value)
+                {
+                    _alarmResetTime = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
+        public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

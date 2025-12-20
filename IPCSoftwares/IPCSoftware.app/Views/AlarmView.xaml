@@ -14,7 +14,21 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Active Alarms" FontSize="18" FontWeight="Bold" Margin="10,5"/>
+        <DockPanel Grid.Row="0" Margin="10,5">
+            <TextBlock Text="Active Alarms" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Global Acknowledge" 
+                        Command="{Binding GlobalAcknowledgeCommand}" 
+                        Width="140" Height="30" Margin="5,0"
+                        Background="Green" Foreground="White" FontWeight="Bold"/>
+
+                <Button Content="Reset System" 
+                        Command="{Binding GlobalResetCommand}" 
+                        Width="100" Height="30" Margin="5,0"
+                        Background="#1976D2" Foreground="White" FontWeight="Bold"/>
+            </StackPanel>
+        </DockPanel>
 
         <DataGrid Grid.Row="1" 
                   ItemsSource="{Binding ActiveAlarms}" 
@@ -42,8 +56,11 @@
                 </DataGridTextColumn>
 
                 <DataGridTextColumn Header="Message" Binding="{Binding AlarmText}" Width="*"/>
-                <DataGridTextColumn Header="Raised At" Binding="{Binding AlarmTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="150"/>
-                <DataGridTextColumn Header="Ack At" Binding="{Binding AlarmAckTime, StringFormat='HH:mm:ss'}" Width="100"/>
+                <DataGridTextColumn Header="Raised At" Binding="{Binding AlarmTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="140"/>
+                <DataGridTextColumn Header="Ack At" Binding="{Binding AlarmAckTime, StringFormat='HH:mm:ss'}" Width="90"/>
+
+                <DataGridTextColumn Header="Reset At" Binding="{Binding AlarmResetTime, StringFormat='HH:mm:ss'}" Width="90"/>
+
                 <DataGridTextColumn Header="Ack By" Binding="{Binding AcknowledgedByUser}" Width="100"/>
 
                 <DataGridTemplateColumn Header="Action" Width="120">
