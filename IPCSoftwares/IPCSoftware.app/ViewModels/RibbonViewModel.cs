@@ -77,9 +77,10 @@ public class RibbonViewModel : BaseViewModel
             LoadMenu(new List<string>
             {
                 "System Settings",
-                "Manual Operation",
+                //"Manual Operation",
                 "Mode Of Operation",
                 "PLC IO",
+                "SERVO PARAMETERS",
                 "Diagnostic",
                  "Alarm View"
             }, nameof(OpenSettingsMenu));

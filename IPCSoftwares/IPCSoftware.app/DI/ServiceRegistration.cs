@@ -127,6 +127,12 @@ namespace IPCSoftware.App.DI
             services.AddTransient<PLCTagListViewModel>();
             services.AddTransient<PLCTagConfigurationViewModel>();
 
+            // ========== PLC TAG CONFIGURATION VIEWMODELS (Transient) ========== 
+            services.AddTransient<ServoCalibrationView>();
+            services.AddTransient<ServoCalibrationViewModel>();
+
+            services.AddSingleton<IServoCalibrationService, ServoCalibrationService>();
+
             // Views
             services.AddTransient<RibbonView>();
             services.AddTransient<OEEDashboard>();

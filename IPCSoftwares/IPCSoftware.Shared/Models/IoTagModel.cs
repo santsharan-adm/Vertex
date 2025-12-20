@@ -8,41 +8,34 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.Shared.Models
 {
-    public class IoTagModel : INotifyPropertyChanged
+    public class IoTagModel : ObservableObjectVM
     {
+        private int _id;
+        public int Id
+        {
+            get => _id;
+            set => SetProperty(ref _id, value);
+        }
+
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set => SetProperty(ref _name, value);
+        }
+
         private object _value;
-
-        public int Id { get; set; }
-        public string Name { get; set; }
-
         public object Value
         {
             get => _value;
-            set
-            {
-                if (!Equals(_value, value))
-                {
-                    _value = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(DisplayStatus));
-                }
-            }
+            set => SetProperty(ref _value, value);
         }
 
-        public string DisplayStatus
+        private string _description;
+        public string Description
         {
-            get
-            {
-                if (Value is bool b)
-                    return b ? "ON" : "OFF";
-                return Value?.ToString();
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            get => _description;
+            set => SetProperty(ref _description, value);
         }
     }
 }
