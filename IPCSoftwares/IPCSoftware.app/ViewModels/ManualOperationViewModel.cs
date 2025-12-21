@@ -16,7 +16,7 @@ using System.Windows.Threading;
 
 namespace IPCSoftware.App.ViewModels
 {
-    // --- Attributes & Helper Classes ---
+    // --- Helper Classes ---
     public class GroupAttribute : Attribute
     {
         public string Name { get; }
@@ -28,19 +28,18 @@ namespace IPCSoftware.App.ViewModels
         public ManualOperationMode Mode { get; set; }
         public string Group { get; set; }
 
-        // Visual States
-        private bool _isBlinking;
-        public bool IsBlinking
-        {
-            get => _isBlinking;
-            set => SetProperty(ref _isBlinking, value);
-        }
-
-        private bool _isActive; // Green State
-        public bool IsActive
+        private bool _isActive;
+        public bool IsActive // Green Status
         {
             get => _isActive;
             set => SetProperty(ref _isActive, value);
+        }
+
+        private bool _isBlinking;
+        public bool IsBlinking // Waiting for Feedback
+        {
+            get => _isBlinking;
+            set => SetProperty(ref _isBlinking, value);
         }
     }
 
@@ -73,17 +72,20 @@ namespace IPCSoftware.App.ViewModels
         [Group("Transport Conveyor")] TransportConveyorReverse,
         [Group("Transport Conveyor")] TransportConveyorForward,
         [Group("Transport Conveyor")] TransportConveyorStop,
-        [Group("Transport Conveyor")] TransportConveyorSpeedSwitching, // Toggle Low/High
+        [Group("Transport Conveyor")] TransportConveyorLowSpeed,
+        [Group("Transport Conveyor")] TransportConveyorHighSpeed,
 
         // Manual X-Axis
         [Group("Manual X-Axis Jog")] ManualXAxisJogBackward,
         [Group("Manual X-Axis Jog")] ManualXAxisJogForward,
-        [Group("Manual X-Axis Jog")] XAxisJogSpeedSwitching,
+        [Group("Manual X-Axis Jog")] XAxisJogLowSpeed,
+        [Group("Manual X-Axis Jog")] XAxisJogHighSpeed,
 
         // Manual Y-Axis
         [Group("Manual Y-Axis Jog")] ManualYAxisJogBackward,
         [Group("Manual Y-Axis Jog")] ManualYAxisJogForward,
-        [Group("Manual Y-Axis Jog")] YAxisJogSpeedSwitching
+        [Group("Manual Y-Axis Jog")] YAxisJogLowSpeed,
+        [Group("Manual Y-Axis Jog")] YAxisJogHighSpeed
     }
 
     public class ManualOperationViewModel : BaseViewModel, IDisposable
@@ -91,18 +93,14 @@ namespace IPCSoftware.App.ViewModels
         private readonly CoreClient _coreClient;
         private readonly DispatcherTimer _feedbackTimer;
 
-        // --- TAG CONFIGURATION (A = Write 40-69, B = Read 80-109) ---
-        private readonly Dictionary<ManualOperationMode, int> _writeTagMap = new();
-        private readonly Dictionary<ManualOperationMode, int> _readTagMap = new();
+        // Tag Maps (A = Write, B = Read)
+        private readonly Dictionary<ManualOperationMode, int> _tagMapA = new();
+        private readonly Dictionary<ManualOperationMode, int> _tagMapB = new();
 
-        // High Speed Tags Mapping (Used for the 6 motion commands that have 2 speeds)
-        private readonly Dictionary<ManualOperationMode, int> _writeHighSpeedTagMap = new();
-        private readonly Dictionary<ManualOperationMode, int> _readHighSpeedTagMap = new();
-
-        // Speed State (False = Low, True = High)
-        private bool _conveyorHighSpeed = false;
-        private bool _xAxisHighSpeed = false;
-        private bool _yAxisHighSpeed = false;
+        // Speed State (False = Low, True = High) - These are derived from button state now
+        private bool _conveyorHighSpeed => IsModeActive(ManualOperationMode.TransportConveyorHighSpeed);
+        private bool _xAxisHighSpeed => IsModeActive(ManualOperationMode.XAxisJogHighSpeed);
+        private bool _yAxisHighSpeed => IsModeActive(ManualOperationMode.YAxisJogHighSpeed);
 
         // --- Properties ---
         public ObservableCollection<ModeItem> Modes { get; }
@@ -121,9 +119,9 @@ namespace IPCSoftware.App.ViewModels
         {
             _coreClient = coreClient;
 
-            InitializeTags(); // 1. Load Tag IDs (40-69 / 80-109)
+            InitializeTags(); // Load Tag IDs
 
-            // 2. Initialize Modes List
+            // Populate Modes
             Modes = new ObservableCollection<ModeItem>(
                 Enum.GetValues(typeof(ManualOperationMode))
                     .Cast<ManualOperationMode>()
@@ -135,72 +133,100 @@ namespace IPCSoftware.App.ViewModels
 
             ButtonClickCommand = new RelayCommand<ManualOperationMode>(OnButtonClicked);
 
-            // 3. Start Polling Loop
-            _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
+            // Faster Polling for Responsiveness (100ms)
+            _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
             _feedbackTimer.Tick += FeedbackLoop_Tick;
             _feedbackTimer.Start();
+
+            // Initial Sync
+            _ = SyncUiWithPlcState();
+        }
+
+        // Initialize defaults if PLC is fresh, otherwise read from PLC
+        private async Task SyncUiWithPlcState()
+        {
+            try
+            {
+                var liveData = await _coreClient.GetIoValuesAsync(5);
+                if (liveData == null)
+                {
+                    // If read fails, set defaults locally
+                    SetDefaultSpeeds();
+                    return;
+                }
+
+                // Update ALL buttons based on PLC state
+                foreach (var item in Modes)
+                {
+                    // Check if the "Read" tag (B) is high
+                    if (_tagMapB.TryGetValue(item.Mode, out int readTagId))
+                    {
+                        if (liveData.TryGetValue(readTagId, out object? val))
+                        {
+                            item.IsActive = Convert.ToBoolean(val);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Sync Error: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+
+        private void SetDefaultSpeeds()
+        {
+            // Default UI state if PLC read fails
+            SetActiveLocal(ManualOperationMode.TransportConveyorLowSpeed, true);
+            SetActiveLocal(ManualOperationMode.XAxisJogLowSpeed, true);
+            SetActiveLocal(ManualOperationMode.YAxisJogLowSpeed, true);
         }
 
         private void InitializeTags()
         {
-            // Base Offsets
-            int aStart = 40; // Write Start
-            int bStart = 80; // Read Start (A + 40)
+            int aStart = 40;
+            int bStart = 80;
 
-            // 1. TRAY LIFT (40-41)
-            MapTag(ManualOperationMode.TrayLiftUp, aStart + 0, bStart + 0);
-            MapTag(ManualOperationMode.TrayLiftDown, aStart + 1, bStart + 1);
+            // Tray Lift
+            MapTag(ManualOperationMode.TrayLiftDown, aStart + 0, bStart + 0);
+            MapTag(ManualOperationMode.TrayLiftUp, aStart + 1, bStart + 1);
 
-            // 2. POSITIONING CYLINDER (42-43)
+            // Positioning Cylinder
             MapTag(ManualOperationMode.PositioningCylinderUp, aStart + 2, bStart + 2);
             MapTag(ManualOperationMode.PositioningCylinderDown, aStart + 3, bStart + 3);
 
-            // 3. POSITIONS 0-12 (44-56)
-            int posOffset = 4; // Starts at A44
+            // Conveyor
+            MapTag(ManualOperationMode.TransportConveyorForward, aStart + 4, bStart + 4);
+            MapTag(ManualOperationMode.TransportConveyorReverse, aStart + 5, bStart + 5);
+            MapTag(ManualOperationMode.TransportConveyorStop, aStart + 6, bStart + 6);
+            MapTag(ManualOperationMode.TransportConveyorLowSpeed, aStart + 7, bStart + 7);
+            MapTag(ManualOperationMode.TransportConveyorHighSpeed, aStart + 8, bStart + 8);
+
+            // X Axis
+            MapTag(ManualOperationMode.ManualXAxisJogForward, aStart + 9, bStart + 9);
+            MapTag(ManualOperationMode.ManualXAxisJogBackward, aStart + 10, bStart + 10);
+            MapTag(ManualOperationMode.XAxisJogLowSpeed, aStart + 11, bStart + 11);
+            MapTag(ManualOperationMode.XAxisJogHighSpeed, aStart + 12, bStart + 12);
+
+            // Y Axis
+            MapTag(ManualOperationMode.ManualYAxisJogBackward, aStart + 13, bStart + 13);
+            MapTag(ManualOperationMode.ManualYAxisJogForward, aStart + 14, bStart + 14);
+            MapTag(ManualOperationMode.YAxisJogLowSpeed, aStart + 15, bStart + 15);
+            MapTag(ManualOperationMode.YAxisJogHighSpeed, aStart + 16, bStart + 16);
+
+            // Positions 0-12
+            int posOffset = 17;
             for (int i = 0; i <= 12; i++)
             {
-                // Enum name construction via simple loop index won't work easily with generic MapTag 
-                // so we do it explicitly or assume enum order. 
-                // Let's rely on specific Enum values:
                 var mode = (ManualOperationMode)Enum.Parse(typeof(ManualOperationMode), $"MoveToPos{i}");
                 MapTag(mode, aStart + posOffset + i, bStart + posOffset + i);
             }
-
-            // 4. CONVEYOR (Low: 57-59, High: 64-65)
-            // Low Speed & Stop
-            MapTag(ManualOperationMode.TransportConveyorReverse, 57, 97);
-            MapTag(ManualOperationMode.TransportConveyorForward, 58, 98);
-            MapTag(ManualOperationMode.TransportConveyorStop, 59, 99);
-
-            // High Speed (Mapped to Dictionary directly)
-            MapHighSpeedTag(ManualOperationMode.TransportConveyorReverse, 64, 104);
-            MapHighSpeedTag(ManualOperationMode.TransportConveyorForward, 65, 105);
-
-            // 5. X AXIS (Low: 60-61, High: 66-67)
-            MapTag(ManualOperationMode.ManualXAxisJogBackward, 60, 100);
-            MapTag(ManualOperationMode.ManualXAxisJogForward, 61, 101);
-
-            MapHighSpeedTag(ManualOperationMode.ManualXAxisJogBackward, 66, 106);
-            MapHighSpeedTag(ManualOperationMode.ManualXAxisJogForward, 67, 107);
-
-            // 6. Y AXIS (Low: 62-63, High: 68-69)
-            MapTag(ManualOperationMode.ManualYAxisJogBackward, 62, 102);
-            MapTag(ManualOperationMode.ManualYAxisJogForward, 63, 103);
-
-            MapHighSpeedTag(ManualOperationMode.ManualYAxisJogBackward, 68, 108);
-            MapHighSpeedTag(ManualOperationMode.ManualYAxisJogForward, 69, 109);
         }
 
         private void MapTag(ManualOperationMode mode, int writeId, int readId)
         {
-            _writeTagMap[mode] = writeId;
-            _readTagMap[mode] = readId;
-        }
-
-        private void MapHighSpeedTag(ManualOperationMode mode, int writeId, int readId)
-        {
-            _writeHighSpeedTagMap[mode] = writeId;
-            _readHighSpeedTagMap[mode] = readId;
+            _tagMapA[mode] = writeId;
+            _tagMapB[mode] = readId;
         }
 
         private async void OnButtonClicked(ManualOperationMode mode)
@@ -210,59 +236,146 @@ namespace IPCSoftware.App.ViewModels
                 var item = Modes.First(m => m.Mode == mode);
                 string group = item.Group;
 
-                // --- LOGIC A: SPEED SWITCHING ---
-                if (mode == ManualOperationMode.TransportConveyorSpeedSwitching) { _conveyorHighSpeed = !_conveyorHighSpeed; ToggleVisual(item); return; }
-                if (mode == ManualOperationMode.XAxisJogSpeedSwitching) { _xAxisHighSpeed = !_xAxisHighSpeed; ToggleVisual(item); return; }
-                if (mode == ManualOperationMode.YAxisJogSpeedSwitching) { _yAxisHighSpeed = !_yAxisHighSpeed; ToggleVisual(item); return; }
-
-                // --- LOGIC B: CONVEYOR STOP ---
+                // 1. Handle STOP Button Special Case
                 if (mode == ManualOperationMode.TransportConveyorStop)
                 {
-                    ResetGroupVisuals("Transport Conveyor");
-                    await WriteTag(mode, 1);
-                    item.IsBlinking = true;
+                    await HandleStopLogic(item);
                     return;
                 }
 
-                // --- LOGIC C: MOVEMENT COMMANDS ---
+                // 2. Interlock Check (Prevent Forward if Backward is On, Low/High conflict, etc.)
+                if (!CheckInterlocks(item)) return;
 
-                int tagId = GetWriteTagId(mode);
-                if (tagId == 0) return;
+                // 3. Get Tag
+                if (!_tagMapA.TryGetValue(mode, out int tagA)) return;
 
-                // 2. Logic Split based on Group Type
+                // 4. Logic Split
                 if (group == "Tray Lift" || group == "Positioning Cylinder" || group == "Move to Position")
                 {
-                    // TYPE 1: Pulse Logic (Send A -> Wait B -> Send 0)
+                    // TYPE 1: PULSE (Write 1 -> Blink -> Wait B -> Write 0)
                     if (!item.IsBlinking)
                     {
-                        _logger.LogInfo($"[Manual] Pulse Start: {mode} (Tag {tagId})", LogType.Audit);
-                        await _coreClient.WriteTagAsync(tagId, 1); // Send A=1
-                        item.IsBlinking = true;
+                        _logger.LogInfo($"[Manual] Pulse {mode} (Tag {tagA}=1)", LogType.Audit);
+                        await _coreClient.WriteTagAsync(tagA, 1);
+                        item.IsBlinking = true; // Waiting for B
                     }
                 }
                 else
                 {
-                    // TYPE 2: Toggle Logic (X/Y/Conveyor)
-                    if (item.IsActive)
+                    // TYPE 2: LATCH (Jog/Conveyor/Speed)
+                    // (Write 1 -> Blink -> Wait B -> Green) OR (Write 0 -> Off)
+
+                    if (item.IsActive || item.IsBlinking)
                     {
-                        // Stop Logic
-                        _logger.LogInfo($"[Manual] Stop: {mode} (Tag {tagId})", LogType.Audit);
-                        await _coreClient.WriteTagAsync(tagId, 0); // Send A=0
+                        // Turn OFF
+                        _logger.LogInfo($"[Manual] Stop {mode} (Tag {tagA}=0)", LogType.Audit);
+                        await _coreClient.WriteTagAsync(tagA, 0);
                         item.IsActive = false;
                         item.IsBlinking = false;
                     }
                     else
                     {
-                        // Start Logic
-                        _logger.LogInfo($"[Manual] Start: {mode} (Tag {tagId})", LogType.Audit);
-                        await _coreClient.WriteTagAsync(tagId, 1); // Send A=1
-                        item.IsBlinking = true; // Wait for B
+                        // Turn ON
+                        _logger.LogInfo($"[Manual] Start {mode} (Tag {tagA}=1)", LogType.Audit);
+                        await _coreClient.WriteTagAsync(tagA, 1);
+                        item.IsBlinking = true; // Wait for B confirmation
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Button Click Error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"Btn Click Error: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+
+        private bool CheckInterlocks(ModeItem item)
+        {
+            var groupItems = GetGroup(item.Group).ToList();
+
+            // Allow clicking the item itself (to turn it off)
+            if (item.IsActive || item.IsBlinking) return true;
+
+            // Define exclusive pairs/sets
+            var exclusive = new List<ManualOperationMode>();
+
+            switch (item.Mode)
+            {
+                case ManualOperationMode.TrayLiftUp: exclusive.Add(ManualOperationMode.TrayLiftDown); break;
+                case ManualOperationMode.TrayLiftDown: exclusive.Add(ManualOperationMode.TrayLiftUp); break;
+
+                case ManualOperationMode.PositioningCylinderUp: exclusive.Add(ManualOperationMode.PositioningCylinderDown); break;
+                case ManualOperationMode.PositioningCylinderDown: exclusive.Add(ManualOperationMode.PositioningCylinderUp); break;
+
+                case ManualOperationMode.TransportConveyorForward: exclusive.Add(ManualOperationMode.TransportConveyorReverse); break;
+                case ManualOperationMode.TransportConveyorReverse: exclusive.Add(ManualOperationMode.TransportConveyorForward); break;
+
+                case ManualOperationMode.TransportConveyorLowSpeed: exclusive.Add(ManualOperationMode.TransportConveyorHighSpeed); break;
+                case ManualOperationMode.TransportConveyorHighSpeed: exclusive.Add(ManualOperationMode.TransportConveyorLowSpeed); break;
+
+                case ManualOperationMode.ManualXAxisJogForward: exclusive.Add(ManualOperationMode.ManualXAxisJogBackward); break;
+                case ManualOperationMode.ManualXAxisJogBackward: exclusive.Add(ManualOperationMode.ManualXAxisJogForward); break;
+
+                case ManualOperationMode.XAxisJogLowSpeed: exclusive.Add(ManualOperationMode.XAxisJogHighSpeed); break;
+                case ManualOperationMode.XAxisJogHighSpeed: exclusive.Add(ManualOperationMode.XAxisJogLowSpeed); break;
+
+                case ManualOperationMode.ManualYAxisJogForward: exclusive.Add(ManualOperationMode.ManualYAxisJogBackward); break;
+                case ManualOperationMode.ManualYAxisJogBackward: exclusive.Add(ManualOperationMode.ManualYAxisJogForward); break;
+
+                case ManualOperationMode.YAxisJogLowSpeed: exclusive.Add(ManualOperationMode.YAxisJogHighSpeed); break;
+                case ManualOperationMode.YAxisJogHighSpeed: exclusive.Add(ManualOperationMode.YAxisJogLowSpeed); break;
+            }
+
+            // Check if any exclusive mode is currently active or blinking
+            foreach (var exMode in exclusive)
+            {
+                var other = groupItems.FirstOrDefault(m => m.Mode == exMode);
+                if (other != null && (other.IsActive || other.IsBlinking))
+                {
+                    _logger.LogWarning($"Interlock: Cannot start {item.Mode} while {other.Mode} is active.", LogType.Audit);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private async Task HandleStopLogic(ModeItem stopItem)
+        {
+            try
+            {
+                // 1. Get all Conveyor Items
+                var fwd = Modes.First(m => m.Mode == ManualOperationMode.TransportConveyorForward);
+                var rev = Modes.First(m => m.Mode == ManualOperationMode.TransportConveyorReverse);
+                var low = Modes.First(m => m.Mode == ManualOperationMode.TransportConveyorLowSpeed);
+                var high = Modes.First(m => m.Mode == ManualOperationMode.TransportConveyorHighSpeed);
+
+                // 2. Turn off UI immediately (Visual Feedback)
+                fwd.IsActive = false; fwd.IsBlinking = false;
+                rev.IsActive = false; rev.IsBlinking = false;
+                low.IsActive = false; low.IsBlinking = false;
+                high.IsActive = false; high.IsBlinking = false;
+
+                // 3. Reset Internal Speed Flags (Optional, depends if you want them reset)
+                // _conveyorHighSpeed = false; 
+
+                // 4. Send 0 to PLC for Motion tags (Safety)
+                if (_tagMapA.TryGetValue(fwd.Mode, out int tF)) await _coreClient.WriteTagAsync(tF, 0);
+                if (_tagMapA.TryGetValue(rev.Mode, out int tR)) await _coreClient.WriteTagAsync(tR, 0);
+
+                // 5. Send 0 to PLC for Speed tags (Resetting Speed)
+                if (_tagMapA.TryGetValue(low.Mode, out int tL)) await _coreClient.WriteTagAsync(tL, 0);
+                if (_tagMapA.TryGetValue(high.Mode, out int tH)) await _coreClient.WriteTagAsync(tH, 0);
+
+                // 6. Pulse Stop Tag
+                if (_tagMapA.TryGetValue(stopItem.Mode, out int tStop))
+                {
+                    _logger.LogInfo($"[Manual] Transport Stop Activated (Tag {tStop})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(tStop, 1);
+                    stopItem.IsBlinking = true; // Wait for B (Stop Confirmed) to clear
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Stop Logic Error: {ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -270,95 +383,71 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                // Request IO Packet (ID 5 assumed)
                 var liveData = await _coreClient.GetIoValuesAsync(5);
                 if (liveData == null) return;
 
                 foreach (var item in Modes)
                 {
-                    // Determine which Tag ID to check (Low vs High speed based on selection)
-                    int readTagId = GetReadTagId(item.Mode);
-                    if (readTagId == 0) continue;
+                    if (!_tagMapB.TryGetValue(item.Mode, out int tagB)) continue;
 
-                    if (liveData.TryGetValue(readTagId, out object? valObj))
+                    if (liveData.TryGetValue(tagB, out object? valObj))
                     {
-                        bool bSignal = Convert.ToBoolean(valObj); // B Parameter
-
+                        bool bSignal = Convert.ToBoolean(valObj);
                         string group = item.Group;
 
-                        // --- FEEDBACK LOGIC TYPE 1: Tray/Cylinder/Position ---
-                        if (group == "Tray Lift" || group == "Positioning Cylinder" || group == "Move to Position")
+                        // --- FEEDBACK TYPE 1 (Tray/Pos/Cyl/Stop) ---
+                        if (group == "Tray Lift" || group == "Positioning Cylinder" || group == "Move to Position" || item.Mode == ManualOperationMode.TransportConveyorStop)
                         {
                             if (item.IsBlinking && bSignal)
                             {
-                                item.IsBlinking = false;
-                                int writeTag = GetWriteTagId(item.Mode);
-                                await _coreClient.WriteTagAsync(writeTag, 0); // Reset A=0
+                                item.IsBlinking = false; // Stop Blinking
+
+                                // Send A=0 (Reset Trigger)
+                                if (_tagMapA.TryGetValue(item.Mode, out int tagA))
+                                    await _coreClient.WriteTagAsync(tagA, 0);
+
                                 _logger.LogInfo($"[Manual] Action Complete: {item.Mode}", LogType.Audit);
                             }
                         }
-                        // --- FEEDBACK LOGIC TYPE 2: X/Y/Conveyor ---
-                        else if (group == "Transport Conveyor" || group.Contains("Jog"))
+                        // --- FEEDBACK TYPE 2 (Jog/Conveyor/Speed) ---
+                        else
                         {
                             if (item.IsBlinking && bSignal)
                             {
                                 item.IsBlinking = false;
-                                item.IsActive = true;
+                                item.IsActive = true; // Turn Green
                                 _logger.LogInfo($"[Manual] Action Active: {item.Mode}", LogType.Audit);
                             }
-                            // Logic to auto-turn off UI if PLC turns off bit?
-                            // else if (item.IsActive && !bSignal) item.IsActive = false; 
+                            else if (item.IsActive && !bSignal)
+                            {
+                                // PLC turned it off externally -> UI Updates automatically
+                                item.IsActive = false;
+                            }
+                            // Persistence: If we enter screen and B is 1, ensure IsActive is true
+                            else if (!item.IsActive && !item.IsBlinking && bSignal)
+                            {
+                                item.IsActive = true;
+                            }
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                // Logger.LogError($"Feedback Loop Error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"Feedback Loop: {ex.Message}", LogType.Diagnostics);
             }
         }
 
-        // Helpers
-        private int GetWriteTagId(ManualOperationMode mode)
+        private bool IsModeActive(ManualOperationMode mode)
         {
-            if (_conveyorHighSpeed && IsConveyorMove(mode)) return _writeHighSpeedTagMap.GetValueOrDefault(mode, 0);
-            if (_xAxisHighSpeed && IsXMove(mode)) return _writeHighSpeedTagMap.GetValueOrDefault(mode, 0);
-            if (_yAxisHighSpeed && IsYMove(mode)) return _writeHighSpeedTagMap.GetValueOrDefault(mode, 0);
-
-            return _writeTagMap.GetValueOrDefault(mode, 0);
+            var m = Modes.FirstOrDefault(x => x.Mode == mode);
+            return m?.IsActive ?? false;
         }
 
-        private int GetReadTagId(ManualOperationMode mode)
+        private void SetActiveLocal(ManualOperationMode mode, bool state)
         {
-            if (_conveyorHighSpeed && IsConveyorMove(mode)) return _readHighSpeedTagMap.GetValueOrDefault(mode, 0);
-            if (_xAxisHighSpeed && IsXMove(mode)) return _readHighSpeedTagMap.GetValueOrDefault(mode, 0);
-            if (_yAxisHighSpeed && IsYMove(mode)) return _readHighSpeedTagMap.GetValueOrDefault(mode, 0);
-
-            return _readTagMap.GetValueOrDefault(mode, 0);
-        }
-
-        private bool IsConveyorMove(ManualOperationMode m) => m == ManualOperationMode.TransportConveyorForward || m == ManualOperationMode.TransportConveyorReverse;
-        private bool IsXMove(ManualOperationMode m) => m == ManualOperationMode.ManualXAxisJogForward || m == ManualOperationMode.ManualXAxisJogBackward;
-        private bool IsYMove(ManualOperationMode m) => m == ManualOperationMode.ManualYAxisJogForward || m == ManualOperationMode.ManualYAxisJogBackward;
-
-        private async Task WriteTag(ManualOperationMode mode, object val)
-        {
-            if (_writeTagMap.TryGetValue(mode, out int tag))
-                await _coreClient.WriteTagAsync(tag, val);
-        }
-
-        private void ToggleVisual(ModeItem item)
-        {
-            item.IsActive = !item.IsActive;
-        }
-
-        private void ResetGroupVisuals(string group)
-        {
-            foreach (var m in Modes.Where(x => x.Group == group))
-            {
-                m.IsActive = false;
-                m.IsBlinking = false;
-            }
+            var m = Modes.FirstOrDefault(x => x.Mode == mode);
+            if (m != null) m.IsActive = state;
         }
 
         private IEnumerable<ModeItem> GetGroup(string groupName) => Modes.Where(x => x.Group == groupName);
