@@ -197,7 +197,9 @@ namespace IPCSoftware.Services.ConfigServices
                         $"{tag.Span}," +
                         $"{EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
                         $"{EscapeCsv(tag.Remark)}," +       // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
-                        $"{tag.CanWrite}");
+                        $"{tag.CanWrite}" +
+                        $"{EscapeCsv(tag.IOType)},");  // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
+                       // $"{EscapeCsv(tag.DMAddress)},") ;
                 }
 
                 await File.WriteAllTextAsync(_csvFilePath, sb.ToString(), Encoding.UTF8);
@@ -233,6 +235,8 @@ namespace IPCSoftware.Services.ConfigServices
                 3 => "Bit",
                 4 => "Float",
                 5 => "String",
+                6 => "UInt16",
+                7 => "UInt32",
                 _ => "Int16"
             };
         }

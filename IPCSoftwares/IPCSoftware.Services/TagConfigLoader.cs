@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace IPCSoftware.Services
 {
-    public class TagConfigLoader: BaseService
+    public class TagConfigLoader : BaseService
     {
         public TagConfigLoader(IAppLogger logger) : base(logger)
         { }
@@ -15,63 +15,68 @@ namespace IPCSoftware.Services
         private const int DataType_Bit = 3;
         private const int DataType_FP = 4;
         private const int DataType_String = 5;
+        private const int DataType_UInt16 = 6;
+        private const int DataType_UInt32 = 7;
 
         public List<PLCTagConfigurationModel> Load(string filePath)
         {
             try
             {
-           
-            var rows = CsvReader.Read(filePath);
-            var tags = new List<PLCTagConfigurationModel>();
 
-            foreach (var r in rows)
-            {
-                // Ensure the row has enough columns (at least 14 columns, including CanWrite at [13])
-                if (r.Length < 14) continue;
+                var rows = CsvReader.Read(filePath);
+                var tags = new List<PLCTagConfigurationModel>();
 
-                try
+                foreach (var r in rows)
                 {
-                    // 1. Parse Data Type and Bit No first, as they determine Length
-                    int dataType = ParseDataType(r[7]);
-                    int bitNo = ParseBitNo(r[7], r[8]);
-                    int configuredLength = int.Parse(r[5]);
+                    // Ensure the row has enough columns (at least 14 columns, including CanWrite at [13])
+                    if (r.Length < 14) continue;
 
-                    // 2. Apply Length Enforcement (Fix for requirements C, D, F, G)
-                    int enforcedLength = EnforceDataLength(dataType, configuredLength);
-
-                    // 3. Load the base model
-                    var tag = new PLCTagConfigurationModel
+                    try
                     {
-                        Id = int.Parse(r[0]),
-                        TagNo = int.Parse(r[1]),
-                        Name = r[2],
-                        PLCNo = int.Parse(r[3]),
-                        ModbusAddress = int.Parse(r[4]),
+                        // 1. Parse Data Type and Bit No first, as they determine Length
+                        int dataType = ParseDataType(r[7]);
+                        int bitNo = ParseBitNo(r[7], r[8]);
+                        int configuredLength = int.Parse(r[5]);
 
-                        // Use the enforced length
-                        Length = enforcedLength,
+                        // 2. Apply Length Enforcement (Fix for requirements C, D, F, G)
+                        int enforcedLength = EnforceDataLength(dataType, configuredLength);
 
-                        AlgNo = int.Parse(r[6]),
-                        DataType = dataType,
-                        BitNo = bitNo,
-                        Offset = int.Parse(r[9]),
-                        Span = int.Parse(r[10]),
-                        Description = r[11],
-                        Remark = r[12],
+                        // 3. Load the base model
+                        var tag = new PLCTagConfigurationModel
+                        {
+                            Id = int.Parse(r[0]),
+                            TagNo = int.Parse(r[1]),
+                            Name = r[2],
+                            PLCNo = int.Parse(r[3]),
+                            ModbusAddress = int.Parse(r[4]),
 
-                        // NEW: Read CanWrite (assuming column [13])
-                        CanWrite = ParseBoolean(r[13])
-                    };
+                            // Use the enforced length
+                            Length = enforcedLength,
 
-                    tags.Add(tag);
-                }
-                catch(Exception ex) 
-                {
+                            AlgNo = int.Parse(r[6]),
+                            DataType = dataType,
+                            BitNo = bitNo,
+                            Offset = int.Parse(r[9]),
+                            Span = int.Parse(r[10]),
+                            Description = r[11],
+                            Remark = r[12],
+
+                            // NEW: Read CanWrite (assuming column [13])
+                            CanWrite = ParseBoolean(r[13]),
+                            //IOType = r[14],
+                            //DMAddress = r[15]
+
+                        };
+
+                        tags.Add(tag);
+                    }
+                    catch (Exception ex)
+                    {
                         _logger.LogError(ex.Message, LogType.Diagnostics);
+                    }
                 }
-            }
 
-            return tags;
+                return tags;
             }
             catch (Exception ex)
             {
@@ -100,7 +105,7 @@ namespace IPCSoftware.Services
                 "dint" => 2,
 
                 // NEW Mappings for 32-bit Word (Code 2)
-                "uint" => 2,     // New from your CSV (Unsigned Int)
+                //"uint" => 2,     // New from your CSV (Unsigned Int)
                 "dword" => 2,    // New from your CSV (Double Word / Int32)
                 "int32" => 2,
 
@@ -117,6 +122,9 @@ namespace IPCSoftware.Services
 
                 // Existing Mapping (String - Code 5)
                 "string" => 5,
+                "uint" => 6,     // New from your CSV (Unsigned Int)
+                "uint16" => 6,     // New from your CSV (Unsigned Int)
+                "uint32" => 7,     // New from your CSV (Unsigned Int)
 
                 _ => 1 // Default to Int16 for safety
             };
@@ -156,10 +164,12 @@ namespace IPCSoftware.Services
             {
                 case DataType_Int16: // 16-bit (1 register)
                 case DataType_Bit:   // 1-bit (1 register)
+                case DataType_UInt16:   // 1-bit (1 register)
                     return 1;
 
                 case DataType_Word32: // 32-bit (2 registers)
                 case DataType_FP:     // Float (32-bit, 2 registers)
+                case DataType_UInt32:   // 1-bit (1 register)
                     return 2;
 
                 case DataType_String:

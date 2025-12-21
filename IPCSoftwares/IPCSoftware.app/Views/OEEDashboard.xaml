@@ -22,6 +22,7 @@
             <!-- Register the new converter -->
             <conv:OeeToGeometryConverter x:Key="OeeToGeometry"/>
             <conv:OeeToColorConverter x:Key="OeeToColor"/>
+            <conv:MsToSecondsConverter x:Key="MsToSeconds"/>
             <Style x:Key="DashboardCard" TargetType="Border">
                 <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
                 <Setter Property="CornerRadius" Value="12"/>
@@ -100,8 +101,8 @@
                             </Button.Resources>
                         </Button>
 
-                        <Ellipse Width="16" Height="16" Fill="{DynamicResource TableHeaderBrush}" Margin="0,0,8,0"/>
-                        <TextBlock Text="MACHINE STATUS" Foreground="{DynamicResource TableHeaderBrush}" FontSize="20" FontWeight="Bold"/>
+                        <!--<Ellipse Width="16" Height="16" Fill="{DynamicResource TableHeaderBrush}" Margin="0,0,8,0"/>-->
+                        <!--<TextBlock Text="MACHINE STATUS" Foreground="{DynamicResource TableHeaderBrush}" FontSize="20" FontWeight="Bold"/>-->
                     </StackPanel>
                 </Grid>
             </Border>
@@ -143,7 +144,7 @@
                     </Border.InputBindings>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Foreground="White" Text="AVG CYCLE (SEC)" Style="{StaticResource KpiLabel}"/>
-                        <TextBlock Text="{Binding CycleTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource KpiValue}" Foreground="White"/>
+                        <TextBlock Text="{Binding CycleTime,Converter={StaticResource MsToSeconds}, StringFormat=F2, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource KpiValue}" Foreground="White"/>
                     </StackPanel>
                 </Border>
 
@@ -303,7 +304,7 @@
                                 <controls:TrendChart Grid.Row="1" Values="{Binding CycleTrend}"/>
                             </Grid>
                         </Border>
-
+                        <!-- Latest Measurements Card -->
                         <Border Grid.Column="1" Style="{StaticResource DashboardCard}" Margin="6,6,0,0">
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -311,12 +312,7 @@
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" 
-                   Text="Latest Measurements" 
-                   Foreground="{DynamicResource PrimaryTextBrush}" 
-                   FontSize="24" 
-                   FontWeight="SemiBold" 
-                   Margin="0,0,0,10"/>
+                                <TextBlock Grid.Row="0" Text="Latest Measurements" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,10"/>
 
                                 <Grid Grid.Row="1" VerticalAlignment="Center">
                                     <Grid.RowDefinitions>
@@ -327,43 +323,46 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="1.5*"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="PARAMETER" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left"/>
+                                    <!-- Header -->
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="PARAM" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold"/>
                                     <TextBlock Grid.Row="0" Grid.Column="1" Text="VALUE" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Row="0" Grid.Column="2" Text="SPECS" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Right"/>
 
-                                    <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Text="X" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" Margin="0,15,0,0"/>
+                                    <!-- X Value -->
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="X" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" Margin="0,15,0,0"/>
                                     <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
-                                        <TextBlock Text="3.45 mm" Foreground="{DynamicResource SuccessBrush}" FontSize="24" FontWeight="Bold"/>
+                                        <!-- Added StringFormat for 'mm' -->
+                                        <TextBlock Text="{Binding LatestX, StringFormat={}{0:F2} mm}" Foreground="{DynamicResource SuccessBrush}" FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
                                     <TextBlock Grid.Row="1" Grid.Column="2" Text="3 - 4" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Right" Margin="0,15,0,0"/>
 
                                     <Border Grid.Row="2" Grid.ColumnSpan="3" Height="1" Background="{DynamicResource BorderBrush}" Margin="0,10"/>
 
+                                    <!-- Y Value -->
                                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Y" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24"/>
                                     <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock Text="5.23 mm" Foreground="{DynamicResource DangerBrush}" FontSize="24" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding LatestY, StringFormat={}{0:F2} mm}" Foreground="{DynamicResource SuccessBrush}" FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
                                     <TextBlock Grid.Row="3" Grid.Column="2" Text="3 - 4" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Right"/>
 
                                     <Border Grid.Row="4" Grid.ColumnSpan="3" Height="1" Background="{DynamicResource BorderBrush}" Margin="0,10"/>
 
-                                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Z" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24"/>
+                                    <!-- Theta (Z) Value -->
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Text="θ" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24"/>
                                     <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock Text="0.02 mm" Foreground="{DynamicResource SuccessBrush}" FontSize="24" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding LatestTheta, StringFormat={}{0:F2} mm}" Foreground="{DynamicResource SuccessBrush}" FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
                                     <TextBlock Grid.Row="5" Grid.Column="2" Text="0 - 0.5" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Right"/>
 
                                 </Grid>
                             </Grid>
                         </Border>
-
                     </Grid>
                 </Grid>
 

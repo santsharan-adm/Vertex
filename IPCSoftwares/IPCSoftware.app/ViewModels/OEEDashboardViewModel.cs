@@ -107,6 +107,28 @@ namespace IPCSoftware.App.ViewModels
         public ObservableCollection<WritableTagItem> AllInputs { get; } = new();
 
 
+        private double _latestX;
+        public double LatestX
+        {
+            get => _latestX;
+            set => SetProperty(ref _latestX, value);
+        }
+
+        private double _latestY;
+        public double LatestY
+        {
+            get => _latestY;
+            set => SetProperty(ref _latestY, value);
+        }
+
+        private double _latestTheta;
+        public double LatestTheta
+        {
+            get => _latestTheta;
+            set => SetProperty(ref _latestTheta, value);
+        }
+
+
         #endregion
 
 
@@ -143,15 +165,15 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _overallOEE, value);
         }
 
-        private int _operatingTime = 0;
-        public int OperatingTime
+        private string _operatingTime;
+        public string OperatingTime
         {
             get => _operatingTime;
             set => SetProperty(ref _operatingTime, value);
         }
 
-        private int _downtime = 0;
-        public int Downtime
+        private string _downtime;
+        public string Downtime
         {
             get => _downtime;
             set => SetProperty(ref _downtime, value);
@@ -375,8 +397,11 @@ namespace IPCSoftware.App.ViewModels
                         Quality = Math.Round(oeeResult.Quality * 100, 1);
                         OverallOEE = Math.Round(oeeResult.OverallOEE * 100, 1);
 
-                        OperatingTime = oeeResult.OperatingTime;
-                        Downtime = oeeResult.Downtime;
+                        OperatingTime = FormatDuration(oeeResult.OperatingTime);
+
+                        // If Downtime is also in seconds, format it too.
+                        // Assuming consistency with OperatingTime. If it's still Minutes, remove FormatDuration.
+                        Downtime = FormatDuration(oeeResult.Downtime);
                         GoodUnits = oeeResult.OKParts;
                         RejectedUnits = oeeResult.NGParts;
                         CycleTime = oeeResult.CycleTime;
@@ -407,6 +432,19 @@ namespace IPCSoftware.App.ViewModels
 
         #region Logic Methods
 
+        private string FormatDuration(double totalSeconds)
+        {
+            TimeSpan t = TimeSpan.FromSeconds(totalSeconds);
+            if (t.TotalDays >= 1)
+            {
+                return $"{t.Days}d {t.Hours}h {t.Minutes}m";
+            }
+            else
+            {
+                return t.ToString(@"hh\:mm\:ss");
+            }
+        }
+
         private void UpdateValues(Dictionary<int, object> dict)
         {
             if (dict == null) return;
@@ -424,91 +462,89 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                // 1. Check if JSON file exists
+                // 1. Reset Check
                 if (!File.Exists(_jsonStatePath))
                 {
-                    // CASE: File Deleted by Service (Reset Cycle)
-                    if (_lastJsonWriteTime != DateTime.MinValue)
-                    {
-                        ResetDashboard();
-                        _lastJsonWriteTime = DateTime.MinValue;
-                    }
+                    if (_lastJsonWriteTime != DateTime.MinValue) { ResetDashboard(); _lastJsonWriteTime = DateTime.MinValue; }
                     return;
                 }
 
-                // 2. Check if file has been modified
+                // 2. Read
                 DateTime currentWriteTime = File.GetLastWriteTime(_jsonStatePath);
-                if (currentWriteTime == _lastJsonWriteTime) return; // No changes
+                if (currentWriteTime == _lastJsonWriteTime) return;
 
-                // 3. Read content
                 string jsonContent = string.Empty;
-                for (int k = 0; k < 3; k++) // Retry for lock
-                {
-                    try { jsonContent = File.ReadAllText(_jsonStatePath); break; }
-                    catch { System.Threading.Thread.Sleep(50); }
-                }
-
+                for (int k = 0; k < 3; k++) { try { jsonContent = File.ReadAllText(_jsonStatePath); break; } catch { Thread.Sleep(50); } }
                 if (string.IsNullOrEmpty(jsonContent)) return;
 
-                // 4. Deserialize
                 var state = JsonConvert.DeserializeObject<CycleStateModel>(jsonContent);
                 if (state == null) return;
 
-                // 5. Update UI Properties
-                // We use JSON for Batch ID to keep it in sync with the images
+                // 3. Logic: If BatchID changed from what we have, reset first
+                if (state.BatchId != QRCodeText)
+                {
+                    ResetDashboard();
+                }
+
                 QRCodeText = state.BatchId;
 
-                // If the QR Image is stored as Station 0 in JSON:
+                // 4. Update QR Image
                 if (state.Stations.ContainsKey(0))
                 {
                     var qrData = state.Stations[0];
-                    // Load QR Image if changed
-                    // Note: We don't have a check for LastLoadedFilePath for QR code separate var, 
-                    // but we can check the source string
                     if (QrCodeImage == null || (QrCodeImage is BitmapImage bmp && bmp.UriSource?.LocalPath != qrData.ImagePath))
-                    {
                         Application.Current.Dispatcher.Invoke(() => QrCodeImage = LoadBitmapSafe(qrData.ImagePath));
-                    }
                 }
 
-                // 6. Update Grid Items (Stations 1-12)
+                // 5. Update Grid & Find Latest
+                StationResult latestStation = null;
+
                 foreach (var kvp in state.Stations)
                 {
-                    int stationNo = kvp.Key;
-                    if (stationNo == 0) continue; // Skip QR
+                    if (kvp.Key == 0) continue;
 
                     var data = kvp.Value;
-                    var uiItem = CameraImages.FirstOrDefault(x => x.StationNumber == stationNo);
 
+                    // Track latest (highest ID processed so far)
+                    if (latestStation == null || data.StationNumber > latestStation.StationNumber)
+                    {
+                        latestStation = data;
+                    }
+
+                    var uiItem = CameraImages.FirstOrDefault(x => x.StationNumber == kvp.Key);
                     if (uiItem != null)
                     {
-                        // Update Image
                         if (uiItem.LastLoadedFilePath != data.ImagePath)
                         {
                             uiItem.LastLoadedFilePath = data.ImagePath;
                             uiItem.ImagePath = LoadBitmapSafe(data.ImagePath);
                         }
-
-                        // Update Data (X, Y, Z, Status)
                         uiItem.Result = data.Status;
-                        uiItem.ValX = data.X;
-                        uiItem.ValY = data.Y;
-                        uiItem.ValZ = data.Z;
+                        uiItem.ValX = data.X; uiItem.ValY = data.Y; uiItem.ValZ = data.Z;
                     }
+                }
+
+                // 6. Update Latest Measurement Panel
+                if (latestStation != null)
+                {
+                    LatestX = latestStation.X;
+                    LatestY = latestStation.Y;
+                    LatestTheta = latestStation.Z; // Assuming Z maps to Theta
                 }
 
                 _lastJsonWriteTime = currentWriteTime;
             }
-            catch (Exception ex)
-            {
-               _logger.LogError($"Sync Error: {ex.Message}", LogType.Diagnostics);
-            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Sync Error: {ex.Message}"); }
         }
-
         private void ResetDashboard()
         {
             QRCodeText = "Waiting for Scan...";
             QrCodeImage = null; // Clear QR Image
+
+            // Clear Measurements
+            LatestX = 0;
+            LatestY = 0;
+            LatestTheta = 0;
 
             foreach (var item in CameraImages)
             {
@@ -575,55 +611,55 @@ namespace IPCSoftware.App.ViewModels
                 {
                     case "Efficiency":
                         title = "Efficiency Breakdown Details";
-                        data.Add(new MetricDetailItem { MetricName = "Availability", CurrentVal = "85%", WeeklyVal = "87%", MonthlyVal = "88%" });
-                        data.Add(new MetricDetailItem { MetricName = "Performance", CurrentVal = "95%", WeeklyVal = "94%", MonthlyVal = "93%" });
-                        data.Add(new MetricDetailItem { MetricName = "Quality", CurrentVal = "97%", WeeklyVal = "98%", MonthlyVal = "98%" });
+                        data.Add(new MetricDetailItem { MetricName = "Availability", CurrentVal = "0%", WeeklyVal = "0%", MonthlyVal = "0%" });
+                        data.Add(new MetricDetailItem { MetricName = "Performance", CurrentVal = "0%", WeeklyVal = "0%D", MonthlyVal = "0%" });
+                        data.Add(new MetricDetailItem { MetricName = "Quality", CurrentVal = "0%", WeeklyVal = "0%", MonthlyVal = "0%" });
                         break;
 
                     case "OEE":
                         title = "OEE Score Statistics";
-                        data.Add(new MetricDetailItem { MetricName = "OEE Score", CurrentVal = "78%", WeeklyVal = "80%", MonthlyVal = "82%" });
+                        data.Add(new MetricDetailItem { MetricName = "OEE Score", CurrentVal = "0%", WeeklyVal = "0%", MonthlyVal = "0%" });
 
                         break;
 
                     case "CycleTime":
                         title = "Cycle Time Trends";
-                        data.Add(new MetricDetailItem { MetricName = "Avg Cycle", CurrentVal = "2.9s", WeeklyVal = "3.1s", MonthlyVal = "3.0s" });
-                        data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "2.5s", WeeklyVal = "2.5s", MonthlyVal = "2.5s" });
+                        data.Add(new MetricDetailItem { MetricName = "Avg Cycle", CurrentVal = "0s", WeeklyVal = "0s", MonthlyVal = "0s" });
+                        data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "0s", WeeklyVal = "0s", MonthlyVal = "0s" });
                         break;
                     case "OperatingTime":
                         title = "Operating Time";
-                        data.Add(new MetricDetailItem { MetricName = "Operating Time", CurrentVal = "2.9", WeeklyVal = "3.1", MonthlyVal = "3.0" });
+                        data.Add(new MetricDetailItem { MetricName = "Operating Time", CurrentVal = "0", WeeklyVal = "0", MonthlyVal = "0" });
                         break;
 
                     case "Downtime":
                         title = "Downtime Statistics";
-                        data.Add(new MetricDetailItem { MetricName = "Total Stop", CurrentVal = "00:12:45", WeeklyVal = "01:30:00", MonthlyVal = "05:45:00" });
-                        data.Add(new MetricDetailItem { MetricName = "Minor Stops", CurrentVal = "00:04:15", WeeklyVal = "00:25:00", MonthlyVal = "01:40:00" });
-                        data.Add(new MetricDetailItem { MetricName = "Changeover", CurrentVal = "00:08:30", WeeklyVal = "01:05:00", MonthlyVal = "04:05:00" });
+                        data.Add(new MetricDetailItem { MetricName = "Total Stop", CurrentVal = "0", WeeklyVal = "0", MonthlyVal = "0" });
+                        data.Add(new MetricDetailItem { MetricName = "Minor Stops", CurrentVal = "0", WeeklyVal = "0", MonthlyVal = "0" });
+                        data.Add(new MetricDetailItem { MetricName = "Changeover", CurrentVal = "0", WeeklyVal = "0", MonthlyVal = "0" });
                         break;
 
                     case "AvgCycle": // Or "CycleTime" depending on your CommandParameter
                         title = "Cycle Time Metrics";
-                        data.Add(new MetricDetailItem { MetricName = "Actual Cycle", CurrentVal = "2.9s", WeeklyVal = "3.0s", MonthlyVal = "2.95s" });
-                        data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "2.5s", WeeklyVal = "2.5s", MonthlyVal = "2.5s" });
+                        data.Add(new MetricDetailItem { MetricName = "Actual Cycle", CurrentVal = "0s", WeeklyVal = "0s", MonthlyVal = "0s" });
+                        data.Add(new MetricDetailItem { MetricName = "Ideal Cycle", CurrentVal = "0s", WeeklyVal = "0s", MonthlyVal = "0s" });
 
                         break;
 
                     case "InFlow":
                         title = "Input Statistics";
-                        data.Add(new MetricDetailItem { MetricName = "Total Input", CurrentVal = "1165", WeeklyVal = "8150", MonthlyVal = "32500" });
+                        data.Add(new MetricDetailItem { MetricName = "Total Input", CurrentVal = "0", WeeklyVal = "0", MonthlyVal = "0" });
                         break;
 
                     case "OK":
                         title = "Production Quality (OK)";
-                        data.Add(new MetricDetailItem { MetricName = "Good Units", CurrentVal = "1140", WeeklyVal = "7980", MonthlyVal = "31850" });
-                        data.Add(new MetricDetailItem { MetricName = "Yield Rate", CurrentVal = "97.8%", WeeklyVal = "97.9%", MonthlyVal = "98.0%" });
+                        data.Add(new MetricDetailItem { MetricName = "Good Units", CurrentVal = "0", WeeklyVal = "0", MonthlyVal = "0" });
+                        data.Add(new MetricDetailItem { MetricName = "Yield Rate", CurrentVal = "0%", WeeklyVal = "0%", MonthlyVal = "0%" });
                         break;
 
                     case "NG":
                         title = "Rejection Statistics (NG)";
-                        data.Add(new MetricDetailItem { MetricName = "Total Rejects", CurrentVal = "25", WeeklyVal = "170", MonthlyVal = "650" });
+                        data.Add(new MetricDetailItem { MetricName = "Total Rejects", CurrentVal = "0", WeeklyVal = "0", MonthlyVal = "0" });
                         break;
 
                         // Add more cases for "OperatingTime", "Downtime", "InFlow", etc.

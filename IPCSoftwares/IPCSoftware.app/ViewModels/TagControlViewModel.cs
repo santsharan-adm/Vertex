@@ -46,7 +46,7 @@ namespace IPCSoftware.App.ViewModels
 
         public TagControlViewModel(
             IPLCTagConfigurationService tagService,
-            CoreClient coreClient, 
+            CoreClient coreClient,
             IDialogService dialog,
             IAppLogger logger) : base(logger)
         {
@@ -79,7 +79,7 @@ namespace IPCSoftware.App.ViewModels
                 var liveData = await _coreClient.GetIoValuesAsync(5);
                 UpdateValues(liveData);
             }
-           
+
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
@@ -177,7 +177,7 @@ namespace IPCSoftware.App.ViewModels
                             // [STEP 2] OPTIMISTIC UPDATE
                             // Manually set the DisplayValue to what we just wrote.
                             // This gives the user instant feedback that it worked.
-                  
+
 
                             // Clear the input box
                             item.InputValue = null;
@@ -241,6 +241,14 @@ namespace IPCSoftware.App.ViewModels
                     result = input;
                     return true;
 
+                case 6: // UINT
+                    if (ushort.TryParse(input, out ushort sVal2)) { result = sVal2; return true; }
+                    if (uint.TryParse(input, out uint iVal2) && iVal2 >= ushort.MinValue && iVal2 <= ushort.MaxValue) { result = (ushort)iVal2; return true; }
+                    break;
+                case 7: // unsigned Word / Dint (Int32)
+                    if (int.TryParse(input, out int intVal2)) { result = intVal2; return true; }
+                    break;
+
                 default: // Fallback to Int
                     if (int.TryParse(input, out int defVal)) { result = defVal; return true; }
                     break;
@@ -286,69 +294,5 @@ namespace IPCSoftware.App.ViewModels
             GC.SuppressFinalize(this);
         }
     }
-   
 
-    // Helper Wrapper Class
-    public class WritableTagItem : BaseViewModel
-    {
-        public PLCTagConfigurationModel Model { get; }
-
-        //private string _inputValue;
-        //public string InputValue
-        //{
-        //    get => _inputValue;
-        //    set => SetProperty(ref _inputValue, value);
-        //}
-
-        public string DataTypeDisplay => GetDataTypeName(Model.DataType);
-
-        public WritableTagItem(PLCTagConfigurationModel model)
-        {
-            Model = model;
-        }
-        private object _displayValue;
-        public object DisplayValue
-        {
-            get => _displayValue;
-            set => SetProperty(ref _displayValue, value);
-            //set { _selectedTabIndex = value; OnPropertyChanged(); }
-            //set
-            //{
-            //    _value = value;
-            //    OnPropertyChanged();
-            //    OnPropertyChanged(nameof(DisplayStatus));
-            //}
-        }
-
-        private object _inputValue;
-        public object InputValue
-        {
-            get => _inputValue;
-            set => SetProperty(ref _inputValue, value);
-            //set
-            //{
-            //    _inputValue = value;
-            //    OnPropertyChanged();
-            //    OnPropertyChanged(nameof(DisplayStatus));
-            //}
-        }
-
-
-
-      
-
-
-        private string GetDataTypeName(int typeId)
-        {
-            return typeId switch
-            {
-                1 => "Int16",
-                2 => "Int32",
-                3 => "Boolean",
-                4 => "Float",
-                5 => "String",
-                _ => "Unknown"
-            };
-        }
-    }
 }

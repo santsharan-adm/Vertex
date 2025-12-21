@@ -87,6 +87,7 @@ namespace IPCSoftware.App.ViewModels
                     {
                         Id = tag.Id,
                         Name = tag.Name,
+                        Description = tag.Description,
                         Value = false
                     };
 
@@ -175,6 +176,7 @@ namespace IPCSoftware.App.ViewModels
                     var s = SearchText.Trim().ToLower();
                     filtered = source.Where(t =>
                         (t.Name != null && t.Name.ToLower().Contains(s)) ||
+                        (t.Description != null && t.Description.ToLower().Contains(s)) ||
                         t.Id.ToString().Contains(s));
                 }
 

@@ -393,15 +393,11 @@ public class MainWindowViewModel : BaseViewModel
                 case "Machine Summary":
                    // _nav.NavigateMain<ServoCalibrationView>();
                     break;
-                case "SERVO PARAMETERS":
+                case "Servo Parameters":
                     _nav.NavigateMain<ServoCalibrationView>();
                     break;
 
-                case "KPI Monitoring":
-                    _nav.NavigateMain<OeeDashboardNew>();
-                    break;
-
-                case "System Settings":
+                case "Time Sync":
                     _nav.NavigateToSystemSettings();
                     break;
 

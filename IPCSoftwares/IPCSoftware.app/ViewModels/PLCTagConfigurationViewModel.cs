@@ -64,6 +64,14 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _modbusAddress, value);
         }
 
+        private string _dmAddress;
+        public string DMAddress
+        {
+            get => _dmAddress;
+            set => SetProperty(ref _dmAddress, value);
+        }
+
+
         private int _length;
         public int Length
         {
@@ -185,7 +193,8 @@ namespace IPCSoftware.App.ViewModels
             IOTypes = new ObservableCollection<string>
             {
                 "Input",
-                "Output"
+                "Output",
+                "None"
             };
 
             // Initialize algorithm types with Value and DisplayName
@@ -226,6 +235,7 @@ namespace IPCSoftware.App.ViewModels
                 Name = tag.Name;
                 PLCNo = tag.PLCNo;
                 ModbusAddress = tag.ModbusAddress;
+              //  DMAddress = tag.DMAddress; // Bind DMAddress
                 Length = tag.Length;
 
                 // Map int AlgNo to AlgorithmType object
@@ -240,6 +250,8 @@ namespace IPCSoftware.App.ViewModels
                 Description = tag.Description;
                 Remark = tag.Remark;
                 CanWrite = tag.CanWrite;
+                // Bind IOType
+                SelectedIOType = tag.IOType;
                 UpdateAlgorithmState();
             }
             catch (Exception ex)
@@ -256,6 +268,7 @@ namespace IPCSoftware.App.ViewModels
                 _currentTag.Name = Name;
                 _currentTag.PLCNo = PLCNo;
                 _currentTag.ModbusAddress = ModbusAddress;
+               // _currentTag.DMAddress = DMAddress;
                 _currentTag.Length = Length;
 
                 // Save the numeric value (1, 2, or 3)
@@ -268,6 +281,8 @@ namespace IPCSoftware.App.ViewModels
                 _currentTag.Description = Description;
                 _currentTag.Remark = Remark;
                 _currentTag.CanWrite = CanWrite;
+
+                _currentTag.IOType = SelectedIOType;
             }
             catch (Exception ex)
             {

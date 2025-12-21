@@ -60,8 +60,9 @@ public class RibbonViewModel : BaseViewModel
             LoadMenu(new List<string>
             {
                 "OEE Dashboard",
-                "Machine Summary",
-                "KPI Monitoring"
+                "Time Sync",
+                "Alarm View"
+
             }, nameof(OpenDashboardMenu));
         }
         catch (Exception ex)
@@ -76,13 +77,11 @@ public class RibbonViewModel : BaseViewModel
         {
             LoadMenu(new List<string>
             {
-                "System Settings",
-                //"Manual Operation",
                 "Mode Of Operation",
+                "Servo Parameters",
                 "PLC IO",
-                "SERVO PARAMETERS",
                 "Diagnostic",
-                 "Alarm View"
+                 
             }, nameof(OpenSettingsMenu));
         }
         catch (Exception ex)

@@ -48,11 +48,11 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
                     _ = WriteTagAsync(ConstantValues.TAG_CTL_CYCLETIME_B1, true);
                 }
-               /* else if (!currentA1State && _lastCycleTimeTriggerState)
+                else if (!currentA1State && _lastCycleTimeTriggerState)
                 {
                     // Falling edge of A1 -> Reset B1 to ready for next
                     _ = WriteTagAsync(ConstantValues.TAG_CTL_CYCLETIME_B1, false);
-                }*/
+                }
 
                 _lastCycleTimeTriggerState = currentA1State;
             }

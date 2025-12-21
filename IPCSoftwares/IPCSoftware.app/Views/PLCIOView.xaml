@@ -209,8 +209,10 @@
 								<DataGridTextColumn Header="SrNo" Binding="{Binding Id}" Width="150" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
 
 								<!-- Name -->
-								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
-								<DataGridTextColumn Header="Status" Binding="{Binding Value}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+							
+                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+                                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+                                <DataGridTextColumn Header="Status" Binding="{Binding Value}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
 
 								<!-- Status (Light Indicator) -->
 								<!--<DataGridTemplateColumn Header="Status" Width="200">
@@ -273,6 +275,7 @@
 
 								<!-- Name -->
 								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+                                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
 
 								<!-- Status (Light Indicator) -->
 								<DataGridTemplateColumn Header="Status" Width="200">
