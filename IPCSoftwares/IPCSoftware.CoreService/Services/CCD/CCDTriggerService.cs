@@ -1,10 +1,13 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,34 +17,29 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Services.CCD
 {
-    public class CCDTriggerService
+    public class CCDTriggerService : BaseService
     {
         private readonly ICycleManagerService _cycleManager;
         private  PLCClientManager _plcManager; // 1. Inject PLC Manager
         private readonly IPLCTagConfigurationService  _tagService; // 2. Store Tag Config
-
-
+        private readonly string  _tempImageFolder; 
         // State tracking
         private bool _lastTriggerState = false;
-
-        // Configuration
-        private const string TEMP_IMAGE_FOLDER = ConstantValues.TempImgFolder;
-        //private const int TRIGGER_TAG_ID = 15;
-        //private const int QR_DATA_TAG_ID = 16;
 
         private const int IMAGE_WAIT_TIMEOUT_SECONDS = 10; // Wait up to 10s
         private const int POLLING_INTERVAL_MS = 500;
 
-        public CCDTriggerService(ICycleManagerService cycleManager,  IPLCTagConfigurationService tagService)
+        public CCDTriggerService
+            (ICycleManagerService cycleManager,
+            IPLCTagConfigurationService tagService,
+            IOptions<CcdSettings> ccdSettings
+            ,
+            IAppLogger logger) : base(logger)
         {
+            var ccd = ccdSettings.Value;
+            _tempImageFolder = ccd.TempImgFolder;
             _tagService = tagService;
-
             _cycleManager = cycleManager;
-         //   _plcManager = plcManager;
-           
-
-            // Find the configuration for the Trigger Tag (ID 15) so we can write back to it later
-        
         }
 
         /// <summary>
@@ -50,130 +48,161 @@ namespace IPCSoftware.CoreService.Services.CCD
         /// <param name="tagValues">The dictionary of processed tag values</param>
         public void ProcessTriggers(Dictionary<int, object> tagValues, PLCClientManager manager)
         {
-            _plcManager = manager;
-            // 1. Extract Trigger State (Tag 15)
-            bool currentTriggerState = false;
-
-            if (tagValues.TryGetValue(ConstantValues.TRIGGER_TAG_ID, out object triggerObj))
+            try
             {
-                if (triggerObj is bool bVal) currentTriggerState = bVal;
-                else if (triggerObj is int iVal) currentTriggerState = iVal > 0;
-            }
+                _plcManager = manager;
+                // 1. Extract Trigger State (Tag 15)
+                bool currentTriggerState = false;
 
-            // 2. Rising Edge Detection (False -> True)
-            if (currentTriggerState && !_lastTriggerState)
-            {
-                // 3. Extract QR Code (Tag 16) - needed if this is the start of a cycle
-                string currentQrCode = string.Empty;
-                if (tagValues.TryGetValue(ConstantValues.QR_DATA_TAG_ID, out object qrObj))
+                if (tagValues.TryGetValue(ConstantValues.TRIGGER_TAG_ID, out object triggerObj))
                 {
-                    currentQrCode = qrObj?.ToString() ?? string.Empty;
+                    if (triggerObj is bool bVal) currentTriggerState = bVal;
+                    else if (triggerObj is int iVal) currentTriggerState = iVal > 0;
                 }
 
-                Console.WriteLine($"[CCD Monitor] Rising Edge Detected on Tag {ConstantValues.TRIGGER_TAG_ID}.");
-                _ = ExecuteWorkflowAsync(currentQrCode);
-            }
+                // 2. Rising Edge Detection (False -> True)
+                if (currentTriggerState && !_lastTriggerState)
+                {
+                    Console.WriteLine($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID}");
+                    _logger.LogInfo($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID}", LogType.Diagnostics);
 
-            // 4. Update State
-            _lastTriggerState = currentTriggerState;
+                    // 3. Gather Data
+                    string qrCode = tagValues.ContainsKey(ConstantValues.QR_DATA_TAG_ID) ? tagValues[ConstantValues.QR_DATA_TAG_ID]?.ToString() : null;
+
+                    var stationData = new Dictionary<string, object>();
+
+                    // Fetch X, Y, Z, Status from tag dictionary
+                  //  stationData["Status"] = tagValues.ContainsKey(ConstantValues.TAG_STATUS) ? tagValues[ConstantValues.TAG_STATUS].ToString() : "OK";
+                    var rawStatus = tagValues.ContainsKey(ConstantValues.TAG_STATUS)
+                    ? tagValues[ConstantValues.TAG_STATUS]
+                    : null;
+                    stationData["Status"] = MapStatus(rawStatus);
+
+
+                    stationData["X"] = tagValues.ContainsKey(ConstantValues.TAG_X) ? tagValues[ConstantValues.TAG_X] : 0.0;
+                    stationData["Y"] = tagValues.ContainsKey(ConstantValues.TAG_Y) ? tagValues[ConstantValues.TAG_Y] : 0.0;
+                    stationData["Z"] = tagValues.ContainsKey(ConstantValues.TAG_Z) ? tagValues[ConstantValues.TAG_Z] : 0.0;
+
+                    // 4. Execute Async Workflow
+                    _ = ExecuteWorkflowAsync(qrCode, stationData);
+                }
+
+                // 4. Update State
+                _lastTriggerState = currentTriggerState;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
      
 
         }
-
-        private async Task ExecuteWorkflowAsync(string qrCode)
+        private string MapStatus(object rawStatus)
         {
-            string? imagePath = null;
-            DateTime startTime = DateTime.Now;
+            if (rawStatus == null)
+                return "Unchecked";
 
-            // 1. WAIT FOR IMAGE
-            while ((DateTime.Now - startTime).TotalSeconds < IMAGE_WAIT_TIMEOUT_SECONDS)
+            switch (rawStatus.ToString())
             {
-                imagePath = GetLatestImageFromTemp();
-
-                if (!string.IsNullOrEmpty(imagePath) && IsFileReady(imagePath))
-                {
-                    Console.WriteLine($"[CCD Monitor] Image found: {Path.GetFileName(imagePath)}");
-                    break;
-                }
-                await Task.Delay(POLLING_INTERVAL_MS);
+                case "0": return "Unchecked";
+                case "1": return "OK";
+                case "2": return "NG";
+                default: return "Unchecked"; // fallback
             }
+        }
+
+
+        private async Task ExecuteWorkflowAsync(string qrCode, Dictionary<string, object> data)
+        {
+            string imagePath = await WaitForImageAsync();
 
             if (!string.IsNullOrEmpty(imagePath))
             {
-                // 2. PROCESS IMAGE
                 try
                 {
-                    _cycleManager.HandleIncomingImage(imagePath, qrCode);
-                    Console.WriteLine("[CCD Monitor] Image Processed Successfully.");
+                    // 1. Hand off to Cycle Manager (Updates JSON & Moves Files)
+                    // Note: Update CycleManager Interface to accept Dictionary
+                    _cycleManager.HandleIncomingData(imagePath, data, qrCode);
 
-                    // 3. WRITE BACK TO PLC (Reset Bit to 0)
-                    // This happens ONLY after processing is done.
-                    var allTags = _tagService.GetAllTagsAsync().GetAwaiter().GetResult();
-                    var _triggerTag = allTags.FirstOrDefault(t => t.Id == ConstantValues.Return_TAG_ID);
-                    if (_triggerTag != null)
-                    {
-                        var client = _plcManager.GetClient(_triggerTag.PLCNo);
-                        if (client != null)
-                        {
-                            // Write FALSE (0) to Tag 15
-                            await client.WriteAsync(_triggerTag, true);
-                            Console.WriteLine("[CCD Monitor] PLC Trigger Bit Reset to 1.");
-                        }
-                    }
+                    // 2. Write Ack (Tag 15) to PLC
+                    await WriteAckToPlcAsync();
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[CCD Monitor] Processing Error: {ex.Message}");
+                    Console.WriteLine($"[Error] Processing: {ex.Message}");
+                    _logger.LogError($"[Error] Processing: {ex.Message}", LogType.Diagnostics);
                 }
             }
             else
             {
-                Console.WriteLine($"[Error] Trigger received, but NO IMAGE appeared in folder.");
+                Console.WriteLine("[Error] Triggered but No Image found.");
+                _logger.LogInfo("[Error] Triggered but No Image found.", LogType.Diagnostics);
             }
         }
 
-
-
-        private string GetLatestImageFromTemp()
+        private async Task WriteAckToPlcAsync()
         {
             try
             {
-                if (!Directory.Exists(TEMP_IMAGE_FOLDER)) return null;
+                var allTags = await _tagService.GetAllTagsAsync();
+                var ackTag = allTags.FirstOrDefault(t => t.TagNo == ConstantValues.Return_TAG_ID); // Look for TagNo 15
 
-                var directory = new DirectoryInfo(TEMP_IMAGE_FOLDER);
+                if (ackTag != null)
+                {
+                    var client = _plcManager.GetClient(ackTag.PLCNo);
+                    if (client != null)
+                    {
+                        // Write TRUE to 15 to tell PLC we are done
+                        await client.WriteAsync(ackTag, true);
+                        Console.WriteLine($"[CCD] Ack sent to Tag {ConstantValues.Return_TAG_ID}");
+                        _logger.LogInfo ($"[CCD] Ack sent to Tag {ConstantValues.Return_TAG_ID}", LogType.Diagnostics);
 
-                // Get the most recent BMP file
-                var latestFile = directory.GetFiles("*.bmp")
-                                          .OrderByDescending(f => f.LastWriteTime)
-                                          .FirstOrDefault();
-
-                return latestFile?.FullName;
+                        // PLC Logic: When PLC sees 15=True, it will set 10=False. 
+                        // Then PLC logic likely resets 15 to False later, or we toggle it.
+                        // Assuming Pulse behavior here.
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Error] Failed to find image: {ex.Message}");
-                return null;
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
-
-        // Helper to ensure the camera is finished writing the file
-        private bool IsFileReady(string filename)
+        private async Task<string> WaitForImageAsync()
         {
             try
             {
-                using (FileStream inputStream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.None))
+                DateTime start = DateTime.Now;
+                while ((DateTime.Now - start).TotalSeconds < 10)
                 {
-                    if (inputStream.Length > 0)
+                    if (!Directory.Exists(_tempImageFolder)) return null;
+
+                    var file = new DirectoryInfo(_tempImageFolder)
+                        .GetFiles("*.bmp")
+                        .OrderByDescending(f => f.LastWriteTime)
+                        .FirstOrDefault();
+
+                    // Simple check: Ensure file is not locked
+                    if (file != null)
                     {
-                        return true;
+                        try
+                        {
+                            using (var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+                            {
+                                if (stream.Length > 0) return file.FullName;
+                            }
+                        }
+                        catch { /* Locked, retry */ }
                     }
+                    await Task.Delay(200);
                 }
-                return false;
+                return null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false; // File is locked by another process (Camera)
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return null;
             }
         }
 

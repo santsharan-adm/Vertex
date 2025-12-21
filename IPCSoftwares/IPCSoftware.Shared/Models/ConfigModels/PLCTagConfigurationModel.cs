@@ -24,6 +24,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public string Remark { get; set; }
 
         public bool CanWrite { get; set; }
+       // public string IOType { get; set; }
 
         public PLCTagConfigurationModel()
         {
@@ -35,6 +36,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
             Offset = 0;
             Span = 100;
             CanWrite = false; 
+
         }
 
         public PLCTagConfigurationModel Clone()

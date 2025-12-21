@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.App;
+using IPCSoftware.App.Services;
 using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
 
@@ -6,6 +7,8 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.Shared.Models.Messaging;
+using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Printing;
 using System.Reflection;
@@ -17,15 +20,47 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 public class MainWindowViewModel : BaseViewModel
 {
+
     private readonly INavigationService _nav;
     private readonly IDialogService _dialog;
-    private readonly IAppLogger  _logger;
+    private readonly CoreClient _coreClient;
+    private readonly AlarmViewModel _alarmVM;
 
     public ICommand SidebarItemClickCommand { get; }
     public RibbonViewModel RibbonVM { get; }
     public ICommand CloseSidebarCommand { get; }
     public ICommand MinimizeAppCommand { get; }
     public ICommand CloseAppCommand { get; }
+
+    // --- ALARM BANNER COMMANDS & PROPERTIES ---
+    public ICommand CloseAlarmBannerCommand { get; }
+
+    
+
+    public ICommand AcknowledgeBannerAlarmCommand { get; }
+
+    private bool _isAlarmBannerVisible;
+    public bool IsAlarmBannerVisible
+    {
+        get => _isAlarmBannerVisible;
+        set => SetProperty(ref _isAlarmBannerVisible, value);
+    }
+
+    private string _alarmBannerMessage;
+    public string AlarmBannerMessage
+    {
+        get => _alarmBannerMessage;
+        set => SetProperty(ref _alarmBannerMessage, value);
+    }
+
+    private string _alarmBannerColor = "#D32F2F"; // Default Red
+    public string AlarmBannerColor
+    {
+        get => _alarmBannerColor;
+        set => SetProperty(ref _alarmBannerColor, value);
+    }
+    // ------------------------------------------
+
 
     private readonly DispatcherTimer _timer;
 
@@ -56,59 +91,190 @@ public class MainWindowViewModel : BaseViewModel
     }
 
 
+    public bool _isConnected;
+    public bool IsConnected
+    {
+        get => _isConnected;
+        set => SetProperty(ref _isConnected, value);
+    }
+
+    public bool _timeSynched;
+    public bool TimeSynched
+    {
+        get => _timeSynched;
+        set => SetProperty(ref _timeSynched, value);
+    }
+
+
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
     public string AppVersion => "AOI System v1.0.3";
 
-    public MainWindowViewModel(INavigationService nav, IAppLogger logger, IDialogService dialog,RibbonViewModel ribbonVM)
+    public MainWindowViewModel(
+        INavigationService nav, 
+        CoreClient coreClient,
+        IDialogService dialog,
+        RibbonViewModel ribbonVM, 
+        AlarmViewModel alarmVM,
+        IAppLogger logger) : base(logger)
     {
+        _coreClient = coreClient;
+        _dialog = dialog;
+        _nav = nav;
+        _alarmVM = alarmVM;
         _timer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
         };
-        _timer.Tick += (s, e) => SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
-        _timer.Start();
+        _timer.Tick += LiveDataTimerTick; 
+        _timer.Start(); 
+        // 3. Subscribe to Alarm Events
+        _coreClient.OnAlarmMessageReceived += OnAlarmReceived;
 
         // Set initial time immediately
         SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
 
-        _nav = nav;
         RibbonVM = ribbonVM;
         RibbonVM.ShowSidebar = LoadSidebarMenu;
         RibbonVM.OnLogout = ResetLandingState; 
         RibbonVM.OnLandingPageRequested = ResetLandingState;
+
         CloseAppCommand = new RelayCommand(ExecuteCloseApp);
         MinimizeAppCommand = new RelayCommand(ExecuteMinimizeApp);
-
         SidebarItemClickCommand = new RelayCommand<string>(OnSidebarItemClick);
         CloseSidebarCommand = new RelayCommand(() => IsSidebarOpen = false);
 
-        UserSession.OnSessionChanged += () =>
+        CloseAlarmBannerCommand = new RelayCommand(() => IsAlarmBannerVisible = false);
 
+        AcknowledgeBannerAlarmCommand = new RelayCommand(ExecuteAcknowledgeBannerAlarm, CanExecuteAcknowledgeBannerAlarm);
+
+        UserSession.OnSessionChanged += () =>
         {
             OnPropertyChanged(nameof(IsRibbonVisible));
             OnPropertyChanged(nameof(CurrentUserName));
             OnPropertyChanged(nameof(IsAdmin));
         };
-        _dialog = dialog;
+    }
+    private bool CanExecuteAcknowledgeBannerAlarm()
+    {
+        // Enable the button only if there is at least one UNACKNOWLEDGED alarm
+        // The command is only active if the banner is visible AND there are alarms to ack.
+        return ActiveAlarmCount > 0 && IsAlarmBannerVisible;
     }
 
+    private async void ExecuteAcknowledgeBannerAlarm()
+    {
+        try
+        {
+            // 1. Find the latest unacknowledged alarm (the one currently displayed)
+            var latestUnackedAlarm = _alarmVM.ActiveAlarms
+                .Where(a => a.AlarmAckTime == null)
+                .OrderByDescending(a => a.AlarmTime)
+                .FirstOrDefault();
+
+            if (latestUnackedAlarm != null)
+            {
+                // 2. Call the Acknowledge logic in the AlarmViewModel
+                // This relies on the core logic being available in AlarmViewModel (Action 2.2)
+                await _alarmVM.AcknowledgeAlarmRequestAsync(latestUnackedAlarm);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+        }
+    }
+
+    public string AlarmBannerTotalMessage => ActiveAlarmCount > 0
+        ? ActiveAlarmCount == 1
+        ? AlarmBannerMessage // Only one alarm, show the detailed message
+       : $"Critical System Alarms ({ActiveAlarmCount}) | {AlarmBannerMessage}" // Multiple alarms, show count + latest message
+       : "No Active Alarms";
+
+    private int _activeAlarmCount;
+    public int ActiveAlarmCount
+    {
+        get => _activeAlarmCount;
+        set
+        {
+            SetProperty(ref _activeAlarmCount, value);
+            // Recalculate the Banner Message when the count changes
+            OnPropertyChanged(nameof(AlarmBannerTotalMessage));
+        }
+    }
+
+    private void OnAlarmReceived(AlarmMessage msg)
+    {
+        try
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // 1. Identify the latest alarm first
+                var latestUnackedAlarm = _alarmVM.ActiveAlarms
+                    .Where(a => a.AlarmAckTime == null)
+                    .OrderByDescending(a => a.AlarmTime)
+                    .FirstOrDefault();
+
+                // 2. PREPARE THE DATA FIRST
+                // We set the text and color BEFORE we update the count.
+                if (latestUnackedAlarm != null)
+                {
+                    AlarmBannerMessage = $"⚠️ ALARM {latestUnackedAlarm.AlarmNo}: {latestUnackedAlarm.AlarmText}";
+
+                    if (latestUnackedAlarm.Severity == "High") AlarmBannerColor = "#D32F2F";
+                    else if (latestUnackedAlarm.Severity == "Warning") AlarmBannerColor = "#F57C00";
+                    else AlarmBannerColor = "#1976D2";
+                }
+                else
+                {
+                    AlarmBannerMessage = "No Critical Alarms";
+                    AlarmBannerColor = "#1976D2";
+                }
+
+                // 3. TRIGGER THE REFRESH LAST
+                // Setting this property triggers OnPropertyChanged(nameof(AlarmBannerTotalMessage))
+                // Because the message was set above, the banner will now show the correct text.
+                ActiveAlarmCount = _alarmVM.ActiveAlarms.Count(a => a.AlarmAckTime == null);
+
+                // 4. Control Visibility
+                IsAlarmBannerVisible = ActiveAlarmCount > 0;
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+        }
+    }
+
+
+
+    private async void LiveDataTimerTick(object sender, EventArgs e)
+    {
+        try 
+        {
+
+            SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
+            var boolDict = await _coreClient.GetIoValuesAsync(1);
+            if (boolDict != null && boolDict.TryGetValue(1, out object pulseObj))
+            {
+                var json = JsonConvert.SerializeObject(pulseObj);
+                var pulseResult = JsonConvert.DeserializeObject<List<bool>>(json);
+                IsConnected = pulseResult[0];
+                TimeSynched = pulseResult[1];
+
+            }
+        }
+        catch(Exception ex )
+        {
+           _logger.LogError(ex.Message, LogType.Diagnostics);
+            
+        }
+    }
     private void ResetLandingState()
     {
         existingUserControl = string.Empty;   // clear selected page
         IsSidebarOpen = false;                // close sidebar if open
         IsSidebarDocked = false;
-
-      
     }
-/*
-    private void CloseSideBar()
-    {
-        IsSidebarOpen = false;
-        IsSidebarDocked = false;
-
-    }
-*/
-
     // ==============================
     // RIBBON VISIBILITY PROPERTIES
     // ==============================
@@ -144,22 +310,29 @@ public class MainWindowViewModel : BaseViewModel
 
     private void LoadSidebarMenu((string Key, List<string> Items) menu)
     {
-        SidebarItems.Clear();
-
-        foreach (var item in menu.Items)
-            SidebarItems.Add(item);
-        if (currentRibbonKey == menu.Key )
+        try
         {
-            if (!IsSidebarDocked)
+            SidebarItems.Clear();
+
+            foreach (var item in menu.Items)
+                SidebarItems.Add(item);
+            if (currentRibbonKey == menu.Key )
             {
-                IsSidebarOpen = !IsSidebarOpen;
+                if (!IsSidebarDocked)
+                {
+                    IsSidebarOpen = !IsSidebarOpen;
+                }
+
+                return;
             }
 
-            return;
+            IsSidebarOpen = true;
+            currentRibbonKey = menu.Key;
         }
-
-        IsSidebarOpen = true;
-        currentRibbonKey = menu.Key;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+        }
 
         // MVVM triggers animation
     }
@@ -188,96 +361,109 @@ public class MainWindowViewModel : BaseViewModel
 
     private void OnSidebarItemClick(string itemName)
     {
-        // Close sidebar
-        if (!IsSidebarDocked)
+        try
         {
-          IsSidebarOpen = false;
+            // Close sidebar
+            if (!IsSidebarDocked)
+            {
+              IsSidebarOpen = false;
+            }
+            if (string.IsNullOrWhiteSpace(existingUserControl))
+            {
+                existingUserControl = itemName;
+            }
+            else if (existingUserControl == itemName)
+            {
+                return;
+            }
+            else
+            {
+                existingUserControl = itemName;
+            }
+
+            // Navigate based on item name
+            switch (itemName)
+            {
+                // OEEDashboard Menu
+                case "OEE Dashboard":
+                    //_nav.NavigateMain<LiveOeeView>();
+                    _nav.NavigateMain<OEEDashboard>();
+                    break;
+
+                case "Machine Summary":
+                   // _nav.NavigateMain<ServoCalibrationView>();
+                    break;
+                case "SERVO PARAMETERS":
+                    _nav.NavigateMain<ServoCalibrationView>();
+                    break;
+
+                case "KPI Monitoring":
+                    _nav.NavigateMain<OeeDashboardNew>();
+                    break;
+
+                case "System Settings":
+                    _nav.NavigateToSystemSettings();
+                    break;
+
+                // Config Menu
+                case "Log Config":
+                    _nav.NavigateMain<LogListView>();
+                    break;
+                case "Device Config":
+                    _nav.NavigateMain<DeviceListView>();
+                    break;
+                case "Alarm Config":
+                    _nav.NavigateMain<AlarmListView>();
+                    break;
+
+                case "User Config":
+                    _nav.NavigateMain<UserListView>();
+                    break;
+
+                case "Manual Operation":
+                    _nav.NavigateMain<ManualOperation>();
+                    break;
+
+                case "Mode Of Operation":
+                    _nav.NavigateMain<ModeOfOperation>();
+                    break;
+
+                case "PLC IO":
+                    _nav.NavigateMain<PLCIOView>();
+                    break;
+
+                case "Diagnostic":
+                    _nav.NavigateMain<TagControlView>();
+                    break;
+
+                case "PLC TAG Config":
+                    _nav.NavigateMain<PLCTagListView>();
+                    break;
+
+                case "Alarm View": 
+                    _nav.NavigateMain<AlarmView>(); break;
+
+                case "Audit Logs":
+                    _nav.NavigateToLogs(LogType.Audit);
+                    break;
+
+                case "Error Logs":
+                    _nav.NavigateToLogs(LogType.Error);
+                    break;
+
+                case "Production Logs":
+                    _nav.NavigateToLogs(LogType.Production);
+                    break;
+                case "Diagnostics Logs":
+                    _nav.NavigateToLogs(LogType.Diagnostics);
+                    break;
         }
-        if (string.IsNullOrWhiteSpace(existingUserControl))
+        }
+        catch (Exception ex)
         {
-            existingUserControl = itemName;
-        }
-        else if (existingUserControl == itemName)
-        {
-            return;
-        }
-        else
-        {
-            existingUserControl = itemName;
+            _logger.LogError(ex.Message, LogType.Diagnostics);
         }
 
-        // Navigate based on item name
-        switch (itemName)
-        {
-            // OEEDashboard Menu
-            case "OEE Dashboard":
-                //_nav.NavigateMain<LiveOeeView>();
-                _nav.NavigateMain<OEEDashboard>();
-                break;
-
-            case "Machine Summary":
-                _nav.NavigateMain<OeeDashboard2>();
-                break;
-
-            case "KPI Monitoring":
-                _nav.NavigateMain<OeeDashboardNew>();
-                break;
-
-            case "System Settings":
-                _nav.NavigateToSystemSettings();
-                break;
-
-            // Config Menu
-            case "Log Config":
-                _nav.NavigateMain<LogListView>();
-                break;
-            case "Device Config":
-                _nav.NavigateMain<DeviceListView>();
-                break;
-            case "Alarm Config":
-                _nav.NavigateMain<AlarmListView>();
-                break;
-
-            case "User Config":
-                _nav.NavigateMain<UserListView>();
-                break;
-
-            case "Manual Operation":
-                _nav.NavigateMain<ManualOperation>();
-                break;
-
-            case "Mode Of Operation":
-                _nav.NavigateMain<ModeOfOperation>();
-                break;
-
-            case "PLC IO":
-                _nav.NavigateMain<PLCIOView>();
-                break;
-
-            case "Tag Control":
-                _nav.NavigateMain<TagControlView>();
-                break;
-
-            case "PLC TAG Config":
-                _nav.NavigateMain<PLCTagListView>();
-                break;
-
-            case "Audit Logs":
-                _nav.NavigateToLogs(LogType.Audit);
-                break;
-
-            case "Error Logs":
-                _nav.NavigateToLogs(LogType.Error);
-                break;
-
-            case "Production Logs":
-                _nav.NavigateToLogs(LogType.Production);
-                break;
-            case "Diagnostics Logs":
-                _nav.NavigateToLogs(LogType.Diagnostics);
-                break;
-
-        }
 
 
 

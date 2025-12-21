@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
@@ -34,7 +35,10 @@ namespace IPCSoftware.App.ViewModels
         public ICommand EditTagCommand { get; }
         public ICommand DeleteTagCommand { get; }
 
-        public PLCTagListViewModel(IPLCTagConfigurationService tagService, INavigationService nav)
+        public PLCTagListViewModel(
+            IPLCTagConfigurationService tagService, 
+            INavigationService nav,
+            IAppLogger logger) : base(logger)
         {
             _tagService = tagService;
             _nav = nav;
@@ -49,11 +53,18 @@ namespace IPCSoftware.App.ViewModels
 
         public async Task LoadDataAsync()
         {
-            var tags = await _tagService.GetAllTagsAsync();
-            Tags.Clear();
-            foreach (var tag in tags)
+            try
             {
-                Tags.Add(tag);
+                var tags = await _tagService.GetAllTagsAsync();
+                Tags.Clear();
+                foreach (var tag in tags)
+                {
+                    Tags.Add(tag);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
@@ -77,11 +88,18 @@ namespace IPCSoftware.App.ViewModels
 
         private async void OnDeleteTag(PLCTagConfigurationModel tag)
         {
-            if (tag == null) return;
+            try
+            {
+                if (tag == null) return;
 
-            // TODO: Add confirmation dialog
-            await _tagService.DeleteTagAsync(tag.Id);
-            await LoadDataAsync();
+                // TODO: Add confirmation dialog
+                await _tagService.DeleteTagAsync(tag.Id);
+                await LoadDataAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
     }
 }

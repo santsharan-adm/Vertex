@@ -1,170 +1,106 @@
-﻿using IPCSoftware.CoreService.Services.Algorithm;
+﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.CoreService.Alarm;
+using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
+using IPCSoftware.Services;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
+using Microsoft.Extensions.FileSystemGlobbing.Internal.PatternContexts;
 using System.Diagnostics;
+using System.Net.Sockets;
 using System.Text.Json;
 
 
 namespace IPCSoftware.CoreService.Services.Dashboard
 {
-    public class DashboardInitializer
+    public class DashboardInitializer : BaseService
     {
         private readonly PLCClientManager _manager;
-        private readonly UiListener _ui = new UiListener(5050);
+        private readonly UiListener _ui ;
         private readonly AlgorithmAnalysisService _algo;
-        private readonly OeeEngine _oee = new OeeEngine();
+        private readonly OeeEngine _oee ;
+        private readonly SystemMonitorService _systemMonitor;
         private readonly CCDTriggerService _ccdTrigger; // 1. Add field
+        private readonly AlarmService _alarmService;
 
         // latest packets per PLC (unitno)
         private readonly Dictionary<int, PlcPacket> _latestPackets = new();
 
-        private Dictionary<uint, object>? _lastValues = null;
+        private Dictionary<int, object>? _lastValues = null;
 
-        public DashboardInitializer(PLCClientManager manager, List<PLCTagConfigurationModel> tags, CCDTriggerService ccdTrigger)
+        public DashboardInitializer(PLCClientManager manager,
+            AlgorithmAnalysisService algo,
+            OeeEngine oee,
+            SystemMonitorService systemMonitor,
+          UiListener ui,
+          AlarmService alarmService,
+            CCDTriggerService ccdTrigger,
+            IAppLogger logger) : base(logger)
         {
+            _ui = ui;
+            _alarmService = alarmService;   
+            _systemMonitor = systemMonitor;
+            _oee = oee;
             _manager = manager;
-            _algo = new AlgorithmAnalysisService(tags);
+            _algo =algo;
             _ccdTrigger = ccdTrigger;
         }
 
-        //public async Task StartAsync()
-        //{
-        //    _ui.OnRequestReceived = HandleUiRequest;
+      
 
-        //    // Start PLC loops
-        //    List<Task> tasks = new();
-
-        //    foreach (var client in _manager.Clients)
-        //    {
-        //        client.OnPlcDataReceived += (plcNo, values) =>
-        //        {
-        //            var final = _algo.Apply(plcNo, values)
-        //                             .ToDictionary(k => (uint)k.Key, v => v.Value);
-
-        //            _latestPackets[plcNo] = new PlcPacket
-        //            {
-        //                PlcNo = plcNo,
-        //                Values = final,
-        //                Timestamp = DateTime.Now
-        //            };
-        //        };
-
-        //        tasks.Add(client.StartAsync());
-        //    }
-
-        //    tasks.Add(_ui.StartAsync());
-
-        //    await Task.WhenAll(tasks);
-        //}
-
-        //public async Task StartAsync()
-        //{
-        //    _ui.OnRequestReceived = HandleUiRequest;
-
-        //    // Start UI
-        //    var uiTask = _ui.StartAsync();
-
-        //    // Start PLC read loops
-        //    var plcTasks = _manager.Clients.Select(client =>
-        //    {
-        //        client.OnPlcDataReceived += (plcNo, values) =>
-        //        {
-        //            var processedData = _algo.Apply(plcNo, values);
-
-        //            // B. CHECK FOR TRIGGERS (This is where the magic happens)
-        //            // We call this immediately after processing values, but before updating UI
-        //            _ccdTrigger.ProcessTriggers(processedData);
-
-        //            var final = _algo.Apply(plcNo, values)
-        //                             .ToDictionary(k => (uint)k.Key, v => v.Value);
-
-        //            var finalDict = final.ToDictionary(kv => (uint)kv.Key, kv => kv.Value);
-
-        //            _latestPackets[plcNo] = new PlcPacket
-        //            {
-        //                PlcNo = plcNo,
-        //                Values = final,
-        //                Timestamp = DateTime.Now
-        //            };
-
-        //            _lastValues = finalDict;
-        //        };
-        //        return client.StartAsync();
-        //    });
-
-        //    // Await everything
-        //    await Task.WhenAll(plcTasks.Append(uiTask));
-        //}
-        //private FileSystemWatcher _watcher;
-        //private string _watchFolder;
         public async Task StartAsync()
         {
-            _ui.OnRequestReceived = HandleUiRequest;
-
-            // Start UI
-            var uiTask = _ui.StartAsync();
-
-            //_watcher = new FileSystemWatcher(_watchFolder)
-
-            //{
-
-            //    EnableRaisingEvents = true,
-
-            //    IncludeSubdirectories = false,
-
-            //    NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.CreationTime
-
-            //};
-
-
-
-            //_watcher.Created += OnCreated;
-
-            // Start PLC read loops
-            var plcTasks = _manager.Clients.Select(client =>
+            try
             {
-                client.OnPlcDataReceived += (plcNo, values) =>
+                _ui.OnRequestReceived = HandleUiRequest;
+
+                // Start UI
+               // var uiTask = _ui.StartAsync();
+                // Start PLC read loops
+                var plcTasks = _manager.Clients.Select(client =>
                 {
-                    // A. Process Raw Data -> Typed Values (Int/Bool/String)
-                    // processedData is Dictionary<int, object> where int is Tag ID
-                    var processedData = _algo.Apply(plcNo, values);
-
-                    // B. CHECK FOR TRIGGERS (This is where the magic happens)
-                    // We call this immediately after processing values, but before updating UI
-                  _ccdTrigger.ProcessTriggers(processedData, _manager);
-
-                    // C. Prepare for UI (Convert int Key to uint Key for compatibility)
-                    var final = processedData.ToDictionary(k => (uint)k.Key, v => v.Value);
-
-                    // D. Update Cache
-                    _latestPackets[plcNo] = new PlcPacket
+                    client.OnPlcDataReceived += (plcNo, values) =>
                     {
-                        PlcNo = plcNo,
-                        Values = final,
-                        Timestamp = DateTime.Now
+                        // A. Process Raw Data -> Typed Values (Int/Bool/String)
+                        // processedData is Dictionary<int, object> where int is Tag ID
+                        var processedData = _algo.Apply(plcNo, values);
+
+                        // B. CHECK FOR TRIGGERS (This is where the magic happens)
+                        // We call this immediately after processing values, but before updating UI
+                      _ccdTrigger.ProcessTriggers(processedData, _manager);
+                        _oee.ProcessCycleTimeLogic(processedData);
+                        _oee.Calculate(processedData);
+                        _systemMonitor.Process(processedData);
+                        _alarmService.ProcessTagData(processedData);
+
+                        // C. Prepare for UI (Convert int Key to uint Key for compatibility)
+                        var final = processedData.ToDictionary(k => (int)k.Key, v => v.Value);
+
+                        // D. Update Cache
+                        _latestPackets[plcNo] = new PlcPacket
+                        {
+                            PlcNo = plcNo,
+                            Values = final,
+                            Timestamp = DateTime.Now
+                        };
+
+                        _lastValues = final;
                     };
+                    return client.StartAsync();
+                });
 
-                    _lastValues = final;
-                };
-                return client.StartAsync();
-            });
-
-            // Await everything
-            await Task.WhenAll(plcTasks.Append(uiTask));
+                // Await everything
+                await Task.WhenAll(plcTasks);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
-        //private void OnCreated(object sender, FileSystemEventArgs e)
-        //{
-        //    //e.FullPath
-
-            
-
-        //}
-
-        private void HandlePlcPacket(int plcNo, Dictionary<uint, object> values)
+        private void HandlePlcPacket(int plcNo, Dictionary<int, object> values)
         {
             // Store latest packet
             _latestPackets[plcNo] = new PlcPacket
@@ -177,7 +113,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             Console.WriteLine($"Dashboard: Received {values.Count} tags from PLC {plcNo}");
         }
 
-        private PLCTagConfigurationModel? GetTagConfig(uint tagId)
+        private PLCTagConfigurationModel? GetTagConfig(int tagId)
         {
             return _algo.Tags.FirstOrDefault(t => t.Id == tagId);
         }
@@ -185,80 +121,119 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
         public async Task<ResponsePackage> HandleUiRequest(RequestPackage request)
         {
-            Debug.WriteLine($"[Core] HandleUiRequest called → RequestId={request.RequestId}");
-
-            //---------------------------------------------------------
-            // 6) WRITE REQUEST (RequestId = 6)
-            //---------------------------------------------------------
-            if (request.RequestId == 6)
+            try
             {
-                return await HandleUiWrite(request);
-            }
+                Debug.WriteLine($"[Core] HandleUiRequest called → RequestId={request.RequestId}");
+                _logger.LogInfo($"[Core] HandleUiRequest called → RequestId={request.RequestId}",LogType.Diagnostics);
 
-            //---------------------------------------------------------
-            // 1) IO REQUEST (RequestId = 5)
-            //---------------------------------------------------------
-            if (request.RequestId == 5)
-            {
-                if (!_latestPackets.TryGetValue(1, out var packet))
+                //---------------------------------------------------------
+                // 6) WRITE REQUEST (RequestId = 6)
+                //---------------------------------------------------------
+                if (request.RequestId == 6)
                 {
+                    return await HandleUiWrite(request);
+                }
+                if (request.RequestId == 7)
+                {
+                    return await HandleAlarmRequest(request);
+                }
+
+                //---------------------------------------------------------
+                // 1) IO REQUEST (RequestId = 5)
+                //---------------------------------------------------------
+                if (request.RequestId == 5)
+                {
+                    if (!_latestPackets.TryGetValue(1, out var packet))
+                    {
+                        return new ResponsePackage
+                        {
+                            ResponseId = 5,
+                            Parameters = _lastValues
+                        };
+                    }
+
                     return new ResponsePackage
                     {
                         ResponseId = 5,
-                        Parameters = _lastValues
+                        Parameters = packet.Values // Dictionary<uint, object>
                     };
                 }
 
-                return new ResponsePackage
+                //---------------------------------------------------------
+                // 2) OEE REQUEST (RequestId = 4)
+                //---------------------------------------------------------
+                if (request.RequestId == 4)
                 {
-                    ResponseId = 5,
-                    Parameters = packet.Values // Dictionary<uint, object>
-                };
-            }
-
-            //---------------------------------------------------------
-            // 2) OEE REQUEST (RequestId = 4)
-            //---------------------------------------------------------
-            if (request.RequestId == 4)
-            {
-                if (!_latestPackets.TryGetValue(1, out var packet))
-                {
+                    if (!_latestPackets.TryGetValue(1, out var packet))
+                    {
+                        return new ResponsePackage
+                        {
+                            ResponseId = 4,
+                            Parameters = new Dictionary<int, object>()
+                        };
+                    }
+                //    _oee.ProcessCycleTimeLogic(packet.Values);
                     return new ResponsePackage
                     {
                         ResponseId = 4,
-                        Parameters = new Dictionary<uint, object>()
+                        Parameters =_oee.Calculate( packet.Values)
                     };
                 }
 
+
+                if (request.RequestId == 1)
+                {
+                    if (!_latestPackets.TryGetValue(1, out var packet))
+                    {
+                        return new ResponsePackage
+                        {
+                            ResponseId = 1,
+                            Parameters = new Dictionary<int, object>()
+                        };
+                    }
+                //    _oee.ProcessCycleTimeLogic(packet.Values);
+                    return new ResponsePackage
+                    {   
+                        ResponseId = 1,
+                        Parameters = _systemMonitor.Process(packet.Values)
+                    };
+                }
+
+
+
+
+                //---------------------------------------------------------
+                // 3) UNKNOWN REQUEST
+                //---------------------------------------------------------
                 return new ResponsePackage
                 {
-                    ResponseId = 4,
-                    Parameters = packet.Values
+                    ResponseId = -1,
+                    Parameters = new Dictionary<int, object>()
                 };
             }
-
-            //---------------------------------------------------------
-            // 3) UNKNOWN REQUEST
-            //---------------------------------------------------------
-            return new ResponsePackage
+            catch (Exception ex)
             {
-                ResponseId = -1,
-                Parameters = new Dictionary<uint, object>()
-            };
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return new ResponsePackage
+                {
+                    ResponseId = -1,
+                    Parameters = new Dictionary<int, object>()
+                };
+            }
         }
 
         private async Task<ResponsePackage> HandleUiWrite(RequestPackage request)
         {
             try
             {
-                uint tagId = 0;
+                int tagId = 0;
                 object value = null;
 
                 if (request.Parameters is JsonElement json)
                 {
                     foreach (var prop in json.EnumerateObject())
                     {
-                        tagId = uint.Parse(prop.Name);
+                        tagId = int.Parse(prop.Name);
 
                         // Handle different value types
                         value = prop.Value.ValueKind switch
@@ -290,11 +265,56 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
                 return Error(ex.Message);
             }
         }
 
-        private void SetCachedValue(uint tagId, object value)
+
+        private async Task<ResponsePackage> HandleAlarmRequest(RequestPackage request)
+        {
+            try
+            {
+                if (request.Parameters is JsonElement json)
+                {
+                    try
+                    {
+                        if (json.TryGetProperty("Action", out var actionElement) && actionElement.GetString() == "Acknowledge")
+                        {
+                            int alarmNo = json.GetProperty("AlarmNo").GetInt32();
+                            string userName = json.GetProperty("UserName").GetString() ?? "WebClient";
+
+                            bool success = await _alarmService.AcknowledgeAlarm(alarmNo, userName);
+
+                            if (success) return OkAlarm(alarmNo);
+                            else return ErrorAlarm($"Failed to acknowledge Alarm {alarmNo}. Not active or already ack'd.");
+                        }
+                        return ErrorAlarm("Unknown alarm action.");
+                    }
+                    catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); return ErrorAlarm($"Error processing alarm request: {ex.Message}"); }
+                }
+                return ErrorAlarm("Invalid alarm request parameters.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return ErrorAlarm($"Error processing alarm request: {ex.Message}.");
+            }
+        }
+
+
+        private ResponsePackage OkAlarm(int alarmNo) =>
+                                new ResponsePackage
+                                {
+                                    ResponseId = 7,
+                                    Success = true,
+                                    Parameters = new Dictionary<int, object> { { 0, $"ACKNOWLEDGED:{alarmNo}" } }
+                                };
+
+        private ResponsePackage ErrorAlarm(string msg) =>
+            new ResponsePackage { ResponseId = 7, Success = false, ErrorMessage = msg, Parameters = null };
+
+        private void SetCachedValue(int tagId, object value)
         {
             // for PLC No = 1 (or use cfg.PLCNo)
             if (_latestPackets.TryGetValue(1, out var packet))
@@ -308,18 +328,6 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
         private ResponsePackage Error(string msg) =>
             new ResponsePackage { ResponseId = 6, Success = false, ErrorMessage = msg };
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }

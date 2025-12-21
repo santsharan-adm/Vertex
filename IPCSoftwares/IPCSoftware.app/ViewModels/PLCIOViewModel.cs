@@ -2,8 +2,10 @@
 using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -50,11 +52,13 @@ namespace IPCSoftware.App.ViewModels
 
         public ICommand ToggleOutputCommand { get; }
 
-        public PLCIOViewModel(UiTcpClient tcpClient, IPLCTagConfigurationService tagService)
+        public PLCIOViewModel(
+            CoreClient coreClient, 
+            IPLCTagConfigurationService tagService,
+            IAppLogger logger) : base(logger)
         {
             _tagService = tagService;
-            _tcpClient = tcpClient;
-            _coreClient = new CoreClient(_tcpClient);
+            _coreClient = coreClient;
 
             InitializeAsync();
 
@@ -70,51 +74,65 @@ namespace IPCSoftware.App.ViewModels
 
         private async void InitializeAsync()
         {
-            var configTags = await _tagService.GetAllTagsAsync();
-
-            AllInputTags.Clear();
-            AllOutputTags.Clear();
-
-            foreach (var tag in configTags)
+            try
             {
-                var model = new IoTagModel
-                {
-                    Id = tag.Id,
-                    Name = tag.Name,
-                    Value = false
-                };
+                var configTags = await _tagService.GetAllTagsAsync();
 
-                if (tag.Name != null)
+                AllInputTags.Clear();
+                AllOutputTags.Clear();
+
+                foreach (var tag in configTags)
                 {
-                    AllInputTags.Add(model);
-                    /*if (tag.Name.StartsWith("IO_INPUT", StringComparison.OrdinalIgnoreCase))
+                    var model = new IoTagModel
+                    {
+                        Id = tag.Id,
+                        Name = tag.Name,
+                        Value = false
+                    };
+
+                    if (tag.Name != null)
+                    {
                         AllInputTags.Add(model);
-                    else if (tag.Name.StartsWith("IO_OUTPUT", StringComparison.OrdinalIgnoreCase))
-                        AllOutputTags.Add(model);*/
+                        /*if (tag.Name.StartsWith("IO_INPUT", StringComparison.OrdinalIgnoreCase))
+                            AllInputTags.Add(model);
+                        else if (tag.Name.StartsWith("IO_OUTPUT", StringComparison.OrdinalIgnoreCase))
+                            AllOutputTags.Add(model);*/
+                    }
                 }
-            }
 
-            ApplyFilter();
+                ApplyFilter();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private async void OnToggleOutput(IoTagModel tag)
         {
-            if (tag == null) return;
-
             try
             {
-                bool currentState = tag.Value is bool b && b;
-                bool newValue = !currentState;
+                if (tag == null) return;
 
-                _isWriting = true;
+                try
+                {
+                    bool currentState = tag.Value is bool b && b;
+                    bool newValue = !currentState;
 
-                tag.Value = newValue;
+                    _isWriting = true;
 
-                await _coreClient.WriteTagAsync(tag.Id, newValue);
+                    tag.Value = newValue;
+
+                    await _coreClient.WriteTagAsync(tag.Id, newValue);
+                }
+                finally
+                {
+                    _isWriting = false;
+                }
             }
-            finally
+            catch (Exception ex)
             {
-                _isWriting = false;
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
@@ -125,10 +143,14 @@ namespace IPCSoftware.App.ViewModels
 
             try
             {
-                var liveData = await _coreClient.GetIoValuesAsync();
+                var liveData = await _coreClient.GetIoValuesAsync(5);
                 UpdateValues(liveData);
             }
-            catch { }
+          
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void ApplyFilter()
@@ -139,50 +161,71 @@ namespace IPCSoftware.App.ViewModels
 
         private void FilterList(List<IoTagModel> source, ObservableCollection<IoTagModel> target)
         {
-            target.Clear();
-            IEnumerable<IoTagModel> filtered;
-
-            if (string.IsNullOrWhiteSpace(SearchText))
+            try
             {
-                filtered = source;
-            }
-            else
-            {
-                var s = SearchText.Trim().ToLower();
-                filtered = source.Where(t =>
-                    (t.Name != null && t.Name.ToLower().Contains(s)) ||
-                    t.Id.ToString().Contains(s));
-            }
+                target.Clear();
+                IEnumerable<IoTagModel> filtered;
 
-            foreach (var item in filtered)
-                target.Add(item);
+                if (string.IsNullOrWhiteSpace(SearchText))
+                {
+                    filtered = source;
+                }
+                else
+                {
+                    var s = SearchText.Trim().ToLower();
+                    filtered = source.Where(t =>
+                        (t.Name != null && t.Name.ToLower().Contains(s)) ||
+                        t.Id.ToString().Contains(s));
+                }
+
+                foreach (var item in filtered)
+                    target.Add(item);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void UpdateValues(Dictionary<int, object> dict)
         {
-            if (dict == null) return;
-
-            foreach (var input in AllInputTags)
+            try
             {
-                if (dict.TryGetValue(input.Id, out var live))
-                    input.Value = live;
+                if (dict == null) return;
+
+                foreach (var input in AllInputTags)
+                {
+                    if (dict.TryGetValue(input.Id, out var live))
+                        input.Value = live;
+                }
+
+                foreach (var output in AllOutputTags)
+                {
+                    if (dict.TryGetValue(output.Id, out var live))
+                        output.Value = live;
+                }
             }
-
-            foreach (var output in AllOutputTags)
+            catch (Exception ex)
             {
-                if (dict.TryGetValue(output.Id, out var live))
-                    output.Value = live;
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
         public void Dispose()
         {
-            if (_disposed) return;
-            _disposed = true;
+            try
+            {
+                if (_disposed) return;
+                _disposed = true;
 
-            _timer.Stop();
-            _timer.Tick -= TimerTick;
-            GC.SuppressFinalize(this);
+                _timer.Stop();
+                _timer.Tick -= TimerTick;
+                GC.SuppressFinalize(this);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         ~PLCIOViewModel()

@@ -1,4 +1,5 @@
 ﻿
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
@@ -9,47 +10,66 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.Services.AppLoggerServices
 {
-    public class BackupService
+    public class BackupService 
     {
+        public BackupService() 
+        { 
+        }
+
         public void PerformBackup(LogConfigurationModel config, string filePath)
         {
-            if (config.BackupSchedule == BackupScheduleType.Manual)
-                return;
+            try
+            {
+                if (config.BackupSchedule == BackupScheduleType.Manual)
+                    return;
 
-            // Backup folder validation
-            if (!Directory.Exists(config.BackupFolder))
-                Directory.CreateDirectory(config.BackupFolder);
+                // Backup folder validation
+                if (!Directory.Exists(config.BackupFolder))
+                    Directory.CreateDirectory(config.BackupFolder);
 
-            // Check if it's time to backup
-            if (!IsBackupDue(config))
-                return;
+                // Check if it's time to backup
+                if (!IsBackupDue(config))
+                    return;
 
-            // Backup filename
-            string backupFileName = $"{config.FileName.Replace("{yyyyMMdd}",
-                DateTime.Now.ToString("yyyyMMdd"))}_backup_{DateTime.Now:HHmmss}.csv";
+                // Backup filename
+                string backupFileName = $"{config.FileName.Replace("{yyyyMMdd}",
+                    DateTime.Now.ToString("yyyyMMdd"))}_backup_{DateTime.Now:HHmmss}.csv";
 
-            string backupFilePath = Path.Combine(config.BackupFolder, backupFileName);
+                string backupFilePath = Path.Combine(config.BackupFolder, backupFileName);
 
-            // Copy file
-            File.Copy(filePath, backupFilePath, true);
+                // Copy file
+                File.Copy(filePath, backupFilePath, true);
+            }
+            catch (Exception ex)
+            {
+               // _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private bool IsBackupDue(LogConfigurationModel config)
         {
-            DateTime now = DateTime.Now;
-
-            // Time check (hour/minute)
-            if (now.Hour != config.BackupTime.Hours ||
-                now.Minute != config.BackupTime.Minutes)
-                return false;
-            return config.BackupSchedule switch
+            try
             {
-                BackupScheduleType.Manual => false,
-                BackupScheduleType.Daily => true,
-                BackupScheduleType.Weekly => now.DayOfWeek == DayOfWeek.Monday,
-                BackupScheduleType.Monthly => now.Day == 1,
-                _ => false
-            };
+                DateTime now = DateTime.Now;
+
+                // Time check (hour/minute)
+                if (now.Hour != config.BackupTime.Hours ||
+                    now.Minute != config.BackupTime.Minutes)
+                    return false;
+                return config.BackupSchedule switch
+                {
+                    BackupScheduleType.Manual => false,
+                    BackupScheduleType.Daily => true,
+                    BackupScheduleType.Weekly => now.DayOfWeek == DayOfWeek.Monday,
+                    BackupScheduleType.Monthly => now.Day == 1,
+                    _ => false
+                };
+            }
+            catch (Exception ex)
+            {
+               // _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
 
         }
     }

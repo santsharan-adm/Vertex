@@ -20,12 +20,15 @@ namespace IPCSoftware.Services.AppLoggerServices
 
         private readonly BackupService _backupService;
 
-        public LogManagerService(ILogConfigurationService logConfigService)
+        public LogManagerService(
+            ILogConfigurationService logConfigService,
+            BackupService backupService
+            )
         {
             _logConfigService = logConfigService;
             _logConfigs = new List<LogConfigurationModel>();
             // _ = LoadDataAsync();
-            _backupService = new BackupService(); // new line
+            _backupService = backupService; // new line
             _logConfigService.ConfigurationChanged += async (s, e) => await ReloadConfigAsync();
         }
 
@@ -38,6 +41,7 @@ namespace IPCSoftware.Services.AppLoggerServices
         // Extract loading logic to a separate method
         private async Task ReloadConfigAsync()
         {
+
             var logs = await _logConfigService.GetAllAsync();
 
 

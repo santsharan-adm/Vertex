@@ -8,7 +8,7 @@
              
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers" 
-             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:OeeDashboardNewViewModel}"
+  
              mc:Ignorable="d">
     
 

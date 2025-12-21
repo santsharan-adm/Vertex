@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -96,7 +97,9 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public DeviceConfigurationViewModel(IDeviceConfigurationService deviceService)
+        public DeviceConfigurationViewModel(
+            IDeviceConfigurationService deviceService,
+            IAppLogger logger) : base(logger)
         {
             _deviceService = deviceService;
 
@@ -126,26 +129,40 @@ namespace IPCSoftware.App.ViewModels
 
         private void LoadFromModel(DeviceModel device)
         {
-            DeviceNo = device.DeviceNo;
-            DeviceName = device.DeviceName;
-            SelectedDeviceType = device.DeviceType ?? "PLC";
-            Make = device.Make;
-            Model = device.Model;
-            Description = device.Description;
-            Remark = device.Remark;
-            Enabled = device.Enabled;
+            try
+            {
+                DeviceNo = device.DeviceNo;
+                DeviceName = device.DeviceName;
+                SelectedDeviceType = device.DeviceType ?? "PLC";
+                Make = device.Make;
+                Model = device.Model;
+                Description = device.Description;
+                Remark = device.Remark;
+                Enabled = device.Enabled;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void SaveToModel()
         {
-            _currentDevice.DeviceNo = DeviceNo;
-            _currentDevice.DeviceName = DeviceName;
-            _currentDevice.DeviceType = SelectedDeviceType;
-            _currentDevice.Make = Make;
-            _currentDevice.Model = Model;
-            _currentDevice.Description = Description;
-            _currentDevice.Remark = Remark;
-            _currentDevice.Enabled = Enabled;
+            try
+            {
+                _currentDevice.DeviceNo = DeviceNo;
+                _currentDevice.DeviceName = DeviceName;
+                _currentDevice.DeviceType = SelectedDeviceType;
+                _currentDevice.Make = Make;
+                _currentDevice.Model = Model;
+                _currentDevice.Description = Description;
+                _currentDevice.Remark = Remark;
+                _currentDevice.Enabled = Enabled;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private bool CanSave()
@@ -157,18 +174,25 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task OnSaveAsync()
         {
-            SaveToModel();
-
-            if (IsEditMode)
+            try
             {
-                await _deviceService.UpdateDeviceAsync(_currentDevice);
-            }
-            else
-            {
-                await _deviceService.AddDeviceAsync(_currentDevice);
-            }
+                SaveToModel();
 
-            SaveCompleted?.Invoke(this, EventArgs.Empty);
+                if (IsEditMode)
+                {
+                    await _deviceService.UpdateDeviceAsync(_currentDevice);
+                }
+                else
+                {
+                    await _deviceService.AddDeviceAsync(_currentDevice);
+                }
+
+                SaveCompleted?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void OnCancel()

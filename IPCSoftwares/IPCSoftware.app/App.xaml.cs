@@ -3,6 +3,7 @@ using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Services;
 using IPCSoftware.Shared.Models.Messaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -77,7 +78,12 @@ namespace IPCSoftware.App
 
 
                     // services.AddSingleton<IConfiguration>(configuration);
-                    services.AddSingleton<IConfiguration>(hostContext.Configuration);
+                   // services.AddSingleton<IConfiguration>(hostContext.Configuration);
+                    services.Configure<ConfigSettings>(hostContext.Configuration.GetSection("Config"));
+                    services.Configure<CcdSettings>(hostContext.Configuration.GetSection("CCD"));
+
+
+
                     ServiceRegistration.RegisterServices(services);
                 })
                 .Build();

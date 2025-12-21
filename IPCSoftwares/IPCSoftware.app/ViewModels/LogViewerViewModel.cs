@@ -42,7 +42,9 @@ namespace IPCSoftware.App.ViewModels
         public ICommand RefreshCommand { get; }
 
         // Constructor
-        public LogViewerViewModel(ILogService logService)
+        public LogViewerViewModel(
+            ILogService logService,
+            IAppLogger logger) : base(logger)
         {
             _logService = logService;
         //  /*  RefreshCommand = new */ Task.Run(async () => await LoadFilesAsync(_currentCategory));
@@ -53,30 +55,51 @@ namespace IPCSoftware.App.ViewModels
         // Call this method when navigating from the Main Window Sidebar
         public async Task LoadCategoryAsync(LogType category)
         {
-            _currentCategory = category;
-            CurrentCategoryName = $"{category} Logs";
-            await LoadFilesAsync(category);
+            try
+            {
+                _currentCategory = category;
+                CurrentCategoryName = $"{category} Logs";
+                await LoadFilesAsync(category);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private async Task LoadFilesAsync(LogType category)
         {
-            LogFiles.Clear();
-            LogEntries.Clear(); // Clear old logs when switching category
-
-            var files = await _logService.GetLogFilesAsync(category);
-            foreach (var file in files)
+            try
             {
-                LogFiles.Add(file);
+                LogFiles.Clear();
+                LogEntries.Clear(); // Clear old logs when switching category
+
+                var files = await _logService.GetLogFilesAsync(category);
+                foreach (var file in files)
+                {
+                    LogFiles.Add(file);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
         private async Task LoadLogsAsync(string fullPath)
         {
-            LogEntries.Clear();
-            var logs = await _logService.ReadLogFileAsync(fullPath);
-            foreach (var log in logs)
+            try
             {
-                LogEntries.Add(log);
+                LogEntries.Clear();
+                var logs = await _logService.ReadLogFileAsync(fullPath);
+                foreach (var log in logs)
+                {
+                    LogEntries.Add(log);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
     }

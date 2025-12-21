@@ -1,5 +1,7 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,15 +11,19 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.Services.ConfigServices
 {
-    public class AlarmConfigurationService : IAlarmConfigurationService
+    public class AlarmConfigurationService : BaseService, IAlarmConfigurationService
     {
         private readonly string _dataFolder;
         private readonly string _csvFilePath;
         private List<AlarmConfigurationModel> _alarms;
         private int _nextId = 1;
 
-        public AlarmConfigurationService(string dataFolderPath = null)
+        public AlarmConfigurationService(IOptions<ConfigSettings> configSettings,
+            IAppLogger logger) : base(logger)
         {
+            var config = configSettings.Value;
+            string dataFolderPath = config.DataFolder;
+
             _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
 
             if (!Directory.Exists(_dataFolder))
@@ -25,13 +31,22 @@ namespace IPCSoftware.Services.ConfigServices
                 Directory.CreateDirectory(_dataFolder);
             }
 
-            _csvFilePath = Path.Combine(_dataFolder, "AlarmConfigurations.csv");
+            _csvFilePath = Path.Combine(_dataFolder, config.AlarmConfigFileName/* "AlarmConfigurations.csv"*/);
             _alarms = new List<AlarmConfigurationModel>();
         }
 
         public async Task InitializeAsync()
         {
-            await LoadFromCsvAsync();
+            try
+            {
+              await LoadFromCsvAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                throw;
+            }
+
         }
 
         public async Task<List<AlarmConfigurationModel>> GetAllAlarmsAsync()
@@ -46,53 +61,86 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task<AlarmConfigurationModel> AddAlarmAsync(AlarmConfigurationModel alarm)
         {
-            alarm.Id = _nextId++;
-            _alarms.Add(alarm);
-            await SaveToCsvAsync();
-            return alarm;
+            try
+            {
+                alarm.Id = _nextId++;
+                _alarms.Add(alarm);
+                await SaveToCsvAsync();
+                return alarm;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return alarm;
+                throw;
+            }
         }
 
         public async Task<bool> UpdateAlarmAsync(AlarmConfigurationModel alarm)
         {
-            var existing = _alarms.FirstOrDefault(a => a.Id == alarm.Id);
-            if (existing == null) return false;
+            try
+            {
+                var existing = _alarms.FirstOrDefault(a => a.Id == alarm.Id);
+                if (existing == null) return false;
 
-            var index = _alarms.IndexOf(existing);
-            _alarms[index] = alarm;
-            await SaveToCsvAsync();
-            return true;
+                var index = _alarms.IndexOf(existing);
+                _alarms[index] = alarm;
+                await SaveToCsvAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
 
         public async Task<bool> DeleteAlarmAsync(int id)
         {
-            var alarm = _alarms.FirstOrDefault(a => a.Id == id);
-            if (alarm == null) return false;
+            try
+            {
+                var alarm = _alarms.FirstOrDefault(a => a.Id == id);
+                if (alarm == null) return false;
 
-            _alarms.Remove(alarm);
-            await SaveToCsvAsync();
-            return true;
+                _alarms.Remove(alarm);
+                await SaveToCsvAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
 
         public async Task<bool> AcknowledgeAlarmAsync(int id)
         {
-            var alarm = _alarms.FirstOrDefault(a => a.Id == id);
-            if (alarm == null) return false;
+            try
+            {
+                var alarm = _alarms.FirstOrDefault(a => a.Id == id);
+                if (alarm == null) return false;
 
-            alarm.AlarmAckTime = DateTime.Now;
-            await SaveToCsvAsync();
-            return true;
+                alarm.AlarmAckTime = DateTime.Now;
+                await SaveToCsvAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
 
         private async Task LoadFromCsvAsync()
         {
+            try
+            {
             if (!File.Exists(_csvFilePath))
             {
                 await SaveToCsvAsync();
                 return;
             }
 
-            try
-            {
                 var lines = await File.ReadAllLinesAsync(_csvFilePath);
                 if (lines.Length <= 1) return;
 
@@ -110,7 +158,9 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading alarms CSV: {ex.Message}");
+                _logger.LogError($"Failed to load alarms CSV: {ex.Message}", LogType.Diagnostics);
+              //  Console.WriteLine($"Error loading alarms CSV: {ex.Message}");
+
             }
         }
 
@@ -142,7 +192,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving alarms CSV: {ex.Message}");
+                _logger.LogError($"Failed to save alarms CSV: {ex.Message}", LogType.Diagnostics);
                 throw;
             }
         }
@@ -171,8 +221,9 @@ namespace IPCSoftware.Services.ConfigServices
                     Remark = values[12]
                 };
             }
-            catch
+            catch(Exception ex)
             {
+                //_logger.LogError($"Error parsing alarms CSV: {ex.Message}", LogType.Diagnostics);
                 return null;
             }
         }
@@ -182,47 +233,55 @@ namespace IPCSoftware.Services.ConfigServices
             var values = new List<string>();
             var currentValue = new StringBuilder();
             bool inQuotes = false;
-
-            for (int i = 0; i < line.Length; i++)
+            try
             {
-                char c = line[i];
-
-                if (c == '"')
+                for (int i = 0; i < line.Length; i++)
                 {
-                    if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
+                    char c = line[i];
+
+                    if (c == '"')
                     {
-                        currentValue.Append('"');
-                        i++;
+                        if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
+                        {
+                            currentValue.Append('"');
+                            i++;
+                        }
+                        else
+                        {
+                            inQuotes = !inQuotes;
+                        }
+                    }
+                    else if (c == ',' && !inQuotes)
+                    {
+                        values.Add(currentValue.ToString());
+                        currentValue.Clear();
                     }
                     else
                     {
-                        inQuotes = !inQuotes;
+                        currentValue.Append(c);
                     }
                 }
-                else if (c == ',' && !inQuotes)
-                {
-                    values.Add(currentValue.ToString());
-                    currentValue.Clear();
-                }
-                else
-                {
-                    currentValue.Append(c);
-                }
+                values.Add(currentValue.ToString());
+                return values;
             }
-
-            values.Add(currentValue.ToString());
-            return values;
+            catch (Exception ex)
+            {
+              //  _logger.LogError(ex.Message, LogType.Diagnostics);
+                return values;
+            }
         }
 
         private string EscapeCsv(string value)
         {
-            if (string.IsNullOrEmpty(value))
-                return string.Empty;
+            
+                if (string.IsNullOrEmpty(value))
+                    return string.Empty;
 
-            if (value.Contains("\""))
-                return value.Replace("\"", "\"\"");
+                if (value.Contains("\""))
+                    return value.Replace("\"", "\"\"");
+               return value;
+         
 
-            return value;
         }
     }
 }

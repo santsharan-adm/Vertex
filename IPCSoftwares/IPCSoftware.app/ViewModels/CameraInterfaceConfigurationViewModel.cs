@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
@@ -181,7 +182,9 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public CameraInterfaceConfigurationViewModel(IDeviceConfigurationService deviceService)
+        public CameraInterfaceConfigurationViewModel
+            (IDeviceConfigurationService deviceService,
+            IAppLogger logger) : base(logger)
         {
             _deviceService = deviceService;
 
@@ -200,6 +203,7 @@ namespace IPCSoftware.App.ViewModels
 
         public void InitializeNewInterface(DeviceModel parentDevice)
         {
+
             Title = "Camera Interface Configuration - New";
             IsEditMode = false;
             _parentDevice = parentDevice;
@@ -225,58 +229,72 @@ namespace IPCSoftware.App.ViewModels
 
         private void LoadFromModel(CameraInterfaceModel model)
         {
-            DeviceNo = model.DeviceNo;
-            CameraName = model.DeviceName;
-            Name = model.Name;
-            SelectedProtocol = model.Protocol ?? "FTP-Server";
-            IPAddress = model.IPAddress;
-            Port = model.Port;
-            Gateway = model.Gateway;
-            AllowAnonymous = model.AnonymousLogin;
-            Username = model.Username;
-            Password = model.Password;
-            Enabled = model.Enabled;
-            Description = model.Description;
-            Remark = model.Remark;
+            try
+            {
+                DeviceNo = model.DeviceNo;
+                CameraName = model.DeviceName;
+                Name = model.Name;
+                SelectedProtocol = model.Protocol ?? "FTP-Server";
+                IPAddress = model.IPAddress;
+                Port = model.Port;
+                Gateway = model.Gateway;
+                AllowAnonymous = model.AnonymousLogin;
+                Username = model.Username;
+                Password = model.Password;
+                Enabled = model.Enabled;
+                Description = model.Description;
+                Remark = model.Remark;
 
-            // Load protocol-specific fields
-            if (model.Protocol == "FTP-Server")
-            {
-                PhysicalPath = model.RemotePath;
+                // Load protocol-specific fields
+                if (model.Protocol == "FTP-Server")
+                {
+                    PhysicalPath = model.RemotePath;
+                }
+                else if (model.Protocol == "FTP-Client")
+                {
+                    RemotePath = model.RemotePath;
+                    LocalDirectory = model.LocalDirectory;
+                }
             }
-            else if (model.Protocol == "FTP-Client")
+            catch (Exception ex)
             {
-                RemotePath = model.RemotePath;
-                LocalDirectory = model.LocalDirectory;
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
         private void SaveToModel()
         {
-            _currentInterface.DeviceNo = DeviceNo;
-            _currentInterface.DeviceName = CameraName;
-            _currentInterface.Name = Name;
-            _currentInterface.Protocol = SelectedProtocol;
-            _currentInterface.IPAddress = IPAddress;
-            _currentInterface.Port = Port;
-            _currentInterface.Gateway = Gateway;
-            _currentInterface.AnonymousLogin = AllowAnonymous;
-            _currentInterface.Username = Username;
-            _currentInterface.Password = Password;
-            _currentInterface.Enabled = Enabled;
-            _currentInterface.Description = Description;
-            _currentInterface.Remark = Remark;
+            try
+            {
+                _currentInterface.DeviceNo = DeviceNo;
+                _currentInterface.DeviceName = CameraName;
+                _currentInterface.Name = Name;
+                _currentInterface.Protocol = SelectedProtocol;
+                _currentInterface.IPAddress = IPAddress;
+                _currentInterface.Port = Port;
+                _currentInterface.Gateway = Gateway;
+                _currentInterface.AnonymousLogin = AllowAnonymous;
+                _currentInterface.Username = Username;
+                _currentInterface.Password = Password;
+                _currentInterface.Enabled = Enabled;
+                _currentInterface.Description = Description;
+                _currentInterface.Remark = Remark;
 
-            // Save protocol-specific fields
-            if (SelectedProtocol == "FTP-Server")
-            {
-                _currentInterface.RemotePath = PhysicalPath;
-                _currentInterface.LocalDirectory = null;
+                // Save protocol-specific fields
+                if (SelectedProtocol == "FTP-Server")
+                {
+                    _currentInterface.RemotePath = PhysicalPath;
+                    _currentInterface.LocalDirectory = null;
+                }
+                else if (SelectedProtocol == "FTP-Client")
+                {
+                    _currentInterface.RemotePath = RemotePath;
+                    _currentInterface.LocalDirectory = LocalDirectory;
+                }
             }
-            else if (SelectedProtocol == "FTP-Client")
+            catch (Exception ex)
             {
-                _currentInterface.RemotePath = RemotePath;
-                _currentInterface.LocalDirectory = LocalDirectory;
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
@@ -288,18 +306,25 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task OnSaveAsync()
         {
-            SaveToModel();
-
-            if (IsEditMode)
+            try
             {
-                await _deviceService.UpdateCameraInterfaceAsync(_currentInterface);
-            }
-            else
-            {
-                await _deviceService.AddCameraInterfaceAsync(_currentInterface);
-            }
+                SaveToModel();
 
-            SaveCompleted?.Invoke(this, EventArgs.Empty);
+                if (IsEditMode)
+                {
+                    await _deviceService.UpdateCameraInterfaceAsync(_currentInterface);
+                }
+                else
+                {
+                    await _deviceService.AddCameraInterfaceAsync(_currentInterface);
+                }
+
+                SaveCompleted?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void OnCancel()

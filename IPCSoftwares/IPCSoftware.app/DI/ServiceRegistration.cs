@@ -7,7 +7,13 @@ using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
+using IPCSoftware.CoreService;
+using IPCSoftware.CoreService.Alarm;
+using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
+using IPCSoftware.CoreService.Services.Dashboard;
+using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
@@ -21,6 +27,34 @@ namespace IPCSoftware.App.DI
     {
         public static void RegisterServices(IServiceCollection services/*, IConfiguration configuration*/)
         {
+            // services.AddHostedService<Worker>();
+            services.AddSingleton<IAppLogger, AppLoggerService>();
+            services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+            services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
+            services.AddSingleton<ICycleManagerService, CycleManagerService>();
+            services.AddSingleton<AlgorithmAnalysisService>();
+            services.AddSingleton<DashboardInitializer>();
+            services.AddSingleton<OeeEngine>();
+            services.AddSingleton<SystemMonitorService>();
+            services.AddSingleton<CCDTriggerService>();
+            services.AddSingleton<PLCClientManager>();
+            services.AddSingleton<CameraFtpService>();
+            services.AddTransient<ProductionImageService>();
+            services.AddSingleton<AlarmService>();
+
+           /* services.AddSingleton<UiListener>(sp =>
+            {
+                return new UiListener(5050);
+            });*/
+            services.AddSingleton<UiListener>(sp =>
+            {
+                var logger = sp.GetRequiredService<IAppLogger>();
+                return new UiListener(5050, logger);
+            });
+            // When someone asks for IMessagePublisher, give them the EXISTING UiListener
+            services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
+
+
             //services.AddSingleton<IConfiguration>(configuration);
             //Auth service
             services.AddSingleton<IAuthService, AuthService>();
@@ -31,22 +65,20 @@ namespace IPCSoftware.App.DI
             //Dialog service
             services.AddSingleton<IDialogService, DialogService>();
             //AppLogger 
-            services.AddSingleton<IAppLogger, AppLoggerService>();
+      
             services.AddSingleton<ILogManagerService, LogManagerService>();
-            services.AddSingleton<CCDTriggerService>();
-
-
+          
 
 
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
-            services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
+           // services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
             services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
             services.AddSingleton<IUserManagementService, UserManagementService>();
-            services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+          //  services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
 
 
             // CCD Serive
-            services.AddSingleton<ICycleManagerService, CycleManagerService>();
+           // services.AddSingleton<ICycleManagerService, CycleManagerService>();
 
             services.AddSingleton<ILogService, LogService>();
 
@@ -54,8 +86,8 @@ namespace IPCSoftware.App.DI
             // ========== MAIN VIEWMODELS (Singleton) ==========
             services.AddSingleton<RibbonViewModel>();
             services.AddSingleton<MainWindowViewModel>();
-            services.AddSingleton<OEEDashboardViewModel>();
-            services.AddSingleton<OeeDashboardNewViewModel>();
+            services.AddTransient<OEEDashboardViewModel>();
+        //    services.AddSingleton<OeeDashboardNewViewModel>();
             services.AddSingleton<UiTcpClient>();
 
 
@@ -77,22 +109,35 @@ namespace IPCSoftware.App.DI
             // ========== ALARM CONFIGURATION VIEWMODELS (Transient) ========== 
             services.AddTransient<AlarmListViewModel>();
             services.AddTransient<AlarmConfigurationViewModel>();
+            services.AddTransient< BackupService>();
+            services.AddTransient<TagConfigLoader>();
+
 
             // ========== USER MANAGEMENT VIEWMODELS (Transient) ========== 
             services.AddTransient<UserListViewModel>();
             services.AddTransient<UserConfigurationViewModel>();
+
+            // ========== Alaram VIEWMODELS (Transient) ========== 
+            services.AddTransient<AlarmView>();
+            services.AddSingleton<AlarmViewModel>();
+            services.AddSingleton<AlarmService>();
 
 
             // ========== PLC TAG CONFIGURATION VIEWMODELS (Transient) ========== 
             services.AddTransient<PLCTagListViewModel>();
             services.AddTransient<PLCTagConfigurationViewModel>();
 
+            // ========== PLC TAG CONFIGURATION VIEWMODELS (Transient) ========== 
+            services.AddTransient<ServoCalibrationView>();
+            services.AddTransient<ServoCalibrationViewModel>();
+
+            services.AddSingleton<IServoCalibrationService, ServoCalibrationService>();
+
             // Views
-            services.AddTransient<LoginView>();
             services.AddTransient<RibbonView>();
             services.AddTransient<OEEDashboard>();
-            services.AddTransient<OeeDashboard2>();
-            services.AddTransient<OeeDashboardNew>();
+       
+      
             services.AddTransient<DashboardView>();
 
             services.AddTransient<PLCIOView>();
@@ -120,11 +165,11 @@ namespace IPCSoftware.App.DI
             services.AddTransient<UserListView>();
             services.AddTransient<UserConfigurationView>();
 
-            services.AddTransient<ModeOfOperation>();
+            services.AddSingleton<ModeOfOperation>();
             services.AddTransient<ManualOperation>();
             services.AddTransient<PLCIOMonitor>();
 
-            services.AddTransient<ModeOfOperationViewModel>();
+            services.AddSingleton<ModeOfOperationViewModel>();
             services.AddTransient<ManualOperationViewModel>();
             services.AddTransient<PlcIoMonitorViewModel>();
             // PLC Tag Configuration Views 
@@ -132,6 +177,9 @@ namespace IPCSoftware.App.DI
             services.AddTransient<PLCTagConfigurationView>();
 
             services.AddTransient<LogViewerViewModel>();
+
+            services.AddTransient<LoginViewModel>();
+            services.AddTransient<LoginView>();
 
             //Tag Control
             services.AddTransient<TagControlView>();

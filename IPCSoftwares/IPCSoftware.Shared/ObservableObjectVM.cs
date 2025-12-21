@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.Shared
 {
-    public class BaseViewModel : INotifyPropertyChanged
+    public class ObservableObjectVM : INotifyPropertyChanged
     {
+   
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)

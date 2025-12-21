@@ -12,11 +12,12 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.Services.AppLoggerServices
 {
-    public class LogService : ILogService
+    public class LogService : BaseService, ILogService
     {
         private readonly ILogConfigurationService _logConfigService;
 
-        public LogService(ILogConfigurationService logConfigService)
+        public LogService(ILogConfigurationService logConfigService,
+            IAppLogger logger) : base(logger)
         {
             _logConfigService = logConfigService;
         }
@@ -27,6 +28,7 @@ namespace IPCSoftware.Services.AppLoggerServices
         /// </summary>
         public async Task<List<LogFileInfo>> GetLogFilesAsync(LogType category)
         {
+
             return await Task.Run(async () =>
             {
                 // Get config for this log type
@@ -34,7 +36,7 @@ namespace IPCSoftware.Services.AppLoggerServices
 
                 if (config == null || !config.Enabled)
                 {
-                    Console.WriteLine($"Log configuration for {category} not found or disabled");
+                    _logger.LogError($"Log configuration for {category} not found or disabled", LogType.Error);
                     return new List<LogFileInfo>();
                 }
 
@@ -43,7 +45,7 @@ namespace IPCSoftware.Services.AppLoggerServices
 
                 if (!Directory.Exists(folderPath))
                 {
-                    Console.WriteLine($"Log folder does not exist: {folderPath}");
+                    _logger.LogError($"Log folder does not exist: {folderPath}", LogType.Error);
                     return new List<LogFileInfo>();
                 }
 
@@ -64,7 +66,7 @@ namespace IPCSoftware.Services.AppLoggerServices
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error reading log files from {folderPath}: {ex.Message}");
+                    _logger.LogError($"Error reading log files from {folderPath}: {ex.Message}", LogType.Diagnostics);
                     return new List<LogFileInfo>();
                 }
             });
@@ -76,15 +78,15 @@ namespace IPCSoftware.Services.AppLoggerServices
         public async Task<List<LogEntry>> ReadLogFileAsync(string filePath)
         {
             var logs = new List<LogEntry>();
+            try
+            {
 
             if (!File.Exists(filePath))
             {
-                Console.WriteLine($"Log file not found: {filePath}");
+                _logger.LogError($"Log file not found: {filePath}", LogType.Error);
                 return logs;
             }
 
-            try
-            {
                 var lines = await File.ReadAllLinesAsync(filePath);
 
                 // Skip Header Row (index 0)
@@ -114,7 +116,7 @@ namespace IPCSoftware.Services.AppLoggerServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error reading log file {filePath}: {ex.Message}");
+                _logger.LogError($"Error reading log file {filePath}: {ex.Message}", LogType.Diagnostics);
                 return logs;
             }
         }

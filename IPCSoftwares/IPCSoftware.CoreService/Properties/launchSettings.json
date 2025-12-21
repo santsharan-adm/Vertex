@@ -6,7 +6,8 @@
       "dotnetRunMessages": true,
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development",
-        "CONFIG_DIR": "C:\\Users\\benny.kurian\\source\\repos\\Vertex2\\IPCSoftwares\\IPCSoftware.App\\"
+        "CONFIG_DIR": "C:\\Projects\\Restructured\\Vertex\\IPCSoftwares\\IPCSoftware.app"
+
       }
     }
   }

@@ -95,13 +95,38 @@
                             <StackPanel>
                                 <TextBlock Text="Tag Identification" FontSize="32" FontWeight="Bold"  Margin="0,0,0,30"/>
 
+                                <Grid Margin="0,0,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Margin="0,0,0,30">
+                                        <TextBlock Text="Tag No"  FontSize="{StaticResource LabelFontSize}"
+                                         Margin="{StaticResource LabelMargin}" Style="{StaticResource HmiLabelStyle}"/>
+                                        <TextBox Text="{Binding TagNo, UpdateSourceTrigger=PropertyChanged}" 
+                                         Style="{StaticResource HmiTextBoxStyle}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2">
+                                    <TextBlock Text="IO Type" FontSize="{StaticResource LabelFontSize}" 
+                                        Margin="{StaticResource LabelMargin}" 
+                                        Style="{StaticResource HmiLabelStyle}"/>
+                                        <ComboBox ItemsSource="{Binding IOTypes}"
+                                        SelectedItem="{Binding SelectedIOType}"
+                                        DisplayMemberPath="DisplayName"
+                                        Style="{StaticResource HmiComboBoxStyle}"/>
+                                    </StackPanel>
+                                </Grid>
+
+
                                 <!-- Tag No -->
-                                <StackPanel Margin="0,0,0,30">
+                                <!--<StackPanel Margin="0,0,0,30">
                                     <TextBlock Text="Tag No"     FontSize="{StaticResource LabelFontSize}"
                                         Margin="{StaticResource LabelMargin}" Style="{StaticResource HmiLabelStyle}"/>
                                     <TextBox Text="{Binding TagNo, UpdateSourceTrigger=PropertyChanged}" 
                                              Style="{StaticResource HmiTextBoxStyle}"/>
-                                </StackPanel>
+                                </StackPanel>-->
 
                                 <!-- Name -->
                                 <StackPanel Margin="0,0,0,30">
@@ -214,7 +239,7 @@
                                                    Style="{StaticResource HmiLabelStyle}"/>
                                         <ComboBox ItemsSource="{Binding AlgorithmTypes}"
                                                   SelectedItem="{Binding SelectedAlgorithm}"
-                                                  DisplayMemberPath="DisplayName"
+                                               
                                                   Style="{StaticResource HmiComboBoxStyle}"/>
                                     </StackPanel>
                                 </Grid>
@@ -247,7 +272,7 @@
                                     </StackPanel>
                                 </Grid>
 
-                                    <CheckBox Content="Can Write" FontSize="12" HorizontalAlignment="Left" Height="30"  Width="200"
+                                    <CheckBox Content="IsControl" FontSize="12" HorizontalAlignment="Left" Height="30"  Width="200"
                                     IsChecked="{Binding CanWrite}"
                                     Style="{StaticResource HmiCheckBoxStyle}"/>
                          

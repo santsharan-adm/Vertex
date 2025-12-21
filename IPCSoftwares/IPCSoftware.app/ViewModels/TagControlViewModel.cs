@@ -1,6 +1,7 @@
 ﻿using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -43,10 +44,14 @@ namespace IPCSoftware.App.ViewModels
 
         public ICommand WriteCommand { get; }
 
-        public TagControlViewModel(IPLCTagConfigurationService tagService, UiTcpClient tcpClient, IDialogService dialog)
+        public TagControlViewModel(
+            IPLCTagConfigurationService tagService,
+            CoreClient coreClient, 
+            IDialogService dialog,
+            IAppLogger logger) : base(logger)
         {
             _tagService = tagService;
-            _coreClient = new CoreClient(tcpClient);
+            _coreClient = coreClient;
             _dialog = dialog;
 
             WriteCommand = new RelayCommand<WritableTagItem>(async (item) => await OnWriteAsync(item));
@@ -71,10 +76,14 @@ namespace IPCSoftware.App.ViewModels
 
             try
             {
-                var liveData = await _coreClient.GetIoValuesAsync();
+                var liveData = await _coreClient.GetIoValuesAsync(5);
                 UpdateValues(liveData);
             }
-            catch { }
+           
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
 
@@ -110,24 +119,31 @@ namespace IPCSoftware.App.ViewModels
 
         private async void InitializeAsync()
         {
-            var allTags = await _tagService.GetAllTagsAsync();
-
-            // 1. Clear both lists
-            WritableTags.Clear();
-            AllInputs.Clear();
-
-            // 2. Filter for writable tags only
-            var writable = allTags.Where(t => t.CanWrite).ToList();
-
-            // 3. Populate the Master List (AllInputs)
-            foreach (var tag in writable)
+            try
             {
-                var item = new WritableTagItem(tag);
-                AllInputs.Add(item);
-            }
+                var allTags = await _tagService.GetAllTagsAsync();
 
-            // 4. Populate UI list (WritableTags) based on current filter
-            ApplyFilter();
+                // 1. Clear both lists
+                WritableTags.Clear();
+                AllInputs.Clear();
+
+                // 2. Filter for writable tags only
+                var writable = allTags.Where(t => t.CanWrite).ToList();
+
+                // 3. Populate the Master List (AllInputs)
+                foreach (var tag in writable)
+                {
+                    var item = new WritableTagItem(tag);
+                    AllInputs.Add(item);
+                }
+
+                // 4. Populate UI list (WritableTags) based on current filter
+                ApplyFilter();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
 
@@ -135,54 +151,61 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task OnWriteAsync(WritableTagItem item)
         {
-            if (item == null) return;
-
-            // 1. Validate Input
-            if (!ValidateInput(item, out object parsedValue))
-            {
-                _dialog.ShowWarning($"Invalid format for {item.DataTypeDisplay}...");
-                return;
-            }
-
-            // [STEP 1] PAUSE THE TIMER
-            // Stop reading background data so we don't overwrite our new value with old data
-            _timer.Stop();
-
             try
             {
-                bool success = await _coreClient.WriteTagAsync(item.Model.TagNo, parsedValue);
+                if (item == null) return;
 
-                if (success)
+                // 1. Validate Input
+                if (!ValidateInput(item, out object parsedValue))
                 {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    _dialog.ShowWarning($"Invalid format for {item.DataTypeDisplay}...");
+                    return;
+                }
+
+                // [STEP 1] PAUSE THE TIMER
+                // Stop reading background data so we don't overwrite our new value with old data
+                _timer.Stop();
+
+                try
+                {
+                    bool success = await _coreClient.WriteTagAsync(item.Model.TagNo, parsedValue);
+
+                    if (success)
                     {
-                        // [STEP 2] OPTIMISTIC UPDATE
-                        // Manually set the DisplayValue to what we just wrote.
-                        // This gives the user instant feedback that it worked.
+                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            // [STEP 2] OPTIMISTIC UPDATE
+                            // Manually set the DisplayValue to what we just wrote.
+                            // This gives the user instant feedback that it worked.
                   
 
-                        // Clear the input box
-                        item.InputValue = null;
-                    });
+                            // Clear the input box
+                            item.InputValue = null;
+                        });
 
-                    // [STEP 3] SETTLE DELAY
-                    // Give the PLC a moment (e.g., 500ms) to update its internal memory
-                    // before we start asking it for values again.
-                    await Task.Delay(50);
+                        // [STEP 3] SETTLE DELAY
+                        // Give the PLC a moment (e.g., 500ms) to update its internal memory
+                        // before we start asking it for values again.
+                        await Task.Delay(50);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _dialog.ShowWarning($"Failed to write to PLC: {ex.Message}");
+                }
+                finally
+                {
+                    // [STEP 4] RESUME TIMER
+                    // Always restart the timer, even if the write failed
+                    if (!_disposed)
+                    {
+                        _timer.Start();
+                    }
                 }
             }
             catch (Exception ex)
             {
-                _dialog.ShowWarning($"Failed to write to PLC: {ex.Message}");
-            }
-            finally
-            {
-                // [STEP 4] RESUME TIMER
-                // Always restart the timer, even if the write failed
-                if (!_disposed)
-                {
-                    _timer.Start();
-                }
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
@@ -226,17 +249,6 @@ namespace IPCSoftware.App.ViewModels
             return false;
         }
 
-        /*   private void UpdateValues(Dictionary<int, object> dict)
-           {
-               if (dict == null) return;
-
-               foreach (var input in WritableTags)
-               {
-                   if (dict.TryGetValue(input.Model.Id, out var live))
-                       input.InputValue =(string) live;
-               }
-
-           }*/
 
         private void UpdateValues(Dictionary<int, object> dict)
         {
