@@ -128,6 +128,8 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
+
+
         // NEW - Add Alarm
         private void OnAddAlarm()
         {

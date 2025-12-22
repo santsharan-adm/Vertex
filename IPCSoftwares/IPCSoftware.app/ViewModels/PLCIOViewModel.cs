@@ -93,11 +93,11 @@ namespace IPCSoftware.App.ViewModels
 
                     if (tag.Name != null)
                     {
-                        AllInputTags.Add(model);
-                        /*if (tag.Name.StartsWith("IO_INPUT", StringComparison.OrdinalIgnoreCase))
+                        //AllInputTags.Add(model);
+                        if (tag.IOType.Equals("Input", StringComparison.OrdinalIgnoreCase))
                             AllInputTags.Add(model);
-                        else if (tag.Name.StartsWith("IO_OUTPUT", StringComparison.OrdinalIgnoreCase))
-                            AllOutputTags.Add(model);*/
+                        else if (tag.IOType.Equals("Output", StringComparison.OrdinalIgnoreCase))
+                            AllOutputTags.Add(model);
                     }
                 }
 

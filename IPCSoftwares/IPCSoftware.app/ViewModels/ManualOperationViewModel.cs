@@ -151,7 +151,7 @@ namespace IPCSoftware.App.ViewModels
                 if (liveData == null)
                 {
                     // If read fails, set defaults locally
-                    SetDefaultSpeeds();
+                   // SetDefaultSpeeds();
                     return;
                 }
 
@@ -229,10 +229,32 @@ namespace IPCSoftware.App.ViewModels
             _tagMapB[mode] = readId;
         }
 
+        private async Task<bool> IsPLCConnected()
+        {
+            try
+            {
+                // Request ID 5 (IO Data + System Tags)
+                var liveData = await _coreClient.GetIoValuesAsync(5);
+
+                if (liveData.Count() == 0)
+                    return false;
+                return true;
+            }
+            catch (Exception)
+            {
+                // Connection lost to Core Service
+                return false;
+            }
+        }
+
         private async void OnButtonClicked(ManualOperationMode mode)
         {
             try
             {
+                if (!await IsPLCConnected())
+                {
+                    return;
+                }
                 var item = Modes.First(m => m.Mode == mode);
                 string group = item.Group;
 
@@ -323,6 +345,21 @@ namespace IPCSoftware.App.ViewModels
 
                 case ManualOperationMode.YAxisJogLowSpeed: exclusive.Add(ManualOperationMode.YAxisJogHighSpeed); break;
                 case ManualOperationMode.YAxisJogHighSpeed: exclusive.Add(ManualOperationMode.YAxisJogLowSpeed); break;
+                // Inside CheckInterlocks(ModeItem item) switch statement:
+
+                // Add this case to handle ALL position moves (0 to 12)
+                case var m when m >= ManualOperationMode.MoveToPos0 && m <= ManualOperationMode.MoveToPos12:
+                    // Add all OTHER position modes to the exclusive list
+                    for (int i = 0; i <= 12; i++)
+                    {
+                        var targetMode = (ManualOperationMode)Enum.Parse(typeof(ManualOperationMode), $"MoveToPos{i}");
+                        if (targetMode != item.Mode)
+                        {
+                            exclusive.Add(targetMode);
+                        }
+                    }
+                    break;
+
             }
 
             // Check if any exclusive mode is currently active or blinking
@@ -379,6 +416,10 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
+
+      
+
+    
         private async void FeedbackLoop_Tick(object? sender, EventArgs e)
         {
             try

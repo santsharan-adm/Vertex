@@ -36,7 +36,7 @@
         <!-- Button Style (Taller, Squarer) -->
         <Style x:Key="ManualModeButtonStyle" TargetType="Button">
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-            <Setter Property="Height" Value="150"/>
+            <Setter Property="Height" Value="120"/>
             <!-- Increased Height for Square look -->
             <Setter Property="Margin" Value="8"/>
             <Setter Property="FontSize" Value="28"/>
@@ -91,7 +91,7 @@
         </Style>
 
         <DataTemplate x:Key="SharedButtonTemplate">
-            <Button Style="{StaticResource ManualModeButtonStyle}"
+            <Button Style="{StaticResource ManualModeButtonStyle}" Height="110  "
                     Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                     CommandParameter="{Binding Mode}">
                 <TextBlock Text="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"

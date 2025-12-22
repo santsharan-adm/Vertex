@@ -100,7 +100,7 @@ namespace IPCSoftware.App.ViewModels
 
             InitializeParameters();
             InitializePositions();
-
+                
             _liveDataTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
             _liveDataTimer.Tick += OnLiveDataTick;
             _liveDataTimer.Start();
@@ -204,6 +204,11 @@ namespace IPCSoftware.App.ViewModels
                 // Optimistic UI Update
                 position.X = LiveX;
                 position.Y = LiveY;
+                int index = Positions.IndexOf(position);
+                if (index != -1)
+                {
+                    Positions[index] = position;
+                }
             }
             catch (Exception ex)
             {
