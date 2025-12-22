@@ -10,19 +10,33 @@ using System.Windows.Data;
 
 namespace IPCSoftware.App.Converters
 {
+    /// Converts an enum value to a display-friendly string by
+    /// removing the enum group prefix defined using GroupAttribute.
+
     public class EnumToSpacedStringConverter : IValueConverter
     {
+        /// Converts enum value into a readable string without group prefix.
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            // Return empty string if no value is provided
+
             if (value == null) return "";
+
+            // Convert enum value to its name
 
             string enumName = value.ToString();
 
-            // Get the Group attribute
+            // Get enum member information
+
             var memberInfo = value.GetType().GetMember(enumName)[0];
+
+            // Try to read GroupAttribute from enum member
+
             var groupAttr = memberInfo.GetCustomAttributes(typeof(GroupAttribute), false)
                                       .Cast<GroupAttribute>()
                                       .FirstOrDefault();
+
+            // If group attribute exists, remove group name from enum name
 
             if (groupAttr != null)
             {
@@ -35,22 +49,29 @@ namespace IPCSoftware.App.Converters
             return enumName;
         }
 
+        /// ConvertBack is not required as this converter is used for display only.
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
     }
 
+    /// Converts ManualOperationMode enum values into
+    /// user-friendly symbols and text for UI buttons.
 
     public class EnumToSymbolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            // Return empty string if no value
+
             if (value == null) return "";
+
+            // Cast enum value
 
             var mode = (ManualOperationMode)value;
 
-            // UPDATED: All Caps, Removed "Pos" prefix
+            // Map enum values to symbols and labels
             return mode switch
             {
                 // Tray Lift
@@ -95,11 +116,16 @@ namespace IPCSoftware.App.Converters
                 _ => value.ToString().ToUpper()
             };
         }
+
+        /// ConvertBack is not supported for one-way UI bindings.
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
     }
+
+    /// Controls visibility of UI elements based on group matching.
+    /// Used to show/hide buttons depending on selected group.
 
 
     public class GroupVisibilityConverter : IValueConverter
@@ -124,6 +150,7 @@ namespace IPCSoftware.App.Converters
             return itemGroup == targetGroup ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        /// ConvertBack is not required for visibility control.
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();

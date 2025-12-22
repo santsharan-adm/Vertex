@@ -3,8 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="Transparent">
 
+    <!-- Root container for the trend chart -->
+
     <Grid>
-        <!-- Title -->
+
+        <!-- CHART TITLE                                               -->
+        <!-- Displayed at the top-left of the chart                    -->
+        
         <TextBlock x:Name="TitleBlock"
                    Text="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}"
                    FontSize="18"
@@ -14,7 +19,9 @@
                    VerticalAlignment="Top"
                    HorizontalAlignment="Left"/>
 
-        <!-- Left Y-Axis Label -->
+        <!-- Y-AXIS LABEL (LEFT SIDE)                                  -->
+        <!-- Rotated -90 degrees to appear vertically                  -->
+        
         <TextBlock x:Name="YAxisLabel"
                    Text="{Binding YAxisText, RelativeSource={RelativeSource AncestorType=UserControl}}"
                    Foreground="#AAAAAA"
@@ -22,17 +29,25 @@
                    VerticalAlignment="Center"
                    HorizontalAlignment="Left"
                    Margin="0,0,5,0">
+            
+              <!-- Rotate text for vertical Y-axis label -->
+            
             <TextBlock.LayoutTransform>
                 <RotateTransform Angle="-90"/>
             </TextBlock.LayoutTransform>
         </TextBlock>
 
-        <!-- Chart Canvas -->
+        <!-- MAIN CHART CANVAS                                         -->
+        <!-- Used to draw grid lines, axes, and trend lines            -->
+        <!-- Drawing is handled in code-behind                         -->
+        
         <Canvas x:Name="PlotCanvas"
                 Margin="45 10 30 25"
                 Background="Transparent"/>
 
-        <!-- X-Axis -->
+        <!-- X-AXIS LABEL (BOTTOM CENTER)                              -->
+        <!-- Displays time / category text                             -->
+        
         <TextBlock x:Name="XAxisLabel"
                    Text="{Binding XAxisText, RelativeSource={RelativeSource AncestorType=UserControl}}"
                    HorizontalAlignment="Center"

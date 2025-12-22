@@ -45,6 +45,10 @@ namespace IPCSoftware.App.Converters
     //}
 
 
+
+    /// Multi-value converter that checks whether the currently selected
+    /// ManualOperationMode for a given group matches the provided mode.
+
     public class EqualityConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)

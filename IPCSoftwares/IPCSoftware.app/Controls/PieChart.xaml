@@ -7,20 +7,31 @@
              Background="Transparent"
              d:DesignHeight="300" d:DesignWidth="300">
 
+    <!-- Root layout container -->
+
     <Grid>
-        <!-- 1. PIE CANVAS (Draws the slices - Full Pie, no donut hole) -->
+
+        <!-- 1. PIE CANVAS                                            -->
+        <!-- Draws pie slices dynamically from code-behind             -->
+        <!-- Full pie chart (no donut hole)                            -->
+
         <Canvas x:Name="PieCanvas"
                 Background="Transparent"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Margin="10"/>
 
-        <!-- 2. OVERLAY TEXT (Center text with large font size) -->
-        <!-- Placed AFTER Canvas to render ON TOP of the Pie Slices -->
+        <!-- 2. CENTER OVERLAY TEXT                                    -->
+        <!-- Displayed on top of pie slices                            -->
+        <!-- IsHitTestVisible=false allows mouse events to pass through -->
+        
         <StackPanel x:Name="CenterTextPanel"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
                     IsHitTestVisible="False">
+
+            <!-- Drop Shadow is crucial here so text is readable on top of colors -->
+
             <TextBlock x:Name="CenterTitle"
                        Text="{Binding CenterText, RelativeSource={RelativeSource AncestorType=UserControl}}"
                        FontSize="28"
@@ -28,14 +39,19 @@
                        FontWeight="Bold"
                        HorizontalAlignment="Center"
                        TextAlignment="Center">
-                <!-- Drop Shadow is crucial here so text is readable on top of colors -->
+                
+               <!-- Drop shadow improves readability over colored slices -->
+                
                 <TextBlock.Effect>
                     <DropShadowEffect Color="Black" BlurRadius="6" ShadowDepth="3" Opacity="0.9"/>
                 </TextBlock.Effect>
             </TextBlock>
         </StackPanel>
 
-        <!-- 3. TOOLTIP -->
+        <!-- 3. TOOLTIP                                               -->
+        <!-- Appears on mouse hover over pie slices                   -->
+        <!-- Visibility is controlled from code-behind                -->
+        
         <Border x:Name="Tooltip"
                 Background="#222"
                 BorderBrush="#555"
@@ -46,10 +62,15 @@
                 IsHitTestVisible="False"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top">
+
+            <!-- Soft shadow for tooltip popup -->
+
             <Border.Effect>
                 <DropShadowEffect BlurRadius="10" ShadowDepth="4" Opacity="0.4"/>
             </Border.Effect>
 
+            <!-- Tooltip text content -->
+            
             <TextBlock x:Name="TooltipText"
                        Foreground="White"
                        FontWeight="SemiBold"

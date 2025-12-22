@@ -3,33 +3,49 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Height="40" Width="350">
 
+    <!-- Root layout container -->
+
     <Grid Margin="5">
+
+        <!-- Define columns:
+             Column 0 ? Left value text
+             Column 1 ? Progress bar -->
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30"/>
-            <!-- Value -->
+            <!-- Left value text width -->
             <ColumnDefinition Width="20*"/>
-            <!-- Bar -->
+            <!-- Progress bar width -->
         </Grid.ColumnDefinitions>
 
         <!-- LEFT VALUE TEXT -->
+
+        <!-- Displays numeric or percentage value (e.g., 85%) -->
+        
         <TextBlock Text="{Binding ValueText, RelativeSource={RelativeSource AncestorType=UserControl}}"
                    VerticalAlignment="Center"
                    FontSize="14"
                    Foreground="White"
                    FontWeight="Bold"/>
 
-        <!-- PROGRESS BAR BLOCK -->
+        <!-- ================= PROGRESS BAR CONTAINER ================= -->
+        
         <Grid Grid.Column="1" Height="40" >
-            <!-- Background -->
+            
+            <!-- Background of progress bar -->
+            
             <Border Background="#222" CornerRadius="4"/>
 
-            <!-- Filled section -->
+            <!-- Filled portion of the progress bar
+                 Width changes dynamically based on value -->
+            
             <Border Background="{Binding BarColor, RelativeSource={RelativeSource AncestorType=UserControl}}"
                     CornerRadius="4"
                     HorizontalAlignment="Left"
                     Width="{Binding FillWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
 
-            <!-- Label on bar -->
+            <!-- Text label displayed on top of the progress bar -->
+            
             <TextBlock Text="{Binding Label, RelativeSource={RelativeSource AncestorType=UserControl}}"
                        VerticalAlignment="Center"
                        Margin="10,0,0,0"
@@ -38,7 +54,10 @@
                        FontWeight="SemiBold"/>
         </Grid>
 
-        <!-- Arrow (right side) -->
+        <!-- ================= RIGHT SIDE ARROW INDICATOR ================= -->
+        
+                      <!-- Small arrow showing direction or status -->
+        
         <Polygon Grid.Column="1"
                  Points="0,5 8,10 0,15"
                  Fill="Orange"
