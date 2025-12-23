@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ServoCalibrationViewModel}"
              Background="#F3F3F3">
 
@@ -42,7 +43,6 @@
             <Setter Property="FontSize" Value="32"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Padding" Value="30,15"/>
-            <!-- Made slightly smaller to fit better -->
             <Setter Property="Height" Value="80"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -70,6 +70,35 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- JOG BUTTON STYLE -->
+        <Style x:Key="JogButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="80"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="12" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.6"/>
+                                <Setter TargetName="border" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.95" ScaleY="0.95" CenterX="100" CenterY="40"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
     <Grid Margin="40">
@@ -77,15 +106,14 @@
 
             <!-- TAB 1: SETUP & LIVE DATA -->
             <TabItem Header="Servo Params">
+                <!-- ... (Content same as before) ... -->
                 <Grid Margin="0,30,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <!-- Header + Live -->
                         <RowDefinition Height="*"/>
-                        <!-- Jog Params (Split X/Y) -->
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- 1. Header & Live Readout -->
                     <Grid Grid.Row="0" Margin="0,0,0,30">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -94,18 +122,13 @@
 
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                             <TextBlock Text="Servo Parameters" FontSize="36" FontWeight="Bold" Foreground="#333"/>
-                       
                         </StackPanel>
-
-                      
                     </Grid>
 
-                    <!-- 2. Jog Speed Settings (Split X and Y) -->
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="30"/>
-                            <!-- Spacer -->
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
@@ -233,11 +256,8 @@
                 <Grid Margin="0,30,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <!-- Title + Live -->
                         <RowDefinition Height="*"/>
-                        <!-- Position List -->
                         <RowDefinition Height="Auto"/>
-                        <!-- Footer -->
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0" Margin="0,0,0,30">
@@ -248,7 +268,6 @@
 
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                             <TextBlock Text="Position Teaching" FontSize="36" FontWeight="Bold" Foreground="#333"/>
-                            
                         </StackPanel>
 
                         <!-- Live Value Card -->
@@ -280,6 +299,42 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="ID" Binding="{Binding PositionId}" Width="150" FontWeight="Bold"/>
                                 <DataGridTextColumn Header="Position Name" Binding="{Binding Name}" Width="400"/>
+
+                                <DataGridTemplateColumn Header="Sequence" Width="150">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ContentControl Content="{Binding}">
+                                                <ContentControl.Style>
+                                                    <Style TargetType="ContentControl">
+                                                        <Setter Property="ContentTemplate">
+                                                            <Setter.Value>
+                                                                <DataTemplate>
+                                                                    <ComboBox ItemsSource="{Binding DataContext.AvailableSequences, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                              SelectedItem="{Binding SequenceIndex, UpdateSourceTrigger=PropertyChanged}"
+                                                                              FontSize="24" FontWeight="Bold" 
+                                                                              Height="60" Width="100"
+                                                                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                                                </DataTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding PositionId}" Value="0">
+                                                                <Setter Property="ContentTemplate">
+                                                                    <Setter.Value>
+                                                                        <DataTemplate>
+                                                                            <TextBlock Text="0" FontSize="24" FontWeight="Bold" Foreground="#666" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                        </DataTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </ContentControl.Style>
+                                            </ContentControl>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
                                 <DataGridTextColumn Header="Saved X" Binding="{Binding X, StringFormat=F2}" Width="300" Foreground="#28A745"/>
                                 <DataGridTextColumn Header="Saved Y" Binding="{Binding Y, StringFormat=F2}" Width="300" Foreground="#28A745"/>
                                 <DataGridTemplateColumn Header="Action" Width="*">
@@ -310,12 +365,19 @@
                         </DataGrid>
                     </Border>
 
-                    <!-- Footer: 2 Buttons (X Confirm & Y Confirm) -->
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,30,0,0">
-                        <Button Content="X COORD CONFIRM" 
-                                Command="{Binding ConfirmXCoordsCommand}"
-                                Width="300" Height="80" FontSize="24" FontWeight="Bold"
-                                Background="#1E4FA8" Foreground="White" Cursor="Hand" Margin="0,0,20,0">
+                    <!-- Footer: Jog Buttons & Save -->
+
+                    <Grid Grid.Row="2"  Margin="0,30,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- HOME POS BUTTON -->
+                        <Button Content="HOME POSITION" Grid.Column="0" HorizontalAlignment="Left" Margin="0,0,20,0"
+Command="{Binding ConfirmYCoordsCommand}" Width="300"
+Height="80" FontSize="24" FontWeight="Bold"
+Background="#1E4FA8" Foreground="White" Cursor="Hand">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border Background="{TemplateBinding Background}" CornerRadius="12">
@@ -330,10 +392,70 @@
                             </Button.Template>
                         </Button>
 
-                        <Button Content="Y COORD CONFIRM" 
-                                Command="{Binding ConfirmYCoordsCommand}"
-                                Width="300" Height="80" FontSize="24" FontWeight="Bold"
-                                Background="#1E4FA8" Foreground="White" Cursor="Hand">
+
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Center" Orientation="Horizontal" >
+
+
+                        
+                            <!-- JOG BUTTONS (Standard Events) -->
+
+                            <!-- X JOG - -->
+                            <Button Content="X JOG -" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="Coral">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                            <!-- X JOG + -->
+                            <Button Content="X JOG +" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="Coral">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                            <!-- Y JOG - -->
+                            <Button Content="Y JOG -" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="LightGreen">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                            <!-- Y JOG + -->
+                            <Button Content="Y JOG +" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="LightGreen">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                     
+
+                        </StackPanel>
+
+                        <!-- SAVE (Confirm X Coord) -->
+                        <Button Content="SAVE" Grid.Column="2" HorizontalAlignment="Right"
+                Command="{Binding ConfirmXCoordsCommand}"
+                Width="300" Height="80" FontSize="24" FontWeight="Bold"
+                Background="#1E4FA8" Foreground="White" Cursor="Hand" Margin="0,0,20,0">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border Background="{TemplateBinding Background}" CornerRadius="12">
@@ -347,7 +469,8 @@
                                 </ControlTemplate>
                             </Button.Template>
                         </Button>
-                    </StackPanel>
+                    </Grid>
+               
                 </Grid>
             </TabItem>
 

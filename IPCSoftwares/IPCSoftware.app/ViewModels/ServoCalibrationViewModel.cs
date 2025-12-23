@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
+using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
@@ -10,34 +11,31 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public class ServoParameterItem : ObservableObjectVM
-    {
-        public string Name { get; set; }
-        public int ReadTagId { get; set; }
-        public int WriteTagId { get; set; }
-
-        private double _currentValue;
-        public double CurrentValue
-        {
-            get => _currentValue;
-            set => SetProperty(ref _currentValue, value);
-        }
-
-        private double _newValue;
-        public double NewValue
-        {
-            get => _newValue;
-            set => SetProperty(ref _newValue, value);
-        }
-    }
-
     public class ServoCalibrationViewModel : BaseViewModel, IDisposable
     {
         private readonly CoreClient _coreClient;
         private readonly DispatcherTimer _liveDataTimer;
+        private readonly IServoCalibrationService _servoService; // Injected Service
+        private readonly IDialogService _dialog; // Injected Service
+
+        // --- JOG TAGS (Write A / Read B) ---
+        // X Minus
+        private const int TAG_WRITE_X_MINUS = 49;
+        private const int TAG_READ_X_MINUS = 79;
+        // X Plus
+        private const int TAG_WRITE_X_PLUS = 50;
+        private const int TAG_READ_X_PLUS = 80;
+        // Y Minus
+        private const int TAG_WRITE_Y_MINUS = 53;
+        private const int TAG_READ_Y_MINUS = 83;
+        // Y Plus
+        private const int TAG_WRITE_Y_PLUS = 54;
+        private const int TAG_READ_Y_PLUS = 84;
+
 
         // --- TAG CONFIGURATION ---
         // Control Bits (110-113)
@@ -53,6 +51,14 @@ namespace IPCSoftware.App.ViewModels
         // Start of Coordinate Registers (13 Positions: 0 to 12)
         private const int START_TAG_POS_X = 128;
         private const int START_TAG_POS_Y = 141;
+
+        // Visual Feedback Properties for Jog Buttons
+        // These are set True ONLY when B-Tag is received from PLC
+        private bool _isJogXMinusActive; public bool IsJogXMinusActive { get => _isJogXMinusActive; set => SetProperty(ref _isJogXMinusActive, value); }
+        private bool _isJogXPlusActive; public bool IsJogXPlusActive { get => _isJogXPlusActive; set => SetProperty(ref _isJogXPlusActive, value); }
+        private bool _isJogYMinusActive; public bool IsJogYMinusActive { get => _isJogYMinusActive; set => SetProperty(ref _isJogYMinusActive, value); }
+        private bool _isJogYPlusActive; public bool IsJogYPlusActive { get => _isJogYPlusActive; set => SetProperty(ref _isJogYPlusActive, value); }
+
 
         // --- Properties ---
         private double _liveX;
@@ -75,6 +81,8 @@ namespace IPCSoftware.App.ViewModels
         public ObservableCollection<ServoParameterItem> XParameters { get; } = new();
         public ObservableCollection<ServoParameterItem> YParameters { get; } = new();
 
+        public List<int> AvailableSequences { get; } = Enumerable.Range(1, 12).ToList();
+
         // Commands
         public ICommand TeachCommand { get; }
         public ICommand WriteParamCommand { get; }
@@ -85,10 +93,15 @@ namespace IPCSoftware.App.ViewModels
         public ICommand ConfirmXCoordsCommand { get; }
         public ICommand ConfirmYCoordsCommand { get; }
 
-        public ServoCalibrationViewModel(CoreClient coreClient, IAppLogger logger)
+        // NEW: Jog Command (Takes [Direction, IsPressed])
+        public ICommand JogCommand { get; }
+
+        public ServoCalibrationViewModel(CoreClient coreClient, IServoCalibrationService servoService,IDialogService dialog, IAppLogger logger)
              : base(logger)
         {
+            _dialog = dialog;
             _coreClient = coreClient;
+            _servoService = servoService; // Assign injected service
 
             TeachCommand = new RelayCommand<ServoPositionModel>(OnTeachPosition);
             WriteParamCommand = new RelayCommand<ServoParameterItem>(OnWriteParameter);
@@ -98,12 +111,108 @@ namespace IPCSoftware.App.ViewModels
             ConfirmXCoordsCommand = new RelayCommand(async () => await PulseBit(TAG_PARAM_A3, "X Coordinates"));
             ConfirmYCoordsCommand = new RelayCommand(async () => await PulseBit(TAG_PARAM_A4, "Y Coordinates"));
 
+            JogCommand = new RelayCommand<object>(async (args) => await OnJogAsync(args));
+
             InitializeParameters();
-            InitializePositions();
+            // Load positions from JSON via Service
+            _ = InitializePositionsAsync();
+            //InitializePositions();
                 
-            _liveDataTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
+            _liveDataTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
             _liveDataTimer.Tick += OnLiveDataTick;
             _liveDataTimer.Start();
+        }
+
+
+        private async Task<bool> IsPLCConnected()
+        {
+            try
+            {
+                // Request ID 5 (IO Data + System Tags)
+                var liveData = await _coreClient.GetIoValuesAsync(5);
+
+                if (liveData.Count() == 0)
+                    return false;
+                return true;
+            }
+            catch (Exception)
+            {
+                // Connection lost to Core Service
+                return false;
+            }
+        }
+
+        private async Task OnJogAsync(object args)
+        {
+            // 1. Check PLC Connection
+            if (!await IsPLCConnected())
+            {
+                // Optionally log only once per press/release to avoid spam
+                // _logger.LogWarning("Jog ignored: PLC disconnected", LogType.Audit);
+                return;
+            }
+
+            if (args is not string commandStr) return;
+            var parts = commandStr.Split('|');
+            if (parts.Length != 2) return;
+
+            if (!Enum.TryParse(parts[0], out JogDirection dir)) return;
+            bool isPressed = bool.Parse(parts[1]);
+
+            int writeTagId = 0;
+
+            // 2. Interlock Check (Only on Press)
+            if (isPressed)
+            {
+                switch (dir)
+                {
+                    case JogDirection.XPlus:
+                        if (IsJogXMinusActive) { _logger.LogWarning("Interlock: Cannot Jog X+ while X- is active.", LogType.Audit); return; }
+                        writeTagId = TAG_WRITE_X_PLUS;
+                        break;
+                    case JogDirection.XMinus:
+                        if (IsJogXPlusActive) { _logger.LogWarning("Interlock: Cannot Jog X- while X+ is active.", LogType.Audit); return; }
+                        writeTagId = TAG_WRITE_X_MINUS;
+                        break;
+                    case JogDirection.YPlus:
+                        if (IsJogYMinusActive) { _logger.LogWarning("Interlock: Cannot Jog Y+ while Y- is active.", LogType.Audit); return; }
+                        writeTagId = TAG_WRITE_Y_PLUS;
+                        break;
+                    case JogDirection.YMinus:
+                        if (IsJogYPlusActive) { _logger.LogWarning("Interlock: Cannot Jog Y- while Y+ is active.", LogType.Audit); return; }
+                        writeTagId = TAG_WRITE_Y_MINUS;
+                        break;
+                }
+            }
+            else
+            {
+                // On Release, just get the tag to turn off
+                switch (dir)
+                {
+                    case JogDirection.XPlus: writeTagId = TAG_WRITE_X_PLUS; break;
+                    case JogDirection.XMinus: writeTagId = TAG_WRITE_X_MINUS; break;
+                    case JogDirection.YPlus: writeTagId = TAG_WRITE_Y_PLUS; break;
+                    case JogDirection.YMinus: writeTagId = TAG_WRITE_Y_MINUS; break;
+                }
+            }
+
+            try
+            {
+                if (isPressed)
+                {
+                    _logger.LogInfo($"JOG START: {dir} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 1);
+                }
+                else
+                {
+                    _logger.LogInfo($"JOG STOP: {dir} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Jog Error: {ex.Message}", LogType.Diagnostics);
+            }
         }
 
         private void InitializeParameters()
@@ -136,9 +245,29 @@ namespace IPCSoftware.App.ViewModels
                 {
                     PositionId = i,
                     Name = i == 0 ? "Home Position" : $"Position {i}",
-                    X = 0,
+                    X = 0,  
                     Y = 0
                 });
+            }
+        }
+
+        private async Task InitializePositionsAsync()
+        {
+            try
+            {
+                // Use the service to load positions (which includes SequenceIndex and Coordinates)
+                var positions = await _servoService.LoadPositionsAsync();
+
+                Positions.Clear();
+                // Ensure ordered by ID for UI consistency
+                foreach (var pos in positions.OrderBy(p => p.PositionId))
+                {
+                    Positions.Add(pos);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Init Positions Error: {ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -151,6 +280,13 @@ namespace IPCSoftware.App.ViewModels
 
                 if (data != null)
                 {
+                    // 1. Update Jog Status (B-Tags)
+                    // Visual feedback depends strictly on these values
+                    if (data.TryGetValue(TAG_READ_X_MINUS, out object xm)) IsJogXMinusActive = Convert.ToBoolean(xm);
+                    if (data.TryGetValue(TAG_READ_X_PLUS, out object xp)) IsJogXPlusActive = Convert.ToBoolean(xp);
+                    if (data.TryGetValue(TAG_READ_Y_MINUS, out object ym)) IsJogYMinusActive = Convert.ToBoolean(ym);
+                    if (data.TryGetValue(TAG_READ_Y_PLUS, out object yp)) IsJogYPlusActive = Convert.ToBoolean(yp);
+
                     // 1. Update Live Position
                     if (data.TryGetValue(TAG_LIVE_X, out object xVal)) LiveX = Convert.ToDouble(xVal);
                     if (data.TryGetValue(TAG_LIVE_Y, out object yVal)) LiveY = Convert.ToDouble(yVal);
@@ -231,12 +367,37 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
+                if (description.Contains("Coordinates"))
+
+                {
+                    // --- VALIDATION LOGIC START ---
+                    var userSequences = Positions.Where(p => p.PositionId != 0).Select(p => p.SequenceIndex).ToList();
+
+                    // 1. Check for Duplicates
+                    if (userSequences.Distinct().Count() != userSequences.Count)
+                    {
+                        _dialog.ShowWarning("Validation Failed: Duplicate sequence numbers detected. Each position must have a unique number from 1 to 12.");
+                        return;
+                    }
+
+                    // 2. Check Range (Just in case)
+                    if (userSequences.Any(s => s < 1 || s > 12))
+                    {
+                        _dialog.ShowWarning("Validation Failed: Sequence numbers must be between 1 and 12.");
+                        return;
+                    }
+
+                }
+
+
                 _logger.LogInfo($"Confirming {description}...", LogType.Audit);
 
                 // Pulse 1 -> 0
                 await _coreClient.WriteTagAsync(tagId, 1);
                 await Task.Delay(100);
                 //await _coreClient.WriteTagAsync(tagId, 0);
+
+                await _servoService.SavePositionsAsync(Positions.ToList());
 
                 _logger.LogInfo($"{description} Confirmed.", LogType.Audit);
             }
@@ -247,5 +408,13 @@ namespace IPCSoftware.App.ViewModels
         {
             _liveDataTimer.Stop();
         }
+    }
+
+    public enum JogDirection
+    {
+        XPlus,
+        XMinus,
+        YPlus,
+        YMinus
     }
 }

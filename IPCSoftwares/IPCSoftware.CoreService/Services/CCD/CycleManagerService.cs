@@ -1,4 +1,5 @@
-﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
@@ -17,6 +18,7 @@ namespace IPCSoftware.CoreService.Services.CCD
     public class CycleManagerService : BaseService, ICycleManagerService
     {
         private readonly ProductionImageService _imageService;
+        private readonly IServoCalibrationService _servoService; // Injected
         //private readonly IConfiguration _configuration;
 
         // State Variables
@@ -31,29 +33,66 @@ namespace IPCSoftware.CoreService.Services.CCD
         // CONFIGURATION: Define your Snake Pattern here
         // Index 0 = First Grid Move, Index 1 = Second Grid Move, etc.
         // Based on your description: 1->2->3 (down) 6->5->4 (down) 7->8->9 (down) 12->11->10
-        private readonly int[] _stationMap = new int[]
-        {
-            1, 2, 3,    // Row 1 (Right)
-            6, 5, 4,    // Row 2 (Left)
-            7, 8, 9,    // Row 3 (Right)
-            12, 11, 10  // Row 4 (Left)
-        };
+        /*  private readonly int[] _stationMap = new int[]
+          {
+              1, 2, 3,    // Row 1 (Right)
+              6, 5, 4,    // Row 2 (Left)
+              7, 8, 9,    // Row 3 (Right)
+              12, 11, 10  // Row 4 (Left)
+          };*/
+
+        private int[] _stationMap;
+
 
         public CycleManagerService(
             IOptions<CcdSettings> ccdSettng, 
+            IServoCalibrationService servoService,
             ProductionImageService imageService,
             IAppLogger logger) : base(logger)
         {
             var ccd = ccdSettng.Value;
             _imageService = imageService;
+            _servoService = servoService;   
             _stateFilePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
-           // _stateFilePath = Path.Combine(ConstantValues.QrCodeImagePath, "CurrentCycleState.json");
+            // _stateFilePath = Path.Combine(ConstantValues.QrCodeImagePath, "CurrentCycleState.json");
+            _ = LoadStationMapAsync();
         }
 
-     
+        private async Task LoadStationMapAsync()
+        {
+            try
+            {
+                // Use the Service - Single Source of Truth
+                var positions = await _servoService.LoadPositionsAsync();
+
+                if (positions != null && positions.Count > 0)
+                {
+                    // Filter out Home (0) and sort by SequenceIndex (1 to 12)
+                    _stationMap = positions
+                        .Where(p => p.PositionId != 0 && p.SequenceIndex > 0)
+                        .OrderBy(p => p.PositionId)
+                        .Select(p => p.SequenceIndex)
+                        .ToArray();
+
+                    Console.WriteLine($"[CycleManager] Loaded sequence: {string.Join("->", _stationMap)}");
+                }
+            }
+            catch (Exception ex)
+            {
+        
+                _logger.LogError($"[CycleManager] Error loading sequence: {ex.Message}", LogType.Diagnostics);
+                // Absolute fallback if Service fails entirely
+                _stationMap = new int[] { 1, 2, 3, 6, 5, 4, 7, 8, 9, 12, 11, 10 };
+            }
+        }
 
         public void HandleIncomingData(string tempImagePath, Dictionary<string, object> stationData, string qrString = null)
         {
+            // Reload map at start of cycle to ensure we have latest config if it changed
+            if (_currentSequenceStep == 0 && string.IsNullOrEmpty(_activeBatchId))
+            {
+                _ = LoadStationMapAsync();
+            }
             // CASE 1: Start of Cycle (QR Scan)
             if (string.IsNullOrEmpty(_activeBatchId) )
             {
@@ -102,6 +141,11 @@ namespace IPCSoftware.CoreService.Services.CCD
         {
             try
             {
+                if (_stationMap == null || _stationMap.Length == 0)
+                {
+                    Console.WriteLine("[Error] Station Map not loaded.");
+                    return;
+                }
                 if (_currentSequenceStep >= _stationMap.Length)
                 {
                     ForceResetCycle();
@@ -204,13 +248,6 @@ namespace IPCSoftware.CoreService.Services.CCD
         }
 
 
-        /*  public void ForceResetCycle()
-          {
-              _activeBatchId = string.Empty;
-              _currentSequenceStep = 0;
-              Console.WriteLine("[System] Cycle Forced Reset.");
-          }*/
-
         public void ForceResetCycle()
         {
             try
@@ -227,12 +264,6 @@ namespace IPCSoftware.CoreService.Services.CCD
                     {
                         File.Delete(file);
                     }
-
-                    // (Optional) delete all subdirectories
-                    //foreach (var dir in Directory.GetDirectories(folder))
-                    //{
-                    //    Directory.Delete(dir, true); // true = delete recursively
-                    //}
                 }
 
                 Console.WriteLine("[System] Cycle Reset — Folder cleared completely.");
