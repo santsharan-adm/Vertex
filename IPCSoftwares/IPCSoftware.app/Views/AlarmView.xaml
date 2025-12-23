@@ -15,7 +15,7 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" Margin="10,5">
-            <TextBlock Text="Active Alarms" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+            <TextBlock Text="Active Alarms" FontSize="28" FontWeight="Bold" VerticalAlignment="Center"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <!--<Button Content="Global Acknowledge" 
@@ -25,8 +25,8 @@
 
                 <Button Content="Reset System" 
                         Command="{Binding GlobalResetCommand}" 
-                        Width="100" Height="30" Margin="5,0"
-                        Background="#1976D2" Foreground="White" FontWeight="Bold"/>
+                        Width="250" Height="80" Margin="5,0" FontSize="22"
+                        Background="Red" Foreground="White" FontWeight="Bold"/>
             </StackPanel>
         </DockPanel>
 
@@ -35,13 +35,15 @@
                   AutoGenerateColumns="False" 
                   IsReadOnly="True"
                   RowBackground="White"
+                  RowHeight="32"
+                  ColumnHeaderHeight="45"
                   AlternatingRowBackground="#F0F0F0">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Alarm No" Binding="{Binding AlarmNo}" Width="80"/>
+                <DataGridTextColumn Header="Alarm No" FontSize="22" Binding="{Binding AlarmNo}" Width="80"/>
 
-                <DataGridTextColumn Header="Severity" Binding="{Binding Severity}" Width="100">
+                <DataGridTextColumn Header="Severity" FontSize="22" Binding="{Binding Severity}" Width="100">
                     <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
+                        <Style TargetType="TextBlock" >
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Severity}" Value="High">
                                     <Setter Property="Background" Value="Red"/>
@@ -55,11 +57,11 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
 
-                <DataGridTextColumn Header="Message" Binding="{Binding AlarmText}" Width="*"/>
-                <DataGridTextColumn Header="Raised At" Binding="{Binding AlarmTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="140"/>
+                <DataGridTextColumn Header="Message" FontSize="22" Binding="{Binding AlarmText}" Width="*"/>
+                <DataGridTextColumn Header="Raised At" FontSize="22" Binding="{Binding AlarmTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="260"/>
                 <!--<DataGridTextColumn Header="Ack At" Binding="{Binding AlarmAckTime, StringFormat='HH:mm:ss'}" Width="90"/>-->
 
-                <DataGridTextColumn Header="Reset At" Binding="{Binding AlarmResetTime, StringFormat='HH:mm:ss'}" Width="90"/>
+                <DataGridTextColumn Header="Reset At" FontSize="22" Binding="{Binding AlarmResetTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="260"/>
 
                 <!--<DataGridTextColumn Header="Ack By" Binding="{Binding AcknowledgedByUser}" Width="100"/>-->
 

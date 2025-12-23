@@ -9,10 +9,10 @@
         mc:Ignorable="d"
         Title="IPC HMI Software" 
         Height="1080" Width="1920"
-        WindowState="Normal" 
-        WindowStyle="ThreeDBorderWindow"
+        WindowState="Maximized" 
+       WindowStyle="None"
         Background="#F3F3F3" 
-        ResizeMode="CanResizeWithGrip">
+        ResizeMode="NoResize">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
