@@ -10,7 +10,7 @@ using System.Globalization;
 using System.Windows;
 using Xunit;
 
-namespace IPCSoftware.App.Tests
+namespace IPCSoftware_UnitTesting
 {
     public class RibbonViewModelTests
     {
@@ -47,7 +47,7 @@ namespace IPCSoftware.App.Tests
         }
 
         [Fact]
-        public void OpenDashboardMenu_Invokes_ShowSidebar_With_DashboardItems()
+        public void OpenDashboardMenu_Invokes_ShowSidebar_With_DashboardItems() ///// Collection: ["OEE Dashboard", "Time Sync", "Alarm View"] /////
         {
             //var vm = CreateVm();
             var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
@@ -58,13 +58,13 @@ namespace IPCSoftware.App.Tests
             Assert.NotNull(captured);
             Assert.Equal("DashboardMenu", captured?.Key);
             Assert.Contains("OEE Dashboard", captured?.Items);
-            Assert.Contains("Machine Summary", captured?.Items);
-            Assert.Contains("KPI Monitoring", captured?.Items);
+            Assert.Contains("Time Sync", captured?.Items);
+            Assert.Contains("Alarm View", captured?.Items);
 
-        }
+        }  
 
         [Fact]
-        public void OpenSettingsMenu_Invokes_ShowSidebar_With_SettingsItems()
+        public void OpenSettingsMenu_Invokes_ShowSidebar_With_SettingsItems() //// Collection: ["Mode Of Operation", "Servo Parameters", "PLC IO", "Diagnostic"]
         {
             //var vm = CreateVm();
             var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
@@ -76,12 +76,12 @@ namespace IPCSoftware.App.Tests
 
             Assert.NotNull(captured);
             Assert.Equal("SettingsMenu", captured?.Key);
-            Assert.Contains("System Settings", captured?.Items);
-            Assert.Contains("Manual Operation", captured?.Items);
             Assert.Contains("Mode Of Operation", captured?.Items);
+            Assert.Contains("Servo Parameters", captured?.Items);
+            Assert.Contains("Diagnostic", captured?.Items);
             Assert.Contains("PLC IO", captured?.Items);
             // Assert.Contains("Tag Control", captured?.Items);
-            Assert.Contains("Alarm View", captured?.Items);
+           // Assert.Contains("Alarm View", captured?.Items);
 
         }
 

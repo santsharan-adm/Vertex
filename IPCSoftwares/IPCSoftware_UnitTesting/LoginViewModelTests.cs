@@ -10,7 +10,7 @@ using Moq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
-namespace IPCSoftware.App.Tests
+namespace IPCSoftware.App.Test
 {
  public class LoginViewModelTests
  {
