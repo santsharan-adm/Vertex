@@ -154,6 +154,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                     {
                         // Write TRUE to 15 to tell PLC we are done
                         await client.WriteAsync(ackTag, true);
+                        await client.WriteAsync(ackTag, false);
                         Console.WriteLine($"[CCD] Ack sent to Tag {ConstantValues.Return_TAG_ID}");
                         _logger.LogInfo ($"[CCD] Ack sent to Tag {ConstantValues.Return_TAG_ID}", LogType.Diagnostics);
 

@@ -86,6 +86,14 @@ namespace IPCSoftware.App.ViewModels
                             }
                         }
                     });
+
+                    // 3. Pulse Logic: Turn OFF Tag 39 after 2 seconds
+                    if (tagId == 39)
+                    {
+                        await Task.Delay(2000); // Wait 2s
+                        await _coreClient.WriteTagAsync(tagId, false); // Turn Off
+                        _logger.LogInfo($"{actionName} (Tag {tagId}) pulsed off.", LogType.Audit);
+                    }
                 }
             }
             catch (Exception ex)

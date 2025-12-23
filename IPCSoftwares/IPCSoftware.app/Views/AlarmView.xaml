@@ -18,10 +18,10 @@
             <TextBlock Text="Active Alarms" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Global Acknowledge" 
+                <!--<Button Content="Global Acknowledge" 
                         Command="{Binding GlobalAcknowledgeCommand}" 
                         Width="140" Height="30" Margin="5,0"
-                        Background="Green" Foreground="White" FontWeight="Bold"/>
+                        Background="Green" Foreground="White" FontWeight="Bold"/>-->
 
                 <Button Content="Reset System" 
                         Command="{Binding GlobalResetCommand}" 
@@ -57,13 +57,13 @@
 
                 <DataGridTextColumn Header="Message" Binding="{Binding AlarmText}" Width="*"/>
                 <DataGridTextColumn Header="Raised At" Binding="{Binding AlarmTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="140"/>
-                <DataGridTextColumn Header="Ack At" Binding="{Binding AlarmAckTime, StringFormat='HH:mm:ss'}" Width="90"/>
+                <!--<DataGridTextColumn Header="Ack At" Binding="{Binding AlarmAckTime, StringFormat='HH:mm:ss'}" Width="90"/>-->
 
                 <DataGridTextColumn Header="Reset At" Binding="{Binding AlarmResetTime, StringFormat='HH:mm:ss'}" Width="90"/>
 
-                <DataGridTextColumn Header="Ack By" Binding="{Binding AcknowledgedByUser}" Width="100"/>
+                <!--<DataGridTextColumn Header="Ack By" Binding="{Binding AcknowledgedByUser}" Width="100"/>-->
 
-                <DataGridTemplateColumn Header="Action" Width="120">
+                <!--<DataGridTemplateColumn Header="Action" Width="120">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="Acknowledge"
@@ -89,7 +89,9 @@
                             </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                </DataGridTemplateColumn>-->
+                
+                
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
