@@ -171,22 +171,8 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
 
-                                <Button Grid.Row="2" Content="CONFIRM X PARAMS" Command="{Binding ConfirmXParamsCommand}"
-                                        Background="#007ACC" Foreground="White" FontSize="24" FontWeight="Bold"
-                                        Height="70" Margin="15" Cursor="Hand">
-                                    <Button.Template>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="10">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsPressed" Value="True">
-                                                    <Setter Property="Opacity" Value="0.8"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Button.Template>
-                                </Button>
+                               
+                                
                             </Grid>
                         </Border>
 
@@ -229,7 +215,7 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
 
-                                <Button Grid.Row="2" Content="CONFIRM Y PARAMS" Command="{Binding ConfirmYParamsCommand}"
+                                <!--<Button Grid.Row="2" Content="CONFIRM Y PARAMS" Command="{Binding ConfirmYParamsCommand}"
                                         Background="#007ACC" Foreground="White" FontSize="24" FontWeight="Bold"
                                         Height="70" Margin="15" Cursor="Hand">
                                     <Button.Template>
@@ -244,10 +230,31 @@
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
                                     </Button.Template>
-                                </Button>
+                                </Button>-->
                             </Grid>
                         </Border>
+                        
+                        
+                        
                     </Grid>
+
+                    <Button Grid.Row="2" Content="CONFIRM PARAMS" Width=" 400" HorizontalAlignment="Center" Command="{Binding ConfirmXParamsCommand}"
+             Background="#007ACC" Foreground="White" FontSize="24" FontWeight="Bold"
+             Height="70" Margin="15" Cursor="Hand">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/> 
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter Property="Opacity" Value="0.8"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
                 </Grid>
             </TabItem>
 
@@ -292,15 +299,15 @@
                     <!-- Position List -->
                     <Border Grid.Row="1" Background="White" CornerRadius="15" BorderBrush="#CCC" BorderThickness="1">
                         <DataGrid ItemsSource="{Binding Positions}" 
-                                  AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" RowHeight="90" 
+                                  AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="False" RowHeight="90" 
                                   ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}" CellStyle="{StaticResource HmiCellStyle}"
                                   GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#EEE" VerticalGridLinesBrush="Transparent"
                                   BorderThickness="0" Background="White" ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="ID" Binding="{Binding PositionId}" Width="150" FontWeight="Bold"/>
-                                <DataGridTextColumn Header="Position Name" Binding="{Binding Name}" Width="400"/>
+                                <DataGridTextColumn Header="Position Name" Binding="{Binding Name}" Width="300"/>
 
-                                <DataGridTemplateColumn Header="Sequence" Width="150">
+                                <DataGridTemplateColumn Header="Sequence" Width="200">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <ContentControl Content="{Binding}">
@@ -335,32 +342,86 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTextColumn Header="Saved X" Binding="{Binding X, StringFormat=F2}" Width="300" Foreground="#28A745"/>
-                                <DataGridTextColumn Header="Saved Y" Binding="{Binding Y, StringFormat=F2}" Width="300" Foreground="#28A745"/>
-                                <DataGridTemplateColumn Header="Action" Width="*">
+                                <DataGridTemplateColumn Header="Saved X" Width="300">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="TEACH CURRENT" 
-                                                    Command="{Binding DataContext.TeachCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding}"
-                                                    Background="#007ACC" Foreground="White" FontSize="22" FontWeight="Bold"
-                                                    Height="60" Width="240" Cursor="Hand" HorizontalAlignment="Left" Margin="20,0">
-                                                <Button.Template>
-                                                    <ControlTemplate TargetType="Button">
-                                                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
-                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                        </Border>
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsPressed" Value="True">
-                                                                <Setter Property="Opacity" Value="0.8"/>
-                                                            </Trigger>
-                                                        </ControlTemplate.Triggers>
-                                                    </ControlTemplate>
-                                                </Button.Template>
-                                            </Button>
+                                            <TextBox Text="{Binding X, StringFormat=F2, UpdateSourceTrigger=LostFocus}" 
+                                                     FontSize="26" FontWeight="Bold" Foreground="#28A745"
+                                                     VerticalContentAlignment="Center" Padding="5" 
+                                                     BorderBrush="Transparent" Background="Transparent"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
+
+                                <!-- EDITABLE Y Coordinate -->
+                                <DataGridTemplateColumn Header="Saved Y" Width="300">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Y, StringFormat=F2, UpdateSourceTrigger=LostFocus}" 
+                                                     FontSize="26" FontWeight="Bold" Foreground="#28A745"
+                                                     VerticalContentAlignment="Center" Padding="5" 
+                                                     BorderBrush="Transparent" Background="Transparent"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Action" Width="450">
+                                    <!-- Increased Width -->
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+                                                <!-- TEACH BUTTON (Captures Live) -->
+                                                <Button Command="{Binding DataContext.TeachCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding}"
+                            Background="#007ACC" Foreground="White" 
+                            Height="50" Width="150" Cursor="Hand" Margin="0,0,10,0"
+                            ToolTip="Capture current Live Position">
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                                                                <Viewbox Margin="5">
+                                                                    <TextBlock Text="TEACH" FontWeight="Bold"/>
+                                                                </Viewbox>
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsPressed" Value="True">
+                                                                    <Setter Property="Opacity" Value="0.8"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+
+                                                <!-- WRITE BUTTON (Manual Entry) -->
+                                                <Button Command="{Binding DataContext.WritePositionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding}"
+                            Background="#E67E22" Foreground="White" 
+                            Height="50" Width="150" Cursor="Hand"
+                            ToolTip="Write manually typed value to PLC">
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                                                                <Viewbox Margin="5">
+                                                                    <TextBlock Text="WRITE" FontWeight="Bold"/>
+                                                                </Viewbox>
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsPressed" Value="True">
+                                                                    <Setter Property="Opacity" Value="0.8"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+
+
+
                             </DataGrid.Columns>
                         </DataGrid>
                     </Border>
