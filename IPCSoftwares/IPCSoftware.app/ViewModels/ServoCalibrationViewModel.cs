@@ -23,23 +23,25 @@ namespace IPCSoftware.App.ViewModels
         private readonly IServoCalibrationService _servoService; // Injected Service
         private readonly IDialogService _dialog; // Injected Service
 
+        private bool _initialPlcLoadDone = false;
+
         // --- JOG TAGS (Write A / Read B) ---
         // X Minus
-        private const int TAG_WRITE_X_MINUS = 49;
-        private const int TAG_READ_X_MINUS = 79;
+        private const int TAG_WRITE_X_MINUS = 50;
+        private const int TAG_READ_X_MINUS = 90;
         // X Plus
-        private const int TAG_WRITE_X_PLUS = 50;
-        private const int TAG_READ_X_PLUS = 80;
+        private const int TAG_WRITE_X_PLUS = 49;
+        private const int TAG_READ_X_PLUS = 89;
         // Y Minus
-        private const int TAG_WRITE_Y_MINUS = 53;
-        private const int TAG_READ_Y_MINUS = 83;
+        private const int TAG_WRITE_Y_MINUS = 54;
+        private const int TAG_READ_Y_MINUS = 94;
         // Y Plus
-        private const int TAG_WRITE_Y_PLUS = 54;
-        private const int TAG_READ_Y_PLUS = 84;
+        private const int TAG_WRITE_Y_PLUS = 53;
+        private const int TAG_READ_Y_PLUS = 93;
 
 
-        private const int TAG_X_HOME = 501;
-        private const int TAG_Y_HOME = 502;
+        private const int TAG_X_HOME = 117;
+        private const int TAG_Y_HOME = 124;
 
 
         // --- TAG CONFIGURATION ---
@@ -130,7 +132,7 @@ namespace IPCSoftware.App.ViewModels
             _liveDataTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
             _liveDataTimer.Tick += OnLiveDataTick;
             _liveDataTimer.Start();
-            UpdateCoord();
+           // UpdateCoord();
         }
 
 
@@ -212,6 +214,8 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _logger.LogInfo($"JOG START: {dir} (Tag {writeTagId})", LogType.Audit);
                     await _coreClient.WriteTagAsync(writeTagId, 1);
+                    await Task.Delay(1000);
+                    await _coreClient.WriteTagAsync(writeTagId, 0);
                 }
                 else
                 {
@@ -229,23 +233,23 @@ namespace IPCSoftware.App.ViewModels
         {
             // X Axis Params (114-120) -> Bind to XParameters
             XParameters.Add(new ServoParameterItem { Name = "Jog Low Speed", ReadTagId = 114, WriteTagId = 114 });
-            XParameters.Add(new ServoParameterItem { Name = "Jog High Speed", ReadTagId = 115, WriteTagId = 115 });
-            XParameters.Add(new ServoParameterItem { Name = "Inching Dist", ReadTagId = 116, WriteTagId = 116 });
+          //  XParameters.Add(new ServoParameterItem { Name = "Jog High Speed", ReadTagId = 115, WriteTagId = 115 });
+           // XParameters.Add(new ServoParameterItem { Name = "Inching Dist", ReadTagId = 116, WriteTagId = 116 });
             XParameters.Add(new ServoParameterItem { Name = "Origin Offset", ReadTagId = 117, WriteTagId = 117 });
             XParameters.Add(new ServoParameterItem { Name = "Move Speed", ReadTagId = 118, WriteTagId = 118 });
             XParameters.Add(new ServoParameterItem { Name = "Acceleration", ReadTagId = 119, WriteTagId = 119 });
             XParameters.Add(new ServoParameterItem { Name = "Deceleration", ReadTagId = 120, WriteTagId = 120 });
-            XParameters.Add(new ServoParameterItem { Name = "X HOME", ReadTagId = 501, WriteTagId = 501 });
+           // XParameters.Add(new ServoParameterItem { Name = "X HOME", ReadTagId = TAG_X_HOME, WriteTagId = TAG_X_HOME });
 
             // Y Axis Params (121-127) -> Bind to YParameters
             YParameters.Add(new ServoParameterItem { Name = "Jog Low Speed", ReadTagId = 121, WriteTagId = 121 });
-            YParameters.Add(new ServoParameterItem { Name = "Jog High Speed", ReadTagId = 122, WriteTagId = 122 });
-            YParameters.Add(new ServoParameterItem { Name = "Inching Dist", ReadTagId = 123, WriteTagId = 123 });
+          //  YParameters.Add(new ServoParameterItem { Name = "Jog High Speed", ReadTagId = 122, WriteTagId = 122 });
+           // YParameters.Add(new ServoParameterItem { Name = "Inching Dist", ReadTagId = 123, WriteTagId = 123 });
             YParameters.Add(new ServoParameterItem { Name = "Origin Offset", ReadTagId = 124, WriteTagId = 124 });
             YParameters.Add(new ServoParameterItem { Name = "Move Speed", ReadTagId = 125, WriteTagId = 125 });
             YParameters.Add(new ServoParameterItem { Name = "Acceleration", ReadTagId = 126, WriteTagId = 126 });
             YParameters.Add(new ServoParameterItem { Name = "Deceleration", ReadTagId = 127, WriteTagId = 127 });
-            YParameters.Add(new ServoParameterItem { Name = "Y HOME", ReadTagId = 502, WriteTagId = 502 });
+          //  YParameters.Add(new ServoParameterItem { Name = "Y HOME", ReadTagId = TAG_Y_HOME, WriteTagId = TAG_Y_HOME });
         }
 
       
@@ -270,8 +274,9 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        private async void OnLiveDataTick(object sender, EventArgs e)
+        private async void OnLiveDataTick(object? sender, EventArgs e)
         {
+            _liveDataTimer.Stop();
             try
             {
                 // Request IO Packet (ID 5 assumed to cover all tags)
@@ -304,22 +309,45 @@ namespace IPCSoftware.App.ViewModels
                             param.CurrentValue = Convert.ToDouble(val);
                     }
 
-                    // 4. Update Position List (Read stored values from PLC)
-                    //for (int i = 0; i < Positions.Count; i++)
-                    //{
-                    //    int xTag = START_TAG_POS_X + i;
-                    //    int yTag = START_TAG_POS_Y + i;
+                    // 4. Initial Load of Stored Positions (ONCE ONLY)
+                    if (!_initialPlcLoadDone)
+                    {
+                        bool anyDataRead = false;
+                        for (int i = 0; i < Positions.Count; i++)
+                        {
+                            int xTag = START_TAG_POS_X + i;
+                            int yTag = START_TAG_POS_Y + i;
 
-                    //    if (data.TryGetValue(xTag, out object valX)) Positions[i].X = Convert.ToDouble(valX);
-                    //    if (data.TryGetValue(yTag, out object valY)) Positions[i].Y = Convert.ToDouble(valY);
-                    //}
+                            if (data.TryGetValue(xTag, out object valX))
+                            {
+                                Positions[i].X = Convert.ToDouble(valX);
+                                anyDataRead = true;
+                            }
+                            if (data.TryGetValue(yTag, out object valY))
+                            {
+                                Positions[i].Y = Convert.ToDouble(valY);
+                                anyDataRead = true;
+                            }
+                        }
+
+                        // Only mark as done if we actually got some data (connection is valid)
+                        if (anyDataRead) _initialPlcLoadDone = true;
+                    }
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Live Data Error: {ex.Message}");
             }
+            finally
+            {
+                // CRITICAL FIX 1: Restart timer only after processing is done
+                _liveDataTimer.Start();
+            }
         }
+        
+
+
         private async void UpdateCoord()
         {
             var data = await _coreClient.GetIoValuesAsync(5);
@@ -364,7 +392,8 @@ namespace IPCSoftware.App.ViewModels
                 {
                     Positions[index] = position;
                 }
-                UpdateCoord();
+                _initialPlcLoadDone = false;
+               // UpdateCoord();
             }
             catch (Exception ex)
             {
@@ -387,7 +416,8 @@ namespace IPCSoftware.App.ViewModels
 
                 await _coreClient.WriteTagAsync(xTag, position.X);
                 await _coreClient.WriteTagAsync(yTag, position.Y);
-                UpdateCoord();
+                _initialPlcLoadDone = false;
+              //  UpdateCoord();
                 // Optional: Flash success or log
             }
             catch (Exception ex) { _logger.LogError($"Manual Write Error: {ex.Message}", LogType.Diagnostics); }

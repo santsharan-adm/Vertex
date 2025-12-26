@@ -9,7 +9,7 @@ namespace IPCSoftware.Services
     {
         private DateTime _simulatedPlcTime;
 
-        public PlcService(IAppLogger logger) : base(logger)
+        public PlcService(IAppLogger logger) : base(logger) 
         {
             // Initial PLC time = machine boot-up time (simulated)
             _simulatedPlcTime = DateTime.Now.AddSeconds(-5);

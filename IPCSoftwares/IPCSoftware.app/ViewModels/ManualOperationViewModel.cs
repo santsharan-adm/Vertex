@@ -78,14 +78,14 @@ namespace IPCSoftware.App.ViewModels
         // Manual X-Axis
         [Group("Manual X-Axis Jog")] ManualXAxisJogBackward,
         [Group("Manual X-Axis Jog")] ManualXAxisJogForward,
-        [Group("Manual X-Axis Jog")] XAxisJogLowSpeed,
-        [Group("Manual X-Axis Jog")] XAxisJogHighSpeed,
+  /*      [Group("Manual X-Axis Jog")] XAxisJogLowSpeed,
+        [Group("Manual X-Axis Jog")] XAxisJogHighSpeed,*/
 
         // Manual Y-Axis
         [Group("Manual Y-Axis Jog")] ManualYAxisJogBackward,
-        [Group("Manual Y-Axis Jog")] ManualYAxisJogForward,
+        [Group("Manual Y-Axis Jog")] ManualYAxisJogForward/*,
         [Group("Manual Y-Axis Jog")] YAxisJogLowSpeed,
-        [Group("Manual Y-Axis Jog")] YAxisJogHighSpeed
+        [Group("Manual Y-Axis Jog")] YAxisJogHighSpeed*/
     }
 
     public class ManualOperationViewModel : BaseViewModel, IDisposable
@@ -99,8 +99,54 @@ namespace IPCSoftware.App.ViewModels
 
         // Speed State (False = Low, True = High) - These are derived from button state now
         private bool _conveyorHighSpeed => IsModeActive(ManualOperationMode.TransportConveyorHighSpeed);
-        private bool _xAxisHighSpeed => IsModeActive(ManualOperationMode.XAxisJogHighSpeed);
-        private bool _yAxisHighSpeed => IsModeActive(ManualOperationMode.YAxisJogHighSpeed);
+        //   private bool _xAxisHighSpeed => IsModeActive(ManualOperationMode.XAxisJogHighSpeed);
+        //  private bool _yAxisHighSpeed => IsModeActive(ManualOperationMode.YAxisJogHighSpeed);
+
+
+        private const int TAG_WRITE_X_MINUS = 50;
+        private const int TAG_READ_X_MINUS = 90;
+
+        // X Plus
+        private const int TAG_WRITE_X_PLUS = 49;
+        private const int TAG_READ_X_PLUS = 89;
+        // Y Minus
+        private const int TAG_WRITE_Y_MINUS = 54;
+        private const int TAG_READ_Y_MINUS = 94;
+        // Y Plus
+        private const int TAG_WRITE_Y_PLUS = 53;
+        private const int TAG_READ_Y_PLUS = 93;
+
+        private const int TAG_WRITE_TRAY_DOWN = 40;
+        private const int TAG_READ_TRAY_DOWN = 80;
+
+        private const int TAG_WRITE_TRAY_UP= 41;
+        private const int TAG_READ_TRAY_UP = 81;
+
+
+        private const int TAG_WRITE_CYL_DOWN = 43;
+        private const int TAG_READ_CYL_DOWN = 83;
+
+        private const int TAG_WRITE_CYL_UP= 42;
+        private const int TAG_READ_CYL_UP = 82;
+
+
+
+
+
+        private bool _isJogXMinusActive; public bool IsJogXMinusActive { get => _isJogXMinusActive; set => SetProperty(ref _isJogXMinusActive, value); }
+        private bool _isJogXPlusActive; public bool IsJogXPlusActive { get => _isJogXPlusActive; set => SetProperty(ref _isJogXPlusActive, value); }
+        private bool _isJogYMinusActive; public bool IsJogYMinusActive { get => _isJogYMinusActive; set => SetProperty(ref _isJogYMinusActive, value); }
+        private bool _isJogYPlusActive; public bool IsJogYPlusActive { get => _isJogYPlusActive; set => SetProperty(ref _isJogYPlusActive, value); }
+
+        private bool _isTrayUpActive; public bool IsTrayUpActive { get => _isTrayUpActive; set => SetProperty(ref _isTrayUpActive, value); }
+        private bool _isTrayDownActive; public bool IsTrayDownActive { get => _isTrayDownActive; set => SetProperty(ref _isTrayDownActive, value); }
+
+        // Cylinder
+        private bool _isCylUpActive; public bool IsCylUpActive { get => _isCylUpActive; set => SetProperty(ref _isCylUpActive, value); }
+        private bool _isCylDownActive; public bool IsCylDownActive { get => _isCylDownActive; set => SetProperty(ref _isCylDownActive, value); }
+
+
+
 
         // --- Properties ---
         public ObservableCollection<ModeItem> Modes { get; }
@@ -113,6 +159,10 @@ namespace IPCSoftware.App.ViewModels
         public IEnumerable<ModeItem> XAxisModes => GetGroup("Manual X-Axis Jog");
         public IEnumerable<ModeItem> YAxisModes => GetGroup("Manual Y-Axis Jog");
         public ModeItem HomePositionMode => Modes.FirstOrDefault(x => x.Mode == ManualOperationMode.MoveToPos0);
+
+        public ICommand JogCommand { get; }
+        public ICommand CylPosCommand { get; }
+        public ICommand TrayLiftCommand { get; }
         public IEnumerable<ModeItem> GridPositionModes => GetGroup("Move to Position").Where(x => x.Mode != ManualOperationMode.MoveToPos0);
 
         public ManualOperationViewModel(IAppLogger logger, CoreClient coreClient) : base(logger)
@@ -133,6 +183,10 @@ namespace IPCSoftware.App.ViewModels
 
             ButtonClickCommand = new RelayCommand<ManualOperationMode>(OnButtonClicked);
 
+            JogCommand = new RelayCommand<object>(async (args) => await OnJogAsync(args));
+            TrayLiftCommand = new RelayCommand<object>(async (args) => await OnTrayAsync(args));
+            CylPosCommand = new RelayCommand<object>(async (args) => await OnCylAsync(args));
+
             // Faster Polling for Responsiveness (100ms)
             _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
             _feedbackTimer.Tick += FeedbackLoop_Tick;
@@ -141,6 +195,191 @@ namespace IPCSoftware.App.ViewModels
             // Initial Sync
             _ = SyncUiWithPlcState();
         }
+
+
+
+
+        private async Task OnJogAsync(object args)
+        {
+            // 1. Check PLC Connection
+            if (!await IsPLCConnected())
+            {
+                // Optionally log only once per press/release to avoid spam
+                // _logger.LogWarning("Jog ignored: PLC disconnected", LogType.Audit);
+                return;
+            }
+
+            if (args is not string commandStr) return;
+            var parts = commandStr.Split('|');
+            if (parts.Length != 2) return;
+
+            if (!Enum.TryParse(parts[0], out JogDirection dir)) return;
+            bool isPressed = bool.Parse(parts[1]);
+
+            int writeTagId = 0;
+
+            // 2. Interlock Check (Only on Press)
+            if (isPressed)
+            {
+                switch (dir)
+                {
+                    case JogDirection.XPlus:
+                        if (IsJogXMinusActive) { _logger.LogWarning("Interlock: Cannot Jog X+ while X- is active.", LogType.Audit); return; }
+                        writeTagId = TAG_WRITE_X_PLUS;
+                        break;
+                    case JogDirection.XMinus:
+                        if (IsJogXPlusActive) { _logger.LogWarning("Interlock: Cannot Jog X- while X+ is active.", LogType.Audit); return; }
+                        writeTagId = TAG_WRITE_X_MINUS;
+                        break;
+                    case JogDirection.YPlus:
+                        if (IsJogYMinusActive) { _logger.LogWarning("Interlock: Cannot Jog Y+ while Y- is active.", LogType.Audit); return; }
+                        writeTagId = TAG_WRITE_Y_PLUS;
+                        break;
+                    case JogDirection.YMinus:
+                        if (IsJogYPlusActive) { _logger.LogWarning("Interlock: Cannot Jog Y- while Y+ is active.", LogType.Audit); return; }
+                        writeTagId = TAG_WRITE_Y_MINUS;
+                        break;
+                }
+            }
+            else
+            {
+                // On Release, just get the tag to turn off
+                switch (dir)
+                {
+                    case JogDirection.XPlus: writeTagId = TAG_WRITE_X_PLUS; break;
+                    case JogDirection.XMinus: writeTagId = TAG_WRITE_X_MINUS; break;
+                    case JogDirection.YPlus: writeTagId = TAG_WRITE_Y_PLUS; break;
+                    case JogDirection.YMinus: writeTagId = TAG_WRITE_Y_MINUS; break;
+                }
+            }
+
+            try
+            {
+                if (isPressed)
+                {
+                    _logger.LogInfo($"JOG START: {dir} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 1);
+                    await Task.Delay(1000);
+                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                }
+                else
+                {
+                    _logger.LogInfo($"JOG STOP: {dir} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Jog Error: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+
+
+        private async Task OnTrayAsync(object args)
+        {
+            if (!await IsPLCConnected()) return;
+
+            if (args is not string commandStr) return;
+            var parts = commandStr.Split('|');
+            if (parts.Length != 2) return;
+
+            string direction = parts[0]; // "Up" or "Down"
+            bool isPressed = bool.Parse(parts[1]);
+            int writeTagId = 0;
+
+            if (isPressed)
+            {
+                if (direction == "TrayUP")
+                {
+                    // Interlock: Cannot go Up if Down is Active
+                    if (IsTrayDownActive) { _logger.LogWarning("Interlock: Cannot Tray Up while Tray Down is active.", LogType.Audit); return; }
+                    writeTagId = TAG_WRITE_TRAY_UP;
+                }
+                else if (direction == "TrayDOWN")
+                {
+                    // Interlock: Cannot go Down if Up is Active
+                    if (IsTrayUpActive) { _logger.LogWarning("Interlock: Cannot Tray Down while Tray Up is active.", LogType.Audit); return; }
+                    writeTagId = TAG_WRITE_TRAY_DOWN;
+                }
+            }
+            else
+            {
+                // Release Logic
+                if (direction == "TrayUP") writeTagId = TAG_WRITE_TRAY_UP;
+                else if (direction == "TrayDOWN") writeTagId = TAG_WRITE_TRAY_DOWN;
+            }
+
+            try
+            {
+                if (isPressed)
+                {
+                    _logger.LogInfo($"TRAY START: {direction} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 1);
+                    await Task.Delay(1000);
+                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                }
+                else
+                {
+                    _logger.LogInfo($"TRAY STOP: {direction} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                }
+            }
+            catch (Exception ex) { _logger.LogError($"Tray Error: {ex.Message}", LogType.Diagnostics); }
+        }
+
+        // =========================================================
+        //                 2. CYLINDER LOGIC (Press/Hold)
+        // =========================================================
+        private async Task OnCylAsync(object args)
+        {
+            if (!await IsPLCConnected()) return;
+
+            if (args is not string commandStr) return;
+            var parts = commandStr.Split('|');
+            if (parts.Length != 2) return;
+
+            string direction = parts[0]; // "Up" or "Down"
+            bool isPressed = bool.Parse(parts[1]);
+            int writeTagId = 0;
+
+            if (isPressed)
+            {
+                if (direction == "CylUP")
+                {
+                    if (IsCylDownActive) { _logger.LogWarning("Interlock: Cannot Cyl Up while Cyl Down is active.", LogType.Audit); return; }
+                    writeTagId = TAG_WRITE_CYL_UP;
+                }
+                else if (direction == "CylDOWN")
+                {
+                    if (IsCylUpActive) { _logger.LogWarning("Interlock: Cannot Cyl Down while Cyl Up is active.", LogType.Audit); return; }
+                    writeTagId = TAG_WRITE_CYL_DOWN;
+                }
+            }
+            else
+            {
+                if (direction == "CylUP") writeTagId = TAG_WRITE_CYL_UP;
+                else if (direction == "CylDOWN") writeTagId = TAG_WRITE_CYL_DOWN;
+            }
+
+            try
+            {
+                if (isPressed)
+                {
+                    _logger.LogInfo($"CYL START: {direction} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 1);
+                    await Task.Delay(10000);
+                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                }
+                else
+                {
+                    _logger.LogInfo($"CYL STOP: {direction} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                }
+            }
+            catch (Exception ex) { _logger.LogError($"Cyl Error: {ex.Message}", LogType.Diagnostics); }
+        }
+
+
 
         // Initialize defaults if PLC is fresh, otherwise read from PLC
         private async Task SyncUiWithPlcState()
@@ -178,8 +417,8 @@ namespace IPCSoftware.App.ViewModels
         {
             // Default UI state if PLC read fails
             SetActiveLocal(ManualOperationMode.TransportConveyorLowSpeed, true);
-            SetActiveLocal(ManualOperationMode.XAxisJogLowSpeed, true);
-            SetActiveLocal(ManualOperationMode.YAxisJogLowSpeed, true);
+         //   SetActiveLocal(ManualOperationMode.XAxisJogLowSpeed, true);
+         //   SetActiveLocal(ManualOperationMode.YAxisJogLowSpeed, true);
         }
 
         private void InitializeTags()
@@ -205,14 +444,14 @@ namespace IPCSoftware.App.ViewModels
             // X Axis
             MapTag(ManualOperationMode.ManualXAxisJogForward, aStart + 9, bStart + 9);
             MapTag(ManualOperationMode.ManualXAxisJogBackward, aStart + 10, bStart + 10);
-            MapTag(ManualOperationMode.XAxisJogLowSpeed, aStart + 11, bStart + 11);
-            MapTag(ManualOperationMode.XAxisJogHighSpeed, aStart + 12, bStart + 12);
+          //  MapTag(ManualOperationMode.XAxisJogLowSpeed, aStart + 11, bStart + 11);
+           // MapTag(ManualOperationMode.XAxisJogHighSpeed, aStart + 12, bStart + 12);
 
             // Y Axis
             MapTag(ManualOperationMode.ManualYAxisJogBackward, aStart + 13, bStart + 13);
             MapTag(ManualOperationMode.ManualYAxisJogForward, aStart + 14, bStart + 14);
-            MapTag(ManualOperationMode.YAxisJogLowSpeed, aStart + 15, bStart + 15);
-            MapTag(ManualOperationMode.YAxisJogHighSpeed, aStart + 16, bStart + 16);
+          //  MapTag(ManualOperationMode.YAxisJogLowSpeed, aStart + 15, bStart + 15);
+          //  MapTag(ManualOperationMode.YAxisJogHighSpeed, aStart + 16, bStart + 16);
 
             // Positions 0-12
             int posOffset = 17;
@@ -280,6 +519,9 @@ namespace IPCSoftware.App.ViewModels
                         _logger.LogInfo($"[Manual] Pulse {mode} (Tag {tagA}=1)", LogType.Audit);
                         await _coreClient.WriteTagAsync(tagA, 1);
                         item.IsBlinking = true; // Waiting for B
+                        await Task.Delay(1000);
+                        await _coreClient.WriteTagAsync(tagA, 0);
+                        item.IsBlinking = false;
                     }
                 }
                 else
@@ -293,13 +535,14 @@ namespace IPCSoftware.App.ViewModels
                         _logger.LogInfo($"[Manual] Stop {mode} (Tag {tagA}=0)", LogType.Audit);
                         await _coreClient.WriteTagAsync(tagA, 0);
                         item.IsActive = false;
-                        item.IsBlinking = false;
+                        item.IsBlinking = true;
                     }
                     else
                     {
                         // Turn ON
                         _logger.LogInfo($"[Manual] Start {mode} (Tag {tagA}=1)", LogType.Audit);
                         await _coreClient.WriteTagAsync(tagA, 1);
+                        await _coreClient.WriteTagAsync(tagA, 0);
                         item.IsBlinking = true; // Wait for B confirmation
                     }
                 }
@@ -337,14 +580,14 @@ namespace IPCSoftware.App.ViewModels
                 case ManualOperationMode.ManualXAxisJogForward: exclusive.Add(ManualOperationMode.ManualXAxisJogBackward); break;
                 case ManualOperationMode.ManualXAxisJogBackward: exclusive.Add(ManualOperationMode.ManualXAxisJogForward); break;
 
-                case ManualOperationMode.XAxisJogLowSpeed: exclusive.Add(ManualOperationMode.XAxisJogHighSpeed); break;
-                case ManualOperationMode.XAxisJogHighSpeed: exclusive.Add(ManualOperationMode.XAxisJogLowSpeed); break;
+              //  case ManualOperationMode.XAxisJogLowSpeed: exclusive.Add(ManualOperationMode.XAxisJogHighSpeed); break;
+              //  case ManualOperationMode.XAxisJogHighSpeed: exclusive.Add(ManualOperationMode.XAxisJogLowSpeed); break;
 
                 case ManualOperationMode.ManualYAxisJogForward: exclusive.Add(ManualOperationMode.ManualYAxisJogBackward); break;
                 case ManualOperationMode.ManualYAxisJogBackward: exclusive.Add(ManualOperationMode.ManualYAxisJogForward); break;
 
-                case ManualOperationMode.YAxisJogLowSpeed: exclusive.Add(ManualOperationMode.YAxisJogHighSpeed); break;
-                case ManualOperationMode.YAxisJogHighSpeed: exclusive.Add(ManualOperationMode.YAxisJogLowSpeed); break;
+             //   case ManualOperationMode.YAxisJogLowSpeed: exclusive.Add(ManualOperationMode.YAxisJogHighSpeed); break;
+               // case ManualOperationMode.YAxisJogHighSpeed: exclusive.Add(ManualOperationMode.YAxisJogLowSpeed); break;
                 // Inside CheckInterlocks(ModeItem item) switch statement:
 
                 // Add this case to handle ALL position moves (0 to 12)
@@ -407,6 +650,7 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _logger.LogInfo($"[Manual] Transport Stop Activated (Tag {tStop})", LogType.Audit);
                     await _coreClient.WriteTagAsync(tStop, 1);
+                    await _coreClient.WriteTagAsync(tStop, 0);
                     stopItem.IsBlinking = true; // Wait for B (Stop Confirmed) to clear
                 }
             }
@@ -426,6 +670,22 @@ namespace IPCSoftware.App.ViewModels
             {
                 var liveData = await _coreClient.GetIoValuesAsync(5);
                 if (liveData == null) return;
+
+
+                if (liveData.TryGetValue(TAG_READ_X_MINUS, out object xm)) IsJogXMinusActive = Convert.ToBoolean(xm);
+                if (liveData.TryGetValue(TAG_READ_X_PLUS, out object xp)) IsJogXPlusActive = Convert.ToBoolean(xp);
+                if (liveData.TryGetValue(TAG_READ_Y_MINUS, out object ym)) IsJogYMinusActive = Convert.ToBoolean(ym);
+                if (liveData.TryGetValue(TAG_READ_Y_PLUS, out object yp)) IsJogYPlusActive = Convert.ToBoolean(yp);
+
+                // 2.Tray Feedback(B Tags)
+                if (liveData.TryGetValue(TAG_READ_TRAY_DOWN, out object td)) IsTrayDownActive = Convert.ToBoolean(td);
+                if (liveData.TryGetValue(TAG_READ_TRAY_UP, out object tu)) IsTrayUpActive = Convert.ToBoolean(tu);
+
+                // 3. Cylinder Feedback (B Tags)
+                if (liveData.TryGetValue(TAG_READ_CYL_DOWN, out object cd)) IsCylDownActive = Convert.ToBoolean(cd);
+                if (liveData.TryGetValue(TAG_READ_CYL_UP, out object cu)) IsCylUpActive = Convert.ToBoolean(cu);
+
+
 
                 foreach (var item in Modes)
                 {

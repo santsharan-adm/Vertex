@@ -1,5 +1,5 @@
 ﻿Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark,CanWrite,IOType
-1,1,CD_COM_PULSE_PLC,1,40000,1,1,Bit,0,0,0,"DM10000, Heart beat signal1","Pulse PLC to IPC, PLC?IPC Heartbeat SignalEvery 1 second, send a signal of 0?1/1?0Received by polling every 1 second / If there is no change for 3 seconds, it is considered an abnormality",True,None
+1,1,CD_COM_PULSE_PLC,1,40001,1,1,Bit,0,0,0,"DM10000, Heart beat signal1","Pulse PLC to IPC, PLC?IPC Heartbeat SignalEvery 1 second, send a signal of 0?1/1?0Received by polling every 1 second / If there is no change for 3 seconds, it is considered an abnormality",True,None
 2,2,CD_COM_PULSE_IPC,1,40015,1,0,Bit,0,0,0,"DM10015, Heart beat signal2","Pulse IPC to PLC, SignalEvery 1 second, send a signal of 0?1/1?0Received by polling every 1 second / If there is no change for 3 seconds, it is considered an abnormality",True,None
 3,3,SYS_DATA_B1,1,40015,1,0,Bit,1,0,0,"DM10015, System Data B1","Time storage completion signalWhen time storage is complete, set it to 0?1.Always see a 0 or 1 change at scan time",True,None
 4,4,SYS_DATA_B2,1,40019,1,0,UInt16,0,0,0,"DM10019, System Data B2","Yearly DataStore year data in UINT format (e.g., 2025,2026)When the time storage completion signal reaches 0?1, check the IN data on the PLC",True,None
@@ -14,7 +14,7 @@
 13,13,CD_DATA_B3,1,40055,1,0,Bit,2,0,0,"DM10055, Control Data B3",Cycle Stop Start SignalCreate a switch to the IPC monitor and turn on the signal by pressing the switchRecognize triggers from IPC and turn on PLC devices,True,None
 14,14,CD_DATA_B4,1,40055,1,0,Bit,3,0,0,"DM10055, Control Data B4",Mass return to origin signalCreate a switch to the IPC monitor and turn on the signal by pressing the switchRecognize triggers from IPC and turn on PLC devices,True,None
 15,15,CD_DATA_B5,1,40055,1,0,Bit,4,0,0,"DM10055, Control Data B5","ALL data reading completedOnce you have received all the photos from the CCD and the data from the PLC, turn on the trigger signal.Recognize triggers from IPC and turn on PLC devices",True,None
-16,16,PD_DATA_2DCode,1,40500,1,0,String,0,0,0,"DM10500, Production Data B1 (2D Code)"," (string, length defined in meeting). Reserve 50 character",True,None
+16,16,PD_DATA_2DCode,1,40500,20,1,String,0,0,0,"DM10500, Production Data B1 (2D Code)"," (string, length defined in meeting). Reserve 50 character",True,None
 17,17,PD_DATA_B2,1,40520,1,0,UInt16,0,0,0,"DM10520, Production Data B2 (Judgment)","Storing data read from CCD (1????OK, 2????NG)",True,None
 18,18,PD_DATA_B3,1,40522,2,0,Float,0,0,0,"DM10522, Stores data read from CCDs",Stores data read from CCDs,True,None
 19,19,PD_DATA_B4,1,40524,2,0,Float,0,0,0,"DM10524, ",,True,None

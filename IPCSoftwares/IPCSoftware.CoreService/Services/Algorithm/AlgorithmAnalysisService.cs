@@ -60,7 +60,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
         /// Applies data conversion (Word/FP/String) and configured algorithm (Raw/Scale).
         /// </summary>
         /// <param name="rawModbusData">Dictionary keyed by Modbus start address, containing raw ushort[] registers.</param>
-        public Dictionary<int, object> Apply(int plcNo, Dictionary<uint, object> rawModbusData)
+        public Dictionary<int, object>  Apply(int plcNo, Dictionary<uint, object> rawModbusData)
         {
             var result = new Dictionary<int, object>();
 
