@@ -37,7 +37,7 @@
 36,36,PD_ALARMS6,1,40206,1,0,UInt16,0,0,0,"DM10206, PD_ALARMS6","16 Bit, for 16 alarms",True,None
 37,37,PD_ALARMS7,1,40207,1,0,UInt16,0,0,0,"DM10207, PD_ALARMS7","16 Bit, for 16 alarms",True,None
 38,38,ALM_Alarm B1,1,40208,1,0,Bit,0,0,0,"DM10208, Alarm B1","IPC to PLC, Alarm Data Received SignalTurn on the trigger signal when the alarm code is receivedRecognize triggers from IPC and turn on PLC devices",True,None
-39,39,ALM_Alarm B2,1,40208,1,1,Bit,0,0,0,"DM10208, Alarm B2","IPC to PLC, Alarm Reset SignalCreate a switch to the IPC monitor and turn on the signal by pressing the switchRecognize triggers from IPC and turn on PLC devices",True,None
+39,39,ALM_Alarm B2,1,40208,1,1,Bit,1,0,0,"DM10208, Alarm B2","IPC to PLC, Alarm Reset SignalCreate a switch to the IPC monitor and turn on the signal by pressing the switchRecognize triggers from IPC and turn on PLC devices",True,None
 40,40,CTL_MANUAL_A1,1,40220,1,0,Bit,0,0,0,"DM10220, Manual Control A1",Tray lift Down signal,True,None
 41,41,CTL_MANUAL_A2,1,40220,1,0,Bit,1,0,0,"DM10220, Manual Control A2",Tray lift rising signal,True,None
 42,42,CTL_MANUAL_A3,1,40220,1,0,Bit,2,0,0,"DM10220, Manual Control A3",Positioning cylinder rising signal,True,None
