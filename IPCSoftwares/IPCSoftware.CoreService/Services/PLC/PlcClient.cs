@@ -10,6 +10,7 @@ using System.Threading; // Added for Interlocked
 using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Services.PLC
+
 {
     public class PlcClient
     {
@@ -159,48 +160,103 @@ namespace IPCSoftware.CoreService.Services.PLC
         }
 
 
-        // ---------------------------------------------------------
-        // POLL ALL TAG GROUPS (Fixed for Multi-Register Reading)
-        // ---------------------------------------------------------
         private async Task<Dictionary<uint, object>> PollAllGroups()
         {
+            // The final result will contain exactly 104 entries
             var result = new Dictionary<uint, object>();
 
-            try
-            {
-                var groups = _tags
-                    .GroupBy(t => t.ModbusAddress)
-                    .ToList();
+            // 1. Get the optimized chunks (Maybe 3 or 4 chunks total)
+            var chunks = OptimizeReads(_tags);
 
-                foreach (var g in groups)
+            foreach (var chunk in chunks)
+            {
+                try
                 {
-                    int baseAddress = g.Key;
-                    ushort startOffset = (ushort)(baseAddress - _modbusAddress);
-                    //  ushort startOffset = (ushort)(baseAddress - 40000);
-                    ushort maxLength = (ushort)g.Max(t => t.Length);
+                    // 2. Perform ONE big read (e.g., 50 registers)
+                    ushort[] bigBlockRaw = await _master.ReadHoldingRegistersAsync(
+                        1, // Slave ID
+                        chunk.StartOffset,
+                        chunk.TotalCount
+                    );
 
-                    // Read the holding registers from the PLC.
-                    ushort[] rawRegisters = await _master.ReadHoldingRegistersAsync(1, startOffset, maxLength);
+                    // 3. SLICE THE DATA
+                    // We iterate through the specific 104 addresses we know are in this chunk
+                    foreach (var addrDef in chunk.IncludedAddresses)
+                    {
+                        // Calculate where inside the big block this specific address starts
+                        // Example: Chunk starts at 100. This address is 105. Index is 5.
+                        int indexInBlock = addrDef.Offset - chunk.StartOffset;
 
-                    // Pass the raw register block for the start address.
-                    result[(uint)baseAddress] = rawRegisters;
+                        // Safety check
+                        if (indexInBlock < 0 || (indexInBlock + addrDef.Length) > bigBlockRaw.Length)
+                        {
+                           // _logger.LogError($"[SLICE ERROR] Index out of bounds for address {addrDef.ModbusAddress}");
+                            continue;
+                        }
 
-                    // NEW DEBUG LOG: Confirming successful Modbus read
-                    Console.WriteLine($"PLC[{_device.DeviceName}] [DEBUG] Read Addr {baseAddress}, Len {maxLength} successful.");
-                    _logger.LogInfo($"PLC[{_device.DeviceName}] [DEBUG] Read Addr {baseAddress}, Len {maxLength} successful.", LogType.Diagnostics);
+                        // Extract specific registers for this address
+                        // If it's a 32-bit float, we copy 2 registers. If 16-bit, 1 register.
+                        ushort[] specificData = new ushort[addrDef.Length];
+                        Array.Copy(bigBlockRaw, indexInBlock, specificData, 0, addrDef.Length);
+
+                        // 4. ADD TO RESULT
+                        // This restores the "104 Groups" structure you require
+                        result[(uint)addrDef.ModbusAddress] = specificData;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                // This exception will be caught by the outer StartAsync loop's CATCH-ALL.
-                Console.WriteLine($"PLC[{_device.DeviceName}] [CRITICAL] Modbus Read Failed! Message: {ex.Message}");
-                _logger.LogError($"PLC[{_device.DeviceName}] [CRITICAL] Modbus Read Failed! Message: {ex.Message}", LogType.Diagnostics);
-                // Rethrow to break the polling cycle and force a Disconnect/Reconnect sequence
-                throw;
+                catch (Exception ex)
+                {
+                   // _logger.LogError($"[CHUNK FAIL] Failed to read chunk start {chunk.StartOffset}: {ex.Message}");
+                    // Optional: You could choose to throw here if you want to stop everything
+                }
             }
 
             return result;
         }
+
+
+        // ---------------------------------------------------------
+        // POLL ALL TAG GROUPS (Fixed for Multi-Register Reading)
+        // ---------------------------------------------------------
+        /*  private async Task<Dictionary<uint, object>> PollAllGroups()
+          {
+              var result = new Dictionary<uint, object>();
+
+              try
+              {
+                  var groups = _tags
+                      .GroupBy(t => t.ModbusAddress)
+                      .ToList();
+
+                  foreach (var g in groups)
+                  {
+                      int baseAddress = g.Key;
+                      ushort startOffset = (ushort)(baseAddress - _modbusAddress);
+                      //  ushort startOffset = (ushort)(baseAddress - 40000);
+                      ushort maxLength = (ushort)g.Max(t => t.Length);
+
+                      // Read the holding registers from the PLC.
+                      ushort[] rawRegisters = await _master.ReadHoldingRegistersAsync(1, startOffset, maxLength);
+
+                      // Pass the raw register block for the start address.
+                      result[(uint)baseAddress] = rawRegisters;
+
+                      // NEW DEBUG LOG: Confirming successful Modbus read
+                      Console.WriteLine($"PLC[{_device.DeviceName}] [DEBUG] Read Addr {baseAddress}, Len {maxLength} successful.");
+                      _logger.LogInfo($"PLC[{_device.DeviceName}] [DEBUG] Read Addr {baseAddress}, Len {maxLength} successful.", LogType.Diagnostics);
+                  }
+              }
+              catch (Exception ex)
+              {
+                  // This exception will be caught by the outer StartAsync loop's CATCH-ALL.
+                  Console.WriteLine($"PLC[{_device.DeviceName}] [CRITICAL] Modbus Read Failed! Message: {ex.Message}");
+                  _logger.LogError($"PLC[{_device.DeviceName}] [CRITICAL] Modbus Read Failed! Message: {ex.Message}", LogType.Diagnostics);
+                  // Rethrow to break the polling cycle and force a Disconnect/Reconnect sequence
+                  throw;
+              }
+
+              return result;
+          }*/
 
 
 
@@ -345,6 +401,7 @@ namespace IPCSoftware.CoreService.Services.PLC
 
 
 
+        #region Commented code
 
         //public async Task WriteAsync(PLCTagConfigurationModel cfg, object value)
         //{
@@ -523,7 +580,7 @@ namespace IPCSoftware.CoreService.Services.PLC
         //}
 
 
-
+        #endregion
 
 
         // DataType constants (add these to match your ConvertData logic)
@@ -538,6 +595,93 @@ namespace IPCSoftware.CoreService.Services.PLC
         private const int DataType_UInt32 = 7;
 
 
+        // Helper class to hold chunk info
+        public class ModbusReadChunk
+        {
+            public ushort StartOffset { get; set; }
+            public ushort TotalCount { get; set; }
+            // We store WHICH addresses are inside this chunk so we can extract them later
+            public List<AddressDef> IncludedAddresses { get; set; } = new List<AddressDef>();
+        }
+
+        public class AddressDef
+        {
+            public int ModbusAddress { get; set; } // e.g. 40001
+            public ushort Offset { get; set; }     // e.g. 1 (The calculated 0-based offset)
+            public ushort Length { get; set; }     // e.g. 1 or 2
+        }
+
+        private List<ModbusReadChunk> OptimizeReads(List<PLCTagConfigurationModel> tags)
+        {
+            var chunks = new List<ModbusReadChunk>();
+
+            // 1. Filter to just the 104 Unique Addresses
+            // We take Max(Length) because if Address 100 has a Bit (Len 1) and a Float (Len 2), we need 2 registers.
+            var uniqueAddresses = tags
+                .GroupBy(t => t.ModbusAddress)
+                .Select(g => new AddressDef
+                {
+                    ModbusAddress = g.Key,
+                    Offset = (ushort)(g.Key - _modbusAddress), // Ensure this calculation matches your logic
+                    Length = (ushort)g.Max(t => t.Length)
+                })
+                .OrderBy(a => a.Offset)
+                .ToList();
+
+            if (!uniqueAddresses.Any()) return chunks;
+
+            // 2. Algorithm to create chunks
+            var currentChunk = new ModbusReadChunk();
+            // Initialize with first address
+            var first = uniqueAddresses[0];
+            currentChunk.StartOffset = first.Offset;
+            currentChunk.IncludedAddresses.Add(first);
+
+            int currentEnd = first.Offset + first.Length;
+
+            for (int i = 1; i < uniqueAddresses.Count; i++)
+            {
+                var addr = uniqueAddresses[i];
+                int addrEnd = addr.Offset + addr.Length;
+
+                // SETTINGS
+                int MAX_GAP = 10;     // Don't read more than 10 empty registers just to bridge a gap
+                int MAX_READ = 120;   // Max registers per Modbus request
+
+                // Calculate gap from end of last data to start of this data
+                int gap = addr.Offset - currentEnd;
+                // Calculate total size if we add this address
+                int newTotalSize = addrEnd - currentChunk.StartOffset;
+
+                if (gap <= MAX_GAP && newTotalSize <= MAX_READ)
+                {
+                    // Add to current chunk
+                    currentChunk.IncludedAddresses.Add(addr);
+                    currentEnd = addrEnd;
+                }
+                else
+                {
+                    // Close current chunk
+                    currentChunk.TotalCount = (ushort)(currentEnd - currentChunk.StartOffset);
+                    chunks.Add(currentChunk);
+
+                    // Start new chunk
+                    currentChunk = new ModbusReadChunk();
+                    currentChunk.StartOffset = addr.Offset;
+                    currentChunk.IncludedAddresses.Add(addr);
+                    currentEnd = addrEnd;
+                }
+            }
+
+            // Add final chunk
+            currentChunk.TotalCount = (ushort)(currentEnd - currentChunk.StartOffset);
+            chunks.Add(currentChunk);
+
+            return chunks;
+        }
 
     }
+
+
+
 }

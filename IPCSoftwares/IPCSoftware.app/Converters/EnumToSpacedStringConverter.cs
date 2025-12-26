@@ -68,16 +68,16 @@ namespace IPCSoftware.App.Converters
                 ManualOperationMode.TransportConveyorHighSpeed => "⏩ HIGH",
 
                 // X-Axis
-                ManualOperationMode.ManualXAxisJogBackward => "◀ BACK",
-                ManualOperationMode.ManualXAxisJogForward => "▶ FWD",
-                ManualOperationMode.XAxisJogLowSpeed => "⏪ LOW",
-                ManualOperationMode.XAxisJogHighSpeed => "⏩ HIGH",
+                ManualOperationMode.ManualXAxisJogBackward => "◀ JOG -",
+                ManualOperationMode.ManualXAxisJogForward => "▶ JOG +",
+             /*   ManualOperationMode.XAxisJogLowSpeed => "⏪ LOW",
+                ManualOperationMode.XAxisJogHighSpeed => "⏩ HIGH",*/
 
                 // Y-Axis
-                ManualOperationMode.ManualYAxisJogForward => "▲ UP",
-                ManualOperationMode.ManualYAxisJogBackward => "▼ DOWN",
-                ManualOperationMode.YAxisJogLowSpeed => "⏪ LOW",
-                ManualOperationMode.YAxisJogHighSpeed => "⏩ HIGH",
+                ManualOperationMode.ManualYAxisJogBackward => "◀ JOG -",
+                ManualOperationMode.ManualYAxisJogForward => "▶ JOG +",
+         /*       ManualOperationMode.YAxisJogLowSpeed => "⏪ LOW",
+                ManualOperationMode.YAxisJogHighSpeed => "⏩ HIGH",*/
 
                 // Positions
                 ManualOperationMode.MoveToPos0 => "HOME",

@@ -163,6 +163,8 @@ namespace IPCSoftware.App.ViewModels
                     await WriteTagToPlc(_tagMap[OperationMode.Auto], 0);
                     await WriteTagToPlc(_tagMap[OperationMode.DryRun], 0);
 
+                    //await WriteTagToPlc(_tagMap[OperationMode.CycleStop], 0);
+
                     AddAudit("Cycle Stop Initiated. Waiting for Home...");
                     return;
                 }
