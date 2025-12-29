@@ -212,10 +212,10 @@
 							
                                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
                                 <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
-                                <DataGridTextColumn Header="Status" Binding="{Binding Value}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+                                <!--<DataGridTextColumn Header="Status" Binding="{Binding Value}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>-->
 
 								<!-- Status (Light Indicator) -->
-								<!--<DataGridTemplateColumn Header="Status" Width="200">
+								<DataGridTemplateColumn Header="Status" Width="200">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<Border Width="50" Height="50" CornerRadius="25"
@@ -228,7 +228,7 @@
 											</Border>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>-->
+								</DataGridTemplateColumn>
 						
                             </DataGrid.Columns>
 						</DataGrid>
@@ -276,8 +276,8 @@
 								<!-- Name -->
 								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
                                 <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
-
-								<!-- Status (Light Indicator) -->
+                                <!--<DataGridTextColumn Header="Status" Binding="{Binding Value}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>-->
+                                <!-- Status (Light Indicator) -->
 								<DataGridTemplateColumn Header="Status" Width="200">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
@@ -293,7 +293,7 @@
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
 
-								<!-- Toggle Action Button (Mobile Switch Style) -->
+								<!-- Toggle Action Button (Mobile Switch Style) --><!--
 								<DataGridTemplateColumn Header="Action" Width="250">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
@@ -303,7 +303,9 @@
                                                           CommandParameter="{Binding}"/>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>
+								</DataGridTemplateColumn>-->
+                                
+                                
 							</DataGrid.Columns>
 						</DataGrid>
 					</Border>

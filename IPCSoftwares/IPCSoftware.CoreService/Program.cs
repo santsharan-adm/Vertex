@@ -78,6 +78,7 @@ namespace IPCSoftware.CoreService
                         services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
                         services.AddSingleton<ICycleManagerService, CycleManagerService>();
                         services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
+                        services.AddSingleton<IServoCalibrationService, ServoCalibrationService>();
                         services.AddSingleton<AlgorithmAnalysisService>();
                         services.AddSingleton<DashboardInitializer>();
                         services.AddSingleton<OeeEngine>();

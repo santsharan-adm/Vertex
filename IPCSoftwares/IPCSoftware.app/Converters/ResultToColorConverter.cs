@@ -41,7 +41,7 @@ namespace IPCSoftware.App.Converters
             if (double.TryParse(value.ToString(), out double milliseconds))
             {
                 // Divide by 1000 to get seconds
-                return milliseconds / 1000.0;
+                return milliseconds / 100.0;
             }
 
             return 0.0;

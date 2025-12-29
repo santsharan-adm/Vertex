@@ -15,6 +15,16 @@
     <UserControl.Resources>
         <converters:AlgNoToNameConverter x:Key="AlgNoToNameConverter"/>
 
+        <!-- Filter Box Style -->
+        <Style x:Key="HmiFilterTextBox" TargetType="TextBox">
+            <Setter Property="Height" Value="70"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
         <Style x:Key="HmiColumnHeaderStyle" TargetType="DataGridColumnHeader">
             <Setter Property="Height" Value="90"/>
             <Setter Property="FontSize" Value="36"/>
@@ -73,6 +83,7 @@
 
             <Grid Grid.Row="0" Margin="0,0,0,30">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
@@ -84,7 +95,36 @@
                            Foreground="#333333"
                            VerticalAlignment="Center"/>
 
-                <Button Grid.Column="1" 
+                <Grid Grid.Column="1" Margin=" 50 0 50 0" VerticalAlignment="Center">
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+            >
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource HmiFilterTextBox}">
+                                <Style.Triggers>
+                                    <Trigger Property="Text" Value="">
+                                        <Setter Property="Background">
+                                            <Setter.Value>
+                                                <VisualBrush Stretch="None" AlignmentX="Left">
+                                                    <VisualBrush.Visual>
+                                                        <TextBlock FontStyle="Italic" Text="Search ..." 
+                                                     FontSize="28"
+                                                     Foreground="#999999" 
+                                                     Margin="15,0,0,0"
+                                                     />
+                                                    </VisualBrush.Visual>
+                                                </VisualBrush>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </Grid>
+
+
+
+                <Button Grid.Column="2" 
                         Content="+ ADD TAG" 
                         Command="{Binding AddTagCommand}"
                         Height="90" Width="350"
@@ -107,7 +147,7 @@
                     BorderBrush="#CCCCCC" 
                     BorderThickness="2">
 
-                <DataGrid ItemsSource="{Binding Tags}"
+                <DataGrid ItemsSource="{Binding FilteredTags}"
                           SelectedItem="{Binding SelectedTag}"
                           AutoGenerateColumns="False"
                           IsReadOnly="True"

@@ -4,12 +4,44 @@
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ManualOperationViewModel}"
              Background="#F0F2F5">
 
     <UserControl.Resources>
         <conv:EnumToSymbolConverter x:Key="EnumToSymbolConverter"/>
         <conv:EqualityConverter x:Key="EqualityConverter"/>
+
+        <!-- JOG BUTTON STYLE (Base) -->
+        <Style x:Key="JogButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="120"/>
+            <Setter Property="Width" Value="220"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <!-- Default Background if not overridden -->
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="12" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.6"/>
+                                <Setter TargetName="border" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.95" ScaleY="0.95" CenterX="100" CenterY="40"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <!-- Styles -->
         <Style x:Key="CardStyle" TargetType="Border">
@@ -26,7 +58,6 @@
 
         <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="32"/>
-            <!-- Increased -->
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#333"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -37,10 +68,8 @@
         <Style x:Key="ManualModeButtonStyle" TargetType="Button">
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Height" Value="150"/>
-            <!-- Increased Height for Square look -->
             <Setter Property="Margin" Value="8"/>
             <Setter Property="FontSize" Value="28"/>
-            <!-- Increased Font Size -->
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
@@ -91,7 +120,7 @@
         </Style>
 
         <DataTemplate x:Key="SharedButtonTemplate">
-            <Button Style="{StaticResource ManualModeButtonStyle}"
+            <Button Style="{StaticResource ManualModeButtonStyle}" Height="108"
                     Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                     CommandParameter="{Binding Mode}">
                 <TextBlock Text="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
@@ -100,13 +129,11 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <!-- Full Screen Grid (No Viewbox) -->
+    <!-- Full Screen Grid -->
     <Grid Margin="30">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Header -->
             <RowDefinition Height="*"/>
-            <!-- Content Area -->
         </Grid.RowDefinitions>
 
         <!-- Header -->
@@ -115,54 +142,147 @@
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1.5*"/>
-                <!-- Left Column (Tray, Cyl, Conveyor, Jog) -->
                 <ColumnDefinition Width="*"/>
-                <!-- Right Column (Positions) -->
             </Grid.ColumnDefinitions>
 
             <!-- LEFT COLUMN -->
             <Grid Grid.Column="0" Margin="0,0,15,0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="1.4*"/>
                     <RowDefinition Height="*"/>
-                    <!-- Row 1: Tray, Cyl, Conveyor -->
-                    <RowDefinition Height="*"/>
-                    <!-- Row 2: Jog (X & Y) -->
                 </Grid.RowDefinitions>
 
-                <!-- Top Group: Tray, Cyl, Conveyor -->
+                <!-- Row 1: Tray, Cyl, Conveyor -->
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="2*"/>
-                        <!-- Conveyor needs more space -->
+                        <ColumnDefinition Width="2.3*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Tray Lift -->
                     <Border Grid.Column="0" Style="{StaticResource CardStyle}">
                         <StackPanel>
-                            <TextBlock Text="Tray Lift" Style="{StaticResource SectionHeaderStyle}"/>
-                            <ItemsControl ItemsSource="{Binding TrayModes}" ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Columns="1"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
+                            <TextBlock Text="Tray Lift" Margin="0 0 0 40" Style="{StaticResource SectionHeaderStyle}"/>
+
+                            <!-- TRAY UP (Hardcoded with Style Trigger) -->
+                            <Button Content="UP" Width="180" Margin="0 0 0 20" HorizontalAlignment="Center">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsTrayUpActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                            <!-- TRAY DOWN -->
+                            <Button Content="DOWN" Width="180" HorizontalAlignment="Center">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsTrayDownActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
                         </StackPanel>
                     </Border>
 
                     <!-- Positioning Cylinder -->
                     <Border Grid.Column="1" Style="{StaticResource CardStyle}">
                         <StackPanel>
-                            <TextBlock Text="Pos. Cylinder" Style="{StaticResource SectionHeaderStyle}"/>
-                            <ItemsControl ItemsSource="{Binding CylinderModes}" ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Columns="1"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
+                            <TextBlock Text="Pos. Cylinder" Margin="0 0 0 40 " Style="{StaticResource SectionHeaderStyle}"/>
+
+                            <!-- CYL UP -->
+                            <Button Content="UP" Width="180" Margin="0 0 0 20" HorizontalAlignment="Center">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCylUpActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                            <!-- CYL DOWN -->
+                            <Button Content="DOWN" Width="180" HorizontalAlignment="Center">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCylDownActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
                         </StackPanel>
                     </Border>
 
@@ -170,7 +290,7 @@
                     <Border Grid.Column="2" Style="{StaticResource CardStyle}">
                         <StackPanel>
                             <TextBlock Text="Transport Conveyor" Style="{StaticResource SectionHeaderStyle}"/>
-                            <ItemsControl ItemsSource="{Binding ConveyorModes}" ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                            <ItemsControl ItemsSource="{Binding ConveyorModes}" Margin="0 20 0 20" ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Columns="3"/>
@@ -192,13 +312,62 @@
                     <Border Grid.Column="0" Style="{StaticResource CardStyle}">
                         <DockPanel>
                             <TextBlock DockPanel.Dock="Top" Text="Manual X-Axis Jog" Style="{StaticResource SectionHeaderStyle}"/>
-                            <ItemsControl ItemsSource="{Binding XAxisModes}" ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Columns="2" Rows="2"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
+
+                            <Button Content="X JOG -" HorizontalAlignment="Right">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <!--<Setter Property="Background" Value="Coral"/>-->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsJogXMinusActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                            <Button Content="X JOG +" HorizontalAlignment="Right">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <!--<Setter Property="Background" Value="Coral"/>-->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsJogXPlusActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
                         </DockPanel>
                     </Border>
 
@@ -206,13 +375,62 @@
                     <Border Grid.Column="1" Style="{StaticResource CardStyle}">
                         <DockPanel>
                             <TextBlock DockPanel.Dock="Top" Text="Manual Y-Axis Jog" Style="{StaticResource SectionHeaderStyle}"/>
-                            <ItemsControl ItemsSource="{Binding YAxisModes}" ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Columns="2" Rows="2"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
+
+                            <Button Content="Y JOG -" HorizontalAlignment="Right">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <!--<Setter Property="Background" Value="LightGreen"/>-->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsJogYMinusActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                            <Button Content="Y JOG +" HorizontalAlignment="Right">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <!--<Setter Property="Background" Value="LightGreen"/>-->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsJogYPlusActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
                         </DockPanel>
                     </Border>
                 </Grid>
@@ -230,15 +448,14 @@
                     <TextBlock Text="Move to Position" Style="{StaticResource SectionHeaderStyle}"/>
 
                     <!-- Home Button (Large) -->
-                    <Button Grid.Row="1" Margin="20,0,20,20" Content="HOME POS" FontWeight="Bold" FontSize="36" Height="120"
+                    <Button Grid.Row="1" Margin="10,0,10,20" Content="HOME POS" FontWeight="Bold" FontSize="36" Height="120"
                             Style="{StaticResource ManualModeButtonStyle}" DataContext="{Binding HomePositionMode}"
                             Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                             CommandParameter="{Binding Mode}"/>
 
                     <!-- Grid 1-12 -->
-                    <ItemsControl Grid.Row="2" ItemsSource="{Binding GridPositionModes}" ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                    <ItemsControl Grid.Row="2" ItemsSource="{Binding GridPositionModes}"  ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
                         <ItemsControl.ItemsPanel>
-                            <!-- 3 Columns for bigger buttons -->
                             <ItemsPanelTemplate>
                                 <UniformGrid Columns="3"/>
                             </ItemsPanelTemplate>

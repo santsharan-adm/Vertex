@@ -59,35 +59,63 @@ namespace IPCSoftware.App.ViewModels
             try
             {
                 // 1. Write the boolean true to the PLC tag
-                bool success = await _coreClient.WriteTagAsync(tagId, true);
-
-                if (success)
+                await _coreClient.WriteTagAsync(tagId, true);
+                _logger.LogInfo($"{actionName} (Tag {tagId}) triggered successfully.", LogType.Audit);
+                var now = DateTime.Now;
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    _logger.LogInfo($"{actionName} (Tag {tagId}) triggered successfully.", LogType.Audit);
-
-                    // 2. Update the local UI collection immediately on the UI thread
-                    Application.Current.Dispatcher.Invoke(() =>
+                    foreach (var alarm in ActiveAlarms)
                     {
-                        var now = DateTime.Now;
-                        foreach (var alarm in ActiveAlarms)
+
+                        if (tagId == 39) // Global Reset logic
                         {
-                            if (tagId == 38) // Global Acknowledge logic
-                            {
-                                if (alarm.AlarmAckTime == null)
-                                {
-                                    alarm.AlarmAckTime = now;
-                                    alarm.AcknowledgedByUser = Environment.UserName;
-                                }
-                            }
-                            else if (tagId == 39) // Global Reset logic
-                            {
-                                // Update the reset timestamp in the model
-                                alarm.AlarmResetTime = now;
-                            }
+                            // Update the reset timestamp in the model
+                            alarm.AlarmResetTime = now;
                         }
-                    });
+                    }
+                });
+                if (tagId == 39)
+                {
+                    await Task.Delay(2000); // Wait 2s
+                    await _coreClient.WriteTagAsync(tagId, false); // Turn Off
+                    _logger.LogInfo($"{actionName} (Tag {tagId}) pulsed off.", LogType.Audit);
                 }
             }
+
+            //    if (success)
+            //    {
+            //        _logger.LogInfo($"{actionName} (Tag {tagId}) triggered successfully.", LogType.Audit);
+
+            //        // 2. Update the local UI collection immediately on the UI thread
+            //        Application.Current.Dispatcher.Invoke(() =>
+            //        {
+            //            foreach (var alarm in ActiveAlarms)
+            //            {
+            //                if (tagId == 38) // Global Acknowledge logic
+            //                {
+            //                    if (alarm.AlarmAckTime == null)
+            //                    {
+            //                        alarm.AlarmAckTime = now;
+            //                        alarm.AcknowledgedByUser = Environment.UserName;
+            //                    }
+            //                }
+            //                else if (tagId == 39) // Global Reset logic
+            //                {
+            //                    // Update the reset timestamp in the model
+            //                    alarm.AlarmResetTime = now;
+            //                }
+            //            }
+            //        });
+
+            //        // 3. Pulse Logic: Turn OFF Tag 39 after 2 seconds
+            //        if (tagId == 39)
+            //        {
+            //            await Task.Delay(2000); // Wait 2s
+            //            await _coreClient.WriteTagAsync(tagId, false); // Turn Off
+            //            _logger.LogInfo($"{actionName} (Tag {tagId}) pulsed off.", LogType.Audit);
+            //        }
+            //    }
+            //}
             catch (Exception ex)
             {
                 _logger.LogError($"Error during {actionName}: {ex.Message}", LogType.Diagnostics);

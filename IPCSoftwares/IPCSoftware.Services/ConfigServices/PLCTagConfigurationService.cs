@@ -178,7 +178,7 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 var sb = new StringBuilder();
                 // Header
-                sb.AppendLine("Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark,CanWrite");
+                sb.AppendLine("Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark,CanWrite,IOType");
 
                 foreach (var tag in _tags)
                 {
@@ -197,8 +197,8 @@ namespace IPCSoftware.Services.ConfigServices
                         $"{tag.Span}," +
                         $"{EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
                         $"{EscapeCsv(tag.Remark)}," +       // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
-                        $"{tag.CanWrite}" +
-                        $"{EscapeCsv(tag.IOType)},");  // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
+                        $"{tag.CanWrite}," +
+                        $"{EscapeCsv(tag.IOType)}");  // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
                        // $"{EscapeCsv(tag.DMAddress)},") ;
                 }
 

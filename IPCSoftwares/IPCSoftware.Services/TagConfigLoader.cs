@@ -63,7 +63,7 @@ namespace IPCSoftware.Services
 
                             // NEW: Read CanWrite (assuming column [13])
                             CanWrite = ParseBoolean(r[13]),
-                            //IOType = r[14],
+                            IOType = r[14]
                             //DMAddress = r[15]
 
                         };
