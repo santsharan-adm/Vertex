@@ -198,7 +198,7 @@ namespace IPCSoftware.App.ViewModels
             CylPosCommand = new RelayCommand<object>(async (args) => await OnCylAsync(args));
 
             // Faster Polling for Responsiveness (100ms)
-            _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+            _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(10) };
             _feedbackTimer.Tick += FeedbackLoop_Tick;
             _feedbackTimer.Start();
 
@@ -211,7 +211,7 @@ namespace IPCSoftware.App.ViewModels
         {
             await _coreClient.WriteTagAsync(TAG_PARAM_A4, 1);
             
-            await Task.Delay(2000);
+           // await Task.Delay(2000);
 
             await _coreClient.WriteTagAsync(TAG_PARAM_A4, 0);
         }
@@ -276,8 +276,8 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _logger.LogInfo($"JOG START: {dir} (Tag {writeTagId})", LogType.Audit);
                     await _coreClient.WriteTagAsync(writeTagId, 1);
-                    await Task.Delay(1000);
-                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                    //await Task.Delay(1000);
+                   // await _coreClient.WriteTagAsync(writeTagId, 0);
                 }
                 else
                 {
@@ -332,8 +332,8 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _logger.LogInfo($"TRAY START: {direction} (Tag {writeTagId})", LogType.Audit);
                     await _coreClient.WriteTagAsync(writeTagId, 1);
-                    await Task.Delay(1000);
-                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                   // await Task.Delay(1000);
+                   // await _coreClient.WriteTagAsync(writeTagId, 0);
                 }
                 else
                 {
@@ -384,8 +384,8 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _logger.LogInfo($"CYL START: {direction} (Tag {writeTagId})", LogType.Audit);
                     await _coreClient.WriteTagAsync(writeTagId, 1);
-                    await Task.Delay(1000);
-                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                   // await Task.Delay(1000);
+                   // await _coreClient.WriteTagAsync(writeTagId, 0);
                 }
                 else
                 {
@@ -552,7 +552,7 @@ namespace IPCSoftware.App.ViewModels
                         _logger.LogInfo($"[Manual] Pulse {mode} (Tag {tagA}=1)", LogType.Audit);
                         await _coreClient.WriteTagAsync(tagA, 1);
                         item.IsBlinking = true; // Waiting for B
-                        await Task.Delay(1000);
+                      //  await Task.Delay(1000);
                         await _coreClient.WriteTagAsync(tagA, 0);
                         item.IsBlinking = false;
                     }
@@ -576,7 +576,7 @@ namespace IPCSoftware.App.ViewModels
                         _logger.LogInfo($"[Manual] Start {mode} (Tag {tagA}=1)", LogType.Audit);
                         await _coreClient.WriteTagAsync(tagA, 1);
                         item.IsBlinking = true; // Wait for B confirmation
-                        await Task.Delay(1000);
+                        //await Task.Delay(1000);
                         await _coreClient.WriteTagAsync(tagA, 0);
                         item.IsBlinking = false;
                     }
