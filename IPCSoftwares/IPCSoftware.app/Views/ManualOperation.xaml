@@ -120,7 +120,7 @@
         </Style>
 
         <DataTemplate x:Key="SharedButtonTemplate">
-            <Button Style="{StaticResource ManualModeButtonStyle}"
+            <Button Style="{StaticResource ManualModeButtonStyle}" Height="108"
                     Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                     CommandParameter="{Binding Mode}">
                 <TextBlock Text="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
@@ -454,7 +454,7 @@
                             CommandParameter="{Binding Mode}"/>
 
                     <!-- Grid 1-12 -->
-                    <ItemsControl Grid.Row="2" ItemsSource="{Binding GridPositionModes}" ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                    <ItemsControl Grid.Row="2" ItemsSource="{Binding GridPositionModes}"  ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <UniformGrid Columns="3"/>

@@ -99,6 +99,7 @@ namespace IPCSoftware.App.ViewModels
 
         // Speed State (False = Low, True = High) - These are derived from button state now
         private bool _conveyorHighSpeed => IsModeActive(ManualOperationMode.TransportConveyorHighSpeed);
+
         //   private bool _xAxisHighSpeed => IsModeActive(ManualOperationMode.XAxisJogHighSpeed);
         //  private bool _yAxisHighSpeed => IsModeActive(ManualOperationMode.YAxisJogHighSpeed);
 
@@ -292,13 +293,13 @@ namespace IPCSoftware.App.ViewModels
                 if (direction == "TrayUP")
                 {
                     // Interlock: Cannot go Up if Down is Active
-                    if (IsTrayDownActive) { _logger.LogWarning("Interlock: Cannot Tray Up while Tray Down is active.", LogType.Audit); return; }
+                   // if (IsTrayDownActive) { _logger.LogWarning("Interlock: Cannot Tray Up while Tray Down is active.", LogType.Audit); return; }
                     writeTagId = TAG_WRITE_TRAY_UP;
                 }
                 else if (direction == "TrayDOWN")
                 {
                     // Interlock: Cannot go Down if Up is Active
-                    if (IsTrayUpActive) { _logger.LogWarning("Interlock: Cannot Tray Down while Tray Up is active.", LogType.Audit); return; }
+                   // if (IsTrayUpActive) { _logger.LogWarning("Interlock: Cannot Tray Down while Tray Up is active.", LogType.Audit); return; }
                     writeTagId = TAG_WRITE_TRAY_DOWN;
                 }
             }
@@ -346,12 +347,12 @@ namespace IPCSoftware.App.ViewModels
             {
                 if (direction == "CylUP")
                 {
-                    if (IsCylDownActive) { _logger.LogWarning("Interlock: Cannot Cyl Up while Cyl Down is active.", LogType.Audit); return; }
+                  //  if (IsCylDownActive) { _logger.LogWarning("Interlock: Cannot Cyl Up while Cyl Down is active.", LogType.Audit); return; }
                     writeTagId = TAG_WRITE_CYL_UP;
                 }
                 else if (direction == "CylDOWN")
                 {
-                    if (IsCylUpActive) { _logger.LogWarning("Interlock: Cannot Cyl Down while Cyl Up is active.", LogType.Audit); return; }
+                    //if (IsCylUpActive) { _logger.LogWarning("Interlock: Cannot Cyl Down while Cyl Up is active.", LogType.Audit); return; }
                     writeTagId = TAG_WRITE_CYL_DOWN;
                 }
             }
@@ -367,7 +368,7 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _logger.LogInfo($"CYL START: {direction} (Tag {writeTagId})", LogType.Audit);
                     await _coreClient.WriteTagAsync(writeTagId, 1);
-                    await Task.Delay(10000);
+                    await Task.Delay(1000);
                     await _coreClient.WriteTagAsync(writeTagId, 0);
                 }
                 else
@@ -505,7 +506,14 @@ namespace IPCSoftware.App.ViewModels
                 }
 
                 // 2. Interlock Check (Prevent Forward if Backward is On, Low/High conflict, etc.)
-                if (!CheckInterlocks(item)) return;
+                if (group != "Move to Position")
+                {
+                 if (!CheckInterlocks(item)) return;
+                }
+                else
+                {
+
+                }
 
                 // 3. Get Tag
                 if (!_tagMapA.TryGetValue(mode, out int tagA)) return;
@@ -651,7 +659,8 @@ namespace IPCSoftware.App.ViewModels
                     _logger.LogInfo($"[Manual] Transport Stop Activated (Tag {tStop})", LogType.Audit);
                     await _coreClient.WriteTagAsync(tStop, 1);
                     await _coreClient.WriteTagAsync(tStop, 0);
-                    stopItem.IsBlinking = true; // Wait for B (Stop Confirmed) to clear
+                   // stopItem.IsBlinking = true; // Wait for B (Stop Confirmed) to clear
+
                 }
             }
             catch (Exception ex)
