@@ -501,7 +501,6 @@
 500,500,CD_DATA_A25,1,40051,1,0,Bit,15,0,0,"DM10051, Startup Condition 16",(Control Data A25),True,None
 501,501,SYS_PARAMETER_A45,1,40382,2,0,UInt32,0,0,0,"DM10382, System Parameter a45",X - Axis Home,True,None
 502,502,SYS_PARAMETER_A46,1,40384,2,0,UInt32,0,0,0,"DM10384, System Parameter a46",Y- Axis Home,True,None
-
 503,503,SYS_DATA_READ_B2,1,40004,1,0,UInt16,0,0,0,"DM10004, System Data READ B2","Yearly DataStore year data in UINT format (e.g., 2025,2026)When the time storage completion signal reaches 0?1, check the IN data on the PLC",True,None
 504,504,SYS_DATA_READ_B3,1,40005,1,0,UInt16,0,0,0,"DM10005, System Data READ B3","Monthly dataStore monthly data in UINT format (e.g., 1~12)When the time storage completion signal reaches 0?1, check the IN data on the PLC",True,None
 505,505,SYS_DATA_READ_B4,1,40006,1,0,UInt16,0,0,0,"DM10006, System Data READ B4","Daily DataStore day data in UINT format (e.g., 1~31)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",True,None
