@@ -135,6 +135,7 @@ namespace IPCSoftware.App.ViewModels
 
         private const int TAG_READ_CONV_FWD= 84;
         private const int TAG_READ_CONV_REV = 85;
+        private const int TAG_PARAM_A4 = 113;
 
 
 
@@ -158,6 +159,7 @@ namespace IPCSoftware.App.ViewModels
         // --- Properties ---
         public ObservableCollection<ModeItem> Modes { get; }
         public ICommand ButtonClickCommand { get; }
+        public ICommand ConfirmYCoordsCommand { get; }
 
         // Filtered Lists for UI
         public IEnumerable<ModeItem> TrayModes => GetGroup("Tray Lift");
@@ -189,6 +191,7 @@ namespace IPCSoftware.App.ViewModels
                     }));
 
             ButtonClickCommand = new RelayCommand<ManualOperationMode>(OnButtonClicked);
+            ConfirmYCoordsCommand = new RelayCommand(XYOriign);
 
             JogCommand = new RelayCommand<object>(async (args) => await OnJogAsync(args));
             TrayLiftCommand = new RelayCommand<object>(async (args) => await OnTrayAsync(args));
@@ -204,7 +207,14 @@ namespace IPCSoftware.App.ViewModels
         }
 
 
+        private async void XYOriign()
+        {
+            await _coreClient.WriteTagAsync(TAG_PARAM_A4, 1);
+            
+            await Task.Delay(2000);
 
+            await _coreClient.WriteTagAsync(TAG_PARAM_A4, 0);
+        }
 
         private async Task OnJogAsync(object args)
         {
@@ -440,6 +450,7 @@ namespace IPCSoftware.App.ViewModels
         {
             int aStart = 40;
             int bStart = 80;
+
 
             // Tray Lift
             MapTag(ManualOperationMode.TrayLiftDown, aStart + 0, bStart + 0);
