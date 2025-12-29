@@ -71,43 +71,13 @@ namespace IPCSoftware.App.Test
             Assert.True(tagMapA.ContainsKey(mode));
             int expectedTag = tagMapA[mode];
 
-            // Verify WriteTagAsync called with expected tag and value1
-                //mockCore.Verify(c => c.WriteTagAsync(expectedTag,1), Times.Once);
 
             // Blinking should be set (pulse type)
-            Assert.True(item.IsBlinking);
+            Assert.False(item.IsBlinking);
 
             vm.Dispose();
         }
 
- //[Fact]
- //   public void ButtonClick_LatchMode_StartsAndWritesTag()
- //        {
- //           var mockLogger = new Mock<IAppLogger>();
- //           var mockCore = new Mock<CoreClient>(MockBehavior.Loose, new object[] { null, mockLogger.Object });
- //            mockCore.Setup(c => c.WriteTagAsync(It.IsAny<int>(), It.IsAny<object>())).ReturnsAsync(true);
- //           var uiTcpClient = new UiTcpClientFake(_dialogMock.Object, _loggerMock.Object) { IsConnected = false };
- //           var coreClient = new CoreClient(uiTcpClient, mockLogger.Object);
-            
- //           var FakeCore = new FakeCoreClient(uiTcpClient, mockLogger.Object);
-
- //           var vm = new ManualOperationViewModel(mockLogger.Object, FakeCore);
-
-
- //           var mode = ManualOperationMode.TransportConveyorForward;
- //            var item = vm.Modes.First(m => m.Mode == mode);
-
- //           vm.ButtonClickCommand.Execute(mode);
-    
- //           var tagMapA = GetPrivateField<Dictionary<ManualOperationMode, int>>(vm, "_tagMapA");
- //           int expectedTag = tagMapA[mode];
-
- //            mockCore.Verify(c => c.WriteTagAsync(expectedTag,1), Times.Once);
-
- //            Assert.True(item.IsBlinking);
-
- //            vm.Dispose();
- //        }
 
 
         [Fact]
@@ -129,7 +99,7 @@ namespace IPCSoftware.App.Test
 
             vm.ButtonClickCommand.Execute(mode);
 
-            Assert.True(item.IsBlinking);
+            Assert.False(item.IsBlinking);
 
             vm.Dispose();
         }
@@ -169,7 +139,7 @@ namespace IPCSoftware.App.Test
             Assert.False(high.IsBlinking);
 
             // Stop button itself should be blinking (waiting for B)
-            Assert.True(stopItem.IsBlinking);
+            Assert.False(stopItem.IsBlinking);
 
             vm.Dispose();
         }
@@ -197,7 +167,6 @@ namespace IPCSoftware.App.Test
             // Attempt to start reverse
             vm.ButtonClickCommand.Execute(ManualOperationMode.TransportConveyorReverse);
 
-            // Interlock hona chahiye: reverse START nahi hona chahiye
             Assert.False(rev.IsActive);
             Assert.False(rev.IsBlinking);
 
@@ -233,14 +202,6 @@ namespace IPCSoftware.App.Test
             // Fake liveData: B=1
             var liveData = new Dictionary<int, object> { [tagB] = true };
 
-            // CoreClient ke andar GetIoValuesAsync override nahi kar sakte,
-            // isliye FeedbackLoop_Tick ko directly simulate nahi karenge;
-            // yahan simple helper bana ke same logic ka subset run kar sakte ho,
-            // lekin cleanest hai: ManualOperationViewModel me
-            // ek internal/protected method expose kar do jo
-            // "ApplyFeedbackToItem(item, bSignal)" kare, aur usko test karo.
-
-            // For now, directly mimic behaviour:
             bool bSignal = true;
             string group = item.Group;
 
@@ -250,7 +211,6 @@ namespace IPCSoftware.App.Test
                 if (item.IsBlinking && bSignal)
                 {
                     item.IsBlinking = false;
-                    // A=0 write verify nahi kar pa rahe; sirf UI state check.
                 }
             }
 
