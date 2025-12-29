@@ -4,6 +4,7 @@ using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.Messaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -87,6 +88,19 @@ namespace IPCSoftware.App
                     ServiceRegistration.RegisterServices(services);
                 })
                 .Build();
+
+            var config = _host.Services.GetRequiredService<IConfiguration>();
+
+            // 1. Create specific settings objects
+            var configSettings = new ConfigSettings();
+            var ccdSettings = new CcdSettings();
+
+            // 2. Bind the specific sections from JSON to these objects
+            config.GetSection("Config").Bind(configSettings);
+            config.GetSection("CCD").Bind(ccdSettings);
+
+            // 3. Initialize Constants without needing AppConfigSettings wrapper
+            ConstantValues.Initialize(configSettings);
 
             _host.Start();
 

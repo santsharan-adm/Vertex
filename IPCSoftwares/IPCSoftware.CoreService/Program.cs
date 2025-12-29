@@ -11,6 +11,7 @@ using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
+using IPCSoftware.Shared.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -102,12 +103,25 @@ namespace IPCSoftware.CoreService
                         services.AddSingleton<SystemMonitorService>();
                         services.AddSingleton<CCDTriggerService>();
                         services.AddSingleton < PLCClientManager>();
-                        services.AddSingleton<CameraFtpService>();
+                        services.AddSingleton<CameraFtpService>();  
                         services.AddTransient<ProductionImageService>();
                         services.AddHostedService<Worker>();
 
                     })
                     .Build();
+
+                var config = host.Services.GetRequiredService<IConfiguration>();
+
+                // 1. Create specific settings objects
+                var configSettings = new ConfigSettings();
+                var ccdSettings = new CcdSettings();
+
+                // 2. Bind the specific sections from JSON to these objects
+                config.GetSection("Config").Bind(configSettings);
+                config.GetSection("CCD").Bind(ccdSettings);
+
+                // 3. Initialize Constants without needing AppConfigSettings wrapper
+                ConstantValues.Initialize(configSettings);
 
                 host.Run();
 

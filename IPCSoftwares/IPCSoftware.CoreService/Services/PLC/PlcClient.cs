@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using NModbus;
 using System.Linq;
