@@ -1,0 +1,163 @@
+using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.Logging;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Windows.Input;
+using IPCSoftware.Core.Interfaces;
+using Microsoft.Win32;
+
+namespace IPCSoftware.App.ViewModels
+{
+ public class ReportViewerViewModel : INotifyPropertyChanged
+ {
+ public ObservableCollection<ReportFormatConfig> ReportFormats { get; set; } = new();
+ public ReportFormatConfig SelectedReportFormat { get; set; }
+ public DateTime DateFrom { get; set; } = DateTime.Today.AddDays(-7);
+ public DateTime DateTo { get; set; } = DateTime.Today;
+ public ICommand LoadDataCommand { get; }
+ public ICommand ExportCsvCommand { get; }
+ public DataTable ReportDataTable { get; set; } = new DataTable();
+
+ private readonly string _configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "ReportFormats.json");
+ private string _prodCsvFolder;
+
+ public ReportViewerViewModel(ILogConfigurationService logConfigService)
+ {
+ LoadReportFormats();
+ LoadDataCommand = new RelayCommand(LoadData);
+ ExportCsvCommand = new RelayCommand(ExportToCsv);
+ // Get production log config for correct folder
+ var prodLogConfigTask = logConfigService.GetByLogTypeAsync(IPCSoftware.Shared.Models.ConfigModels.LogType.Production);
+ prodLogConfigTask.Wait();
+ var prodLogConfig = prodLogConfigTask.Result;
+ _prodCsvFolder = prodLogConfig?.DataFolder ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+ }
+
+ private void LoadReportFormats()
+ {
+ try
+ {
+ if (File.Exists(_configPath))
+ {
+ var json = File.ReadAllText(_configPath);
+ var list = JsonSerializer.Deserialize<List<ReportFormatConfig>>(json);
+ if (list != null)
+ {
+ ReportFormats.Clear();
+ foreach (var f in list) ReportFormats.Add(f);
+ }
+ }
+ }
+ catch { }
+ }
+
+ private void LoadData()
+ {
+ ReportDataTable = new DataTable();
+
+ if (SelectedReportFormat == null || SelectedReportFormat.SelectedColumns == null || !SelectedReportFormat.SelectedColumns.Any())
+ {
+ System.Diagnostics.Debug.WriteLine("No report format or columns selected.");
+ OnPropertyChanged(nameof(ReportDataTable));
+ return;
+ }
+
+ // Add columns to DataTable
+ foreach (var col in SelectedReportFormat.SelectedColumns)
+ {
+ ReportDataTable.Columns.Add(col);
+ }
+
+ for (var date = DateFrom.Date; date <= DateTo.Date; date = date.AddDays(1))
+ {
+ var filePath = Path.Combine(_prodCsvFolder, $"Production_{date:yyyyMMdd}.csv");
+ System.Diagnostics.Debug.WriteLine($"Looking for file: {filePath}");
+ if (!File.Exists(filePath))
+ {
+ System.Diagnostics.Debug.WriteLine("File not found.");
+ continue;
+ }
+ var lines = File.ReadAllLines(filePath);
+ if (lines.Length <2)
+ {
+ System.Diagnostics.Debug.WriteLine("File has no data.");
+ continue;
+ }
+ var headers = lines[0].Split(',').Select(h => h.Trim()).ToArray();
+ System.Diagnostics.Debug.WriteLine($"Headers ({headers.Length}): {string.Join(" | ", headers)}");
+ for (int i =1; i < lines.Length; i++)
+ {
+ var row = lines[i].Split(',');
+ System.Diagnostics.Debug.WriteLine($"Row {i} ({row.Length}): {string.Join(" | ", row)}");
+ if (row.Length != headers.Length)
+ {
+ System.Diagnostics.Debug.WriteLine($"Row {i} length mismatch: {row.Length} vs {headers.Length}");
+ continue;
+ }
+ var dataRow = ReportDataTable.NewRow();
+ foreach (var col in SelectedReportFormat.SelectedColumns)
+ {
+ int idx = Array.IndexOf(headers, col);
+ if (idx >=0)
+ dataRow[col] = row[idx];
+ else
+ dataRow[col] = string.Empty;
+ }
+ ReportDataTable.Rows.Add(dataRow);
+ }
+ }
+
+ System.Diagnostics.Debug.WriteLine($"Total rows loaded: {ReportDataTable.Rows.Count}");
+ OnPropertyChanged(nameof(ReportDataTable));
+ }
+
+ private void ExportToCsv()
+ {
+ if (ReportDataTable == null || ReportDataTable.Rows.Count == 0)
+ {
+ System.Windows.MessageBox.Show("No data to export.", "Export", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+ return;
+ }
+
+ var saveDialog = new SaveFileDialog
+ {
+ Filter = "CSV files (*.csv)|*.csv",
+ FileName = $"Report_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+ };
+
+ if (saveDialog.ShowDialog() == true)
+ {
+ var sb = new StringBuilder();
+ // Header
+ var columnNames = ReportDataTable.Columns.Cast<DataColumn>().Select(c => c.ColumnName);
+ sb.AppendLine(string.Join(",", columnNames));
+ // Rows
+ foreach (DataRow row in ReportDataTable.Rows)
+ {
+ var values = row.ItemArray.Select(v => EscapeCsv(v?.ToString() ?? ""));
+ sb.AppendLine(string.Join(",", values));
+ }
+ File.WriteAllText(saveDialog.FileName, sb.ToString(), Encoding.UTF8);
+ System.Windows.MessageBox.Show($"Exported to {saveDialog.FileName}", "Export", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+ }
+ }
+
+ private string EscapeCsv(string value)
+ {
+ if (value.Contains(',') || value.Contains('"') || value.Contains('\n'))
+ return $"\"{value.Replace("\"", "\"\"")}\"";
+ return value;
+ }
+
+ public event PropertyChangedEventHandler PropertyChanged;
+ protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+ }
+}

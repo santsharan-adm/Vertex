@@ -44,5 +44,7 @@
         public double? Downtime { get; set; }
         public double? TotalTime { get; set; }
         public double? CT { get; set; } // Cycle Time
+
+        public DateTime Timestamp { get; set; }
     }
 }

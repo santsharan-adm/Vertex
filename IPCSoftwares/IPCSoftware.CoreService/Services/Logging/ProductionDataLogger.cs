@@ -91,8 +91,9 @@ namespace IPCSoftware.CoreService.Services.Logging
         {
             var sb = new StringBuilder();
 
-            // First column: 2D code
-            sb.Append("2D_Code");
+            // Add Timestamp as the first column
+            sb.Append("Timestamp");
+            sb.Append(",2D_Code");
 
             // Station columns: St0_result, St0_X, St0_Y, St0_Z, ..., St12_result, St12_X, St12_Y, St12_Z
             for (int i = 0; i < StationCount; i++)
@@ -149,6 +150,10 @@ namespace IPCSoftware.CoreService.Services.Logging
             }
 
             var sb = new StringBuilder();
+
+            // Add current timestamp as the first column
+            sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            sb.Append(",");
 
             // 2D code
             sb.Append(F(record.TwoDCode));

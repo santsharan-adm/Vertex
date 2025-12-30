@@ -216,6 +216,10 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<CoreClient>();
 
 
+            services.AddSingleton<ReportConfigViewModel>();
+            services.AddSingleton<ReportConfigView>();
+            services.AddSingleton<ReportViewerViewModel>();
+            services.AddSingleton<ReportViewerView>();
         }
     }
 }
