@@ -18,11 +18,15 @@ using System.Windows.Threading;
 namespace IPCSoftware.App.ViewModels
 {
     // --- Helper Classes ---
+
+    //[AttributeUsage(AttributeTargets.Field)]
     public class GroupAttribute : Attribute
     {
         public string Name { get; }
         public GroupAttribute(string name) => Name = name;
     }
+
+
 
     public class ModeItem : ObservableObjectVM
     {
@@ -229,7 +233,7 @@ namespace IPCSoftware.App.ViewModels
             ConvSpeedCommand = new RelayCommand<object>(async (args) => await OnConvSpeedAsync(args));
 
             // Faster Polling for Responsiveness (100ms)
-            _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(10) };
+            _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
             _feedbackTimer.Tick += FeedbackLoop_Tick;
             _feedbackTimer.Start();
 

@@ -148,7 +148,8 @@ namespace IPCSoftware.App.ViewModels
                     // "When Manual mode is selected then Manual Screen should open else it should not open"
                     // Only navigate if enabled (handled by UpdateUiLogic)
                     _logger.LogInfo("Navigating to Manual Screen", LogType.Audit);
-                    _navService.NavigateMain<ManualOperation>();
+                    //_navService.NavigateMain<ManualOperation>();
+                    _navService.NavigateMain<ManualOperationView>();
                     return;
                 }
 

@@ -129,7 +129,7 @@ namespace IPCSoftware.App.ViewModels
             _ = InitializePositionsAsync();
             //InitializePositions();
                 
-            _liveDataTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
+            _liveDataTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
             _liveDataTimer.Tick += OnLiveDataTick;
             _liveDataTimer.Start();
            // UpdateCoord();
