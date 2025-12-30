@@ -157,12 +157,12 @@ namespace IPCSoftware.App.ViewModels
         private async Task OnJogAsync(object args)
         {
             // 1. Check PLC Connection
-            if (!await IsPLCConnected())
-            {
-                // Optionally log only once per press/release to avoid spam
-                // _logger.LogWarning("Jog ignored: PLC disconnected", LogType.Audit);
-                return;
-            }
+            //if (!await IsPLCConnected())
+            //{
+            //    // Optionally log only once per press/release to avoid spam
+            //    // _logger.LogWarning("Jog ignored: PLC disconnected", LogType.Audit);
+            //    return;
+            //}
 
             if (args is not string commandStr) return;
             var parts = commandStr.Split('|');
