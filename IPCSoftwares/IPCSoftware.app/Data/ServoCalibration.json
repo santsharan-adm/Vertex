@@ -42,7 +42,7 @@
   {
     "PositionId": 5,
     "Name": "Position 5",
-    "SequenceIndex": 8,
+    "SequenceIndex": 1,
     "X": 0,
     "Y": 0,
     "Description": null
@@ -98,7 +98,7 @@
   {
     "PositionId": 12,
     "Name": "Position 12",
-    "SequenceIndex": 1,
+    "SequenceIndex": 8,
     "X": 0,
     "Y": 0,
     "Description": null

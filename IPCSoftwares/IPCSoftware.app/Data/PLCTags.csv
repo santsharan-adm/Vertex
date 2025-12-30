@@ -1,5 +1,5 @@
 ﻿Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark,CanWrite,IOType
-1,1,CD_COM_PULSE_PLC,1,40000,1,1,Bit,0,0,0,"DM10000, Heart beat signal1","Pulse PLC to IPC, PLC?IPC Heartbeat SignalEvery 1 second, send a signal of 0?1/1?0Received by polling every 1 second / If there is no change for 3 seconds, it is considered an abnormality",True,None
+1,1,CD_COM_PULSE_PLC,1,40001,1,1,Bit,0,0,0,"DM10000, Heart beat signal1","Pulse PLC to IPC, PLC?IPC Heartbeat SignalEvery 1 second, send a signal of 0?1/1?0Received by polling every 1 second / If there is no change for 3 seconds, it is considered an abnormality",True,None
 2,2,CD_COM_PULSE_IPC,1,40015,1,0,Bit,0,0,0,"DM10015, Heart beat signal2","Pulse IPC to PLC, SignalEvery 1 second, send a signal of 0?1/1?0Received by polling every 1 second / If there is no change for 3 seconds, it is considered an abnormality",True,None
 3,3,SYS_DATA_B1,1,40015,1,0,Bit,1,0,0,"DM10015, System Data B1","Time storage completion signalWhen time storage is complete, set it to 0?1.Always see a 0 or 1 change at scan time",True,None
 4,4,SYS_DATA_B2,1,40019,1,0,UInt16,0,0,0,"DM10019, System Data B2","Yearly DataStore year data in UINT format (e.g., 2025,2026)When the time storage completion signal reaches 0?1, check the IN data on the PLC",True,None
@@ -474,7 +474,7 @@
 473,473,IO_OUTPUT158,1,40269,1,0,Bit,13,0,0,"DM10269, Outputs 158",Outputs 158,True,Output
 474,474,IO_OUTPUT159,1,40269,1,0,Bit,14,0,0,"DM10269, Outputs 159",Outputs 159,True,Output
 475,475,IO_OUTPUT160,1,40269,1,0,Bit,15,0,0,"DM10269, Outputs 160",Outputs 160,True,Output
-476,476,SYS_DATA_A1,1,40000,1,0,Bit,1,0,0,"DM10000, (System Data A1)","Pulse PLC to IPC, Time adjustment start signalWhen time adjustment is required, set to 0?1Receive by polling every 5 seconds and store each data",True,None
+476,476,SYS_DATA_A1,1,40001,1,0,Bit,1,0,0,"DM10000, (System Data A1)","Pulse PLC to IPC, Time adjustment start signalWhen time adjustment is required, set to 0?1Receive by polling every 5 seconds and store each data",True,None
 477,477,CD_DATA_A2,1,40050,1,0,Bit,1,0,0,"DM10050, Auto Run Condition Validation Signal",(Control Data A2),True,None
 478,478,CD_DATA_A3,1,40050,1,0,Bit,2,0,0,"DM10050, Dry Run Condition Validation Signal",(Control Data A3),True,None
 479,479,CD_DATA_A4,1,40050,1,0,Bit,3,0,0,"DM10050, Cycle Stop Condition Validation Signal",(Control Data A4),True,None
