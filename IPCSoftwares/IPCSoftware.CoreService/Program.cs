@@ -6,17 +6,15 @@ using IPCSoftware.CoreService.Alarm;
 using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.CoreService.Services.Dashboard;
+using IPCSoftware.CoreService.Services.Logging;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared.Models;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Hosting.WindowsServices;
-using Microsoft.Extensions.Logging; // Added for ILogger injection if needed
+using IPCSoftware.Shared.Models.ConfigModels;
+using System.Linq;
 
 namespace IPCSoftware.CoreService
 {
@@ -86,11 +84,26 @@ namespace IPCSoftware.CoreService
                         services.AddSingleton<AlarmService>();
                         services.AddTransient<TagConfigLoader>();
                         services.AddTransient<BackupService>();
-
-                     /*   services.AddSingleton<UiListener>(sp =>
+                        // --- Updated registration for IProductionDataLogger ---
+                        services.AddSingleton<IProductionDataLogger>(sp =>
                         {
-                            return new UiListener(5050);
-                        });*/
+                            var logConfigService = sp.GetRequiredService<ILogConfigurationService>();
+                            // Ensure configs are loaded
+                            var initTask = logConfigService.InitializeAsync();
+                            initTask.Wait();
+                            var prodLogConfigTask = logConfigService.GetByLogTypeAsync(LogType.Production);
+                            prodLogConfigTask.Wait();
+                            var prodLogConfig = prodLogConfigTask.Result;
+                            if (prodLogConfig == null || !prodLogConfig.Enabled)
+                                throw new InvalidOperationException("Production log configuration not found or not enabled.");
+
+                            return new ProductionDataLogger(prodLogConfig);
+                        });
+
+                        /*   services.AddSingleton<UiListener>(sp =>
+                           {
+                               return new UiListener(5050);
+                           });*/
                         services.AddSingleton<UiListener>(sp =>
                         {
                             var logger = sp.GetRequiredService<IAppLogger>();
