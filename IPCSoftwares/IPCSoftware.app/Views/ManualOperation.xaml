@@ -181,6 +181,9 @@
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|True"/>
                                     </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|True"/>
+                                    </i:EventTrigger>
                                     <i:EventTrigger EventName="LostMouseCapture">
                                         <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|False"/>
                                     </i:EventTrigger>
@@ -188,6 +191,9 @@
                                         <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|True"/>
                                     </i:EventTrigger>
                                     <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
                                         <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|False"/>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
@@ -209,6 +215,9 @@
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|True"/>
                                     </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|True"/>
+                                    </i:EventTrigger>
                                     <i:EventTrigger EventName="LostMouseCapture">
                                         <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|False"/>
                                     </i:EventTrigger>
@@ -216,6 +225,9 @@
                                         <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|True"/>
                                     </i:EventTrigger>
                                     <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
                                         <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|False"/>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
@@ -244,6 +256,9 @@
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|True"/>
                                     </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|True"/>
+                                    </i:EventTrigger>
                                     <i:EventTrigger EventName="LostMouseCapture">
                                         <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|False"/>
                                     </i:EventTrigger>
@@ -251,6 +266,9 @@
                                         <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|True"/>
                                     </i:EventTrigger>
                                     <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
                                         <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|False"/>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
@@ -272,6 +290,9 @@
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|True"/>
                                     </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|True"/>
+                                    </i:EventTrigger>
                                     <i:EventTrigger EventName="LostMouseCapture">
                                         <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|False"/>
                                     </i:EventTrigger>
@@ -279,6 +300,9 @@
                                         <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|True"/>
                                     </i:EventTrigger>
                                     <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
                                         <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|False"/>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
@@ -309,6 +333,9 @@
                                         <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                             <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|True"/>
                                         </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|True"/>
+                                        </i:EventTrigger>
                                         <i:EventTrigger EventName="LostMouseCapture">
                                             <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|False"/>
                                         </i:EventTrigger>
@@ -316,6 +343,9 @@
                                             <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|True"/>
                                         </i:EventTrigger>
                                         <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchUp">
                                             <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|False"/>
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
@@ -337,6 +367,9 @@
                                         <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                             <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|True"/>
                                         </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|True"/>
+                                        </i:EventTrigger>
                                         <i:EventTrigger EventName="LostMouseCapture">
                                             <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|False"/>
                                         </i:EventTrigger>
@@ -344,6 +377,9 @@
                                             <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|True"/>
                                         </i:EventTrigger>
                                         <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchUp">
                                             <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|False"/>
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
@@ -366,6 +402,9 @@
                                         <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                             <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|True"/>
                                         </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|True"/>
+                                        </i:EventTrigger>
                                         <i:EventTrigger EventName="LostMouseCapture">
                                             <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|False"/>
                                         </i:EventTrigger>
@@ -373,6 +412,9 @@
                                             <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|True"/>
                                         </i:EventTrigger>
                                         <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchUp">
                                             <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|False"/>
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
@@ -393,6 +435,9 @@
                                         <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                             <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|True"/>
                                         </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|True"/>
+                                        </i:EventTrigger>
                                         <i:EventTrigger EventName="LostMouseCapture">
                                             <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|False"/>
                                         </i:EventTrigger>
@@ -400,6 +445,9 @@
                                             <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|True"/>
                                         </i:EventTrigger>
                                         <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchUp">
                                             <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|False"/>
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
@@ -421,6 +469,9 @@
                                         <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                             <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|True"/>
                                         </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|True"/>
+                                        </i:EventTrigger>
                                         <i:EventTrigger EventName="LostMouseCapture">
                                             <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|False"/>
                                         </i:EventTrigger>
@@ -428,6 +479,9 @@
                                             <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|True"/>
                                         </i:EventTrigger>
                                         <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchUp">
                                             <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|False"/>
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
@@ -477,6 +531,9 @@
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
                                     </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
+                                    </i:EventTrigger>
                                     <i:EventTrigger EventName="LostMouseCapture">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
                                     </i:EventTrigger>
@@ -484,6 +541,9 @@
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
                                     </i:EventTrigger>
                                     <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
@@ -505,6 +565,9 @@
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
                                     </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
+                                    </i:EventTrigger>
                                     <i:EventTrigger EventName="LostMouseCapture">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
                                     </i:EventTrigger>
@@ -512,6 +575,9 @@
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
                                     </i:EventTrigger>
                                     <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
@@ -540,6 +606,9 @@
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
                                     </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
+                                    </i:EventTrigger>
                                     <i:EventTrigger EventName="LostMouseCapture">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
                                     </i:EventTrigger>
@@ -547,6 +616,9 @@
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
                                     </i:EventTrigger>
                                     <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
@@ -568,6 +640,9 @@
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
                                     </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
+                                    </i:EventTrigger>
                                     <i:EventTrigger EventName="LostMouseCapture">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
                                     </i:EventTrigger>
@@ -575,6 +650,9 @@
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
                                     </i:EventTrigger>
                                     <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
