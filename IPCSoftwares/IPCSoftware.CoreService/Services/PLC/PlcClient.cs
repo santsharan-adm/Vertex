@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using NModbus;
 using System.Linq;
@@ -108,7 +109,7 @@ namespace IPCSoftware.CoreService.Services.PLC
                     }
 
                     // Polling rate delay 
-                    await Task.Delay(100);
+                    await Task.Delay(10);
                 }
             });
         }

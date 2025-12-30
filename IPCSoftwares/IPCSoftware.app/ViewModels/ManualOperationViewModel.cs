@@ -130,6 +130,13 @@ namespace IPCSoftware.App.ViewModels
         private const int TAG_WRITE_CYL_UP= 42;
         private const int TAG_READ_CYL_UP = 82;
 
+        private const int TAG_WRITE_CONV_FWD= 44;
+        private const int TAG_WRITE_CONV_REV= 45;
+
+        private const int TAG_READ_CONV_FWD= 84;
+        private const int TAG_READ_CONV_REV = 85;
+        private const int TAG_PARAM_A4 = 113;
+
 
 
 
@@ -152,6 +159,7 @@ namespace IPCSoftware.App.ViewModels
         // --- Properties ---
         public ObservableCollection<ModeItem> Modes { get; }
         public ICommand ButtonClickCommand { get; }
+        public ICommand ConfirmYCoordsCommand { get; }
 
         // Filtered Lists for UI
         public IEnumerable<ModeItem> TrayModes => GetGroup("Tray Lift");
@@ -183,13 +191,14 @@ namespace IPCSoftware.App.ViewModels
                     }));
 
             ButtonClickCommand = new RelayCommand<ManualOperationMode>(OnButtonClicked);
+            ConfirmYCoordsCommand = new RelayCommand(XYOriign);
 
             JogCommand = new RelayCommand<object>(async (args) => await OnJogAsync(args));
             TrayLiftCommand = new RelayCommand<object>(async (args) => await OnTrayAsync(args));
             CylPosCommand = new RelayCommand<object>(async (args) => await OnCylAsync(args));
 
             // Faster Polling for Responsiveness (100ms)
-            _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+            _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(10) };
             _feedbackTimer.Tick += FeedbackLoop_Tick;
             _feedbackTimer.Start();
 
@@ -198,7 +207,14 @@ namespace IPCSoftware.App.ViewModels
         }
 
 
+        private async void XYOriign()
+        {
+            await _coreClient.WriteTagAsync(TAG_PARAM_A4, 1);
+            
+           // await Task.Delay(2000);
 
+            await _coreClient.WriteTagAsync(TAG_PARAM_A4, 0);
+        }
 
         private async Task OnJogAsync(object args)
         {
@@ -260,8 +276,8 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _logger.LogInfo($"JOG START: {dir} (Tag {writeTagId})", LogType.Audit);
                     await _coreClient.WriteTagAsync(writeTagId, 1);
-                    await Task.Delay(1000);
-                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                    //await Task.Delay(1000);
+                   // await _coreClient.WriteTagAsync(writeTagId, 0);
                 }
                 else
                 {
@@ -316,8 +332,8 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _logger.LogInfo($"TRAY START: {direction} (Tag {writeTagId})", LogType.Audit);
                     await _coreClient.WriteTagAsync(writeTagId, 1);
-                    await Task.Delay(1000);
-                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                   // await Task.Delay(1000);
+                   // await _coreClient.WriteTagAsync(writeTagId, 0);
                 }
                 else
                 {
@@ -368,8 +384,8 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _logger.LogInfo($"CYL START: {direction} (Tag {writeTagId})", LogType.Audit);
                     await _coreClient.WriteTagAsync(writeTagId, 1);
-                    await Task.Delay(1000);
-                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                   // await Task.Delay(1000);
+                   // await _coreClient.WriteTagAsync(writeTagId, 0);
                 }
                 else
                 {
@@ -406,6 +422,14 @@ namespace IPCSoftware.App.ViewModels
                             item.IsActive = Convert.ToBoolean(val);
                         }
                     }
+
+                    if (_tagMapA.TryGetValue(item.Mode, out int writeTagId))
+                    {
+                        if (liveData.TryGetValue(writeTagId, out object? val))
+                        {
+                            item.IsBlinking = Convert.ToBoolean(val);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -426,6 +450,7 @@ namespace IPCSoftware.App.ViewModels
         {
             int aStart = 40;
             int bStart = 80;
+
 
             // Tray Lift
             MapTag(ManualOperationMode.TrayLiftDown, aStart + 0, bStart + 0);
@@ -506,20 +531,20 @@ namespace IPCSoftware.App.ViewModels
                 }
 
                 // 2. Interlock Check (Prevent Forward if Backward is On, Low/High conflict, etc.)
-                if (group != "Move to Position")
-                {
-                 if (!CheckInterlocks(item)) return;
-                }
-                else
-                {
+                //if (group != "Move to Position")
+                //{
+                // if (!CheckInterlocks(item)) return;
+                //}
+                //else
+                //{
 
-                }
+                //}
 
                 // 3. Get Tag
                 if (!_tagMapA.TryGetValue(mode, out int tagA)) return;
 
                 // 4. Logic Split
-                if (group == "Tray Lift" || group == "Positioning Cylinder" || group == "Move to Position")
+                if ( group == "Positioning Cylinder" || group == "Move to Position")
                 {
                     // TYPE 1: PULSE (Write 1 -> Blink -> Wait B -> Write 0)
                     if (!item.IsBlinking)
@@ -527,7 +552,7 @@ namespace IPCSoftware.App.ViewModels
                         _logger.LogInfo($"[Manual] Pulse {mode} (Tag {tagA}=1)", LogType.Audit);
                         await _coreClient.WriteTagAsync(tagA, 1);
                         item.IsBlinking = true; // Waiting for B
-                        await Task.Delay(1000);
+                      //  await Task.Delay(1000);
                         await _coreClient.WriteTagAsync(tagA, 0);
                         item.IsBlinking = false;
                     }
@@ -550,8 +575,10 @@ namespace IPCSoftware.App.ViewModels
                         // Turn ON
                         _logger.LogInfo($"[Manual] Start {mode} (Tag {tagA}=1)", LogType.Audit);
                         await _coreClient.WriteTagAsync(tagA, 1);
-                        await _coreClient.WriteTagAsync(tagA, 0);
                         item.IsBlinking = true; // Wait for B confirmation
+                        //await Task.Delay(1000);
+                        await _coreClient.WriteTagAsync(tagA, 0);
+                        item.IsBlinking = false;
                     }
                 }
             }
@@ -670,15 +697,14 @@ namespace IPCSoftware.App.ViewModels
         }
 
 
-      
 
-    
+
         private async void FeedbackLoop_Tick(object? sender, EventArgs e)
         {
             try
             {
                 var liveData = await _coreClient.GetIoValuesAsync(5);
-                if (liveData == null) return;
+                if (!liveData .Any()) return;
 
 
                 if (liveData.TryGetValue(TAG_READ_X_MINUS, out object xm)) IsJogXMinusActive = Convert.ToBoolean(xm);
@@ -708,6 +734,7 @@ namespace IPCSoftware.App.ViewModels
                         // --- FEEDBACK TYPE 1 (Tray/Pos/Cyl/Stop) ---
                         if (group == "Tray Lift" || group == "Positioning Cylinder" || group == "Move to Position" || item.Mode == ManualOperationMode.TransportConveyorStop)
                         {
+                            item.IsActive = Convert.ToBoolean(bSignal);
                             if (item.IsBlinking && bSignal)
                             {
                                 item.IsBlinking = false; // Stop Blinking

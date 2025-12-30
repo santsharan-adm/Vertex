@@ -4,16 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.Services
+namespace IPCSoftware.Shared.Models
 {
-
     public class AppConfigSettings
     {
         public ConfigSettings Config { get; set; } = new();
 
         public CcdSettings CCD { get; set; } = new();
     }
-
     public class ConfigSettings
     {
         public string DataFolder { get; set; }
@@ -28,6 +26,9 @@ namespace IPCSoftware.Services
 
         public bool SwapBytes { get; set; } = true;
         public int DefaultModBusAddress { get; set; }
+
+        public TagMappingSettings TagMapping { get; set; } = new TagMappingSettings();
+
     }
 
     public class CcdSettings
@@ -38,4 +39,5 @@ namespace IPCSoftware.Services
         public string MetadataStyle { get; set; }
         public string CurrentCycleStateFileName { get; set; }
     }
+
 }

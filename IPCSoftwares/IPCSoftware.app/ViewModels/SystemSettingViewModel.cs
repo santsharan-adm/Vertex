@@ -20,12 +20,12 @@ namespace IPCSoftware.App.ViewModels
 
         // --- TAG CONFIGURATION ---
         // READ Tags (PLC -> IPC): DM10019...DM10024 (Example 511-516)
-        private const int TAG_READ_YEAR = 4;//511;
-        private const int TAG_READ_MONTH = 5; //12;
-        private const int TAG_READ_DAY = 6; //;
-        private const int TAG_READ_HOUR = 7 ;
-        private const int TAG_READ_MIN = 8;
-        private const int TAG_READ_SEC = 9;
+        private const int TAG_READ_YEAR = 503;//511;
+        private const int TAG_READ_MONTH = 504; //12;
+        private const int TAG_READ_DAY = 505; //;
+        private const int TAG_READ_HOUR = 506 ;
+        private const int TAG_READ_MIN = 507;
+        private const int TAG_READ_SEC = 508;
 
         // WRITE Tags (IPC -> PLC): DM10019...DM10024 (Example 4-9)
         // Usually Write and Read addresses are the same for Time Sync registers, 

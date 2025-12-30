@@ -67,7 +67,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                     _logger.LogInfo($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID}", LogType.Diagnostics);
 
                     // 3. Gather Data
-                    string qrCode = tagValues.ContainsKey(ConstantValues.QR_DATA_TAG_ID) ? tagValues[ConstantValues.QR_DATA_TAG_ID]?.ToString() : null;
+                    string qrCode = tagValues.ContainsKey(ConstantValues.TAG_QR_DATA) ? tagValues[ConstantValues.TAG_QR_DATA]?.ToString() : null;
 
                     var stationData = new Dictionary<string, object>();
 
