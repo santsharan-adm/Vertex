@@ -139,7 +139,7 @@ namespace IPCSoftware.App.ViewModels
                 AddAudit("Sync triggered");
 
                 // 1. Calculate Target Time (+2 Seconds Margin)
-                DateTime targetTime = DateTime.Now.AddSeconds(2);
+                DateTime targetTime = DateTime.Now;
 
                 _logger.LogInfo($"Syncing PLC Time to: {targetTime:yyyy-MM-dd HH:mm:ss}", LogType.Audit);
 
