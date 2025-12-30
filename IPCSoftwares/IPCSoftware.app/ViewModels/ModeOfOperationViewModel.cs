@@ -191,6 +191,11 @@ namespace IPCSoftware.App.ViewModels
                 var liveData = await _coreClient.GetIoValuesAsync(5);
                 if (liveData.Count <2) return;
 
+                bool isAutoRunning = false;
+                bool isDryRunning = false;
+                bool isStopRunning = false;
+                bool isRTORunning = false;
+
                 foreach (var btn in ModeButtons)
                 {
                     // A. Update BLINKING/ACTIVE Status (from 481-483)
@@ -201,6 +206,10 @@ namespace IPCSoftware.App.ViewModels
                             bool signal = Convert.ToBoolean(val);
                             btn.IsBlinking = signal;
                             btn.IsActive = signal;
+                            if (btn.Mode == OperationMode.Auto) isAutoRunning = signal;
+                            if (btn.Mode == OperationMode.DryRun) isDryRunning = signal;
+                            if (btn.Mode == OperationMode.MassRTO) isRTORunning = signal;
+                            if (btn.Mode == OperationMode.CycleStop) isStopRunning = signal;
                         }
                     }
 
@@ -216,6 +225,14 @@ namespace IPCSoftware.App.ViewModels
                     // Note: 'Manual' mode IsEnabled is skipped here as it has no tag in _enableTags map. 
                     // It stays True (default) or you can add logic if needed.
                 }
+
+                var manualBtn = GetBtn(OperationMode.Manual);
+
+                // If EITHER Auto OR Dry is running (True), Manual must be Disabled.
+                // If BOTH are stopped (False), Manual is Enabled.
+                bool isSystemBusy = isAutoRunning || isDryRunning ||  isStopRunning;
+
+                manualBtn.IsEnabled = !isSystemBusy;
 
                 // C. Update Home Lamp
                 if (liveData.TryGetValue(TAG_READ_HOME_LAMP, out object? homeVal))
