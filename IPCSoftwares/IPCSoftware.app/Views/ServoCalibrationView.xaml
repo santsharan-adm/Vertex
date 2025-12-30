@@ -467,13 +467,13 @@ Background="#1E4FA8" Foreground="White" Cursor="Hand">
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
                                     </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                    <i:EventTrigger EventName="LostMouseCapture">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
                                     </i:EventTrigger>
                                     <i:EventTrigger EventName="PreviewTouchDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
                                     </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                    <i:EventTrigger EventName="LostTouchCapture">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
@@ -485,13 +485,13 @@ Background="#1E4FA8" Foreground="White" Cursor="Hand">
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
                                     </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                    <i:EventTrigger EventName="LostMouseCapture">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
                                     </i:EventTrigger>
                                     <i:EventTrigger EventName="PreviewTouchDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
                                     </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                    <i:EventTrigger EventName="LostTouchCapture">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
@@ -505,13 +505,13 @@ Background="#1E4FA8" Foreground="White" Cursor="Hand">
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
                                     </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                    <i:EventTrigger EventName="LostMouseCapture">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
                                     </i:EventTrigger>
                                     <i:EventTrigger EventName="PreviewTouchDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
                                     </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                    <i:EventTrigger EventName="LostTouchCapture">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
@@ -523,13 +523,13 @@ Background="#1E4FA8" Foreground="White" Cursor="Hand">
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
                                     </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                    <i:EventTrigger EventName="LostMouseCapture">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
                                     </i:EventTrigger>
                                     <i:EventTrigger EventName="PreviewTouchDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
                                     </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                    <i:EventTrigger EventName="LostTouchCapture">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
