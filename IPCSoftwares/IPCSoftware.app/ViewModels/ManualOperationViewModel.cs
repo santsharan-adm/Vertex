@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -131,10 +132,22 @@ namespace IPCSoftware.App.ViewModels
         private const int TAG_READ_CYL_UP = 82;
 
         private const int TAG_WRITE_CONV_FWD= 44;
-        private const int TAG_WRITE_CONV_REV= 45;
-
         private const int TAG_READ_CONV_FWD= 84;
+
+        private const int TAG_WRITE_CONV_REV= 45;
         private const int TAG_READ_CONV_REV = 85;
+
+        private const int TAG_WRITE_CONV_STOP= 46;
+        private const int TAG_READ_CONV_STOP= 86;
+
+        private const int TAG_WRITE_CONV_LOW= 47;
+        private const int TAG_READ_CONV_LOW= 87;
+
+        private const int TAG_WRITE_CONV_HIGH= 48;
+        private const int TAG_READ_CONV_HIGH= 88;
+
+
+
         private const int TAG_PARAM_A4 = 113;
 
 
@@ -152,6 +165,16 @@ namespace IPCSoftware.App.ViewModels
         // Cylinder
         private bool _isCylUpActive; public bool IsCylUpActive { get => _isCylUpActive; set => SetProperty(ref _isCylUpActive, value); }
         private bool _isCylDownActive; public bool IsCylDownActive { get => _isCylDownActive; set => SetProperty(ref _isCylDownActive, value); }
+
+        //Conveyor Direction
+        private bool _isConvFwdActive; public bool IsConvFwdActive { get => _isConvFwdActive; set => SetProperty(ref _isConvFwdActive, value); }
+        private bool _isConvRevActive; public bool IsConvRevActive { get => _isConvRevActive; set => SetProperty(ref _isConvRevActive, value); }
+
+        //Converyor Speed
+        private bool _isConvLowActive; public bool IsConvLowActive { get => _isConvLowActive; set => SetProperty(ref _isConvLowActive, value); }
+        private bool _isConvHighActive; public bool IsConvHighActive { get => _isConvHighActive; set => SetProperty(ref _isConvHighActive, value); }
+
+        private bool _isConvStopActive; public bool IsConvStopActive { get => _isConvStopActive; set => SetProperty(ref _isConvStopActive, value); }
 
 
 
@@ -172,6 +195,10 @@ namespace IPCSoftware.App.ViewModels
         public ICommand JogCommand { get; }
         public ICommand CylPosCommand { get; }
         public ICommand TrayLiftCommand { get; }
+
+        public ICommand ConvDirCommand { get; }
+        public ICommand ConvStopCommand { get; }
+        public ICommand ConvSpeedCommand { get; }
         public IEnumerable<ModeItem> GridPositionModes => GetGroup("Move to Position").Where(x => x.Mode != ManualOperationMode.MoveToPos0);
 
         public ManualOperationViewModel(IAppLogger logger, CoreClient coreClient) : base(logger)
@@ -197,6 +224,10 @@ namespace IPCSoftware.App.ViewModels
             TrayLiftCommand = new RelayCommand<object>(async (args) => await OnTrayAsync(args));
             CylPosCommand = new RelayCommand<object>(async (args) => await OnCylAsync(args));
 
+            ConvDirCommand = new RelayCommand<object>(async (args) => await OnConvDirAsync(args));
+            ConvStopCommand = new RelayCommand<object>(async (args) => await OnConvStopAsync(args));
+            ConvSpeedCommand = new RelayCommand<object>(async (args) => await OnConvSpeedAsync(args));
+
             // Faster Polling for Responsiveness (100ms)
             _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(10) };
             _feedbackTimer.Tick += FeedbackLoop_Tick;
@@ -219,12 +250,12 @@ namespace IPCSoftware.App.ViewModels
         private async Task OnJogAsync(object args)
         {
             // 1. Check PLC Connection
-            if (!await IsPLCConnected())
-            {
-                // Optionally log only once per press/release to avoid spam
-                // _logger.LogWarning("Jog ignored: PLC disconnected", LogType.Audit);
-                return;
-            }
+            //if (!await IsPLCConnected())
+            //{
+            //    // Optionally log only once per press/release to avoid spam
+            //    // _logger.LogWarning("Jog ignored: PLC disconnected", LogType.Audit);
+            //    return;
+            //}
 
             if (args is not string commandStr) return;
             var parts = commandStr.Split('|');
@@ -294,7 +325,7 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task OnTrayAsync(object args)
         {
-            if (!await IsPLCConnected()) return;
+           // if (!await IsPLCConnected()) return;
 
             if (args is not string commandStr) return;
             var parts = commandStr.Split('|');
@@ -347,9 +378,12 @@ namespace IPCSoftware.App.ViewModels
         // =========================================================
         //                 2. CYLINDER LOGIC (Press/Hold)
         // =========================================================
+
+
+
         private async Task OnCylAsync(object args)
         {
-            if (!await IsPLCConnected()) return;
+            //if (!await IsPLCConnected()) return;
 
             if (args is not string commandStr) return;
             var parts = commandStr.Split('|');
@@ -394,6 +428,151 @@ namespace IPCSoftware.App.ViewModels
                 }
             }
             catch (Exception ex) { _logger.LogError($"Cyl Error: {ex.Message}", LogType.Diagnostics); }
+        }
+
+
+
+        private async Task OnConvDirAsync(object args)
+        {
+            //if (!await IsPLCConnected()) return;
+
+            if (args is not string commandStr) return;
+            var parts = commandStr.Split('|');
+            if (parts.Length != 2) return;
+            string direction = parts[0]; // "Up" or "Down"
+            bool isPressed = bool.Parse(parts[1]);
+            int writeTagId = 0;
+            Debug.WriteLine($" Key Pressed Direction  = {direction} IsPressed = {isPressed}   time is = {DateTime.Now.Millisecond}");
+            if (isPressed)
+            {
+                if (direction == "ConvRev")
+                {
+                  //  if (IsCylDownActive) { _logger.LogWarning("Interlock: Cannot Cyl Up while Cyl Down is active.", LogType.Audit); return; }
+                    writeTagId = TAG_WRITE_CONV_REV;
+                }
+                else if (direction == "ConvFwd")
+                {
+                    //if (IsCylUpActive) { _logger.LogWarning("Interlock: Cannot Cyl Down while Cyl Up is active.", LogType.Audit); return; }
+                    writeTagId = TAG_WRITE_CONV_FWD;
+                }
+            }
+            else
+            {
+                if (direction == "ConvFwd") writeTagId = TAG_WRITE_CONV_FWD;
+                else if (direction == "ConvRev") writeTagId = TAG_WRITE_CONV_REV;
+            }
+
+            try
+            {
+                if (isPressed)
+                {
+                    _logger.LogInfo($"Conv START: {direction} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 1);
+                   // await Task.Delay(1000);
+                   // await _coreClient.WriteTagAsync(writeTagId, 0);
+                }
+                else
+                {
+                    _logger.LogInfo($"Conv STOP: {direction} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                }
+            }
+            catch (Exception ex) { _logger.LogError($"Conv Error: {ex.Message}", LogType.Diagnostics); }
+        }
+
+
+        private async Task OnConvStopAsync(object args)
+        {
+           // if (!await IsPLCConnected()) return;
+
+            if (args is not string commandStr) return;
+            var parts = commandStr.Split('|');
+            if (parts.Length != 2) return;
+
+            string direction = parts[0]; // "Up" or "Down"
+            bool isPressed = bool.Parse(parts[1]);
+            int writeTagId = 0;
+
+            if (isPressed)
+            {
+                if (direction == "ConStop")
+                {
+                  //  if (IsCylDownActive) { _logger.LogWarning("Interlock: Cannot Cyl Up while Cyl Down is active.", LogType.Audit); return; }
+                    writeTagId = TAG_WRITE_CONV_STOP;
+                }
+              
+            }
+            else
+            {
+                if (direction == "ConStop") writeTagId = TAG_WRITE_CONV_STOP;
+            }
+
+            try
+            {
+                if (isPressed)
+                {
+                    _logger.LogInfo($"Conv START: {direction} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 1);
+                    await HandleStopLogicNew();
+                    // await Task.Delay(1000);
+                    // await _coreClient.WriteTagAsync(writeTagId, 0);
+                }
+                else
+                {
+                    _logger.LogInfo($"Conv STOP: {direction} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                }
+            }
+            catch (Exception ex) { _logger.LogError($"Conv Error: {ex.Message}", LogType.Diagnostics); }
+        }
+
+        private async Task OnConvSpeedAsync(object args)
+        {
+           // if (!await IsPLCConnected()) return;
+
+            if (args is not string commandStr) return;
+            var parts = commandStr.Split('|');
+            if (parts.Length != 2) return;
+
+            string direction = parts[0]; // "Up" or "Down"
+            bool isPressed = bool.Parse(parts[1]);
+            int writeTagId = 0;
+
+            if (isPressed)
+            {
+                if (direction == "ConvLow")
+                {
+                  //  if (IsCylDownActive) { _logger.LogWarning("Interlock: Cannot Cyl Up while Cyl Down is active.", LogType.Audit); return; }
+                    writeTagId = TAG_WRITE_CONV_LOW;
+                }
+                else if (direction == "ConvHigh")
+                {
+                    //if (IsCylUpActive) { _logger.LogWarning("Interlock: Cannot Cyl Down while Cyl Up is active.", LogType.Audit); return; }
+                    writeTagId = TAG_WRITE_CONV_HIGH;
+                }
+            }
+            else
+            {
+                if (direction == "ConvHigh") writeTagId = TAG_WRITE_CONV_HIGH;
+                else if (direction == "ConvLow") writeTagId = TAG_WRITE_CONV_LOW;
+            }
+
+            try
+            {
+                if (isPressed)
+                {
+                    _logger.LogInfo($"Conv START: {direction} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 1);
+                   // await Task.Delay(1000);
+                   // await _coreClient.WriteTagAsync(writeTagId, 0);
+                }
+                else
+                {
+                    _logger.LogInfo($"Conv STOP: {direction} (Tag {writeTagId})", LogType.Audit);
+                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                }
+            }
+            catch (Exception ex) { _logger.LogError($"Conv Error: {ex.Message}", LogType.Diagnostics); }
         }
 
 
@@ -547,15 +726,14 @@ namespace IPCSoftware.App.ViewModels
                 if ( group == "Positioning Cylinder" || group == "Move to Position")
                 {
                     // TYPE 1: PULSE (Write 1 -> Blink -> Wait B -> Write 0)
-                    if (!item.IsBlinking)
-                    {
+                  
                         _logger.LogInfo($"[Manual] Pulse {mode} (Tag {tagA}=1)", LogType.Audit);
                         await _coreClient.WriteTagAsync(tagA, 1);
                         item.IsBlinking = true; // Waiting for B
                       //  await Task.Delay(1000);
                         await _coreClient.WriteTagAsync(tagA, 0);
                         item.IsBlinking = false;
-                    }
+                    
                 }
                 else
                 {
@@ -568,7 +746,7 @@ namespace IPCSoftware.App.ViewModels
                         _logger.LogInfo($"[Manual] Stop {mode} (Tag {tagA}=0)", LogType.Audit);
                         await _coreClient.WriteTagAsync(tagA, 0);
                         item.IsActive = false;
-                        item.IsBlinking = true;
+                       // item.IsBlinking = true;
                     }
                     else
                     {
@@ -697,6 +875,30 @@ namespace IPCSoftware.App.ViewModels
         }
 
 
+        private async Task HandleStopLogicNew()
+        {
+            try
+            {
+                // 1. Get all Conveyor Items
+                IsConvRevActive = false;
+                IsConvFwdActive = false;
+                IsConvLowActive = false;
+                IsConvHighActive = false;
+
+                await _coreClient.WriteTagAsync(TAG_READ_CONV_FWD, 0);
+                await _coreClient.WriteTagAsync(TAG_READ_CONV_REV, 0);
+                await _coreClient.WriteTagAsync(TAG_READ_CONV_LOW, 0);
+                await _coreClient.WriteTagAsync(TAG_READ_CONV_HIGH, 0);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Stop Logic Error: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+
+
+
+
 
 
         private async void FeedbackLoop_Tick(object? sender, EventArgs e)
@@ -719,6 +921,14 @@ namespace IPCSoftware.App.ViewModels
                 // 3. Cylinder Feedback (B Tags)
                 if (liveData.TryGetValue(TAG_READ_CYL_DOWN, out object cd)) IsCylDownActive = Convert.ToBoolean(cd);
                 if (liveData.TryGetValue(TAG_READ_CYL_UP, out object cu)) IsCylUpActive = Convert.ToBoolean(cu);
+
+                if (liveData.TryGetValue(TAG_READ_CONV_FWD, out object cf)) IsConvFwdActive = Convert.ToBoolean(cf);
+                if (liveData.TryGetValue(TAG_READ_CONV_REV, out object cr)) IsConvRevActive = Convert.ToBoolean(cr);
+
+                if (liveData.TryGetValue(TAG_READ_CONV_STOP, out object cs)) IsConvStopActive = Convert.ToBoolean(cs);
+
+                if (liveData.TryGetValue(TAG_READ_CONV_LOW, out object cl)) IsConvLowActive = Convert.ToBoolean(cl);
+                if (liveData.TryGetValue(TAG_READ_CONV_HIGH, out object ch)) IsConvHighActive = Convert.ToBoolean(ch);
 
 
 

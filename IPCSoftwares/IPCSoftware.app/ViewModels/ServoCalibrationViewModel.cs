@@ -214,8 +214,8 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _logger.LogInfo($"JOG START: {dir} (Tag {writeTagId})", LogType.Audit);
                     await _coreClient.WriteTagAsync(writeTagId, 1);
-                    await Task.Delay(1000);
-                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                   // await Task.Delay(1000);
+                    //await _coreClient.WriteTagAsync(writeTagId, 0);
                 }
                 else
                 {

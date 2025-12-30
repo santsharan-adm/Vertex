@@ -166,7 +166,7 @@
                             <TextBlock Text="Tray Lift" Margin="0 0 0 40" Style="{StaticResource SectionHeaderStyle}"/>
 
                             <!-- TRAY UP (Hardcoded with Style Trigger) -->
-                            <Button Content="UP" Width="180" Margin="0 0 0 20" HorizontalAlignment="Center">
+                            <Button Content="▲ UP" Width="180" Margin="0 0 0 20" HorizontalAlignment="Center">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
                                         <Style.Triggers>
@@ -194,7 +194,7 @@
                             </Button>
 
                             <!-- TRAY DOWN -->
-                            <Button Content="DOWN" Width="180" HorizontalAlignment="Center">
+                            <Button Content="▼ DOWN" Width="180" HorizontalAlignment="Center">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
                                         <Style.Triggers>
@@ -229,7 +229,7 @@
                             <TextBlock Text="Pos. Cylinder" Margin="0 0 0 40 " Style="{StaticResource SectionHeaderStyle}"/>
 
                             <!-- CYL UP -->
-                            <Button Content="UP" Width="180" Margin="0 0 0 20" HorizontalAlignment="Center">
+                            <Button Content="▲ UP" Width="180" Margin="0 0 0 20" HorizontalAlignment="Center">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
                                         <Style.Triggers>
@@ -257,7 +257,7 @@
                             </Button>
 
                             <!-- CYL DOWN -->
-                            <Button Content="DOWN" Width="180" HorizontalAlignment="Center">
+                            <Button Content="▼ DOWN" Width="180" HorizontalAlignment="Center">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
                                         <Style.Triggers>
@@ -283,20 +283,168 @@
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
                             </Button>
+                            
+                            
                         </StackPanel>
                     </Border>
 
                     <!-- Conveyor -->
                     <Border Grid.Column="2" Style="{StaticResource CardStyle}">
                         <StackPanel>
-                            <TextBlock Text="Transport Conveyor" Style="{StaticResource SectionHeaderStyle}"/>
-                            <ItemsControl ItemsSource="{Binding ConveyorModes}" Margin="0 20 0 20" ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                            <TextBlock  Text="Transport Conveyor" Style="{StaticResource SectionHeaderStyle}"/>
+                            <WrapPanel Margin="20 20 0 20" >
+
+                                <Button Content= "◀ REV" Width="150" Margin="0 10 0 10" HorizontalAlignment="Center">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsConvRevActive}" Value="True">
+                                                    <Setter Property="Background" Value="#0F9D58"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostMouseCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|False"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+
+                                <Button Content= "▶ FWD" Width="150" Margin=" 20 10 0 10"  HorizontalAlignment="Center">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsConvFwdActive}" Value="True">
+                                                    <Setter Property="Background" Value="#0F9D58"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostMouseCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|False"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+
+
+                                <Button Content="■ STOP" Width="150" Margin=" 20 10 0 10" HorizontalAlignment="Center">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsConvStopActive}" Value="True">
+                                                    <Setter Property="Background" Value="#0F9D58"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostMouseCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|False"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+                                <Button Content="⏪ LOW" Width="150" Margin=" 0 10 10 10" HorizontalAlignment="Center">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsConvLowActive}" Value="True">
+                                                    <Setter Property="Background" Value="#0F9D58"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostMouseCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|False"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+
+                                <Button Content="⏩ HIGH" Width="150" Margin=" 10 10 10 10"  HorizontalAlignment="Center">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsConvHighActive}" Value="True">
+                                                    <Setter Property="Background" Value="#0F9D58"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostMouseCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|False"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+                            </WrapPanel>
+
+
+
+
+                            <!--<ItemsControl ItemsSource="{Binding ConveyorModes}" Margin="0 20 0 20" ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Columns="3"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
-                            </ItemsControl>
+                            </ItemsControl>-->
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -313,7 +461,7 @@
                         <DockPanel>
                             <TextBlock DockPanel.Dock="Top" Text="Manual X-Axis Jog" Style="{StaticResource SectionHeaderStyle}"/>
 
-                            <Button Content="X JOG -" HorizontalAlignment="Right">
+                            <Button Content="◀ X JOG -" HorizontalAlignment="Right">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
                                         <!--<Setter Property="Background" Value="Coral"/>-->
@@ -341,7 +489,7 @@
                                 </i:Interaction.Triggers>
                             </Button>
 
-                            <Button Content="X JOG +" HorizontalAlignment="Right">
+                            <Button Content="▶ X JOG +" HorizontalAlignment="Right">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
                                         <!--<Setter Property="Background" Value="Coral"/>-->
@@ -376,7 +524,7 @@
                         <DockPanel>
                             <TextBlock DockPanel.Dock="Top" Text="Manual Y-Axis Jog" Style="{StaticResource SectionHeaderStyle}"/>
 
-                            <Button Content="Y JOG -" HorizontalAlignment="Right">
+                            <Button Content="◀ Y JOG -" HorizontalAlignment="Right">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
                                         <!--<Setter Property="Background" Value="LightGreen"/>-->
@@ -404,7 +552,7 @@
                                 </i:Interaction.Triggers>
                             </Button>
 
-                            <Button Content="Y JOG +" HorizontalAlignment="Right">
+                            <Button Content="▶ Y JOG +" HorizontalAlignment="Right">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
                                         <!--<Setter Property="Background" Value="LightGreen"/>-->
