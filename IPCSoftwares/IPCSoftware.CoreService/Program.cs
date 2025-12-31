@@ -91,6 +91,11 @@ namespace IPCSoftware.CoreService
                             // Ensure configs are loaded
                             var initTask = logConfigService.InitializeAsync();
                             initTask.Wait();
+
+                            var logManager = sp.GetRequiredService<ILogManagerService>();
+                            var initTask2 = logManager.InitializeAsync();
+                            initTask2.Wait();
+
                             var prodLogConfigTask = logConfigService.GetByLogTypeAsync(LogType.Production);
                             prodLogConfigTask.Wait();
                             var prodLogConfig = prodLogConfigTask.Result;

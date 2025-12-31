@@ -428,3 +428,5 @@ FodyWeavers.xsd
 IPCSoftwares/IPCSoftware.app/appsettings.Development.json
 IPCSoftwares/IPCSoftware.app/Properties/launchSettings.json
 IPCSoftwares/IPCSoftware.CoreService/Properties/launchSettings.json
+/IPCSoftwares/IPCSoftware.app/Properties
+/IPCSoftwares/IPCSoftware.CoreService/Properties

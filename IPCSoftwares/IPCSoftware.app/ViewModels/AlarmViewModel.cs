@@ -3,6 +3,7 @@ using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
 using System;
@@ -40,8 +41,8 @@ namespace IPCSoftware.App.ViewModels
             _coreClient = coreClient;
 
             // Initialize Global Commands (Tags 38 and 39)
-            GlobalAcknowledgeCommand = new RelayCommand(async () => await ExecuteGlobalWrite(38, "Global Acknowledge"));
-            GlobalResetCommand = new RelayCommand(async () => await ExecuteGlobalWrite(39, "Global Reset"));
+            GlobalAcknowledgeCommand = new RelayCommand(async () => await ExecuteGlobalWrite(ConstantValues.TAG_Global_Ack, "Global Acknowledge"));
+            GlobalResetCommand = new RelayCommand(async () => await ExecuteGlobalWrite(ConstantValues.TAG_Global_Reset, "Global Reset"));
 
             // Initialize Row-Level Command
             AcknowledgeCommand = new RelayCommand<AlarmInstanceModel>(
@@ -67,14 +68,14 @@ namespace IPCSoftware.App.ViewModels
                     foreach (var alarm in ActiveAlarms)
                     {
 
-                        if (tagId == 39) // Global Reset logic
+                        if (tagId == ConstantValues.TAG_Global_Reset) // Global Reset logic
                         {
                             // Update the reset timestamp in the model
                             alarm.AlarmResetTime = now;
                         }
                     }
                 });
-                if (tagId == 39)
+                if (tagId == ConstantValues.TAG_Global_Reset)
                 {
                     await Task.Delay(2000); // Wait 2s
                     await _coreClient.WriteTagAsync(tagId, false); // Turn Off

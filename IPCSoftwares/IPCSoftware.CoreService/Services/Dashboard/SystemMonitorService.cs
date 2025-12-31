@@ -2,6 +2,7 @@
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.Services;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
@@ -14,18 +15,6 @@ namespace IPCSoftware.CoreService.Services.Dashboard
     {
         private readonly PLCClientManager _plcManager;
         private readonly IPLCTagConfigurationService _tagService;
-
-        // Tag Constants
-        public const int TAG_HEARTBEAT_PLC = 1;  // DM10000.0 (Read)
-        public const int TAG_TIME_REQ = 476;     // DM10000.1 (Read)
-        public const int TAG_HEARTBEAT_IPC = 2;  // DM10015.0 (Write)
-        public const int TAG_TIME_ACK = 3;       // DM10015.1 (Write)
-        public const int TAG_TIME_YEAR = 4;      // DM10019
-        public const int TAG_TIME_MONTH = 5;
-        public const int TAG_TIME_DAY = 6;
-        public const int TAG_TIME_HOUR = 7;
-        public const int TAG_TIME_MIN = 8;
-        public const int TAG_TIME_SEC = 9;
 
         // --- HEARTBEAT STATE ---
         private bool? _lastPlcPulse = null;      // Nullable to detect first read
@@ -74,7 +63,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                     _lastSuccessfulRead = DateTime.Now;
 
                     // A. Monitor PLC Pulse (PLC -> IPC)
-                    bool currentPlcPulse = GetBool(tagValues, TAG_HEARTBEAT_PLC);
+                    bool currentPlcPulse = GetBool(tagValues, ConstantValues.TAG_Heartbeat_PLC);
 
                     // First read initialization
                     if (_lastPlcPulse == null)
@@ -135,7 +124,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                     // Only write if PLC is connected
                     if (isPlcConnected)
                     {
-                        _ = WriteTagAsync(TAG_HEARTBEAT_IPC, _ipcPulseState);
+                        _ = WriteTagAsync(ConstantValues.TAG_Heartbeat_IPC, _ipcPulseState);
                         Console.WriteLine($"[Heartbeat] IPC pulse toggled to: {_ipcPulseState}");
                         _logger.LogInfo($"[Heartbeat] IPC pulse toggled to: {_ipcPulseState}", LogType.Diagnostics);
                     }
@@ -144,7 +133,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 // ---------------------------------------------------------
                 // 2. TIME SYNC LOGIC
                 // ---------------------------------------------------------
-                bool currentTimeReq = GetBool(tagValues, TAG_TIME_REQ);
+                bool currentTimeReq = GetBool(tagValues, ConstantValues.TAG_TimeSync_Req);
 
                 // Rising Edge Detection (0 -> 1)
                 if (currentTimeReq && !_lastTimeReqState)
@@ -157,7 +146,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 // Falling Edge Logic (Reset Ack)
                 if (!currentTimeReq && _lastTimeReqState)
                 {
-                    _ = WriteTagAsync(TAG_TIME_ACK, false);
+                    _ = WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, false);
                     Console.WriteLine("[TimeSync] Time request cleared, ACK reset.");
                     _logger.LogInfo("[TimeSync] Time request cleared, ACK reset.", LogType.Diagnostics);
                 }
@@ -184,18 +173,18 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 DateTime now = DateTime.Now;
 
                 // Write time data in sequence
-                await WriteTagAsync(TAG_TIME_YEAR, now.Year);
-                await WriteTagAsync(TAG_TIME_MONTH, now.Month);
-                await WriteTagAsync(TAG_TIME_DAY, now.Day);
-                await WriteTagAsync(TAG_TIME_HOUR, now.Hour);
-                await WriteTagAsync(TAG_TIME_MIN, now.Minute);
-                await WriteTagAsync(TAG_TIME_SEC, now.Second);
+                await WriteTagAsync(ConstantValues.TAG_Time_Year.Write, now.Year);
+                await WriteTagAsync(ConstantValues.TAG_Time_Month.Write, now.Month);
+                await WriteTagAsync(ConstantValues.TAG_Time_Day.Write, now.Day);
+                await WriteTagAsync(ConstantValues.TAG_Time_Hour.Write, now.Hour);
+                await WriteTagAsync(ConstantValues.TAG_Time_Minute.Write, now.Minute);
+                await WriteTagAsync(ConstantValues.TAG_Time_Second.Write, now.Second);
 
                 // Small delay to ensure all writes complete
                 await Task.Delay(100);
 
                 // Write acknowledgement
-                await WriteTagAsync(TAG_TIME_ACK, true);
+                await WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, true);
 
                 Console.WriteLine($"[TimeSync] Completed: {now:yyyy-MM-dd HH:mm:ss}");
                 _logger.LogInfo($"[TimeSync] Completed: {now:yyyy-MM-dd HH:mm:ss}", LogType.Diagnostics);

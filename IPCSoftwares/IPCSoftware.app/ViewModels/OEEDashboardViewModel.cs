@@ -49,22 +49,17 @@ namespace IPCSoftware.App.ViewModels
         // --- Member Variables ---
         private bool _disposed;
         private bool _isDarkTheme = false;
-        private Dictionary<int, Action<object>> _tagValueMap;
 
-        // Filter for Writable Tags (Settings/Inputs)
-        private HashSet<int> allowedTagNos = new HashSet<int>
-        {
-            15, 16, 17, 18, 19, 20
-        };
+
 
         // Map Grid Index(0-11) to Physical Station Number(1-12)
         private readonly int[] _visualToStationMap = new int[]
-       {
-            1, 2, 3,
-            4, 5, 6,    // Changed to Linear Order
-            7, 8, 9,
-            10, 11, 12  // Changed to Linear Order
-       };
+        {
+                1, 2, 3,
+                4, 5, 6,    // Changed to Linear Order
+                7, 8, 9,
+                10, 11, 12  // Changed to Linear Order
+        };
 
         private string _currentThemePath = "/IPCSoftware.App;component/Styles/LightTheme.xaml";
         public string CurrentThemePath
@@ -91,7 +86,7 @@ namespace IPCSoftware.App.ViewModels
         }
 
 
-     
+
 
         private ImageSource _qrCodeImage;
         public ImageSource QrCodeImage
@@ -102,10 +97,6 @@ namespace IPCSoftware.App.ViewModels
 
         // The Collection for the 12 Grid Stations
         public ObservableCollection<CameraImageItem> CameraImages { get; } = new ObservableCollection<CameraImageItem>();
-
-        // The Collection for User Inputs (Writable Tags)
-        public ObservableCollection<WritableTagItem> AllInputs { get; } = new();
-
 
         private double _latestX;
         public double LatestX
@@ -221,9 +212,9 @@ namespace IPCSoftware.App.ViewModels
 
 
         public OEEDashboardViewModel(
-            IPLCTagConfigurationService tagService, 
-            IOptions<CcdSettings> ccdSettng, 
-            CoreClient coreClient, 
+            IPLCTagConfigurationService tagService,
+            IOptions<CcdSettings> ccdSettng,
+            CoreClient coreClient,
             IDialogService dialog,
             IAppLogger logger) : base(logger)
         {
@@ -238,7 +229,7 @@ namespace IPCSoftware.App.ViewModels
             // _jsonStatePath = Path.Combine(ConstantValues.QrCodeImagePath, "CurrentCycleState.json");
 
             // Initialize Lists
-            InitializeAsync();      // Writable Tags
+            //  InitializeAsync();      // Writable Tags
             InitializeCameraGrid(); // Camera Grid placeholders
 
             // --- COMMANDS ---
@@ -278,28 +269,28 @@ namespace IPCSoftware.App.ViewModels
             CycleTrend = new List<double> { 2.8, 2.9, 2.7, 3.0, 2.8, 2.9, 2.85, 2.75, 2.9 };
         }
 
-        private async void InitializeAsync()
-        {
-            try
-            {
-                //  InitializeTagMap();
-                var allTags = await _tagService.GetAllTagsAsync();
+        /* private async void InitializeAsync()
+         {
+             try
+             {
+                 //  InitializeTagMap();
+                 var allTags = await _tagService.GetAllTagsAsync();
 
-                AllInputs.Clear();
-                var writableFilteredTags = allTags
-                    .Where(t => t.CanWrite && allowedTagNos.Contains(t.TagNo))
-                    .ToList();
+                 AllInputs.Clear();
+                 var writableFilteredTags = allTags
+                     .Where(t => t.CanWrite && allowedTagNos.Contains(t.TagNo))
+                     .ToList();
 
-                foreach (var tag in writableFilteredTags)
-                {
-                    AllInputs.Add(new WritableTagItem(tag));
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, LogType.Diagnostics);
-            }
-        }
+                 foreach (var tag in writableFilteredTags)
+                 {
+                     AllInputs.Add(new WritableTagItem(tag));
+                 }
+             }
+             catch (Exception ex)
+             {
+                 _logger.LogError(ex.Message, LogType.Diagnostics);
+             }
+         }*/
 
         private void InitializeCameraGrid()
         {
@@ -326,46 +317,6 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        /*   private void InitializeTagMap()
-           {
-               _tagValueMap = new Dictionary<int, Action<object>>
-               {
-
-                  // [16] = v => QRCodeText = v?.ToString()
-                   //[17] = v => OkNgStatus = Convert.ToInt32(v),
-                   //[18] = v => CameraStatus = Convert.ToBoolean(v)
-                   //[19] = v => CameraStatus = Convert.ToBoolean(v)
-                   //[20] = v => CameraStatus = Convert.ToBoolean(v)
-               };
-           }
-   */
-
-
-        private void InitializeTagMap()
-        {
-            _tagValueMap = new Dictionary<int, Action<object>>
-            {
-                // Mapping Actual PLC Tags to UI Properties
-
-                // Tag 24: UpTime (Operating Time)
-                //  [ConstantValues.TAG_UpTime] = v => OperatingTime = v.ToString(),
-
-                // Tag 26: DownTime
-                //  [ConstantValues.TAG_DownTime] = v => Downtime = v.ToString(),
-
-                // Tag 28: Good Units (OK)
-                [ConstantValues.TAG_OK] = v => GoodUnits = Convert.ToInt32(v),
-
-                // Tag 29: Rejected Units (NG)
-                [ConstantValues.TAG_NG] = v => RejectedUnits = Convert.ToInt32(v),
-
-                // Tag 27: InFlow (Total)
-                [ConstantValues.TAG_InFlow] = v => InFlow = Convert.ToInt32(v),
-
-                // Tag 22: Cycle Time (Optional: Update trend or display)
-                [ConstantValues.TAG_CycleTime] = v => CycleTime = Convert.ToInt32(v)
-            };
-        }
 
         #endregion
 
@@ -379,7 +330,7 @@ namespace IPCSoftware.App.ViewModels
             try
             {
                 var resultDict = await _coreClient.GetIoValuesAsync(4);
-               
+
 
                 if (resultDict != null && resultDict.TryGetValue(4, out object oeeObj))
                 {
@@ -445,18 +396,6 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        private void UpdateValues(Dictionary<int, object> dict)
-        {
-            if (dict == null) return;
-
-            foreach (var kvp in dict)
-            {
-                if (_tagValueMap.TryGetValue(kvp.Key, out var setter))
-                {
-                    setter(kvp.Value);
-                }
-            }
-        }
 
         private void SyncUiWithJson()
         {
