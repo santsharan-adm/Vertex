@@ -129,7 +129,7 @@ namespace IPCSoftware.App.ViewModels
             _ = InitializePositionsAsync();
             //InitializePositions();
                 
-            _liveDataTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
+            _liveDataTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
             _liveDataTimer.Tick += OnLiveDataTick;
             _liveDataTimer.Start();
            // UpdateCoord();
@@ -157,12 +157,12 @@ namespace IPCSoftware.App.ViewModels
         private async Task OnJogAsync(object args)
         {
             // 1. Check PLC Connection
-            if (!await IsPLCConnected())
-            {
-                // Optionally log only once per press/release to avoid spam
-                // _logger.LogWarning("Jog ignored: PLC disconnected", LogType.Audit);
-                return;
-            }
+            //if (!await IsPLCConnected())
+            //{
+            //    // Optionally log only once per press/release to avoid spam
+            //    // _logger.LogWarning("Jog ignored: PLC disconnected", LogType.Audit);
+            //    return;
+            //}
 
             if (args is not string commandStr) return;
             var parts = commandStr.Split('|');
@@ -214,8 +214,8 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _logger.LogInfo($"JOG START: {dir} (Tag {writeTagId})", LogType.Audit);
                     await _coreClient.WriteTagAsync(writeTagId, 1);
-                    await Task.Delay(1000);
-                    await _coreClient.WriteTagAsync(writeTagId, 0);
+                   // await Task.Delay(1000);
+                    //await _coreClient.WriteTagAsync(writeTagId, 0);
                 }
                 else
                 {

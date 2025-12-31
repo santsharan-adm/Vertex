@@ -3,7 +3,6 @@ using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
-
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
@@ -12,14 +11,16 @@ using IPCSoftware.CoreService.Alarm;
 using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.CoreService.Services.Dashboard;
+using IPCSoftware.CoreService.Services.Logging;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
-using Microsoft.Extensions.Configuration;
+using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel.Design.Serialization;
+using System.IO;
 
 namespace IPCSoftware.App.DI
 {
@@ -36,16 +37,25 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<DashboardInitializer>();
             services.AddSingleton<OeeEngine>();
             services.AddSingleton<SystemMonitorService>();
+            // --- Updated registration for IProductionDataLogger ---
+            services.AddSingleton<IProductionDataLogger>(sp =>
+            {
+                var logConfigService = sp.GetRequiredService<ILogConfigurationService>();
+                var initTask = logConfigService.InitializeAsync();
+                initTask.Wait();
+                var prodLogConfigTask = logConfigService.GetByLogTypeAsync(LogType.Production);
+                prodLogConfigTask.Wait();
+                var prodLogConfig = prodLogConfigTask.Result;
+                if (prodLogConfig == null || !prodLogConfig.Enabled)
+                    throw new InvalidOperationException("Production log configuration not found or not enabled.");
+
+                return new ProductionDataLogger(prodLogConfig);
+            });
             services.AddSingleton<CCDTriggerService>();
             services.AddSingleton<PLCClientManager>();
             services.AddSingleton<CameraFtpService>();
             services.AddTransient<ProductionImageService>();
             services.AddSingleton<AlarmService>();
-
-           /* services.AddSingleton<UiListener>(sp =>
-            {
-                return new UiListener(5050);
-            });*/
             services.AddSingleton<UiListener>(sp =>
             {
                 var logger = sp.GetRequiredService<IAppLogger>();
@@ -167,10 +177,12 @@ namespace IPCSoftware.App.DI
 
             services.AddSingleton<ModeOfOperation>();
             services.AddTransient<ManualOperation>();
+            services.AddTransient<ManualOperationView>();
             services.AddTransient<PLCIOMonitor>();
 
             services.AddSingleton<ModeOfOperationViewModel>();
             services.AddTransient<ManualOperationViewModel>();
+            services.AddTransient<ManualOpViewModel>();
             services.AddTransient<PlcIoMonitorViewModel>();
             // PLC Tag Configuration Views 
             services.AddTransient<PLCTagListView>();
@@ -206,6 +218,10 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<CoreClient>();
 
 
+            services.AddSingleton<ReportConfigViewModel>();
+            services.AddSingleton<ReportConfigView>();
+            services.AddSingleton<ReportViewerViewModel>();
+            services.AddSingleton<ReportViewerView>();
         }
     }
 }

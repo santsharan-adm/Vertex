@@ -1,12 +1,16 @@
-﻿// OeeEngine.cs
-using IPCSoftware.Core.Interfaces;
+﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.CoreService.Services.Logging;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.Shared.Models.Logging;
 using Newtonsoft.Json.Linq;
+using System.IO;
+using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace IPCSoftware.CoreService.Services.Dashboard
 {
@@ -14,38 +18,224 @@ namespace IPCSoftware.CoreService.Services.Dashboard
     {
         private readonly IPLCTagConfigurationService _tagService;
         private readonly PLCClientManager _plcManager;
-
+        private readonly IProductionDataLogger _prodLogger;
         private bool _lastCycleTimeTriggerState = false;
         private int _lastCycleTime = 1;
+        private readonly string _servoCalibrationPath;
+        // Holds all data for the current 2D code / part
+        private ProductionDataRecord? _currentCycleRecord;
+
+        // Tracks which station index we are currently at (0..12) for current part
+        private int _currentStationIndex = -1;
+
+        // For rising-edge detection of TriggerCCD (tag 10)
+        private bool _lastCcdTriggerState = false;
+
+
+        // =======================
+        // Station sequence mapping (from APP/Data JSON)
+        // =======================
+
+        // SequenceIndex -> PositionId
+        private Dictionary<int, int> _sequenceToPositionId = new();
+
+        // Flag to ensure we only try loading once
+        private bool _stationMapLoaded = false;
+
+        // Step counter for CCD triggers within current part (0,1,2,...)
+        private int _currentSequenceStep = 0;
+
 
         public OeeEngine(
             IPLCTagConfigurationService tagService, 
             PLCClientManager plcManager,
-            IAppLogger logger) : base(logger)
+            IAppLogger logger,
+            IProductionDataLogger prodLogger,
+            IConfiguration configuration) : base(logger)
         {
             _tagService = tagService;
             _plcManager = plcManager;
+            _prodLogger = prodLogger;
+
+            var dataFolder = configuration["Config:DataFolder"];
+            var servoFileName = configuration["Config:ServoCalibrationFileName"] ?? "ServoCalibration.json";
+
+            // Fallbacks if something is missing
+            if (string.IsNullOrWhiteSpace(dataFolder))
+            {
+                dataFolder = AppContext.BaseDirectory;
+            }
+
+            _servoCalibrationPath = Path.Combine(dataFolder, servoFileName);
         }
 
         public void ProcessCycleTimeLogic(Dictionary<int, object> tagValues)
         {
             try
             {
-                // 1. Check A1 Bit (Tag 21)
+                // =========================
+                // 0) Handle CCD Station Step (TriggerCCD tag 10)
+                // =========================
+                bool currentCcdState = GetBoolState(tagValues, ConstantValues.TRIGGER_TAG_ID); // -> 10
+
+                if (currentCcdState && !_lastCcdTriggerState)
+                {
+                    // Rising edge of TriggerCCD: capture one station's CCD snapshot
+
+                    // 1) Read 2D code from QR tag (16)
+                    string twoDCode = GetString(tagValues, ConstantValues.TAG_QR_DATA); // -> 16
+                    if (string.IsNullOrWhiteSpace(twoDCode))
+                    {
+                        twoDCode = "NA";
+                    }
+
+                    // 2) If no current cycle record, or 2D code changed, start a new record
+                    if (_currentCycleRecord == null ||
+                        !string.Equals(_currentCycleRecord.TwoDCode, twoDCode, StringComparison.OrdinalIgnoreCase))
+                    {
+                        _currentCycleRecord = new ProductionDataRecord
+                        {
+                            TwoDCode = twoDCode
+                        };
+                        _currentSequenceStep = 0; // start new sequence for this 2D
+                    }
+
+                    // 3) Determine which logical station this CCD hit, based on JSON mapping
+                    int step = _currentSequenceStep;      // 0,1,2,...
+                    _currentSequenceStep++;               // prepare for next trigger
+
+                    int logicalStationId = GetStationIdForStep(step);
+
+                    // Clamp to Stations array bounds
+                    if (logicalStationId < 0 || logicalStationId >= _currentCycleRecord.Stations.Length)
+                    {
+                        _logger.LogError($"[OEE] Logical station {logicalStationId} out of bounds. Forcing to 0.", LogType.Diagnostics);
+                        logicalStationId = 0;
+                    }
+
+                    // 4) Read CCD tags
+                    int statusRaw = GetInt(tagValues, ConstantValues.TAG_STATUS);      // 17
+                    string stResult = statusRaw switch
+                    {
+                        1 => "OK",
+                        2 => "NG",
+                        _ => statusRaw.ToString()
+                    };
+
+                    double? stX = GetDouble(tagValues, ConstantValues.TAG_X);         // 18
+                    double? stY = GetDouble(tagValues, ConstantValues.TAG_Y);         // 19
+                    double? stZ = GetDouble(tagValues, ConstantValues.TAG_Z);         // 20
+
+                    // 5) Store in the proper station (PositionId)
+                    var station = _currentCycleRecord.Stations[logicalStationId];
+                    station.Result = stResult;
+                    station.X = stX;
+                    station.Y = stY;
+                    station.Z = stZ;
+
+                    _logger.LogInfo(
+                        $"[CCD] Captured station {logicalStationId} (step {step}) for 2D={_currentCycleRecord.TwoDCode}, Status={stResult}, X={stX}, Y={stY}, Z={stZ}",
+                        LogType.Diagnostics);
+                }
+
+                // =========================
+                // 1) Handle Cycle Complete (CtlCycleTimeA1 tag 21)
+                // =========================
                 bool currentA1State = GetBoolState(tagValues, ConstantValues.TAG_CTL_CYCLETIME_A1);
 
-                // 2. Rising Edge Detection (0 -> 1)
+                // Rising edge Detection (0 -> 1)
                 if (currentA1State && !_lastCycleTimeTriggerState)
                 {
                     _lastCycleTime = GetInt(tagValues, ConstantValues.TAG_CycleTime);
                     Console.WriteLine($"[CycleTime] A1 Trigger Detected (Tag {ConstantValues.TAG_CTL_CYCLETIME_A1})");
                     _logger.LogInfo($"[CycleTime] A1 Trigger Detected (Tag {ConstantValues.TAG_CTL_CYCLETIME_A1})", LogType.Diagnostics);
 
-                    // Note: The Cycle Time Value (Tag 22) is already read in 'tagValues' 
-                    // because the AlgorithmService processes the whole packet.
+                    try
+                    {
+                        // 1) Read raw OEE-related values from current tagValues
+                        int operatingMin = GetInt(tagValues, ConstantValues.TAG_UpTime);    // 24
+                        int downTimeMin = GetInt(tagValues, ConstantValues.TAG_DownTime);  // 26
+                        int totalParts = GetInt(tagValues, ConstantValues.TAG_InFlow);    // 27
+                        int okParts = GetInt(tagValues, ConstantValues.TAG_OK);        // 28
+                        int ngParts = GetInt(tagValues, ConstantValues.TAG_NG);        // 29
+                        int idealCycle = GetInt(tagValues, ConstantValues.TAG_CycleTime); // 22 (sec/part)
+                        int actualCycleTime = _lastCycleTime;
 
-                    // 3. Send Acknowledgement B1 (Tag 23)
+                        // 2) Calculate OEE KPIs (same formulas as in Calculate)
+                        double availability = 0.0;
+                        double quality = 0.0;
+                        double performance = 0.0;
+                        double oee = 0.0;
 
+                        double totalTimeMin = operatingMin + downTimeMin;
+
+                        // Availability = Uptime / (Uptime + Downtime)
+                        if (totalTimeMin > 0)
+                        {
+                            availability = (double)operatingMin / totalTimeMin;
+                        }
+
+                        // Quality = Good / Total
+                        if (totalParts > 0)
+                        {
+                            quality = (double)okParts / totalParts;
+                        }
+
+                        // Performance = (IdealCycle * TotalProduction) / Uptime(sec)
+                        if (operatingMin > 0 && idealCycle > 0)
+                        {
+                            double operatingSeconds = (double)operatingMin * 60.0;
+                            if (operatingSeconds > 0)
+                            {
+                                performance = ((double)idealCycle * totalParts) / operatingSeconds;
+                            }
+                        }
+
+                        // OEE = A * P * Q
+                        oee = availability * performance * quality;
+
+                        // 3) Ensure we have a current cycle record (in case CCD never fired)
+                        if (_currentCycleRecord == null)
+                        {
+                            string twoDCode = GetString(tagValues, ConstantValues.TAG_QR_DATA);
+                            if (string.IsNullOrWhiteSpace(twoDCode))
+                                twoDCode = "NA";
+
+                            _currentCycleRecord = new ProductionDataRecord
+                            {
+                                TwoDCode = twoDCode
+                            };
+                        }
+
+                        // 4) Fill OEE + counters into current cycle record
+                        _currentCycleRecord.OEE = oee;
+                        _currentCycleRecord.Availability = availability;
+                        _currentCycleRecord.Performance = performance;
+                        _currentCycleRecord.Quality = quality;
+
+                        _currentCycleRecord.Total_IN = totalParts;
+                        _currentCycleRecord.OK = okParts;
+                        _currentCycleRecord.NG = ngParts;
+
+                        _currentCycleRecord.Uptime = operatingMin;
+                        _currentCycleRecord.Downtime = downTimeMin;
+                        _currentCycleRecord.TotalTime = totalTimeMin;
+                        _currentCycleRecord.CT = actualCycleTime;
+
+                        // 5) Append full record (all captured stations 0..n)
+                        _prodLogger.AppendRecord(_currentCycleRecord);
+
+                        // 6) Reset for next 2D / part
+                        _currentCycleRecord = null;
+                        _currentStationIndex = -1;
+                        _currentSequenceStep = 0;    // IMPORTANT: reset here, not on every scan
+                    }
+                    catch (Exception exLog)
+                    {
+                        _logger.LogError($"ProductionData CSV log failed: {exLog.Message}", LogType.Diagnostics);
+                    }
+
+                    // 7) Send Acknowledgement B1 (Tag 23) AFTER logging
                     _ = WriteTagAsync(ConstantValues.TAG_CTL_CYCLETIME_B1, true);
                 }
                 else if (!currentA1State && _lastCycleTimeTriggerState)
@@ -54,6 +244,8 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                     _ = WriteTagAsync(ConstantValues.TAG_CTL_CYCLETIME_B1, false);
                 }
 
+                // Update edge states for next scan (only flags, no data reset)
+                _lastCcdTriggerState = currentCcdState;
                 _lastCycleTimeTriggerState = currentA1State;
             }
             catch (Exception ex)
@@ -61,6 +253,73 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
+
+
+        private void EnsureStationMapLoaded()
+        {
+            if (_stationMapLoaded)
+                return;
+
+            try
+            {
+                // We already built the full path in the constructor from appsettings
+                var jsonPath = _servoCalibrationPath;
+
+                if (!File.Exists(jsonPath))
+                {
+                    _logger.LogError($"[OEE] Station positions JSON not found at: {jsonPath}", LogType.Diagnostics);
+                    _stationMapLoaded = true; // avoid repeated attempts
+                    return;
+                }
+
+                string json = File.ReadAllText(jsonPath);
+                var positions = JsonSerializer.Deserialize<List<PositionConfigJson>>(json);
+
+                if (positions == null || positions.Count == 0)
+                {
+                    _logger.LogError("[OEE] Station positions JSON is empty or could not be deserialized.", LogType.Diagnostics);
+                    _stationMapLoaded = true;
+                    return;
+                }
+
+                // Build SequenceIndex -> PositionId map
+                _sequenceToPositionId = positions
+                    .Where(p => p.SequenceIndex >= 0 && p.PositionId >= 0)
+                    .ToDictionary(p => p.SequenceIndex, p => p.PositionId);
+
+                _logger.LogInfo(
+                    "[OEE] Loaded station map (Seq->Pos): " +
+                    string.Join(", ", _sequenceToPositionId
+                        .OrderBy(kv => kv.Key)
+                        .Select(kv => $"{kv.Key}->{kv.Value}")),
+                    LogType.Diagnostics);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[OEE] Failed to load station positions JSON: {ex.Message}", LogType.Diagnostics);
+            }
+            finally
+            {
+                _stationMapLoaded = true;
+            }
+        }
+
+
+        private int GetStationIdForStep(int sequenceStep)
+        {
+            // Ensure mapping is loaded
+            EnsureStationMapLoaded();
+
+            if (_sequenceToPositionId != null &&
+                _sequenceToPositionId.TryGetValue(sequenceStep, out var posId))
+            {
+                return posId; // PositionId 0..12
+            }
+
+            // Fallback: if config missing, just use the step as station
+            return sequenceStep;
+        }
+
 
         public Dictionary<int, object> Calculate(Dictionary<int, object> values)
         {
@@ -123,6 +382,10 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 r.TotalParts = totalParts;
                 r.CycleTime = _lastCycleTime;
 
+
+                
+
+
                 // Return as dictionary with ID 4 (OEE_DATA)
                 return new Dictionary<int, object> { { 4, r } };
             }
@@ -143,6 +406,41 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 { _logger.LogError(ex.Message, LogType.Diagnostics); return 0; }
             }
             return 0;
+        }
+
+        private string GetString(Dictionary<int, object> values, int tagId)
+        {
+            if (values != null && values.TryGetValue(tagId, out object val) && val != null)
+            {
+                try
+                {
+                    return val.ToString() ?? string.Empty;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message, LogType.Diagnostics);
+                    return string.Empty;
+                }
+            }
+            return string.Empty;
+        }
+
+
+        private double? GetDouble(Dictionary<int, object> values, int tagId)
+        {
+            if (values != null && values.TryGetValue(tagId, out object val) && val != null)
+            {
+                try
+                {
+                    return Convert.ToDouble(val);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message, LogType.Diagnostics);
+                    return null;
+                }
+            }
+            return null;
         }
 
 
@@ -178,6 +476,16 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 Console.WriteLine($"[Error] CycleTime Write Tag {tagNo}: {ex.Message}");
                 _logger.LogError($"[Error] CycleTime Write Tag {tagNo}: {ex.Message}", LogType.Diagnostics);
             }
+        }
+
+        private class PositionConfigJson
+        {
+            public int PositionId { get; set; }
+            public string? Name { get; set; }
+            public int SequenceIndex { get; set; }
+            public int X { get; set; }
+            public int Y { get; set; }
+            public string? Description { get; set; }
         }
 
     }

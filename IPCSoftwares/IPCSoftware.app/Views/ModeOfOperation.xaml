@@ -3,42 +3,116 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ModeOfOperationViewModel}"
              Background="#F3F3F3">
 
     <UserControl.Resources>
-        <!-- HMI DataGrid Styles (Restored for bold, large look) -->
         <Style x:Key="HmiColumnHeaderStyle" TargetType="DataGridColumnHeader">
             <Setter Property="Height" Value="60"/>
             <Setter Property="FontSize" Value="24"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="#333"/>
             <Setter Property="Background" Value="#E0E0E0"/>
-            <Setter Property="Padding" Value="15,0"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="BorderThickness" Value="0,0,1,1"/>
             <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
         </Style>
 
         <Style x:Key="HmiCellStyle" TargetType="DataGridCell">
             <Setter Property="FontSize" Value="20"/>
-            <Setter Property="Padding" Value="15,10"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="DataGridCell">
-                        <Border Background="{TemplateBinding Background}" BorderThickness="0" SnapsToDevicePixels="True">
-                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#CCE8FF"/>
-                    <Setter Property="Foreground" Value="Black"/>
-                </Trigger>
-            </Style.Triggers>
+            <Setter Property="Padding" Value="10"/>
         </Style>
+
+        <DataTemplate x:Key="ModeButtonTemplate">
+            <Button Margin="15" Width="330" Height="270"
+                    IsEnabled="{Binding IsEnabled}">
+
+                <i:Interaction.Behaviors>
+                    <helpers:MomentaryBehavior 
+                        Command="{Binding DataContext.UnifiedOperationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        CommandParameter="{Binding Mode}"/>
+                </i:Interaction.Behaviors>
+
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid>
+                                        <Border x:Name="BaseLayer" CornerRadius="15" BorderThickness="1" BorderBrush="#777">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding BaseColor}"/>
+                                            </Border.Background>
+                                            <Border.Effect>
+                                                <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.2"/>
+                                            </Border.Effect>
+                                        </Border>
+
+                                        <Border x:Name="ActiveLayer" CornerRadius="15" BorderThickness="2" BorderBrush="White" Opacity="0">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding ActiveColor}"/>
+                                            </Border.Background>
+                                            <Border.Effect>
+                                                <DropShadowEffect Color="{Binding ActiveColor}" BlurRadius="25" Opacity="0.8"/>
+                                            </Border.Effect>
+                                        </Border>
+
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter TargetName="BaseLayer" Property="Opacity" Value="0.4"/>
+                                            <Setter TargetName="BaseLayer" Property="Effect" Value="{x:Null}"/>
+                                            <Setter Property="Foreground" Value="#888"/>
+                                        </Trigger>
+
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                            <Setter TargetName="BaseLayer" Property="Opacity" Value="0.9"/>
+                                        </Trigger>
+
+                                        <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                            <Setter TargetName="ActiveLayer" Property="Opacity" Value="1"/>
+                                            <Setter TargetName="BaseLayer" Property="Opacity" Value="1"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding IsBlinking}" Value="True">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard Name="BlinkAnim">
+                                                    <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                                        <DoubleAnimation Storyboard.TargetName="ActiveLayer"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         From="0.4" To="1.0" Duration="0:0:0.6"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <DataTrigger.ExitActions>
+                                                <StopStoryboard BeginStoryboardName="BlinkAnim"/>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="ActiveLayer"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="0" Duration="0:0:0.1"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+
+                <TextBlock Text="{Binding Name}" FontSize="45" FontWeight="Bold" Foreground="White" 
+                           TextWrapping="Wrap" TextAlignment="Center">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2" Opacity="0.5"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+            </Button>
+        </DataTemplate>
     </UserControl.Resources>
 
     <Grid Margin="20">
@@ -47,11 +121,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header & Home Indicator -->
         <Grid Margin="0,0,0,20">
             <TextBlock Text="Mode of Operation" FontSize="48" FontWeight="Bold" Foreground="#333"/>
-            
-            
 
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Center">
                 <TextBlock Text="MACHINE HOME" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,15,0">
@@ -60,22 +131,22 @@
                             <Setter Property="Foreground" Value="Gray"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsMachineHome}" Value="True">
-                                    <Setter Property="Foreground" Value="Green"/>
+                                    <Setter Property="Foreground" Value="#008000"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
-                <Ellipse Width="40" Height="40" Stroke="Black" StrokeThickness="2">
+                <Ellipse Width="40" Height="40" Stroke="Black" StrokeThickness="1">
                     <Ellipse.Style>
                         <Style TargetType="Ellipse">
-                            <Setter Property="Fill" Value="LightGray"/>
+                            <Setter Property="Fill" Value="#DDDDDD"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsMachineHome}" Value="True">
-                                    <Setter Property="Fill" Value="LimeGreen"/>
+                                    <Setter Property="Fill" Value="#00FF00"/>
                                     <Setter Property="Effect">
                                         <Setter.Value>
-                                            <DropShadowEffect Color="Lime" BlurRadius="20"/>
+                                            <DropShadowEffect Color="#00FF00" BlurRadius="15"/>
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
@@ -92,115 +163,17 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Buttons Grid -->
-            <Border Grid.Column="0" Background="White" CornerRadius="15" Padding="10" Margin="0,0,0,0" BorderBrush="#DDD" BorderThickness="1">
-                <Border.Effect>
-                    <DropShadowEffect Color="Black" BlurRadius="20" Opacity="0.1"/>
-                </Border.Effect>
-
-                <ItemsControl ItemsSource="{Binding ModeButtons}">
+            <Border Grid.Column="0" Background="White" CornerRadius="15" Padding="10" BorderBrush="#CCC" BorderThickness="1">
+                <ItemsControl ItemsSource="{Binding ModeButtons}" ItemTemplate="{StaticResource ModeButtonTemplate}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <!-- Adjusted Rows/Columns for better spacing -->
                             <UniformGrid Rows="2" Columns="3"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
-
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <!-- Slightly smaller margin to make buttons effectively smaller/cleaner -->
-                            <Button Margin="15" Width="330"
-                                    Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}"
-                                    IsEnabled="{Binding IsEnabled}"
-                                    Height="270">
-                                <!-- Fixed height for consistency -->
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="Button">
-                                                    <!-- Main Container -->
-                                                    <Grid>
-                                                        <Border x:Name="BaseLayer" CornerRadius="15" BorderThickness="1" BorderBrush="#CCC">
-                                                            <Border.Background>
-                                                                <SolidColorBrush Color="{Binding BaseColor}"/>
-                                                            </Border.Background>
-                                                            <Border.Effect>
-                                                                <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.2"/>
-                                                            </Border.Effect>
-                                                        </Border>
-
-                                                        <!-- Overlay for Active/Blinking State -->
-                                                        <Border x:Name="ActiveOverlay" CornerRadius="15" BorderThickness="0" Opacity="0">
-                                                            <Border.Background>
-                                                                <SolidColorBrush Color="{Binding ActiveColor}"/>
-                                                            </Border.Background>
-                                                            <Border.Effect>
-                                                                <DropShadowEffect Color="{Binding ActiveColor}" BlurRadius="20" Opacity="0.6"/>
-                                                            </Border.Effect>
-                                                        </Border>
-
-                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Grid>
-
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsEnabled" Value="False">
-                                                            <Setter TargetName="BaseLayer" Property="Opacity" Value="0.3"/>
-                                                            <Setter TargetName="ActiveOverlay" Property="Opacity" Value="0"/>
-                                                        </Trigger>
-
-                                                        <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                                            <DataTrigger.EnterActions>
-                                                                <BeginStoryboard Name="BlinkAnim">
-                                                                    <Storyboard RepeatBehavior="Forever" AutoReverse="True">
-                                                                        <DoubleAnimation Storyboard.TargetName="ActiveOverlay"
-                                                                                         Storyboard.TargetProperty="Opacity"
-                                                                                         From="0.3" To="1.0" Duration="0:0:0.6"/>
-                                                                    </Storyboard>
-                                                                </BeginStoryboard>
-                                                            </DataTrigger.EnterActions>
-                                                            <DataTrigger.ExitActions>
-                                                                <StopStoryboard BeginStoryboardName="BlinkAnim"/>
-                                                                <BeginStoryboard>
-                                                                    <Storyboard>
-                                                                        <DoubleAnimation Storyboard.TargetName="ActiveOverlay"
-                                                                                         Storyboard.TargetProperty="Opacity"
-                                                                                         To="0" Duration="0:0:0.1"/>
-                                                                    </Storyboard>
-                                                                </BeginStoryboard>
-                                                            </DataTrigger.ExitActions>
-                                                        </DataTrigger>
-
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="BaseLayer" Property="Opacity" Value="0.9"/>
-                                                            <Setter Property="Cursor" Value="Hand"/>
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </Button.Style>
-
-                                <!-- Increased Font Size per request -->
-                                <TextBlock Text="{Binding Name}" FontSize="45" FontWeight="Bold" Foreground="White" 
-                                           TextWrapping="Wrap" TextAlignment="Center">
-                                    <TextBlock.Effect>
-                                        <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="1" Opacity="0.5"/>
-                                    </TextBlock.Effect>
-                                </TextBlock>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Border>
 
-            <!-- Audit Log DataGrid -->
-            <Border Grid.Column="1" Margin=" 20 0 0 0 " Background="White" CornerRadius="15" Padding="20" BorderBrush="#DDD" BorderThickness="1">
-                <Border.Effect>
-                    <DropShadowEffect Color="Black" BlurRadius="20" Opacity="0.1"/>
-                </Border.Effect>
+            <Border Grid.Column="1" Margin="20 0 0 0" Background="White" CornerRadius="15" Padding="20" BorderBrush="#CCC" BorderThickness="1">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -209,18 +182,10 @@
 
                     <TextBlock Text="Operation Activity Log" FontSize="32" FontWeight="SemiBold" Foreground="#555" Margin="0,0,0,20"/>
 
-                    <DataGrid Grid.Row="1" 
-                              ItemsSource="{Binding AuditLogs}" 
-                              AutoGenerateColumns="False" 
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding AuditLogs}" AutoGenerateColumns="False"
                               ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}"
                               CellStyle="{StaticResource HmiCellStyle}"
-                              RowHeight="60"
-                              CanUserAddRows="False" 
-                              IsReadOnly="True" 
-                              GridLinesVisibility="Horizontal"
-                              HorizontalGridLinesBrush="#EEE"
-                              VerticalGridLinesBrush="Transparent"
-                              BorderThickness="0">
+                              RowHeight="50" IsReadOnly="True" BorderThickness="0" GridLinesVisibility="Horizontal">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Time" Binding="{Binding Time}" Width="140"/>
                             <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*"/>

@@ -21,7 +21,8 @@ public class RibbonViewModel : BaseViewModel
     public ICommand NavigateLogsCommand { get; }
     public ICommand NavigateUserMgmtCommand { get; }
     public ICommand NavigateLandingPageCommand { get; }
-
+    public ICommand NavigateReportConfigCommand { get; }
+    public ICommand NavigateReportsCommand { get; }
 
     public ICommand LogoutCommand { get; }
     public Action OnLogout { get; set; }
@@ -43,6 +44,8 @@ public class RibbonViewModel : BaseViewModel
         NavigateSettingsCommand = new RelayCommand(OpenSettingsMenu);
         NavigateLogsCommand = new RelayCommand(OpenLogsMenu);
         NavigateUserMgmtCommand = new RelayCommand(OpenUserMgtMenu);
+        NavigateReportConfigCommand = new RelayCommand(OpenReportConfig);
+        NavigateReportsCommand = new RelayCommand(OpenReportsView);
 
         LogoutCommand = new RelayCommand(Logout);
         NavigateLandingPageCommand = new RelayCommand(OpenLandingPage);
@@ -81,7 +84,7 @@ public class RibbonViewModel : BaseViewModel
                 "Servo Parameters",
                 "PLC IO",
                 "Diagnostic",
-                 
+                
             }, nameof(OpenSettingsMenu));
         }
         catch (Exception ex)
@@ -118,12 +121,12 @@ public class RibbonViewModel : BaseViewModel
                 LoadMenu(new List<string>
                     {
                         "Log Config",
-                            "Device Config",
-                            "Alarm Config",
-                            "User Config",
-                            "PLC TAG Config",
-                            "Report Config",
-                            "External Interface"
+                        "Device Config",
+                        "Alarm Config",
+                        "User Config",
+                        "PLC TAG Config",
+                        "Report Config",
+                        "External Interface"
                     }, nameof(OpenUserMgtMenu));
             }
         }
@@ -162,6 +165,16 @@ public class RibbonViewModel : BaseViewModel
     {
         OnLandingPageRequested?.Invoke();  // notify MainWindowViewModel
         _nav.NavigateMain<DashboardView>();
+    }
+
+    private void OpenReportConfig()
+    {
+        _nav.NavigateMain<ReportConfigView>();
+    }
+
+    private void OpenReportsView()
+    {
+        _nav.NavigateMain<ReportViewerView>();
     }
 
 

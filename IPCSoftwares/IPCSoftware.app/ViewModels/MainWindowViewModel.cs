@@ -417,7 +417,8 @@ public class MainWindowViewModel : BaseViewModel
                     break;
 
                 case "Manual Operation":
-                    _nav.NavigateMain<ManualOperation>();
+                    //_nav.NavigateMain<ManualOperation>();
+                    _nav.NavigateMain<ManualOperationView>();
                     break;
 
                 case "Mode Of Operation":
@@ -434,6 +435,9 @@ public class MainWindowViewModel : BaseViewModel
 
                 case "PLC TAG Config":
                     _nav.NavigateMain<PLCTagListView>();
+                    break;
+                case "Report Config":
+                    _nav.NavigateMain<ReportConfigView>();
                     break;
 
                 case "Alarm View": 
@@ -453,7 +457,8 @@ public class MainWindowViewModel : BaseViewModel
                 case "Diagnostics Logs":
                     _nav.NavigateToLogs(LogType.Diagnostics);
                     break;
-        }
+                
+            }
         }
         catch (Exception ex)
         {
