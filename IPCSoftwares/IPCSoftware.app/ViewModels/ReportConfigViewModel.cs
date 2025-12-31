@@ -41,6 +41,8 @@ namespace IPCSoftware.App.ViewModels
  SelectedColumns.Clear();
  foreach (var col in value.SelectedColumns)
  SelectedColumns.Add(col);
+ // Notify that SelectedColumns has been updated to trigger UI sync
+ OnPropertyChanged(nameof(SelectedColumns));
  }
  }
  }
