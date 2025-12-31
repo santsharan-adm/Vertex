@@ -153,11 +153,26 @@ namespace IPCSoftware.App.ViewModels
  {
  if (SelectedFormat != null && SelectedColumnToRemove != null)
  {
- SelectedFormat.SelectedColumns.Remove(SelectedColumnToRemove);
- SelectedColumnToRemove = null;
- SaveReportFormats();
- OnPropertyChanged(nameof(SelectedColumnsView));
- }
+ // Remove from the selected format's columns
+   SelectedFormat.SelectedColumns.Remove(SelectedColumnToRemove);
+        
+        // Also remove from SelectedColumns collection for UI sync
+ if (SelectedColumns.Contains(SelectedColumnToRemove))
+            SelectedColumns.Remove(SelectedColumnToRemove);
+     
+        SelectedColumnToRemove = null;
+     SaveReportFormats();
+        OnPropertyChanged(nameof(SelectedColumnsView));
+    }
+    else if (SelectedFormat == null && SelectedColumnToRemove != null)
+    {
+        // Remove from current selection (before saving)
+   if (SelectedColumns.Contains(SelectedColumnToRemove))
+            SelectedColumns.Remove(SelectedColumnToRemove);
+        
+        SelectedColumnToRemove = null;
+        OnPropertyChanged(nameof(SelectedColumnsView));
+}
  }
 
  private void SaveReportFormats()
