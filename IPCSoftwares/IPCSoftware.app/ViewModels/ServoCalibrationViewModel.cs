@@ -77,7 +77,8 @@ namespace IPCSoftware.App.ViewModels
         // NEW: Jog Command (Takes [Direction, IsPressed])
         public ICommand JogCommand { get; }
 
-        public ServoCalibrationViewModel(CoreClient coreClient, IServoCalibrationService servoService,IDialogService dialog, IAppLogger logger)
+        public ServoCalibrationViewModel(CoreClient coreClient, 
+            IServoCalibrationService servoService,IDialogService dialog, IAppLogger logger)
              : base(logger)
         {
             _dialog = dialog;
@@ -351,6 +352,7 @@ namespace IPCSoftware.App.ViewModels
                 {
                     Positions[index] = position;
                 }
+                _dialog.ShowMessage("Values updated sucessfully.");
                 _initialPlcLoadDone = false;
                // UpdateCoord();
             }
@@ -375,6 +377,7 @@ namespace IPCSoftware.App.ViewModels
 
                 await _coreClient.WriteTagAsync(xTag, position.X);
                 await _coreClient.WriteTagAsync(yTag, position.Y);
+                _dialog.ShowMessage("Values updated sucessfully.");
                 _initialPlcLoadDone = false;
               //  UpdateCoord();
                 // Optional: Flash success or log
@@ -392,6 +395,9 @@ namespace IPCSoftware.App.ViewModels
             {
                 _logger.LogInfo($"Writing {param.Name} -> {param.NewValue}", LogType.Audit);
                 await _coreClient.WriteTagAsync(param.WriteTagId, param.NewValue);
+                _dialog.ShowMessage("Value updated sucessfully.");
+
+
             }
             catch (Exception ex) { _logger.LogError($"Write Param Error: {ex.Message}", LogType.Diagnostics); }
         }

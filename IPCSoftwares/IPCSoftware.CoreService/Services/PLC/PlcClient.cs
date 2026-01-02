@@ -92,8 +92,8 @@ namespace IPCSoftware.CoreService.Services.PLC
                             OnPlcDataReceived?.Invoke(_device.DeviceNo, data);
                             // NEW DEBUG LOG: Confirming data dispatched
                             Console.WriteLine($"PLC[{_device.DeviceName}] [DATA] Polling successful. Dispatched {data.Count} raw register groups.");
-                            _logger.LogInfo($"PLC[{_device.DeviceName}] [DATA] Polling successful. " +
-                                $"Dispatched {data.Count} raw register groups.", LogType.Diagnostics);
+                            //_logger.LogInfo($"PLC[{_device.DeviceName}] [DATA] Polling successful. " +
+                            //    $"Dispatched {data.Count} raw register groups.", LogType.Diagnostics);
                         }
                     }
                     catch (Exception ex)
@@ -302,7 +302,7 @@ namespace IPCSoftware.CoreService.Services.PLC
                     await _master!.WriteMultipleRegistersAsync(1, start, registers);
                 }
                 Console.WriteLine($"PLC[{_device.DeviceName}] Written {cfg.Name}: {value}");
-                _logger.LogInfo($"PLC[{_device.DeviceName}] Written {cfg.Name}: {value}", LogType.Diagnostics);
+                //_logger.LogInfo($"PLC[{_device.DeviceName}] Written {cfg.Name}: {value}", LogType.Diagnostics);
             }
             catch (Exception ex)
             {

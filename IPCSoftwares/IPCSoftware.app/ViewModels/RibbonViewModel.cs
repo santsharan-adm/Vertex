@@ -21,7 +21,7 @@ public class RibbonViewModel : BaseViewModel
     public ICommand NavigateLogsCommand { get; }
     public ICommand NavigateUserMgmtCommand { get; }
     public ICommand NavigateLandingPageCommand { get; }
-    public ICommand NavigateReportConfigCommand { get; }
+   // public ICommand NavigateReportConfigCommand { get; }
     public ICommand NavigateReportsCommand { get; }
 
     public ICommand LogoutCommand { get; }
@@ -44,7 +44,7 @@ public class RibbonViewModel : BaseViewModel
         NavigateSettingsCommand = new RelayCommand(OpenSettingsMenu);
         NavigateLogsCommand = new RelayCommand(OpenLogsMenu);
         NavigateUserMgmtCommand = new RelayCommand(OpenUserMgtMenu);
-        NavigateReportConfigCommand = new RelayCommand(OpenReportConfig);
+       // NavigateReportConfigCommand = new RelayCommand(OpenReportConfig);
         NavigateReportsCommand = new RelayCommand(OpenReportsView);
 
         LogoutCommand = new RelayCommand(Logout);
@@ -100,7 +100,6 @@ public class RibbonViewModel : BaseViewModel
             LoadMenu(new List<string>
             {
                 "Audit Logs",
-                "Production Logs",
                 "Error Logs",
                 "Diagnostics Logs"
             }, nameof(OpenLogsMenu));
@@ -111,6 +110,25 @@ public class RibbonViewModel : BaseViewModel
         }
      
     }
+
+    private void OpenReportsView()
+    {
+        try
+        {
+            LoadMenu(new List<string>
+            {
+                "Production Data",
+                "Production Images"
+
+            }, nameof(OpenReportsView));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+        }
+       // _nav.NavigateMain<ReportViewerView>();
+    }
+
 
     private void OpenUserMgtMenu()
     {
@@ -167,16 +185,8 @@ public class RibbonViewModel : BaseViewModel
         _nav.NavigateMain<DashboardView>();
     }
 
-    private void OpenReportConfig()
-    {
-        _nav.NavigateMain<ReportConfigView>();
-    }
-
-    private void OpenReportsView()
-    {
-        _nav.NavigateMain<ReportViewerView>();
-    }
-
+  
+   
 
 
     private void LoadMenu(List<string> items, string functionName)

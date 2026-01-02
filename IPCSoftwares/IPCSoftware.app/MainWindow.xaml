@@ -402,7 +402,7 @@
                                         <Setter Property="Fill" Value="Green"/>
                                         <!-- Default: Connected -->
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                                            <DataTrigger Binding="{Binding PLCConnected}" Value="False">
                                                 <Setter Property="Fill" Value="Red"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -417,7 +417,7 @@
                                         <Setter Property="Text" Value="PLC CONNECTED"/>
                                         <Setter Property="Foreground" Value="Green"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                                            <DataTrigger Binding="{Binding PLCConnected}" Value="False">
                                                 <Setter Property="Text" Value="PLC DISCONNECTED"/>
                                                 <Setter Property="Foreground" Value="Red"/>
                                             </DataTrigger>
@@ -425,6 +425,38 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
+
+
+                            <Ellipse Width="16" Height="16" Margin="20,0,8,0">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="Green"/>
+                                        <!-- Default: Connected -->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                                                <Setter Property="Fill" Value="Red"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+
+                            <TextBlock FontSize="20" FontWeight="Bold" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="SERVICE CONNECTED"/>
+                                        <Setter Property="Foreground" Value="Green"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                                                <Setter Property="Text" Value="SERVICE DISCONNECTED"/>
+                                                <Setter Property="Foreground" Value="Red"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            
+                            
 
                         </StackPanel>
                     </StackPanel>

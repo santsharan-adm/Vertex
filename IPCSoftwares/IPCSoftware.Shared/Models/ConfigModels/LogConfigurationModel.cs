@@ -68,7 +68,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         Diagnostics = 3
     }
 
-    public enum BackupScheduleType
+    public enum BackupScheduleType  
     {
         Manual,
         Daily,
