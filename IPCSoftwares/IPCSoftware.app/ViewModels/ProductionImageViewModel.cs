@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Win32;
 
 namespace IPCSoftware.App.ViewModels
 {
@@ -58,6 +59,7 @@ namespace IPCSoftware.App.ViewModels
         }
 
         public ICommand RefreshCommand { get; }
+        public ICommand SaveImageCommand { get; }
 
         public ProductionImageViewModel(
             ICcdConfigService ccdConfig,
@@ -66,6 +68,7 @@ namespace IPCSoftware.App.ViewModels
             _ccdConfig = ccdConfig;
             _= InitializeAsync();
             RefreshCommand = new RelayCommand(async () => await InitializeAsync());
+            SaveImageCommand = new RelayCommand<ProductionImageModel>(OnSaveImage);
         }
 
         public async Task InitializeAsync()
@@ -107,6 +110,36 @@ namespace IPCSoftware.App.ViewModels
             foreach (var folder in query)
             {
                 Folders.Add(folder);
+            }
+        }
+
+        private void OnSaveImage(ProductionImageModel img)
+        {
+            if (img == null || !File.Exists(img.FullPath)) return;
+
+            try
+            {
+                // Open Save Dialog
+                var saveDialog = new SaveFileDialog
+                {
+                    FileName = img.FileName, // Default file name
+                    DefaultExt = Path.GetExtension(img.FullPath), // Default file extension
+                    Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp|All Files|*.*" // Filter
+                };
+
+                if (saveDialog.ShowDialog() == true)
+                {
+                    // Copy the file from Source (Network/Folder) to Destination (User selected path)
+                    File.Copy(img.FullPath, saveDialog.FileName, true);
+
+                    // Optional: Update Status Bar to show success
+                    StatusMessage = $"Saved: {Path.GetFileName(saveDialog.FileName)}";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Save Image Error: {ex.Message}", LogType.Diagnostics);
+                StatusMessage = "Error saving image.";
             }
         }
 

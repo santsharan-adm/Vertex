@@ -184,20 +184,34 @@
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Width="206" Margin="10">
-                                <Image Source="{Binding FullPath}" 
-                                       Height="160" Stretch="Uniform" 
-                             
-                                       RenderOptions.BitmapScalingMode="Fant"/>
+                            <StackPanel Width="206" Margin="10" 
+                    Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save Image" 
+                              Command="{Binding PlacementTarget.Tag.SaveImageCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                              CommandParameter="{Binding}">
+                                            <MenuItem.Icon>
+                                                <TextBlock Text="💾"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
+
+                                <Image Source="{Binding FullPath, Converter={StaticResource PathToThumbnailConverter}}" 
+                   Height="160" Stretch="Uniform" 
+                   RenderOptions.BitmapScalingMode="Fant"/>
 
                                 <TextBlock Text="{Binding FileName}" 
-                                           HorizontalAlignment="Center" Margin="0,10,0,5"
-                                       TextWrapping="Wrap"
-                                           ToolTip="{Binding FileName}"
-                                           FontSize="16"/>
+                       HorizontalAlignment="Center" Margin="0,10,0,5"
+                       TextWrapping="Wrap"
+                       ToolTip="{Binding FileName}"
+                       FontSize="16"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
+
                 </ListBox>
             </Grid>
         </Grid>

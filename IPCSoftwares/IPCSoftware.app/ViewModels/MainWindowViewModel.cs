@@ -393,7 +393,7 @@ public class MainWindowViewModel : BaseViewModel
             switch (itemName)
             {
                 // OEEDashboard Menu
-                case "OEE Dashboard":
+                case "Dashboard":
                     //_nav.NavigateMain<LiveOeeView>();
                     _nav.NavigateMain<OEEDashboard>();
                     break;
