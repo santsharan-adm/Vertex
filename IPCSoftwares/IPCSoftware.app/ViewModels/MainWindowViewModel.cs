@@ -256,6 +256,7 @@ public class MainWindowViewModel : BaseViewModel
 
     private async void LiveDataTimerTick(object sender, EventArgs e)
     {
+        _timer.Stop();
         try 
         {
             IsConnected =  _coreClient.isConnected;
@@ -270,11 +271,23 @@ public class MainWindowViewModel : BaseViewModel
                 TimeSynched = pulseResult[1];
 
             }
+            else
+            {
+                PLCConnected = false;
+                TimeSynched = false;
+            }
         }
         catch(Exception ex )
         {
-           _logger.LogError(ex.Message, LogType.Diagnostics);
-            
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+            PLCConnected = false;
+            TimeSynched = false;
+
+        }
+        finally
+        {
+            // Always restart the timer
+            _timer.Start();
         }
     }
     private void ResetLandingState()

@@ -49,7 +49,14 @@ namespace IPCSoftware.App.ViewModels
         {
             _logService = logService;
          RefreshCommand = new RelayCommand(async () => await LoadFilesAsync(_currentCategory));
-            RefreshLogsCommand = new RelayCommand(async () => await LoadLogsAsync(SelectedFile.FullPath));
+            RefreshLogsCommand = new RelayCommand(async () =>
+            {
+                // 1. Guard clause: Check if null before acting
+                if (SelectedFile == null) return;
+
+                // 2. Safe to access FullPath now
+                await LoadLogsAsync(SelectedFile.FullPath);
+            });
         }
 
         private LogType _currentCategory;
