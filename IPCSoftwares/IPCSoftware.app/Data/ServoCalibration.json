@@ -3,8 +3,8 @@
     "PositionId": 0,
     "Name": "Position 0",
     "SequenceIndex": 0,
-    "X": 122,
-    "Y": 100,
+    "X": 154,
+    "Y": 154,
     "Description": null
   },
   {
@@ -19,16 +19,16 @@
     "PositionId": 2,
     "Name": "Position 2",
     "SequenceIndex": 11,
-    "X": 122,
-    "Y": 100,
+    "X": 102,
+    "Y": 102,
     "Description": null
   },
   {
     "PositionId": 3,
     "Name": "Position 3",
     "SequenceIndex": 12,
-    "X": 47,
-    "Y": 45,
+    "X": 102,
+    "Y": 102,
     "Description": null
   },
   {
@@ -36,15 +36,15 @@
     "Name": "Position 4",
     "SequenceIndex": 9,
     "X": 122,
-    "Y": 100,
+    "Y": 123,
     "Description": null
   },
   {
     "PositionId": 5,
     "Name": "Position 5",
     "SequenceIndex": 1,
-    "X": 0,
-    "Y": 0,
+    "X": 135,
+    "Y": 150,
     "Description": null
   },
   {
@@ -67,8 +67,8 @@
     "PositionId": 8,
     "Name": "Position 8",
     "SequenceIndex": 5,
-    "X": 0,
-    "Y": 0,
+    "X": 23,
+    "Y": 234,
     "Description": null
   },
   {

@@ -33,6 +33,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
             services.AddSingleton<ICycleManagerService, CycleManagerService>();
+            services.AddSingleton<ICcdConfigService, CcdConfigService>();
             services.AddSingleton<AlgorithmAnalysisService>();
             services.AddSingleton<DashboardInitializer>();
             services.AddSingleton<OeeEngine>();
@@ -115,6 +116,11 @@ namespace IPCSoftware.App.DI
             services.AddTransient<CameraDetailViewModel>();
             services.AddTransient<CameraInterfaceConfigurationViewModel>();
 
+            // ===== Produciton Image ViewModel =====
+            services.AddTransient<ProductionImageView>();
+            services.AddTransient<ProductionImageViewModel>();
+
+
 
             // ========== ALARM CONFIGURATION VIEWMODELS (Transient) ========== 
             services.AddTransient<AlarmListViewModel>();
@@ -176,12 +182,12 @@ namespace IPCSoftware.App.DI
             services.AddTransient<UserConfigurationView>();
 
             services.AddSingleton<ModeOfOperation>();
-            services.AddTransient<ManualOperation>();
+          //  services.AddTransient<ManualOperation>();
             services.AddTransient<ManualOperationView>();
             services.AddTransient<PLCIOMonitor>();
 
             services.AddSingleton<ModeOfOperationViewModel>();
-            services.AddTransient<ManualOperationViewModel>();
+            //services.AddTransient<ManualOperationViewModel>();
             services.AddTransient<ManualOpViewModel>();
             services.AddTransient<PlcIoMonitorViewModel>();
             // PLC Tag Configuration Views 

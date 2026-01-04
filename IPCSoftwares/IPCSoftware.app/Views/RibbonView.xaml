@@ -8,14 +8,30 @@
 
     <UserControl.Resources>
         <!-- Existing Icons -->
+        <!--<Geometry x:Key="Icon_Home">M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z</Geometry>
+        <Geometry x:Key="Icon_HomeOutline">M12 5.69L17 10.19V18H15V12H9V18H7V10.19L12 5.69M12 3L2 12H5V20H11V14H13V20H19V12H22L12 3Z</Geometry>
         <Geometry x:Key="Icon_Dashboard">M3,13H11V3H3V13M3,21H11V15H3V21M13,21H21V11H13V21M13,3V9H21V3H13Z</Geometry>
         <Geometry x:Key="Icon_Settings">M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z</Geometry>
         <Geometry x:Key="Icon_Logs">M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M11.5,17L8.5,13.5H11V11H13V13.5H15.5L12.5,17Z</Geometry>
         <Geometry x:Key="Icon_Config">M12,16A2,2 0 0,1 10,18C8.4,18 7.1,16.7 7.1,15.1C7.1,13.5 8.4,12.2 10,12.2C11.6,12.2 12.9,13.5 12.9,15.1C12.9,16.7 11.6,18 10,18M10,20C12.2,20 14,18.2 14,16C14,13.8 12.2,12 10,12C7.8,12 6,13.8 6,16C6,18.2 7.8,20 10,20M20,8V18C20,19.1 19.1,20 18,20H16C15.4,20 14.9,19.5 14.9,18.9C14.9,18.3 15.4,17.8 16,17.8H18V8H6V10C6,10.6 5.5,11.1 4.9,11.1C4.3,11.1 3.8,10.6 3.8,10V8C3.8,6.9 4.7,6 5.8,6H18C19.1,6 20,6.9 20,8M18,4H6C3.8,4 2,5.8 2,8V18C2,20.2 3.8,22 6,22H18C20.2,22 22,20.2 22,18V8C22,5.8 20.2,4 18,4Z</Geometry>
         <Geometry x:Key="Icon_Logout">M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z</Geometry>
 
-        <!-- NEW: Reports Icon (Chart/Document style) -->
+        --><!-- NEW: Reports Icon (Chart/Document style) --><!--
+        <Geometry x:Key="Icon_Reports">M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M7,20H9V14H7V20M11,20H13V12H11V20M15,20H17V16H15V20Z</Geometry>-->
+
+
+        <Geometry x:Key="Icon_Home">M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z</Geometry>
+
+        <Geometry x:Key="Icon_Dashboard">M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,3V13H11V3Z</Geometry>
+
+        <Geometry x:Key="Icon_Logs">M14,17H7V15H14M17,13H7V11H17M17,9H7V7H17M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z</Geometry>
+
         <Geometry x:Key="Icon_Reports">M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M7,20H9V14H7V20M11,20H13V12H11V20M15,20H17V16H15V20Z</Geometry>
+
+        <Geometry x:Key="Icon_Config">M3,17V19H9V17H3M3,5V7H13V5H3M13,21V19H21V17H13V15H11V21H13M7,9V11H3V13H7V15H9V9H7M21,13V11H11V13H21M15,9H17V7H21V5H17V3H15V9Z</Geometry>
+
+        <Geometry x:Key="Icon_Logout">M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z</Geometry>
+
 
         <Style x:Key="RibbonButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="100"/>
@@ -106,8 +122,8 @@
 
             <!-- 1. Dashboard -->
             <Button Command="{Binding NavigateDashboardCommand}" 
-                    Content="Dashboard"
-                    Tag="{StaticResource Icon_Dashboard}"
+                    Content="Home"
+                    Tag="{StaticResource Icon_HomeOutline}"
                     Style="{StaticResource RibbonButtonStyle}"/>
 
             <!-- 2. Logs -->
@@ -123,16 +139,22 @@
                     Style="{StaticResource RibbonButtonStyle}"/>
 
             <!-- 4. Settings -->
-            <Button Command="{Binding NavigateSettingsCommand}" 
+            <!--<Button Command="{Binding NavigateSettingsCommand}" 
                     Content="Settings"
                     Tag="{StaticResource Icon_Settings}"
-                    Style="{StaticResource RibbonButtonStyle}"/>
+                    Style="{StaticResource RibbonButtonStyle}"/>-->
 
             <!-- 5. Config -->
+            <!--<Button Command="{Binding NavigateUserMgmtCommand}" 
+                    Content="Config"
+                    Tag="{StaticResource Icon_Config}"
+                    Style="{StaticResource RibbonButtonStyle}"/>-->
+
             <Button Command="{Binding NavigateUserMgmtCommand}" 
                     Content="Config"
                     Tag="{StaticResource Icon_Config}"
-                    Style="{StaticResource RibbonButtonStyle}"/>
+                    Style="{StaticResource RibbonButtonStyle}"
+                    Visibility="{Binding IsConfigRibbonVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
         </StackPanel>
 

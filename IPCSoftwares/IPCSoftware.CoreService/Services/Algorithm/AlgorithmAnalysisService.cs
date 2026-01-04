@@ -87,7 +87,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
                     // --- DEBUG OUTPUT ---
                     string algoName = tag.AlgNo == 1 ? "Scaled" : "Raw";
                     Console.WriteLine($"[ALGO_DEBUG] Tag: {tag.Name} (ID:{tag.Id}) | Value: {finalValue} | Type: {tag.DataType} | Algo: {algoName}");
-                    _logger.LogInfo($"[ALGO_DEBUG] Tag: {tag.Name} (ID:{tag.Id}) | Value: {finalValue} | Type: {tag.DataType} | Algo: {algoName}", LogType.Diagnostics);
+                    //_logger.LogInfo($"[ALGO_DEBUG] Tag: {tag.Name} (ID:{tag.Id}) | Value: {finalValue} | Type: {tag.DataType} | Algo: {algoName}", LogType.Diagnostics);
                     // --- END DEBUG OUTPUT ---
 
                     // Add using Tag Id (for Dashboard cache)

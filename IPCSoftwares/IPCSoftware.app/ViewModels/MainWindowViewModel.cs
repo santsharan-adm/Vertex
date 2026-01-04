@@ -98,6 +98,13 @@ public class MainWindowViewModel : BaseViewModel
         set => SetProperty(ref _isConnected, value);
     }
 
+    public bool _plcConnected;
+    public bool PLCConnected
+    {
+        get => _plcConnected;
+        set => SetProperty(ref _plcConnected, value);
+    }
+
     public bool _timeSynched;
     public bool TimeSynched
     {
@@ -251,6 +258,7 @@ public class MainWindowViewModel : BaseViewModel
     {
         try 
         {
+            IsConnected =  _coreClient.isConnected;
 
             SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
             var boolDict = await _coreClient.GetIoValuesAsync(1);
@@ -258,7 +266,7 @@ public class MainWindowViewModel : BaseViewModel
             {
                 var json = JsonConvert.SerializeObject(pulseObj);
                 var pulseResult = JsonConvert.DeserializeObject<List<bool>>(json);
-                IsConnected = pulseResult[0];
+                PLCConnected = pulseResult[0];
                 TimeSynched = pulseResult[1];
 
             }
@@ -385,7 +393,7 @@ public class MainWindowViewModel : BaseViewModel
             switch (itemName)
             {
                 // OEEDashboard Menu
-                case "OEE Dashboard":
+                case "Dashboard":
                     //_nav.NavigateMain<LiveOeeView>();
                     _nav.NavigateMain<OEEDashboard>();
                     break;
@@ -443,6 +451,14 @@ public class MainWindowViewModel : BaseViewModel
                 case "Alarm View": 
                     _nav.NavigateMain<AlarmView>(); break;
 
+                case "Production Data": 
+                    _nav.NavigateMain<ReportViewerView>(); break;
+
+
+                case "Production Images": 
+                    _nav.NavigateMain<ProductionImageView>(); break;
+
+
                 case "Audit Logs":
                     _nav.NavigateToLogs(LogType.Audit);
                     break;
@@ -451,9 +467,9 @@ public class MainWindowViewModel : BaseViewModel
                     _nav.NavigateToLogs(LogType.Error);
                     break;
 
-                case "Production Logs":
-                    _nav.NavigateToLogs(LogType.Production);
-                    break;
+                //case "Production Logs":
+                //    _nav.NavigateToLogs(LogType.Production);
+                //    break;
                 case "Diagnostics Logs":
                     _nav.NavigateToLogs(LogType.Diagnostics);
                     break;

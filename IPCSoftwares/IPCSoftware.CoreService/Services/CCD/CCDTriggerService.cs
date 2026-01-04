@@ -26,8 +26,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         // State tracking
         private bool _lastTriggerState = false;
 
-        private const int IMAGE_WAIT_TIMEOUT_SECONDS = 10; // Wait up to 10s
-        private const int POLLING_INTERVAL_MS = 500;
+ 
 
         public CCDTriggerService
             (ICycleManagerService cycleManager,

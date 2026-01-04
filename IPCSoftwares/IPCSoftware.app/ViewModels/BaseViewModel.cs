@@ -19,32 +19,5 @@ namespace IPCSoftware.App.ViewModels
                _logger = logger;
         }
 
-
-
-        /// <summary>
-        /// Provides access to the AppLogger without requiring Constructor Injection.
-        /// This allows derived ViewModels to use 'Logger.LogInfo()' immediately.
-        /// </summary>
-      //  public IAppLogger Logger
-        //{
-        //    get
-        //    {
-        //        // Lazy loading: Only resolve the service when first accessed.
-        //        // This prevents issues if the ViewModel is created before the ServiceProvider is fully built.
-        //        if (_logger == null && App.ServiceProvider != null)
-        //        {
-        //            _logger = App.ServiceProvider.GetService<IAppLogger>();
-        //        }
-        //        return _logger;
-        //    }
-        //}
-
-        //// Optional: Helper methods to make logging even easier in derived classes
-        //protected void LogInfo(string message) => Logger?.LogInfo(message, Shared.Models.ConfigModels.LogType.Production);
-        //protected void LogWarning(string message) => Logger?.LogWarning(message, LogType.Audit);
-        //protected void LogError(string message) => Logger?.LogError(message, LogType.Error);
-
-
-
     }
 }

@@ -55,9 +55,27 @@ namespace IPCSoftware.Shared.Models
         public static int TAG_Heartbeat_IPC;
         public static int TAG_TimeSync_Req;
         public static int TAG_TimeSync_Ack;
-        public static int TAG_Time_Year;
+
+        public static  TagPair TAG_Time_Year = new ();
+        public static TagPair TAG_Time_Month = new ();
+        public static TagPair TAG_Time_Day = new ();
+        public static TagPair TAG_Time_Hour = new ();
+        public static TagPair TAG_Time_Minute = new ();
+        public static TagPair TAG_Time_Second = new ();
+
+
         public static int TAG_Global_Ack;
         public static int TAG_Global_Reset;
+
+        //Modes (Write/Read Pairs)
+        public static TagPair Mode_Auto = new();
+        public static TagPair Mode_DryRun = new();
+        public static TagPair Mode_CycleStop = new();
+        public static TagPair Mode_MassRTO = new();
+        public static int Mode_Auto_Enable = new();
+        public static int Mode_DryRun_Enable = new();
+        public static int Mode_CycleStop_Enable = new();
+        public static int Mode_MassRTO_Enable = new();
 
         // MANUAL (Write/Read Pairs)
         public static TagPair Manual_TrayDown = new();
@@ -83,16 +101,19 @@ namespace IPCSoftware.Shared.Models
         public static TagPair Manual_PosStart = new();
 
         // SERVO
-        public static int Servo_ParamA1;
+        public static int Servo_ParamSave;
         public static int Servo_ParamA2;
-        public static int Servo_ParamA3;
-        public static int Servo_ParamA4;
-        public static int Servo_LiveX;
-        public static int Servo_LiveY;
-        public static int Servo_PosX_Start;
-        public static int Servo_PosY_Start;
-        public static int Servo_ParamX_Start;
-        public static int Servo_ParamY_Start;
+        public static int Servo_CoordSave;
+        public static int Servo_XYOrigin;
+
+        public static XYPair Servo_JogSpeed_Low = new();
+        public static XYPair Servo_OffSet = new();
+        public static XYPair Servo_Move_Speed= new();
+        public static XYPair Servo_Accel= new();
+        public static XYPair Servo_DeAccel= new();
+        public static XYPair Servo_Pos_Start= new();
+        public static XYPair Servo_Live= new();
+  
 
         /// <summary>
         /// Populates static fields from the root AppConfigSettings.
@@ -108,16 +129,24 @@ namespace IPCSoftware.Shared.Models
             {
                 var tags = rootConfig.TagMapping;
 
-                // System & OEE
+                // System 
                 var sys = tags.System;
                 TAG_Heartbeat_PLC = sys.HeartbeatPLC;
                 TAG_Heartbeat_IPC = sys.HeartbeatIPC;
                 TAG_TimeSync_Req = sys.TimeSyncReq;
                 TAG_TimeSync_Ack = sys.TimeSyncAck;
-                TAG_Time_Year = sys.TimeDataStart;
+            
+                TAG_Time_Year = sys.Year;
+                TAG_Time_Month = sys.Month;
+                TAG_Time_Day = sys.Day;
+                TAG_Time_Hour = sys.Hour;
+                TAG_Time_Minute = sys.Minute;
+                TAG_Time_Second = sys.Second;
+
                 TAG_Global_Ack = sys.GlobalAck;
                 TAG_Global_Reset = sys.GlobalReset;
 
+                //Oee
                 var oee = tags.OEE;
                 TRIGGER_TAG_ID = oee.TriggerCCD;
                 Return_TAG_ID = oee.ReadCompleteCCD;
@@ -134,6 +163,19 @@ namespace IPCSoftware.Shared.Models
                 TAG_InFlow = oee.InFlow;
                 TAG_OK = oee.OK;
                 TAG_NG = oee.NG;
+
+                // Modes
+                var modes = tags.Modes;
+                Mode_Auto = modes.Auto;
+                Mode_DryRun = modes.DryRun;
+                Mode_CycleStop = modes.CycleStop;
+                Mode_MassRTO = modes.MassRTO;
+
+                Mode_Auto_Enable = modes.AutoEnable;
+                Mode_DryRun_Enable = modes.DryRunEnable;
+                Mode_CycleStop_Enable = modes.CycleStopEnable;
+                Mode_MassRTO_Enable = modes.MassRTOEnable;
+
 
                 // Manual
                 var m = tags.Manual;
@@ -158,16 +200,17 @@ namespace IPCSoftware.Shared.Models
 
                 // Servo
                 var s = tags.Servo;
-                Servo_ParamA1 = s.ParamA1;
+                Servo_ParamSave = s.ParamA1;
                 Servo_ParamA2 = s.ParamA2;
-                Servo_ParamA3 = s.ParamA3;
-                Servo_ParamA4 = s.ParamA4;
-                Servo_LiveX = s.LiveX;
-                Servo_LiveY = s.LiveY;
-                Servo_PosX_Start = s.PosXStart;
-                Servo_PosY_Start = s.PosYStart;
-                Servo_ParamX_Start = s.ParamXStart;
-                Servo_ParamY_Start = s.ParamYStart;
+                Servo_CoordSave= s.ParamA3;
+                Servo_XYOrigin = s.ParamA4;
+                Servo_JogSpeed_Low = s.JogSpeedLow;
+                Servo_OffSet = s.OriginOffSet;
+                Servo_Move_Speed = s.MoveSpeed;
+                Servo_Accel = s.Accel;
+                Servo_DeAccel = s.DeAccel;
+                Servo_Pos_Start = s.PosStart;
+                Servo_Live = s.Live;
             }
         }
 

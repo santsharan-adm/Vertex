@@ -113,7 +113,7 @@ namespace IPCSoftware.CoreService.Services.UI
                         // Response path: Delimiter is already correctly handled here
                         string outJson = MessageSerializer.Serialize(response) + "\n";
                         Console.WriteLine("SENDING TO UI: " + outJson.Trim());
-                        _logger.LogInfo("SENDING TO UI: " + outJson.Trim(), LogType.Diagnostics);
+                      //      _logger.LogInfo("SENDING TO UI: " + outJson.Trim(), LogType.Diagnostics);
                         await stream.WriteAsync(Encoding.UTF8.GetBytes(outJson));
                     }
                 }

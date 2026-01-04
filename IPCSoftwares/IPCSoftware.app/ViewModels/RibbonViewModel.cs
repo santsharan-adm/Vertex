@@ -17,19 +17,16 @@ public class RibbonViewModel : BaseViewModel
 
     public ICommand NavigateDashboardCommand { get; }
 
-    public ICommand NavigateSettingsCommand { get; }
+   // public ICommand NavigateSettingsCommand { get; }
     public ICommand NavigateLogsCommand { get; }
     public ICommand NavigateUserMgmtCommand { get; }
     public ICommand NavigateLandingPageCommand { get; }
-    public ICommand NavigateReportConfigCommand { get; }
+   // public ICommand NavigateReportConfigCommand { get; }
     public ICommand NavigateReportsCommand { get; }
 
     public ICommand LogoutCommand { get; }
     public Action OnLogout { get; set; }
     public Action OnLandingPageRequested { get; set; }
-
-
-    private (string Key, List<string> Items)? _currentMenu;
 
     public Action<(string Key, List<string> Items)> ShowSidebar { get; set; }   // NEW
 
@@ -39,22 +36,25 @@ public class RibbonViewModel : BaseViewModel
         IAppLogger logger) : base(logger)
     {
         _nav = nav;
+        _dialog = dialog;
 
         NavigateDashboardCommand = new RelayCommand(OpenDashboardMenu);
-        NavigateSettingsCommand = new RelayCommand(OpenSettingsMenu);
+       // NavigateSettingsCommand = new RelayCommand(OpenSettingsMenu);
         NavigateLogsCommand = new RelayCommand(OpenLogsMenu);
         NavigateUserMgmtCommand = new RelayCommand(OpenUserMgtMenu);
-        NavigateReportConfigCommand = new RelayCommand(OpenReportConfig);
         NavigateReportsCommand = new RelayCommand(OpenReportsView);
-
         LogoutCommand = new RelayCommand(Logout);
         NavigateLandingPageCommand = new RelayCommand(OpenLandingPage);
-        _dialog = dialog;
     }
 
-    public bool IsAdmin => UserSession.Role == "Admin";
-    public string CurrentUserName => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Username.ToLower()) ?? "Guest";
+    //public bool IsAdmin => UserSession.Role == "Admin";
 
+    public bool IsAdmin => string.Equals(UserSession.Role, "Admin", StringComparison.OrdinalIgnoreCase);
+    public bool IsSupervisor => string.Equals(UserSession.Role, "Supervisor", StringComparison.OrdinalIgnoreCase);
+    public bool IsOperator => string.Equals(UserSession.Role, "Operator", StringComparison.OrdinalIgnoreCase);
+
+    public string CurrentUserName => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Username.ToLower()) ?? "Guest";
+    public bool IsConfigRibbonVisible => IsAdmin || IsSupervisor;
 
     private void OpenDashboardMenu()
     {
@@ -62,9 +62,12 @@ public class RibbonViewModel : BaseViewModel
         {
             LoadMenu(new List<string>
             {
-                "OEE Dashboard",
+                "Dashboard",
+                "Mode Of Operation",
+                "Servo Parameters",
+                "PLC IO",
+                "Alarm View",
                 "Time Sync",
-                "Alarm View"
 
             }, nameof(OpenDashboardMenu));
         }
@@ -74,24 +77,22 @@ public class RibbonViewModel : BaseViewModel
         }
     }
 
-    private void OpenSettingsMenu()
-    {
-        try
-        {
-            LoadMenu(new List<string>
-            {
-                "Mode Of Operation",
-                "Servo Parameters",
-                "PLC IO",
-                "Diagnostic",
+    //private void OpenSettingsMenu()
+    //{
+    //    try
+    //    {
+    //        LoadMenu(new List<string>
+    //        {
+               
+             
                 
-            }, nameof(OpenSettingsMenu));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message, LogType.Diagnostics);
-        }
-    }
+    //        }, nameof(OpenSettingsMenu));
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        _logger.LogError(ex.Message, LogType.Diagnostics);
+    //    }
+    //}
 
     private void OpenLogsMenu()
     {
@@ -100,7 +101,6 @@ public class RibbonViewModel : BaseViewModel
             LoadMenu(new List<string>
             {
                 "Audit Logs",
-                "Production Logs",
                 "Error Logs",
                 "Diagnostics Logs"
             }, nameof(OpenLogsMenu));
@@ -112,29 +112,59 @@ public class RibbonViewModel : BaseViewModel
      
     }
 
-    private void OpenUserMgtMenu()
+    private void OpenReportsView()
     {
         try
         {
-            if (IsAdmin)
+            LoadMenu(new List<string>
             {
-                LoadMenu(new List<string>
-                    {
-                        "Log Config",
-                        "Device Config",
-                        "Alarm Config",
-                        "User Config",
-                        "PLC TAG Config",
-                        "Report Config",
-                        "External Interface"
-                    }, nameof(OpenUserMgtMenu));
-            }
+                "Production Data",
+                "Production Images"
+
+            }, nameof(OpenReportsView));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.Message, LogType.Diagnostics);
         }
+       // _nav.NavigateMain<ReportViewerView>();
+    }
 
+
+    private void OpenUserMgtMenu()
+    {
+        try
+        {
+            // 1. Double check: If Operator somehow clicked this, do nothing
+            if (IsOperator) return;
+
+            // 2. Base list for Supervisor and Admin
+            var configItems = new List<string>
+            {
+                "Log Config",
+                "Device Config",
+                "Alarm Config",
+                // "User Config" is removed from here intentionally
+                "PLC TAG Config",
+                "Report Config",
+                "Diagnostic",
+                "External Interface"
+            };
+
+            // 3. Logic: Only Admin can see "User Config"
+            // Insert it at a specific index or add it
+            if (IsAdmin)
+            {
+                // Inserting after Alarm Config (index 3) to match your original order
+                configItems.Insert(3, "User Config");
+            }
+
+            LoadMenu(configItems, nameof(OpenUserMgtMenu));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+        }
     }
 
     private void Logout()
@@ -166,18 +196,6 @@ public class RibbonViewModel : BaseViewModel
         OnLandingPageRequested?.Invoke();  // notify MainWindowViewModel
         _nav.NavigateMain<DashboardView>();
     }
-
-    private void OpenReportConfig()
-    {
-        _nav.NavigateMain<ReportConfigView>();
-    }
-
-    private void OpenReportsView()
-    {
-        _nav.NavigateMain<ReportViewerView>();
-    }
-
-
 
     private void LoadMenu(List<string> items, string functionName)
     {
