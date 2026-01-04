@@ -16,8 +16,7 @@ namespace IPCSoftware.App.Services.UI
         }
 
         public new bool IsConnected { get; set; } = false;
-
-       
+        public string NextResponse { get; internal set; }
 
         private TcpClient _client;
         private NetworkStream _stream;
