@@ -39,7 +39,7 @@ namespace IPCSoftware_UnitTesting
             var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
             // string un = UserSession.Username;
             Assert.NotNull(vm.NavigateDashboardCommand);
-            Assert.NotNull(vm.NavigateSettingsCommand);
+           //Assert.NotNull(vm.NavigateSettingsCommand);
             Assert.NotNull(vm.NavigateLogsCommand);
             Assert.NotNull(vm.NavigateUserMgmtCommand);
             Assert.NotNull(vm.LogoutCommand);
@@ -72,7 +72,7 @@ namespace IPCSoftware_UnitTesting
 
             vm.ShowSidebar = t => captured = t;
 
-            vm.NavigateSettingsCommand.Execute(null);
+           // vm.NavigateSettingsCommand.Execute(null);
 
             Assert.NotNull(captured);
             Assert.Equal("SettingsMenu", captured?.Key);

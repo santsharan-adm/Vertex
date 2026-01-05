@@ -24,4 +24,10 @@ public class FakeCoreClient : CoreClient
     {
         return Task.FromResult(new Dictionary<int, object>());
     }
+
+    // Provide a simple acknowledgement implementation for tests
+    public new Task<bool> AcknowledgeAlarmAsync(int alarmNo, string userName)
+    {
+        return Task.FromResult(true);
+    }
 }
