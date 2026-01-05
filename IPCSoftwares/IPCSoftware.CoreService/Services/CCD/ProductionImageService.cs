@@ -35,7 +35,6 @@ namespace IPCSoftware.CoreService.Services.CCD
             {
                 if (!File.Exists(tempFilePath))
                 {
-                    Console.WriteLine($"[Error] Source file not found: {tempFilePath}");
                     _logger.LogInfo($"[Error] Source file not found: {tempFilePath}", LogType.Diagnostics);
                     return string.Empty;
                 }
@@ -44,6 +43,10 @@ namespace IPCSoftware.CoreService.Services.CCD
                 DateTime now = DateTime.Now;
                 string dateStr = now.ToString("dd-MM-yyyy");       // e.g. 08-12-2025
                 string timeStr = now.ToString("HH-mm-ss-fff");     // e.g. 14-30-01-123 (Colons replaced with dashes for filename validity)
+
+                // Metadata formats require specific date/time formats
+                string metaDate = now.ToString("yyyy_MM_dd");     //
+                string metaTime = now.ToString("HH:mm:ss.fff");   //
 
                 // 2. Construct Folder Name
                 // Format: uniqueString_DateOfToday
@@ -70,13 +73,20 @@ namespace IPCSoftware.CoreService.Services.CCD
                 }
                 string procDestPath = Path.Combine(targetFolder, $"{fileNameBase}_processed.bmp");
 
-                // 5. Prepare Metadata Strings
-                string clientMetadata = $"Data:{uniqueDataString};StNo:{stNo}";
-                string vendorMetadata = "Vendor:ABCDEF;Ver:1.0";
+                // --- 3. Prepare Metadata Objects (Runtime overrides) ---
+                // We create copies so we don't modify the global settings
+                var clientMeta = CloneAndUpdate(_ccd.ClientMetaDataParams, uniqueDataString, stNo, metaDate, metaTime, fileNameBase);
+                var vendorMeta = CloneAndUpdate(_ccd.VendorMetaDataParams, uniqueDataString, stNo, metaDate, metaTime, fileNameBase);
+
+                // --- 4. Format Metadata Strings ---
+                string clientMetaStr = MetadataFormatter.Format(clientMeta, true);
+                string vendorMetaStr = MetadataFormatter.Format(vendorMeta, false);
+
+         
 
                 if (!qrCodeFile)
                 {
-                  ProcessImageInternal(tempFilePath, procDestPath, clientMetadata, vendorMetadata);
+                  ProcessImageInternal(tempFilePath, procDestPath, clientMetaStr, vendorMetaStr);
                 }
                 // 6. Process I mage (Read Temp -> Add Meta -> Save to Processed Path)
 
@@ -108,6 +118,41 @@ namespace IPCSoftware.CoreService.Services.CCD
             }
         }
 
+        // Helper to update dynamic runtime values into the metadata object
+        private T CloneAndUpdate<T>(T source, string serial, int stNo, string date, string time, string nickName) where T : MetaDataBase, new()
+        {
+            // Create a shallow copy manually or use JSON serialization for deep copy. 
+            // Since MetaDataBase is flat strings, we can just map a new object.
+            var newObj = new T();
+
+            // Map Config Values
+            newObj.Version = source.Version;
+            newObj.VisionVendor = source.VisionVendor;
+            newObj.StationNickname = source.StationNickname;
+            newObj.ProcessCommand = source.ProcessCommand;
+            newObj.CameraNumber = source.CameraNumber;
+            newObj.XPixelSizeMM = source.XPixelSizeMM;
+            newObj.YPixelSizeMM = source.YPixelSizeMM;
+            newObj.CameraGain = source.CameraGain;
+            newObj.CameraExposure = source.CameraExposure;
+            newObj.NumberOfLightSettings = source.NumberOfLightSettings;
+            newObj.LightSetting1 = source.LightSetting1;
+            newObj.LightSettingN = source.LightSettingN;
+            newObj.DUTColor = source.DUTColor;
+            newObj.ImageNickname = source.ImageNickname;
+            newObj.DUTSerialNumber = source.DUTSerialNumber;
+           // newObj.StationID = source.StationID.ToString();
+
+            // Map Dynamic Runtime Values
+            newObj.Date = date;
+            newObj.Time = time;
+            newObj.StationID = stNo.ToString(); // Or lookup station ID based on int
+           // newObj.DUTSerialNumber = serial;
+            newObj.ImageNickname = nickName;    // Unique name for this specific image
+
+            return newObj;
+        }
+
         private void ProcessImageInternal(string inputPath, string outputPath, string clientMeta, string vendorMeta)
         {
             try
@@ -128,21 +173,26 @@ namespace IPCSoftware.CoreService.Services.CCD
                 // 2. Build Data Array
                 List<byte> dataBuilder = new List<byte>(fileData);
 
-                // Append Style
-                dataBuilder.AddRange(Encoding.ASCII.GetBytes(_ccd.MetadataStyle));
-
-                // Append Client Meta
-                if (_ccd.MetadataStyle != "METADATASTYLE002")
+                // --- 3. Append Metadata Style (16 Bytes) ---
+                // Ensure style is padded/trimmed to exactly 16 bytes if required, 
+                // though diagram just says "Append Metadata Style". 
+                // We use the string directly as per the code logic usually matching "METADATASTYLE003".
+                string style = _ccd.MetadataStyle ?? "METADATASTYLE003";
+                dataBuilder.AddRange(Encoding.ASCII.GetBytes(style));
+                // --- 4. Append Client Metadata ---
+                // If Style is 002, skip Client. 
+                if (style != "METADATASTYLE002")
                 {
                     dataBuilder.AddRange(Encoding.ASCII.GetBytes(clientMeta));
-                    dataBuilder.Add(0x90); // Terminator
+                    dataBuilder.Add(0x80); // Termination Character
                 }
 
-                // Append Vendor Meta
-                if (_ccd.MetadataStyle != "METADATASTYLE001")
+                // --- 5. Append Vendor Metadata ---
+                // If Style is 001, skip Vendor.
+                if (style != "METADATASTYLE001")
                 {
                     dataBuilder.AddRange(Encoding.ASCII.GetBytes(vendorMeta));
-                    dataBuilder.Add(0x80); // Terminator
+                    dataBuilder.Add(0x80); // Termination Character
                 }
 
                 // 3. Calculate Hash
