@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.App;
+using IPCSoftware.App.Helpers;
 using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces;
@@ -18,7 +19,7 @@ namespace IPCSoftware.App.ViewModels
     public class PLCIOViewModel : BaseViewModel, IDisposable
     {
         private readonly IPLCTagConfigurationService _tagService;
-        private readonly DispatcherTimer _timer;
+        private readonly SafePoller _timer;
         private readonly CoreClient _coreClient;
         private readonly UiTcpClient _tcpClient;
 
@@ -29,7 +30,6 @@ namespace IPCSoftware.App.ViewModels
         private readonly List<IoTagModel> AllOutputTags = new();
 
         private bool _isWriting = false;
-        private bool _disposed;
 
         private string _searchText;
         public string SearchText
@@ -64,11 +64,9 @@ namespace IPCSoftware.App.ViewModels
 
             ToggleOutputCommand = new RelayCommand<IoTagModel>(OnToggleOutput);
 
-            _timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(1500)
-            };
-            _timer.Tick += TimerTick;
+            _timer = new SafePoller(TimeSpan.FromMilliseconds(1500),
+                TimerTick);
+            
             _timer.Start();
         }
 
@@ -137,9 +135,9 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        private async void TimerTick(object sender, EventArgs e)
+        private async Task TimerTick()
         {
-            if (_disposed || _isWriting)
+            if ( _isWriting)
                 return;
 
             try
@@ -217,23 +215,16 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                if (_disposed) return;
-                _disposed = true;
-
-                _timer.Stop();
-                _timer.Tick -= TimerTick;
-                GC.SuppressFinalize(this);
+                _timer.Dispose();
             }
+
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
-        ~PLCIOViewModel()
-        {
-            Dispose();
-        }
+      
     }
 
 }

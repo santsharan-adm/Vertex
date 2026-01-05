@@ -1,5 +1,8 @@
 ﻿
+using IPCSoftware.App.Helpers;
 using IPCSoftware.App.Services;
+using IPCSoftware.App.Views;
+using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
@@ -18,7 +21,8 @@ namespace IPCSoftware.App.ViewModels
     public class ManualOpViewModel : BaseViewModel, IDisposable
     {
         private readonly CoreClient _coreClient;
-        private readonly DispatcherTimer _feedbackTimer;
+        private readonly SafePoller _feedbackTimer;
+        private readonly INavigationService _nav;
 
         // --- Tag Maps ---
         private readonly Dictionary<ManualOperationMode, int> _writeTags = new();
@@ -30,6 +34,7 @@ namespace IPCSoftware.App.ViewModels
         // --- Commands ---
         public ICommand UnifiedOperationCommand { get; }
         public ICommand OriginCommand { get; }
+        public ICommand NavigateBackCommand { get; }
 
         // --- Filtered Lists for UI ItemsControl ---
         public IEnumerable<ModeItem> GridPositionModes => Modes.Where(x => x.Group == "Move to Position" && x.Mode != ManualOperationMode.MoveToPos0);
@@ -59,9 +64,10 @@ namespace IPCSoftware.App.ViewModels
         private bool GetState(ManualOperationMode mode) => Modes.FirstOrDefault(x => x.Mode == mode)?.IsActive ?? false;
 
 
-        public ManualOpViewModel(IAppLogger logger, CoreClient coreClient) : base(logger)
+        public ManualOpViewModel(IAppLogger logger, CoreClient coreClient, INavigationService nav) : base(logger)
         {
             _coreClient = coreClient;
+            _nav = nav;
 
             // 1. Initialize Modes List
             Modes = new ObservableCollection<ModeItem>(
@@ -74,6 +80,7 @@ namespace IPCSoftware.App.ViewModels
 
             // 3. Unified Command used by EVERY button
             UnifiedOperationCommand = new RelayCommand<string>(async (args) => await ExecuteOperationAsync(args));
+            NavigateBackCommand = new RelayCommand(OnBackClick);
 
             // 4. Origin Command
             OriginCommand = new RelayCommand(async () =>
@@ -84,8 +91,7 @@ namespace IPCSoftware.App.ViewModels
             });
 
             // 5. Feedback Timer
-            _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
-            _feedbackTimer.Tick += FeedbackLoop_Tick;
+            _feedbackTimer = new SafePoller ( TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
             _feedbackTimer.Start();
         }
 
@@ -124,6 +130,11 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
+        private void  OnBackClick()
+        {
+            Dispose();
+             _nav.NavigateMain<ModeOfOperation>();
+        }   
         void Map(ManualOperationMode m, TagPair tag)
         {
             _writeTags[m] = tag.Write;
@@ -198,7 +209,7 @@ namespace IPCSoftware.App.ViewModels
             await _coreClient.WriteTagAsync(stopTagId, 0);
         }
 
-        private async void FeedbackLoop_Tick(object? sender, EventArgs e)
+        private async Task FeedbackLoop_Tick()
         {
             try
             {
@@ -246,7 +257,10 @@ namespace IPCSoftware.App.ViewModels
             return attr?.Name ?? "Other";
         }
 
-        public void Dispose() => _feedbackTimer.Stop();
+        public void Dispose()
+        {
+            _feedbackTimer.Dispose();
+        }
     }
 
 }

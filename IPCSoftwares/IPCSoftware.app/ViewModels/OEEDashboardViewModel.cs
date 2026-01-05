@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.App.Controls;
+using IPCSoftware.App.Helpers;
 using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.App.Views;
@@ -32,9 +33,10 @@ namespace IPCSoftware.App.ViewModels
 
         // --- Timers ---
         // 1. For Live Data (TCP Polling) - e.g. OEE, Machine Status
-        private readonly DispatcherTimer _liveDataTimer;
+        private readonly SafePoller _liveDataTimer;
         // 2. For Cycle Sync (JSON Polling) - e.g. Images, Inspection Results
-        private readonly DispatcherTimer _uiSyncTimer;
+        private readonly SafePoller _uiSyncTimer;
+        private int _liveDataRunning = 0;
 
         // --- JSON State Sync Variables ---
         private readonly string _jsonStatePath;
@@ -47,7 +49,6 @@ namespace IPCSoftware.App.ViewModels
         public ICommand OpenCardDetailCommand { get; }
 
         // --- Member Variables ---
-        private bool _disposed;
         private bool _isDarkTheme = false;
 
 
@@ -239,13 +240,11 @@ namespace IPCSoftware.App.ViewModels
 
             DummyData();
             // 1. Live Data Timer (1000ms) - Gets OEE, IOs, Status from Core Service via TCP
-            _liveDataTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
-            _liveDataTimer.Tick += LiveDataTimerTick;
+            _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(500), LiveDataTimerTick);
             _liveDataTimer.Start();
 
             // 2. UI Sync Timer (200ms) - Gets Images and Station Data from JSON (Cycle Synced)
-            _uiSyncTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
-            _uiSyncTimer.Tick += UiSyncTick;
+            _uiSyncTimer = new SafePoller( TimeSpan.FromMilliseconds(200), UiSyncTick);
             _uiSyncTimer.Start();
 
             // Force initial sync
@@ -324,40 +323,39 @@ namespace IPCSoftware.App.ViewModels
         #region Timer Loops
 
         // Loop 1: Live Data (TCP)
-        private async void LiveDataTimerTick(object sender, EventArgs e)
+        private async Task LiveDataTimerTick()
         {
-            if (_disposed) return;
+            if (Interlocked.Exchange(ref _liveDataRunning, 1) == 1) return;
             try
             {
-                var resultDict = await _coreClient.GetIoValuesAsync(4);
+                var getTask = _coreClient.GetIoValuesAsync(4);
+                var completed = await Task.WhenAny(getTask, Task.Delay(2000));
 
-
-                if (resultDict != null && resultDict.TryGetValue(4, out object oeeObj))
+                if (completed == getTask)
                 {
-                    // Deserialization: Convert object (which might be JObject/JsonElement) to OeeResult
-                    var json = JsonConvert.SerializeObject(oeeObj);
-                    var oeeResult = JsonConvert.DeserializeObject<OeeResult>(json);
-
-                    if (oeeResult != null)
+                    var resultDict = await getTask;
+                    if (resultDict != null && resultDict.TryGetValue(4, out object oeeObj))
                     {
-                        // Map OEE Result to View Model Properties
-                        // Assuming percentages are 0.0-1.0 in backend, display as % (0-100) or keep as is depending on UI converter.
-                        // Assuming UI expects 0-100 based on previous dummy data "92.5".
-                        Availability = Math.Round(oeeResult.Availability * 100, 1);
-                        Performance = Math.Round(oeeResult.Performance * 100, 1);
-                        Quality = Math.Round(oeeResult.Quality * 100, 1);
-                        OverallOEE = Math.Round(oeeResult.OverallOEE * 100, 1);
-
-                        OperatingTime = FormatDuration(oeeResult.OperatingTime);
-
-                        // If Downtime is also in seconds, format it too.
-                        // Assuming consistency with OperatingTime. If it's still Minutes, remove FormatDuration.
-                        Downtime = FormatDuration(oeeResult.Downtime);
-                        GoodUnits = oeeResult.OKParts;
-                        RejectedUnits = oeeResult.NGParts;
-                        CycleTime = oeeResult.CycleTime;
-                        InFlow = oeeResult.TotalParts;
+                        var json = JsonConvert.SerializeObject(oeeObj);
+                        var oeeResult = JsonConvert.DeserializeObject<OeeResult>(json);
+                        if (oeeResult != null)
+                        {
+                            Availability = Math.Round(oeeResult.Availability * 100, 1);
+                            Performance = Math.Round(oeeResult.Performance * 100, 1);
+                            Quality = Math.Round(oeeResult.Quality * 100, 1);
+                            OverallOEE = Math.Round(oeeResult.OverallOEE * 100, 1);
+                            OperatingTime = FormatDuration(oeeResult.OperatingTime);
+                            Downtime = FormatDuration(oeeResult.Downtime);
+                            GoodUnits = oeeResult.OKParts;
+                            RejectedUnits = oeeResult.NGParts;
+                            CycleTime = oeeResult.CycleTime;
+                            InFlow = oeeResult.TotalParts;
+                        }
                     }
+                }
+                else
+                {
+                    _logger.LogWarning("LiveDataTimerTick: GetIoValuesAsync timed out.", LogType.Diagnostics);
                 }
 
                 // NOTE: If you need to update Header/Summary values from liveData manually (without map):
@@ -367,14 +365,18 @@ namespace IPCSoftware.App.ViewModels
             {
                 _logger.LogError("Live Data Error: " + ex.Message, LogType.Diagnostics);
             }
+            finally
+            {
+                Interlocked.Exchange(ref _liveDataRunning, 0);
+            }
         }
 
 
 
         // Loop 2: Cycle Sync (JSON)
-        private void UiSyncTick(object sender, EventArgs e)
+        private async Task UiSyncTick()
         {
-            if (_disposed) return;
+          
             SyncUiWithJson();
         }
 
@@ -455,8 +457,35 @@ namespace IPCSoftware.App.ViewModels
                     {
                         if (uiItem.LastLoadedFilePath != data.ImagePath)
                         {
-                            uiItem.LastLoadedFilePath = data.ImagePath;
-                            uiItem.ImagePath = LoadBitmapSafe(data.ImagePath);
+                            string pathCopy = data.ImagePath;
+                            uiItem.LastLoadedFilePath = pathCopy;
+
+                            // Load bitmap off UI thread to avoid blocking dispatcher
+                            _ = Task.Run(() =>
+                            {
+                                BitmapImage bmp = null;
+                                try
+                                {
+                                    if (!string.IsNullOrEmpty(pathCopy) && File.Exists(pathCopy))
+                                    {
+                                        using var fs = new FileStream(pathCopy, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                                        var bi = new BitmapImage();
+                                        bi.BeginInit();
+                                        bi.CacheOption = BitmapCacheOption.OnLoad;
+                                        bi.StreamSource = fs;
+                                        bi.EndInit();
+                                        bi.Freeze();
+                                        bmp = bi;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogWarning($"LoadBitmapSafe background load failed: {ex.Message}", LogType.Diagnostics);
+                                }
+
+                                // assign on UI thread
+                                Application.Current?.Dispatcher.Invoke(() => uiItem.ImagePath = bmp);
+                            });
                         }
                         uiItem.Result = data.Status;
                         uiItem.ValX = data.X; uiItem.ValY = data.Y; uiItem.ValZ = data.Z;
@@ -626,22 +655,18 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                if (_disposed) return;
-                _disposed = true;
+                _liveDataTimer.Dispose();
 
-                _liveDataTimer.Stop();
-                _liveDataTimer.Tick -= LiveDataTimerTick;
+                _uiSyncTimer.Dispose();
 
-                _uiSyncTimer.Stop();
-                _uiSyncTimer.Tick -= UiSyncTick;
-
-                GC.SuppressFinalize(this);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
+
+
         #endregion
 
 

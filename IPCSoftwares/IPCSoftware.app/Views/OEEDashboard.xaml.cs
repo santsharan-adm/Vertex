@@ -14,15 +14,7 @@ namespace IPCSoftware.App.Views
         public OEEDashboard()
         {
             InitializeComponent();
-            //DataContext = new OEEDashboardViewModel();
         }
 
-        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
-        {
-            (DataContext as IDisposable)?.Dispose();
-        }
-
-        // Unloaded logic is handled by the LifecycleBehavior now
-        // The rest of the event handlers (MouseDown, Loaded) remain if they are not binding related
     }
 }

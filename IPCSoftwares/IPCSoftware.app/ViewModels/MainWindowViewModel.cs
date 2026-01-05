@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.App;
+using IPCSoftware.App.Helpers;
 using IPCSoftware.App.Services;
 using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
@@ -62,7 +63,7 @@ public class MainWindowViewModel : BaseViewModel
     // ------------------------------------------
 
 
-    private readonly DispatcherTimer _timer;
+    private readonly SafePoller _timer;
 
     // Live System Time Property
     private string _systemTime;
@@ -128,11 +129,8 @@ public class MainWindowViewModel : BaseViewModel
         _dialog = dialog;
         _nav = nav;
         _alarmVM = alarmVM;
-        _timer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromSeconds(1)
-        };
-        _timer.Tick += LiveDataTimerTick; 
+        _timer = new SafePoller
+        (TimeSpan.FromSeconds(1), LiveDataTimerTick);
         _timer.Start(); 
         // 3. Subscribe to Alarm Events
         _coreClient.OnAlarmMessageReceived += OnAlarmReceived;
@@ -254,9 +252,8 @@ public class MainWindowViewModel : BaseViewModel
 
 
 
-    private async void LiveDataTimerTick(object sender, EventArgs e)
+    private async Task LiveDataTimerTick()
     {
-        _timer.Stop();
         try 
         {
             IsConnected =  _coreClient.isConnected;
@@ -284,11 +281,7 @@ public class MainWindowViewModel : BaseViewModel
             TimeSynched = false;
 
         }
-        finally
-        {
-            // Always restart the timer
-            _timer.Start();
-        }
+       
     }
     private void ResetLandingState()
     {
@@ -493,11 +486,6 @@ public class MainWindowViewModel : BaseViewModel
         {
             _logger.LogError(ex.Message, LogType.Diagnostics);
         }
-
-
-
-
-
 
     }
 

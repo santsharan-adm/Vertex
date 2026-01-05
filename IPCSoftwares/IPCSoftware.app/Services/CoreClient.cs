@@ -337,12 +337,12 @@ namespace IPCSoftware.App.Services
                 string json = JsonConvert.SerializeObject(request);
 
                 // 4. Send Data
-                _tcpClient.Send(json);
+              await  _tcpClient.Send(json);
                 // System.Diagnostics.Debug.WriteLine($"UI -> Sent: {json}");
 
                 // 5. Wait for Response with Timeout (e.g., 3 seconds)
                 // Using Task.WhenAny is safer than Wait()
-                var timeoutTask = Task.Delay(3000);
+                var timeoutTask = Task.Delay(1000);
                 var completedTask = await Task.WhenAny(_currentResponseTcs.Task, timeoutTask);
 
                 if (completedTask == _currentResponseTcs.Task)
@@ -354,6 +354,7 @@ namespace IPCSoftware.App.Services
                 {
                     // Fail: Timeout
                     _logger.LogError($"[CoreClient] Request {request.RequestId} Timed Out.", LogType.Diagnostics);
+                    try { _currentResponseTcs.TrySetCanceled(); } catch { }
                     return null;
                 }
             }
@@ -413,6 +414,11 @@ namespace IPCSoftware.App.Services
             if (string.IsNullOrEmpty(jsonResponse)) return false;
 
             var res = JsonConvert.DeserializeObject<ResponsePackage>(jsonResponse);
+            if (!res.Success)
+            {
+                _logger.LogError($"{res.ErrorMessage} for tagId: {tagId} and value was {value}", LogType.Diagnostics);
+
+            }
             return res.Success;
         }
 

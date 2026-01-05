@@ -8,6 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:AlarmViewModel}"
+     helpers:DisposeBehavior.AutoDispose="True"
              Background="#F3F3F3">
 
     <UserControl.Resources>
