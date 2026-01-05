@@ -9,7 +9,9 @@ using IPCSoftware.Shared.Models.Messaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Windows;
@@ -42,11 +44,18 @@ namespace IPCSoftware.App
 
             if (!createdNew)
             {
-                // Another instance is running
-                MessageBox.Show("The application is already running.", "Instance Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                // 2. Logic to bring existing window to front (from previous step)
+                Process current = Process.GetCurrentProcess();
+                foreach (Process process in Process.GetProcessesByName(current.ProcessName))
+                {
+                    if (process.Id != current.Id)
+                    {
+                        WindowHelper.BringProcessToFront(process);
+                        break;
+                    }
+                }
 
-                // Bring the other window to front (Optional advanced step), 
-                // otherwise just shut down this duplicate.
+                // 3. Close this duplicate instance
                 Application.Current.Shutdown();
                 return;
             }
@@ -307,6 +316,36 @@ namespace IPCSoftware.App
             _isReconnecting = false;
             _reconnectLock?.Dispose();
             base.OnExit(e);
+        }
+    }
+
+    public static class WindowHelper
+    {
+        // Win32 API Constants
+        private const int SW_RESTORE = 9;
+
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
+        private static extern bool IsIconic(IntPtr hWnd);
+
+        public static void BringProcessToFront(Process process)
+        {
+            IntPtr handle = process.MainWindowHandle;
+            if (handle == IntPtr.Zero) return;
+
+            // 1. If minimized, restore it
+            if (IsIconic(handle))
+            {
+                ShowWindowAsync(handle, SW_RESTORE);
+            }
+
+            // 2. Bring to foreground
+            SetForegroundWindow(handle);
         }
     }
 }

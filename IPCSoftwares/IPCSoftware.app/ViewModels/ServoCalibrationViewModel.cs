@@ -330,7 +330,14 @@ namespace IPCSoftware.App.ViewModels
 
             try
             {
-                int xTag = START_TAG_POS_X + position.PositionId;
+                bool confirm = _dialog.ShowYesNo("Are you sure you want to update?", "Confirmation");
+
+                if (!confirm)
+                {
+                    return;
+                }
+
+                    int xTag = START_TAG_POS_X + position.PositionId;
                 int yTag = START_TAG_POS_Y + position.PositionId;
 
                 _logger.LogInfo($"Teaching Pos {position.PositionId}: X={LiveX}, Y={LiveY}", LogType.Audit);
@@ -367,6 +374,12 @@ namespace IPCSoftware.App.ViewModels
             if (position == null) return;
             try
             {
+                bool confirm = _dialog.ShowYesNo("Are you sure you want to update?", "Confirmation");
+
+                if (!confirm)
+                {
+                    return;
+                }
                 // The 'position' object already has the new values because 
                 // the TextBox binding (UpdateSourceTrigger=LostFocus) updated it.
 
@@ -393,6 +406,12 @@ namespace IPCSoftware.App.ViewModels
             if (param == null) return;
             try
             {
+                bool confirm = _dialog.ShowYesNo("Are you sure you want to update?", "Confirm");
+
+                if (!confirm)
+                {
+                    return;
+                }
                 _logger.LogInfo($"Writing {param.Name} -> {param.NewValue}", LogType.Audit);
                 await _coreClient.WriteTagAsync(param.WriteTagId, param.NewValue);
                 _dialog.ShowMessage("Value updated sucessfully.");
