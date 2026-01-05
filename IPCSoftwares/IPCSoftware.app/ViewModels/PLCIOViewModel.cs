@@ -64,7 +64,7 @@ namespace IPCSoftware.App.ViewModels
 
             ToggleOutputCommand = new RelayCommand<IoTagModel>(OnToggleOutput);
 
-            _timer = new SafePoller(TimeSpan.FromMilliseconds(1500),
+            _timer = new SafePoller(TimeSpan.FromMilliseconds(100),
                 TimerTick);
             
             _timer.Start();

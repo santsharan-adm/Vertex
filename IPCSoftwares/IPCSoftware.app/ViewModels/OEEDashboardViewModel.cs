@@ -240,11 +240,11 @@ namespace IPCSoftware.App.ViewModels
 
             DummyData();
             // 1. Live Data Timer (1000ms) - Gets OEE, IOs, Status from Core Service via TCP
-            _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(500), LiveDataTimerTick);
+            _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(100), LiveDataTimerTick);
             _liveDataTimer.Start();
 
             // 2. UI Sync Timer (200ms) - Gets Images and Station Data from JSON (Cycle Synced)
-            _uiSyncTimer = new SafePoller( TimeSpan.FromMilliseconds(200), UiSyncTick);
+            _uiSyncTimer = new SafePoller( TimeSpan.FromMilliseconds(100), UiSyncTick);
             _uiSyncTimer.Start();
 
             // Force initial sync
