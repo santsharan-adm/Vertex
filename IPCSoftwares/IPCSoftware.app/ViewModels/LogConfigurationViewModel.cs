@@ -18,6 +18,7 @@ namespace IPCSoftware.App.ViewModels
     public class LogConfigurationViewModel : BaseViewModel
     {
         private readonly ILogConfigurationService _logService;
+        private readonly ICcdConfigService _ccdService;
         private LogConfigurationModel _currentLog;
         private bool _isEditMode;
         private string _title;
@@ -42,7 +43,20 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _logName, value);
         }
 
+
         private string _selectedLogType;
+    /*    public string SelectedLogType
+        {
+            get => _selectedLogType;
+            set
+            {
+                if (SetProperty(ref _selectedLogType, value))
+                {
+                    UpdateFileName();
+                }
+            }
+        }
+*/
         public string SelectedLogType
         {
             get => _selectedLogType;
@@ -51,6 +65,15 @@ namespace IPCSoftware.App.ViewModels
                 if (SetProperty(ref _selectedLogType, value))
                 {
                     UpdateFileName();
+
+                    // 2. Determine if we are in Production Mode
+                    IsProductionLog = (value == "Production");
+
+                    // 3. If Production, Load from JSON
+                    if (IsProductionLog)
+                    {
+                        LoadJsonPaths();
+                    }
                 }
             }
         }
@@ -67,6 +90,27 @@ namespace IPCSoftware.App.ViewModels
         {
             get => _backupFolder;
             set => SetProperty(ref _backupFolder, value);
+        }
+
+        private string _productionImagePath;
+        public string ProductionImagePath
+        {
+            get => _productionImagePath;
+            set => SetProperty(ref _productionImagePath, value);
+        }
+
+        private string _productionImageBackupPath;
+        public string ProductionImageBackupPath
+        {
+            get => _productionImageBackupPath;
+            set => SetProperty(ref _productionImageBackupPath, value);
+        }
+
+        private bool _isProductionLog;
+        public bool IsProductionLog
+        {
+            get => _isProductionLog;
+            set => SetProperty(ref _isProductionLog, value);
         }
 
         private string _fileName;
@@ -165,14 +209,18 @@ namespace IPCSoftware.App.ViewModels
         public ICommand BrowseDataFolderCommand { get; }
         public ICommand BrowseBackupFolderCommand { get; }
 
+        public ICommand BrowseProdImageCommand { get; }
+        public ICommand BrowseProdBackupCommand { get; }
+
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public LogConfigurationViewModel(ILogConfigurationService logService, IAppLogger logger) : base(logger)
+        public LogConfigurationViewModel(ILogConfigurationService logService,ICcdConfigService ccdService, IAppLogger logger) : base(logger)
         {
             _logService = logService;
+            _ccdService = ccdService;
 
-            LogTypes = new ObservableCollection<string> { "Production", "Audit", "Error" };
+            LogTypes = new ObservableCollection<string> { "Production", "Audit", "Error", "Diagnostics" };
             BackupSchedules = new ObservableCollection<string> { "Manual", "Daily", "Weekly", "Monthly" };
 
             // Days 1-28 for monthly backup
@@ -189,6 +237,8 @@ namespace IPCSoftware.App.ViewModels
             BrowseDataFolderCommand = new RelayCommand(() => OnBrowseDataFolder());
             BrowseBackupFolderCommand = new RelayCommand(() => OnBrowseBackupFolder());
             BackUpCommand = new RelayCommand(() => OnBackUp());
+            BrowseProdImageCommand = new RelayCommand(() => ProductionImagePath = BrowseFolder("Select Production Image Folder"));
+            BrowseProdBackupCommand = new RelayCommand(() => ProductionImageBackupPath = BrowseFolder("Select Production Backup Folder"));
 
             InitializeNewLog();
         }
@@ -200,6 +250,18 @@ namespace IPCSoftware.App.ViewModels
             _currentLog = new LogConfigurationModel();
             FileName = $"{SelectedLogType}_yyyyMMdd";
             LoadFromModel(_currentLog);
+        }
+
+        private void LoadJsonPaths()
+        {
+            try
+            {
+                // Use the service to get paths
+                var paths = _ccdService.LoadCcdPaths();
+                ProductionImagePath = paths.ImagePath;
+                ProductionImageBackupPath = paths.BackupPath;
+            }
+            catch { }
         }
 
         public void LoadForEdit(LogConfigurationModel log)
@@ -296,6 +358,10 @@ namespace IPCSoftware.App.ViewModels
             try
             {
                 SaveToModel();
+                if (IsProductionLog)
+                {
+                    _ccdService.SaveCcdPaths(ProductionImagePath, ProductionImageBackupPath);
+                }
 
                 if (IsEditMode)
                 {
@@ -312,6 +378,23 @@ namespace IPCSoftware.App.ViewModels
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
             }
+        }
+
+        private string BrowseFolder(string title)
+        {
+            try
+            {
+                var dialog = new CommonOpenFileDialog
+                {
+                    IsFolderPicker = true,
+                    Title = title,
+                    AllowNonFileSystemItems = false,
+                    Multiselect = false
+                };
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok) return dialog.FileName;
+            }
+            catch { }
+            return string.Empty;
         }
 
         private void OnBrowseDataFolder()

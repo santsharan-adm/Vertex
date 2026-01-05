@@ -25,39 +25,10 @@ namespace IPCSoftware.App.ViewModels
 
         private bool _initialPlcLoadDone = false;
 
-        // --- JOG TAGS (Write A / Read B) ---
-        // X Minus
-        private const int TAG_WRITE_X_MINUS = 50;
-        private const int TAG_READ_X_MINUS = 90;
-        // X Plus
-        private const int TAG_WRITE_X_PLUS = 49;
-        private const int TAG_READ_X_PLUS = 89;
-        // Y Minus
-        private const int TAG_WRITE_Y_MINUS = 54;
-        private const int TAG_READ_Y_MINUS = 94;
-        // Y Plus
-        private const int TAG_WRITE_Y_PLUS = 53;
-        private const int TAG_READ_Y_PLUS = 93;
-
-
-        private const int TAG_X_HOME = 117;
-        private const int TAG_Y_HOME = 124;
-
-
-        // --- TAG CONFIGURATION ---
-        // Control Bits (110-113)
-        private const int TAG_PARAM_A1 = 110; // Confirm X Servo Params
-        private const int TAG_PARAM_A2 = 111; // Confirm Y Servo Params
-        private const int TAG_PARAM_A3 = 112; // Confirm X Coordinates
-        private const int TAG_PARAM_A4 = 113; // Confirm Y Coordinates
-
-        // Live Positions (B1, B2)
-        private const int TAG_LIVE_X = 154;
-        private const int TAG_LIVE_Y = 155;
 
         // Start of Coordinate Registers (13 Positions: 0 to 12)
-        private const int START_TAG_POS_X = 128;
-        private const int START_TAG_POS_Y = 141;
+        private  int START_TAG_POS_X = ConstantValues.Servo_Pos_Start.X;
+        private  int START_TAG_POS_Y = ConstantValues.Servo_Pos_Start.Y;
 
         // Visual Feedback Properties for Jog Buttons
         // These are set True ONLY when B-Tag is received from PLC
@@ -106,7 +77,8 @@ namespace IPCSoftware.App.ViewModels
         // NEW: Jog Command (Takes [Direction, IsPressed])
         public ICommand JogCommand { get; }
 
-        public ServoCalibrationViewModel(CoreClient coreClient, IServoCalibrationService servoService,IDialogService dialog, IAppLogger logger)
+        public ServoCalibrationViewModel(CoreClient coreClient, 
+            IServoCalibrationService servoService,IDialogService dialog, IAppLogger logger)
              : base(logger)
         {
             _dialog = dialog;
@@ -117,10 +89,10 @@ namespace IPCSoftware.App.ViewModels
             WritePositionCommand = new RelayCommand<ServoPositionModel>(OnWritePositionManual);
             WriteParamCommand = new RelayCommand<ServoParameterItem>(OnWriteParameter);
 
-            ConfirmXParamsCommand = new RelayCommand(async () => await PulseBit(TAG_PARAM_A1, "X Servo Params"));
-            ConfirmYParamsCommand = new RelayCommand(async () => await PulseBit(TAG_PARAM_A2, "Y Servo Params"));
-            ConfirmXCoordsCommand = new RelayCommand(async () => await PulseBit(TAG_PARAM_A3, "X Coordinates"));
-            ConfirmYCoordsCommand = new RelayCommand(async () => await PulseBit(TAG_PARAM_A4, "Y Coordinates"));
+            ConfirmXParamsCommand = new RelayCommand(async () => await PulseBit(ConstantValues.Servo_ParamSave, "X Servo Params"));
+            ConfirmYParamsCommand = new RelayCommand(async () => await PulseBit(ConstantValues.Servo_ParamA2, "Y Servo Params"));
+            ConfirmXCoordsCommand = new RelayCommand(async () => await PulseBit(ConstantValues.Servo_CoordSave, "X Coordinates"));
+            ConfirmYCoordsCommand = new RelayCommand(async () => await PulseBit(ConstantValues.Servo_XYOrigin, "Y Coordinates"));
 
             JogCommand = new RelayCommand<object>(async (args) => await OnJogAsync(args));
 
@@ -156,14 +128,7 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task OnJogAsync(object args)
         {
-            // 1. Check PLC Connection
-            //if (!await IsPLCConnected())
-            //{
-            //    // Optionally log only once per press/release to avoid spam
-            //    // _logger.LogWarning("Jog ignored: PLC disconnected", LogType.Audit);
-            //    return;
-            //}
-
+            
             if (args is not string commandStr) return;
             var parts = commandStr.Split('|');
             if (parts.Length != 2) return;
@@ -179,20 +144,20 @@ namespace IPCSoftware.App.ViewModels
                 switch (dir)
                 {
                     case JogDirection.XPlus:
-                        if (IsJogXMinusActive) { _logger.LogWarning("Interlock: Cannot Jog X+ while X- is active.", LogType.Audit); return; }
-                        writeTagId = TAG_WRITE_X_PLUS;
+                       // if (IsJogXMinusActive) { _logger.LogWarning("Interlock: Cannot Jog X+ while X- is active.", LogType.Audit); return; }
+                        writeTagId = ConstantValues.Manual_XFwd.Write;
                         break;
                     case JogDirection.XMinus:
-                        if (IsJogXPlusActive) { _logger.LogWarning("Interlock: Cannot Jog X- while X+ is active.", LogType.Audit); return; }
-                        writeTagId = TAG_WRITE_X_MINUS;
+                       // if (IsJogXPlusActive) { _logger.LogWarning("Interlock: Cannot Jog X- while X+ is active.", LogType.Audit); return; }
+                        writeTagId = ConstantValues.Manual_XRev.Write ;
                         break;
                     case JogDirection.YPlus:
-                        if (IsJogYMinusActive) { _logger.LogWarning("Interlock: Cannot Jog Y+ while Y- is active.", LogType.Audit); return; }
-                        writeTagId = TAG_WRITE_Y_PLUS;
+                       // if (IsJogYMinusActive) { _logger.LogWarning("Interlock: Cannot Jog Y+ while Y- is active.", LogType.Audit); return; }
+                        writeTagId = ConstantValues.Manual_YFwd.Write ;
                         break;
                     case JogDirection.YMinus:
-                        if (IsJogYPlusActive) { _logger.LogWarning("Interlock: Cannot Jog Y- while Y+ is active.", LogType.Audit); return; }
-                        writeTagId = TAG_WRITE_Y_MINUS;
+                      //  if (IsJogYPlusActive) { _logger.LogWarning("Interlock: Cannot Jog Y- while Y+ is active.", LogType.Audit); return; }
+                        writeTagId = ConstantValues.Manual_YRev.Write;
                         break;
                 }
             }
@@ -201,10 +166,10 @@ namespace IPCSoftware.App.ViewModels
                 // On Release, just get the tag to turn off
                 switch (dir)
                 {
-                    case JogDirection.XPlus: writeTagId = TAG_WRITE_X_PLUS; break;
-                    case JogDirection.XMinus: writeTagId = TAG_WRITE_X_MINUS; break;
-                    case JogDirection.YPlus: writeTagId = TAG_WRITE_Y_PLUS; break;
-                    case JogDirection.YMinus: writeTagId = TAG_WRITE_Y_MINUS; break;
+                    case JogDirection.XPlus: writeTagId = ConstantValues.Manual_XFwd.Write; break;
+                    case JogDirection.XMinus: writeTagId = ConstantValues.Manual_XRev.Write; break;
+                    case JogDirection.YPlus: writeTagId = ConstantValues.Manual_YFwd.Write; break;
+                    case JogDirection.YMinus: writeTagId = ConstantValues.Manual_YRev.Write; break;
                 }
             }
 
@@ -231,29 +196,24 @@ namespace IPCSoftware.App.ViewModels
 
         private void InitializeParameters()
         {
-            // X Axis Params (114-120) -> Bind to XParameters
-            XParameters.Add(new ServoParameterItem { Name = "Jog Low Speed", ReadTagId = 114, WriteTagId = 114 });
-          //  XParameters.Add(new ServoParameterItem { Name = "Jog High Speed", ReadTagId = 115, WriteTagId = 115 });
-           // XParameters.Add(new ServoParameterItem { Name = "Inching Dist", ReadTagId = 116, WriteTagId = 116 });
-            XParameters.Add(new ServoParameterItem { Name = "Origin Offset", ReadTagId = 117, WriteTagId = 117 });
-            XParameters.Add(new ServoParameterItem { Name = "Move Speed", ReadTagId = 118, WriteTagId = 118 });
-            XParameters.Add(new ServoParameterItem { Name = "Acceleration", ReadTagId = 119, WriteTagId = 119 });
-            XParameters.Add(new ServoParameterItem { Name = "Deceleration", ReadTagId = 120, WriteTagId = 120 });
-           // XParameters.Add(new ServoParameterItem { Name = "X HOME", ReadTagId = TAG_X_HOME, WriteTagId = TAG_X_HOME });
-
-            // Y Axis Params (121-127) -> Bind to YParameters
-            YParameters.Add(new ServoParameterItem { Name = "Jog Low Speed", ReadTagId = 121, WriteTagId = 121 });
-          //  YParameters.Add(new ServoParameterItem { Name = "Jog High Speed", ReadTagId = 122, WriteTagId = 122 });
-           // YParameters.Add(new ServoParameterItem { Name = "Inching Dist", ReadTagId = 123, WriteTagId = 123 });
-            YParameters.Add(new ServoParameterItem { Name = "Origin Offset", ReadTagId = 124, WriteTagId = 124 });
-            YParameters.Add(new ServoParameterItem { Name = "Move Speed", ReadTagId = 125, WriteTagId = 125 });
-            YParameters.Add(new ServoParameterItem { Name = "Acceleration", ReadTagId = 126, WriteTagId = 126 });
-            YParameters.Add(new ServoParameterItem { Name = "Deceleration", ReadTagId = 127, WriteTagId = 127 });
-          //  YParameters.Add(new ServoParameterItem { Name = "Y HOME", ReadTagId = TAG_Y_HOME, WriteTagId = TAG_Y_HOME });
+            Map("Jog Low Speed", ConstantValues.Servo_JogSpeed_Low);
+            Map("Origin Offset", ConstantValues.Servo_OffSet);
+            Map("Move Speed", ConstantValues.Servo_Move_Speed);
+            Map("Acceleration", ConstantValues.Servo_Accel);
+            Map("Deceleration", ConstantValues.Servo_DeAccel);
         }
 
-      
+        private void Map(string name, XYPair pair)
+        {
+            // Helper to create the item (Target-typed new)
+            ServoParameterItem Create(int tag) => new() { Name = name, ReadTagId = tag, WriteTagId = tag };
 
+            XParameters.Add(Create(pair.X));
+            YParameters.Add(Create(pair.Y));
+        }
+
+
+       
         private async Task InitializePositionsAsync()
         {
             try
@@ -286,14 +246,14 @@ namespace IPCSoftware.App.ViewModels
                 {
                     // 1. Update Jog Status (B-Tags)
                     // Visual feedback depends strictly on these values
-                    if (data.TryGetValue(TAG_READ_X_MINUS, out object xm)) IsJogXMinusActive = Convert.ToBoolean(xm);
-                    if (data.TryGetValue(TAG_READ_X_PLUS, out object xp)) IsJogXPlusActive = Convert.ToBoolean(xp);
-                    if (data.TryGetValue(TAG_READ_Y_MINUS, out object ym)) IsJogYMinusActive = Convert.ToBoolean(ym);
-                    if (data.TryGetValue(TAG_READ_Y_PLUS, out object yp)) IsJogYPlusActive = Convert.ToBoolean(yp);
+                    if (data.TryGetValue(ConstantValues.Manual_XRev.Read, out object xm)) IsJogXMinusActive = Convert.ToBoolean(xm);
+                    if (data.TryGetValue(ConstantValues.Manual_XFwd.Read, out object xp)) IsJogXPlusActive = Convert.ToBoolean(xp);
+                    if (data.TryGetValue(ConstantValues.Manual_YRev.Read, out object ym)) IsJogYMinusActive = Convert.ToBoolean(ym);
+                    if (data.TryGetValue(ConstantValues.Manual_YFwd.Read, out object yp)) IsJogYPlusActive = Convert.ToBoolean(yp);
 
                     // 1. Update Live Position
-                    if (data.TryGetValue(TAG_LIVE_X, out object xVal)) LiveX = Convert.ToDouble(xVal);
-                    if (data.TryGetValue(TAG_LIVE_Y, out object yVal)) LiveY = Convert.ToDouble(yVal);
+                    if (data.TryGetValue(ConstantValues.Servo_Live.X  , out object xVal)) LiveX = Convert.ToDouble(xVal);
+                    if (data.TryGetValue(ConstantValues.Servo_Live.Y, out object yVal)) LiveY = Convert.ToDouble(yVal);
 
                     // 2. Update X Parameters
                     foreach (var param in XParameters)
@@ -392,6 +352,7 @@ namespace IPCSoftware.App.ViewModels
                 {
                     Positions[index] = position;
                 }
+                _dialog.ShowMessage("Values updated sucessfully.");
                 _initialPlcLoadDone = false;
                // UpdateCoord();
             }
@@ -416,6 +377,7 @@ namespace IPCSoftware.App.ViewModels
 
                 await _coreClient.WriteTagAsync(xTag, position.X);
                 await _coreClient.WriteTagAsync(yTag, position.Y);
+                _dialog.ShowMessage("Values updated sucessfully.");
                 _initialPlcLoadDone = false;
               //  UpdateCoord();
                 // Optional: Flash success or log
@@ -433,6 +395,9 @@ namespace IPCSoftware.App.ViewModels
             {
                 _logger.LogInfo($"Writing {param.Name} -> {param.NewValue}", LogType.Audit);
                 await _coreClient.WriteTagAsync(param.WriteTagId, param.NewValue);
+                _dialog.ShowMessage("Value updated sucessfully.");
+
+
             }
             catch (Exception ex) { _logger.LogError($"Write Param Error: {ex.Message}", LogType.Diagnostics); }
         }

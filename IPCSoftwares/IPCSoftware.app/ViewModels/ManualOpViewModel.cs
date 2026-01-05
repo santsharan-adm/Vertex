@@ -2,6 +2,7 @@
 using IPCSoftware.App.Services;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
@@ -77,9 +78,9 @@ namespace IPCSoftware.App.ViewModels
             // 4. Origin Command
             OriginCommand = new RelayCommand(async () =>
             {
-                await _coreClient.WriteTagAsync(113, 1);
+                await _coreClient.WriteTagAsync(ConstantValues.Servo_XYOrigin, 1);
                 await Task.Delay(200);
-                await _coreClient.WriteTagAsync(113, 0);
+                await _coreClient.WriteTagAsync(ConstantValues.Servo_XYOrigin, 0);
             });
 
             // 5. Feedback Timer
@@ -90,43 +91,45 @@ namespace IPCSoftware.App.ViewModels
 
         private void InitializeTags()
         {
-            int wStart = 40; // Write Start
-            int rStart = 80; // Read Start
-
-            // Helper to map tags quickly
-            void Map(ManualOperationMode m, int offset)
-            {
-                _writeTags[m] = wStart + offset;
-                _readTags[m] = rStart + offset;
-            }
-
             // --- Manual Controls ---
-            Map(ManualOperationMode.TrayLiftDown, 0);
-            Map(ManualOperationMode.TrayLiftUp, 1);
-            Map(ManualOperationMode.PositioningCylinderUp, 2);
-            Map(ManualOperationMode.PositioningCylinderDown, 3);
-            Map(ManualOperationMode.TransportConveyorForward, 4);
-            Map(ManualOperationMode.TransportConveyorReverse, 5);
-            Map(ManualOperationMode.TransportConveyorStop, 6);
-            Map(ManualOperationMode.TransportConveyorLowSpeed, 7);
-            Map(ManualOperationMode.TransportConveyorHighSpeed, 8);
-            Map(ManualOperationMode.ManualXAxisJogForward, 9);
-            Map(ManualOperationMode.ManualXAxisJogBackward, 10);
+            Map(ManualOperationMode.TrayLiftDown, ConstantValues.Manual_TrayDown);
+            Map(ManualOperationMode.TrayLiftUp, ConstantValues.Manual_TrayUp);
+            Map(ManualOperationMode.PositioningCylinderUp, ConstantValues.Manual_CylUp);
+            Map(ManualOperationMode.PositioningCylinderDown, ConstantValues.Manual_CylDown);
+            Map(ManualOperationMode.TransportConveyorForward, ConstantValues.Manual_ConvFwd);
+            Map(ManualOperationMode.TransportConveyorReverse, ConstantValues.Manual_ConvRev);
+            Map(ManualOperationMode.TransportConveyorStop, ConstantValues.Manual_ConvStop);
+            Map(ManualOperationMode.TransportConveyorLowSpeed, ConstantValues.Manual_ConvLow);
+            Map(ManualOperationMode.TransportConveyorHighSpeed, ConstantValues.Manual_ConvHigh);
+            Map(ManualOperationMode.ManualXAxisJogForward, ConstantValues.Manual_XFwd);
+            Map(ManualOperationMode.ManualXAxisJogBackward, ConstantValues.Manual_XRev);
             // Skipping 11, 12 reserved for jogging speed if needed
-            Map(ManualOperationMode.ManualYAxisJogBackward, 13);
-            Map(ManualOperationMode.ManualYAxisJogForward, 14);
+            Map(ManualOperationMode.ManualYAxisJogForward, ConstantValues.Manual_YFwd);
+            Map(ManualOperationMode.ManualYAxisJogBackward, ConstantValues.Manual_YRev);
 
             // --- Positions 0 to 12 ---
             // These start at offset 20 (Tags 60/100)
-            int posOffset = 17;
+            TagPair posOffset = ConstantValues.Manual_PosStart;
             for (int i = 0; i <= 12; i++)
             {
                 if (Enum.TryParse($"MoveToPos{i}", out ManualOperationMode mode))
                 {
-                    Map(mode, posOffset + i);
+                    posOffset = new TagPair
+                    {
+                        Write = ConstantValues.Manual_PosStart.Write + i,
+                        Read = ConstantValues.Manual_PosStart.Read + i
+                    };
+                    Map(mode, posOffset);
                 }
             }
         }
+
+        void Map(ManualOperationMode m, TagPair tag)
+        {
+            _writeTags[m] = tag.Write;
+            _readTags[m] = tag.Read;
+        }
+
 
         private async Task ExecuteOperationAsync(string args)
         {

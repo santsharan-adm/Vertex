@@ -40,6 +40,7 @@ namespace IPCSoftware.App.ViewModels
         }
 
         public ICommand RefreshCommand { get; }
+        public ICommand RefreshLogsCommand { get; }
 
         // Constructor
         public LogViewerViewModel(
@@ -47,7 +48,15 @@ namespace IPCSoftware.App.ViewModels
             IAppLogger logger) : base(logger)
         {
             _logService = logService;
-        //  /*  RefreshCommand = new */ Task.Run(async () => await LoadFilesAsync(_currentCategory));
+         RefreshCommand = new RelayCommand(async () => await LoadFilesAsync(_currentCategory));
+            RefreshLogsCommand = new RelayCommand(async () =>
+            {
+                // 1. Guard clause: Check if null before acting
+                if (SelectedFile == null) return;
+
+                // 2. Safe to access FullPath now
+                await LoadLogsAsync(SelectedFile.FullPath);
+            });
         }
 
         private LogType _currentCategory;
@@ -88,6 +97,7 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task LoadLogsAsync(string fullPath)
         {
+            if (fullPath == null) return;
             try
             {
                 LogEntries.Clear();

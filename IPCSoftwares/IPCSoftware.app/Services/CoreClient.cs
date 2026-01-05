@@ -18,6 +18,7 @@ namespace IPCSoftware.App.Services
 
 
         public event Action<AlarmMessage> OnAlarmMessageReceived;
+        public bool isConnected = false;
 
         public CoreClient(UiTcpClient client,
             IAppLogger logger) : base(logger)
@@ -156,10 +157,12 @@ namespace IPCSoftware.App.Services
         {
             if (_tcpClient == null || !_tcpClient.IsConnected)
             {
+                isConnected = false;
+            _logger.LogWarning("WATCHDOG ERROR: Core service not conncted.", LogType.Diagnostics);
             _logger.LogError("CoreClient: Cannot send request, client disconnected.", LogType.Diagnostics);
                 return null;
             }
-
+            isConnected = true;
             string json = JsonConvert.SerializeObject(request);
             _responseTcs = new TaskCompletionSource<string>();
 

@@ -30,17 +30,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         // Path to the JSON file shared with UI
         private readonly string _stateFilePath;
 
-        // CONFIGURATION: Define your Snake Pattern here
-        // Index 0 = First Grid Move, Index 1 = Second Grid Move, etc.
-        // Based on your description: 1->2->3 (down) 6->5->4 (down) 7->8->9 (down) 12->11->10
-        /*  private readonly int[] _stationMap = new int[]
-          {
-              1, 2, 3,    // Row 1 (Right)
-              6, 5, 4,    // Row 2 (Left)
-              7, 8, 9,    // Row 3 (Right)
-              12, 11, 10  // Row 4 (Left)
-          };*/
-
+       
         private int[] _stationMap;
 
 

@@ -1,5 +1,5 @@
 ﻿Id,LogName,LogType,DataFolder,BackupFolder,FileName,LogRetentionTime,LogRetentionFileSize,AutoPurge,BackupSchedule,BackupTime,BackupDay,BackupDayOfWeek,Description,Remark,Enabled
-1,Audit,Audit,C:\Datalog\Logs\Audit,D:\Logs\Backup\Audit,Audit_yyyyMMdd,90,5,FALSE,Monthly,02:00:00,1,,Audit log configuration,System audit trail logs,TRUE
-2,Production,Production,C:\Datalog\Logs\Production,D:\Logs\Production,Production_{yyyyMMdd},30,5,TRUE,Weekly,03:00:00,0,Monday,Production log configuration,Production system logs,TRUE
-3,Error,Error,C:\Datalog\Logs\Error,D:\Logs\Backup\Error,Error_yyyyMMdd,60,5,FALSE,Monthly,04:00:00,1,,Error log configuration,System error logs,TRUE
-4,Diagnostics,Diagnostics,C:\Datalog\Logs\Diagnostics,D:\Logs\Backup\Diagnostics,Diagnostics_yyyyMMdd,60,5,FALSE,Monthly,04:00:00,1,,Diagnostics log configuration,System Diagnostics logs,TRUE
+1,"Audit","Audit","C:\Datalog\Logs\Audit","D:\Logs\Backup\Audit","Audit_yyyyMMdd",90,5,False,"Monthly","02:00:00",1,"","Audit log configuration","System audit trail logs",True
+2,"Production","Production","C:\Datalog\Logs\Production","D:\Logs\Production","Production_{yyyyMMdd}",30,5,True,"Weekly","03:00:00",0,"Monday","Production log configuration","Production system logs",True
+3,"Error","Error","C:\Datalog\Logs\Error","D:\Logs\Backup\Error","Error_yyyyMMdd",60,5,False,"Monthly","04:00:00",1,"","Error log configuration","System error logs",True
+4,"Diagnostics","Diagnostics","C:\Datalog\Logs\Diagnostics","D:\Logs\Backup\Diagnostics","Diagnostics_yyyyMMdd",60,5,False,"Monthly","04:00:00",1,"","Diagnostics log configuration","System Diagnostics logs",True

@@ -18,27 +18,6 @@ namespace IPCSoftware.App.ViewModels
         private readonly DispatcherTimer _clockTimer;
         private readonly DispatcherTimer _plcPollTimer;
 
-        // --- TAG CONFIGURATION ---
-        // READ Tags (PLC -> IPC): DM10019...DM10024 (Example 511-516)
-        private const int TAG_READ_YEAR = 503;//511;
-        private const int TAG_READ_MONTH = 504; //12;
-        private const int TAG_READ_DAY = 505; //;
-        private const int TAG_READ_HOUR = 506 ;
-        private const int TAG_READ_MIN = 507;
-        private const int TAG_READ_SEC = 508;
-
-        // WRITE Tags (IPC -> PLC): DM10019...DM10024 (Example 4-9)
-        // Usually Write and Read addresses are the same for Time Sync registers, 
-        // but based on your request:
-        private const int TAG_WRITE_YEAR = 4;
-        private const int TAG_WRITE_MONTH = 5;
-        private const int TAG_WRITE_DAY = 6;
-        private const int TAG_WRITE_HOUR = 7;
-        private const int TAG_WRITE_MIN = 8;
-        private const int TAG_WRITE_SEC = 9;
-
-        // SYNC TRIGGER (A1)
-        private const int TAG_SYNC_TRIGGER = 3;
 
         // --- Properties ---
         private string _plcDate = "--/--/----";
@@ -96,12 +75,12 @@ namespace IPCSoftware.App.ViewModels
                 if (data != null)
                 {
                     // Read Time Parts
-                    int y = GetInt(data, TAG_READ_YEAR);
-                    int M = GetInt(data, TAG_READ_MONTH);
-                    int d = GetInt(data, TAG_READ_DAY);
-                    int h = GetInt(data, TAG_READ_HOUR);
-                    int m = GetInt(data, TAG_READ_MIN);
-                    int s = GetInt(data, TAG_READ_SEC);
+                    int y = GetInt(data, ConstantValues.TAG_Time_Year.Read);
+                    int M = GetInt(data, ConstantValues.TAG_Time_Month.Read);
+                    int d = GetInt(data, ConstantValues.TAG_Time_Day.Read);
+                    int h = GetInt(data, ConstantValues.TAG_Time_Hour.Read);
+                    int m = GetInt(data, ConstantValues.TAG_Time_Minute.Read);
+                    int s = GetInt(data, ConstantValues.TAG_Time_Second.Read);
 
                     // Validate & Format
                     if (y > 0 && M > 0 && d > 0)
@@ -144,17 +123,17 @@ namespace IPCSoftware.App.ViewModels
                 _logger.LogInfo($"Syncing PLC Time to: {targetTime:yyyy-MM-dd HH:mm:ss}", LogType.Audit);
 
                 // 2. Write Time Values
-                await _coreClient.WriteTagAsync(TAG_WRITE_YEAR, targetTime.Year);
-                await _coreClient.WriteTagAsync(TAG_WRITE_MONTH, targetTime.Month);
-                await _coreClient.WriteTagAsync(TAG_WRITE_DAY, targetTime.Day);
-                await _coreClient.WriteTagAsync(TAG_WRITE_HOUR, targetTime.Hour);
-                await _coreClient.WriteTagAsync(TAG_WRITE_MIN, targetTime.Minute);
-                await _coreClient.WriteTagAsync(TAG_WRITE_SEC, targetTime.Second);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Year.Write, targetTime.Year);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Month.Write, targetTime.Month);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Day.Write, targetTime.Day);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Hour.Write, targetTime.Hour);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Minute.Write, targetTime.Minute);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Second.Write, targetTime.Second);
 
                 // 3. Pulse Trigger (A1)
-                await _coreClient.WriteTagAsync(TAG_SYNC_TRIGGER, 1);
-                await Task.Delay(500); // Hold pulse
-                await _coreClient.WriteTagAsync(TAG_SYNC_TRIGGER, 0);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, 1);
+                await Task.Delay(200); // Hold pulse
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, 0);
 
                 SyncState = "Synced";
                 AddAudit("PLC time sync command sent.");
