@@ -6,7 +6,9 @@
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:PLCIOViewModel}"
-              Unloaded="UserControl_Unloaded"
+               
+     helpers:DisposeBehavior.AutoDispose="True"
+            
              xmlns:converters="clr-namespace:IPCSoftware.App.Converters"
  mc:Ignorable="d"
              d:DesignHeight="1080" d:DesignWidth="1920"

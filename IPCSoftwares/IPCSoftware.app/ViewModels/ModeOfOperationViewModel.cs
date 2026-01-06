@@ -1,4 +1,5 @@
-﻿using IPCSoftware.App.NavServices;
+﻿using IPCSoftware.App.Helpers;
+using IPCSoftware.App.NavServices;
 using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.App.Views;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -62,7 +64,7 @@ namespace IPCSoftware.App.ViewModels
     {
         private readonly CoreClient _coreClient;
         private readonly INavigationService _navService;
-        private readonly DispatcherTimer _feedbackTimer;
+        private readonly SafePoller _feedbackTimer;
 
         private readonly Dictionary<OperationMode, int> _writeTags = new();
         private readonly Dictionary<OperationMode, int> _statusTags = new(); // For Blinking/Color
@@ -75,7 +77,7 @@ namespace IPCSoftware.App.ViewModels
         public bool IsMachineHome { get => _isMachineHome; set => SetProperty(ref _isMachineHome, value); }
 
         public ICommand UnifiedOperationCommand { get; }
-
+         
         public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService) : base(logger)
         {
             _coreClient = coreClient;
@@ -86,8 +88,7 @@ namespace IPCSoftware.App.ViewModels
 
             UnifiedOperationCommand = new RelayCommand<string>(async (args) => await ExecuteOperationAsync(args));
 
-            _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
-            _feedbackTimer.Tick += FeedbackLoop_Tick;
+            _feedbackTimer = new SafePoller (TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
             _feedbackTimer.Start();
         }
 
@@ -149,7 +150,7 @@ namespace IPCSoftware.App.ViewModels
                 if (buttonItem.IsEnabled && _writeTags.TryGetValue(mode, out int tagId))
                 {
                     int value = isPressed ? 1 : 0;
-                    await _coreClient.WriteTagAsync(tagId, value);
+                    await _coreClient.WriteTagAsync(tagId, isPressed);
 
                     if (isPressed) AddAudit($"Operator Pressed: {mode}");
                 }
@@ -160,7 +161,7 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        private async void FeedbackLoop_Tick(object? sender, EventArgs e)
+        private async Task FeedbackLoop_Tick()
         {
             try
             {
@@ -168,57 +169,62 @@ namespace IPCSoftware.App.ViewModels
                 // Assuming CoreClient can handle disjointed reads or you just read a large block.
                 // If tags are far apart, you might need two calls or a block read. 
                 var liveData = await _coreClient.GetIoValuesAsync(5);
-                if (liveData.Count < 2) return;
+                if (liveData.Count < 1) return;
 
-                bool isAutoRunning = false;
-                bool isDryRunning = false;
-                bool isStopRunning = false;
-                bool isRTORunning = false;
-
-                foreach (var btn in ModeButtons)
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    // A. Update BLINKING/ACTIVE Status (from 481-483)
-                    if (_statusTags.TryGetValue(btn.Mode, out int statusTagId))
+
+                    bool isAutoRunning = false;
+                    bool isDryRunning = false;
+                    bool isStopRunning = false;
+                    bool isRTORunning = false;
+
+                    foreach (var btn in ModeButtons)
                     {
-                        if (liveData.TryGetValue(statusTagId, out object? val))
+                        // A. Update BLINKING/ACTIVE Status (from 481-483)
+                        if (_statusTags.TryGetValue(btn.Mode, out int statusTagId))
                         {
-                            bool signal = Convert.ToBoolean(val);
-                            btn.IsBlinking = signal;
-                            btn.IsActive = signal;
-                            if (btn.Mode == OperationMode.Auto) isAutoRunning = signal;
-                            if (btn.Mode == OperationMode.DryRun) isDryRunning = signal;
-                            if (btn.Mode == OperationMode.MassRTO) isRTORunning = signal;
-                            if (btn.Mode == OperationMode.CycleStop) isStopRunning = signal;
+                            if (liveData.TryGetValue(statusTagId, out object? val))
+                            {
+                                bool signal = Convert.ToBoolean(val);
+                                btn.IsBlinking = signal;
+                                btn.IsActive = signal;
+                                if (btn.Mode == OperationMode.Auto) isAutoRunning = signal;
+                                if (btn.Mode == OperationMode.DryRun) isDryRunning = signal;
+                                if (btn.Mode == OperationMode.MassRTO) isRTORunning = signal;
+                                if (btn.Mode == OperationMode.CycleStop) isStopRunning = signal;
+                            }
                         }
+
+                        // B. Update ENABLE/DISABLE State (from 477-480)
+                        if (_enableTags.TryGetValue(btn.Mode, out int enableTagId))
+                        {
+                            if (liveData.TryGetValue(enableTagId, out object? val))
+                            {
+                                // PLC Logic dictates Enabled State directly
+                                btn.IsEnabled = Convert.ToBoolean(val);
+                            }
+                        }
+                        // Note: 'Manual' mode IsEnabled is skipped here as it has no tag in _enableTags map. 
+                        // It stays True (default) or you can add logic if needed.
                     }
 
-                    // B. Update ENABLE/DISABLE State (from 477-480)
-                    if (_enableTags.TryGetValue(btn.Mode, out int enableTagId))
+                    var manualBtn = GetBtn(OperationMode.Manual);
+
+                    // If EITHER Auto OR Dry is running (True), Manual must be Disabled.
+                    // If BOTH are stopped (False), Manual is Enabled.
+                    bool isSystemBusy = isAutoRunning || isDryRunning || isStopRunning || isRTORunning;
+
+                    manualBtn.IsEnabled = !isSystemBusy;
+
+                    _enableTags.TryGetValue(OperationMode.MassRTO, out int homeLampId);
+                    // C. Update Home Lamp
+                    if (liveData.TryGetValue(homeLampId, out object? homeVal))
                     {
-                        if (liveData.TryGetValue(enableTagId, out object? val))
-                        {
-                            // PLC Logic dictates Enabled State directly
-                            btn.IsEnabled = Convert.ToBoolean(val);
-                        }
+                        var homeLamp = Convert.ToBoolean(homeVal);
+                        IsMachineHome = !homeLamp;
                     }
-                    // Note: 'Manual' mode IsEnabled is skipped here as it has no tag in _enableTags map. 
-                    // It stays True (default) or you can add logic if needed.
-                }
-
-                var manualBtn = GetBtn(OperationMode.Manual);
-
-                // If EITHER Auto OR Dry is running (True), Manual must be Disabled.
-                // If BOTH are stopped (False), Manual is Enabled.
-                bool isSystemBusy = isAutoRunning || isDryRunning || isStopRunning;
-
-                manualBtn.IsEnabled = !isSystemBusy;
-
-                _statusTags.TryGetValue(OperationMode.MassRTO, out int homeLampId);
-                // C. Update Home Lamp
-                if (liveData.TryGetValue(homeLampId, out object? homeVal))
-                {
-                    IsMachineHome = Convert.ToBoolean(homeVal);
-                }
+                });
             }
             catch { }
         }
@@ -232,7 +238,12 @@ namespace IPCSoftware.App.ViewModels
             AuditLogs.Add(new AuditLogModel { Time = DateTime.Now.ToString("HH:mm:ss"), Message = message });
         }
 
-        public void Dispose() => _feedbackTimer.Stop();
+
+        public void Dispose()
+        {
+                _feedbackTimer.Dispose();
+
+        }
     }
 }
 

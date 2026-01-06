@@ -1,4 +1,5 @@
-﻿using IPCSoftware.App.Services;
+﻿using IPCSoftware.App.Helpers;
+using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
@@ -15,8 +16,9 @@ namespace IPCSoftware.App.ViewModels
     public class SystemSettingViewModel : BaseViewModel, IDisposable
     {
         private readonly CoreClient _coreClient;
-        private readonly DispatcherTimer _clockTimer;
-        private readonly DispatcherTimer _plcPollTimer;
+
+        private readonly SafePoller _clockPoller;
+        private readonly SafePoller _plcPoller;
 
 
         // --- Properties ---
@@ -45,70 +47,76 @@ namespace IPCSoftware.App.ViewModels
 
             SyncCommand = new RelayCommand(async () => await SyncTime());
 
-            // 1. IPC Clock (1s Tick)
-            _clockTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _clockTimer.Tick += (s, e) => UpdateIpcTime();
-            _clockTimer.Start();
+            _clockPoller = new SafePoller(
+            TimeSpan.FromSeconds(1),
+            UpdateIpcTimeAsync  // Pass the method directly
+          );
+            _clockPoller.Start();
 
-            // 2. PLC Polling (500ms Tick)
-            _plcPollTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
-            _plcPollTimer.Tick += PlcPollTick;
-            _plcPollTimer.Start();
+            _plcPoller = new SafePoller(
+             TimeSpan.FromMilliseconds(500),
+             PlcPollTickAsync,
+             ex => _logger.LogError($"PLC Poll Error: {ex.Message}", LogType.Diagnostics)
+         );
+            _plcPoller.Start();
 
-            UpdateIpcTime();
+            UpdateIpcTimeAsync();
         }
+      
 
-        private void UpdateIpcTime()
+
+        private Task UpdateIpcTimeAsync()
         {
             var now = DateTime.Now;
             IpcDate = now.ToString("dd-MMM-yyyy");
             IpcTime = now.ToString("HH:mm:ss");
+            IpcTime = DateTime.Now.ToString("HH:mm:ss");
+            // Trigger PropertyChanged if needed, or use [ObservableProperty]
+            OnPropertyChanged(nameof(IpcTime));
+
+            return Task.CompletedTask;
         }
 
-        private async void PlcPollTick(object sender, EventArgs e)
+        private async Task PlcPollTickAsync()
         {
-            try
+            // No need for _isBusy flags or try/catch here! 
+            // SafePoller handles all of that.
+
+            var data = await _coreClient.GetIoValuesAsync(5); // Example ID
+
+            if (data.Count > 0)
             {
-                // Request IO Packet (ID 5 assumed)
-                var data = await _coreClient.GetIoValuesAsync(5);
+                // Read Time Parts
+                int y = GetInt(data, ConstantValues.TAG_Time_Year.Read);
+                int M = GetInt(data, ConstantValues.TAG_Time_Month.Read);
+                int d = GetInt(data, ConstantValues.TAG_Time_Day.Read);
+                int h = GetInt(data, ConstantValues.TAG_Time_Hour.Read);
+                int m = GetInt(data, ConstantValues.TAG_Time_Minute.Read);
+                int s = GetInt(data, ConstantValues.TAG_Time_Second.Read);
 
-                if (data != null)
+                // Validate & Format
+                if (y > 0 && M > 0 && d > 0)
                 {
-                    // Read Time Parts
-                    int y = GetInt(data, ConstantValues.TAG_Time_Year.Read);
-                    int M = GetInt(data, ConstantValues.TAG_Time_Month.Read);
-                    int d = GetInt(data, ConstantValues.TAG_Time_Day.Read);
-                    int h = GetInt(data, ConstantValues.TAG_Time_Hour.Read);
-                    int m = GetInt(data, ConstantValues.TAG_Time_Minute.Read);
-                    int s = GetInt(data, ConstantValues.TAG_Time_Second.Read);
+                    // Handle 2-digit vs 4-digit year if needed
+                    if (y < 100) y += 2000;
 
-                    // Validate & Format
-                    if (y > 0 && M > 0 && d > 0)
+                    try
                     {
-                        // Handle 2-digit vs 4-digit year if needed
-                        if (y < 100) y += 2000;
-
-                        try
-                        {
-                            var dt = new DateTime(y, M, d, h, m, s);
-                            PlcDate = dt.ToString("dd-MMM-yyyy");
-                            PlcTime = dt.ToString("HH:mm:ss");
-                        }
-                        catch(Exception ex)
-                        {
-                            // Invalid date from PLC (e.g. 0/0/0)
-                            PlcDate = "--/--/----";
-                            PlcTime = "--:--:--";
-                        }
+                        var dt = new DateTime(y, M, d, h, m, s);
+                        PlcDate = dt.ToString("dd-MMM-yyyy");
+                        PlcTime = dt.ToString("HH:mm:ss");
+                    }
+                    catch (Exception ex)
+                    {
+                        // Invalid date from PLC (e.g. 0/0/0)
+                        PlcDate = "--/--/----";
+                        PlcTime = "--:--:--";
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                // Silent fail for polling
-                // System.Diagnostics.Debug.WriteLine($"PLC Time Read Error: {ex.Message}");
-            }
         }
+
+
 
         private async Task SyncTime()
         {
@@ -167,10 +175,12 @@ namespace IPCSoftware.App.ViewModels
             });
         }
 
+
         public void Dispose()
         {
-            _clockTimer.Stop();
-            _plcPollTimer.Stop();
+            // Just dispose the pollers. They automatically stop and unsubscribe.
+            _clockPoller.Dispose();
+            _plcPoller.Dispose();
         }
     }
 }

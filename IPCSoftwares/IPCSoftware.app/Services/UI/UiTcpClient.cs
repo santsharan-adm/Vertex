@@ -164,7 +164,7 @@ namespace IPCSoftware.App.Services.UI
             }
         }
 
-        public void Send(string message)
+        public async Task Send(string message)
         {
             if (_stream == null || !IsConnected)
             {

@@ -27,12 +27,6 @@ namespace IPCSoftware.App.Views
             InitializeComponent();
         }
 
-        private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is DataGrid grid && grid.SelectedItem is PlcIoItem item)
-            {
-                (DataContext as PlcIoMonitorViewModel)?.RowDoubleClickCommand.Execute(item);
-            }
-        }
+   
     }
 }

@@ -5,6 +5,8 @@
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ServoCalibrationViewModel}"
+             
+     helpers:DisposeBehavior.AutoDispose="True"
              Background="#F3F3F3">
 
     <UserControl.Resources>
@@ -462,7 +464,7 @@ Background="#1E4FA8" Foreground="White" Cursor="Hand">
 
                             <!-- X JOG - -->
                             <Button Content="X JOG -" HorizontalAlignment="Right" 
-                                    Style="{StaticResource JogButtonStyle}" Background="Coral">
+                                    Style="{StaticResource JogButtonStyle}" Background="#007ACC">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
@@ -486,7 +488,7 @@ Background="#1E4FA8" Foreground="White" Cursor="Hand">
                             </Button>
 
                             <!-- X JOG + -->
-                            <Button Content="X JOG +" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="Coral">
+                            <Button Content="X JOG +" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="#007ACC">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
@@ -512,7 +514,7 @@ Background="#1E4FA8" Foreground="White" Cursor="Hand">
                             
                             
                             <!-- Y JOG - -->
-                            <Button Content="Y JOG -" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="LightGreen">
+                            <Button Content="Y JOG -" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="#007ACC">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
@@ -536,7 +538,7 @@ Background="#1E4FA8" Foreground="White" Cursor="Hand">
                             </Button>
 
                             <!-- Y JOG + -->
-                            <Button Content="Y JOG +" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="LightGreen">
+                            <Button Content="Y JOG +" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="#007ACC">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                                         <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
