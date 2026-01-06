@@ -325,12 +325,15 @@
                     <TextBlock Text="Move to Position" Grid.ColumnSpan="2" Style="{StaticResource SectionHeaderStyle}"/>
 
                     <Button Grid.Row="1" Margin="10,0,10,20" Content="X-Y ORIGIN" FontWeight="Bold" Width="270" FontSize="36" Height="120"
-                            Command="{Binding OriginCommand}">
+        Command="{Binding OriginCommand}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
-                                <Setter Property="Background" Value="#E8E8E8"/>
                             </Style>
                         </Button.Style>
+
+                        <Button.Background>
+                            <SolidColorBrush Color="{Binding IsOriginActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E8E8E8}}"/>
+                        </Button.Background>
                     </Button>
 
                     <Button Grid.Row="1" Grid.Column="1" Margin="10,0,10,20" Content="Position 0" FontWeight="Bold" Width="270" FontSize="36" Height="120">

@@ -11,6 +11,7 @@ using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -209,6 +210,7 @@ namespace IPCSoftware.App.ViewModels
                 // Assuming CoreClient can handle disjointed reads or you just read a large block.
                 // If tags are far apart, you might need two calls or a block read. 
                 var liveData = await _coreClient.GetIoValuesAsync(5);
+                //Debug.Assert((liveData != null) && liveData.Count() > 0);
                 if (liveData.Count < 1) return;
 
                 Application.Current.Dispatcher.Invoke(() =>
