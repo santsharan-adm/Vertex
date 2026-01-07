@@ -16,6 +16,7 @@ namespace IPCSoftware.App.Converters
             {
                 return algNo switch
                 {
+                    0 => "None",
                     1 => "Linear scale",
                     2 => "FP",
                     3 => "String",

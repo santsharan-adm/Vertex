@@ -273,6 +273,18 @@ namespace IPCSoftware.CoreService.Services.PLC
             Console.WriteLine($"PLCClient[{_device.DeviceName}] [INFO] Tags updated to {myNewTags.Count} tags.");
             _logger.LogInfo($"PLCClient[{_device.DeviceName}] [INFO] Tags updated to {myNewTags.Count} tags.", LogType.Diagnostics);
         }
+        private double ReverseLinearScale(double engValue, PLCTagConfigurationModel tag)
+        {
+            double plcRawMax = (tag.DataType == DataType_Int16) ? 65535.0 : 2147483647.0;
+            double plcRawMin = 0.0;
+            double engMin = tag.Offset;
+            double engMax = tag.Offset + tag.Span;
+            double rawRange = plcRawMax - plcRawMin;
+
+            if (Math.Abs(engMax - engMin) < double.Epsilon) return plcRawMin;
+
+            return plcRawMin + (engValue - engMin) * rawRange / (engMax - engMin);
+        }
 
 
         public async Task WriteAsync(PLCTagConfigurationModel cfg, object value)
@@ -282,6 +294,13 @@ namespace IPCSoftware.CoreService.Services.PLC
             try
             {
                 ushort start = (ushort)(cfg.ModbusAddress - _modbusAddress);
+                if (cfg.AlgNo == 1)
+                {
+                    if(double.TryParse(value.ToString(), out double val2))
+                    {
+                        value = ReverseLinearScale(val2, cfg);
+                    }
+                }
                 ushort[] registers = ConvertValueToRegisters(value, cfg);
 
                 if (cfg.DataType == 3) // Bit
@@ -339,7 +358,7 @@ namespace IPCSoftware.CoreService.Services.PLC
                         Array.Resize(ref bytes, reqBytes);
                     }
 
-                    if (_swapBytes)
+                    if (true)
                     {
                         for (int i = 0; i < bytes.Length; i += 2)
                         {

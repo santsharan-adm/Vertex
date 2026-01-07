@@ -38,6 +38,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<DashboardInitializer>();
             services.AddSingleton<OeeEngine>();
             services.AddSingleton<SystemMonitorService>();
+            services.AddSingleton<IAlarmHistoryService, AlarmHistoryService>();
             // --- Updated registration for IProductionDataLogger ---
             services.AddSingleton<IProductionDataLogger>(sp =>
             {

@@ -8,11 +8,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:AlarmViewModel}"
-     helpers:DisposeBehavior.AutoDispose="True"
+             helpers:DisposeBehavior.AutoDispose="True"
              Background="#F3F3F3">
 
     <UserControl.Resources>
-        <!-- SCALED UP HMI Styles (Consistent with Servo/Manual Views) -->
         <Style x:Key="HmiColumnHeaderStyle" TargetType="DataGridColumnHeader">
             <Setter Property="Height" Value="80"/>
             <Setter Property="FontSize" Value="28"/>
@@ -45,7 +44,6 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Modern Button Style -->
         <Style x:Key="HmiButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="70"/>
             <Setter Property="FontSize" Value="34"/>
@@ -70,110 +68,172 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style TargetType="TabItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border Name="Border" BorderThickness="0" CornerRadius="10,10,0,0" Padding="40,20" Margin="0,0,15,0">
+                            <ContentPresenter x:Name="ContentSite"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        ContentSource="Header"
+                                        RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#007BFF" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="#E0E0E0" />
+                                <Setter Property="Foreground" Value="#777" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
     </UserControl.Resources>
 
     <Grid Margin="40">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <!-- Header -->
-            <RowDefinition Height="*"/>
-            <!-- DataGrid -->
-        </Grid.RowDefinitions>
+        <TabControl Background="Transparent" BorderThickness="0">
 
-        <!-- 1. HEADER ROW -->
-        <Grid Grid.Row="0" Margin="0,0,0,30">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+            <TabItem Header=" ACTIVE ALARMS ">
+                <Grid Margin="0,20,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-            <TextBlock Text="Active Alarms" FontSize="48" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center"/>
+                    <Grid Grid.Row="0" Margin="0,0,0,30">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Active Alarms" FontSize="48" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center"/>
 
-            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <!-- Keep commented Global Acknowledge -->
-                <!--<Button Content="Global Acknowledge" 
-                        Command="{Binding GlobalAcknowledgeCommand}" 
-                        Width="200" Height="60" Margin="10,0"
-                        Background="Green" Style="{StaticResource HmiButtonStyle}"/>-->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="RESET SYSTEM" 
+                                    Command="{Binding GlobalResetCommand}" 
+                                    Width="350" Height="100" 
+                                    Background="#DC3545" 
+                                    Style="{StaticResource HmiButtonStyle}"/>
+                        </StackPanel>
+                    </Grid>
 
-                <Button Content="RESET SYSTEM" 
-                        Command="{Binding GlobalResetCommand}" 
-                        Width="350" Height="100" 
-                        Background="#DC3545" 
-                        Style="{StaticResource HmiButtonStyle}"/>
-            </StackPanel>
-        </Grid>
+                    <Border Grid.Row="1" Background="White" CornerRadius="15" BorderBrush="#CCC" BorderThickness="1">
+                        <DataGrid ItemsSource="{Binding ActiveAlarms}" 
+                                  AutoGenerateColumns="False" 
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False" 
+                                  RowHeight="80"
+                                  ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}"
+                                  CellStyle="{StaticResource HmiCellStyle}"
+                                  GridLinesVisibility="Horizontal"
+                                  HorizontalGridLinesBrush="#EEE"
+                                  VerticalGridLinesBrush="Transparent"
+                                  BorderThickness="0"
+                                  Background="White">
 
-        <!-- 2. DATA GRID -->
-        <Border Grid.Row="1" Background="White" CornerRadius="15" BorderBrush="#CCC" BorderThickness="1">
-            <DataGrid ItemsSource="{Binding ActiveAlarms}" 
-                      AutoGenerateColumns="False" 
-                      IsReadOnly="True"
-                      CanUserAddRows="False"
-                      RowHeight="80"
-                      ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}"
-                      CellStyle="{StaticResource HmiCellStyle}"
-                      GridLinesVisibility="Horizontal"
-                      HorizontalGridLinesBrush="#EEE"
-                      VerticalGridLinesBrush="Transparent"
-                      BorderThickness="0"
-                      Background="White"
-                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Alarm No" Binding="{Binding AlarmNo}" Width="250" FontWeight="SemiBold"/>
 
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Alarm No" Binding="{Binding AlarmNo}" Width="250" FontWeight="SemiBold"/>
+                                <DataGridTextColumn Header="Severity" Binding="{Binding Severity}" Width="180">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Padding" Value="10,5"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            <Setter Property="TextAlignment" Value="Center"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Severity}" Value="High">
+                                                    <Setter Property="Background" Value="#DC3545"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Severity}" Value="Medium">
+                                                    <Setter Property="Background" Value="#FFC107"/>
+                                                    <Setter Property="Foreground" Value="Black"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
 
-                    <DataGridTextColumn Header="Severity" Binding="{Binding Severity}" Width="180">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Padding" Value="10,5"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                                <Setter Property="TextAlignment" Value="Center"/>
-                                <!-- Rounded background for badge look -->
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Severity}" Value="High">
-                                        <Setter Property="Background" Value="#DC3545"/>
-                                        <!-- Red -->
-                                        <Setter Property="Foreground" Value="White"/>
-                                        <Setter Property="FontWeight" Value="Bold"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Severity}" Value="Medium">
-                                        <Setter Property="Background" Value="#FFC107"/>
-                                        <!-- Orange/Amber -->
-                                        <Setter Property="Foreground" Value="Black"/>
-                                        <Setter Property="FontWeight" Value="Bold"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
+                                <DataGridTextColumn Header="Message" Binding="{Binding AlarmText}" Width="*"/>
+                                <DataGridTextColumn Header="Raised At" Binding="{Binding AlarmTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="300" Foreground="#555"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
+            </TabItem>
 
-                    <DataGridTextColumn Header="Message" Binding="{Binding AlarmText}" Width="*"/>
+            <TabItem Header=" ALARM HISTORY ">
+                <Grid Margin="0,20,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                    <DataGridTextColumn Header="Raised At" Binding="{Binding AlarmTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="300" Foreground="#555"/>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
+                        <TextBlock Text="Select Date: " FontSize="32" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#333"/>
+                        <DatePicker SelectedDate="{Binding SelectedHistoryDate}" Width="300" Height="60" FontSize="26" Margin="20,0,0,0" VerticalContentAlignment="Center"/>
+                    </StackPanel>
 
-                    <!--<DataGridTextColumn Header="Ack At" Binding="{Binding AlarmAckTime, StringFormat='HH:mm:ss'}" Width="150"/>-->
+                    <Border Grid.Row="1" Background="White" CornerRadius="15" BorderBrush="#CCC" BorderThickness="1">
+                        <DataGrid ItemsSource="{Binding HistoryAlarms}" 
+                                  AutoGenerateColumns="False" 
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False" 
+                                  RowHeight="80"
+                                  ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}"
+                                  CellStyle="{StaticResource HmiCellStyle}"
+                                  GridLinesVisibility="Horizontal"
+                                  HorizontalGridLinesBrush="#EEE"
+                                  VerticalGridLinesBrush="Transparent"
+                                  BorderThickness="0">
 
-                    <DataGridTextColumn Header="Reset At" Binding="{Binding AlarmResetTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="300" Foreground="#555"/>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Alarm No" Binding="{Binding AlarmNo}" Width="200" FontWeight="SemiBold"/>
 
-                    <!--<DataGridTextColumn Header="Ack By" Binding="{Binding AcknowledgedByUser}" Width="200"/>-->
+                                <DataGridTextColumn Header="Message" Binding="{Binding AlarmText}" Width="*"/>
 
-                    <!-- Keep commented Action Column -->
-                    <!--<DataGridTemplateColumn Header="Action" Width="200">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Content="Acknowledge"
-                                        Command="{Binding DataContext.AcknowledgeCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                                        CommandParameter="{Binding}"
-                                        Margin="5"
-                                        Style="{StaticResource HmiButtonStyle}"
-                                        Height="50" FontSize="18" Background="Green"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>-->
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
+                                <DataGridTextColumn Header="Severity" Binding="{Binding Severity}" Width="150">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Padding" Value="10,5"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            <Setter Property="TextAlignment" Value="Center"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Severity}" Value="High">
+                                                    <Setter Property="Background" Value="#DC3545"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Severity}" Value="Medium">
+                                                    <Setter Property="Background" Value="#FFC107"/>
+                                                    <Setter Property="Foreground" Value="Black"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Raised At" Binding="{Binding RaisedTime, StringFormat='HH:mm:ss'}" Width="200" Foreground="#555"/>
+                                <DataGridTextColumn Header="Reset At" Binding="{Binding ResetTime, StringFormat='HH:mm:ss'}" Width="200" Foreground="#555"/>
+                                <DataGridTextColumn Header="Reset By" Binding="{Binding ResetBy}" Width="300" FontWeight="Bold"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>

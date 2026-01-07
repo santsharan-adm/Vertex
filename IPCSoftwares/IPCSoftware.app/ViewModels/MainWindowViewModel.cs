@@ -156,6 +156,7 @@ public class MainWindowViewModel : BaseViewModel
         {
             OnPropertyChanged(nameof(IsRibbonVisible));
             OnPropertyChanged(nameof(CurrentUserName));
+            OnPropertyChanged(nameof(CurrentUserRole));
             OnPropertyChanged(nameof(IsAdmin));
         };
     }
@@ -294,6 +295,7 @@ public class MainWindowViewModel : BaseViewModel
     // ==============================
     public bool IsRibbonVisible => UserSession.IsLoggedIn;
     public string CurrentUserName => UserSession.Username ?? "Guest";
+    public string CurrentUserRole=> UserSession.Role ?? "Guest";
     public bool IsAdmin => UserSession.Role == "Admin";
 
     // ==============================

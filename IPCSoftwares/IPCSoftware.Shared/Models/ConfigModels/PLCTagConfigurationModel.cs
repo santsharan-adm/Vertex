@@ -19,8 +19,8 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public int DataType { get; set; }
         public int BitNo { get; set; }
 
-        public int Offset { get; set; }
-        public int Span { get; set; }
+        public double Offset { get; set; }
+        public double Span { get; set; }
         public string Description { get; set; }
         public string Remark { get; set; }
 
@@ -35,7 +35,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
             BitNo = 0;
 
             Offset = 0;
-            Span = 100;
+            Span = 0;
             CanWrite = false;
             IOType = "None"; // Default
            // DMAddress = string.Empty;

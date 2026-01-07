@@ -128,9 +128,6 @@
     <Content Include="Data\PLCTags.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\PLCTagsOld.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Data\Users.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

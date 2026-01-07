@@ -156,7 +156,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
                     case DataType_String:
                         byte[] bytesToDecode = byteArray;
                         // --- CONFIGURABLE BYTE SWAP (String) ---
-                        if (_swapBytes)
+                        if (true)
                         {
                             bytesToDecode = SwapEveryTwoBytes(byteArray);
                         }
@@ -208,7 +208,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
                 if (tag.AlgNo == AlgoNo_LinearScale)
                 {
                     // Rule: Linear Scale only applies to Int16 (1) and Word32 (2)
-                    if (tag.DataType == DataType_Int16 || tag.DataType == DataType_Word32)
+                    if (tag.DataType == DataType_Int16 || tag.DataType == DataType_UInt32 || tag.DataType == DataType_UInt16 || tag.DataType == DataType_Word32)
                     {
                         double rawNumericValue = Convert.ToDouble(rawTypedValue);
                         return LinearScale(rawNumericValue, tag);
@@ -232,11 +232,13 @@ namespace IPCSoftware.CoreService.Services.Algorithm
             double plcRawMin = 0.0;
             double engMin = tag.Offset;
             double engMax = tag.Offset + tag.Span;
+            //double engMax = tag.Span;
             double rawRange = plcRawMax - plcRawMin;
 
             if (Math.Abs(rawRange) < double.Epsilon) return engMin;
 
             return (rawValue - plcRawMin) * (engMax - engMin) / rawRange + engMin;
+           // return (rawValue - plcRawMin) * (engMax)  + engMin;
         }
 
         byte[] SwapEveryTwoBytes(byte[] src)
