@@ -3,104 +3,104 @@
     "PositionId": 0,
     "Name": "Position 0",
     "SequenceIndex": 0,
-    "X": 154,
-    "Y": 154,
+    "X": 333.0000001550652,
+    "Y": 1.5400000007171184,
     "Description": null
   },
   {
     "PositionId": 1,
     "Name": "Position 1",
     "SequenceIndex": 10,
-    "X": 122,
-    "Y": 100,
+    "X": 123.00000005727634,
+    "Y": 1.5400000007171184,
     "Description": null
   },
   {
     "PositionId": 2,
     "Name": "Position 2",
     "SequenceIndex": 11,
-    "X": 102,
-    "Y": 102,
+    "X": 1.5400000007171184,
+    "Y": 1.5400000007171184,
     "Description": null
   },
   {
     "PositionId": 3,
     "Name": "Position 3",
     "SequenceIndex": 12,
-    "X": 102,
-    "Y": 102,
+    "X": 1.5400000007171184,
+    "Y": 1.5400000007171184,
     "Description": null
   },
   {
     "PositionId": 4,
     "Name": "Position 4",
     "SequenceIndex": 9,
-    "X": 122,
-    "Y": 123,
+    "X": 1.5400000007171184,
+    "Y": 1.5400000007171184,
     "Description": null
   },
   {
     "PositionId": 5,
     "Name": "Position 5",
     "SequenceIndex": 1,
-    "X": 135,
-    "Y": 150,
+    "X": 1.5400000007171184,
+    "Y": 1.5400000007171184,
     "Description": null
   },
   {
     "PositionId": 6,
     "Name": "Position 6",
     "SequenceIndex": 7,
-    "X": 122,
-    "Y": 100,
+    "X": 1.5400000007171184,
+    "Y": 1.5400000007171184,
     "Description": null
   },
   {
     "PositionId": 7,
     "Name": "Position 7",
     "SequenceIndex": 4,
-    "X": 333,
-    "Y": 333,
+    "X": 1.5400000007171184,
+    "Y": 1.5400000007171184,
     "Description": null
   },
   {
     "PositionId": 8,
     "Name": "Position 8",
     "SequenceIndex": 5,
-    "X": 23,
-    "Y": 234,
+    "X": 1.5400000007171184,
+    "Y": 1.5400000007171184,
     "Description": null
   },
   {
     "PositionId": 9,
     "Name": "Position 9",
     "SequenceIndex": 6,
-    "X": 0,
-    "Y": 0,
+    "X": 1.5400000007171184,
+    "Y": 1.5400000007171184,
     "Description": null
   },
   {
     "PositionId": 10,
     "Name": "Position 10",
     "SequenceIndex": 3,
-    "X": 100,
-    "Y": 234,
+    "X": 1.5400000007171184,
+    "Y": 1.5400000007171184,
     "Description": null
   },
   {
     "PositionId": 11,
     "Name": "Position 11",
     "SequenceIndex": 2,
-    "X": 0,
-    "Y": 0,
+    "X": 1.5400000007171184,
+    "Y": 1.5400000007171184,
     "Description": null
   },
   {
     "PositionId": 12,
     "Name": "Position 12",
     "SequenceIndex": 8,
-    "X": 0,
-    "Y": 0,
+    "X": 1.5400000007171184,
+    "Y": 1.5400000007171184,
     "Description": null
   }
 ]

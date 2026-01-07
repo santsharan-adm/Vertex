@@ -177,7 +177,7 @@ namespace IPCSoftware.App.ViewModels
                     // Start a background timer to unlock after 3 seconds
                     _ = Task.Run(async () =>
                     {
-                        await Task.Delay(3000);
+                        await Task.Delay(2000);
                         _isPositionLocked = false;
                         // Debug.WriteLine("Position Buttons Unlocked");
                     });

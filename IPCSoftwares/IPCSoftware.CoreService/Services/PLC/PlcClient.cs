@@ -16,6 +16,7 @@ namespace IPCSoftware.CoreService.Services.PLC
     public class PlcClient
     {
         private readonly bool _swapBytes; // Configurable Flag
+        private readonly bool _swapStringBytes; // Configurable Flag
         private readonly int _modbusAddress; // Configurable 
         private readonly IAppLogger _logger;
 
@@ -46,6 +47,7 @@ namespace IPCSoftware.CoreService.Services.PLC
             _device = device;
             _tags = tags;
             _swapBytes = config.SwapBytes;
+            _swapStringBytes = config.SwapStringBytes;
             _modbusAddress = config.DefaultModBusAddress;
         }
 
@@ -358,7 +360,7 @@ namespace IPCSoftware.CoreService.Services.PLC
                         Array.Resize(ref bytes, reqBytes);
                     }
 
-                    if (true)
+                    if (_swapStringBytes)
                     {
                         for (int i = 0; i < bytes.Length; i += 2)
                         {

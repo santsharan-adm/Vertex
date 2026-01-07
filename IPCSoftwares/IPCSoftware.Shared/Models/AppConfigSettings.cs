@@ -25,6 +25,7 @@ namespace IPCSoftware.Shared.Models
         public string UserFileName { get; set; }
 
         public bool SwapBytes { get; set; } = true;
+        public bool SwapStringBytes { get; set; } = true;
         public int DefaultModBusAddress { get; set; }
 
         public TagMappingSettings TagMapping { get; set; } = new TagMappingSettings();

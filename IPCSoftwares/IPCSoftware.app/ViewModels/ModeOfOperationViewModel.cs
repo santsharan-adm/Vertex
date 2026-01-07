@@ -119,12 +119,12 @@ namespace IPCSoftware.App.ViewModels
         {
             var list = new List<ModeButtonItem>
             {
-                new ModeButtonItem { Mode = OperationMode.Auto,      Name = "Auto Run",     BaseColor = "#008B8B", ActiveColor = "#00FFFF" },
-                new ModeButtonItem { Mode = OperationMode.DryRun,    Name = "Dry Run",      BaseColor = "#8B008B", ActiveColor = "#FF00FF" },
+                new ModeButtonItem { Mode = OperationMode.Auto,      Name = "Auto Run",     BaseColor = "#00BCFE", ActiveColor = "#00BCFE" },
+                new ModeButtonItem { Mode = OperationMode.DryRun,    Name = "Dry Run",      BaseColor = "#B200A1", ActiveColor = "#B200A1" },
                 // Manual is usually always enabled unless you have a specific tag for it
-                new ModeButtonItem { Mode = OperationMode.Manual,    Name = "Manual",       BaseColor = "#607D8B", ActiveColor = "#4CAF50", IsEnabled = true },
-                new ModeButtonItem { Mode = OperationMode.CycleStop, Name = "Cycle Stop",   BaseColor = "#5D4037", ActiveColor = "#D7CCC8" },
-                new ModeButtonItem { Mode = OperationMode.MassRTO,   Name = "Machine Home", BaseColor = "#795548", ActiveColor = "#FF5722" }
+                new ModeButtonItem { Mode = OperationMode.Manual,    Name = "Manual",       BaseColor = "#607D8B", ActiveColor = "#607D8B", IsEnabled = true },
+                new ModeButtonItem { Mode = OperationMode.CycleStop, Name = "Cycle Stop",   BaseColor = "#FE8848", ActiveColor = "#FE8848" },
+                new ModeButtonItem { Mode = OperationMode.MassRTO,   Name = "Machine Home", BaseColor = "#01AE4C", ActiveColor = "#01AE4C" }
             };
             foreach (var item in list) ModeButtons.Add(item);
         }

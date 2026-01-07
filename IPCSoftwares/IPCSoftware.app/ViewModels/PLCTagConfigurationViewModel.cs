@@ -18,6 +18,7 @@ namespace IPCSoftware.App.ViewModels
     public class PLCTagConfigurationViewModel : BaseViewModel
     {
         private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _deviceConfigService;
         private PLCTagConfigurationModel _currentTag;
         private bool _isEditMode;
         private string _title;
@@ -51,6 +52,8 @@ namespace IPCSoftware.App.ViewModels
         }
 
         private int _plcNo;
+
+
         public int PLCNo
         {
             get => _plcNo;
@@ -174,6 +177,8 @@ namespace IPCSoftware.App.ViewModels
 
         // UPDATED: Collection of AlgorithmType objects
         public ObservableCollection<AlgorithmType> AlgorithmTypes { get; }
+        public ObservableCollection<DataTypeOption> DataTypes { get; }
+        public ObservableCollection<DeviceInterfaceModel> AvailablePLCs { get; }
 
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
@@ -182,11 +187,13 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler CancelRequested;
 
         public PLCTagConfigurationViewModel(
-            IPLCTagConfigurationService tagService, 
+            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService deviceConfigService,
             IDialogService dialog,
             IAppLogger logger) : base(logger)
         {
             _tagService = tagService;
+            _deviceConfigService = deviceConfigService;
             _dialog = dialog;
 
 
@@ -197,6 +204,17 @@ namespace IPCSoftware.App.ViewModels
                 "None"
             };
 
+            DataTypes = new ObservableCollection<DataTypeOption>
+            {
+                new DataTypeOption { Id = 1, Name = "Int16" },
+                new DataTypeOption { Id = 2, Name = "Word" },
+                new DataTypeOption { Id = 3, Name = "Bit" },
+                new DataTypeOption { Id = 4, Name = "Float" },
+                new DataTypeOption { Id = 5, Name = "String" },
+                new DataTypeOption { Id = 6, Name = "UInt16" },
+                new DataTypeOption { Id = 7, Name = "UInt32" }
+            };
+
             // Initialize algorithm types with Value and DisplayName
             AlgorithmTypes = new ObservableCollection<AlgorithmType>
             {
@@ -205,6 +223,10 @@ namespace IPCSoftware.App.ViewModels
                 new AlgorithmType(2, "FP"),
                 new AlgorithmType(3, "String")
             };
+            AvailablePLCs = new ObservableCollection<DeviceInterfaceModel>();
+
+            // Fire and forget load (or call from a parent OnNavigatedTo)
+            Task.Run(LoadPlcDevicesAsync);
 
             SaveCommand = new RelayCommand(async () => await OnSaveAsync(), CanSave);
             CancelCommand = new RelayCommand(OnCancel);
@@ -218,6 +240,28 @@ namespace IPCSoftware.App.ViewModels
             IsEditMode = false;
             _currentTag = new PLCTagConfigurationModel();
             LoadFromModel(_currentTag);
+        }
+
+        private async Task LoadPlcDevicesAsync()
+        {
+            try
+            {
+                var plcs = await _deviceConfigService.GetPlcDevicesAsync();
+
+                // Marshal to UI Thread to update Collection
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    AvailablePLCs.Clear();
+                    foreach (var plc in plcs)
+                    {
+                        AvailablePLCs.Add(plc);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to load PLCs: {ex.Message}", LogType.Diagnostics);
+            }
         }
 
         public void LoadForEdit(PLCTagConfigurationModel tag)
@@ -354,6 +398,14 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
+   
+
 
     }
+    public class DataTypeOption
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+    //
 }
