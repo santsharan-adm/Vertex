@@ -1,7 +1,6 @@
 ﻿using IPCSoftware.App;
 using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
-using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
@@ -9,12 +8,10 @@ using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 
 namespace IPCSoftware.App.ViewModels
@@ -22,15 +19,11 @@ namespace IPCSoftware.App.ViewModels
     public class AlarmViewModel : BaseViewModel
     {
         private readonly CoreClient _coreClient;
-        private readonly IAlarmHistoryService _historyService; // 1. Add Service Field
 
         // Collection for the DataGrid
         public ObservableCollection<AlarmInstanceModel> ActiveAlarms { get; } =
             new ObservableCollection<AlarmInstanceModel>();
 
-
-        // 2. Add History Collection
-        public ObservableCollection<AlarmHistoryModel> HistoryAlarms { get; } = new ObservableCollection<AlarmHistoryModel>();
         // Commands
         public RelayCommand<AlarmInstanceModel> AcknowledgeCommand { get; }
         public ICommand GlobalAcknowledgeCommand { get; }
@@ -43,18 +36,10 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _currentBannerAlarm, value);
         }
 
-        // 3. Add Date Selection for History Tab
-        private DateTime _selectedHistoryDate = DateTime.Today;
-        public DateTime SelectedHistoryDate
-        {
-            get => _selectedHistoryDate;
-            set { SetProperty(ref _selectedHistoryDate, value); LoadHistory(); }
-        }
-
-        public AlarmViewModel(CoreClient coreClient, IAlarmHistoryService historyService, IAppLogger logger) : base(logger)
+        public AlarmViewModel(CoreClient coreClient, IAppLogger logger) : base(logger)
         {
             _coreClient = coreClient;
-            _historyService = historyService; // Assign
+
             // Initialize Global Commands (Tags 38 and 39)
             GlobalAcknowledgeCommand = new RelayCommand(async () => await ExecuteGlobalWrite(ConstantValues.TAG_Global_Ack, "Global Acknowledge"));
             GlobalResetCommand = new RelayCommand(async () => await ExecuteGlobalWrite(ConstantValues.TAG_Global_Reset, "Global Reset"));
@@ -66,23 +51,8 @@ namespace IPCSoftware.App.ViewModels
 
             _coreClient.OnAlarmMessageReceived += HandleIncomingAlarmMessage;
             Task.Run(LoadInitialActiveAlarms);
-            LoadHistory();
-            ICollectionView collectionView = CollectionViewSource.GetDefaultView(ActiveAlarms);
-           // collectionView.Filter+= AlarmFilter;    
         }
-        bool bActive;
-      /*  bool AlarmFilter(object item)
-        {
-            if (bActive)
-            {
-                if (item is AlarmInstanceModel alarm)
-                {
-                    AlarmInstanceModel alarm = (AlarmInstanceModel)item;
-                    return alarm.AlarmResetTime is null;
-                }
-            }
-            else return true;
-        }*/
+
         // Update these methods in AlarmViewModel.cs
 
         private async Task ExecuteGlobalWrite(int tagId, string actionName)
@@ -93,8 +63,6 @@ namespace IPCSoftware.App.ViewModels
                 await _coreClient.WriteTagAsync(tagId, true);
                 _logger.LogInfo($"{actionName} (Tag {tagId}) triggered successfully.", LogType.Audit);
                 var now = DateTime.Now;
-                string currentUser = Environment.UserName;
-
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     foreach (var alarm in ActiveAlarms)
@@ -104,21 +72,6 @@ namespace IPCSoftware.App.ViewModels
                         {
                             // Update the reset timestamp in the model
                             alarm.AlarmResetTime = now;
-                            Task.Run(() => _historyService.LogHistoryAsync(alarm, currentUser));
-
-                            // Optional: If viewing today's history, add to UI immediately
-                            if (SelectedHistoryDate.Date == DateTime.Today)
-                            {
-                                HistoryAlarms.Insert(0, new AlarmHistoryModel
-                                {
-                                    AlarmNo = alarm.AlarmNo,
-                                    AlarmText = alarm.AlarmText,
-                                    Severity = alarm.Severity,
-                                    RaisedTime = alarm.AlarmTime,
-                                    ResetTime = now,
-                                    ResetBy = currentUser
-                                });
-                            }
                         }
                     }
                 });
@@ -129,8 +82,6 @@ namespace IPCSoftware.App.ViewModels
                     _logger.LogInfo($"{actionName} (Tag {tagId}) pulsed off.", LogType.Audit);
                 }
             }
-
-
 
             //    if (success)
             //    {
@@ -172,14 +123,6 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        public async void LoadHistory()
-        {
-            var data = await _historyService.GetHistoryAsync(SelectedHistoryDate);
-            Application.Current.Dispatcher.Invoke(() => {
-                HistoryAlarms.Clear();
-                foreach (var item in data) HistoryAlarms.Add(item);
-            });
-        }
         private bool CanExecuteAcknowledge(AlarmInstanceModel alarm)
         {
             return alarm != null && alarm.AlarmAckTime == null;
@@ -245,7 +188,7 @@ namespace IPCSoftware.App.ViewModels
                             {
                                 // Correct property name from AlarmInstanceModel.cs
                                 existingAlarm.AlarmResetTime = DateTime.Now;
-                                //ActiveAlarms.Remove(existingAlarm);
+                                ActiveAlarms.Remove(existingAlarm);
                             }
                             break;
                     }
