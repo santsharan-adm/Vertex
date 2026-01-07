@@ -7,7 +7,7 @@
              xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
-                  Unloaded="UserControl_Unloaded"
+     helpers:DisposeBehavior.AutoDispose="True"
              helpers:ThemeManager.ThemeSource="{Binding CurrentThemePath}"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:OEEDashboardViewModel}"
              Background="{DynamicResource PageBackgroundBrush}">

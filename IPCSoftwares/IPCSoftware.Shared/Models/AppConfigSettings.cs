@@ -39,6 +39,10 @@ namespace IPCSoftware.Shared.Models
         public string BaseOutputDirBackup { get; set; }
         public string MetadataStyle { get; set; }
         public string CurrentCycleStateFileName { get; set; }
+       // [JsonProperty("AppleMetaDataParams")]
+        public ClientMetaData ClientMetaDataParams { get; set; }
+        //[JsonProperty("VendorMetaDataParams")]
+        public VendorMetaData VendorMetaDataParams { get; set; }
     }
 
 }

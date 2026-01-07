@@ -38,6 +38,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<DashboardInitializer>();
             services.AddSingleton<OeeEngine>();
             services.AddSingleton<SystemMonitorService>();
+            services.AddSingleton<IAlarmHistoryService, AlarmHistoryService>();
             // --- Updated registration for IProductionDataLogger ---
             services.AddSingleton<IProductionDataLogger>(sp =>
             {
@@ -181,15 +182,15 @@ namespace IPCSoftware.App.DI
             services.AddTransient<UserListView>();
             services.AddTransient<UserConfigurationView>();
 
-            services.AddSingleton<ModeOfOperation>();
+            services.AddTransient<ModeOfOperation>();
           //  services.AddTransient<ManualOperation>();
             services.AddTransient<ManualOperationView>();
             services.AddTransient<PLCIOMonitor>();
 
-            services.AddSingleton<ModeOfOperationViewModel>();
+            services.AddTransient<ModeOfOperationViewModel>();
             //services.AddTransient<ManualOperationViewModel>();
             services.AddTransient<ManualOpViewModel>();
-            services.AddTransient<PlcIoMonitorViewModel>();
+          //  services.AddTransient<PlcIoMonitorViewModel>();
             // PLC Tag Configuration Views 
             services.AddTransient<PLCTagListView>();
             services.AddTransient<PLCTagConfigurationView>();

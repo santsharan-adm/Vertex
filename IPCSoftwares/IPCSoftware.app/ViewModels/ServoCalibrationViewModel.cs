@@ -1,4 +1,5 @@
-﻿using IPCSoftware.App.Services;
+﻿using IPCSoftware.App.Helpers;
+using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
@@ -19,7 +20,8 @@ namespace IPCSoftware.App.ViewModels
     public class ServoCalibrationViewModel : BaseViewModel, IDisposable
     {
         private readonly CoreClient _coreClient;
-        private readonly DispatcherTimer _liveDataTimer;
+       // private readonly DispatcherTimer _liveDataTimer;
+        private readonly SafePoller _liveDataTimer;
         private readonly IServoCalibrationService _servoService; // Injected Service
         private readonly IDialogService _dialog; // Injected Service
 
@@ -100,11 +102,11 @@ namespace IPCSoftware.App.ViewModels
             // Load positions from JSON via Service
             _ = InitializePositionsAsync();
             //InitializePositions();
-                
-            _liveDataTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
-            _liveDataTimer.Tick += OnLiveDataTick;
+            _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(100),
+                                    OnLiveDataTick  // Pass the method directly
+                                  );
             _liveDataTimer.Start();
-           // UpdateCoord();
+
         }
 
 
@@ -234,9 +236,9 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        private async void OnLiveDataTick(object? sender, EventArgs e)
+        private async Task OnLiveDataTick()
         {
-            _liveDataTimer.Stop();
+         
             try
             {
                 // Request IO Packet (ID 5 assumed to cover all tags)
@@ -299,11 +301,7 @@ namespace IPCSoftware.App.ViewModels
             {
                 System.Diagnostics.Debug.WriteLine($"Live Data Error: {ex.Message}");
             }
-            finally
-            {
-                // CRITICAL FIX 1: Restart timer only after processing is done
-                _liveDataTimer.Start();
-            }
+          
         }
         
 
@@ -330,21 +328,46 @@ namespace IPCSoftware.App.ViewModels
 
             try
             {
-                int xTag = START_TAG_POS_X + position.PositionId;
+                bool confirm = _dialog.ShowYesNo("Are you sure you want to update?", "Confirmation");
+
+                if (!confirm)
+                {
+                    return;
+                }
+
+                    int xTag = START_TAG_POS_X + position.PositionId;
                 int yTag = START_TAG_POS_Y + position.PositionId;
 
                 _logger.LogInfo($"Teaching Pos {position.PositionId}: X={LiveX}, Y={LiveY}", LogType.Audit);
 
-                // Write X and Y directly to PLC registers
-                await _coreClient.WriteTagAsync(xTag, LiveX);
-                await _coreClient.WriteTagAsync(yTag, LiveY);
+                // 1. Capture individual results
+                bool successX = await _coreClient.WriteTagAsync(xTag, LiveX);
+                bool successY = await _coreClient.WriteTagAsync(yTag, LiveY);
 
-               // var newPos = ClonePosition(position);
-               // newPos.X = LiveX;
-               // newPos.Y = LiveY;
-               // ReplacePositionInList(position, newPos);
+                // 2. Check if BOTH succeeded
+                if (successX && successY)
+                {
+                    _dialog.ShowMessage("Values updated successfully.");
+                }
+                else
+                {
+                    // Handle partial or total failure
+                    if (!successX && !successY)
+                    {
+                        _dialog.ShowWarning("Failed to update X and Y. Please check logs.");
+                    }
+                    else
+                    {
+                        _dialog.ShowWarning($"Partial update: X={(successX ? "OK" : "Fail")}, Y={(successY ? "OK" : "Fail")}. Please check logs");
+                    }
+                }
 
-               // Optimistic UI Update
+                // var newPos = ClonePosition(position);
+                // newPos.X = LiveX;
+                // newPos.Y = LiveY;
+                // ReplacePositionInList(position, newPos);
+
+                // Optimistic UI Update
                 position.X = LiveX;
                 position.Y = LiveY;
                 int index = Positions.IndexOf(position);
@@ -352,7 +375,6 @@ namespace IPCSoftware.App.ViewModels
                 {
                     Positions[index] = position;
                 }
-                _dialog.ShowMessage("Values updated sucessfully.");
                 _initialPlcLoadDone = false;
                // UpdateCoord();
             }
@@ -367,6 +389,12 @@ namespace IPCSoftware.App.ViewModels
             if (position == null) return;
             try
             {
+                bool confirm = _dialog.ShowYesNo("Are you sure you want to update?", "Confirmation");
+
+                if (!confirm)
+                {
+                    return;
+                }
                 // The 'position' object already has the new values because 
                 // the TextBox binding (UpdateSourceTrigger=LostFocus) updated it.
 
@@ -375,9 +403,30 @@ namespace IPCSoftware.App.ViewModels
 
                 _logger.LogInfo($"Manually Writing Pos {position.PositionId}: X={position.X:F2}, Y={position.Y:F2}", LogType.Audit);
 
-                await _coreClient.WriteTagAsync(xTag, position.X);
-                await _coreClient.WriteTagAsync(yTag, position.Y);
-                _dialog.ShowMessage("Values updated sucessfully.");
+             
+
+                // 1. Capture individual results
+                bool successX = await _coreClient.WriteTagAsync(xTag, position.X);
+                bool successY = await _coreClient.WriteTagAsync(yTag, position.Y);
+
+                // 2. Check if BOTH succeeded
+                if (successX && successY)
+                {
+                    _dialog.ShowMessage("Values updated successfully.");
+                }
+                else
+                {
+                    // Handle partial or total failure
+                    if (!successX && !successY)
+                    {
+                        _dialog.ShowWarning("Failed to update X and Y. Please check logs.");
+                    }
+                    else
+                    {
+                        _dialog.ShowWarning($"Partial update: X={(successX ? "OK" : "Fail")}, Y={(successY ? "OK" : "Fail")}. Please check logs");
+                    }
+                }
+
                 _initialPlcLoadDone = false;
               //  UpdateCoord();
                 // Optional: Flash success or log
@@ -393,9 +442,21 @@ namespace IPCSoftware.App.ViewModels
             if (param == null) return;
             try
             {
+                bool confirm = _dialog.ShowYesNo("Are you sure you want to update?", "Confirm");
+
+                if (!confirm)
+                {
+                    return;
+                }
                 _logger.LogInfo($"Writing {param.Name} -> {param.NewValue}", LogType.Audit);
-                await _coreClient.WriteTagAsync(param.WriteTagId, param.NewValue);
-                _dialog.ShowMessage("Value updated sucessfully.");
+                if (await _coreClient.WriteTagAsync(param.WriteTagId, param.NewValue))
+                {
+                    _dialog.ShowMessage("Value updated sucessfully.");
+                }
+                else
+                {
+                    _dialog.ShowWarning("Failed to update value. Please check logs.");
+                }
 
 
             }
@@ -441,9 +502,19 @@ namespace IPCSoftware.App.ViewModels
             catch (Exception ex) { _logger.LogError($"Confirm Error ({description}): {ex.Message}", LogType.Diagnostics); }
         }
 
+      
+
+ 
         public void Dispose()
         {
-            _liveDataTimer.Stop();
+            try
+            {
+                _liveDataTimer.Dispose();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
     }
 

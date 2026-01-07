@@ -6,6 +6,7 @@
              xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ManualOpViewModel}"
+     helpers:DisposeBehavior.AutoDispose="True"
              Background="#F0F2F5">
 
     <UserControl.Resources>
@@ -77,6 +78,7 @@
                 <TextBlock Text="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"/>
             </Button>
         </DataTemplate>
+        <Geometry x:Key="Icon_ArrowBack">M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z</Geometry>
     </UserControl.Resources>
 
     <Grid Margin="30">
@@ -86,7 +88,55 @@
         </Grid.RowDefinitions>
 
         <TextBlock Text="Manual Operation Panel" FontSize="46" FontWeight="Bold" Foreground="#444" Margin="10,0,0,30"/>
+        <Button HorizontalAlignment="Right"
+            Command="{Binding NavigateBackCommand}"
+            Cursor="Hand" Width=" 150"
+            Background="Transparent" 
+            BorderThickness="2" 
+                Margin="0 10 50 10"
+            BorderBrush="#CCC"
+            Padding="15,5">
 
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border" 
+                        Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}" 
+                        CornerRadius="8">
+
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Path x:Name="icon" 
+                              Data="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"
+                              Fill="#666" 
+                              Height="24" Width="24" 
+                              Stretch="Uniform" 
+                              Margin="0,0,10,0"/>
+
+                            <TextBlock x:Name="text" 
+                                   Text="BACK" 
+                                   FontSize="34" 
+                                   FontWeight="Bold" 
+                                   Foreground="#666" 
+                                   VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="#2196F3"/>
+                            <Setter TargetName="border" Property="Background" Value="#E3F2FD"/>
+                            <Setter TargetName="icon" Property="Fill" Value="#2196F3"/>
+                            <Setter TargetName="text" Property="Foreground" Value="#2196F3"/>
+                        </Trigger>
+
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#BBDEFB"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1.5*"/>
@@ -275,12 +325,15 @@
                     <TextBlock Text="Move to Position" Grid.ColumnSpan="2" Style="{StaticResource SectionHeaderStyle}"/>
 
                     <Button Grid.Row="1" Margin="10,0,10,20" Content="X-Y ORIGIN" FontWeight="Bold" Width="270" FontSize="36" Height="120"
-                            Command="{Binding OriginCommand}">
+        Command="{Binding OriginCommand}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
-                                <Setter Property="Background" Value="#E8E8E8"/>
                             </Style>
                         </Button.Style>
+
+                        <Button.Background>
+                            <SolidColorBrush Color="{Binding IsOriginActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E8E8E8}}"/>
+                        </Button.Background>
                     </Button>
 
                     <Button Grid.Row="1" Grid.Column="1" Margin="10,0,10,20" Content="Position 0" FontWeight="Bold" Width="270" FontSize="36" Height="120">

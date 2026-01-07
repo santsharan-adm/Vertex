@@ -9,9 +9,6 @@ namespace IPCSoftware.App.Views
             InitializeComponent();
         }
 
-        private void SyncBtn_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-
-        }
+     
     }
 }

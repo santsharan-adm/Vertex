@@ -5,6 +5,7 @@
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ModeOfOperationViewModel}"
+             helpers:DisposeBehavior.AutoDispose="True"
              Background="#F3F3F3">
 
     <UserControl.Resources>

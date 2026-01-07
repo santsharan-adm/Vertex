@@ -1,4 +1,5 @@
-﻿using IPCSoftware.App.Services;
+﻿using IPCSoftware.App.Helpers;
+using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
@@ -20,11 +21,11 @@ namespace IPCSoftware.App.ViewModels
     public class TagControlViewModel : BaseViewModel, IDisposable
     {
         private readonly IPLCTagConfigurationService _tagService;
-        private readonly DispatcherTimer _timer;
+       // private readonly DispatcherTimer _timer;
+        private readonly SafePoller _timer;
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
 
-        private bool _disposed;
 
         public ObservableCollection<WritableTagItem> WritableTags { get; } = new();
         public ObservableCollection<WritableTagItem> AllInputs { get; } = new();
@@ -59,21 +60,17 @@ namespace IPCSoftware.App.ViewModels
             // Load tags on startup
             InitializeAsync();
 
-
-            _timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(100)
-            };
-            _timer.Tick += TimerTick;
+            _timer = new SafePoller( TimeSpan.FromMilliseconds(100),
+                                     TimerTick  // Pass the method directly
+                                   );
             _timer.Start();
+
+        
         }
 
 
-        private async void TimerTick(object sender, EventArgs e)
+        private async Task TimerTick()
         {
-            if (_disposed)
-                return;
-
             try
             {
                 var liveData = await _coreClient.GetIoValuesAsync(5);
@@ -197,10 +194,9 @@ namespace IPCSoftware.App.ViewModels
                 {
                     // [STEP 4] RESUME TIMER
                     // Always restart the timer, even if the write failed
-                    if (!_disposed)
-                    {
+                  
                         _timer.Start();
-                    }
+                    
                 }
             }
             catch (Exception ex)
@@ -284,14 +280,11 @@ namespace IPCSoftware.App.ViewModels
             };
         }
 
+ 
         public void Dispose()
         {
-            if (_disposed) return;
-            _disposed = true;
-
-            _timer.Stop();
-            _timer.Tick -= TimerTick;
-            GC.SuppressFinalize(this);
+            // Just dispose the pollers. They automatically stop and unsubscribe.
+            _timer.Dispose();
         }
     }
 

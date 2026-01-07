@@ -93,7 +93,7 @@ namespace IPCSoftware.App.ViewModels
             _userService = userService;
             _dialog = dialog;
 
-            Roles = new ObservableCollection<string> { "Admin", "Supervisor", "Operator", "Viewer" };
+            Roles = new ObservableCollection<string> { "Admin", "Supervisor", "Operator"};
 
             SaveCommand = new RelayCommand(async () => await OnSaveAsync(), CanSave);
             CancelCommand = new RelayCommand(OnCancel);

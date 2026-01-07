@@ -56,8 +56,8 @@ namespace IPCSoftware.Services
                             AlgNo = int.Parse(r[6]),
                             DataType = dataType,
                             BitNo = bitNo,
-                            Offset = int.Parse(r[9]),
-                            Span = int.Parse(r[10]),
+                            Offset = double.Parse(r[9]),
+                            Span = double.Parse(r[10]),
                             Description = r[11],
                             Remark = r[12],
 
