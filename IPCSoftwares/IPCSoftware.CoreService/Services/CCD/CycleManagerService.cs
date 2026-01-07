@@ -115,7 +115,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 if (File.Exists(_stateFilePath)) File.Delete(_stateFilePath);
 
                 // 3. Process Station 0 Image (QR Image)
-                string destPath = _imageService.ProcessAndMoveImage(tempImagePath, _activeBatchId, 0, true);
+                string destPath = _imageService.ProcessAndMoveImage(tempImagePath, _activeBatchId, 0,0,0,0, true);
 
                 // 4. Create Initial JSON State
                 UpdateJsonState(0, destPath, "OK", 0, 0, 0);
@@ -153,7 +153,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 string status = data.ContainsKey("Status") ? data["Status"].ToString() : "OK";
 
                 // 2. Process Image
-                string destUiPath = _imageService.ProcessAndMoveImage(tempImagePath, _activeBatchId, physicalStationId);
+                string destUiPath = _imageService.ProcessAndMoveImage(tempImagePath, _activeBatchId, physicalStationId, x,y, z);
 
                 // 3. Update JSON State
                 UpdateJsonState(physicalStationId, destUiPath, status, x, y, z);

@@ -10,6 +10,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public string AlarmText { get; set; }
         public string Severity { get; set; }
         public DateTime AlarmTime { get; set; }
+        public int SerialNo { get; set; } //added property for tracking and binding
 
         // REMOVED the auto-property: public DateTime? AlarmResetTime { get; set; } 
 

@@ -29,7 +29,8 @@ namespace IPCSoftware.CoreService.Services.CCD
         /// <param name="tempFilePath">Full path to the source file (e.g. inside CCD folder)</param>
         /// <param name="uniqueDataString">The 40-char unique string</param>
         /// <param name="stNo">Station Number (1-12)</param>
-        public string ProcessAndMoveImage(string tempFilePath, string uniqueDataString, int stNo, bool qrCodeFile = false)
+        public string ProcessAndMoveImage(string tempFilePath, string uniqueDataString, int stNo,
+            double x = 0, double y = 0, double z = 0, bool qrCodeFile = false)
         {
             try
             {
@@ -75,8 +76,8 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                 // --- 3. Prepare Metadata Objects (Runtime overrides) ---
                 // We create copies so we don't modify the global settings
-                var clientMeta = CloneAndUpdate(_ccd.ClientMetaDataParams, uniqueDataString, stNo, metaDate, metaTime, fileNameBase);
-                var vendorMeta = CloneAndUpdate(_ccd.VendorMetaDataParams, uniqueDataString, stNo, metaDate, metaTime, fileNameBase);
+                var clientMeta = CloneAndUpdate(_ccd.ClientMetaDataParams, uniqueDataString, stNo, metaDate, metaTime, fileNameBase, x, y , z);
+                var vendorMeta = CloneAndUpdate(_ccd.VendorMetaDataParams, uniqueDataString, stNo, metaDate, metaTime, fileNameBase, x, y, z);
 
                 // --- 4. Format Metadata Strings ---
                 string clientMetaStr = MetadataFormatter.Format(clientMeta, true);
@@ -119,7 +120,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         }
 
         // Helper to update dynamic runtime values into the metadata object
-        private T CloneAndUpdate<T>(T source, string serial, int stNo, string date, string time, string nickName) where T : MetaDataBase, new()
+        private T CloneAndUpdate<T>(T source, string serial, int stNo, string date, string time, string nickName, double x, double y , double z) where T : MetaDataBase, new()
         {
             // Create a shallow copy manually or use JSON serialization for deep copy. 
             // Since MetaDataBase is flat strings, we can just map a new object.
@@ -140,7 +141,8 @@ namespace IPCSoftware.CoreService.Services.CCD
             newObj.LightSettingN = source.LightSettingN;
             newObj.DUTColor = source.DUTColor;
             newObj.ImageNickname = source.ImageNickname;
-            newObj.DUTSerialNumber = source.DUTSerialNumber;
+           // newObj.DUTSerialNumber = source.DUTSerialNumber;
+            newObj.DUTSerialNumber = serial;
            // newObj.StationID = source.StationID.ToString();
 
             // Map Dynamic Runtime Values

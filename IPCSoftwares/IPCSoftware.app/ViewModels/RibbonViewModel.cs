@@ -54,6 +54,7 @@ public class RibbonViewModel : BaseViewModel
     public bool IsOperator => string.Equals(UserSession.Role, "Operator", StringComparison.OrdinalIgnoreCase);
 
     public string CurrentUserName => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Username.ToLower()) ?? "Guest";
+    public string CurrentUserRole=> CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Role.ToLower()) ?? "Guest";
     public bool IsConfigRibbonVisible => IsAdmin || IsSupervisor;
 
     private void OpenDashboardMenu()

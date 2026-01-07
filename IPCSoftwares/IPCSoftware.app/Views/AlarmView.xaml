@@ -75,9 +75,8 @@
     <Grid Margin="40">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Header -->
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <!-- DataGrid -->
         </Grid.RowDefinitions>
 
         <!-- 1. HEADER ROW -->
@@ -90,12 +89,12 @@
             <TextBlock Text="Active Alarms" FontSize="48" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center"/>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <!-- Keep commented Global Acknowledge -->
-                <!--<Button Content="Global Acknowledge" 
-                        Command="{Binding GlobalAcknowledgeCommand}" 
-                        Width="200" Height="60" Margin="10,0"
-                        Background="Green" Style="{StaticResource HmiButtonStyle}"/>-->
-
+                <Button Content="{Binding FilterButtonText}"
+                        Command="{Binding ToggleFilterCommand}"
+                        Margin="20"
+                        Width="350" Height="100"
+                        Background="#1E88E5"
+                        Style="{StaticResource HmiButtonStyle}"/>
                 <Button Content="RESET SYSTEM" 
                         Command="{Binding GlobalResetCommand}" 
                         Width="350" Height="100" 
@@ -104,8 +103,20 @@
             </StackPanel>
         </Grid>
 
+        <!-- 1b. PAGER ROW -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,15">
+            <StackPanel.Resources>
+                <Style TargetType="FrameworkElement">
+                    <Setter Property="Margin" Value="5,0"/>
+                </Style>
+            </StackPanel.Resources>
+            <Button Content="Prev" Width="120" Height="60" Command="{Binding PrevPageCommand}" IsEnabled="{Binding CanPrevPage}" Style="{StaticResource HmiButtonStyle}" Background="#007ACC"/>
+            <Button Content="Next" Width="120" Height="60" Command="{Binding NextPageCommand}" IsEnabled="{Binding CanNextPage}" Style="{StaticResource HmiButtonStyle}" Background="#007ACC"/>
+            <TextBlock Text="{Binding PageInfo}" FontSize="28" FontWeight="SemiBold" VerticalAlignment="Center" Margin="10,0,0,0"/>
+        </StackPanel>
+
         <!-- 2. DATA GRID -->
-        <Border Grid.Row="1" Background="White" CornerRadius="15" BorderBrush="#CCC" BorderThickness="1">
+        <Border Grid.Row="2" Background="White" CornerRadius="15" BorderBrush="#CCC" BorderThickness="1">
             <DataGrid ItemsSource="{Binding ActiveAlarms}" 
                       AutoGenerateColumns="False" 
                       IsReadOnly="True"
@@ -121,7 +132,8 @@
                       ScrollViewer.VerticalScrollBarVisibility="Auto">
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Alarm No" Binding="{Binding AlarmNo}" Width="250" FontWeight="SemiBold"/>
+                    <DataGridTextColumn Header="S/N" Binding="{Binding SerialNo}" Width="120" FontWeight="SemiBold"/>
+                    <DataGridTextColumn Header="Alarm No" Binding="{Binding AlarmNo}" Width="200" FontWeight="SemiBold"/>
 
                     <DataGridTextColumn Header="Severity" Binding="{Binding Severity}" Width="180">
                         <DataGridTextColumn.ElementStyle>
@@ -130,17 +142,14 @@
                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                 <Setter Property="HorizontalAlignment" Value="Center"/>
                                 <Setter Property="TextAlignment" Value="Center"/>
-                                <!-- Rounded background for badge look -->
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Severity}" Value="High">
                                         <Setter Property="Background" Value="#DC3545"/>
-                                        <!-- Red -->
                                         <Setter Property="Foreground" Value="White"/>
                                         <Setter Property="FontWeight" Value="Bold"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding Severity}" Value="Medium">
                                         <Setter Property="Background" Value="#FFC107"/>
-                                        <!-- Orange/Amber -->
                                         <Setter Property="Foreground" Value="Black"/>
                                         <Setter Property="FontWeight" Value="Bold"/>
                                     </DataTrigger>
@@ -151,27 +160,9 @@
 
                     <DataGridTextColumn Header="Message" Binding="{Binding AlarmText}" Width="*"/>
 
-                    <DataGridTextColumn Header="Raised At" Binding="{Binding AlarmTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="300" Foreground="#555"/>
+                    <DataGridTextColumn Header="Raised At" Binding="{Binding AlarmTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="260" Foreground="#555"/>
 
-                    <!--<DataGridTextColumn Header="Ack At" Binding="{Binding AlarmAckTime, StringFormat='HH:mm:ss'}" Width="150"/>-->
-
-                    <DataGridTextColumn Header="Reset At" Binding="{Binding AlarmResetTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="300" Foreground="#555"/>
-
-                    <!--<DataGridTextColumn Header="Ack By" Binding="{Binding AcknowledgedByUser}" Width="200"/>-->
-
-                    <!-- Keep commented Action Column -->
-                    <!--<DataGridTemplateColumn Header="Action" Width="200">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Content="Acknowledge"
-                                        Command="{Binding DataContext.AcknowledgeCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                                        CommandParameter="{Binding}"
-                                        Margin="5"
-                                        Style="{StaticResource HmiButtonStyle}"
-                                        Height="50" FontSize="18" Background="Green"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>-->
+                    <DataGridTextColumn Header="Reset At" Binding="{Binding AlarmResetTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="260" Foreground="#555"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

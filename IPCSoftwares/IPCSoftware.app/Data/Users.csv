@@ -1,4 +1,5 @@
 ﻿Id,FirstName,LastName,UserName,Password,Role,IsActive
-1,"System","Administrator","ADMIN","1","Admin",True
+1,"System","Administrator","Admin","1","Admin",True
 2,"admin","dd1","supervisor","1","Supervisor",True
 3,"Operator","s","Operator","1","Operator",True
+4,"System","Administrator","admin","admin123","Admin",True

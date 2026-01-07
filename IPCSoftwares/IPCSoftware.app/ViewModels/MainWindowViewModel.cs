@@ -156,6 +156,7 @@ public class MainWindowViewModel : BaseViewModel
         {
             OnPropertyChanged(nameof(IsRibbonVisible));
             OnPropertyChanged(nameof(CurrentUserName));
+            OnPropertyChanged(nameof(CurrentUserRole));
             OnPropertyChanged(nameof(IsAdmin));
         };
     }
@@ -213,20 +214,18 @@ public class MainWindowViewModel : BaseViewModel
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                // 1. Identify the latest alarm first
-                var latestUnackedAlarm = _alarmVM.ActiveAlarms
-                    .Where(a => a.AlarmAckTime == null)
+                // 1. Identify the latest active (non-reset) alarm first
+                var latestActiveAlarm = _alarmVM.ActiveAlarms
+                    .Where(a => a.AlarmResetTime == null)
                     .OrderByDescending(a => a.AlarmTime)
                     .FirstOrDefault();
 
-                // 2. PREPARE THE DATA FIRST
-                // We set the text and color BEFORE we update the count.
-                if (latestUnackedAlarm != null)
+                if (latestActiveAlarm != null)
                 {
-                    AlarmBannerMessage = $"⚠️ ALARM {latestUnackedAlarm.AlarmNo}: {latestUnackedAlarm.AlarmText}";
+                    AlarmBannerMessage = $"⚠️ ALARM {latestActiveAlarm.AlarmNo}: {latestActiveAlarm.AlarmText}";
 
-                    if (latestUnackedAlarm.Severity == "High") AlarmBannerColor = "#D32F2F";
-                    else if (latestUnackedAlarm.Severity == "Warning") AlarmBannerColor = "#F57C00";
+                    if (latestActiveAlarm.Severity == "High") AlarmBannerColor = "#D32F2F";
+                    else if (latestActiveAlarm.Severity == "Warning") AlarmBannerColor = "#F57C00";
                     else AlarmBannerColor = "#1976D2";
                 }
                 else
@@ -235,12 +234,10 @@ public class MainWindowViewModel : BaseViewModel
                     AlarmBannerColor = "#1976D2";
                 }
 
-                // 3. TRIGGER THE REFRESH LAST
-                // Setting this property triggers OnPropertyChanged(nameof(AlarmBannerTotalMessage))
-                // Because the message was set above, the banner will now show the correct text.
-                ActiveAlarmCount = _alarmVM.ActiveAlarms.Count(a => a.AlarmAckTime == null);
+                // Count only alarms that have not been reset
+                ActiveAlarmCount = _alarmVM.ActiveAlarms.Count(a => a.AlarmResetTime == null);
 
-                // 4. Control Visibility
+                // Control Visibility
                 IsAlarmBannerVisible = ActiveAlarmCount > 0;
             });
         }
@@ -294,6 +291,7 @@ public class MainWindowViewModel : BaseViewModel
     // ==============================
     public bool IsRibbonVisible => UserSession.IsLoggedIn;
     public string CurrentUserName => UserSession.Username ?? "Guest";
+    public string CurrentUserRole=> UserSession.Role ?? "Guest";
     public bool IsAdmin => UserSession.Role == "Admin";
 
     // ==============================

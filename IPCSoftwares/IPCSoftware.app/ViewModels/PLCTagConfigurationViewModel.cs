@@ -120,15 +120,15 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _bitNo, value);
         }
 
-        private int _offset;
-        public int Offset
+        private double _offset;
+        public double Offset
         {
             get => _offset;
             set => SetProperty(ref _offset, value);
         }
 
-        private int _span;
-        public int Span
+        private double _span=0.0f;
+        public double Span
         {
             get => _span;
             set => SetProperty(ref _span, value);
@@ -200,6 +200,7 @@ namespace IPCSoftware.App.ViewModels
             // Initialize algorithm types with Value and DisplayName
             AlgorithmTypes = new ObservableCollection<AlgorithmType>
             {
+                new AlgorithmType(0, "None"),
                 new AlgorithmType(1, "Linear scale"),
                 new AlgorithmType(2, "FP"),
                 new AlgorithmType(3, "String")
