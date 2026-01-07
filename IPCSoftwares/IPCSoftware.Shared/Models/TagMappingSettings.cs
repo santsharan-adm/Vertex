@@ -110,6 +110,8 @@ namespace IPCSoftware.Shared.Models
         public int ParamA2 { get; set; }
         public int ParamA3 { get; set; }
         public int ParamA4 { get; set; }
+        public int ManualB12 { get; set; }
+        public int ManualB16 { get; set; }
 
 
         public XYPair JogSpeedLow { get; set; } = new();
