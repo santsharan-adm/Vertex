@@ -4,6 +4,7 @@
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development",
+        "CONFIG_DIR": "D:\\IPCSoftware_UnitTesting\\Vertex\\IPCSoftwares\\IPCSoftware.app"
 
       }
     }
