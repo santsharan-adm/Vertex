@@ -1,8 +1,10 @@
 ﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using NModbus;
+using System.Diagnostics;
 using System.Linq;
 using System.Net; // Added for IPAddress
 using System.Net.Sockets;
@@ -275,10 +277,12 @@ namespace IPCSoftware.CoreService.Services.PLC
             Console.WriteLine($"PLCClient[{_device.DeviceName}] [INFO] Tags updated to {myNewTags.Count} tags.");
             _logger.LogInfo($"PLCClient[{_device.DeviceName}] [INFO] Tags updated to {myNewTags.Count} tags.", LogType.Diagnostics);
         }
-        private double ReverseLinearScale(double engValue, PLCTagConfigurationModel tag)
+        private double ReverseLinearScale_EngMinMax(double engValue, PLCTagConfigurationModel tag)
         {
-            double plcRawMax = (tag.DataType == DataType_Int16) ? 65535.0 : 2147483647.0;
-            double plcRawMin = 0.0;
+          
+
+            double plcRawMax = tag.DataType.GetMaxValue(); //  (tag.DataType == DataType_Int16) ? 65535.0 : 2147483647.0;
+            double plcRawMin = tag.DataType.GetMinValue();
             double engMin = tag.Offset;
             double engMax = tag.Offset + tag.Span;
             double rawRange = plcRawMax - plcRawMin;
@@ -287,6 +291,22 @@ namespace IPCSoftware.CoreService.Services.PLC
 
             return plcRawMin + (engValue - engMin) * rawRange / (engMax - engMin);
         }
+
+        private double ReverseLinearScale_GainOffset(double engValue, PLCTagConfigurationModel tag)
+        {
+
+
+            double plcRawMax = tag.DataType.GetMaxValue(); //  (tag.DataType == DataType_Int16) ? 65535.0 : 2147483647.0;
+            double plcRawMin = tag.DataType.GetMinValue();
+            double gain = tag.Span;
+            double offset = tag.Offset;
+            double rawRange = plcRawMax - plcRawMin;
+
+            //if (Math.Abs(engMax - engMin) < double.Epsilon) return plcRawMin;
+
+            return plcRawMin + ((engValue-offset)  * gain) ;
+        }
+
 
 
         public async Task WriteAsync(PLCTagConfigurationModel cfg, object value)
@@ -300,7 +320,16 @@ namespace IPCSoftware.CoreService.Services.PLC
                 {
                     if(double.TryParse(value.ToString(), out double val2))
                     {
-                        value = ReverseLinearScale(val2, cfg);
+                        if (cfg.UseEngMinMax)
+                        {
+                            value = ReverseLinearScale_EngMinMax(val2, cfg);
+                        }
+                        else
+                        {
+                            value = ReverseLinearScale_GainOffset(val2, cfg);
+                        }
+                        
+                        
                     }
                 }
                 ushort[] registers = ConvertValueToRegisters(value, cfg);

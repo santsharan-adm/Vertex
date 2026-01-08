@@ -120,7 +120,7 @@ namespace IPCSoftware.App.ViewModels
             var list = new List<ModeButtonItem>
             {
                 new ModeButtonItem { Mode = OperationMode.Auto,      Name = "Auto Run",     BaseColor = "#00BCFE", ActiveColor = "#00BCFE" },
-                new ModeButtonItem { Mode = OperationMode.DryRun,    Name = "Dry Run",      BaseColor = "#B200A1", ActiveColor = "#B200A1" },
+                new ModeButtonItem { Mode = OperationMode.DryRun,    Name = "Dry Run",      BaseColor = "#B200A1", ActiveColor = "#7E1A74" },
                 // Manual is usually always enabled unless you have a specific tag for it
                 new ModeButtonItem { Mode = OperationMode.Manual,    Name = "Manual",       BaseColor = "#607D8B", ActiveColor = "#607D8B", IsEnabled = true },
                 new ModeButtonItem { Mode = OperationMode.CycleStop, Name = "Cycle Stop",   BaseColor = "#FE8848", ActiveColor = "#FE8848" },

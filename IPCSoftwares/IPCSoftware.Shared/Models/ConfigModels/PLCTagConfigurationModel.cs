@@ -18,7 +18,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public int AlgNo { get; set; }
         public int DataType { get; set; }
         public int BitNo { get; set; }
-
+        public bool UseEngMinMax { get; set; }
         public double Offset { get; set; }
         public double Span { get; set; }
         public string Description { get; set; }
