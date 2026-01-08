@@ -1,5 +1,4 @@
-﻿Id,FirstName,LastName,UserName,Password,Role,IsActive
-1,"System","Administrator","Admin","1","Admin",True
-2,"admin","dd1","supervisor","1","Supervisor",True
-3,"Operator","s","Operator","1","Operator",True
-4,"System","Administrator","admin","admin123","Admin",True
+﻿Id,FirstName,LastName,UserName,PasswordHash,PasswordSalt,Role,IsActive,IntegritySignature
+1,"System","Administrator","admin","nwzqKaxJKWw6Bgoehp6ka/JYxy3s5ktP5yAEIvmjUR4=","6U6Mr2nDftbH3I1qk7BxxA==","Admin",True,"RVWzzm+UiXwdoz+wBjm2NELeR8groBpsuVZDlP9zZW8="
+2,"Shubham","Bansal","Admin2","p5HT4qhaNxiqsjAzIIYouLqFys/PtOJ7cOypYms676g=","uMLHlCX8KjVmMLWxtmu1Tg==","Admin",True,"EfVY1o2Sq3ZeayV1OmVLGK6MN0bMOqMUTgtzD7ZyZXg="
+3,"Sharan","Sant","Sharan","KRi56Emj7cACgt6HDFInNYxbNsUfcdZQAJfN4Zn7kwE=","P4kMSTeKWZScxOyX1YhAOw==","Supervisor",True,"McWaNN9OUyMC58dMr+ZTl9tmMEoxEwnt+28gW8aRT9I="

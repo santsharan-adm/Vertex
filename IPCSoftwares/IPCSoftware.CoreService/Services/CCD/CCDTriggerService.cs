@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,7 +46,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         /// Call this method in your Worker loop immediately after AlgorithmService.Apply returns the data.
         /// </summary>
         /// <param name="tagValues">The dictionary of processed tag values</param>
-        public void ProcessTriggers(Dictionary<int, object> tagValues, PLCClientManager manager)
+        public async Task ProcessTriggers(Dictionary<int, object> tagValues, PLCClientManager manager)
         {
             try
             {
@@ -84,6 +85,11 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                     // 4. Execute Async Workflow
                     _ = ExecuteWorkflowAsync(qrCode, stationData);
+
+                }
+                if (!currentTriggerState && _lastTriggerState)
+                {
+                    await WriteAckToPlcAsync(false);
                 }
 
                 // 4. Update State
@@ -124,7 +130,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                     _cycleManager.HandleIncomingData(imagePath, data, qrCode);
 
                     // 2. Write Ack (Tag 15) to PLC
-                    await WriteAckToPlcAsync();
+                    await WriteAckToPlcAsync(true);
                 }
                 catch (Exception ex)
                 {
@@ -139,7 +145,8 @@ namespace IPCSoftware.CoreService.Services.CCD
             }
         }
 
-        private async Task WriteAckToPlcAsync()
+        Stopwatch sp = new Stopwatch();
+        private async Task WriteAckToPlcAsync(bool writebool)
         {
             try
             {
@@ -152,8 +159,22 @@ namespace IPCSoftware.CoreService.Services.CCD
                     if (client != null)
                     {
                         // Write TRUE to 15 to tell PLC we are done
-                        await client.WriteAsync(ackTag, true);
-                        await client.WriteAsync(ackTag, false);
+                        if (writebool )
+                        {
+                            await client.WriteAsync(ackTag, true);
+                            sp.Start();
+                        }
+                        else
+                        {
+                            await client.WriteAsync(ackTag, false);
+                            sp.Stop();
+                        }
+                        if (sp.Elapsed.TotalMilliseconds > 600)
+                        {
+                            await client.WriteAsync(ackTag, false);
+                            sp.Stop();
+                        }
+                        // await Task.Delay(200);
                         Console.WriteLine($"[CCD] Ack sent to Tag {ConstantValues.Return_TAG_ID}");
                         _logger.LogInfo ($"[CCD] Ack sent to Tag {ConstantValues.Return_TAG_ID}", LogType.Diagnostics);
 

@@ -50,4 +50,10 @@ namespace IPCSoftware.Core.Interfaces
         void NavigateToPLCTagConfiguration(PLCTagConfigurationModel tagToEdit, Func<Task> onSaveCallback);
 
     }
+
+    public interface INavigationalAware
+    {
+        // Returns True if navigation is allowed, False to cancel
+        bool OnNavigatingFrom();
+    }
 }

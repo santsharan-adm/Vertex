@@ -124,9 +124,12 @@ namespace IPCSoftware.App.ViewModels
                 FirstName = user.FirstName;
                 LastName = user.LastName;
                 UserName = user.UserName;
-                Password = user.Password;
+                 Password = "";
+               // Password = user.Password;
                 SelectedRole = user.Role ?? "User";
                 IsActive = user.IsActive;
+
+
             }
             catch (Exception ex)
             {
@@ -144,6 +147,14 @@ namespace IPCSoftware.App.ViewModels
                 _currentUser.Password = Password;
                 _currentUser.Role = SelectedRole;
                 _currentUser.IsActive = IsActive;
+                if (!string.IsNullOrEmpty(Password))
+                {
+                    _currentUser.PlainTextPassword = Password;
+                }
+                else
+                {
+                    _currentUser.PlainTextPassword = null;
+                }
             }
             catch (Exception ex)
             {
@@ -151,12 +162,29 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        private bool CanSave()
+     /*   private bool CanSave()
         {
             return !string.IsNullOrWhiteSpace(FirstName) &&
                    !string.IsNullOrWhiteSpace(LastName) &&
                    !string.IsNullOrWhiteSpace(UserName) &&
                    !string.IsNullOrWhiteSpace(Password);
+        }
+*/
+        private bool CanSave()
+        {
+            if (IsEditMode)
+            {
+                // On Edit, Password can be empty (meaning keep existing)
+                return !string.IsNullOrWhiteSpace(FirstName) &&
+                       !string.IsNullOrWhiteSpace(UserName);
+            }
+            else
+            {
+                // On New, Password is required
+                return !string.IsNullOrWhiteSpace(FirstName) &&
+                       !string.IsNullOrWhiteSpace(UserName) &&
+                       !string.IsNullOrWhiteSpace(Password);
+            }
         }
 
         private string _errorMessage;

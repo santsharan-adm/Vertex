@@ -367,8 +367,12 @@
                             </Grid>
                         </Border>
 
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" Margin="0,20,0,0">
-                            <ItemsControl ItemsSource="{Binding SidebarItems}">
+                        <!--<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" Margin="0,20,0,0">-->
+                            <ScrollViewer Grid.Row="1" 
+              VerticalScrollBarVisibility="Hidden" 
+              Margin="0,20,0,0"
+              PanningMode="VerticalOnly">
+                            <ItemsControl ItemsSource="{Binding SidebarItems}" Background="Transparent" >
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Button Content="{Binding}" Style="{StaticResource SidebarButtonStyle}"

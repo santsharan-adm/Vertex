@@ -8,6 +8,7 @@ using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public class ServoCalibrationViewModel : BaseViewModel, IDisposable
+    public class ServoCalibrationViewModel : BaseViewModel, IDisposable, INavigationalAware
     {
         private readonly CoreClient _coreClient;
        // private readonly DispatcherTimer _liveDataTimer;
@@ -26,6 +27,7 @@ namespace IPCSoftware.App.ViewModels
         private readonly IDialogService _dialog; // Injected Service
 
         private bool _initialPlcLoadDone = false;
+        private bool _isUpdatingFromPlc = false;
 
 
         // Start of Coordinate Registers (13 Positions: 0 to 12)
@@ -54,6 +56,41 @@ namespace IPCSoftware.App.ViewModels
             get => _liveY;
             set => SetProperty(ref _liveY, value);
         }
+
+        private int _selectedTabIndex;
+        public int SelectedTabIndex
+        {
+            get => _selectedTabIndex;
+            set
+            {
+                if (_selectedTabIndex == value) return;
+
+                // If data is dirty, intercept the tab switch
+                if (IsDirty)
+                {
+                    bool discard = _dialog.ShowYesNo("You have unsaved changes. Do you want to discard them and switch tabs?", "Unsaved Changes");
+                    if (!discard)
+                    {
+                        // User said NO (Stay here). 
+                        // Raise PropertyChanged for the *OLD* value to force the UI Tab to snap back.
+                        OnPropertyChanged(nameof(SelectedTabIndex));
+                        return;
+                    }
+                    else
+                    {
+                        // User said YES (Discard). Reset dirty flag and allow switch.
+                        IsDirty = false;
+                        // Optional: Reload original values here if needed
+                    }
+                }
+
+                // Normal set
+                SetProperty(ref _selectedTabIndex, value);
+            }
+        }
+
+        // 2. CONTROL PAGE NAVIGATION (Going back or to Home)
+     
 
         public ObservableCollection<ServoPositionModel> Positions { get; } = new();
 
@@ -101,6 +138,7 @@ namespace IPCSoftware.App.ViewModels
             InitializeParameters();
             // Load positions from JSON via Service
             _ = InitializePositionsAsync();
+            SubscribeToChanges();
             //InitializePositions();
             _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(100),
                                     OnLiveDataTick  // Pass the method directly
@@ -109,6 +147,34 @@ namespace IPCSoftware.App.ViewModels
 
         }
 
+        private void SubscribeToChanges()
+        {
+            // Hook into Parameters
+            foreach (var p in XParameters) p.PropertyChanged += OnItemPropertyChanged;
+            foreach (var p in YParameters) p.PropertyChanged += OnItemPropertyChanged;
+
+            // Hook into Positions (We do this in InitializePositionsAsync too)
+            Positions.CollectionChanged += (s, e) =>
+            {
+                if (e.NewItems != null)
+                    foreach (INotifyPropertyChanged item in e.NewItems)
+                        item.PropertyChanged += OnItemPropertyChanged;
+            };
+        }
+
+        private void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            // If we are currently running the PLC update loop, IGNORE this change.
+            if (_isUpdatingFromPlc) return;
+
+            // If specific properties changed by user, mark dirty
+            if (e.PropertyName == nameof(ServoPositionModel.X) ||
+                e.PropertyName == nameof(ServoPositionModel.Y) ||
+                e.PropertyName == nameof(ServoParameterItem.NewValue))
+            {
+                IsDirty = true;
+            }
+        }
 
         private async Task<bool> IsPLCConnected()
         {
@@ -213,7 +279,7 @@ namespace IPCSoftware.App.ViewModels
             XParameters.Add(Create(pair.X));
             YParameters.Add(Create(pair.Y));
         }
-
+            
 
        
         private async Task InitializePositionsAsync()
@@ -224,11 +290,15 @@ namespace IPCSoftware.App.ViewModels
                 var positions = await _servoService.LoadPositionsAsync();
 
                 Positions.Clear();
-                // Ensure ordered by ID for UI consistency
+
                 foreach (var pos in positions.OrderBy(p => p.PositionId))
                 {
+                    // IMPORTANT: Subscribe to the new item!
+                    pos.PropertyChanged += OnItemPropertyChanged;
                     Positions.Add(pos);
                 }
+                // Ensure ordered by ID for UI consistency
+               
             }
             catch (Exception ex)
             {
@@ -246,6 +316,7 @@ namespace IPCSoftware.App.ViewModels
 
                 if (data != null)
                 {
+                    _isUpdatingFromPlc = true;
                     // 1. Update Jog Status (B-Tags)
                     // Visual feedback depends strictly on these values
                     if (data.TryGetValue(ConstantValues.Manual_XRev.Read, out object xm)) IsJogXMinusActive = Convert.ToBoolean(xm);
@@ -306,21 +377,7 @@ namespace IPCSoftware.App.ViewModels
         
 
 
-        private async void UpdateCoord()
-        {
-            var data = await _coreClient.GetIoValuesAsync(5);
-            // 4. Update Position List (Read stored values from PLC)
-            for (int i = 0; i < Positions.Count; i++)
-            {
-                int xTag = START_TAG_POS_X + i;
-                int yTag = START_TAG_POS_Y + i;
-
-                if (data.TryGetValue(xTag, out object valX)) Positions[i].X = Convert.ToDouble(valX);
-                if (data.TryGetValue(yTag, out object valY)) Positions[i].Y = Convert.ToDouble(valY);
-            }
-        }
-
-
+  
 
         private async void OnTeachPosition(ServoPositionModel position)
         {
@@ -354,6 +411,7 @@ namespace IPCSoftware.App.ViewModels
                     // Handle partial or total failure
                     if (!successX && !successY)
                     {
+                        IsDirty = false;
                         _dialog.ShowWarning("Failed to update X and Y. Please check logs.");
                     }
                     else
@@ -463,6 +521,21 @@ namespace IPCSoftware.App.ViewModels
             catch (Exception ex) { _logger.LogError($"Write Param Error: {ex.Message}", LogType.Diagnostics); }
         }
 
+        public bool OnNavigatingFrom()
+        {
+            if (IsDirty)
+            {
+                bool discard = _dialog.ShowYesNo("You have unsaved changes. Leaving this page will lose them. Continue?", "Unsaved Changes");
+                if (discard)
+                {
+                    IsDirty = false; // Reset for next time
+                    return true; // Allow navigation
+                }
+                return false; // Cancel navigation
+            }
+            return true; // No changes, allow navigation
+        }
+
         private async Task PulseBit(int tagId, string description)
         {
             try
@@ -506,6 +579,7 @@ namespace IPCSoftware.App.ViewModels
                 await _coreClient.WriteTagAsync(tagId, 0);
 
                 await _servoService.SavePositionsAsync(Positions.ToList());
+                IsDirty = false;
 
                 _logger.LogInfo($"{description} Confirmed.", LogType.Audit);
             }
