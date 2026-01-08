@@ -142,6 +142,137 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
+        private List<AlarmInstanceModel> ReadAlarmFile(string file)
+        {
+            var list = new List<AlarmInstanceModel>();
+            if (!File.Exists(file)) return list;
+
+            var lines = File.ReadAllLines(file).Skip(1);
+            foreach (var line in lines)
+            {
+                var parsed = ParseCsvLine(line);
+                if (parsed != null)
+                {
+                    list.Add(parsed);
+                }
+            }
+            return list;
+        }
+
+        private void WriteAlarmFile(string file, IEnumerable<AlarmInstanceModel> records)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("SerialNo,AlarmNo,Severity,AlarmText,AlarmTime,AlarmAckTime,AcknowledgedByUser,AlarmResetTime,EventType");
+
+            string Escape(string value)
+            {
+                if (string.IsNullOrEmpty(value)) return string.Empty;
+                var escaped = value.Replace("\"", "\"\"");
+                return $"\"{escaped}\"";
+            }
+            string fmt(DateTime? dt) => dt.HasValue ? dt.Value.ToString("o") : string.Empty;
+
+            foreach (var record in records.OrderBy(r => r.SerialNo))
+            {
+                var evt = record.AlarmResetTime.HasValue ? AlarmMessageType.Cleared : AlarmMessageType.Raised;
+                sb.AppendLine($"{record.SerialNo},{record.AlarmNo},{Escape(record.Severity)},{Escape(record.AlarmText)},{fmt(record.AlarmTime)},{fmt(record.AlarmAckTime)},{Escape(record.AcknowledgedByUser)},{fmt(record.AlarmResetTime)},{evt}");
+            }
+
+            File.WriteAllText(file, sb.ToString());
+        }
+
+        private void AppendRaisedRecord(AlarmInstanceModel alarm)
+        {
+            var file = GetCurrentAlarmFilePath();
+            if (File.Exists(file))
+            {
+                // keep serial counter in sync
+                var existing = ReadAlarmFile(file);
+                if (existing.Count > 0)
+                {
+                    _serialCounter = Math.Max(_serialCounter, existing.Max(r => r.SerialNo));
+                }
+            }
+
+            if (alarm.SerialNo == 0)
+            {
+                alarm.SerialNo = ++_serialCounter;
+            }
+
+            var writeHeader = !File.Exists(file);
+            var sb = new StringBuilder();
+            if (writeHeader)
+            {
+                sb.AppendLine("SerialNo,AlarmNo,Severity,AlarmText,AlarmTime,AlarmAckTime,AcknowledgedByUser,AlarmResetTime,EventType");
+            }
+
+            string Escape(string value)
+            {
+                if (string.IsNullOrEmpty(value)) return string.Empty;
+                var escaped = value.Replace("\"", "\"\"");
+                return $"\"{escaped}\"";
+            }
+            string fmt(DateTime? dt) => dt.HasValue ? dt.Value.ToString("o") : string.Empty;
+
+            sb.AppendLine($"{alarm.SerialNo},{alarm.AlarmNo},{Escape(alarm.Severity)},{Escape(alarm.AlarmText)},{fmt(alarm.AlarmTime)},{fmt(alarm.AlarmAckTime)},{Escape(alarm.AcknowledgedByUser)},{fmt(alarm.AlarmResetTime)},{AlarmMessageType.Raised}");
+            File.AppendAllText(file, sb.ToString());
+            _totalRecords++;
+            UpdatePagingState();
+        }
+
+        private AlarmInstanceModel FindExistingForUpdate(List<AlarmInstanceModel> records, AlarmInstanceModel alarm)
+        {
+            if (alarm.SerialNo != 0)
+                return records.FirstOrDefault(r => r.SerialNo == alarm.SerialNo);
+
+            // fallback: find the latest active (no reset) for the same AlarmNo
+            return records.Where(r => r.AlarmNo == alarm.AlarmNo && r.AlarmResetTime == null)
+                          .OrderByDescending(r => r.AlarmTime)
+                          .FirstOrDefault();
+        }
+
+        private void UpdateRecord(AlarmInstanceModel alarm, AlarmMessageType messageType)
+        {
+            var file = GetCurrentAlarmFilePath();
+            var records = ReadAlarmFile(file);
+            if (records.Count > 0)
+            {
+                _serialCounter = Math.Max(_serialCounter, records.Max(r => r.SerialNo));
+            }
+
+            var existing = FindExistingForUpdate(records, alarm);
+            if (existing == null)
+            {
+                if (alarm.SerialNo == 0) alarm.SerialNo = ++_serialCounter;
+                records.Add(alarm);
+                existing = alarm;
+            }
+            else
+            {
+                alarm.SerialNo = existing.SerialNo;
+                existing.AlarmNo = alarm.AlarmNo;
+                existing.Severity = alarm.Severity;
+                existing.AlarmText = alarm.AlarmText;
+                existing.AlarmTime = alarm.AlarmTime;
+                existing.AlarmAckTime = alarm.AlarmAckTime;
+                existing.AcknowledgedByUser = alarm.AcknowledgedByUser;
+            }
+
+            if (messageType == AlarmMessageType.Cleared && existing.AlarmResetTime == null)
+            {
+                existing.AlarmResetTime = alarm.AlarmResetTime ?? DateTime.Now;
+            }
+            if (messageType == AlarmMessageType.Acknowledged && alarm.AlarmAckTime != null)
+            {
+                existing.AlarmAckTime = alarm.AlarmAckTime;
+                existing.AcknowledgedByUser = alarm.AcknowledgedByUser;
+            }
+
+            _totalRecords = records.Count;
+            WriteAlarmFile(file, records);
+            UpdatePagingState();
+        }
+
         private List<AlarmInstanceModel> LoadAllFromLatestFile()
         {
             try
@@ -151,24 +282,13 @@ namespace IPCSoftware.App.ViewModels
                 var latestFile = Directory.GetFiles(dir, "alarm_*.csv").OrderByDescending(f => f).FirstOrDefault();
                 if (string.IsNullOrEmpty(latestFile) || !File.Exists(latestFile)) return new List<AlarmInstanceModel>();
 
-                var lines = File.ReadAllLines(latestFile).Skip(1); // skip header
-                var map = new Dictionary<int, AlarmInstanceModel>();
-                foreach (var line in lines)
+                var records = ReadAlarmFile(latestFile);
+                if (records.Count > 0)
                 {
-                    var parsed = ParseCsvLine(line);
-                    if (parsed != null)
-                    {
-                        if (parsed.SerialNo == 0)
-                        {
-                            parsed.SerialNo = ++_serialCounter;
-                        }
-                        map[parsed.SerialNo] = parsed; // latest occurrence wins
-                    }
+                    _serialCounter = Math.Max(_serialCounter, records.Max(r => r.SerialNo));
                 }
-                var list = map.Values.ToList();
-                _totalRecords = list.Count;
-                _serialCounter = _totalRecords;
-                return list.OrderByDescending(a => a.AlarmTime).ToList();
+                _totalRecords = records.Count;
+                return records.OrderByDescending(a => a.AlarmTime).ToList();
             }
             catch (Exception ex)
             {
@@ -345,17 +465,30 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                UpsertAlarmRecord(message.AlarmInstance, message.MessageType);
+                if (message.MessageType == AlarmMessageType.Raised && message.AlarmInstance.SerialNo == 0)
+                {
+                    message.AlarmInstance.SerialNo = ++_serialCounter;
+                }
+
+                switch (message.MessageType)
+                {
+                    case AlarmMessageType.Raised:
+                        AppendRaisedRecord(message.AlarmInstance);
+                        break;
+                    case AlarmMessageType.Acknowledged:
+                    case AlarmMessageType.Cleared:
+                        UpdateRecord(message.AlarmInstance, message.MessageType);
+                        break;
+                }
 
                 Application.Current.Dispatcher.Invoke(async () =>
                 {
                     var alarmInstance = message.AlarmInstance;
-                    var existingAlarm = ActiveAlarms.FirstOrDefault(a => a.AlarmNo == alarmInstance.AlarmNo);
+                    var existingAlarm = FindExistingActiveInGrid(alarmInstance);
 
                     switch (message.MessageType)
                     {
                         case AlarmMessageType.Raised:
-                            if (alarmInstance.SerialNo == 0) alarmInstance.SerialNo = ++_serialCounter;
                             if (existingAlarm == null)
                             {
                                 ActiveAlarms.Insert(0, alarmInstance);
@@ -364,7 +497,6 @@ namespace IPCSoftware.App.ViewModels
                             }
                             else
                             {
-                                // Update existing instance details
                                 existingAlarm.Severity = alarmInstance.Severity;
                                 existingAlarm.AlarmText = alarmInstance.AlarmText;
                                 existingAlarm.AlarmTime = alarmInstance.AlarmTime;
@@ -418,7 +550,7 @@ namespace IPCSoftware.App.ViewModels
                 foreach (var alarm in toUpdate)
                 {
                     alarm.AlarmResetTime = now;
-                    UpsertAlarmRecord(alarm, AlarmMessageType.Cleared);
+                    UpdateRecord(alarm, AlarmMessageType.Cleared);
                 }
                 if (tagId == ConstantValues.TAG_Global_Reset)
                 {
@@ -472,6 +604,17 @@ namespace IPCSoftware.App.ViewModels
         {
             get => _currentBannerAlarm;
             set => SetProperty(ref _currentBannerAlarm, value);
+        }
+
+
+        private AlarmInstanceModel FindExistingActiveInGrid(AlarmInstanceModel alarm)
+        {
+            if (alarm.SerialNo != 0)
+                return ActiveAlarms.FirstOrDefault(a => a.SerialNo == alarm.SerialNo);
+
+            return ActiveAlarms.Where(a => a.AlarmNo == alarm.AlarmNo && a.AlarmResetTime == null)
+                                .OrderByDescending(a => a.AlarmTime)
+                                .FirstOrDefault();
         }
     }
 }
