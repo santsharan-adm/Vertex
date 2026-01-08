@@ -213,7 +213,15 @@ namespace IPCSoftware.CoreService.Services.Algorithm
                     if (tag.DataType == DataType_Int16 || tag.DataType == DataType_UInt32 || tag.DataType == DataType_UInt16 || tag.DataType == DataType_Word32)
                     {
                         double rawNumericValue = Convert.ToDouble(rawTypedValue);
-                        return LinearScale(rawNumericValue, tag);
+                        if (tag.UseEngMinMax)
+                        {
+                            return LinearScale_EngMinMax(rawNumericValue, tag);
+                        }
+                        else
+                        {
+                            return LinearScale_GainOffset(rawNumericValue, tag);
+                        }
+                        
                     }
                 }
 
@@ -228,10 +236,13 @@ namespace IPCSoftware.CoreService.Services.Algorithm
         }
 
 
-        private double LinearScale(double rawValue, PLCTagConfigurationModel tag)
+        private double LinearScale_EngMinMax(double rawValue, PLCTagConfigurationModel tag)
         {
-            double plcRawMax = (tag.DataType == DataType_Int16) ? 65535.0 : 2147483647.0;
-            double plcRawMin = 0.0;
+            /*      double plcRawMax = (tag.DataType == DataType_Int16) ? 65535.0 : 2147483647.0;
+                  double plcRawMin = 0.0;*/
+
+            double plcRawMax = tag.DataType.GetMaxValue(); //  (tag.DataType == DataType_Int16) ? 65535.0 : 2147483647.0;
+            double plcRawMin = tag.DataType.GetMinValue();
             double engMin = tag.Offset;
             double engMax = tag.Offset + tag.Span;
             //double engMax = tag.Span;
@@ -240,7 +251,22 @@ namespace IPCSoftware.CoreService.Services.Algorithm
             if (Math.Abs(rawRange) < double.Epsilon) return engMin;
 
             return (rawValue - plcRawMin) * (engMax - engMin) / rawRange + engMin;
-           // return (rawValue - plcRawMin) * (engMax)  + engMin;
+            // return (rawValue - plcRawMin) * (engMax)  + engMin;
+        }
+
+        private double LinearScale_GainOffset(double rawValue, PLCTagConfigurationModel tag)
+        {
+            double plcRawMax = tag.DataType.GetMaxValue(); //  (tag.DataType == DataType_Int16) ? 65535.0 : 2147483647.0;
+            double plcRawMin = tag.DataType.GetMinValue();
+            double offset = tag.Offset;
+            //double engMax = tag.Offset + tag.Span;
+            double gain = tag.Span;
+            double rawRange = plcRawMax - plcRawMin;
+
+            if (Math.Abs(rawRange) < double.Epsilon) return offset;
+
+            //return (rawValue - plcRawMin) * (engMax - engMin) / rawRange + engMin;
+             return (rawValue - plcRawMin) / (gain)  + offset;
         }
 
         byte[] SwapEveryTwoBytes(byte[] src)
@@ -256,6 +282,74 @@ namespace IPCSoftware.CoreService.Services.Algorithm
         }
 
 
+
+    }
+
+
+    public static class GetMinMax
+    {
+        public static double GetMaxValue(this int type)
+        {
+            switch (type)
+            {
+                case DataType_Int16:     // short
+                    return short.MaxValue;          // 32767
+
+                case DataType_Word32:    // DWord / Int32 / Word
+                                         // Choose ONE depending on your protocol meaning:
+                    return uint.MaxValue;           // 4294967295 (DWord)
+                                                    // return int.MaxValue;         // 2147483647 (Int32)
+
+                case DataType_FP:        // float / real
+                    return float.MaxValue;          // 3.4028235E38
+
+                case DataType_UInt16:    // ushort
+                    return ushort.MaxValue;         // 65535
+
+                case DataType_UInt32:    // uint
+                    return uint.MaxValue;           // 4294967295
+
+                default:
+                    return short.MaxValue;
+            }
+        }
+
+       public static  double GetMinValue(this int type)
+        {
+            switch (type)
+            {
+                case DataType_Int16:     // short
+                    return short.MinValue;          // 32767
+
+                case DataType_Word32:    // DWord / Int32 / Word
+                                         // Choose ONE depending on your protocol meaning:
+                    return uint.MinValue;           // 4294967295 (DWord)
+                                                    // return int.MaxValue;         // 2147483647 (Int32)
+
+                case DataType_FP:        // float / real
+                    return float.MinValue;          // 3.4028235E38
+
+                case DataType_UInt16:    // ushort
+                    return ushort.MinValue;         // 65535
+
+                case DataType_UInt32:    // uint
+                    return uint.MinValue;           // 4294967295
+
+                default:
+                    return short.MinValue;
+            }
+        }
+
+
+
+        private const int DataType_Int16 = 1;
+        private const int DataType_Word32 = 2; // DWord, Int32, Word
+        private const int DataType_Bit = 3;
+        private const int DataType_FP = 4; // Real, Float
+        private const int DataType_String = 5;
+
+        private const int DataType_UInt16 = 6;
+        private const int DataType_UInt32 = 7;
 
     }
 }

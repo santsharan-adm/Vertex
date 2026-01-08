@@ -86,7 +86,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Active Alarms" FontSize="48" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center"/>
+            <TextBlock Text="Alarms View" FontSize="48" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center"/>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Button Content="{Binding FilterButtonText}"
