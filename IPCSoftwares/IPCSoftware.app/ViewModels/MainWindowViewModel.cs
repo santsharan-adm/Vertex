@@ -433,7 +433,7 @@ public class MainWindowViewModel : BaseViewModel
                     _nav.NavigateMain<ManualOperationView>();
                     break;
 
-                case "Mode Of Operation":
+                case "Control":
                     _nav.NavigateMain<ModeOfOperation>();
                     break;
 

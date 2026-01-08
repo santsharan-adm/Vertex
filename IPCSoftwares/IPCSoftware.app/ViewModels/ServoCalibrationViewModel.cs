@@ -490,8 +490,18 @@ namespace IPCSoftware.App.ViewModels
                 _logger.LogInfo($"Confirming {description}...", LogType.Audit);
 
                 // Pulse 1 -> 0
-                await _coreClient.WriteTagAsync(tagId, 1);
-                await Task.Delay(2000);
+              //  await _coreClient.WriteTagAsync(tagId, 1);
+
+                if (await _coreClient.WriteTagAsync(tagId, 1))
+                {
+                    _dialog.ShowMessage("Value updated sucessfully.");
+                }
+                else
+                {
+                    _dialog.ShowWarning("Failed to update value. Please check logs.");
+                }
+                await Task.Delay(200);
+
 
                 await _coreClient.WriteTagAsync(tagId, 0);
 

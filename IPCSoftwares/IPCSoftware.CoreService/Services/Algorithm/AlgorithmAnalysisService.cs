@@ -19,6 +19,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
         private readonly IPLCTagConfigurationService _tagService;
         public List<PLCTagConfigurationModel> Tags => _tags;
         private readonly bool _swapBytes;
+        private readonly bool _swapStringBytes;
 
         // Constants matching definitions in TagConfigLoader (after necessary mapping)
         private const int AlgoNo_Raw = 0;
@@ -41,6 +42,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
         {
             _tagService = tagService;
             _swapBytes = config.Value.SwapBytes;
+            _swapStringBytes = config.Value.SwapStringBytes;
             _ = GetTags();
         }
 
@@ -156,7 +158,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
                     case DataType_String:
                         byte[] bytesToDecode = byteArray;
                         // --- CONFIGURABLE BYTE SWAP (String) ---
-                        if (true)
+                        if (_swapStringBytes)
                         {
                             bytesToDecode = SwapEveryTwoBytes(byteArray);
                         }
