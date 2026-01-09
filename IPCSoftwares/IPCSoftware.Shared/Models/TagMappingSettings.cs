@@ -49,6 +49,7 @@ namespace IPCSoftware.Shared.Models
 
     public class OeeTags
     {
+        public int CycleStartTriggerCCD { get; set; }
         public int TriggerCCD { get; set; }
         public int ReadCompleteCCD { get; set; }
         public int Status { get; set; }

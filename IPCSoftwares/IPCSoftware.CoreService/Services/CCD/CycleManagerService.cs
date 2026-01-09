@@ -33,7 +33,6 @@ namespace IPCSoftware.CoreService.Services.CCD
        
         private int[] _stationMap;
 
-
         public CycleManagerService(
             IOptions<CcdSettings> ccdSettng, 
             IServoCalibrationService servoService,
@@ -239,7 +238,7 @@ namespace IPCSoftware.CoreService.Services.CCD
 
 
         public void ForceResetCycle()
-        {
+            {
             try
             {
                 _activeBatchId = string.Empty;
@@ -257,7 +256,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 }
 
                 Console.WriteLine("[System] Cycle Reset — Folder cleared completely.");
-                _logger.LogError("[System] Cycle Reset — Folder cleared completely." , LogType.Diagnostics  );
+                _logger.LogError("[System] Cycle Reset — Folder cleared completely." , LogType.Error  );
             }
             catch (Exception ex)
             {

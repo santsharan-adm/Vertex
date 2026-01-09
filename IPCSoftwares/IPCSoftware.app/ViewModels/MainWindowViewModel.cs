@@ -374,6 +374,8 @@ public class MainWindowViewModel : BaseViewModel
     {
         try
         {
+            if (!_nav.CanNavigateFromCurrent()) return;
+
             // Close sidebar
             if (!IsSidebarDocked)
             {

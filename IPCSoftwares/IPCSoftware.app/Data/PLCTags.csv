@@ -509,3 +509,4 @@
 508,508,SYS_DATA_READ_B7,1,40009,1,0,UInt16,0,0,0,"DM10009, System Data READ B7","Seconds DataStore second data in UINT format (e.g., 0~59)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",TRUE,None
 509,509,Manual B12,1,40225,1,0,Bit,11,0,0,DM10225,X origin,TRUE,None
 510,510,Manual B16,1,40225,1,0,Bit,15,0,0,D10225,Y origin,TRUE,None
+511,511,CD_DATA_Cycle_Start,1,40050,1,0,Bit,9,0,0,D10050,Cycle Squence Start and End,TRUE,None

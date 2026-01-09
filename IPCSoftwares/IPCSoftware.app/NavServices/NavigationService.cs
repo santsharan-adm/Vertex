@@ -449,7 +449,7 @@ namespace IPCSoftware.App.NavServices
 
         }
 
-        private bool CanNavigateFromCurrent()
+        public bool CanNavigateFromCurrent()
         {
             // 1. Get the current View
             if (_mainContent?.Content is FrameworkElement currentView)

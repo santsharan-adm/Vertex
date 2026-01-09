@@ -26,8 +26,9 @@ namespace IPCSoftware.CoreService.Services.CCD
         private readonly string  _tempImageFolder; 
         // State tracking
         private bool _lastTriggerState = false;
+        private bool _lastCycleStartState = false;
 
- 
+
 
         public CCDTriggerService
             (ICycleManagerService cycleManager,
@@ -51,8 +52,38 @@ namespace IPCSoftware.CoreService.Services.CCD
             try
             {
                 _plcManager = manager;
+
+                bool isCycleEnabled = false;
+
+                if (tagValues.TryGetValue(ConstantValues.CYCLE_START_TRIGGER_TAG_ID, out object cycleStartObj))
+                {
+                    if (cycleStartObj is bool bVal) isCycleEnabled = bVal;
+                    else if (cycleStartObj is int iVal) isCycleEnabled = iVal > 0;
+                }
+
+                // DETECT RESET CONDITION (Falling Edge: True -> False)
+                // Or just check if it is False to enforce Reset state continuously
+                if (!isCycleEnabled && _lastCycleStartState)
+                {
+                    Console.WriteLine("[CCD] Cycle Start Bit went LOW. Forcing Reset.");
+                    _logger.LogInfo("[CCD] Cycle Start Bit went LOW. Forcing Reset.", LogType.Audit);
+
+                    // Call the reset logic immediately
+                    _cycleManager.ForceResetCycle();
+
+                    // Optional: Write "Unchecked" or Reset status to PLC if needed
+                }
+
+                _lastCycleStartState = isCycleEnabled;
+
+                // IF CYCLE IS NOT ENABLED, STOP HERE. DO NOT PROCESS IMAGE TRIGGERS.
+                if (!isCycleEnabled)
+                {
+                    return;
+                }
                 // 1. Extract Trigger State (Tag 15)
                 bool currentTriggerState = false;
+
 
                 if (tagValues.TryGetValue(ConstantValues.TRIGGER_TAG_ID, out object triggerObj))
                 {
@@ -63,8 +94,9 @@ namespace IPCSoftware.CoreService.Services.CCD
                 // 2. Rising Edge Detection (False -> True)
                 if (currentTriggerState && !_lastTriggerState)
                 {
+                       // e.g. 08-12-2025
                     Console.WriteLine($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID}");
-                    _logger.LogInfo($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID}", LogType.Diagnostics);
+                    _logger.LogInfo($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID} {DateTime.Now.ToString("HH-mm-ss-fff")} ", LogType.Error);
 
                     // 3. Gather Data
                     string qrCode = tagValues.ContainsKey(ConstantValues.TAG_QR_DATA) ? tagValues[ConstantValues.TAG_QR_DATA]?.ToString() : null;
@@ -145,7 +177,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             }
         }
 
-        Stopwatch sp = new Stopwatch();
+       // Stopwatch sp = new Stopwatch();
         private async Task WriteAckToPlcAsync(bool writebool)
         {
             try
@@ -162,25 +194,22 @@ namespace IPCSoftware.CoreService.Services.CCD
                         if (writebool )
                         {
                             await client.WriteAsync(ackTag, true);
-                            sp.Start();
+                            _logger.LogInfo($"[CCD] Ack sent {1} to Tag {ConstantValues.Return_TAG_ID} {DateTime.Now.ToString("HH-mm-ss-fff")} ", LogType.Error);
+                           // sp.Start();
                         }
                         else
                         {
                             await client.WriteAsync(ackTag, false);
-                            sp.Stop();
+                            _logger.LogInfo($"[CCD] Ack sent {0} by Falling Edge  to Tag {ConstantValues.Return_TAG_ID} {DateTime.Now.ToString("HH-mm-ss-fff")}", LogType.Error);
+                           // sp.Stop();
                         }
-                        if (sp.Elapsed.TotalMilliseconds > 600)
-                        {
-                            await client.WriteAsync(ackTag, false);
-                            sp.Stop();
-                        }
-                        // await Task.Delay(200);
-                        Console.WriteLine($"[CCD] Ack sent to Tag {ConstantValues.Return_TAG_ID}");
-                        _logger.LogInfo ($"[CCD] Ack sent to Tag {ConstantValues.Return_TAG_ID}", LogType.Diagnostics);
+                        //if (sp.Elapsed.TotalMilliseconds > 600)
+                        //{
+                        //    await client.WriteAsync(ackTag, false);
+                        //    _logger.LogInfo($"[CCD] Ack sent {0} by timer  to Tag {ConstantValues.Return_TAG_ID}", LogType.Error);
 
-                        // PLC Logic: When PLC sees 15=True, it will set 10=False. 
-                        // Then PLC logic likely resets 15 to False later, or we toggle it.
-                        // Assuming Pulse behavior here.
+                        //    sp.Stop();
+                        //}
                     }
                 }
             }
@@ -216,7 +245,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                         }
                         catch { /* Locked, retry */ }
                     }
-                    await Task.Delay(200);
+                  //  await Task.Delay(200);
                 }
                 return null;
             }

@@ -104,7 +104,8 @@
     </UserControl.Resources>
 
     <Grid Margin="40">
-        <TabControl Background="Transparent" SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}" BorderThickness="0">
+        <TabControl Background="Transparent"  helpers:BlockTabChangeBehavior.BlockWhen="{Binding HasUnsavedChanges}"  BorderThickness="0">
+            
 
             <!-- TAB 1: SETUP & LIVE DATA -->
             <TabItem Header="Servo Params">

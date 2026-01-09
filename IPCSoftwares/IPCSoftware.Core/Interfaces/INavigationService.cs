@@ -48,6 +48,7 @@ namespace IPCSoftware.Core.Interfaces
 
         void NavigateToLogs(LogType logType);
         void NavigateToPLCTagConfiguration(PLCTagConfigurationModel tagToEdit, Func<Task> onSaveCallback);
+        bool CanNavigateFromCurrent();
 
     }
 
