@@ -24,5 +24,10 @@ namespace IPCSoftware.App.Views
         {
             InitializeComponent();
         }
+
+        private void TabControl_LostFocus(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

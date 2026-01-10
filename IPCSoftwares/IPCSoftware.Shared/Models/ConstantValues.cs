@@ -34,6 +34,7 @@ namespace IPCSoftware.Shared.Models
 
         // SYSTEM & OEE (Populated from ConfigSettings.TagMapping)
 
+        public static int CYCLE_START_TRIGGER_TAG_ID ;
         public static int TRIGGER_TAG_ID;
         public static int Return_TAG_ID;
         public static int TAG_QR_DATA;
@@ -150,6 +151,7 @@ namespace IPCSoftware.Shared.Models
 
                 //Oee
                 var oee = tags.OEE;
+                CYCLE_START_TRIGGER_TAG_ID = oee.CycleStartTriggerCCD;
                 TRIGGER_TAG_ID = oee.TriggerCCD;
                 Return_TAG_ID = oee.ReadCompleteCCD;
                 TAG_QR_DATA = oee.QR2dCode;

@@ -258,8 +258,8 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                     return Error($"PLC {cfg.PLCNo} not connected");
 
 
-                _logger.LogInfo($"Tag id  = {tagId} Tag Name = {cfg.Name} Value is = {value}  time is = {DateTime.Now.Millisecond}", LogType.Error);
-                Debug.WriteLine($"Tag id  = {tagId} Tag Name = {cfg.Name} Value is = {value}  time is = {DateTime.Now.Millisecond}");
+                //_logger.LogInfo($"Tag id  = {tagId} Tag Name = {cfg.Name} Value is = {value}  time is = {DateTime.Now.Millisecond}", LogType.Error);
+              //  Debug.WriteLine($"Tag id  = {tagId} Tag Name = {cfg.Name} Value is = {value}  time is = {DateTime.Now.Millisecond}");
                 await plc.WriteAsync(cfg, value);
 
                 SetCachedValue(tagId, value);

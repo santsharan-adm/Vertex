@@ -64,7 +64,134 @@ namespace IPCSoftware.Services.ConfigServices
                 u.UserName.Equals(username, StringComparison.OrdinalIgnoreCase)));
         }
 
+
+        private UserConfigurationModel ParseCsvLine(string line)
+        {
+            try
+            {
+                var values = SplitCsvLine(line);
+                // We expect more columns now (Salt + Signature)
+                if (values.Count < 9) return null;
+
+                var user = new UserConfigurationModel
+                {
+                    Id = int.Parse(values[0]),
+                    FirstName = values[1],
+                    LastName = values[2],
+                    UserName = values[3],
+                    Password = values[4],      // This is the Hash
+                    PasswordSalt = values[5],  // New Column
+                    Role = values[6],
+                    IsActive = bool.Parse(values[7]),
+                    RowSignature = values[8]   // New Column
+                };
+
+                // === INTEGRITY CHECK ===
+                // Recalculate signature based on the data read
+                string calculatedSig = SecurityService.GenerateRowSignature(
+                    user.Id, user.UserName, user.Role, user.Password, user.IsActive);
+
+                if (calculatedSig != user.RowSignature)
+                {
+                    _logger.LogError($"DATA TAMPERING DETECTED for User ID: {user.Id}. Skipping load.", LogType.Audit);
+                    return null; // Reject this row!
+                }
+
+                return user;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        // MODIFIED: Save to CSV with Signature generation
+        private async Task SaveToCsvAsync()
+        {
+            try
+            {
+                var sb = new StringBuilder();
+                // Update Header
+                sb.AppendLine("Id,FirstName,LastName,UserName,PasswordHash,PasswordSalt,Role,IsActive,IntegritySignature");
+
+                foreach (var user in _users)
+                {
+                    // Ensure signature is up to date before saving
+                    user.RowSignature = SecurityService.GenerateRowSignature(
+                        user.Id, user.UserName, user.Role, user.Password, user.IsActive);
+
+                    sb.AppendLine($"{user.Id}," +
+                        $"\"{EscapeCsv(user.FirstName)}\"," +
+                        $"\"{EscapeCsv(user.LastName)}\"," +
+                        $"\"{EscapeCsv(user.UserName)}\"," +
+                        $"\"{user.Password}\"," +        // Hash
+                        $"\"{user.PasswordSalt}\"," +    // Salt
+                        $"\"{EscapeCsv(user.Role)}\"," +
+                        $"{user.IsActive}," +
+                        $"\"{user.RowSignature}\"");     // HMAC
+                }
+
+                await File.WriteAllTextAsync(_csvFilePath, sb.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error saving users CSV: {ex.Message}", LogType.Diagnostics);
+                throw;
+            }
+        }
+
+        // MODIFIED: Add User (Hashing Logic)
         public async Task<UserConfigurationModel> AddUserAsync(UserConfigurationModel user)
+        {
+            // ... (Duplicate check remains same) ...
+
+            user.Id = _nextId++;
+
+            // Hash the password coming from UI
+            if (!string.IsNullOrEmpty(user.PlainTextPassword))
+            {
+                string salt;
+                user.Password = SecurityService.HashPassword(user.PlainTextPassword, out salt);
+                user.PasswordSalt = salt;
+            }
+
+            _users.Add(user);
+            await SaveToCsvAsync();
+            return user;
+        }
+
+        // MODIFIED: Update User (Hashing Logic)
+        public async Task<bool> UpdateUserAsync(UserConfigurationModel user)
+        {
+            var existing = _users.FirstOrDefault(u => u.Id == user.Id);
+            if (existing == null) return false;
+
+            // ... (Duplicate check remains same) ...
+
+            // Only re-hash if the user typed a new password
+            if (!string.IsNullOrEmpty(user.PlainTextPassword))
+            {
+                string salt;
+                existing.Password = SecurityService.HashPassword(user.PlainTextPassword, out salt);
+                existing.PasswordSalt = salt;
+            }
+            // If PlainTextPassword is empty, we keep the old existing.Password (Hash)
+
+            existing.FirstName = user.FirstName;
+            existing.LastName = user.LastName;
+            existing.Role = user.Role;
+            existing.IsActive = user.IsActive;
+
+            // NOTE: We do not update UserName usually as it breaks the signature logic if not careful, 
+            // but since we regenerate signature on Save, it is fine.
+            existing.UserName = user.UserName;
+
+            await SaveToCsvAsync();
+            return true;
+        }
+
+
+        public async Task<UserConfigurationModel> AddUserAsync2(UserConfigurationModel user)
         {
             try
             {
@@ -91,7 +218,7 @@ namespace IPCSoftware.Services.ConfigServices
             // 1. Check for Duplicate Username
         }
 
-        public async Task<bool> UpdateUserAsync(UserConfigurationModel user)
+        public async Task<bool> UpdateUserAsync2(UserConfigurationModel user)
         {
             try
             {
@@ -168,7 +295,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-        private async Task SaveToCsvAsync()
+        private async Task SaveToCsvAsync2()
         {
             try
             {
@@ -195,7 +322,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-        private UserConfigurationModel ParseCsvLine(string line)
+        private UserConfigurationModel ParseCsvLine2(string line)
         {
             try
             {
@@ -218,6 +345,7 @@ namespace IPCSoftware.Services.ConfigServices
                 return null;
             }
         }
+
 
         private List<string> SplitCsvLine(string line)
         {

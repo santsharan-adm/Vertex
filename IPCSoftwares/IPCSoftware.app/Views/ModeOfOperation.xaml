@@ -144,7 +144,7 @@
         </Grid.RowDefinitions>
 
         <Grid Margin="0,0,0,20">
-            <TextBlock Text="Conntrol" FontSize="48" FontWeight="Bold" Foreground="#333"/>
+            <TextBlock Text="Control" FontSize="48" FontWeight="Bold" Foreground="#333"/>
 
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Center">
                 <TextBlock Text="MACHINE HOME" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,15,0">
