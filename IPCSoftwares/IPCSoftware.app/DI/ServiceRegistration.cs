@@ -102,6 +102,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<OEEDashboardViewModel>();
         //    services.AddSingleton<OeeDashboardNewViewModel>();
             services.AddSingleton<UiTcpClient>();
+            services.AddSingleton<ShiftResetService>();
 
 
 

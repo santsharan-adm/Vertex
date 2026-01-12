@@ -38,12 +38,12 @@
                                             <Setter Property="Background">
                                                 <Setter.Value>
                                                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                        <GradientStop Color="#00E676" Offset="0"/>
-                                                        <GradientStop Color="#00C853" Offset="1"/>
+                                                        <GradientStop Color="#0F9D58" Offset="0"/>
+                                                        <GradientStop Color="#0F9D58" Offset="1"/>
                                                     </LinearGradientBrush>
                                                 </Setter.Value>
                                             </Setter>
-                                            <Setter Property="BorderBrush" Value="#00A040"/>
+                                            <Setter Property="BorderBrush" Value="#0F9D58"/>
                                         </DataTrigger>
 
                                         <DataTrigger Binding="{Binding IsMet}" Value="False">
@@ -85,7 +85,7 @@
                     <Setter Property="Background" Value="#E0E0E0"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding AllConditionsMet}" Value="True">
-                            <Setter Property="Background" Value="#00C853"/>
+                            <Setter Property="Background" Value="#0F9D58"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
