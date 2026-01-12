@@ -36,7 +36,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             {
                 if (!File.Exists(tempFilePath))
                 {
-                    _logger.LogInfo($"[Error] Source file not found: {tempFilePath}", LogType.Diagnostics);
+                    _logger.LogInfo($"[Error] Source file not found: {tempFilePath}", LogType.Error);
                     return string.Empty;
                 }
 
@@ -48,6 +48,15 @@ namespace IPCSoftware.CoreService.Services.CCD
                 // Metadata formats require specific date/time formats
                 string metaDate = now.ToString("yyyy_MM_dd");     //
                 string metaTime = now.ToString("HH:mm:ss.fff");   //
+
+                _logger.LogInfo($"[Error] qr Code string is: {uniqueDataString}", LogType.Error);
+
+                string hex = string.Join(" ",
+                             uniqueDataString.Select(c => ((int)c).ToString("X4")));
+
+                _logger.LogInfo(
+                    $"[Error] QR Code string (Char HEX): {hex}",
+                    LogType.Error);
 
                 // 2. Construct Folder Name
                 // Format: uniqueString_DateOfToday

@@ -61,13 +61,27 @@ namespace IPCSoftware.CoreService.Services.CCD
                     else if (cycleStartObj is int iVal) isCycleEnabled = iVal > 0;
                 }
 
+                if (!isCycleEnabled)
+                {
+                    if (tagValues.TryGetValue(ConstantValues.Return_TAG_ID, out object returnValue))
+                    {
+                        if (returnValue is bool bVal)
+                        {
+                            if (bVal == true)
+                            {
+                                WriteAckToPlcAsync(false);
+                            }
+                        }
+                    }
+                    
+                }
                 // DETECT RESET CONDITION (Falling Edge: True -> False)
                 // Or just check if it is False to enforce Reset state continuously
                 if (!isCycleEnabled && _lastCycleStartState)
                 {
                     Console.WriteLine("[CCD] Cycle Start Bit went LOW. Forcing Reset.");
                     _logger.LogInfo("[CCD] Cycle Start Bit went LOW. Forcing Reset.", LogType.Audit);
-
+                  //  await WriteAckToPlcAsync(false);
                     // Call the reset logic immediately
                     _cycleManager.ForceResetCycle();
 
@@ -81,6 +95,21 @@ namespace IPCSoftware.CoreService.Services.CCD
                 {
                     return;
                 }
+
+                string qrCodeNullCgeck = tagValues.ContainsKey(ConstantValues.TAG_QR_DATA) ? tagValues[ConstantValues.TAG_QR_DATA]?.ToString() : null;
+                if(qrCodeNullCgeck == null)
+                {
+                    return;
+                }
+
+
+                if ( (qrCodeNullCgeck.Contains('\0')))
+                {
+                    return;
+                }
+
+
+
                 // 1. Extract Trigger State (Tag 15)
                 bool currentTriggerState = false;
 
@@ -90,6 +119,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                     if (triggerObj is bool bVal) currentTriggerState = bVal;
                     else if (triggerObj is int iVal) currentTriggerState = iVal > 0;
                 }
+               
 
                 // 2. Rising Edge Detection (False -> True)
                 if (currentTriggerState && !_lastTriggerState)

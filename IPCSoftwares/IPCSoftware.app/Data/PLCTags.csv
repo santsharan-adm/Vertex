@@ -483,16 +483,16 @@
 482,482,CD_DATA_A7,1,40050,1,0,Bit,6,0,0,"DM10050, Dry Run Launching",(Control Data A7),TRUE,None
 483,483,CD_DATA_A8,1,40050,1,0,Bit,7,0,0,"DM10050, Cycle Stop Activating",(Control Data A8),TRUE,None
 484,484,CD_DATA_A9,1,40050,1,0,Bit,8,0,0,"DM10050, Mass return to origin Activation",(Control Data A9),TRUE,None
-485,485,CD_DATA_A10,1,40051,1,0,Bit,0,0,0,"DM10051, Startup condition 1",(Control Data A10),TRUE,None
-486,486,CD_DATA_A11,1,40051,1,0,Bit,1,0,0,"DM10051, Startup condition 2",(Control Data A11),TRUE,None
-487,487,CD_DATA_A12,1,40051,1,0,Bit,2,0,0,"DM10051, Startup condition 3",(Control Data A12),TRUE,None
-488,488,CD_DATA_A13,1,40051,1,0,Bit,3,0,0,"DM10051, Startup condition 4",(Control Data A13),TRUE,None
-489,489,CD_DATA_A14,1,40051,1,0,Bit,4,0,0,"DM10051, Startup condition 5",(Control Data A14),TRUE,None
-490,490,CD_DATA_A15,1,40051,1,0,Bit,5,0,0,"DM10051, Startup condition 6",(Control Data A15),TRUE,None
-491,491,CD_DATA_A16,1,40051,1,0,Bit,6,0,0,"DM10051, Startup condition 7",(Control Data A16),TRUE,None
-492,492,CD_DATA_A17,1,40051,1,0,Bit,7,0,0,"DM10051, Startup condition 8",(Control Data A17),TRUE,None
-493,493,CD_DATA_A18,1,40051,1,0,Bit,8,0,0,"DM10051, Startup condition 9",(Control Data A18),TRUE,None
-494,494,CD_DATA_A19,1,40051,1,0,Bit,9,0,0,"DM10051, Startup Condition 10",(Control Data A19),TRUE,None
+485,485,CD_DATA_A10,1,40051,1,0,Bit,0,0,0,"Ready to Drive ON",DM10051 (Control Data A10),TRUE,None
+486,486,CD_DATA_A11,1,40051,1,0,Bit,1,0,0,"Main air pressure sensor ON",DM10051 (Control Data A11),TRUE,None
+487,487,CD_DATA_A12,1,40051,1,0,Bit,2,0,0,"Servo motor 1 (X axis) Ready",DM10051 (Control Data A12),TRUE,None
+488,488,CD_DATA_A13,1,40051,1,0,Bit,3,0,0,"Servo motor 2 (Y axis) Ready",DM10051 (Control Data A13),TRUE,None
+489,489,CD_DATA_A14,1,40051,1,0,Bit,4,0,0,"Servo motor 1 (X axis) origin position",DM10051 (Control Data A14),TRUE,None
+490,490,CD_DATA_A15,1,40051,1,0,Bit,5,0,0,"Servo motor 2 (Y axis) origin position",DM10051 (Control Data A15),TRUE,None
+491,491,CD_DATA_A16,1,40051,1,0,Bit,6,0,0,"Conveyor ready",DM10051 (Control Data A16),TRUE,None
+492,492,CD_DATA_A17,1,40051,1,0,Bit,7,0,0,"Transport conveyor stopped",DM10051 (Control Data A17),TRUE,None
+493,493,CD_DATA_A18,1,40051,1,0,Bit,8,0,0,"Tray lift origin",DM10051 (Control Data A18),TRUE,None
+494,494,CD_DATA_A19,1,40051,1,0,Bit,9,0,0,"Positioning cylinder origin",DM10051 (Control Data A19),TRUE,None
 495,495,CD_DATA_A20,1,40051,1,0,Bit,10,0,0,"DM10051, Startup Condition 11",(Control Data A20),TRUE,None
 496,496,CD_DATA_A21,1,40051,1,0,Bit,11,0,0,"DM10051, Startup Condition 12",(Control Data A21),TRUE,None
 497,497,CD_DATA_A22,1,40051,1,0,Bit,12,0,0,"DM10051, Startup Condition 13",(Control Data A22),TRUE,None
@@ -510,3 +510,7 @@
 509,509,Manual B12,1,40225,1,0,Bit,11,0,0,DM10225,X origin,TRUE,None
 510,510,Manual B16,1,40225,1,0,Bit,15,0,0,D10225,Y origin,TRUE,None
 511,511,CD_DATA_Cycle_Start,1,40050,1,0,Bit,9,0,0,D10050,Cycle Squence Start and End,TRUE,None
+512,512,CD_DATA_B26,1,40059,1,0,Bit,0,0,0,D10059,Reset Oee Params,TRUE,None
+513,513,CD_DATA_A27,1,40054,1,0,Bit,0,0,0,D10054,Reset ackOee Params,TRUE,None
+514,514,CD_DATA_B27,1,40059,1,0,Bit,1,0,0,D10059,Reverse Converyor Direct,TRUE,None
+515,515,CD_DATA_A28,1,40054,1,0,Bit,1,0,0,D10054,Reverse Ack Converyor Direct,TRUE,None

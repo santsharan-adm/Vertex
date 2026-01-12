@@ -50,6 +50,10 @@ namespace IPCSoftware.Shared.Models
         public static int TAG_InFlow;
         public static int TAG_OK;
         public static int TAG_NG;
+        public static int RESET_TAG_ID ; // B26 (Your Reset/Start Command)
+        public static int RESET_ACK_TAG_ID ;
+        public static int REVERSE_TAG_ID ;
+        public static int REVERSE_ACK_TAG_ID;
 
 
         public static int TAG_Heartbeat_PLC;
@@ -148,6 +152,10 @@ namespace IPCSoftware.Shared.Models
 
                 TAG_Global_Ack = sys.GlobalAck;
                 TAG_Global_Reset = sys.GlobalReset;
+                RESET_TAG_ID = sys.ResetTag;
+                RESET_ACK_TAG_ID = sys.ResetAckTag;
+                REVERSE_TAG_ID = sys.ReverseTag;
+                REVERSE_ACK_TAG_ID = sys.ReverseAckTag;
 
                 //Oee
                 var oee = tags.OEE;

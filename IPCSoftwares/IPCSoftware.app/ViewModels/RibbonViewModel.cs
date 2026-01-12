@@ -67,7 +67,8 @@ public class RibbonViewModel : BaseViewModel
                 "Control",
                
                 "PLC IO",
-                "Alarm View"
+                "Alarm View",
+                "Startup Condition"
               
 
             }, nameof(OpenDashboardMenu));
@@ -147,6 +148,8 @@ public class RibbonViewModel : BaseViewModel
                 "Alarm Config",
                 // "User Config" is removed from here intentionally
                 "PLC TAG Config",
+                "Shift Config",
+
                 "Report Config",
                  "Servo Parameters",
                    "Time Sync",
