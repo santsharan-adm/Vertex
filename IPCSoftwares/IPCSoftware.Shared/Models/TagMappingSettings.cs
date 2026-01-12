@@ -69,6 +69,7 @@ namespace IPCSoftware.Shared.Models
         public int InFlow { get; set; }
         public int OK { get; set; }
         public int NG { get; set; }
+        public double IdealCycleTime { get; set; }
     }
 
     public class ModeTags

@@ -698,7 +698,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 int totalParts = GetInt(tagValues, ConstantValues.TAG_InFlow);
                 int okParts = GetInt(tagValues, ConstantValues.TAG_OK);
                 int ngParts = GetInt(tagValues, ConstantValues.TAG_NG);
-                int idealCycle = GetInt(tagValues, ConstantValues.TAG_CycleTime);
+                double idealCycle = ConstantValues.IDEAL_CYCLE_TIME;
 
                 // Get Actual Cycle time (only relevant if cycle completed normally)
                 int actualCycleTime = isCycleComplete ? GetInt(tagValues, ConstantValues.TAG_CycleTime) : 0;
@@ -880,6 +880,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             }
             return 0;
         }
+
 
         private string GetString(Dictionary<int, object> values, int tagId)
         {

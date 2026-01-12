@@ -50,6 +50,8 @@ namespace IPCSoftware.Shared.Models
         public static int TAG_InFlow;
         public static int TAG_OK;
         public static int TAG_NG;
+        public static double IDEAL_CYCLE_TIME;
+
         public static int RESET_TAG_ID ; // B26 (Your Reset/Start Command)
         public static int RESET_ACK_TAG_ID ;
         public static int REVERSE_TAG_ID ;
@@ -175,6 +177,7 @@ namespace IPCSoftware.Shared.Models
                 TAG_InFlow = oee.InFlow;
                 TAG_OK = oee.OK;
                 TAG_NG = oee.NG;
+                IDEAL_CYCLE_TIME = oee.IdealCycleTime;
 
                 // Modes
                 var modes = tags.Modes;
