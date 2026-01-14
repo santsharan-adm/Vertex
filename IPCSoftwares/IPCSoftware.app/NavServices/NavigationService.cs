@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualBasic.Logging;
 using System;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace IPCSoftware.App.NavServices
@@ -31,8 +32,10 @@ namespace IPCSoftware.App.NavServices
         // ---------------- MAIN AREA ----------------
         public void NavigateMain<TView>() where TView : UserControl
         {
+
             if (_mainContent == null)
                 throw new InvalidOperationException("NavigationService not configured");
+            if (!CanNavigateFromCurrent()) return;
 
             var view = App.ServiceProvider.GetService<TView>();
             _mainContent.Content = view;
@@ -160,6 +163,7 @@ namespace IPCSoftware.App.NavServices
         // --------------- DEVICE DETAIL ---------------
         public async void NavigateToDeviceDetail(DeviceModel device)
         {
+            if (!CanNavigateFromCurrent()) return;
             var detailView = App.ServiceProvider.GetService<DeviceDetailView>();
             var detailVM = App.ServiceProvider.GetService<DeviceDetailViewModel>();
              
@@ -172,6 +176,7 @@ namespace IPCSoftware.App.NavServices
         // --------------- Camera DETAIL ---------------
         public async void NavigateToCameraDetail(DeviceModel device)
         {
+            if (!CanNavigateFromCurrent()) return;
             var detailView = App.ServiceProvider.GetService<CameraDetailView>();
             var detailVM = App.ServiceProvider.GetService<CameraDetailViewModel>();
              
@@ -372,7 +377,7 @@ namespace IPCSoftware.App.NavServices
             // Create View + ViewModel via DI container
             var view = App.ServiceProvider.GetService<SystemSettingView>();
             var viewModel = App.ServiceProvider.GetService<SystemSettingViewModel>();
-
+            if (!CanNavigateFromCurrent()) return;
             // Assign VM to View
             view.DataContext = viewModel;
 
@@ -386,6 +391,7 @@ namespace IPCSoftware.App.NavServices
 
         public void NavigateToPLCTagConfiguration(PLCTagConfigurationModel tagToEdit, Func<Task> onSaveCallback)
         {
+
             var configView = App.ServiceProvider.GetService<PLCTagConfigurationView>();
             var configVM = App.ServiceProvider.GetService<PLCTagConfigurationViewModel>();
 
@@ -433,6 +439,7 @@ namespace IPCSoftware.App.NavServices
         // 1. Define the Navigation Command
         public void NavigateToLogs(LogType logType)
         {
+            if (!CanNavigateFromCurrent()) return;
             var view = App.ServiceProvider.GetRequiredService<LogView>();
             var vm = App.ServiceProvider.GetRequiredService<LogViewerViewModel>();
             _ = vm.LoadCategoryAsync(logType);
@@ -440,6 +447,24 @@ namespace IPCSoftware.App.NavServices
 
             _mainContent.Content = view;
 
+        }
+
+        public bool CanNavigateFromCurrent()
+        {
+            // 1. Get the current View
+            if (_mainContent?.Content is FrameworkElement currentView)
+            {
+                // 2. Get the ViewModel from DataContext
+                if (currentView.DataContext is INavigationalAware navAwareVM)
+                {
+                    // 3. Ask ViewModel if we can leave
+                    if (!navAwareVM.OnNavigatingFrom())
+                    {
+                        return false; // ViewModel said NO
+                    }
+                }
+            }
+            return true; // Safe to navigate
         }
 
 

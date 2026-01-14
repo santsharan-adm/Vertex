@@ -37,6 +37,9 @@ namespace IPCSoftware.App.ViewModels
         private readonly SafePoller _liveDataTimer;
         // 2. For Cycle Sync (JSON Polling) - e.g. Images, Inspection Results
         private readonly SafePoller _uiSyncTimer;
+        private readonly SafePoller _resetLogicTimer;
+        private int _resetTimerRunning = 0; // Lock for safety
+
         private int _liveDataRunning = 0;
 
         // --- JSON State Sync Variables ---
@@ -46,6 +49,8 @@ namespace IPCSoftware.App.ViewModels
 
         // --- Commands ---
         public ICommand ToggleThemeCommand { get; }
+        public ICommand ResetCommand { get; }
+        public ICommand ReverseCommand { get; }
         public ICommand ShowImageCommand { get; }
         public ICommand OpenCardDetailCommand { get; }
 
@@ -119,6 +124,51 @@ namespace IPCSoftware.App.ViewModels
         {
             get => _latestTheta;
             set => SetProperty(ref _latestTheta, value);
+        }
+
+
+        private bool _switchDirection;
+        public bool SwitchDirection
+        {
+            get => _switchDirection;
+            set
+            {
+                SetProperty(ref _switchDirection, value); OnPropertyChanged(nameof(ConveyorDirectionText)); OnPropertyChanged(nameof(ConveyorDirectionIcon));
+            }
+        }
+
+        private bool _isConveyorReverseActive;
+        public bool IsConveyorReverseActive
+        {
+            get => _isConveyorReverseActive;
+            set
+            {
+                if (SetProperty(ref _isConveyorReverseActive, value))
+                {
+                    // Refresh visuals when state changes
+                    OnPropertyChanged(nameof(ConveyorDirectionText));
+                    OnPropertyChanged(nameof(ConveyorDirectionIcon));
+                }
+            }
+        }
+
+        public string ConveyorDirectionText
+        {
+            get
+            {
+                bool isLeft = IsConveyorReverseActive ^ SwitchDirection;
+                return isLeft ? "Dir: Left" : "Dir: Right";
+            }
+        }
+
+        public string ConveyorDirectionIcon
+        {
+            get
+            {
+                bool isLeft = IsConveyorReverseActive ^ SwitchDirection;
+                // Unicode Arrows: ⬅ (Left), ➡ (Right)
+                return isLeft ? "⏪" : "⏩";
+            }
         }
 
 
@@ -216,6 +266,7 @@ namespace IPCSoftware.App.ViewModels
         public OEEDashboardViewModel(
             IPLCTagConfigurationService tagService,
             IOptions<CcdSettings> ccdSettng,
+            IOptions<ConfigSettings> configSettng,
             CoreClient coreClient,
             IDialogService dialog,
             ILogConfigurationService logConfigService,
@@ -225,6 +276,7 @@ namespace IPCSoftware.App.ViewModels
             _tagService = tagService;
             _coreClient = coreClient;
             _dialog = dialog;
+            SwitchDirection = configSettng.Value.SwitchConveyorDirection;
 
             var prodLogConfigTask = logConfigService.GetByLogTypeAsync(LogType.Production);
             prodLogConfigTask.Wait();
@@ -240,6 +292,9 @@ namespace IPCSoftware.App.ViewModels
 
             // --- COMMANDS ---
             ToggleThemeCommand = new RelayCommand(ToggleTheme);
+
+            ResetCommand = new RelayCommand((StartResetSequence));
+            ReverseCommand = new RelayCommand(async () => await ReverseAsync());
             OpenCardDetailCommand = new RelayCommand<string>(OpenCardDetail);
             ShowImageCommand = new RelayCommand<CameraImageItem>(ShowImage);
             LoadCycleTimeTrend();
@@ -251,6 +306,9 @@ namespace IPCSoftware.App.ViewModels
             // 2. UI Sync Timer (200ms) - Gets Images and Station Data from JSON (Cycle Synced)
             _uiSyncTimer = new SafePoller( TimeSpan.FromMilliseconds(100), UiSyncTick);
             _uiSyncTimer.Start();
+
+            _resetLogicTimer = new SafePoller(TimeSpan.FromMilliseconds(200), ResetSequenceTick);
+            _resetLogicTimer.Start();
 
             // Force initial sync
             SyncUiWithJson();
@@ -391,6 +449,67 @@ namespace IPCSoftware.App.ViewModels
 
         #region Timer Loops
 
+
+        private async Task ResetSequenceTick()
+        {
+            // Prevent re-entry if the previous tick is still processing (e.g. slow network)
+            if (Interlocked.Exchange(ref _resetTimerRunning, 1) == 1) return;
+
+            try
+            {
+                // Only run logic if we are NOT Idle
+                if (_resetState == ResetSequenceState.Idle) return;
+
+                switch (_resetState)
+                {
+                    case ResetSequenceState.TriggerReset:
+                        // Step A: Write B26 (Cycle Start) = TRUE
+                        await _coreClient.WriteTagAsync(ConstantValues.RESET_TAG_ID, true);
+
+                        _logger.LogInfo("State: TriggerReset -> Set B26 TRUE. Moving to Waiting.", LogType.Audit);
+
+                        // Start Timeout Timer
+                        _resetTimeoutStart = DateTime.Now;
+                        _resetState = ResetSequenceState.WaitingForAck;
+                        break;
+
+                    case ResetSequenceState.WaitingForAck:
+                        // Step B: Read Packet 5 to check for A27 (Ack)
+                        var ackData = await _coreClient.GetIoValuesAsync(5);
+
+                        bool ackReceived = false;
+                        if (ackData != null && GetBoolState(ackData, ConstantValues.RESET_ACK_TAG_ID))
+                        {
+                            ackReceived = true;
+                        }
+
+                        if (ackReceived)
+                        {
+                            _logger.LogInfo("State: Waiting -> Ack (A27) Received! Finishing.", LogType.Audit);
+
+                            // Step C: Write B26 = FALSE
+                            await _coreClient.WriteTagAsync(ConstantValues.RESET_TAG_ID, false);
+
+                            // Success UI Feedback
+                            _dialog.ShowMessage("Cycle Reset Successful.");
+                            _resetState = ResetSequenceState.Idle;
+                        }
+                       
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Reset Timer Error: {ex.Message}", LogType.Diagnostics);
+                // Reset state on crash so user can try again
+                _resetState = ResetSequenceState.Idle;
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _resetTimerRunning, 0);
+            }
+        }
+
         // Loop 1: Live Data (TCP)
         private async Task LiveDataTimerTick()
         {
@@ -427,9 +546,28 @@ namespace IPCSoftware.App.ViewModels
                     _logger.LogWarning("LiveDataTimerTick: GetIoValuesAsync timed out.", LogType.Diagnostics);
                 }
 
+                var getData = await _coreClient.GetIoValuesAsync(5);
+
+                if (getData.TryGetValue(ConstantValues.REVERSE_ACK_TAG_ID, out object revObj))
+                {
+
+                    bool newState = false;
+                    if (revObj is bool b) newState = b;
+                    else if (revObj is int i) newState = i > 0;
+
+                    // Only update if changed to avoid UI flicker/overhead
+                    if (IsConveyorReverseActive != newState)
+                    {
+                        // Dispatch to UI thread since properties affect UI
+                        Application.Current.Dispatcher.Invoke(() => IsConveyorReverseActive = newState);
+                    }
+                }
+
                 // NOTE: If you need to update Header/Summary values from liveData manually (without map):
                 // if (liveData.ContainsKey(99)) OverallOEE = Convert.ToDouble(liveData[99]);
             }
+
+
             catch (Exception ex)
             {
                 _logger.LogError("Live Data Error: " + ex.Message, LogType.Diagnostics);
@@ -622,6 +760,68 @@ namespace IPCSoftware.App.ViewModels
             : "/IPCSoftware.App;component/Styles/LightTheme.xaml";
         }
 
+        private async Task ReverseAsync()
+        {
+            try
+            {
+                // Toggle the current state
+                bool newState = !IsConveyorReverseActive;
+
+                _logger.LogInfo($"User toggling Conveyor Direction to: {newState}", LogType.Audit);
+
+                // Write to PLC
+                await _coreClient.WriteTagAsync(ConstantValues.REVERSE_TAG_ID, newState);
+
+                // Optional: Optimistic UI update (makes button feel instant)
+                IsConveyorReverseActive = newState;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Reverse Command Error: {ex.Message}", LogType.Diagnostics);
+                _dialog.ShowWarning("Failed to switch direction.");
+            }
+        }
+
+        private void StartResetSequence()
+        {
+            if (_resetState == ResetSequenceState.Idle)
+            {
+                _logger.LogInfo("Reset Sequence Initiated by User.", LogType.Audit);
+                _resetState = ResetSequenceState.TriggerReset;
+            }
+            else
+            {
+                _logger.LogWarning("Reset already in progress.", LogType.Audit);
+            }
+        }
+
+        private bool GetBoolState(Dictionary<int, object> tagValues, int tagId)
+        {
+            if (tagValues != null && tagValues.TryGetValue(tagId, out object val))
+            {
+                if (val is bool bVal) return bVal;
+                if (val is int iVal) return iVal > 0;
+                // Optional: Handle string "true"/"1" if needed
+                if (val is string sVal)
+                {
+                    return sVal.Equals("1") || sVal.Equals("true", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+            return false;
+        }
+
+        private enum ResetSequenceState
+        {
+            Idle,
+            TriggerReset,
+            WaitingForAck,
+            Complete
+        }
+
+        private ResetSequenceState _resetState = ResetSequenceState.Idle;
+        private DateTime _resetTimeoutStart;
+
+  
         private void ShowImage(CameraImageItem img)
         {
             try
@@ -924,6 +1124,7 @@ namespace IPCSoftware.App.ViewModels
                 _liveDataTimer.Dispose();
 
                 _uiSyncTimer.Dispose();
+                _resetLogicTimer.Dispose(); 
 
             }
             catch (Exception ex)

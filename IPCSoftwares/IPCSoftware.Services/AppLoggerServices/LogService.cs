@@ -5,6 +5,7 @@ using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -99,8 +100,14 @@ namespace IPCSoftware.Services.AppLoggerServices
 
                     if (parts.Count >= 4)
                     {
-                        if (DateTime.TryParse(parts[0], out var timestamp))
-                        {
+                        //if (DateTime.TryParse(parts[0], out var timestamp))
+                            if (DateTime.TryParseExact(
+                            parts[0],
+                            "yyyy-MM-dd HH:mm:ss:fff",
+                            CultureInfo.InvariantCulture,
+                            DateTimeStyles.None,
+                            out var timestamp))
+                            {
                             logs.Add(new LogEntry
                             {
                                 Timestamp = timestamp,

@@ -79,6 +79,7 @@ namespace IPCSoftware.App.DI
             //AppLogger 
       
             services.AddSingleton<ILogManagerService, LogManagerService>();
+            services.AddSingleton<IShiftManagementService, ShiftManagementService>();
           
 
 
@@ -101,13 +102,24 @@ namespace IPCSoftware.App.DI
             services.AddTransient<OEEDashboardViewModel>();
         //    services.AddSingleton<OeeDashboardNewViewModel>();
             services.AddSingleton<UiTcpClient>();
+            services.AddSingleton<ShiftResetService>();
 
 
 
 
             // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
+            services.AddTransient<ShiftConfigurationViewModel>();
+            services.AddTransient<ShiftConfigurationView>();
+
+
+            // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
             services.AddTransient<LogListViewModel>();
             services.AddTransient<LogConfigurationViewModel>();
+
+
+            // ========== Start Up Condition View (Transient) ==========
+            services.AddTransient<StartupConditionView>();
+            services.AddTransient<StartupConditionViewModel>();
 
             // ========== DEVICE CONFIGURATION VIEWMODELS (Transient) ==========
             services.AddTransient<DeviceListViewModel>();

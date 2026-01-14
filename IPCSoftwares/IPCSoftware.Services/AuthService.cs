@@ -16,24 +16,20 @@ namespace IPCSoftware.Services
         }
 
 
-    
+
         public async Task<(bool Success, string Role)> LoginAsync(string username, string password)
         {
             try
             {
-                // Get user from CSV
                 var user = await _userService.GetUserByUsernameAsync(username);
 
-                if (user == null)
-                    return (false, null);
+                if (user == null) return (false, null);
+                if (!user.IsActive) return (false, null);
 
-                // Check if user is active
-                if (!user.IsActive)
-                    return (false, null);
+                // MODIFIED: Use the SecurityService to verify
+                bool isValid = SecurityService.VerifyPassword(password, user.Password, user.PasswordSalt);
 
-                // Verify password
-                if (user.Password != password)
-                    return (false, null);
+                if (!isValid) return (false, null);
 
                 return (true, user.Role);
             }
@@ -43,6 +39,8 @@ namespace IPCSoftware.Services
                 return (false, null);
             }
         }
+
+    
 
         public async Task EnsureDefaultUserExistsAsync()
         {
@@ -55,6 +53,22 @@ namespace IPCSoftware.Services
                     u.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase));
 
                 if (defaultAdmin == null)
+                {
+                    var adminUser = new UserConfigurationModel
+                    {
+                        FirstName = "System",
+                        LastName = "Administrator",
+                        UserName = "admin",
+                        PlainTextPassword = "admin123", // Set via PlainText
+                        Role = "Admin",
+                        IsActive = true
+                    };
+                    // AddUserAsync will handle hashing automatically
+                    await _userService.AddUserAsync(adminUser);
+                    System.Diagnostics.Debug.WriteLine("Default admin user created");
+                }
+
+            /*    if (defaultAdmin == null)
                 {
                     // Create default admin user
                     var adminUser = new UserConfigurationModel
@@ -69,7 +83,7 @@ namespace IPCSoftware.Services
 
                     await _userService.AddUserAsync(adminUser);
                     System.Diagnostics.Debug.WriteLine("Default admin user created");
-                }
+                }*/
             }
             catch (Exception ex)
             {

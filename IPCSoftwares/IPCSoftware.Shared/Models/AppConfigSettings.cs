@@ -24,7 +24,9 @@ namespace IPCSoftware.Shared.Models
         public string ServoCalibrationFileName { get; set; }
         public string UserFileName { get; set; }
 
+        public bool SwitchConveyorDirection { get; set; } 
         public bool SwapBytes { get; set; } = true;
+        public bool SwapStringBytes { get; set; } = true;
         public int DefaultModBusAddress { get; set; }
 
         public TagMappingSettings TagMapping { get; set; } = new TagMappingSettings();
@@ -43,6 +45,12 @@ namespace IPCSoftware.Shared.Models
         public ClientMetaData ClientMetaDataParams { get; set; }
         //[JsonProperty("VendorMetaDataParams")]
         public VendorMetaData VendorMetaDataParams { get; set; }
+    }
+
+    public class StartupConditionConfig
+    {
+        public int TagId { get; set; }
+        public string Description { get; set; }
     }
 
 }

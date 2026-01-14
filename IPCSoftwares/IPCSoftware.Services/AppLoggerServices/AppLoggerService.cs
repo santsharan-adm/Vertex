@@ -111,7 +111,7 @@ namespace IPCSoftware.Services.AppLoggerServices
             // Doing this here ensures it happens on the background thread, not UI thread
             _logManager.ApplyMaintenance(config, filePath);
 
-            string line = $"{entry.Timestamp:yyyy-MM-dd HH:mm:ss},{entry.Level},\"{entry.Message}\",{config.LogName}{Environment.NewLine}";
+            string line = $"{entry.Timestamp:yyyy-MM-dd HH:mm:ss:fff},{entry.Level},\"{entry.Message}\",{config.LogName}{Environment.NewLine}";
 
             // RETRY POLICY: Handles the case where 'CoreService' and 'App' try to write simultaneously.
             // We try 3 times with a small delay.

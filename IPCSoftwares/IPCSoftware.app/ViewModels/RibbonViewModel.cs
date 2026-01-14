@@ -64,11 +64,12 @@ public class RibbonViewModel : BaseViewModel
             LoadMenu(new List<string>
             {
                 "Dashboard",
-                "Mode Of Operation",
-                "Servo Parameters",
+                "Control",
+               
                 "PLC IO",
                 "Alarm View",
-                "Time Sync",
+                "Startup Condition"
+              
 
             }, nameof(OpenDashboardMenu));
         }
@@ -147,7 +148,11 @@ public class RibbonViewModel : BaseViewModel
                 "Alarm Config",
                 // "User Config" is removed from here intentionally
                 "PLC TAG Config",
+                "Shift Config",
+
                 "Report Config",
+                 "Servo Parameters",
+                   "Time Sync",
                 "Diagnostic",
                 "External Interface"
             };
@@ -195,7 +200,7 @@ public class RibbonViewModel : BaseViewModel
     private void OpenLandingPage()
     {
         OnLandingPageRequested?.Invoke();  // notify MainWindowViewModel
-        _nav.NavigateMain<DashboardView>();
+        _nav.NavigateMain<ModeOfOperation>();
     }
 
     private void LoadMenu(List<string> items, string functionName)

@@ -129,6 +129,7 @@ public class MainWindowViewModel : BaseViewModel
         _dialog = dialog;
         _nav = nav;
         _alarmVM = alarmVM;
+        _alarmVM.ActiveAlarms.CollectionChanged += (s, e) => RefreshAlarmBanner();
         _timer = new SafePoller
         (TimeSpan.FromSeconds(1), LiveDataTimerTick);
         _timer.Start(); 
@@ -208,38 +209,36 @@ public class MainWindowViewModel : BaseViewModel
         }
     }
 
+    private void RefreshAlarmBanner()
+    {
+        var latestActiveAlarm = _alarmVM.ActiveAlarms
+            .Where(a => a.AlarmResetTime == null)
+            .OrderByDescending(a => a.AlarmTime)
+            .FirstOrDefault();
+
+        if (latestActiveAlarm != null)
+        {
+            AlarmBannerMessage = $"⚠️ ALARM {latestActiveAlarm.AlarmNo}: {latestActiveAlarm.AlarmText}";
+
+            if (latestActiveAlarm.Severity == "High") AlarmBannerColor = "#D32F2F";
+            else if (latestActiveAlarm.Severity == "Warning") AlarmBannerColor = "#F57C00";
+            else AlarmBannerColor = "#1976D2";
+        }
+        else
+        {
+            AlarmBannerMessage = "No Critical Alarms";
+            AlarmBannerColor = "#1976D2";
+        }
+
+        ActiveAlarmCount = _alarmVM.ActiveAlarms.Count(a => a.AlarmResetTime == null);
+        IsAlarmBannerVisible = ActiveAlarmCount > 0;
+    }
+
     private void OnAlarmReceived(AlarmMessage msg)
     {
         try
         {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                // 1. Identify the latest active (non-reset) alarm first
-                var latestActiveAlarm = _alarmVM.ActiveAlarms
-                    .Where(a => a.AlarmResetTime == null)
-                    .OrderByDescending(a => a.AlarmTime)
-                    .FirstOrDefault();
-
-                if (latestActiveAlarm != null)
-                {
-                    AlarmBannerMessage = $"⚠️ ALARM {latestActiveAlarm.AlarmNo}: {latestActiveAlarm.AlarmText}";
-
-                    if (latestActiveAlarm.Severity == "High") AlarmBannerColor = "#D32F2F";
-                    else if (latestActiveAlarm.Severity == "Warning") AlarmBannerColor = "#F57C00";
-                    else AlarmBannerColor = "#1976D2";
-                }
-                else
-                {
-                    AlarmBannerMessage = "No Critical Alarms";
-                    AlarmBannerColor = "#1976D2";
-                }
-
-                // Count only alarms that have not been reset
-                ActiveAlarmCount = _alarmVM.ActiveAlarms.Count(a => a.AlarmResetTime == null);
-
-                // Control Visibility
-                IsAlarmBannerVisible = ActiveAlarmCount > 0;
-            });
+            Application.Current.Dispatcher.Invoke(RefreshAlarmBanner);
         }
         catch (Exception ex)
         {
@@ -375,6 +374,8 @@ public class MainWindowViewModel : BaseViewModel
     {
         try
         {
+            if (!_nav.CanNavigateFromCurrent()) return;
+
             // Close sidebar
             if (!IsSidebarDocked)
             {
@@ -417,6 +418,9 @@ public class MainWindowViewModel : BaseViewModel
                 case "Log Config":
                     _nav.NavigateMain<LogListView>();
                     break;
+                case "Startup Condition":
+                    _nav.NavigateMain<StartupConditionView>();
+                    break;
                 case "Device Config":
                     _nav.NavigateMain<DeviceListView>();
                     break;
@@ -433,7 +437,7 @@ public class MainWindowViewModel : BaseViewModel
                     _nav.NavigateMain<ManualOperationView>();
                     break;
 
-                case "Mode Of Operation":
+                case "Control":
                     _nav.NavigateMain<ModeOfOperation>();
                     break;
 
@@ -443,6 +447,10 @@ public class MainWindowViewModel : BaseViewModel
 
                 case "Diagnostic":
                     _nav.NavigateMain<TagControlView>();
+                    break;
+
+                case "Shift Config":
+                    _nav.NavigateMain<ShiftConfigurationView>();
                     break;
 
                 case "PLC TAG Config":

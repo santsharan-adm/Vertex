@@ -1,5 +1,5 @@
 ﻿Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark,CanWrite,IOType
-1,1,CD_COM_PULSE_PLC,1,40001,1,0,Bit,0,0,0,"DM10000, Heart beat signal1","Pulse PLC to IPC, PLC?IPC Heartbeat SignalEvery 1 second, send a signal of 0?1/1?0Received by polling every 1 second / If there is no change for 3 seconds,it is considered an abnormality",TRUE,None
+1,1,CD_COM_PULSE_PLC,1,40000,1,0,Bit,0,0,0,"DM10000, Heart beat signal1","Pulse PLC to IPC, PLC?IPC Heartbeat SignalEvery 1 second, send a signal of 0?1/1?0Received by polling every 1 second / If there is no change for 3 seconds,it is considered an abnormality",TRUE,None
 2,2,CD_COM_PULSE_IPC,1,40015,1,0,Bit,0,0,0,"DM10015, Heart beat signal2","Pulse IPC to PLC, SignalEvery 1 second, send a signal of 0?1/1?0Received by polling every 1 second / If there is no change for 3 seconds, it is considered an abnormality",TRUE,None
 3,3,SYS_DATA_B1,1,40015,1,0,Bit,1,0,0,"DM10015, System Data B1","Time storage completion signalWhen time storage is complete, set it to 0?1.Always see a 0 or 1 change at scan time",TRUE,None
 4,4,SYS_DATA_B2,1,40019,1,0,UInt16,0,0,0,"DM10019, System Data B2","Yearly DataStore year data in UINT format (e.g., 2025,2026)When the time storage completion signal reaches 0?1, check the IN data on the PLC",TRUE,None
@@ -126,32 +126,32 @@
 125,125,SYS_PARAMETER_A16,1,40324,2,0,UInt32,0,0,0,"DM10324, System Parameter A16","Y-axis_movement speedStore the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",TRUE,None
 126,126,SYS_PARAMETER_A17,1,40326,2,0,UInt32,0,0,0,"DM10326, System Parameter A17","Y-axis_movement accelerationStore the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",TRUE,None
 127,127,SYS_PARAMETER_A18,1,40328,2,0,UInt32,0,0,0,"DM10328, System Parameter A18","Y-axis_movement decelerationStore the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",TRUE,None
-128,128,SYS_PARAMETER_A19,1,40330,2,1,UInt32,0,0,21474836.48,"DM10330, System Parameter A19","X-axis _Pos.0 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
-129,129,SYS_PARAMETER_A20,1,40332,2,1,UInt32,0,0,21474836.48,"DM10332, System Parameter A20","X-axis _Pos.1 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
-130,130,SYS_PARAMETER_A21,1,40334,2,1,UInt32,0,0,21474836.48,"DM10334, System Parameter A21","X-axis _Pos.2 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
-131,131,SYS_PARAMETER_A22,1,40336,2,1,UInt32,0,0,21474836.48,"DM10336, System Parameter A22","X-axis _Pos.3 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
-132,132,SYS_PARAMETER_A23,1,40338,2,1,UInt32,0,0,21474836.48,"DM10338, System Parameter A23","X-axis _Pos.4 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
-133,133,SYS_PARAMETER_A24,1,40340,2,1,UInt32,0,0,21474836.48,"DM10340, System Parameter A24","X-axis _Pos.5 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
-134,134,SYS_PARAMETER_A25,1,40342,2,1,UInt32,0,0,21474836.48,"DM10342, System Parameter A25","X-axis _Pos.6 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
-135,135,SYS_PARAMETER_A26,1,40344,2,1,UInt32,0,0,21474836.48,"DM10344, System Parameter A26","X-axis _Pos.7 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
-136,136,SYS_PARAMETER_A27,1,40346,2,1,UInt32,0,0,21474836.48,"DM10346, System Parameter A27","X-axis _Pos.8 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
-137,137,SYS_PARAMETER_A28,1,40348,2,1,UInt32,0,0,21474836.48,"DM10348, System Parameter A28","X-axis _Pos.9 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
-138,138,SYS_PARAMETER_A29,1,40350,2,1,UInt32,0,0,21474836.48,"DM10350, System Parameter A29","X-axis _Pos.10 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
-139,139,SYS_PARAMETER_A30,1,40352,2,1,UInt32,0,0,21474836.48,"DM10352, System Parameter A30","X-Axis_Pos.11 Coordinate RegistrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
-140,140,SYS_PARAMETER_A31,1,40354,2,1,UInt32,0,0,21474836.48,"DM10354, System Parameter A31","X-axis_Pos.12 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
-141,141,SYS_PARAMETER_A32,1,40356,2,1,UInt32,0,0,21474836.48,"DM10356, System Parameter A32","Y-axis _Pos.0 coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
-142,142,SYS_PARAMETER_A33,1,40358,2,1,UInt32,0,0,21474836.48,"DM10358, System Parameter A33","Y-axis _Pos.1 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
-143,143,SYS_PARAMETER_A34,1,40360,2,1,UInt32,0,0,21474836.48,"DM10360, System Parameter A34","Y_Pos.2 Coordinate RegistrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
-144,144,SYS_PARAMETER_A35,1,40362,2,1,UInt32,0,0,21474836.48,"DM10362, System Parameter A35","Y-axis _Pos.3 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
-145,145,SYS_PARAMETER_A36,1,40364,2,1,UInt32,0,0,21474836.48,"DM10364, System Parameter A36","Y-axis _Pos.4 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
-146,146,SYS_PARAMETER_A37,1,40366,2,1,UInt32,0,0,21474836.48,"DM10366, System Parameter A37","Y_Pos.5 Coordinate RegistrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
-147,147,SYS_PARAMETER_A38,1,40368,2,1,UInt32,0,0,21474836.48,"DM10368, System Parameter A38","Y-axis _Pos.6 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
-148,148,SYS_PARAMETER_A39,1,40370,2,1,UInt32,0,0,21474836.48,"DM10370, System Parameter A39","Y-axis_Pos.7 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
-149,149,SYS_PARAMETER_A40,1,40372,2,1,UInt32,0,0,21474836.48,"DM10372, System Parameter A40","Y-axis_Pos.8 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
-150,150,SYS_PARAMETER_A41,1,40374,2,1,UInt32,0,0,21474836.48,"DM10374, System Parameter A41","Y-axis _Pos.9 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
-151,151,SYS_PARAMETER_A42,1,40376,2,1,UInt32,0,0,21474836.48,"DM10376, System Parameter A42","Y_Pos.10 Coordinate RegistrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
-152,152,SYS_PARAMETER_A43,1,40378,2,1,UInt32,0,0,21474836.48,"DM10378, System Parameter A43","Y-axis_Pos.11 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
-153,153,SYS_PARAMETER_A44,1,40380,2,1,UInt32,0,0,21474836.48,"DM10380, System Parameter A44","Y-axis _Pos.12 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+128,128,SYS_PARAMETER_A19,1,40330,2,1,UInt32,0,0,100,"DM10330, System Parameter A19","X-axis _Pos.0 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+129,129,SYS_PARAMETER_A20,1,40332,2,1,UInt32,0,0,100,"DM10332, System Parameter A20","X-axis _Pos.1 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+130,130,SYS_PARAMETER_A21,1,40334,2,1,UInt32,0,0,100,"DM10334, System Parameter A21","X-axis _Pos.2 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+131,131,SYS_PARAMETER_A22,1,40336,2,1,UInt32,0,0,100,"DM10336, System Parameter A22","X-axis _Pos.3 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+132,132,SYS_PARAMETER_A23,1,40338,2,1,UInt32,0,0,100,"DM10338, System Parameter A23","X-axis _Pos.4 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+133,133,SYS_PARAMETER_A24,1,40340,2,1,UInt32,0,0,100,"DM10340, System Parameter A24","X-axis _Pos.5 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+134,134,SYS_PARAMETER_A25,1,40342,2,1,UInt32,0,0,100,"DM10342, System Parameter A25","X-axis _Pos.6 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+135,135,SYS_PARAMETER_A26,1,40344,2,1,UInt32,0,0,100,"DM10344, System Parameter A26","X-axis _Pos.7 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+136,136,SYS_PARAMETER_A27,1,40346,2,1,UInt32,0,0,100,"DM10346, System Parameter A27","X-axis _Pos.8 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+137,137,SYS_PARAMETER_A28,1,40348,2,1,UInt32,0,0,100,"DM10348, System Parameter A28","X-axis _Pos.9 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+138,138,SYS_PARAMETER_A29,1,40350,2,1,UInt32,0,0,100,"DM10350, System Parameter A29","X-axis _Pos.10 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+139,139,SYS_PARAMETER_A30,1,40352,2,1,UInt32,0,0,100,"DM10352, System Parameter A30","X-Axis_Pos.11 Coordinate RegistrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+140,140,SYS_PARAMETER_A31,1,40354,2,1,UInt32,0,0,100,"DM10354, System Parameter A31","X-axis_Pos.12 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+141,141,SYS_PARAMETER_A32,1,40356,2,1,UInt32,0,0,100,"DM10356, System Parameter A32","Y-axis _Pos.0 coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+142,142,SYS_PARAMETER_A33,1,40358,2,1,UInt32,0,0,100,"DM10358, System Parameter A33","Y-axis _Pos.1 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+143,143,SYS_PARAMETER_A34,1,40360,2,1,UInt32,0,0,100,"DM10360, System Parameter A34","Y_Pos.2 Coordinate RegistrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+144,144,SYS_PARAMETER_A35,1,40362,2,1,UInt32,0,0,100,"DM10362, System Parameter A35","Y-axis _Pos.3 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+145,145,SYS_PARAMETER_A36,1,40364,2,1,UInt32,0,0,100,"DM10364, System Parameter A36","Y-axis _Pos.4 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+146,146,SYS_PARAMETER_A37,1,40366,2,1,UInt32,0,0,100,"DM10366, System Parameter A37","Y_Pos.5 Coordinate RegistrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+147,147,SYS_PARAMETER_A38,1,40368,2,1,UInt32,0,0,100,"DM10368, System Parameter A38","Y-axis _Pos.6 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+148,148,SYS_PARAMETER_A39,1,40370,2,1,UInt32,0,0,100,"DM10370, System Parameter A39","Y-axis_Pos.7 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+149,149,SYS_PARAMETER_A40,1,40372,2,1,UInt32,0,0,100,"DM10372, System Parameter A40","Y-axis_Pos.8 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+150,150,SYS_PARAMETER_A41,1,40374,2,1,UInt32,0,0,100,"DM10374, System Parameter A41","Y-axis _Pos.9 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+151,151,SYS_PARAMETER_A42,1,40376,2,1,UInt32,0,0,100,"DM10376, System Parameter A42","Y_Pos.10 Coordinate RegistrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+152,152,SYS_PARAMETER_A43,1,40378,2,1,UInt32,0,0,100,"DM10378, System Parameter A43","Y-axis_Pos.11 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+153,153,SYS_PARAMETER_A44,1,40380,2,1,UInt32,0,0,100,"DM10380, System Parameter A44","Y-axis _Pos.12 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
 154,154,SYS_PARAMETER_B1,1,40450,2,0,Float,0,0,0,"DM10450, System Parameter B1",X-axis_current coordinatesStore the current value in the DMPolling in 0.5 seconds,TRUE,None
 155,155,SYS_PARAMETER_B2,1,40452,2,0,Float,0,0,0,"DM10452, System Parameter B2",Y-axis_current coordinatesStore the current value in the DMPolling in 0.5 seconds,TRUE,None
 156,156,X3000_ ES,1,40250,1,0,Bit,0,0,0,"DM10250, X3000_ emergency stop input RY2",Inputs1,TRUE,Input
@@ -474,7 +474,7 @@
 473,473,IO_OUTPUT158,1,40269,1,0,Bit,13,0,0,"DM10269, Outputs 158",Outputs 158,TRUE,Output
 474,474,IO_OUTPUT159,1,40269,1,0,Bit,14,0,0,"DM10269, Outputs 159",Outputs 159,TRUE,Output
 475,475,IO_OUTPUT160,1,40269,1,0,Bit,15,0,0,"DM10269, Outputs 160",Outputs 160,TRUE,Output
-476,476,SYS_DATA_A1,1,40001,1,0,Bit,1,0,0,"DM10000, (System Data A1)","Pulse PLC to IPC, Time adjustment start signalWhen time adjustment is required, set to 0?1Receive by polling every 5 seconds and store each data",TRUE,None
+476,476,SYS_DATA_A1,1,40000,1,0,Bit,1,0,0,"DM10000, (System Data A1)","Pulse PLC to IPC, Time adjustment start signalWhen time adjustment is required, set to 0?1Receive by polling every 5 seconds and store each data",TRUE,None
 477,477,CD_DATA_A2,1,40050,1,0,Bit,1,0,0,"DM10050, Auto Run Condition Validation Signal",(Control Data A2),TRUE,None
 478,478,CD_DATA_A3,1,40050,1,0,Bit,2,0,0,"DM10050, Dry Run Condition Validation Signal",(Control Data A3),TRUE,None
 479,479,CD_DATA_A4,1,40050,1,0,Bit,3,0,0,"DM10050, Cycle Stop Condition Validation Signal",(Control Data A4),TRUE,None
@@ -483,16 +483,16 @@
 482,482,CD_DATA_A7,1,40050,1,0,Bit,6,0,0,"DM10050, Dry Run Launching",(Control Data A7),TRUE,None
 483,483,CD_DATA_A8,1,40050,1,0,Bit,7,0,0,"DM10050, Cycle Stop Activating",(Control Data A8),TRUE,None
 484,484,CD_DATA_A9,1,40050,1,0,Bit,8,0,0,"DM10050, Mass return to origin Activation",(Control Data A9),TRUE,None
-485,485,CD_DATA_A10,1,40051,1,0,Bit,0,0,0,"DM10051, Startup condition 1",(Control Data A10),TRUE,None
-486,486,CD_DATA_A11,1,40051,1,0,Bit,1,0,0,"DM10051, Startup condition 2",(Control Data A11),TRUE,None
-487,487,CD_DATA_A12,1,40051,1,0,Bit,2,0,0,"DM10051, Startup condition 3",(Control Data A12),TRUE,None
-488,488,CD_DATA_A13,1,40051,1,0,Bit,3,0,0,"DM10051, Startup condition 4",(Control Data A13),TRUE,None
-489,489,CD_DATA_A14,1,40051,1,0,Bit,4,0,0,"DM10051, Startup condition 5",(Control Data A14),TRUE,None
-490,490,CD_DATA_A15,1,40051,1,0,Bit,5,0,0,"DM10051, Startup condition 6",(Control Data A15),TRUE,None
-491,491,CD_DATA_A16,1,40051,1,0,Bit,6,0,0,"DM10051, Startup condition 7",(Control Data A16),TRUE,None
-492,492,CD_DATA_A17,1,40051,1,0,Bit,7,0,0,"DM10051, Startup condition 8",(Control Data A17),TRUE,None
-493,493,CD_DATA_A18,1,40051,1,0,Bit,8,0,0,"DM10051, Startup condition 9",(Control Data A18),TRUE,None
-494,494,CD_DATA_A19,1,40051,1,0,Bit,9,0,0,"DM10051, Startup Condition 10",(Control Data A19),TRUE,None
+485,485,CD_DATA_A10,1,40051,1,0,Bit,0,0,0,"Ready to Drive ON",DM10051 (Control Data A10),TRUE,None
+486,486,CD_DATA_A11,1,40051,1,0,Bit,1,0,0,"Main air pressure sensor ON",DM10051 (Control Data A11),TRUE,None
+487,487,CD_DATA_A12,1,40051,1,0,Bit,2,0,0,"Servo motor 1 (X axis) Ready",DM10051 (Control Data A12),TRUE,None
+488,488,CD_DATA_A13,1,40051,1,0,Bit,3,0,0,"Servo motor 2 (Y axis) Ready",DM10051 (Control Data A13),TRUE,None
+489,489,CD_DATA_A14,1,40051,1,0,Bit,4,0,0,"Servo motor 1 (X axis) origin position",DM10051 (Control Data A14),TRUE,None
+490,490,CD_DATA_A15,1,40051,1,0,Bit,5,0,0,"Servo motor 2 (Y axis) origin position",DM10051 (Control Data A15),TRUE,None
+491,491,CD_DATA_A16,1,40051,1,0,Bit,6,0,0,"Conveyor ready",DM10051 (Control Data A16),TRUE,None
+492,492,CD_DATA_A17,1,40051,1,0,Bit,7,0,0,"Transport conveyor stopped",DM10051 (Control Data A17),TRUE,None
+493,493,CD_DATA_A18,1,40051,1,0,Bit,8,0,0,"Tray lift origin",DM10051 (Control Data A18),TRUE,None
+494,494,CD_DATA_A19,1,40051,1,0,Bit,9,0,0,"Positioning cylinder origin",DM10051 (Control Data A19),TRUE,None
 495,495,CD_DATA_A20,1,40051,1,0,Bit,10,0,0,"DM10051, Startup Condition 11",(Control Data A20),TRUE,None
 496,496,CD_DATA_A21,1,40051,1,0,Bit,11,0,0,"DM10051, Startup Condition 12",(Control Data A21),TRUE,None
 497,497,CD_DATA_A22,1,40051,1,0,Bit,12,0,0,"DM10051, Startup Condition 13",(Control Data A22),TRUE,None
@@ -509,3 +509,8 @@
 508,508,SYS_DATA_READ_B7,1,40009,1,0,UInt16,0,0,0,"DM10009, System Data READ B7","Seconds DataStore second data in UINT format (e.g., 0~59)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",TRUE,None
 509,509,Manual B12,1,40225,1,0,Bit,11,0,0,DM10225,X origin,TRUE,None
 510,510,Manual B16,1,40225,1,0,Bit,15,0,0,D10225,Y origin,TRUE,None
+511,511,CD_DATA_Cycle_Start,1,40050,1,0,Bit,9,0,0,D10050,Cycle Squence Start and End,TRUE,None
+512,512,CD_DATA_B26,1,40059,1,0,Bit,0,0,0,D10059,Reset Oee Params,TRUE,None
+513,513,CD_DATA_A27,1,40054,1,0,Bit,0,0,0,D10054,Reset ackOee Params,TRUE,None
+514,514,CD_DATA_B27,1,40059,1,0,Bit,1,0,0,D10059,Reverse Converyor Direct,TRUE,None
+515,515,CD_DATA_A28,1,40054,1,0,Bit,1,0,0,D10054,Reverse Ack Converyor Direct,TRUE,None

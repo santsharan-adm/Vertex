@@ -22,6 +22,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         private readonly AlgorithmAnalysisService _algo;
         private readonly OeeEngine _oee ;
         private readonly SystemMonitorService _systemMonitor;
+        private readonly ShiftResetService _shiftReset;
         private readonly CCDTriggerService _ccdTrigger; // 1. Add field
         private readonly AlarmService _alarmService;
 
@@ -33,6 +34,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         public DashboardInitializer(PLCClientManager manager,
             AlgorithmAnalysisService algo,
             OeeEngine oee,
+            ShiftResetService shiftReset,
             SystemMonitorService systemMonitor,
           UiListener ui,
           AlarmService alarmService,
@@ -40,6 +42,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             IAppLogger logger) : base(logger)
         {
             _ui = ui;
+            _shiftReset = shiftReset;
             _alarmService = alarmService;   
             _systemMonitor = systemMonitor;
             _oee = oee;
@@ -69,11 +72,14 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
                         // B. CHECK FOR TRIGGERS (This is where the magic happens)
                         // We call this immediately after processing values, but before updating UI
+
+
                       _ccdTrigger.ProcessTriggers(processedData, _manager);
                         _oee.ProcessCycleTimeLogic(processedData);
                         _oee.Calculate(processedData);
                         _systemMonitor.Process(processedData);
                         _alarmService.ProcessTagData(processedData);
+                        _shiftReset.Process(processedData);
 
                         // C. Prepare for UI (Convert int Key to uint Key for compatibility)
                         var final = processedData.ToDictionary(k => (int)k.Key, v => v.Value);
@@ -258,8 +264,8 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                     return Error($"PLC {cfg.PLCNo} not connected");
 
 
-                _logger.LogInfo($"Tag id  = {tagId} Tag Name = {cfg.Name} Value is = {value}  time is = {DateTime.Now.Millisecond}", LogType.Error);
-                Debug.WriteLine($"Tag id  = {tagId} Tag Name = {cfg.Name} Value is = {value}  time is = {DateTime.Now.Millisecond}");
+                //_logger.LogInfo($"Tag id  = {tagId} Tag Name = {cfg.Name} Value is = {value}  time is = {DateTime.Now.Millisecond}", LogType.Error);
+              //  Debug.WriteLine($"Tag id  = {tagId} Tag Name = {cfg.Name} Value is = {value}  time is = {DateTime.Now.Millisecond}");
                 await plc.WriteAsync(cfg, value);
 
                 SetCachedValue(tagId, value);

@@ -32,6 +32,8 @@
     <None Remove="Data\LogConfigurations.csv" />
     <None Remove="Data\PLCTags.csv" />
     <None Remove="Data\PLCTagsOld.csv" />
+    <None Remove="Data\Shifts.csv" />
+    <None Remove="Data\StartupConditions.json" />
     <None Remove="Data\Users.csv" />
   </ItemGroup>
 
@@ -49,6 +51,12 @@
     <Content Include="Controls\Images\landingpage.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\Shifts.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\StartupConditions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -57,6 +65,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="xunit" Version="2.5.3" />
+    <PackageReference Include="xunit.core" Version="2.5.3" />
   </ItemGroup>
 
   <ItemGroup>

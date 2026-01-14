@@ -175,11 +175,16 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
-                                        <TextBlock  FontSize="{StaticResource LabelFontSize}"
-                                                    Margin="{StaticResource LabelMargin}" 
-                                                    Text="PLC No" Style="{StaticResource HmiLabelStyle}"/>
-                                        <TextBox Text="{Binding PLCNo, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                        <TextBlock FontSize="{StaticResource LabelFontSize}"
+                               Margin="{StaticResource LabelMargin}" 
+                               Text="PLC Device" Style="{StaticResource HmiLabelStyle}"/>
+
+                                        <ComboBox ItemsSource="{Binding AvailablePLCs}"
+                              SelectedValue="{Binding PLCNo, UpdateSourceTrigger=PropertyChanged}"
+                              SelectedValuePath="DeviceNo"
+                              DisplayMemberPath="DeviceName" 
+                              Style="{StaticResource HmiComboBoxStyle}"
+                          />
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="2">
@@ -200,12 +205,20 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
-                                        <TextBlock  FontSize="{StaticResource LabelFontSize}"
-                                                    Margin="{StaticResource LabelMargin}" 
-                                                    Text="Data Type" Style="{StaticResource HmiLabelStyle}"/>
-                                        <TextBox Text="{Binding DataType, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Style="{StaticResource HmiTextBoxStyle}"/>
+                                        <TextBlock FontSize="{StaticResource LabelFontSize}"
+                                     Margin="{StaticResource LabelMargin}" 
+                                     Text="Data Type" Style="{StaticResource HmiLabelStyle}"/>
+
+                                                                            <ComboBox ItemsSource="{Binding DataTypes}"
+                                    SelectedValue="{Binding DataType, UpdateSourceTrigger=PropertyChanged}"
+                                    SelectedValuePath="Id"
+                                    DisplayMemberPath="Name"
+                                    Style="{StaticResource HmiComboBoxStyle}"/>
                                     </StackPanel>
+                                    
+                                    
+                                    
+                                    
 
                                     <StackPanel Grid.Column="2">
                                         <TextBlock FontSize="{StaticResource LabelFontSize}" 
