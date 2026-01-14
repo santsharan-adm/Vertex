@@ -13,6 +13,7 @@ namespace IPCSoftware.Shared.Models
         public ModeTags Modes { get; set; } = new();
         public ManualTags Manual { get; set; } = new();
         public ServoTags Servo { get; set; } = new();
+        public External ExternalTags { get; set; } = new();
     }
 
     public class TagPair
@@ -50,6 +51,15 @@ namespace IPCSoftware.Shared.Models
         public TagPair Second { get; set; } = new();
 
     }
+
+    public class External
+    {
+        public int CavityStatus { get; set; }
+        public int DataReady { get; set; }
+        public int SeqRegStart { get; set; }
+    
+    }
+
 
     public class OeeTags
     {

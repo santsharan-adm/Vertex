@@ -1,6 +1,7 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
+using IPCSoftware.CoreService.Services.External;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
@@ -10,47 +11,48 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Services.CCD
 {
     public class CycleManagerService : BaseService, ICycleManagerService
     {
+        // ... (Fields) ...
         private readonly IPLCTagConfigurationService _tagService;
         private readonly PLCClientManager _plcManager;
         private readonly ProductionImageService _imageService;
-        private readonly IServoCalibrationService _servoService; // Injected
-        //private readonly IConfiguration _configuration;
+        private readonly IServoCalibrationService _servoService;
+        private readonly ExternalInterfaceService _extService;
 
-        // State Variables
         private string _activeBatchId = string.Empty;
-
-        // This tracks the "Step Number" (0, 1, 2, 3...) not the Station ID
         private int _currentSequenceStep = 0;
-
-        // Path to the JSON file shared with UI
         private readonly string _stateFilePath;
-
-       
+        private readonly string _quarantinePath;
         private int[] _stationMap;
 
         public CycleManagerService(
-                 IPLCTagConfigurationService tagService,
+            IPLCTagConfigurationService tagService,
             PLCClientManager plcManager,
-            IOptions<CcdSettings> ccdSettng, 
+            IOptions<CcdSettings> appSettings,
             IServoCalibrationService servoService,
             ProductionImageService imageService,
+            ExternalInterfaceService extService,
             IAppLogger logger) : base(logger)
         {
-            var ccd = ccdSettng.Value;
+            var ccd = appSettings.Value;
             _tagService = tagService;
             _plcManager = plcManager;
             _imageService = imageService;
-            _servoService = servoService;   
+            _servoService = servoService;
+            _extService = extService;
+
             _stateFilePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
-            // _stateFilePath = Path.Combine(ConstantValues.QrCodeImagePath, "CurrentCycleState.json");
+            string baseOut = ccd.BaseOutputDir ;
+            _quarantinePath = Path.Combine(baseOut, "Quarantine");
+            if (!Directory.Exists(_quarantinePath)) Directory.CreateDirectory(_quarantinePath);
+
             _ = LoadStationMapAsync();
         }
 
@@ -58,53 +60,33 @@ namespace IPCSoftware.CoreService.Services.CCD
         {
             try
             {
-                // Use the Service - Single Source of Truth
                 var positions = await _servoService.LoadPositionsAsync();
-
                 if (positions != null && positions.Count > 0)
                 {
-                    // Filter out Home (0) and sort by SequenceIndex (1 to 12)
                     _stationMap = positions
                         .Where(p => p.PositionId != 0 && p.SequenceIndex > 0)
-                        .OrderBy(p => p.PositionId)
-                        .Select(p => p.SequenceIndex)
+                        .OrderBy(p => p.SequenceIndex)
+                        .Select(p => p.PositionId)
                         .ToArray();
-
-                    Console.WriteLine($"[CycleManager] Loaded sequence: {string.Join("->", _stationMap)}");
                 }
+                else _stationMap = new int[] { 1, 2, 3, 6, 5, 4, 7, 8, 9, 12, 11, 10 };
             }
-            catch (Exception ex)
-            {
-        
-                _logger.LogError($"[CycleManager] Error loading sequence: {ex.Message}", LogType.Diagnostics);
-                // Absolute fallback if Service fails entirely
-                _stationMap = new int[] { 1, 2, 3, 6, 5, 4, 7, 8, 9, 12, 11, 10 };
-            }
+            catch { _stationMap = new int[] { 1, 2, 3, 6, 5, 4, 7, 8, 9, 12, 11, 10 }; }
         }
 
         public void HandleIncomingData(string tempImagePath, Dictionary<string, object> stationData, string qrString = null)
         {
-            // Reload map at start of cycle to ensure we have latest config if it changed
-            if (_currentSequenceStep == 0 && string.IsNullOrEmpty(_activeBatchId))
+            if (_currentSequenceStep == 0 && string.IsNullOrEmpty(_activeBatchId)) _ = LoadStationMapAsync();
+
+            if (string.IsNullOrEmpty(_activeBatchId))
             {
-                _ = LoadStationMapAsync();
+                if (!string.IsNullOrEmpty(qrString)) StartNewCycle(tempImagePath, qrString);
             }
-            // CASE 1: Start of Cycle (QR Scan)
-            if (string.IsNullOrEmpty(_activeBatchId) )
-            {
-                if (!string.IsNullOrEmpty(qrString))
-                {
-                    StartNewCycle(tempImagePath, qrString);
-                }
-            }
-            // CASE 2: Inspection Steps
             else
             {
                 HandleInspectionStep(tempImagePath, stationData);
             }
         }
-
-
 
         private void StartNewCycle(string tempImagePath, string qrString)
         {
@@ -113,111 +95,122 @@ namespace IPCSoftware.CoreService.Services.CCD
                 Console.WriteLine($"--- NEW CYCLE START: {qrString} ---");
                 _logger.LogInfo($"--- NEW CYCLE START: {qrString} ---", LogType.Diagnostics);
 
-                // 1. Reset State
                 _activeBatchId = qrString;
                 _currentSequenceStep = 0;
 
-                // 2. Clear old JSON file if exists
+                // 1. SYNC WITH MAC MINI
+                // This fetches the JSON, maps it, writes to PLC, and updates internal flags
+                // We use .Result or Wait() here cautiously because this is inside a sync void method called by TriggerService
+                // Ideally trigger service awaits this.
+                _extService.SyncBatchStatusAsync(qrString).Wait();
+
                 if (File.Exists(_stateFilePath)) File.Delete(_stateFilePath);
 
-                // 3. Process Station 0 Image (QR Image)
-                string destPath = _imageService.ProcessAndMoveImage(tempImagePath, _activeBatchId, 0,0,0,0, true);
+                // 2. Initialize JSON State with Pre-Calculated NG status
+                // This ensures UI shows Red immediately for NG parts
+                InitializeCycleStateWithExternalStatus();
 
-                // 4. Create Initial JSON State
-                UpdateJsonState(0, destPath, "OK", 0, 0, 0);
+                // 3. Process QR Image
+                string destPath = _imageService.ProcessAndMoveImage(tempImagePath, _activeBatchId, 0, 0, 0, 0, true);
+                // Update QR entry in JSON (Station 0)
+                UpdateJsonEntry(0, destPath, "OK", 0, 0, 0);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, LogType.Diagnostics);
-            }
+            catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); }
         }
 
+
+
+        private void InitializeCycleStateWithExternalStatus()
+        {
+            try
+            {
+                var state = new CycleStateModel { BatchId = _activeBatchId, LastUpdated = DateTime.Now };
+
+                // Populate placeholders for all 12 stations based on External Status
+                for (int i = 0; i < 12; i++)
+                {
+                    // Map sequence index 'i' to physical station
+                    int physId = _stationMap.Length > i ? _stationMap[i] : (i + 1);
+
+                    // Check External Status using Sequence Index (0-11)
+                    bool isNg = _extService.IsSequenceRestricted(i);
+
+                    state.Stations[physId] = new StationResult
+                    {
+                        StationNumber = physId,
+                        Status = isNg ? "NG" : "Unchecked",
+                        ImagePath = null, // No image yet
+                        Timestamp = DateTime.Now
+                    };
+                }
+
+                File.WriteAllText(_stateFilePath, JsonConvert.SerializeObject(state, Formatting.Indented));
+            }
+            catch { }
+        }
 
         private void HandleInspectionStep(string tempImagePath, Dictionary<string, object> data)
         {
             try
             {
-                if (_stationMap == null || _stationMap.Length == 0)
-                {
-                    Console.WriteLine("[Error] Station Map not loaded.");
-                    return;
-                }
-                if (_currentSequenceStep >= _stationMap.Length)
-                {
-                    ForceResetCycle();
-                    return;
-                }
+                if (_stationMap == null || _stationMap.Length == 0) return;
+                if (_currentSequenceStep >= _stationMap.Length) { ForceResetCycle(); return; }
 
                 int physicalStationId = _stationMap[_currentSequenceStep];
-                Console.WriteLine($"--- PROCESSING STATION {physicalStationId} ---");
-                _logger.LogInfo($"--- PROCESSING STATION {physicalStationId} ---", LogType.Diagnostics);
+                Console.WriteLine($"--- PROCESSING STATION {physicalStationId} (Seq {_currentSequenceStep}) ---");
 
-                // 1. Extract Data
                 double x = data.ContainsKey("X") ? Convert.ToDouble(data["X"]) : 0.0;
                 double y = data.ContainsKey("Y") ? Convert.ToDouble(data["Y"]) : 0.0;
                 double z = data.ContainsKey("Z") ? Convert.ToDouble(data["Z"]) : 0.0;
                 string status = data.ContainsKey("Status") ? data["Status"].ToString() : "OK";
 
-                // 2. Process Image
-                string destUiPath = _imageService.ProcessAndMoveImage(tempImagePath, _activeBatchId, physicalStationId, x,y, z);
+                // 2. CHECK STATUS (Using Sequence Step Index)
+                bool isExternalNg = _extService.IsSequenceRestricted(_currentSequenceStep);
+                string destUiPath;
 
-                // 3. Update JSON State
-                UpdateJsonState(physicalStationId, destUiPath, status, x, y, z);
+                if (isExternalNg)
+                {
+                    status = "NG";
+                    _logger.LogWarning($"[Cycle] Seq {_currentSequenceStep} (Stn {physicalStationId}) quarantined.", LogType.Production);
 
-                // 4. Advance Step
+                    // Move to Quarantine
+                    string fileName = Path.GetFileName(tempImagePath);
+                    string destFile = Path.Combine(_quarantinePath, $"{DateTime.Now:yyyyMMdd_HHmmss}_{fileName}");
+                    File.Move(tempImagePath, destFile);
+                    destUiPath = string.Empty;
+                }
+                else
+                {
+                    destUiPath = _imageService.ProcessAndMoveImage(tempImagePath, _activeBatchId, physicalStationId, x, y, z);
+                }
+
+                UpdateJsonEntry(physicalStationId, destUiPath, status, x, y, z);
+
                 _currentSequenceStep++;
 
-                // 5. Check Cycle Complete
                 if (_currentSequenceStep >= _stationMap.Length)
                 {
-                    Console.WriteLine("--- CYCLE COMPLETE. RESETTING IN 1s ---");
-                    _logger.LogInfo("--- CYCLE COMPLETE. RESETTING IN 1s ---", LogType.Diagnostics);
-                    // Run background task to reset so we don't block the ACK
-                    Task.Run(async () =>
-                    {
-                        await Task.Delay(1500); // Wait 1.5s (allow UI to see last result)
-                        ForceResetCycle();
-                    });
+                    Console.WriteLine("--- CYCLE COMPLETE ---");
+                    Task.Run(async () => { await Task.Delay(1500); ForceResetCycle(); });
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, LogType.Diagnostics);
-            }
+            catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); }
         }
 
-
-        private void UpdateJsonState(int stationNo, string imgPath, string status, double x, double y, double z)
+        private void UpdateJsonEntry(int stationNo, string imgPath, string status, double x, double y, double z)
         {
             try
             {
-                CycleStateModel state;
+                string json = File.Exists(_stateFilePath) ? File.ReadAllText(_stateFilePath) : "";
+                var state = string.IsNullOrEmpty(json) ? new CycleStateModel { BatchId = _activeBatchId } : JsonConvert.DeserializeObject<CycleStateModel>(json);
 
-                // Load existing or create new
-                if (File.Exists(_stateFilePath))
-                {
-                    string json = File.ReadAllText(_stateFilePath);
-                    state = JsonConvert.DeserializeObject<CycleStateModel>(json) ?? new CycleStateModel();
-                }
-                else
-                {
-                    state = new CycleStateModel { BatchId = _activeBatchId };
-                }
-
-                // Update/Add Station Data
                 if (stationNo == 0)
                 {
-                    state.BatchId = _activeBatchId; // Ensure batch ID is set
-
-                    state.Stations[stationNo] = new StationResult
-                    {
-                        StationNumber = stationNo,
-                        ImagePath = imgPath,
-                        Timestamp = DateTime.Now
-                    };
+                    state.Stations[stationNo] = new StationResult { StationNumber = 0, ImagePath = imgPath, Timestamp = DateTime.Now };
                 }
                 else
                 {
+                    // We might update an existing placeholder created in Init
                     state.Stations[stationNo] = new StationResult
                     {
                         StationNumber = stationNo,
@@ -231,50 +224,55 @@ namespace IPCSoftware.CoreService.Services.CCD
                 }
 
                 state.LastUpdated = DateTime.Now;
-
-                // Write back
-                string output = JsonConvert.SerializeObject(state, Formatting.Indented);
-                File.WriteAllText(_stateFilePath, output);
+                File.WriteAllText(_stateFilePath, JsonConvert.SerializeObject(state, Formatting.Indented));
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error updating JSON state: {ex.Message}");
-                _logger.LogError($"Error updating JSON state: {ex.Message}", LogType.Diagnostics);
-            }
+            catch (Exception ex) { _logger.LogError($"Error updating JSON: {ex.Message}", LogType.Diagnostics); }
         }
 
-        private async Task WriteTagAsync( )
+   
+        private async Task WriteTagAsync()
         {
+            // Use ConstantValues for Tag ID (initialized from appsettings via Program.cs)
             int tagNo = ConstantValues.Return_TAG_ID;
             try
             {
                 var allTags = await _tagService.GetAllTagsAsync();
                 var tag = allTags.FirstOrDefault(t => t.TagNo == tagNo);
+
                 if (tag != null)
                 {
                     var client = _plcManager.GetClient(tag.PLCNo);
-                    if (client != null)
-                    {
-                        await client.WriteAsync(tag, 0);
-                        _logger.LogInfo($"[CycleTime] Ack Tag {tagNo} set to {false}", LogType.Error);
-                    }
+                    if (client != null) await client.WriteAsync(tag, 0);
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError($"[Error] CycleTime Write Tag {tagNo}: {ex.Message}", LogType.Diagnostics);
-            }
+            catch (Exception ex) { _logger.LogError($"[Error] Ack Tag {tagNo}: {ex.Message}", LogType.Diagnostics); }
         }
 
+        private async Task WriteToPlc(int tagId, object value)
+        {
+            try
+            {
+                var allTags = await _tagService.GetAllTagsAsync();
+                var tagConfig = allTags.FirstOrDefault(t => t.TagNo == tagId);
+
+                if (tagConfig == null || tagConfig.ModbusAddress <= 0) return;
+
+                var client = _plcManager.GetClient(tagConfig.PLCNo);
+                if (client != null) await client.WriteAsync(tagConfig, value);
+            }
+            catch (Exception ex) { _logger.LogError($"Ext Write Error ({tagId}): {ex.Message}", LogType.Diagnostics); }
+        }
 
         public void ForceResetCycle()
-            {
+        {
             try
             {
                 _activeBatchId = string.Empty;
                 _currentSequenceStep = 0;
 
-                string folder = Path.GetDirectoryName(_stateFilePath);  //ConstantValues.QrCodeImagePath;
+             
+                string folder = Path.GetDirectoryName(_stateFilePath);
+
 
                 if (Directory.Exists(folder))
                 {
@@ -283,17 +281,15 @@ namespace IPCSoftware.CoreService.Services.CCD
                     {
                         File.Delete(file);
                     }
+                    WriteToPlc(ConstantValues.Return_TAG_ID, 0);
+                     WriteToPlc(ConstantValues.Ext_DataReady, 0);
+                      
+                    WriteTagAsync(); // Reset Ack
+                    Console.WriteLine("[System] Cycle Reset.");
+                    _logger.LogError("[System] Cycle Reset — Folder cleared completely.", LogType.Error);
                 }
-                WriteTagAsync();
-
-                Console.WriteLine("[System] Cycle Reset — Folder cleared completely.");
-                _logger.LogError("[System] Cycle Reset — Folder cleared completely." , LogType.Error  );
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, LogType.Diagnostics);
-            }
+            catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); }
         }
-
     }
 }

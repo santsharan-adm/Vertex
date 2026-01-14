@@ -20,5 +20,8 @@ namespace IPCSoftware.Shared
         public int NGParts { get; set; }
         public int CycleTime { get; set; }
         public int TotalParts { get; set; }
+        public double XValue { get; set; }
+        public double YValue { get; set; }
+        public double AngleValue { get; set; }
     }
 }

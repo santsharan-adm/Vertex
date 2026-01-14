@@ -11,6 +11,7 @@ using IPCSoftware.CoreService.Alarm;
 using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.CoreService.Services.Dashboard;
+using IPCSoftware.CoreService.Services.External;
 using IPCSoftware.CoreService.Services.Logging;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
@@ -33,6 +34,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
             services.AddSingleton<ICycleManagerService, CycleManagerService>();
+            services.AddSingleton<ExternalInterfaceService>();
             services.AddSingleton<ICcdConfigService, CcdConfigService>();
             services.AddSingleton<AlgorithmAnalysisService>();
             services.AddSingleton<DashboardInitializer>();

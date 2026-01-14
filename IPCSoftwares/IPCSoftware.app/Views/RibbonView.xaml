@@ -109,12 +109,21 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-
+            <StackPanel>
             <TextBlock Text="AOI System" Foreground="White" FontSize="36" FontWeight="Bold" VerticalAlignment="Center" Margin="25,0,0,0">
                 <TextBlock.Effect>
                     <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2" Opacity="0.3"/>
                 </TextBlock.Effect>
             </TextBlock>
+                <TextBlock Text="{Binding MachineName}" Foreground="White" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Margin="25,0,0,0">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2" Opacity="0.3"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+
+            </StackPanel>
+            
+            
         </StackPanel>
 
         <!-- Center: Menu Buttons (Updated Order) -->

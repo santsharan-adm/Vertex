@@ -460,6 +460,36 @@
                             </TextBlock>
                             
                             
+                            <Ellipse Width="16" Height="16" Margin="20,0,8,0">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="Green"/>
+                                        <!-- Default: Connected -->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected2}" Value="False">
+                                                <Setter Property="Fill" Value="Red"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+
+                            <TextBlock FontSize="20" FontWeight="Bold" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="MAC MINI CONNECTED"/>
+                                        <Setter Property="Foreground" Value="Green"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected2}" Value="False">
+                                                <Setter Property="Text" Value="MAC MINI DISCONNECTED"/>
+                                                <Setter Property="Foreground" Value="Red"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            
+                            
 
                         </StackPanel>
                     </StackPanel>

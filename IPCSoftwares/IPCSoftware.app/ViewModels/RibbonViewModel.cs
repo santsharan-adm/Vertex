@@ -3,7 +3,9 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Windows.Input;
 
@@ -31,10 +33,12 @@ public class RibbonViewModel : BaseViewModel
     public Action<(string Key, List<string> Items)> ShowSidebar { get; set; }   // NEW
 
     public RibbonViewModel(
+        IOptions<ExternalSettings> extSetting,
         INavigationService nav,
         IDialogService dialog,
         IAppLogger logger) : base(logger)
     {
+        MachineName = extSetting.Value.AOIMachineCode;
         _nav = nav;
         _dialog = dialog;
 
@@ -57,6 +61,9 @@ public class RibbonViewModel : BaseViewModel
     public string CurrentUserRole=> CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Role.ToLower()) ?? "Guest";
     public bool IsConfigRibbonVisible => IsAdmin || IsSupervisor;
 
+
+    public string MachineName
+    { get; }
     private void OpenDashboardMenu()
     {
         try

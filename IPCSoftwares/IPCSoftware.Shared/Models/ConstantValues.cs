@@ -9,30 +9,12 @@ namespace IPCSoftware.Shared.Models
 {
     public static class ConstantValues
     {
-       
-       // public static int QR_DATA_TAG_ID = 16;
-        //confirmation id=15--->true
 
-/*        public static int TAG_QR_DATA = 16;
-        public static int TAG_STATUS = 17; // 1=OK, 2=NG
-        public static int TAG_X = 18;
-        public static int TAG_Y = 19;
-        public static int TAG_Z = 20;*/
+        // NEW: External Interface Tags
+        public static int Ext_CavityStatus;
+        public static int Ext_DataReady;
+        public static int Ext_SeqRegStart;
 
-       // public static int TAG_CTL_CYCLETIME_A1= 21;
-       // public static int TAG_CycleTime= 22;
-       // public static int TAG_CTL_CYCLETIME_B1= 23;
-
-        // public static int TAG_UpTime = 24;
-        // public static int TAG_DownTime = 26;
-
-        //  public static int TAG_InFlow= 27;
-        // public static int TAG_OK= 28;
-        // public static int TAG_NG= 29;
-
-
-
-        // SYSTEM & OEE (Populated from ConfigSettings.TagMapping)
 
         public static int CYCLE_START_TRIGGER_TAG_ID ;
         public static int TRIGGER_TAG_ID;
@@ -229,6 +211,15 @@ namespace IPCSoftware.Shared.Models
                 Servo_DeAccel = s.DeAccel;
                 Servo_Pos_Start = s.PosStart;
                 Servo_Live = s.Live;
+
+                var e = tags.ExternalTags;
+                if (e != null)
+                {
+                    Ext_CavityStatus = e.CavityStatus;
+                    Ext_DataReady = e.DataReady;
+                  
+                    Ext_SeqRegStart = e.SeqRegStart;
+                }
             }
         }
 

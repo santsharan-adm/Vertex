@@ -499,8 +499,8 @@
 498,498,CD_DATA_A23,1,40051,1,0,Bit,13,0,0,"DM10051, Startup Condition 14",(Control Data A23),TRUE,None
 499,499,CD_DATA_A24,1,40051,1,0,Bit,14,0,0,"DM10051, Startup Condition 15",(Control Data A24),TRUE,None
 500,500,CD_DATA_A25,1,40051,1,0,Bit,15,0,0,"DM10051, Startup Condition 16",(Control Data A25),TRUE,None
-501,501,SYS_PARAMETER_A45,1,40382,2,0,UInt32,0,0,0,"DM10382, System Parameter a45",X - Axis Home,TRUE,None
-502,502,SYS_PARAMETER_A46,1,40384,2,0,UInt32,0,0,0,"DM10384, System Parameter a46",Y- Axis Home,TRUE,None
+501,501,CTL_EXTINT_DATAIN ,1,40059,1,0,Bit,2,0,0,DM10059,After mapping is complete, the IPC sends a confirmation signal to the PLC,TRUE,None
+502,502,CD_DATA_B6,1,40056,1,0,UInt16,0,0,0,D10056,All Cavity  Status (OK_NG),TRUE,None
 503,503,SYS_DATA_READ_B2,1,40004,1,0,UInt16,0,0,0,"DM10004, System Data READ B2","Yearly DataStore year data in UINT format (e.g., 2025,2026)When the time storage completion signal reaches 0?1, check the IN data on the PLC",TRUE,None
 504,504,SYS_DATA_READ_B3,1,40005,1,0,UInt16,0,0,0,"DM10005, System Data READ B3","Monthly dataStore monthly data in UINT format (e.g., 1~12)When the time storage completion signal reaches 0?1, check the IN data on the PLC",TRUE,None
 505,505,SYS_DATA_READ_B4,1,40006,1,0,UInt16,0,0,0,"DM10006, System Data READ B4","Daily DataStore day data in UINT format (e.g., 1~31)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",TRUE,None
@@ -508,9 +508,13 @@
 507,507,SYS_DATA_READ_B6,1,40008,1,0,UInt16,0,0,0,"DM10008, System Data READ B6","Minute DataStore minute data in UINT format (e.g., 0~59)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",TRUE,None
 508,508,SYS_DATA_READ_B7,1,40009,1,0,UInt16,0,0,0,"DM10009, System Data READ B7","Seconds DataStore second data in UINT format (e.g., 0~59)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",TRUE,None
 509,509,Manual B12,1,40225,1,0,Bit,11,0,0,DM10225,X origin,TRUE,None
-510,510,Manual B16,1,40225,1,0,Bit,15,0,0,D10225,Y origin,TRUE,None
-511,511,CD_DATA_Cycle_Start,1,40050,1,0,Bit,9,0,0,D10050,Cycle Squence Start and End,TRUE,None
-512,512,CD_DATA_B26,1,40059,1,0,Bit,0,0,0,D10059,Reset Oee Params,TRUE,None
-513,513,CD_DATA_A27,1,40054,1,0,Bit,0,0,0,D10054,Reset ackOee Params,TRUE,None
-514,514,CD_DATA_B27,1,40059,1,0,Bit,1,0,0,D10059,Reverse Converyor Direct,TRUE,None
-515,515,CD_DATA_A28,1,40054,1,0,Bit,1,0,0,D10054,Reverse Ack Converyor Direct,TRUE,None
+510,510,Manual B16,1,40225,1,0,Bit,15,0,0,DM10225,Y origin,TRUE,None
+511,511,CD_DATA_A26,1,40050,1,0,Bit,9,0,0,DM10050,Cycle Squence Start and End,TRUE,None
+512,512,CD_DATA_B26,1,40059,1,0,Bit,0,0,0,DM10059,Reset Oee Params,TRUE,None
+513,513,CD_DATA_A27,1,40054,1,0,Bit,0,0,0,DM10054,Reset ackOee Params,TRUE,None
+514,514,CD_DATA_B27,1,40059,1,0,Bit,1,0,0,DM10059,Reverse Converyor Direct,TRUE,None
+515,515,CD_DATA_A28,1,40054,1,0,Bit,1,0,0,DM10054,Reverse Ack Converyor Direct,TRUE,None
+
+
+
+ 

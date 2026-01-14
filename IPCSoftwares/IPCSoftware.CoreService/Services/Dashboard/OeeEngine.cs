@@ -776,6 +776,11 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 int ngParts = GetInt(values, ConstantValues.TAG_NG);
                 int idealCycle = GetInt(values, ConstantValues.TAG_CycleTime);
 
+                double x = GetDouble(values, ConstantValues.TAG_X);
+                double y = GetDouble(values, ConstantValues.TAG_Y);
+                double z = GetDouble(values, ConstantValues.TAG_Z);
+
+                
                 // 2. Availability (A) Calculation
                 double totalTimeMin = operatingMin + downTimeMin;
                 r.Availability = 0.0;
@@ -812,6 +817,10 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 r.Downtime = downTimeMin;
                 r.TotalParts = totalParts;
                 r.CycleTime = _lastCycleTime;
+                r.XValue = x;
+                r.YValue = y;
+                r.AngleValue = z;
+
 
                 // Return as dictionary with ID 4 (OEE_DATA)
                 return new Dictionary<int, object> { { 4, r } };
@@ -892,14 +901,14 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             return string.Empty;
         }
 
-        private double? GetDouble(Dictionary<int, object> values, int tagId)
+        private double GetDouble(Dictionary<int, object> values, int tagId)
         {
             if (values != null && values.TryGetValue(tagId, out object val) && val != null)
             {
                 try { return Convert.ToDouble(val); }
-                catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); return null; }
+                catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); return 0.0; }
             }
-            return null;
+            return 0.0;
         }
 
         private bool GetBoolState(Dictionary<int, object> tagValues, int tagId)

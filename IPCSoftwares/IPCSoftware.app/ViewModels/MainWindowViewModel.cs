@@ -92,6 +92,13 @@ public class MainWindowViewModel : BaseViewModel
     }
 
 
+    public bool _isConnected2;
+    public bool IsConnected2
+    {
+        get => _isConnected2;
+        set => SetProperty(ref _isConnected2, value);
+    }
+
     public bool _isConnected;
     public bool IsConnected
     {
