@@ -7,6 +7,7 @@ using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
 using Newtonsoft.Json;
@@ -36,7 +37,13 @@ public class MainWindowViewModel : BaseViewModel
     // --- ALARM BANNER COMMANDS & PROPERTIES ---
     public ICommand CloseAlarmBannerCommand { get; }
 
-    
+    private string _currentMachineMode = "UNKNOWN";
+    public string CurrentMachineMode
+    {
+        get => _currentMachineMode;
+        set => SetProperty(ref _currentMachineMode, value);
+    }
+
 
     public ICommand AcknowledgeBannerAlarmCommand { get; }
 
@@ -261,6 +268,19 @@ public class MainWindowViewModel : BaseViewModel
         {
             IsConnected =  _coreClient.isConnected;
 
+            var liveData = await _coreClient.GetIoValuesAsync(5);
+
+            if (liveData != null && liveData.Count > 0)
+            {
+                // 1. Check Modes
+                if (GetBool(liveData, ConstantValues.Mode_Auto.Read)) CurrentMachineMode = "AUTO RUN";
+                else if (GetBool(liveData, ConstantValues.Mode_DryRun.Read)) CurrentMachineMode = "DRY RUN";
+                else if (GetBool(liveData, ConstantValues.Mode_CycleStop.Read)) CurrentMachineMode = "CYCLE STOP";
+                else if (GetBool(liveData, ConstantValues.Mode_MassRTO.Read)) CurrentMachineMode = "MACHINE HOME";
+                else CurrentMachineMode = "MANUAL / IDLE"; // Default if no specific mode active
+            }
+
+
             SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
             var boolDict = await _coreClient.GetIoValuesAsync(1);
             if (boolDict != null && boolDict.TryGetValue(1, out object pulseObj))
@@ -282,10 +302,24 @@ public class MainWindowViewModel : BaseViewModel
             _logger.LogError(ex.Message, LogType.Diagnostics);
             PLCConnected = false;
             TimeSynched = false;
+            CurrentMachineMode = "UNKNOWN";
 
         }
        
     }
+
+
+    private bool GetBool(Dictionary<int, object> data, int tagId)
+    {
+        if (data.TryGetValue(tagId, out object val))
+        {
+            return Convert.ToBoolean(val);
+        }
+        return false;
+    }
+
+
+
     private void ResetLandingState()
     {
         existingUserControl = string.Empty;   // clear selected page

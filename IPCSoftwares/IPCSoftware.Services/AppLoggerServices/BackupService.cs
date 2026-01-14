@@ -1,6 +1,8 @@
 ﻿
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,11 +14,14 @@ namespace IPCSoftware.Services.AppLoggerServices
 {
     public class BackupService 
     {
-        public BackupService() 
-        { 
+        private readonly CcdSettings _ccdSettings;
+
+        public BackupService(IOptions<CcdSettings> ccd) 
+        {
+            _ccdSettings = ccd.Value;
         }
 
-        public void PerformBackup(LogConfigurationModel config, string filePath)
+      /*  public void PerformBackup(LogConfigurationModel config, string filePath)
         {
             try
             {
@@ -44,7 +49,73 @@ namespace IPCSoftware.Services.AppLoggerServices
             {
                // _logger.LogError(ex.Message, LogType.Diagnostics);
             }
+        }*/
+
+
+        public void PerformBackup(LogConfigurationModel config)
+        {
+            try
+            {
+                if (config.BackupSchedule == BackupScheduleType.Manual && !config.Enabled)
+                    return; // Or allow Manual even if disabled? Usually yes.
+
+                // 1. Backup Log Data Folder
+                if (Directory.Exists(config.DataFolder) && !string.IsNullOrEmpty(config.BackupFolder))
+                {
+                    // Create timestamped subfolder or just overwrite?
+                    // "you will just overwrite whole data at backup folder form datafolder" -> Implies mirroring.
+                    // If you want history, we'd append a timestamp folder. 
+                    // Based on "overwrite whole data", we copy directly to BackupFolder.
+
+                    CopyDirectory(config.DataFolder, config.BackupFolder);
+                }
+
+                // 2. Special Case: Production Images
+                if (config.LogType == LogType.Production)
+                {
+                 
+                    string sourceImages = _ccdSettings.BaseOutputDir;
+                    string backupImages = _ccdSettings.BaseOutputDirBackup;
+
+                    if (Directory.Exists(sourceImages) && !string.IsNullOrEmpty(backupImages))
+                    {
+                        CopyDirectory(sourceImages, backupImages);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error (inject logger if needed, or swallow/debug print)
+                System.Diagnostics.Debug.WriteLine($"Backup Error: {ex.Message}");
+            }
         }
+
+        private void CopyDirectory(string sourceDir, string destDir)
+        {
+            if (!Directory.Exists(destDir))
+            {
+                Directory.CreateDirectory(destDir);
+            }
+
+            var dir = new DirectoryInfo(sourceDir);
+
+            // Copy all files
+            foreach (FileInfo file in dir.GetFiles())
+            {
+                string targetFilePath = Path.Combine(destDir, file.Name);
+                file.CopyTo(targetFilePath, true); // true = overwrite
+            }
+
+            // Copy all subdirectories (Recursive)
+            foreach (DirectoryInfo subDir in dir.GetDirectories())
+            {
+                string newDestDir = Path.Combine(destDir, subDir.Name);
+                CopyDirectory(subDir.FullName, newDestDir);
+            }
+        }
+
+
+
 
         private bool IsBackupDue(LogConfigurationModel config)
         {

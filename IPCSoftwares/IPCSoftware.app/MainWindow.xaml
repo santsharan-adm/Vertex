@@ -488,7 +488,13 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            
+
+
+
+                            <TextBlock FontSize="20"  Margin="20,0,8,0"  Foreground ="Green" Text="CURRENT MODE:" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="20"  Margin="0,0,8,0"  Foreground ="Green" Text="{Binding CurrentMachineMode}" FontWeight="Bold" VerticalAlignment="Center"/>
+
+                           
                             
 
                         </StackPanel>

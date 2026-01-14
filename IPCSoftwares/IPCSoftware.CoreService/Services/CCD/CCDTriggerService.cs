@@ -275,7 +275,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                         }
                         catch { /* Locked, retry */ }
                     }
-                  //  await Task.Delay(200);
+                    await Task.Delay(200);
                 }
                 return null;
             }
