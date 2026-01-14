@@ -113,7 +113,7 @@ namespace IPCSoftware.CoreService.Services.PLC
                     }
 
                     // Polling rate delay 
-                    await Task.Delay(100);
+                    await Task.Delay(10);
                 }
             });
         }

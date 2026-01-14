@@ -1,6 +1,7 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
+using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
@@ -17,6 +18,8 @@ namespace IPCSoftware.CoreService.Services.CCD
 {
     public class CycleManagerService : BaseService, ICycleManagerService
     {
+        private readonly IPLCTagConfigurationService _tagService;
+        private readonly PLCClientManager _plcManager;
         private readonly ProductionImageService _imageService;
         private readonly IServoCalibrationService _servoService; // Injected
         //private readonly IConfiguration _configuration;
@@ -34,12 +37,16 @@ namespace IPCSoftware.CoreService.Services.CCD
         private int[] _stationMap;
 
         public CycleManagerService(
+                 IPLCTagConfigurationService tagService,
+            PLCClientManager plcManager,
             IOptions<CcdSettings> ccdSettng, 
             IServoCalibrationService servoService,
             ProductionImageService imageService,
             IAppLogger logger) : base(logger)
         {
             var ccd = ccdSettng.Value;
+            _tagService = tagService;
+            _plcManager = plcManager;
             _imageService = imageService;
             _servoService = servoService;   
             _stateFilePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
@@ -236,6 +243,29 @@ namespace IPCSoftware.CoreService.Services.CCD
             }
         }
 
+        private async Task WriteTagAsync( )
+        {
+            int tagNo = ConstantValues.Return_TAG_ID;
+            try
+            {
+                var allTags = await _tagService.GetAllTagsAsync();
+                var tag = allTags.FirstOrDefault(t => t.TagNo == tagNo);
+                if (tag != null)
+                {
+                    var client = _plcManager.GetClient(tag.PLCNo);
+                    if (client != null)
+                    {
+                        await client.WriteAsync(tag, 0);
+                        _logger.LogInfo($"[CycleTime] Ack Tag {tagNo} set to {false}", LogType.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Error] CycleTime Write Tag {tagNo}: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+
 
         public void ForceResetCycle()
             {
@@ -254,6 +284,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                         File.Delete(file);
                     }
                 }
+                WriteTagAsync();
 
                 Console.WriteLine("[System] Cycle Reset — Folder cleared completely.");
                 _logger.LogError("[System] Cycle Reset — Folder cleared completely." , LogType.Error  );

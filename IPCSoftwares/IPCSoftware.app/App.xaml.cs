@@ -181,6 +181,11 @@ namespace IPCSoftware.App
             {
                 await authService.EnsureDefaultUserExistsAsync();
             }
+            var shiftService = ServiceProvider.GetService<IShiftManagementService>();
+            if (shiftService != null)
+            {
+                await shiftService.InitializeAsync();
+            }
 
             // CRITICAL FIX: Subscribe to connection events BEFORE first connection
             TcpClient.UiConnected += OnTcpConnectionChanged;

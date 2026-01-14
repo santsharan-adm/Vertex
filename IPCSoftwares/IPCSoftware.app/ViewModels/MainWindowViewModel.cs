@@ -418,6 +418,9 @@ public class MainWindowViewModel : BaseViewModel
                 case "Log Config":
                     _nav.NavigateMain<LogListView>();
                     break;
+                case "Startup Condition":
+                    _nav.NavigateMain<StartupConditionView>();
+                    break;
                 case "Device Config":
                     _nav.NavigateMain<DeviceListView>();
                     break;
@@ -444,6 +447,10 @@ public class MainWindowViewModel : BaseViewModel
 
                 case "Diagnostic":
                     _nav.NavigateMain<TagControlView>();
+                    break;
+
+                case "Shift Config":
+                    _nav.NavigateMain<ShiftConfigurationView>();
                     break;
 
                 case "PLC TAG Config":

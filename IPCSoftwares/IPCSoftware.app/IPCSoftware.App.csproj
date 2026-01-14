@@ -32,6 +32,8 @@
     <None Remove="Data\LogConfigurations.csv" />
     <None Remove="Data\PLCTags.csv" />
     <None Remove="Data\PLCTagsOld.csv" />
+    <None Remove="Data\Shifts.csv" />
+    <None Remove="Data\StartupConditions.json" />
     <None Remove="Data\Users.csv" />
   </ItemGroup>
 
@@ -47,6 +49,12 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="Controls\Images\landingpage.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Shifts.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\StartupConditions.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

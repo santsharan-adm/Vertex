@@ -96,6 +96,7 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<AlarmService>();
                             services.AddTransient<TagConfigLoader>();
                             services.AddTransient<BackupService>();
+                            services.AddSingleton<ShiftResetService>();
                             // --- Updated registration for IProductionDataLogger ---
                             services.AddSingleton<IProductionDataLogger>(sp =>
                             {

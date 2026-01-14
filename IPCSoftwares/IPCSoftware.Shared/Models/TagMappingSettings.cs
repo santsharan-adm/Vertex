@@ -37,6 +37,10 @@ namespace IPCSoftware.Shared.Models
         public int TimeDataStart { get; set; }
         public int GlobalAck { get; set; }
         public int GlobalReset { get; set; }
+        public int ResetTag { get; set; }
+        public int ResetAckTag { get; set; }
+        public int ReverseTag { get; set; }
+        public int ReverseAckTag { get; set; }
 
         public TagPair Year { get; set; } = new();
         public TagPair Month { get; set; } = new();
@@ -65,6 +69,7 @@ namespace IPCSoftware.Shared.Models
         public int InFlow { get; set; }
         public int OK { get; set; }
         public int NG { get; set; }
+        public double IdealCycleTime { get; set; }
     }
 
     public class ModeTags
