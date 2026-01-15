@@ -6,7 +6,9 @@ using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
+using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Input;
 
 
@@ -16,6 +18,8 @@ public class RibbonViewModel : BaseViewModel
 {
     private readonly INavigationService _nav;
     private readonly IDialogService _dialog;
+    private readonly Func<ProcessSequenceWindow> _sequenceWindowFactory;
+    private ProcessSequenceWindow _sequenceWindow;
 
     public ICommand NavigateDashboardCommand { get; }
 
@@ -32,15 +36,23 @@ public class RibbonViewModel : BaseViewModel
 
     public Action<(string Key, List<string> Items)> ShowSidebar { get; set; }   // NEW
 
+    public ICommand CloseAppCommand { get; }
+
+    public ICommand ShowSequenceMonitorCommand { get; }
+
+    // --- ALARM BANNER COMMANDS & PROPERTIES ---
+
     public RibbonViewModel(
         IOptions<ExternalSettings> extSetting,
         INavigationService nav,
         IDialogService dialog,
+        Func<ProcessSequenceWindow> sequenceWindowFactory,
         IAppLogger logger) : base(logger)
     {
         MachineName = extSetting.Value.AOIMachineCode;
         _nav = nav;
         _dialog = dialog;
+        _sequenceWindowFactory = sequenceWindowFactory;
 
         NavigateDashboardCommand = new RelayCommand(OpenDashboardMenu);
        // NavigateSettingsCommand = new RelayCommand(OpenSettingsMenu);
@@ -49,6 +61,7 @@ public class RibbonViewModel : BaseViewModel
         NavigateReportsCommand = new RelayCommand(OpenReportsView);
         LogoutCommand = new RelayCommand(Logout);
         NavigateLandingPageCommand = new RelayCommand(OpenLandingPage);
+        ShowSequenceMonitorCommand = new RelayCommand(OpenSequenceMonitor);
     }
 
     //public bool IsAdmin => UserSession.Role == "Admin";
@@ -215,5 +228,43 @@ public class RibbonViewModel : BaseViewModel
     {
         string key = functionName.Replace("Open", "");  // "OpenDashboardMenu" → "DashboardMenu"
         ShowSidebar?.Invoke((key, items));
+    }
+
+    private void OpenSequenceMonitor()
+    {
+        try
+        {
+            if (_sequenceWindow == null)
+            {
+                _sequenceWindow = _sequenceWindowFactory();
+                if (Application.Current?.MainWindow != null)
+                {
+                    _sequenceWindow.Owner = Application.Current.MainWindow;
+                }
+                _sequenceWindow.Closed += SequenceWindowClosed;
+                _sequenceWindow.Show();
+            }
+            else
+            {
+                if (_sequenceWindow.WindowState == WindowState.Minimized)
+                {
+                    _sequenceWindow.WindowState = WindowState.Normal;
+                }
+                _sequenceWindow.Activate();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, LogType.Diagnostics);
+        }
+    }
+
+    private void SequenceWindowClosed(object? sender, EventArgs e)
+    {
+        if (_sequenceWindow != null)
+        {
+            _sequenceWindow.Closed -= SequenceWindowClosed;
+            _sequenceWindow = null;
+        }
     }
 }
