@@ -68,18 +68,6 @@ namespace IPCSoftware.CoreService.Services.CCD
                         return;
                     }
 
-                string qrCodeNullCgeck = tagValues.ContainsKey(ConstantValues.TAG_QR_DATA) ? tagValues[ConstantValues.TAG_QR_DATA]?.ToString() : null;
-                if (qrCodeNullCgeck == null)
-                {
-                    return;
-                }
-
-
-                if ((qrCodeNullCgeck.Contains('\0')))
-                {
-                    return;
-                }
-
                 _plcManager = manager;
 
                 bool isCycleEnabled = false;
@@ -162,8 +150,16 @@ namespace IPCSoftware.CoreService.Services.CCD
                     stationData["Y"] = tagValues.ContainsKey(ConstantValues.TAG_Y) ? tagValues[ConstantValues.TAG_Y] : 0.0;
                     stationData["Z"] = tagValues.ContainsKey(ConstantValues.TAG_Z) ? tagValues[ConstantValues.TAG_Z] : 0.0;
 
-                    // 4. Execute Async Workflow
-                    _ = ExecuteWorkflowAsync(qrCode, stationData);
+                    if (!IsQrValid(qrCode))
+                    {
+                        _logger.LogWarning("[CCD] Trigger detected but QR data is not ready. PLC handshake will be acknowledged to keep cycle moving.", LogType.Diagnostics);
+                        await WriteAckToPlcAsync(true);
+                    }
+                    else
+                    {
+                        // 4. Execute Async Workflow
+                        _ = ExecuteWorkflowAsync(qrCode, stationData);
+                    }
 
                 }
                 if (!currentTriggerState && _lastTriggerState)
@@ -183,6 +179,14 @@ namespace IPCSoftware.CoreService.Services.CCD
         }
 
 
+        private bool IsQrValid(string qrCode)
+        {
+            if (string.IsNullOrWhiteSpace(qrCode))
+                return false;
+
+            return !qrCode.Contains('\0');
+        }
+
         private string MapStatus(object rawStatus)
         {
             if (rawStatus == null)
@@ -196,7 +200,6 @@ namespace IPCSoftware.CoreService.Services.CCD
                 default: return "Unchecked"; // fallback
             }
         }
-
 
         private async Task ExecuteWorkflowAsync(string qrCode, Dictionary<string, object> data)
         {

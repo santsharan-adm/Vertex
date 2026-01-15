@@ -185,6 +185,12 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
             // 3) Determine which logical station this CCD hit
             int step = _currentSequenceStep;
+            int maxStations = GetMaxStations();
+            if (step >= maxStations)
+            {
+                _logger.LogWarning($"[OEE] CCD trigger ignored because step {step} exceeds configured station count ({maxStations}). Awaiting cycle reset (Tag 511).", LogType.Diagnostics);
+                return;
+            }
             _currentSequenceStep++;
 
             int logicalStationId = GetStationIdForStep(step);
@@ -386,6 +392,16 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         // =========================================================
         // HELPERS
         // =========================================================
+
+        private int GetMaxStations()
+        {
+            if (_sequenceToPositionId != null && _sequenceToPositionId.Count > 0)
+            {
+                return _sequenceToPositionId.Count;
+            }
+            // default: stations 0..12 => 13 steps
+            return 13;
+        }
 
         private int GetStationIdForStep(int sequenceStep)
         {
