@@ -1,0 +1,262 @@
+﻿<UserControl x:Class="IPCSoftware.App.Views.SystemSettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             Background="#F3F3F3" >
+
+    <UserControl.Resources>
+        <Geometry x:Key="SyncArrowGeometry">M16,12V15H22V12H25.5L21.5,8L17.5,12H21V12H16M19,20V17H13V20H9.5L13.5,24L17.5,20H14V20H19M4,2H18A2,2 0 0,1 20,4V10H18V4H4V20H11.5V22H4A2,2 0 0,1 2,20V4A2,2 0 0,1 4,2Z</Geometry>
+        <Geometry x:Key="ArrowRightGeometry">M4,10 H16 V6 L22,12 L16,18 V14 H4 Z</Geometry>
+        <Style x:Key="SystemCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="15"/>
+            <Setter Property="Padding" Value="30"/>
+            <Setter Property="Margin" Value="20"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="5" Opacity="0.1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="HmiColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Height" Value="80"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="20,0"/>
+        </Style>
+
+        <Style x:Key="HmiCellStyle" TargetType="DataGridCell">
+            <Setter Property="FontSize" Value="26"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter VerticalAlignment="Center" 
+                                              HorizontalAlignment="Left"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#CCE8FF"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SyncButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Gray"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="36"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                CornerRadius="20" 
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="4"
+                                BorderBrush="White">
+
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="15" ShadowDepth="5" Opacity="0.3"/>
+                            </Border.Effect>
+
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <ContentPresenter/>
+                                    <Path Data="{StaticResource ArrowRightGeometry}" 
+                                          Fill="White" 
+                                          Height="40" Width="40" 
+                                          Stretch="Uniform"
+                                          Margin="15,0,0,0"
+                                          VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <TranslateTransform Y="4"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SyncState}" Value="Syncing">
+                    <Setter Property="Background" Value="#245CFF"/>
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                                From="#245CFF" To="#6699FF" Duration="0:0:0.5"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding SyncState}" Value="Synced">
+                    <Setter Property="Background" Value="#28A745"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding SyncState}" Value="Error">
+                    <Setter Property="Background" Value="#DC3545"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Viewbox Stretch="Uniform">
+        <Grid Width="1920" Height="1080" Margin="40">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" 
+                       Text="System Synchronization" 
+                       FontSize="60" 
+                       FontWeight="Bold" 
+                       Foreground="#333"
+                       Margin="0,0,0,40"/>
+
+            <Grid Grid.Row="1" Margin="0,0,0,50">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="2" Style="{StaticResource SystemCardStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Background="#F0F0F0" CornerRadius="12" Width="140" Height="140" VerticalAlignment="Center">
+                            <TextBlock Text="PLC" FontSize="48" FontWeight="Bold" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="40,0,0,0">
+                            <TextBlock Text="{Binding PlcDate, TargetNullValue='--/--/----'}" 
+                                       FontSize="48" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding PlcTime, TargetNullValue='--:--:--'}" 
+                                       FontSize="48" FontWeight="Bold" Foreground="#007ACC"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Button Grid.Column="1"
+                        x:Name="SyncBtn"
+                        Command="{Binding SyncCommand}"
+                        Content="SYNC"
+                        Width="250" Height="100"
+                        Style="{StaticResource SyncButtonStyle}"
+                        Cursor="Hand"
+                        VerticalAlignment="Center" 
+                        Margin="20,0"/>
+
+                <Border Grid.Column="0" Style="{StaticResource SystemCardStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Background="#F0F0F0" CornerRadius="12" Width="140" Height="140" VerticalAlignment="Center">
+                            <TextBlock Text="IPC" FontSize="48" FontWeight="Bold" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="40,0,0,0">
+                            <TextBlock Text="{Binding IpcDate}" 
+                                       FontSize="48" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding IpcTime}" 
+                                       FontSize="48" FontWeight="Bold" Foreground="#007ACC"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Audit Trail Log" FontSize="36" FontWeight="SemiBold" Foreground="#555" Margin="20,0,0,20"/>
+
+                <Border Grid.Row="1" 
+                        Background="White" 
+                        CornerRadius="12" 
+                        BorderBrush="#CCCCCC" 
+                        BorderThickness="1"
+                        ClipToBounds="True">
+
+                    <DataGrid ItemsSource="{Binding AuditLogs}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              GridLinesVisibility="Horizontal"
+                              HorizontalGridLinesBrush="#E0E0E0"
+                              VerticalGridLinesBrush="Transparent"
+                              BorderThickness="0"
+                              Background="White"
+                              RowHeight="80"
+                              ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}"
+                              HeadersVisibility="Column">
+
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="Background" Value="White"/>
+                                <Style.Triggers>
+                                    <Trigger Property="AlternationIndex" Value="1">
+                                        <Setter Property="Background" Value="#FAFAFA"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                        <DataGrid.AlternationCount>2</DataGrid.AlternationCount>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Timestamp" 
+                                                Binding="{Binding Time}" 
+                                                Width="400" 
+                                                CellStyle="{StaticResource HmiCellStyle}"/>
+
+                            <DataGridTextColumn Header="Event Message" 
+                                                Binding="{Binding Message}" 
+                                                Width="*" 
+                                                CellStyle="{StaticResource HmiCellStyle}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </Grid>
+
+        </Grid>
+    </Viewbox>
+</UserControl>
