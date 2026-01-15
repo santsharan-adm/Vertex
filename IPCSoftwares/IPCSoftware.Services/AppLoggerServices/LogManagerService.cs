@@ -106,6 +106,15 @@ namespace IPCSoftware.Services.AppLoggerServices
             }
         }
 
+        public void PerformManualRestore(int logConfigId)
+        {
+            var config = _logConfigs.FirstOrDefault(c => c.Id == logConfigId);
+            if (config != null)
+            {
+                PerformRestoreForConfig(config);
+            }
+        }
+
 
         private void PerformBackupForConfig(LogConfigurationModel config)
         {
@@ -115,6 +124,16 @@ namespace IPCSoftware.Services.AppLoggerServices
             {
             }*/
                 _backupService.PerformBackup(config);
+        }
+
+        private void PerformRestoreForConfig(LogConfigurationModel config)
+        {
+            // Resolve current active file
+            //string currentFile = ResolveLogFile(config.LogType);
+          /*  if (!string.IsNullOrEmpty(currentFile) && File.Exists(currentFile))
+            {
+            }*/
+                _backupService.PerformRestore(config);
         }
 
         private string[] SplitCsv(string line)

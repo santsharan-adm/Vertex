@@ -67,10 +67,10 @@ namespace IPCSoftware.App.Controls
         public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(TrendChart), new PropertyMetadata("Trend Chart"));
 
         public string XAxisText { get => (string)GetValue(XAxisTextProperty); set => SetValue(XAxisTextProperty, value); }
-        public static readonly DependencyProperty XAxisTextProperty = DependencyProperty.Register(nameof(XAxisText), typeof(string), typeof(TrendChart), new PropertyMetadata("X Axis"));
+        public static readonly DependencyProperty XAxisTextProperty = DependencyProperty.Register(nameof(XAxisText), typeof(string), typeof(TrendChart), new PropertyMetadata("Day"));
 
         public string YAxisText { get => (string)GetValue(YAxisTextProperty); set => SetValue(YAxisTextProperty, value); }
-        public static readonly DependencyProperty YAxisTextProperty = DependencyProperty.Register(nameof(YAxisText), typeof(string), typeof(TrendChart), new PropertyMetadata("Y Axis"));
+        public static readonly DependencyProperty YAxisTextProperty = DependencyProperty.Register(nameof(YAxisText), typeof(string), typeof(TrendChart), new PropertyMetadata("sec"));
 
         // ===================== Drawing Engine =====================
 

@@ -18,5 +18,6 @@ namespace IPCSoftware.Core.Interfaces.AppLoggerInterface
         // NEW Methods
         void CheckAndPerformBackups(); // Called by Worker
         void PerformManualBackup(int logConfigId); // Called by UI
+        void PerformManualRestore(int logConfigId); // Called by UI
     }
 }

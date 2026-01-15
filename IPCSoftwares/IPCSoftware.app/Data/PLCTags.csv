@@ -499,7 +499,7 @@
 498,498,CD_DATA_A23,1,40051,1,0,Bit,13,0,0,"DM10051, Startup Condition 14",(Control Data A23),TRUE,None
 499,499,CD_DATA_A24,1,40051,1,0,Bit,14,0,0,"DM10051, Startup Condition 15",(Control Data A24),TRUE,None
 500,500,CD_DATA_A25,1,40051,1,0,Bit,15,0,0,"DM10051, Startup Condition 16",(Control Data A25),TRUE,None
-501,501,CTL_EXTINT_DATAIN ,1,40059,1,0,Bit,2,0,0,DM10059,After mapping is complete, the IPC sends a confirmation signal to the PLC,TRUE,None
+501,501,CTL_EXTINT_DATAIN ,1,40059,1,0,Bit,2,0,0,DM10059,After mapping is complete   the IPC sends a confirmation signal to the PLC,TRUE,None
 502,502,CD_DATA_B6,1,40056,1,0,UInt16,0,0,0,D10056,All Cavity  Status (OK_NG),TRUE,None
 503,503,SYS_DATA_READ_B2,1,40004,1,0,UInt16,0,0,0,"DM10004, System Data READ B2","Yearly DataStore year data in UINT format (e.g., 2025,2026)When the time storage completion signal reaches 0?1, check the IN data on the PLC",TRUE,None
 504,504,SYS_DATA_READ_B3,1,40005,1,0,UInt16,0,0,0,"DM10005, System Data READ B3","Monthly dataStore monthly data in UINT format (e.g., 1~12)When the time storage completion signal reaches 0?1, check the IN data on the PLC",TRUE,None

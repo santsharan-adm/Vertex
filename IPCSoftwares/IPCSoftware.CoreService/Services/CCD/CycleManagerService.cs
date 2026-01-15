@@ -30,10 +30,12 @@ namespace IPCSoftware.CoreService.Services.CCD
         private int _currentSequenceStep = 0;
         private readonly string _stateFilePath;
         private readonly string _quarantinePath;
+        private readonly string _imageBaseOutputPath;
         private int[] _stationMap;
 
         public CycleManagerService(
             IPLCTagConfigurationService tagService,
+            ILogConfigurationService logConfig,
             PLCClientManager plcManager,
             IOptions<CcdSettings> appSettings,
             IServoCalibrationService servoService,
@@ -49,8 +51,14 @@ namespace IPCSoftware.CoreService.Services.CCD
             _extService = extService;
 
             _stateFilePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
-            string baseOut = ccd.BaseOutputDir ;
-            _quarantinePath = Path.Combine(baseOut, "Quarantine");
+            var logs =  logConfig.GetAllAsync();
+            var allLogs = logConfig.GetAllAsync().GetAwaiter().GetResult();
+            var config = allLogs.FirstOrDefault(c => c.LogType == LogType.Production);
+            var baseProductionPath = config.DataFolder;
+            string baseOut = ccd.ImageFolderName;
+            var basePath = Path.Combine(baseProductionPath, baseOut);
+            _imageBaseOutputPath = basePath;
+            _quarantinePath = Path.Combine(basePath, "Quarantine");
             if (!Directory.Exists(_quarantinePath)) Directory.CreateDirectory(_quarantinePath);
 
             _ = LoadStationMapAsync();
@@ -111,7 +119,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 InitializeCycleStateWithExternalStatus();
 
                 // 3. Process QR Image
-                string destPath = _imageService.ProcessAndMoveImage(tempImagePath, _activeBatchId, 0, 0, 0, 0, true);
+                string destPath = _imageService.ProcessAndMoveImage(tempImagePath, _imageBaseOutputPath, _activeBatchId, 0, 0, 0, 0, true);
                 // Update QR entry in JSON (Station 0)
                 UpdateJsonEntry(0, destPath, "OK", 0, 0, 0);
             }
@@ -175,13 +183,14 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                     // Move to Quarantine
                     string fileName = Path.GetFileName(tempImagePath);
+                    if (!Directory.Exists(_quarantinePath)) Directory.CreateDirectory(_quarantinePath);
                     string destFile = Path.Combine(_quarantinePath, $"{DateTime.Now:yyyyMMdd_HHmmss}_{fileName}");
                     File.Move(tempImagePath, destFile);
                     destUiPath = string.Empty;
                 }
                 else
                 {
-                    destUiPath = _imageService.ProcessAndMoveImage(tempImagePath, _activeBatchId, physicalStationId, x, y, z);
+                    destUiPath = _imageService.ProcessAndMoveImage(tempImagePath, _imageBaseOutputPath, _activeBatchId, physicalStationId, x, y, z);
                 }
 
                 UpdateJsonEntry(physicalStationId, destUiPath, status, x, y, z);

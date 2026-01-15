@@ -87,16 +87,26 @@ namespace IPCSoftware.CoreService
 
                 await _logManager.InitializeAsync(); // Ensure configs loaded
 
-                while (!stoppingToken.IsCancellationRequested)
+             
+
+                _ = Task.Run(async () =>
                 {
-                    // ... (Existing polling logic) ...
+                    while (!stoppingToken.IsCancellationRequested)
+                    {
+                        try
+                        {
+                            // Trigger Auto-Backup Check
+                            _logManager.CheckAndPerformBackups();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError($"Backup Loop Error: {ex.Message}", LogType.Diagnostics);
+                        }
 
-                    // 2. Trigger Auto-Backup Check
-                    // This is lightweight; checking 4 configs in memory is instant.
-                    _logManager.CheckAndPerformBackups();
-
-                    await Task.Delay(60000, stoppingToken);
-                }
+                        // Wait 60 seconds before next check
+                        await Task.Delay(60000, stoppingToken);
+                    }
+                }, stoppingToken);
 
 
                 /* CameraInterfaceModel myCamera = cameras.FirstOrDefault();
