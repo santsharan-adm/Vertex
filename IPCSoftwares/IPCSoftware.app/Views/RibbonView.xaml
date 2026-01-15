@@ -198,6 +198,15 @@
                     </Style>
                 </Button.Style>
             </Button>
+
+            <!-- Hidden Diagnostics Button -->
+            <Button Command="{Binding ShowSequenceMonitorCommand}"
+                    Width="40"
+                    Height="100"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Opacity="0.01"
+                    ToolTip="Diagnostics"/>
         </StackPanel>
     </Grid>
 </UserControl>

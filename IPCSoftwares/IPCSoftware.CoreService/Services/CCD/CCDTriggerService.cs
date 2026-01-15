@@ -181,29 +181,16 @@ namespace IPCSoftware.CoreService.Services.CCD
 
         private async Task ExecuteWorkflowAsync(string qrCode, Dictionary<string, object> data)
         {
-            string imagePath = await WaitForImageAsync();
-
+            var imagePath = await WaitForImageAsync();
             if (!string.IsNullOrEmpty(imagePath))
             {
-                try
-                {
-                    // 1. Hand off to Cycle Manager (Updates JSON & Moves Files)
-                    // Note: Update CycleManager Interface to accept Dictionary
-                    _cycleManager.HandleIncomingData(imagePath, data, qrCode);
-
-                    // 2. Write Ack (Tag 15) to PLC
-                    await WriteAckToPlcAsync(true);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"[Error] Processing: {ex.Message}");
-                    _logger.LogError($"[Error] Processing: {ex.Message}", LogType.Diagnostics);
-                }
+                _cycleManager.HandleIncomingData(imagePath, data, qrCode);
+                await WriteAckToPlcAsync(true);
             }
             else
             {
-                Console.WriteLine("[Error] Triggered but No Image found.");
-                _logger.LogInfo("[Error] Triggered but No Image found.", LogType.Diagnostics);
+                _logger.LogWarning("[CCD] No image within timeout, releasing PLC handshake.", LogType.Error);
+                await WriteAckToPlcAsync(true); // or false, depending on PLC contract
             }
         }
 
@@ -253,30 +240,49 @@ namespace IPCSoftware.CoreService.Services.CCD
         {
             try
             {
+                var pollInterval = TimeSpan.FromMilliseconds(200);
+                var quickWindow = TimeSpan.FromSeconds(3);
+                var maxWindow = TimeSpan.FromSeconds(5);
+
                 DateTime start = DateTime.Now;
-                while ((DateTime.Now - start).TotalSeconds < 10)
+                while ((DateTime.Now - start) < maxWindow)
                 {
-                    if (!Directory.Exists(_tempImageFolder)) return null;
+                    if (!Directory.Exists(_tempImageFolder))
+                    {
+                        _logger.LogWarning($"[CCD] Temp image folder missing: {_tempImageFolder}", LogType.Diagnostics);
+                        return null;
+                    }
 
                     var file = new DirectoryInfo(_tempImageFolder)
                         .GetFiles("*.bmp")
                         .OrderByDescending(f => f.LastWriteTime)
                         .FirstOrDefault();
 
-                    // Simple check: Ensure file is not locked
                     if (file != null)
                     {
                         try
                         {
                             using (var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
                             {
-                                if (stream.Length > 0) return file.FullName;
+                                if (stream.Length > 0)
+                                    return file.FullName;
                             }
                         }
-                        catch { /* Locked, retry */ }
+                        catch
+                        {
+                            // file still being written, keep polling
+                        }
                     }
-                    await Task.Delay(200);
+
+                    await Task.Delay(pollInterval);
+
+                    if ((DateTime.Now - start) >= quickWindow)
+                    {
+                        // continue polling until maxWindow but do not block longer than requested
+                    }
                 }
+
+                _logger.LogWarning($"[CCD] Image not found in {_tempImageFolder} within 5s after trigger.", LogType.Diagnostics);
                 return null;
             }
             catch (Exception ex)

@@ -246,6 +246,11 @@ namespace IPCSoftware.App.DI
 
             services.AddTransient<ApiTestViewModel>();
             services.AddTransient<ApiTestView>();
+
+            services.AddTransient<ProcessSequenceViewModel>();
+            services.AddTransient<ProcessSequenceWindow>();
+
+            services.AddTransient<Func<ProcessSequenceWindow>>(sp => () => sp.GetRequiredService<ProcessSequenceWindow>());
         }
     }
 }
