@@ -1,0 +1,162 @@
+﻿<UserControl x:Class="IPCSoftware.App.Views.TagControlView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:TagControlViewModel}"
+                    Unloaded="UserControl_Unloaded"
+             mc:Ignorable="d" 
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             Background="#F3F3F3">
+
+
+    <UserControl.Resources>
+        <!-- Reusing your HMI Styles for consistency -->
+        <Style x:Key="HmiColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Height" Value="70"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="HmiCellStyle" TargetType="DataGridCell">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" BorderThickness="0" SnapsToDevicePixels="True">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#CCE8FF"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <!-- REMOVED Viewbox and Fixed Size. Now it behaves responsively inside MainWindow -->
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Text="Manual Tag Control" 
+                   FontSize="48" FontWeight="Bold" Foreground="#333"
+                   Margin="0,0,0,20"/>
+
+        <StackPanel HorizontalAlignment="Right"  Orientation="Horizontal" VerticalAlignment="Center">
+            <TextBlock Text="Search:" FontSize="32" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#555"/>
+            <TextBox Width="400" Height="60" FontSize="30" VerticalContentAlignment="Center" Padding="5"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <!-- DataGrid -->
+        <Border Grid.Row="1" Background="White" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1">
+            <DataGrid ItemsSource="{Binding WritableTags}"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      IsReadOnly="True"
+                      RowHeight="80"
+                      ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}"
+                      CellStyle="{StaticResource HmiCellStyle}"
+                      GridLinesVisibility="Horizontal"
+                      HorizontalGridLinesBrush="#EEE"
+                      VerticalGridLinesBrush="Transparent"
+                      BorderThickness="0"
+                      Background="White">
+
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#E6F2FF"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+
+                <DataGrid.Columns>
+                    <!-- 1. Sr No (TagNo) -->
+                    <DataGridTextColumn Header="Tag No" Binding="{Binding Model.TagNo}" Width="150"/>
+
+                    <!-- 2. Tag Name -->
+                    <DataGridTextColumn Header="Tag Name"  Binding="{Binding Model.Name}" Width="300">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell" BasedOn="{StaticResource HmiCellStyle}">
+                                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                <Setter Property="Padding" Value="20,0,0,0"/>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+
+                    <!-- 3. Data Type -->
+                    <DataGridTextColumn Header="Data Type" Binding="{Binding DataTypeDisplay}" Width="Auto" Foreground="#666"/>
+                    <DataGridTextColumn Header="Current Value" Binding="{Binding DisplayValue, TargetNullValue=''}"  Width="300" Foreground="#666"/>
+
+                    <!-- 4. Textbox (Value Input) -->
+                    <DataGridTemplateColumn Header="Value to Write" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding InputValue, 
+                                                UpdateSourceTrigger=PropertyChanged, 
+                                                TargetNullValue=''}" 
+                                         FontSize="24"
+                                         Width="300"
+                                         VerticalContentAlignment="Center"
+                                         Padding="10"
+                                         Height="50"
+                                         Margin="10,0"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- 5. Write Button -->
+                    <DataGridTemplateColumn Header="Action" Width="200">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="WRITE"
+                                        Command="{Binding DataContext.WriteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        Background="#007ACC"
+                                        Foreground="White"
+                                        FontSize="20"
+                                        FontWeight="Bold"
+                                        Height="50"
+                                        Width="140"
+                                        Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Opacity" Value="0.8"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>

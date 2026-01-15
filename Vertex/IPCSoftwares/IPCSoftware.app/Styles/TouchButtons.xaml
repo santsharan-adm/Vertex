@@ -1,0 +1,166 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:w="clr-namespace:System.Windows;assembly=PresentationFramework"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- =========================
+         GLOBAL TUNABLE PARAMETERS
+         ========================= -->
+
+    <!-- Default font size for all large touch buttons -->
+    <sys:Double x:Key="DefaultButtonFontSize">22</sys:Double>
+
+    <!-- Minimum width and height for buttons -->
+    <sys:Double x:Key="DefaultButtonMinWidth">80</sys:Double>
+    <sys:Double x:Key="DefaultButtonMinHeight">50</sys:Double>
+
+    <!-- Default spacing for buttons -->
+    <w:Thickness x:Key="DefaultButtonMargin">10,5,10,10 </w:Thickness>
+
+
+    <!-- =========================
+         BUTTON STYLES
+         ========================= -->
+
+
+    <!-- 
+        Base style for all touch-friendly buttons.
+        Provides large padding, rounded corners, 
+        and visual feedback on press or disable state.
+    -->
+    <Style x:Key="TouchButtonBaseStyle" TargetType="Button">
+        <Setter Property="FontSize" Value="{DynamicResource DefaultButtonFontSize}"/>
+        <Setter Property="MinWidth" Value="{DynamicResource DefaultButtonMinWidth}"/>
+        <Setter Property="MinHeight" Value="{DynamicResource DefaultButtonMinHeight}"/>
+        <Setter Property="Margin" Value="{DynamicResource DefaultButtonMargin}"/>
+        <Setter Property="Background" Value="#444"/>                 <!-- Dark gray background -->
+        <Setter Property="Foreground" Value="White"/>                <!-- White text -->
+        <Setter Property="BorderBrush" Value="#444"/>                <!-- Match border to background -->
+        <Setter Property="BorderThickness" Value="1"/>
+
+        <!-- Custom control template for button visuals -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <!-- Outer container with rounded corners -->
+                    <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="10">
+
+                        <!-- Displays button content (text or icon) -->
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+
+                    <!-- Visual states -->
+                    <ControlTemplate.Triggers>
+                        <!-- Slight opacity change on press -->
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Opacity" Value="0.8"/>
+                        </Trigger>
+                        <!-- Grayed-out look when disabled -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="#888"/>
+                            <Setter TargetName="border" Property="Background" Value="#666"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========================= LABEL STYLE  ========================= -->
+
+
+    <!-- 
+        Style for labels or section titles in forms.
+        Large font, subtle gray tone, and small bottom margin.
+    -->
+
+    <Style x:Key="HmiLabelStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="26"/>
+        <Setter Property="Foreground" Value="#666666"/>
+        <Setter Property="Margin" Value="0,0,0,5"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
+    <!-- =========================
+         TEXTBOX STYLE
+         ========================= -->
+
+    <!-- 
+        Style for text input fields.
+        Increases height, font size, and padding for easier touch interaction.
+    -->
+    <Style x:Key="HmiTextBoxStyle" TargetType="TextBox">
+        <Setter Property="Height" Value="50"/>
+        <Setter Property="FontSize" Value="28"/>
+        <Setter Property="Padding" Value="10,0"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="BorderBrush" Value="#CCCCCC"/>
+        <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+
+    <!-- =========================
+         COMBOBOX STYLE
+         ========================= -->
+
+
+    <!-- 
+        Style for dropdowns (ComboBox controls).
+        Keeps consistent sizing and border style with TextBox.
+    -->
+    <Style x:Key="HmiComboBoxStyle" TargetType="ComboBox">
+        <Setter Property="Height" Value="50"/>
+        <Setter Property="FontSize" Value="26"/>
+        <Setter Property="Padding" Value="10,0"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="BorderBrush" Value="#CCCCCC"/>
+        <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+    <!-- =========================
+         CHECKBOX STYLE
+         ========================= -->
+
+    <!-- 
+        Style for checkboxes.
+        Scales up the control for better touch usability.
+    -->
+    <Style x:Key="HmiCheckBoxStyle" TargetType="CheckBox">
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="LayoutTransform">
+            <Setter.Value>
+                <!-- Enlarges checkbox by 1.5× -->
+                <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- =========================
+         CARD STYLE
+         ========================= -->
+
+    <!-- 
+        Reusable card container style.
+        Used for grouping content inside panels or dashboard sections.
+        Includes white background, rounded corners, and subtle drop shadow.
+    -->
+
+    <Style x:Key="CardStyle" TargetType="Border">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="25"/>
+        <Setter Property="Margin" Value="10"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect Color="Black" Direction="270" ShadowDepth="2" Opacity="0.1" BlurRadius="5"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

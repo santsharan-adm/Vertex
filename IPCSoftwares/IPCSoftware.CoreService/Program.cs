@@ -6,6 +6,7 @@ using IPCSoftware.CoreService.Alarm;
 using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.CoreService.Services.Dashboard;
+using IPCSoftware.CoreService.Services.External;
 using IPCSoftware.CoreService.Services.Logging;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
@@ -78,6 +79,7 @@ namespace IPCSoftware.CoreService
                             //   services.Configure<AppConfigSettings>(hostContext.Configuration);
                             services.Configure<ConfigSettings>(hostContext.Configuration.GetSection("Config"));
                             services.Configure<CcdSettings>(hostContext.Configuration.GetSection("CCD"));
+                            services.Configure<ExternalSettings>(hostContext.Configuration.GetSection("External"));
 
                             // 1. Configuration/Logging
                             //   services.AddSingleton<IConfiguration>(hostContext.Configuration);
@@ -87,6 +89,7 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<ILogManagerService, LogManagerService>();
                             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
                             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
+                            services.AddSingleton<ExternalInterfaceService>();
                             services.AddSingleton<ICycleManagerService, CycleManagerService>();
                             services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
                             services.AddSingleton<IServoCalibrationService, ServoCalibrationService>();
@@ -146,10 +149,12 @@ namespace IPCSoftware.CoreService
                     // 1. Create specific settings objects
                     var configSettings = new ConfigSettings();
                     var ccdSettings = new CcdSettings();
+                    var external = new ExternalSettings();
 
                     // 2. Bind the specific sections from JSON to these objects
                     config.GetSection("Config").Bind(configSettings);
                     config.GetSection("CCD").Bind(ccdSettings);
+                    config.GetSection("External").Bind(external);
 
                     // 3. Initialize Constants without needing AppConfigSettings wrapper
                     ConstantValues.Initialize(configSettings);

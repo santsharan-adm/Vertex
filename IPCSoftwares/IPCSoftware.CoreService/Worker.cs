@@ -7,6 +7,7 @@ using IPCSoftware.CoreService.Services.Dashboard;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
+using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,7 @@ namespace IPCSoftware.CoreService
     public class Worker : BackgroundService
     {
         private readonly IAppLogger _logger;
+        private readonly ILogManagerService _logManager;
         private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceService;
         private readonly ConfigSettings _configuration;
@@ -35,6 +37,7 @@ namespace IPCSoftware.CoreService
         // Removed _plcManager and _dashboard fields; they will be local or managed by DashboardInitializer
 
         public Worker(IAppLogger logger, 
+            ILogManagerService logManager, 
             IPLCTagConfigurationService tagService,
             AlgorithmAnalysisService algo,
             DashboardInitializer dashboard,
@@ -45,6 +48,7 @@ namespace IPCSoftware.CoreService
             PLCClientManager plcManger,
             UiListener uiListener)
         {
+            _logManager = logManager;
             _deviceService = deviceService;
             _tagService = tagService;
             _logger = logger;
@@ -81,29 +85,53 @@ namespace IPCSoftware.CoreService
                     }
                 });
 
-               /* CameraInterfaceModel myCamera = cameras.FirstOrDefault();
+                await _logManager.InitializeAsync(); // Ensure configs loaded
 
-                if (myCamera?.Enabled == true)
+             
+
+                _ = Task.Run(async () =>
                 {
-                    Console.WriteLine("Starting Camera FTP Service...");
-
-                    _ = Task.Run(async () =>
+                    while (!stoppingToken.IsCancellationRequested)
                     {
                         try
                         {
-                            await _cameraFtpService.StartAsync(myCamera);
+                            // Trigger Auto-Backup Check
+                            _logManager.CheckAndPerformBackups();
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError($"Camera FTP Service failed: {ex}", LogType.Diagnostics );
+                            _logger.LogError($"Backup Loop Error: {ex.Message}", LogType.Diagnostics);
                         }
-                    });
-                }
-                else
-                {
-                   
-                    _logger.LogError("Camera FTP Service is disabled in configuration.", LogType.Diagnostics);
-                }*/
+
+                        // Wait 60 seconds before next check
+                        await Task.Delay(60000, stoppingToken);
+                    }
+                }, stoppingToken);
+
+
+                /* CameraInterfaceModel myCamera = cameras.FirstOrDefault();
+
+                 if (myCamera?.Enabled == true)
+                 {
+                     Console.WriteLine("Starting Camera FTP Service...");
+
+                     _ = Task.Run(async () =>
+                     {
+                         try
+                         {
+                             await _cameraFtpService.StartAsync(myCamera);
+                         }
+                         catch (Exception ex)
+                         {
+                             _logger.LogError($"Camera FTP Service failed: {ex}", LogType.Diagnostics );
+                         }
+                     });
+                 }
+                 else
+                 {
+
+                     _logger.LogError("Camera FTP Service is disabled in configuration.", LogType.Diagnostics);
+                 }*/
 
                 await _dashboard.StartAsync();
                 await Task.Delay(Timeout.Infinite, stoppingToken);

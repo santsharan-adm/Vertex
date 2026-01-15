@@ -12,6 +12,7 @@ using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -31,6 +32,9 @@ namespace IPCSoftware.App.ViewModels
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
         private readonly string _prodCsvFolder;
+        private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
+
+        private ExternalSettings Settings => _settingsMonitor.CurrentValue;
 
         // --- Timers ---
         // 1. For Live Data (TCP Polling) - e.g. OEE, Machine Status
@@ -56,6 +60,20 @@ namespace IPCSoftware.App.ViewModels
 
         // --- Member Variables ---
         private bool _isDarkTheme = false;
+
+        public ICommand ToggleMacMiniCommand { get; } // NEW COMMAND
+
+        // ... (Properties) ...
+        private bool _isMacMiniEnabled;
+        public bool IsMacMiniEnabled
+        {
+            get => _isMacMiniEnabled;
+            set => SetProperty(ref _isMacMiniEnabled, value);
+        }
+
+        public string MacMiniStatusText => IsMacMiniEnabled ? "Mac Mini: ON" : "Mac Mini: OFF";
+        public Brush MacMiniStatusColor => IsMacMiniEnabled ? new SolidColorBrush(Color.FromRgb(0, 122, 204)) : Brushes.Gray; // Blue vs Gray
+
 
 
 
@@ -267,16 +285,19 @@ namespace IPCSoftware.App.ViewModels
             IPLCTagConfigurationService tagService,
             IOptions<CcdSettings> ccdSettng,
             IOptions<ConfigSettings> configSettng,
+           IOptionsMonitor<ExternalSettings> settingsMonitor,
             CoreClient coreClient,
             IDialogService dialog,
             ILogConfigurationService logConfigService,
             IAppLogger logger) : base(logger)
         {
             var ccd = ccdSettng.Value;
+            _settingsMonitor = settingsMonitor;
             _tagService = tagService;
             _coreClient = coreClient;
             _dialog = dialog;
             SwitchDirection = configSettng.Value.SwitchConveyorDirection;
+            IsMacMiniEnabled = _settingsMonitor.CurrentValue.IsMacMiniEnabled;
 
             var prodLogConfigTask = logConfigService.GetByLogTypeAsync(LogType.Production);
             prodLogConfigTask.Wait();
@@ -297,6 +318,7 @@ namespace IPCSoftware.App.ViewModels
             ReverseCommand = new RelayCommand(async () => await ReverseAsync());
             OpenCardDetailCommand = new RelayCommand<string>(OpenCardDetail);
             ShowImageCommand = new RelayCommand<CameraImageItem>(ShowImage);
+            ToggleMacMiniCommand = new RelayCommand(ToggleMacMini);
             LoadCycleTimeTrend();
             DummyData();
             // 1. Live Data Timer (1000ms) - Gets OEE, IOs, Status from Core Service via TCP
@@ -316,6 +338,38 @@ namespace IPCSoftware.App.ViewModels
 
         #region Data Intilization
 
+        private void ToggleMacMini()
+        {
+            try
+            {
+                bool newState = !IsMacMiniEnabled;
+
+                // 1. Update Runtime UI immediately
+                IsMacMiniEnabled = newState;
+                OnPropertyChanged(nameof(MacMiniStatusText));
+                OnPropertyChanged(nameof(MacMiniStatusColor));
+
+                // 2. Write to appsettings.json
+                string appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+                var json = File.ReadAllText(appSettingsPath);
+                var jsonObj = JObject.Parse(json);
+
+                if (jsonObj["External"] != null)
+                {
+                    jsonObj["External"]["IsMacMiniEnabled"] = newState;
+                    File.WriteAllText(appSettingsPath, jsonObj.ToString());
+
+                    // Log
+                    // _logger.LogInfo($"Mac Mini Logic set to: {newState}", LogType.Audit);
+                }
+            }
+            catch (Exception ex)
+            {
+                // _logger.LogError($"Failed to update config: {ex.Message}", LogType.Diagnostics);
+                // Revert UI if save failed
+                IsMacMiniEnabled = !IsMacMiniEnabled;
+            }
+        }
         private void DummyData()
         {
             // --- DUMMY / INITIAL DATA ---
@@ -538,6 +592,9 @@ namespace IPCSoftware.App.ViewModels
                             RejectedUnits = oeeResult.NGParts;
                             CycleTime = oeeResult.CycleTime;
                             InFlow = oeeResult.TotalParts;
+                            LatestX = oeeResult.XValue;
+                            LatestY = oeeResult.YValue;
+                            LatestTheta = oeeResult.AngleValue; // Assuming Z maps to Theta
                         }
                     }
                 }

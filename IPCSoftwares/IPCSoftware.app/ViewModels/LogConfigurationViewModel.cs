@@ -18,7 +18,9 @@ namespace IPCSoftware.App.ViewModels
     public class LogConfigurationViewModel : BaseViewModel
     {
         private readonly ILogConfigurationService _logService;
+        private readonly ILogManagerService _logManager;
         private readonly ICcdConfigService _ccdService;
+        private readonly IDialogService _dialog;
         private LogConfigurationModel _currentLog;
         private bool _isEditMode;
         private string _title;
@@ -206,6 +208,7 @@ namespace IPCSoftware.App.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
         public ICommand BackUpCommand { get; }
+        public ICommand RestoreCommand { get; }
         public ICommand BrowseDataFolderCommand { get; }
         public ICommand BrowseBackupFolderCommand { get; }
 
@@ -215,8 +218,13 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public LogConfigurationViewModel(ILogConfigurationService logService,ICcdConfigService ccdService, IAppLogger logger) : base(logger)
+        public LogConfigurationViewModel(ILogConfigurationService logService,
+            IDialogService dialog,
+            ILogManagerService logManager,
+            ICcdConfigService ccdService, IAppLogger logger) : base(logger)
         {
+            _dialog = dialog;
+            _logManager = logManager;
             _logService = logService;
             _ccdService = ccdService;
 
@@ -237,6 +245,7 @@ namespace IPCSoftware.App.ViewModels
             BrowseDataFolderCommand = new RelayCommand(() => OnBrowseDataFolder());
             BrowseBackupFolderCommand = new RelayCommand(() => OnBrowseBackupFolder());
             BackUpCommand = new RelayCommand(() => OnBackUp());
+            RestoreCommand = new RelayCommand(() => OnRestore());
             BrowseProdImageCommand = new RelayCommand(() => ProductionImagePath = BrowseFolder("Select Production Image Folder"));
             BrowseProdBackupCommand = new RelayCommand(() => ProductionImageBackupPath = BrowseFolder("Select Production Backup Folder"));
 
@@ -455,9 +464,25 @@ namespace IPCSoftware.App.ViewModels
 
         private void OnBackUp()
         {
+            _logManager.PerformManualBackup(_currentLog.Id);
+
+            Task.Delay(1599);
+            _dialog.ShowMessage("Backup completed sucessfully.");
             // Execute manual backup logic
             // TODO: Implement backup logic
         }
+
+        private void OnRestore()
+        {
+            _logManager.PerformManualRestore(_currentLog.Id);
+
+            Task.Delay(1599);
+            _dialog.ShowMessage("Backup completed sucessfully.");
+            // Execute manual backup logic
+            // TODO: Implement backup logic
+        }
+
+
 
         private void OnBackupScheduleChanged()
         {

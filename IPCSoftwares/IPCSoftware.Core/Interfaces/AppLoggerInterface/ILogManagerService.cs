@@ -9,11 +9,15 @@ namespace IPCSoftware.Core.Interfaces.AppLoggerInterface
 {
     public interface ILogManagerService
     {
-        Task InitializeAsync(); 
-        LogConfigurationModel GetConfig(LogType type);
 
+        Task InitializeAsync();
+        LogConfigurationModel GetConfig(LogType type);
+        string ResolveLogFile(LogType type);
         void ApplyMaintenance(LogConfigurationModel config, string filePath);
 
-        string ResolveLogFile(LogType type);
+        // NEW Methods
+        void CheckAndPerformBackups(); // Called by Worker
+        void PerformManualBackup(int logConfigId); // Called by UI
+        void PerformManualRestore(int logConfigId); // Called by UI
     }
 }

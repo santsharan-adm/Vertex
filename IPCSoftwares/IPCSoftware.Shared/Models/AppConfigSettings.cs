@@ -11,7 +11,9 @@ namespace IPCSoftware.Shared.Models
         public ConfigSettings Config { get; set; } = new();
 
         public CcdSettings CCD { get; set; } = new();
+        public ExternalSettings External { get; set; } = new();
     }
+
     public class ConfigSettings
     {
         public string DataFolder { get; set; }
@@ -35,6 +37,7 @@ namespace IPCSoftware.Shared.Models
 
     public class CcdSettings
     {
+        public string MacMiniSharedPath { get; set; }
         public string QrCodeImagePath { get; set; }
         public string TempImgFolder { get; set; }
         public string BaseOutputDir { get; set; }
@@ -53,4 +56,18 @@ namespace IPCSoftware.Shared.Models
         public string Description { get; set; }
     }
 
+    public class ExternalSettings
+    {
+        public bool IsMacMiniEnabled { get; set; } 
+        public string MacMiniIpAddress { get; set; } 
+        public string SharedFolderPath { get; set; } 
+        public string StatusFileName { get; set; } 
+        public int PingTimeoutMs { get; set; } = 1000;
+
+        public string PreviousMachineCode { get; set; } 
+        public string AOIMachineCode { get; set; } 
+    }
+
 }
+
+

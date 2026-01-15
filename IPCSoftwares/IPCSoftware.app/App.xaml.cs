@@ -102,6 +102,7 @@ namespace IPCSoftware.App
                     var configuration = hostContext.Configuration;
                     services.Configure<ConfigSettings>(hostContext.Configuration.GetSection("Config"));
                     services.Configure<CcdSettings>(hostContext.Configuration.GetSection("CCD"));
+                    services.Configure<ExternalSettings>(hostContext.Configuration.GetSection("External"));
                     ServiceRegistration.RegisterServices(services);
                 })
                 .Build();
@@ -111,10 +112,12 @@ namespace IPCSoftware.App
             // 1. Create specific settings objects
             var configSettings = new ConfigSettings();
             var ccdSettings = new CcdSettings();
+            var external = new ExternalSettings();
 
             // 2. Bind the specific sections from JSON to these objects
             config.GetSection("Config").Bind(configSettings);
             config.GetSection("CCD").Bind(ccdSettings);
+            config.GetSection("External").Bind(ccdSettings);
 
             // 3. Initialize Constants without needing AppConfigSettings wrapper
             ConstantValues.Initialize(configSettings);

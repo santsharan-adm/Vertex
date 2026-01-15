@@ -86,6 +86,41 @@
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
 
+                        <Button Command="{Binding ToggleMacMiniCommand}" 
+                                Content="{Binding MacMiniStatusText}"
+                                Width="160" Height="45"
+                                Margin="0,0,25,0"
+                                Cursor="Hand"
+                                Focusable="False"
+                                Background="{Binding MacMiniStatusColor}" 
+                                Foreground="White"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1"
+                                FontSize="16" 
+                                FontWeight="SemiBold">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </Button.Resources>
+                            <!-- Remove default template triggers that might mess up background binding -->
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" 
+                                            BorderBrush="{TemplateBinding BorderBrush}" 
+                                            BorderThickness="{TemplateBinding BorderThickness}" 
+                                            CornerRadius="8">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Opacity" Value="0.8"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
                         <Button Command="{Binding ReverseCommand}" 
                         Width="140" Height="45"
                         Margin="0,0,25,0"

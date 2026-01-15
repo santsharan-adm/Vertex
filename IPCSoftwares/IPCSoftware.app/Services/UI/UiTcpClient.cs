@@ -215,6 +215,7 @@ namespace IPCSoftware.App.Services.UI
                     try
                     {
                         _client.Close();
+                        
                         _client.Dispose();
                     }
                     catch { }

@@ -172,7 +172,22 @@
 
                         <Border Style="{StaticResource CardStyle}">
                             <StackPanel>
+                                <Grid >
+                                    
                                 <TextBlock Text="Backup Configuration" FontSize="32" FontWeight="Bold" Margin="0,0,0,30"/>
+                                    <Button Content="Restore" HorizontalAlignment="Right"
+                                          Command="{Binding RestoreCommand}"
+                                          Width="200" Height="70"
+                                          FontSize="28" FontWeight="Bold"
+                                          Background="#007ACC" Foreground="White"
+                                          BorderThickness="0">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </Grid>
 
                                 <StackPanel Margin="0,0,0,30">
                                     <TextBlock Text="Schedule Frequency" Style="{StaticResource HmiLabelStyle}"/>
