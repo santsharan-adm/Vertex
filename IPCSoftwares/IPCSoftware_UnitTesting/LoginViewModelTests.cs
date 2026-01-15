@@ -63,7 +63,7 @@ namespace IPCSoftware_UnitTesting
             var task = (Task)method.Invoke(vm, null);
             await task;
 
-             _dialogMock.Verify(x => x.ShowMessage("Please enter username and password."), Times.Once);
+             _dialogMock.Verify(x => x.ShowMessage("Please enter username and password.", It.IsAny<string>()), Times.Once);
              }
           
           
@@ -87,7 +87,7 @@ namespace IPCSoftware_UnitTesting
     It.IsAny<string>(),
     It.IsAny<string>(),
     It.IsAny<int>()), Times.Once);
-               _dialogMock.Verify(d => d.ShowMessage("Invalid username or password."), Times.Once);
+               _dialogMock.Verify(d => d.ShowMessage("Invalid username or password.", It.IsAny<string>()), Times.Once);
               }
 
           [Fact]
@@ -108,7 +108,7 @@ namespace IPCSoftware_UnitTesting
     It.IsAny<string>(),
     It.IsAny<string>(),
     It.IsAny<int>()), Times.Once);
-                 _dialogMock.Verify(d => d.ShowMessage(It.Is<string>(s => s.Contains("boom"))), Times.Once);
+                 _dialogMock.Verify(d => d.ShowMessage(It.Is<string>(s => s.Contains("boom")), It.IsAny<string>()), Times.Once);
              }
 
            [Fact]
