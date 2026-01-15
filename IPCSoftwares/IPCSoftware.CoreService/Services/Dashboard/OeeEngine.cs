@@ -98,6 +98,16 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         {
             try
             {
+                if (IsDryRunMode(tagValues))
+                {
+                    if (_currentCycleRecord != null)
+                    {
+                        _logger.LogInfo("[OEE] Dry Run active — clearing current production record.", LogType.Diagnostics);
+                        ResetCycleTracking();
+                    }
+                    return;
+                }
+
                 // =========================================================
                 // 1. Handle CCD Station Step (TriggerCCD tag 10)
                 // =========================================================
@@ -302,6 +312,11 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         {
             try
             {
+                if (IsDryRunMode(values))
+                {
+                    return new Dictionary<int, object> { { 4, new OeeResult() } };
+                }
+
                 OeeResult r = new OeeResult();
 
                 // 1. Extract Raw Values
@@ -420,6 +435,18 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 if (obj is int iVal) return iVal > 0;
             }
             return false;
+        }
+
+        private bool IsDryRunMode(Dictionary<int, object> tagValues)
+        {
+            return GetBoolState(tagValues, ConstantValues.Mode_DryRun.Read);
+        }
+
+        private void ResetCycleTracking()
+        {
+            _currentCycleRecord = null;
+            _currentStationIndex = -1;
+            _currentSequenceStep = 0;
         }
 
         private async Task WriteTagAsync(int tagNo, object value)

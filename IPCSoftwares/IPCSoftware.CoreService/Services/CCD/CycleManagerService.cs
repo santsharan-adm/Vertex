@@ -175,6 +175,7 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                     // Move to Quarantine
                     string fileName = Path.GetFileName(tempImagePath);
+                    if (!Directory.Exists(_quarantinePath)) Directory.CreateDirectory(_quarantinePath);
                     string destFile = Path.Combine(_quarantinePath, $"{DateTime.Now:yyyyMMdd_HHmmss}_{fileName}");
                     File.Move(tempImagePath, destFile);
                     destUiPath = string.Empty;

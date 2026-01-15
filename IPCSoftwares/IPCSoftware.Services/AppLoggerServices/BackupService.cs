@@ -90,6 +90,39 @@ namespace IPCSoftware.Services.AppLoggerServices
             }
         }
 
+
+        public void PerformRestore(LogConfigurationModel config)
+        {
+            try
+            {
+             
+                if (Directory.Exists(config.BackupFolder) && !string.IsNullOrEmpty(config.DataFolder))
+                {
+                  //  CopyDirectory(config.DataFolder, config.BackupFolder);
+                    CopyDirectory(config.BackupFolder, config.DataFolder);
+                }
+
+                // 2. Special Case: Production Images
+                if (config.LogType == LogType.Production)
+                {
+
+                    string sourceImages = _ccdSettings.BaseOutputDir;
+                    string backupImages = _ccdSettings.BaseOutputDirBackup;
+
+                    if (Directory.Exists(backupImages) && !string.IsNullOrEmpty(sourceImages))
+                    {
+                        CopyDirectory(backupImages, sourceImages);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error (inject logger if needed, or swallow/debug print)
+                System.Diagnostics.Debug.WriteLine($"Backup Error: {ex.Message}");
+            }
+        }
+
+
         private void CopyDirectory(string sourceDir, string destDir)
         {
             if (!Directory.Exists(destDir))

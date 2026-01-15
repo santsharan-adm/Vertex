@@ -130,7 +130,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             try
             {
                 Debug.WriteLine($"[Core] HandleUiRequest called → RequestId={request.RequestId}");
-                _logger.LogInfo($"[Core] HandleUiRequest called → RequestId={request.RequestId}",LogType.Diagnostics);
+               // _logger.LogInfo($"[Core] HandleUiRequest called → RequestId={request.RequestId}",LogType.Diagnostics);
 
                 //---------------------------------------------------------
                 // 6) WRITE REQUEST (RequestId = 6)

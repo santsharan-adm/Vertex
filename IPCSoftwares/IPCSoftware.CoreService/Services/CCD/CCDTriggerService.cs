@@ -189,11 +189,14 @@ namespace IPCSoftware.CoreService.Services.CCD
                 {
                     // 1. Hand off to Cycle Manager (Updates JSON & Moves Files)
                     // Note: Update CycleManager Interface to accept Dictionary
+
+                    
                     _cycleManager.HandleIncomingData(imagePath, data, qrCode);
 
                     // 2. Write Ack (Tag 15) to PLC
                     await WriteAckToPlcAsync(true);
                 }
+
                 catch (Exception ex)
                 {
                     Console.WriteLine($"[Error] Processing: {ex.Message}");
@@ -203,7 +206,8 @@ namespace IPCSoftware.CoreService.Services.CCD
             else
             {
                 Console.WriteLine("[Error] Triggered but No Image found.");
-                _logger.LogInfo("[Error] Triggered but No Image found.", LogType.Diagnostics);
+                await WriteAckToPlcAsync(true);
+                _logger.LogInfo("[Error] Triggered but No Image found.", LogType.Error);
             }
         }
 
