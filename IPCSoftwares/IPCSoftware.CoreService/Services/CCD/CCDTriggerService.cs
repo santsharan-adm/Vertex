@@ -51,23 +51,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         {
             try
             {
-                bool isAutoRun = false;
-
-                if (tagValues.TryGetValue(ConstantValues.Mode_Auto.Read, out object autoRunobj))
-                {
-                    if (autoRunobj is bool bValAuto) isAutoRun = bValAuto;
-                    else if (autoRunobj is int iValAuto) isAutoRun = iValAuto > 0;
-                }
-
-                    if (!isAutoRun && _lastCycleStartState)
-                    {
-                        _cycleManager.ForceResetCycle();
-                        _lastTriggerState = false;
-                        _lastCycleStartState = false;
-
-                        return;
-                    }
-
+              
                 _plcManager = manager;
 
                 bool isCycleEnabled = false;
@@ -87,6 +71,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                             if (bVal == true)
                             {
                                 WriteAckToPlcAsync(false);
+                                _logger.LogInfo($"Writing B5 to false which was not written flase in previous cycle.", LogType.Error);
                             }
                         }
                     }
@@ -100,7 +85,8 @@ namespace IPCSoftware.CoreService.Services.CCD
                     _logger.LogInfo("[CCD] Cycle Start Bit went LOW. Forcing Reset.", LogType.Audit);
                   //  await WriteAckToPlcAsync(false);
                     // Call the reset logic immediately
-                    _cycleManager.ForceResetCycle();
+                  
+                    _cycleManager.ForceResetCycle(true);
 
                     // Optional: Write "Unchecked" or Reset status to PLC if needed
                 }
@@ -110,6 +96,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 // IF CYCLE IS NOT ENABLED, STOP HERE. DO NOT PROCESS IMAGE TRIGGERS.
                 if (!isCycleEnabled)
                 {
+                    _lastTriggerState = false;
                     return;
                 }
 
@@ -124,8 +111,8 @@ namespace IPCSoftware.CoreService.Services.CCD
                     if (triggerObj is bool bVal) currentTriggerState = bVal;
                     else if (triggerObj is int iVal) currentTriggerState = iVal > 0;
                 }
-               
 
+                _logger.LogInfo($"[CCD] Cycle {currentTriggerState } {_lastTriggerState}  reached at line 122.", LogType.Error);
                 // 2. Rising Edge Detection (False -> True)
                 if (currentTriggerState && !_lastTriggerState)
                 {
@@ -150,23 +137,16 @@ namespace IPCSoftware.CoreService.Services.CCD
                     stationData["Y"] = tagValues.ContainsKey(ConstantValues.TAG_Y) ? tagValues[ConstantValues.TAG_Y] : 0.0;
                     stationData["Z"] = tagValues.ContainsKey(ConstantValues.TAG_Z) ? tagValues[ConstantValues.TAG_Z] : 0.0;
 
-                    if (!IsQrValid(qrCode))
-                    {
-                        _logger.LogWarning("[CCD] Trigger detected but QR data is not ready. PLC handshake will be acknowledged to keep cycle moving.", LogType.Diagnostics);
-                        await WriteAckToPlcAsync(true);
-                    }
-                    else
-                    {
-                        // 4. Execute Async Workflow
-                        _ = ExecuteWorkflowAsync(qrCode, stationData);
-                    }
+                    // 4. Execute Async Workflow
+                    _ = ExecuteWorkflowAsync(qrCode, stationData);
 
                 }
                 if (!currentTriggerState && _lastTriggerState)
                 {
                     await WriteAckToPlcAsync(false);
+                    _logger.LogInfo($"[CCD] Cycle {currentTriggerState} {_lastTriggerState}  reached at line 144.", LogType.Error);
                 }
-
+                _logger.LogInfo($"[CCD] Cycle {currentTriggerState} {_lastTriggerState}  reached at line 146.", LogType.Error);
                 // 4. Update State
                 _lastTriggerState = currentTriggerState;
             }
@@ -178,14 +158,6 @@ namespace IPCSoftware.CoreService.Services.CCD
 
         }
 
-
-        private bool IsQrValid(string qrCode)
-        {
-            if (string.IsNullOrWhiteSpace(qrCode))
-                return false;
-
-            return !qrCode.Contains('\0');
-        }
 
         private string MapStatus(object rawStatus)
         {
@@ -200,6 +172,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 default: return "Unchecked"; // fallback
             }
         }
+
 
         private async Task ExecuteWorkflowAsync(string qrCode, Dictionary<string, object> data)
         {
@@ -216,7 +189,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             }
         }
 
-       // Stopwatch sp = new Stopwatch();
+       // Stopwatch sp = new Stopwatch();  
         private async Task WriteAckToPlcAsync(bool writebool)
         {
             try

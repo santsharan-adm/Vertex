@@ -71,9 +71,16 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                         // processedData is Dictionary<int, object> where int is Tag ID
                         var processedData = _algo.Apply(plcNo, values);
 
+                        string qrCodeNullCgeck = processedData.ContainsKey(ConstantValues.TAG_QR_DATA) ? processedData[ConstantValues.TAG_QR_DATA]?.ToString() : null;
+                        if (qrCodeNullCgeck != null && !(qrCodeNullCgeck.Contains('\0')))
+                        {
+                            _ccdTrigger.ProcessTriggers(processedData, _manager);
+                         
+                        }
+
                         // B. CHECK FOR TRIGGERS (This is where the magic happens)
                         // We call this immediately after processing values, but before updating UI
-                          _ccdTrigger.ProcessTriggers(processedData, _manager);
+                      //  _ccdTrigger.ProcessTriggers(processedData, _manager);
                                 /*bool isAutoRun = false;
 
                                 if (processedData.TryGetValue(ConstantValues.Mode_Auto.Read, out object cycleStartObj))

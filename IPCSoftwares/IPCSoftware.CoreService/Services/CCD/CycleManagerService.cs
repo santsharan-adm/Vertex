@@ -32,6 +32,8 @@ namespace IPCSoftware.CoreService.Services.CCD
         private readonly string _quarantinePath;
         private readonly string _imageBaseOutputPath;
         private int[] _stationMap;
+        public bool IsCycleResetCompleted { get; private set; }
+
 
         public CycleManagerService(
             IPLCTagConfigurationService tagService,
@@ -89,6 +91,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             if (string.IsNullOrEmpty(_activeBatchId))
             {
                 if (!string.IsNullOrEmpty(qrString)) StartNewCycle(tempImagePath, qrString);
+                IsCycleResetCompleted = false;
             }
             else
             {
@@ -162,7 +165,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             try
             {
                 if (_stationMap == null || _stationMap.Length == 0) return;
-                if (_currentSequenceStep >= _stationMap.Length) { ForceResetCycle(); return; }
+                if (_currentSequenceStep >= _stationMap.Length) { IsCycleResetCompleted = true; ForceResetCycle(); return; }
 
                 int physicalStationId = _stationMap[_currentSequenceStep];
                 Console.WriteLine($"--- PROCESSING STATION {physicalStationId} (Seq {_currentSequenceStep}) ---");
@@ -200,7 +203,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 if (_currentSequenceStep >= _stationMap.Length)
                 {
                     Console.WriteLine("--- CYCLE COMPLETE ---");
-                    Task.Run(async () => { await Task.Delay(1500); ForceResetCycle(); });
+                    Task.Run(async () => { await Task.Delay(100); IsCycleResetCompleted = true; ForceResetCycle(); });
                 }
             }
             catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); }
@@ -272,7 +275,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             catch (Exception ex) { _logger.LogError($"Ext Write Error ({tagId}): {ex.Message}", LogType.Diagnostics); }
         }
 
-        public void ForceResetCycle()
+        public void ForceResetCycle(bool ccdReset = false)
         {
             try
             {
@@ -295,7 +298,13 @@ namespace IPCSoftware.CoreService.Services.CCD
                       
                     WriteTagAsync(); // Reset Ack
                     Console.WriteLine("[System] Cycle Reset.");
+
                     _logger.LogError("[System] Cycle Reset — Folder cleared completely.", LogType.Error);
+                    if (ccdReset)
+                    {
+
+                    _logger.LogError("[CycleManager] Cycle Reset — By CCD Service .", LogType.Error);
+                    }
                 }
             }
             catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); }
