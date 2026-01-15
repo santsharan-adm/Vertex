@@ -243,6 +243,9 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<ReportConfigView>();
             services.AddSingleton<ReportViewerViewModel>();
             services.AddSingleton<ReportViewerView>();
+
+            services.AddTransient<ApiTestViewModel>();
+            services.AddTransient<ApiTestView>();
         }
     }
 }
