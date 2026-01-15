@@ -51,6 +51,35 @@ namespace IPCSoftware.CoreService.Services.CCD
         {
             try
             {
+                bool isAutoRun = false;
+
+                if (tagValues.TryGetValue(ConstantValues.Mode_Auto.Read, out object autoRunobj))
+                {
+                    if (autoRunobj is bool bValAuto) isAutoRun = bValAuto;
+                    else if (autoRunobj is int iValAuto) isAutoRun = iValAuto > 0;
+                }
+
+                    if (!isAutoRun && _lastCycleStartState)
+                    {
+                        _cycleManager.ForceResetCycle();
+                        _lastTriggerState = false;
+                        _lastCycleStartState = false;
+
+                        return;
+                    }
+
+                string qrCodeNullCgeck = tagValues.ContainsKey(ConstantValues.TAG_QR_DATA) ? tagValues[ConstantValues.TAG_QR_DATA]?.ToString() : null;
+                if (qrCodeNullCgeck == null)
+                {
+                    return;
+                }
+
+
+                if ((qrCodeNullCgeck.Contains('\0')))
+                {
+                    return;
+                }
+
                 _plcManager = manager;
 
                 bool isCycleEnabled = false;
@@ -92,18 +121,6 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                 // IF CYCLE IS NOT ENABLED, STOP HERE. DO NOT PROCESS IMAGE TRIGGERS.
                 if (!isCycleEnabled)
-                {
-                    return;
-                }
-
-                string qrCodeNullCgeck = tagValues.ContainsKey(ConstantValues.TAG_QR_DATA) ? tagValues[ConstantValues.TAG_QR_DATA]?.ToString() : null;
-                if(qrCodeNullCgeck == null)
-                {
-                    return;
-                }
-
-
-                if ( (qrCodeNullCgeck.Contains('\0')))
                 {
                     return;
                 }
@@ -164,6 +181,8 @@ namespace IPCSoftware.CoreService.Services.CCD
      
 
         }
+
+
         private string MapStatus(object rawStatus)
         {
             if (rawStatus == null)

@@ -71,17 +71,17 @@ namespace IPCSoftware.Services.AppLoggerServices
                 }
 
                 // 2. Special Case: Production Images
-                if (config.LogType == LogType.Production)
+                /*if (config.LogType == LogType.Production)
                 {
                  
-                    string sourceImages = _ccdSettings.BaseOutputDir;
+                  //  string sourceImages = _ccdSettings.BaseOutputDir;
                     string backupImages = _ccdSettings.BaseOutputDirBackup;
 
                     if (Directory.Exists(sourceImages) && !string.IsNullOrEmpty(backupImages))
                     {
                         CopyDirectory(sourceImages, backupImages);
                     }
-                }
+                }*/
             }
             catch (Exception ex)
             {
@@ -103,17 +103,17 @@ namespace IPCSoftware.Services.AppLoggerServices
                 }
 
                 // 2. Special Case: Production Images
-                if (config.LogType == LogType.Production)
-                {
+                //if (config.LogType == LogType.Production)
+                //{
 
-                    string sourceImages = _ccdSettings.BaseOutputDir;
-                    string backupImages = _ccdSettings.BaseOutputDirBackup;
+                //    string sourceImages = _ccdSettings.BaseOutputDir;
+                //    string backupImages = _ccdSettings.BaseOutputDirBackup;
 
-                    if (Directory.Exists(backupImages) && !string.IsNullOrEmpty(sourceImages))
-                    {
-                        CopyDirectory(backupImages, sourceImages);
-                    }
-                }
+                //    if (Directory.Exists(backupImages) && !string.IsNullOrEmpty(sourceImages))
+                //    {
+                //        CopyDirectory(backupImages, sourceImages);
+                //    }
+                //}
             }
             catch (Exception ex)
             {

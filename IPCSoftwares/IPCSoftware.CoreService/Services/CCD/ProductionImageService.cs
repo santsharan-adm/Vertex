@@ -16,11 +16,14 @@ namespace IPCSoftware.CoreService.Services.CCD
     public class ProductionImageService : BaseService
     {
         private readonly CcdSettings _ccd;
+        private readonly ExternalSettings _extSetting;
 
         public ProductionImageService(IOptions<CcdSettings> ccdOptions,
+            IOptions<ExternalSettings> extSetting,
             IAppLogger logger) : base(logger)
         {
             _ccd = ccdOptions.Value;
+            _extSetting = extSetting.Value;
         }
 
         /// <summary>
@@ -29,7 +32,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         /// <param name="tempFilePath">Full path to the source file (e.g. inside CCD folder)</param>
         /// <param name="uniqueDataString">The 40-char unique string</param>
         /// <param name="stNo">Station Number (1-12)</param>
-        public string ProcessAndMoveImage(string tempFilePath, string uniqueDataString, int stNo,
+        public string ProcessAndMoveImage(string tempFilePath, string baseImagePath,  string uniqueDataString, int stNo,
             double x = 0, double y = 0, double z = 0, bool qrCodeFile = false)
         {
             try
@@ -47,7 +50,7 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                 // Metadata formats require specific date/time formats
                 string metaDate = now.ToString("yyyy_MM_dd");     //
-                string metaTime = now.ToString("HH:mm:ss.fff");   //
+                string metaTime = now.ToString("HH:mm:ss:fff");   //
 
                 _logger.LogInfo($"[Error] qr Code string is: {uniqueDataString}", LogType.Error);
 
@@ -60,8 +63,14 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                 // 2. Construct Folder Name
                 // Format: uniqueString_DateOfToday
-                string folderName = $"{uniqueDataString}_{dateStr}".Replace("\0", "_");
-                string targetFolder = Path.Combine(_ccd.BaseOutputDir, folderName);
+                //  string folderName = $"{uniqueDataString}_{dateStr}".Replace("\0", "_");
+                string machineCode = _extSetting.AOIMachineCode;
+                string productionFolder = "Production Images";
+
+                string folderName = $"{metaDate}-{uniqueDataString}".Replace("\0", "_");
+                var finalfolderName = Path.Combine(machineCode, productionFolder, folderName);
+
+                string targetFolder = Path.Combine(baseImagePath, finalfolderName);
 
                 // Create directory if it doesn't exist
                 if (!Directory.Exists(targetFolder))
@@ -71,7 +80,7 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                 // 3. Construct File Name Base
                 // Format: stNo_FolderName_time(hh-mm-ss-xxx)
-                string fileNameBase = $"{stNo}_{folderName}_{timeStr}";
+                string fileNameBase = $"{stNo}_{uniqueDataString}_{metaDate}_{timeStr}";
 
                 // 4. Define Full Output Paths
                 string rawDestPath = Path.Combine(targetFolder, $"{fileNameBase}_raw.bmp");

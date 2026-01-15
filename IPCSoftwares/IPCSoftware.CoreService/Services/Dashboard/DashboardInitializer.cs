@@ -5,6 +5,7 @@ using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
 using Microsoft.Extensions.FileSystemGlobbing.Internal.PatternContexts;
@@ -72,9 +73,20 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
                         // B. CHECK FOR TRIGGERS (This is where the magic happens)
                         // We call this immediately after processing values, but before updating UI
+                          _ccdTrigger.ProcessTriggers(processedData, _manager);
+                                /*bool isAutoRun = false;
+
+                                if (processedData.TryGetValue(ConstantValues.Mode_Auto.Read, out object cycleStartObj))
+                                {
+                                    if (cycleStartObj is bool bVal) isAutoRun = bVal;
+                                    else if (cycleStartObj is int iVal) isAutoRun = iVal > 0;
+                                }
+
+                                if (isAutoRun)
+                                {
+                                }*/
 
 
-                      _ccdTrigger.ProcessTriggers(processedData, _manager);
                         _oee.ProcessCycleTimeLogic(processedData);
                         _oee.Calculate(processedData);
                         _systemMonitor.Process(processedData);
