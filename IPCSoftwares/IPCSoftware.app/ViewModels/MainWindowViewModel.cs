@@ -527,6 +527,9 @@ public class MainWindowViewModel : BaseViewModel
                     _nav.NavigateToLogs(LogType.Diagnostics);
                     break;
                 
+                case "MacMini Test":
+                    _nav.NavigateMain<ApiTestView>();
+                    break;
             }
         }
         catch (Exception ex)

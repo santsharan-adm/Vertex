@@ -158,10 +158,11 @@ public class RibbonViewModel : BaseViewModel
                 "Shift Config",
 
                 "Report Config",
-                 "Servo Parameters",
-                   "Time Sync",
+                "Servo Parameters",
+                "Time Sync",
                 "Diagnostic",
-                "External Interface"
+                "External Interface",
+                "MacMini Test"
             };
 
             // 3. Logic: Only Admin can see "User Config"
