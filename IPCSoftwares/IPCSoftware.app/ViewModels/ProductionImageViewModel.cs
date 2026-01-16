@@ -11,12 +11,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Win32;
+using Microsoft.Extensions.Options;
 
 namespace IPCSoftware.App.ViewModels
 {
     public class ProductionImageViewModel : BaseViewModel
     {
-        private readonly ICcdConfigService _ccdConfig;
+        private readonly ILogConfigurationService _logConfig;
         private string _rootPath;
 
         // Collections
@@ -62,22 +63,27 @@ namespace IPCSoftware.App.ViewModels
         public ICommand SaveImageCommand { get; }
 
         public ProductionImageViewModel(
-            ICcdConfigService ccdConfig,
+            ILogConfigurationService logConfig,
+            IOptions <ExternalSettings> extSetting,
             IAppLogger logger) : base(logger)
         {
-            _ccdConfig = ccdConfig;
-            _= InitializeAsync();
-            RefreshCommand = new RelayCommand(async () => await InitializeAsync());
+            var machineFolder = extSetting.Value.AOIMachineCode;
+            var prodFolder = "Production Images";
+            _logConfig = logConfig;
+            _= InitializeAsync(machineFolder, prodFolder);
+            RefreshCommand = new RelayCommand(async () => await InitializeAsync(machineFolder, prodFolder));
             SaveImageCommand = new RelayCommand<ProductionImageModel>(OnSaveImage);
         }
 
-        public async Task InitializeAsync()
+        public async Task InitializeAsync(string machineFolder, string prodFlder)
         {
             try
             {
                 // 1. Get Root Path from Config
-                var paths = _ccdConfig.LoadCcdPaths();
-                _rootPath = paths.ImagePath;
+                var logConfig = await _logConfig.GetByLogTypeAsync(LogType.Production);
+                var logFolderPath = logConfig.ProductionImagePath;
+                
+                _rootPath = Path.Combine(logFolderPath, machineFolder, prodFlder);
 
                 if (string.IsNullOrWhiteSpace(_rootPath) || !Directory.Exists(_rootPath))
                 {

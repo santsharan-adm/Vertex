@@ -19,7 +19,6 @@ namespace IPCSoftware.App.ViewModels
     {
         private readonly ILogConfigurationService _logService;
         private readonly ILogManagerService _logManager;
-        private readonly ICcdConfigService _ccdService;
         private readonly IDialogService _dialog;
         private LogConfigurationModel _currentLog;
         private bool _isEditMode;
@@ -70,12 +69,6 @@ namespace IPCSoftware.App.ViewModels
 
                     // 2. Determine if we are in Production Mode
                     IsProductionLog = (value == "Production");
-
-                    // 3. If Production, Load from JSON
-                    if (IsProductionLog)
-                    {
-                        LoadJsonPaths();
-                    }
                 }
             }
         }
@@ -221,12 +214,11 @@ namespace IPCSoftware.App.ViewModels
         public LogConfigurationViewModel(ILogConfigurationService logService,
             IDialogService dialog,
             ILogManagerService logManager,
-            ICcdConfigService ccdService, IAppLogger logger) : base(logger)
+             IAppLogger logger) : base(logger)
         {
             _dialog = dialog;
             _logManager = logManager;
             _logService = logService;
-            _ccdService = ccdService;
 
             LogTypes = new ObservableCollection<string> { "Production", "Audit", "Error", "Diagnostics" };
             BackupSchedules = new ObservableCollection<string> { "Manual", "Daily", "Weekly", "Monthly" };
@@ -261,17 +253,7 @@ namespace IPCSoftware.App.ViewModels
             LoadFromModel(_currentLog);
         }
 
-        private void LoadJsonPaths()
-        {
-            try
-            {
-                // Use the service to get paths
-                var paths = _ccdService.LoadCcdPaths();
-                ProductionImagePath = paths.ImagePath;
-                ProductionImageBackupPath = paths.BackupPath;
-            }
-            catch { }
-        }
+     
 
         public void LoadForEdit(LogConfigurationModel log)
         {
@@ -300,6 +282,8 @@ namespace IPCSoftware.App.ViewModels
                 Description = log.Description;
                 Remark = log.Remark;
                 Enabled = log.Enabled;
+                ProductionImagePath = log.ProductionImagePath;
+                ProductionImageBackupPath = log.ProductionImageBackupPath;
             }
             catch (Exception ex)
             {
@@ -349,6 +333,8 @@ namespace IPCSoftware.App.ViewModels
                 _currentLog.Description = Description;
                 _currentLog.Remark = Remark;
                 _currentLog.Enabled = Enabled;
+                _currentLog.ProductionImagePath = ProductionImagePath;
+                _currentLog.ProductionImageBackupPath = ProductionImageBackupPath;
             }
             catch (Exception ex)
             {
@@ -367,10 +353,7 @@ namespace IPCSoftware.App.ViewModels
             try
             {
                 SaveToModel();
-                if (IsProductionLog)
-                {
-                    _ccdService.SaveCcdPaths(ProductionImagePath, ProductionImageBackupPath);
-                }
+              
 
                 if (IsEditMode)
                 {

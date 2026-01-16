@@ -416,41 +416,54 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="0.8*"/>
                                         <ColumnDefinition Width="1.5*"/>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="0.8*"/>
+                                        <ColumnDefinition Width="0.8*"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Header -->
                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="PARAM" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold"/>
                                     <TextBlock Grid.Row="0" Grid.Column="1" Text="VALUE" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="SPECS" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="MIN" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="MAX" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"/>
 
-                                    <!-- X Value -->
                                     <TextBlock Grid.Row="1" Grid.Column="0" Text="X" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" Margin="0,15,0,0"/>
+
                                     <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
-                                        <!-- Added StringFormat for 'mm' -->
-                                        <TextBlock Text="{Binding LatestX, StringFormat={}{0:F2} mm}" Foreground="{DynamicResource SuccessBrush}" FontSize="24" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding LatestX, StringFormat={}{0:F2} mm}" 
+                           Foreground="{Binding StatusBrushX}" 
+                           FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
-                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="3 - 4" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Right" Margin="0,15,0,0"/>
 
-                                    <Border Grid.Row="2" Grid.ColumnSpan="3" Height="1" Background="{DynamicResource BorderBrush}" Margin="0,10"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding LimitX_Min, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center" Margin="0,15,0,0"/>
 
-                                    <!-- Y Value -->
+                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding LimitX_Max, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center" Margin="0,15,0,0"/>
+
+                                    <Border Grid.Row="2" Grid.ColumnSpan="4" Height="1" Background="{DynamicResource BorderBrush}" Margin="0,10"/>
+
                                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Y" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24"/>
+
                                     <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock Text="{Binding LatestY, StringFormat={}{0:F2} mm}" Foreground="{DynamicResource SuccessBrush}" FontSize="24" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding LatestY, StringFormat={}{0:F2} mm}" 
+                           Foreground="{Binding StatusBrushY}" 
+                           FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
-                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="3 - 4" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Right"/>
 
-                                    <Border Grid.Row="4" Grid.ColumnSpan="3" Height="1" Background="{DynamicResource BorderBrush}" Margin="0,10"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding LimitY_Min, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding LimitY_Max, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
 
-                                    <!-- Theta (Z) Value -->
+                                    <Border Grid.Row="4" Grid.ColumnSpan="4" Height="1" Background="{DynamicResource BorderBrush}" Margin="0,10"/>
+
                                     <TextBlock Grid.Row="5" Grid.Column="0" Text="θ" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24"/>
+
                                     <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock Text="{Binding LatestTheta, StringFormat={}{0:F2} mm}" Foreground="{DynamicResource SuccessBrush}" FontSize="24" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding LatestTheta, StringFormat={}{0:F2} mm}" 
+                           Foreground="{Binding StatusBrushTheta}" 
+                           FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
-                                    <TextBlock Grid.Row="5" Grid.Column="2" Text="0 - 0.5" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Right"/>
+
+                                    <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding LimitTheta_Min, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding LimitTheta_Max, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
 
                                 </Grid>
                             </Grid>

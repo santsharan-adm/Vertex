@@ -82,7 +82,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 if (!isCycleEnabled && _lastCycleStartState)
                 {
                     Console.WriteLine("[CCD] Cycle Start Bit went LOW. Forcing Reset.");
-                    _logger.LogInfo("[CCD] Cycle Start Bit went LOW. Forcing Reset.", LogType.Audit);
+                    _logger.LogInfo("[CCD] Cycle Start Bit went LOW. Forcing Reset.", LogType.Error);
                   //  await WriteAckToPlcAsync(false);
                     // Call the reset logic immediately
                   
@@ -112,7 +112,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                     else if (triggerObj is int iVal) currentTriggerState = iVal > 0;
                 }
 
-                _logger.LogInfo($"[CCD] Cycle {currentTriggerState } {_lastTriggerState}  reached at line 122.", LogType.Error);
+              //  _logger.LogInfo($"[CCD] Cycle {currentTriggerState } {_lastTriggerState}  reached at line 122.", LogType.Error);
                 // 2. Rising Edge Detection (False -> True)
                 if (currentTriggerState && !_lastTriggerState)
                 {
@@ -138,15 +138,15 @@ namespace IPCSoftware.CoreService.Services.CCD
                     stationData["Z"] = tagValues.ContainsKey(ConstantValues.TAG_Z) ? tagValues[ConstantValues.TAG_Z] : 0.0;
 
                     // 4. Execute Async Workflow
-                    _ = ExecuteWorkflowAsync(qrCode, stationData);
+                    await  ExecuteWorkflowAsync(qrCode, stationData);
 
                 }
                 if (!currentTriggerState && _lastTriggerState)
                 {
                     await WriteAckToPlcAsync(false);
-                    _logger.LogInfo($"[CCD] Cycle {currentTriggerState} {_lastTriggerState}  reached at line 144.", LogType.Error);
+                    //_logger.LogInfo($"[CCD] Cycle {currentTriggerState} {_lastTriggerState}  reached at line 144.", LogType.Error);
                 }
-                _logger.LogInfo($"[CCD] Cycle {currentTriggerState} {_lastTriggerState}  reached at line 146.", LogType.Error);
+               // _logger.LogInfo($"[CCD] Cycle {currentTriggerState} {_lastTriggerState}  reached at line 146.", LogType.Error);
                 // 4. Update State
                 _lastTriggerState = currentTriggerState;
             }
@@ -179,7 +179,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             var imagePath = await WaitForImageAsync();
             if (!string.IsNullOrEmpty(imagePath))
             {
-                _cycleManager.HandleIncomingData(imagePath, data, qrCode);
+               await  _cycleManager.HandleIncomingData(imagePath, data, qrCode);
                 await WriteAckToPlcAsync(true);
             }
             else
