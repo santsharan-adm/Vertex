@@ -11,7 +11,8 @@ namespace IPCSoftware.Core.Interfaces.CCD
     {
         // void HandleIncomingImage(string tempImagePath, string qrCodeString = null);
         void HandleIncomingData(string tempImagePath, Dictionary<string, object> stationData, string qrString = null);
-        void ForceResetCycle();
+        void ForceResetCycle(bool ccdReset = false);
+        bool IsCycleResetCompleted { get; }
     }
 }
     

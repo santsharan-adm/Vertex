@@ -51,6 +51,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         {
             try
             {
+              
                 _plcManager = manager;
 
                 bool isCycleEnabled = false;
@@ -70,6 +71,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                             if (bVal == true)
                             {
                                 WriteAckToPlcAsync(false);
+                                _logger.LogInfo($"Writing B5 to false which was not written flase in previous cycle.", LogType.Error);
                             }
                         }
                     }
@@ -83,7 +85,8 @@ namespace IPCSoftware.CoreService.Services.CCD
                     _logger.LogInfo("[CCD] Cycle Start Bit went LOW. Forcing Reset.", LogType.Audit);
                   //  await WriteAckToPlcAsync(false);
                     // Call the reset logic immediately
-                    _cycleManager.ForceResetCycle();
+                  
+                    _cycleManager.ForceResetCycle(true);
 
                     // Optional: Write "Unchecked" or Reset status to PLC if needed
                 }
@@ -93,18 +96,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 // IF CYCLE IS NOT ENABLED, STOP HERE. DO NOT PROCESS IMAGE TRIGGERS.
                 if (!isCycleEnabled)
                 {
-                    return;
-                }
-
-                string qrCodeNullCgeck = tagValues.ContainsKey(ConstantValues.TAG_QR_DATA) ? tagValues[ConstantValues.TAG_QR_DATA]?.ToString() : null;
-                if(qrCodeNullCgeck == null)
-                {
-                    return;
-                }
-
-
-                if ( (qrCodeNullCgeck.Contains('\0')))
-                {
+                    _lastTriggerState = false;
                     return;
                 }
 
@@ -119,8 +111,8 @@ namespace IPCSoftware.CoreService.Services.CCD
                     if (triggerObj is bool bVal) currentTriggerState = bVal;
                     else if (triggerObj is int iVal) currentTriggerState = iVal > 0;
                 }
-               
 
+                _logger.LogInfo($"[CCD] Cycle {currentTriggerState } {_lastTriggerState}  reached at line 122.", LogType.Error);
                 // 2. Rising Edge Detection (False -> True)
                 if (currentTriggerState && !_lastTriggerState)
                 {
@@ -152,8 +144,9 @@ namespace IPCSoftware.CoreService.Services.CCD
                 if (!currentTriggerState && _lastTriggerState)
                 {
                     await WriteAckToPlcAsync(false);
+                    _logger.LogInfo($"[CCD] Cycle {currentTriggerState} {_lastTriggerState}  reached at line 144.", LogType.Error);
                 }
-
+                _logger.LogInfo($"[CCD] Cycle {currentTriggerState} {_lastTriggerState}  reached at line 146.", LogType.Error);
                 // 4. Update State
                 _lastTriggerState = currentTriggerState;
             }
@@ -164,6 +157,8 @@ namespace IPCSoftware.CoreService.Services.CCD
      
 
         }
+
+
         private string MapStatus(object rawStatus)
         {
             if (rawStatus == null)
@@ -181,37 +176,20 @@ namespace IPCSoftware.CoreService.Services.CCD
 
         private async Task ExecuteWorkflowAsync(string qrCode, Dictionary<string, object> data)
         {
-            string imagePath = await WaitForImageAsync();
-
+            var imagePath = await WaitForImageAsync();
             if (!string.IsNullOrEmpty(imagePath))
             {
-                try
-                {
-                    // 1. Hand off to Cycle Manager (Updates JSON & Moves Files)
-                    // Note: Update CycleManager Interface to accept Dictionary
-
-                    
-                    _cycleManager.HandleIncomingData(imagePath, data, qrCode);
-
-                    // 2. Write Ack (Tag 15) to PLC
-                    await WriteAckToPlcAsync(true);
-                }
-
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"[Error] Processing: {ex.Message}");
-                    _logger.LogError($"[Error] Processing: {ex.Message}", LogType.Diagnostics);
-                }
+                _cycleManager.HandleIncomingData(imagePath, data, qrCode);
+                await WriteAckToPlcAsync(true);
             }
             else
             {
-                Console.WriteLine("[Error] Triggered but No Image found.");
-                await WriteAckToPlcAsync(true);
-                _logger.LogInfo("[Error] Triggered but No Image found.", LogType.Error);
+                _logger.LogWarning("[CCD] No image within timeout, releasing PLC handshake.", LogType.Error);
+                await WriteAckToPlcAsync(true); // or false, depending on PLC contract
             }
         }
 
-       // Stopwatch sp = new Stopwatch();
+       // Stopwatch sp = new Stopwatch();  
         private async Task WriteAckToPlcAsync(bool writebool)
         {
             try
@@ -257,30 +235,49 @@ namespace IPCSoftware.CoreService.Services.CCD
         {
             try
             {
+                var pollInterval = TimeSpan.FromMilliseconds(200);
+                var quickWindow = TimeSpan.FromSeconds(3);
+                var maxWindow = TimeSpan.FromSeconds(5);
+
                 DateTime start = DateTime.Now;
-                while ((DateTime.Now - start).TotalSeconds < 10)
+                while ((DateTime.Now - start) < maxWindow)
                 {
-                    if (!Directory.Exists(_tempImageFolder)) return null;
+                    if (!Directory.Exists(_tempImageFolder))
+                    {
+                        _logger.LogWarning($"[CCD] Temp image folder missing: {_tempImageFolder}", LogType.Diagnostics);
+                        return null;
+                    }
 
                     var file = new DirectoryInfo(_tempImageFolder)
                         .GetFiles("*.bmp")
                         .OrderByDescending(f => f.LastWriteTime)
                         .FirstOrDefault();
 
-                    // Simple check: Ensure file is not locked
                     if (file != null)
                     {
                         try
                         {
                             using (var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
                             {
-                                if (stream.Length > 0) return file.FullName;
+                                if (stream.Length > 0)
+                                    return file.FullName;
                             }
                         }
-                        catch { /* Locked, retry */ }
+                        catch
+                        {
+                            // file still being written, keep polling
+                        }
                     }
-                    await Task.Delay(200);
+
+                    await Task.Delay(pollInterval);
+
+                    if ((DateTime.Now - start) >= quickWindow)
+                    {
+                        // continue polling until maxWindow but do not block longer than requested
+                    }
                 }
+
+                _logger.LogWarning($"[CCD] Image not found in {_tempImageFolder} within 5s after trigger.", LogType.Diagnostics);
                 return null;
             }
             catch (Exception ex)
