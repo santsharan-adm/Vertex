@@ -67,6 +67,7 @@ namespace IPCSoftware.App.DI
             });
             // When someone asks for IMessagePublisher, give them the EXISTING UiListener
             services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
+            services.AddSingleton<IApiTestSettingsService, ApiTestSettingsService>();
 
 
             //services.AddSingleton<IConfiguration>(configuration);
