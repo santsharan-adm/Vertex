@@ -402,7 +402,7 @@
                             <Ellipse Width="16" Height="16" Margin="0,0,8,0">
                                 <Ellipse.Style>
                                     <Style TargetType="Ellipse">
-                                        <Setter Property="Fill" Value="Green"/>
+                                        <Setter Property="Fill" Value="#a7fabd"/>
                                         <!-- Default: Connected -->
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding PLCConnected}" Value="False">
@@ -418,7 +418,7 @@
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Text" Value="PLC CONNECTED"/>
-                                        <Setter Property="Foreground" Value="Green"/>
+                                        <Setter Property="Foreground" Value="#a7fabd"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding PLCConnected}" Value="False">
                                                 <Setter Property="Text" Value="PLC DISCONNECTED"/>
@@ -433,7 +433,7 @@
                             <Ellipse Width="16" Height="16" Margin="20,0,8,0">
                                 <Ellipse.Style>
                                     <Style TargetType="Ellipse">
-                                        <Setter Property="Fill" Value="Green"/>
+                                        <Setter Property="Fill" Value="#a7fabd"/>
                                         <!-- Default: Connected -->
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsConnected}" Value="False">
@@ -448,7 +448,7 @@
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Text" Value="SERVICE CONNECTED"/>
-                                        <Setter Property="Foreground" Value="Green"/>
+                                        <Setter Property="Foreground" Value="#a7fabd"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsConnected}" Value="False">
                                                 <Setter Property="Text" Value="SERVICE DISCONNECTED"/>
@@ -463,7 +463,7 @@
                             <Ellipse Width="16" Height="16" Margin="20,0,8,0">
                                 <Ellipse.Style>
                                     <Style TargetType="Ellipse">
-                                        <Setter Property="Fill" Value="Green"/>
+                                        <Setter Property="Fill" Value="#a7fabd"/>
                                         <!-- Default: Connected -->
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsConnected2}" Value="False">
@@ -478,7 +478,7 @@
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Text" Value="MAC MINI CONNECTED"/>
-                                        <Setter Property="Foreground" Value="Green"/>
+                                        <Setter Property="Foreground" Value="#a7fabd"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsConnected2}" Value="False">
                                                 <Setter Property="Text" Value="MAC MINI DISCONNECTED"/>
@@ -491,8 +491,8 @@
 
 
 
-                            <TextBlock FontSize="20"  Margin="20,0,8,0"  Foreground ="Green" Text="CURRENT MODE:" FontWeight="Bold" VerticalAlignment="Center"/>
-                            <TextBlock FontSize="20"  Margin="0,0,8,0"  Foreground ="Green" Text="{Binding CurrentMachineMode}" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="20"  Margin="20,0,8,0"  Foreground ="#a7fabd" Text="CURRENT MODE:" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="20"  Margin="0,0,8,0"  Foreground ="#a7fabd" Text="{Binding CurrentMachineMode}" FontWeight="Bold" VerticalAlignment="Center"/>
 
                            
                             

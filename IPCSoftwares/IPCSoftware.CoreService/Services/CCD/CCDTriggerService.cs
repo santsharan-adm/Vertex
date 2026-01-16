@@ -136,6 +136,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                     stationData["X"] = tagValues.ContainsKey(ConstantValues.TAG_X) ? tagValues[ConstantValues.TAG_X] : 0.0;
                     stationData["Y"] = tagValues.ContainsKey(ConstantValues.TAG_Y) ? tagValues[ConstantValues.TAG_Y] : 0.0;
                     stationData["Z"] = tagValues.ContainsKey(ConstantValues.TAG_Z) ? tagValues[ConstantValues.TAG_Z] : 0.0;
+                    stationData["CycleTime"] = tagValues.ContainsKey(ConstantValues.TAG_CycleTime) ? tagValues[ConstantValues.TAG_CycleTime] : 0.0;
 
                     // 4. Execute Async Workflow
                     _ = ExecuteWorkflowAsync(qrCode, stationData);
