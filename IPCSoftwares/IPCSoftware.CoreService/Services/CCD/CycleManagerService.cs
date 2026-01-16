@@ -60,9 +60,8 @@ namespace IPCSoftware.CoreService.Services.CCD
             var logs =  logConfig.GetAllAsync();
             var allLogs = logConfig.GetAllAsync().GetAwaiter().GetResult();
             var config = allLogs.FirstOrDefault(c => c.LogType == LogType.Production);
-            var baseProductionPath = config.DataFolder;
-            string baseOut = ccd.ImageFolderName;
-            var basePath = Path.Combine(baseProductionPath, baseOut);
+            var basePath = config.ProductionImagePath;
+
             _imageBaseOutputPath = basePath;
             _quarantinePath = Path.Combine(basePath, "Quarantine");
             if (!Directory.Exists(_quarantinePath)) Directory.CreateDirectory(_quarantinePath);
@@ -88,7 +87,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             catch { _stationMap = new int[] { 1, 2, 3, 6, 5, 4, 7, 8, 9, 12, 11, 10 }; }
         }
 
-        public void HandleIncomingData(string tempImagePath, Dictionary<string, object> stationData, string qrString = null)
+        public async Task HandleIncomingData(string tempImagePath, Dictionary<string, object> stationData, string qrString = null)
         {
             if (_currentSequenceStep == 0 && string.IsNullOrEmpty(_activeBatchId)) _ = LoadStationMapAsync();
 
@@ -202,7 +201,14 @@ namespace IPCSoftware.CoreService.Services.CCD
                     // Move to Quarantine
                     string fileName = Path.GetFileName(tempImagePath);
                     if (!Directory.Exists(_quarantinePath)) Directory.CreateDirectory(_quarantinePath);
-                    string destFile = Path.Combine(_quarantinePath, $"{DateTime.Now:yyyyMMdd_HHmmss}_{fileName}");
+                    string metaDate = DateTime.Now.ToString("yyyy_MM_dd");
+                    string folderName = $"{metaDate}-{_activeBatchId}".Replace("\0", "_");
+                    string destDir = Path.Combine(_quarantinePath, folderName);
+
+                    // ✅ Ensure directory exists
+                    Directory.CreateDirectory(destDir);
+
+                    string destFile = Path.Combine(destDir, $"{physicalStationId}_{_activeBatchId}_{DateTime.Now:yyyyMMdd_HHmmss}_raw.bmp");
                     File.Move(tempImagePath, destFile);
                     destUiPath = string.Empty;
                 }

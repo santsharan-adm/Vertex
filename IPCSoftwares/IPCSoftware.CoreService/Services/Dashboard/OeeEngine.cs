@@ -337,7 +337,15 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 double y = GetDouble(values, ConstantValues.TAG_Y);
                 double z = GetDouble(values, ConstantValues.TAG_Z);
 
+                double minX = GetDouble(values, ConstantValues.MIN_X);
+                double maxX = GetDouble(values, ConstantValues.MAX_X);
+                double minY = GetDouble(values, ConstantValues.MIN_Y);
+                double maxY = GetDouble(values, ConstantValues.MAX_Y);
+                double minZ = GetDouble(values, ConstantValues.MIN_Z);
+                double maxZ = GetDouble(values, ConstantValues.MAX_Z);
                 
+
+
                 // 2. Availability (A) Calculation
                 double totalTimeMin = operatingMin + downTimeMin;
                 r.Availability = 0.0;
@@ -377,6 +385,12 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 r.XValue = x;
                 r.YValue = y;
                 r.AngleValue = z;
+                r.MinX = minX;
+                r.MaxX = maxX;
+                r.MinY = minY;
+                r.MaxY = maxY;
+                r.MinZ = minZ;
+                r.MaxZ = maxZ;
 
 
                 // Return as dictionary with ID 4 (OEE_DATA)
