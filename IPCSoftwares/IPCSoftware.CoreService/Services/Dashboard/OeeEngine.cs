@@ -331,7 +331,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 int totalParts = GetInt(values, ConstantValues.TAG_InFlow);
                 int okParts = GetInt(values, ConstantValues.TAG_OK);
                 int ngParts = GetInt(values, ConstantValues.TAG_NG);
-                int idealCycle = GetInt(values, ConstantValues.TAG_CycleTime);
+                double idealCycle = ConstantValues.IDEAL_CYCLE_TIME;
 
                 double x = GetDouble(values, ConstantValues.TAG_X);
                 double y = GetDouble(values, ConstantValues.TAG_Y);
@@ -365,7 +365,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 r.Performance = 0.0;
                 if (operatingMin > 0 && idealCycle > 0)
                 {
-                    double operatingSeconds = (double)operatingMin * 60.0;
+                    double operatingSeconds = (double)operatingMin ;
                     if (operatingSeconds > 0)
                     {
                         r.Performance = ((double)idealCycle * totalParts) / operatingSeconds;

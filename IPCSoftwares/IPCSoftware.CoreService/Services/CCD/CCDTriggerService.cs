@@ -28,6 +28,9 @@ namespace IPCSoftware.CoreService.Services.CCD
         private bool _lastTriggerState = false;
         private bool _lastCycleStartState = false;
 
+        private readonly SemaphoreSlim _triggerLock = new(1, 1);
+        private volatile bool _isProcessing = false;
+
 
 
         public CCDTriggerService
@@ -49,6 +52,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         /// <param name="tagValues">The dictionary of processed tag values</param>
         public async Task ProcessTriggers(Dictionary<int, object> tagValues, PLCClientManager manager)
         {
+            await _triggerLock.WaitAsync();
             try
             {
               
@@ -61,6 +65,25 @@ namespace IPCSoftware.CoreService.Services.CCD
                     if (cycleStartObj is bool bVal) isCycleEnabled = bVal;
                     else if (cycleStartObj is int iVal) isCycleEnabled = iVal > 0;
                 }
+
+              
+                // DETECT RESET CONDITION (Falling Edge: True -> False)
+                // Or just check if it is False to enforce Reset state continuously
+                if (!isCycleEnabled && _lastCycleStartState)
+                {
+                    Console.WriteLine("[CCD] Cycle Start Bit went LOW. Forcing Reset.");
+                  //  await WriteAckToPlcAsync(false);
+                    // Call the reset logic immediately
+                  if (!_cycleManager.IsCycleResetCompleted)
+                    {
+                    _logger.LogInfo("[CCD] Cycle Start Bit went LOW. Forcing Reset.", LogType.Error);
+                        _cycleManager.RequestReset(true);
+                    }
+
+                    // Optional: Write "Unchecked" or Reset status to PLC if needed
+                }
+
+                _lastCycleStartState = isCycleEnabled; 
 
                 if (!isCycleEnabled)
                 {
@@ -75,30 +98,17 @@ namespace IPCSoftware.CoreService.Services.CCD
                             }
                         }
                     }
-                    
-                }
-                // DETECT RESET CONDITION (Falling Edge: True -> False)
-                // Or just check if it is False to enforce Reset state continuously
-                if (!isCycleEnabled && _lastCycleStartState)
-                {
-                    Console.WriteLine("[CCD] Cycle Start Bit went LOW. Forcing Reset.");
-                    _logger.LogInfo("[CCD] Cycle Start Bit went LOW. Forcing Reset.", LogType.Error);
-                  //  await WriteAckToPlcAsync(false);
-                    // Call the reset logic immediately
-                  
-                    _cycleManager.ForceResetCycle(true);
-
-                    // Optional: Write "Unchecked" or Reset status to PLC if needed
-                }
-
-                _lastCycleStartState = isCycleEnabled;
-
-                // IF CYCLE IS NOT ENABLED, STOP HERE. DO NOT PROCESS IMAGE TRIGGERS.
-                if (!isCycleEnabled)
-                {
+                    _lastCycleStartState = false;
                     _lastTriggerState = false;
                     return;
                 }
+
+                // IF CYCLE IS NOT ENABLED, STOP HERE. DO NOT PROCESS IMAGE TRIGGERS.
+                //if (!isCycleEnabled)
+                //{
+                //    _lastTriggerState = false;
+                //    return;
+                //}
 
 
 
@@ -116,7 +126,11 @@ namespace IPCSoftware.CoreService.Services.CCD
                 // 2. Rising Edge Detection (False -> True)
                 if (currentTriggerState && !_lastTriggerState)
                 {
-                       // e.g. 08-12-2025
+                    if (_isProcessing)
+                        return;
+                    _isProcessing = true;
+
+                    // e.g. 08-12-2025
                     Console.WriteLine($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID}");
                     _logger.LogInfo($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID} {DateTime.Now.ToString("HH-mm-ss-fff")} ", LogType.Error);
 
@@ -139,7 +153,8 @@ namespace IPCSoftware.CoreService.Services.CCD
                     stationData["CycleTime"] = tagValues.ContainsKey(ConstantValues.TAG_CycleTime) ? tagValues[ConstantValues.TAG_CycleTime] : 0.0;
 
                     // 4. Execute Async Workflow
-                    await  ExecuteWorkflowAsync(qrCode, stationData);
+                    await ExecuteWorkflowAsync(qrCode, stationData);
+                    _isProcessing = false;
 
                 }
                 if (!currentTriggerState && _lastTriggerState)
@@ -155,7 +170,10 @@ namespace IPCSoftware.CoreService.Services.CCD
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
             }
-     
+            finally
+            {
+                _triggerLock.Release();
+            }
 
         }
 
@@ -185,8 +203,9 @@ namespace IPCSoftware.CoreService.Services.CCD
             }
             else
             {
-                _logger.LogWarning("[CCD] No image within timeout, releasing PLC handshake.", LogType.Error);
-                await WriteAckToPlcAsync(true); // or false, depending on PLC contract
+                _logger.LogWarning("[CCD] No image within timeout, Wating for Cycle Timeout trigger.", LogType.Error);
+               // _lastTriggerState = false;
+                //await WriteAckToPlcAsync(true); // or false, depending on PLC contract
             }
         }
 
