@@ -6,6 +6,7 @@ using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.AeLimit;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -25,6 +26,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         private readonly ProductionImageService _imageService;
         private readonly IServoCalibrationService _servoService;
         private readonly ExternalInterfaceService _extService;
+        private readonly IAeLimitService _aeLimitService;
 
         private string _activeBatchId = string.Empty;
         private int _currentSequenceStep = 0;
@@ -43,6 +45,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             IServoCalibrationService servoService,
             ProductionImageService imageService,
             ExternalInterfaceService extService,
+            IAeLimitService aeLimitService,
             IAppLogger logger) : base(logger)
         {
             var ccd = appSettings.Value;
@@ -51,6 +54,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             _imageService = imageService;
             _servoService = servoService;
             _extService = extService;
+            _aeLimitService = aeLimitService;
 
             _stateFilePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
             var logs =  logConfig.GetAllAsync();
@@ -107,6 +111,7 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                 _activeBatchId = qrString;
                 _currentSequenceStep = 0;
+                _aeLimitService.BeginCycle(_activeBatchId, qrString);
 
                 // 1. SYNC WITH MAC MINI
                 // This fetches the JSON, maps it, writes to PLC, and updates internal flags
@@ -124,6 +129,16 @@ namespace IPCSoftware.CoreService.Services.CCD
                 string destPath = _imageService.ProcessAndMoveImage(tempImagePath, _imageBaseOutputPath, _activeBatchId, 0, 0, 0, 0, true);
                 // Update QR entry in JSON (Station 0)
                 UpdateJsonEntry(0, destPath, "OK", 0, 0, 0);
+                _aeLimitService.UpdateStation(new AeStationUpdate
+                {
+                    StationId = 0,
+                    SerialNumber = _activeBatchId,
+                    CarrierSerial = _activeBatchId,
+                    ValueX = 0,
+                    ValueY = 0,
+                    Angle = 0,
+                    CycleTime = null
+                });
             }
             catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); }
         }
@@ -203,12 +218,23 @@ namespace IPCSoftware.CoreService.Services.CCD
                 }
 
                 UpdateJsonEntry(physicalStationId, destUiPath, status, x, y, z);
+                _aeLimitService.UpdateStation(new AeStationUpdate
+                {
+                    StationId = physicalStationId,
+                    SerialNumber = _activeBatchId,
+                    CarrierSerial = _activeBatchId,
+                    ValueX = x,
+                    ValueY = y,
+                    Angle = z,
+                    CycleTime = data.TryGetValue("CycleTime", out var ctObj) ? Convert.ToDouble(ctObj) : (double?)null
+                });
 
                 _currentSequenceStep++;
 
                 if (_currentSequenceStep >= _stationMap.Length)
                 {
                     Console.WriteLine("--- CYCLE COMPLETE ---");
+                    _ = _aeLimitService.CompleteCycleAsync();
                     Task.Run(async () => { await Task.Delay(100); IsCycleResetCompleted = true; ForceResetCycle(); });
                 }
             }
@@ -287,6 +313,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             {
                 _activeBatchId = string.Empty;
                 _currentSequenceStep = 0;
+                _aeLimitService.AbortCycle();
 
              
                 string folder = Path.GetDirectoryName(_stateFilePath);

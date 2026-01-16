@@ -74,6 +74,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IAuthService, AuthService>();
             //Credentials
             services.AddSingleton<ICredentialsService, CredentialsService>();
+            services.AddSingleton<IAeLimitService, AeLimitService>();
             //Navigation
             services.AddSingleton<INavigationService, NavigationService>();
             //Dialog service
@@ -130,6 +131,10 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceInterfaceConfigurationViewModel>();
             services.AddTransient<CameraDetailViewModel>();
             services.AddTransient<CameraInterfaceConfigurationViewModel>();
+            
+            services.AddTransient<AeLimitViewModel>();
+            services.AddTransient<AeLimitView>();
+
 
             // ===== Produciton Image ViewModel =====
             services.AddTransient<ProductionImageView>();

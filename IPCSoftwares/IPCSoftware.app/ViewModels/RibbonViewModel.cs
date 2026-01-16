@@ -175,7 +175,8 @@ public class RibbonViewModel : BaseViewModel
                 "Time Sync",
                 "Diagnostic",
                 "External Interface",
-                "MacMini Test"
+                "MacMini Test",
+                "AE Limit"
             };
 
             // 3. Logic: Only Admin can see "User Config"
