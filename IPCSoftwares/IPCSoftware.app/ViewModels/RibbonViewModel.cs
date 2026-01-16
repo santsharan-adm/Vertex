@@ -174,7 +174,7 @@ public class RibbonViewModel : BaseViewModel
                 "Servo Parameters",
                 "Time Sync",
                 "Diagnostic",
-                "External Interface",
+                
                 "MacMini Test",
                 "AE Limit"
             };
