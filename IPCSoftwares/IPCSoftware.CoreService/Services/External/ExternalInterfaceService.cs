@@ -23,7 +23,7 @@ namespace IPCSoftware.CoreService.Services.External
         private readonly IServoCalibrationService _servoService; // Need this for mapping
 
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
-
+        private Dictionary<int, string> _cachedSerials = new Dictionary<int, string>();
         private ExternalSettings Settings => _settingsMonitor.CurrentValue;
 
         // Connectivity State
@@ -64,9 +64,25 @@ namespace IPCSoftware.CoreService.Services.External
         /// 3. Maps Cavity ID -> Sequence Index.
         /// 4. Writes Result to PLC.
         /// </summary>
+        /// 
+
+        public string GetSerialNumber(int stationId)
+        {
+            if (!Settings.IsMacMiniEnabled || !_isMacMiniConnected) return null;
+
+            if (_cachedSerials.TryGetValue(stationId, out string serial))
+            {
+                // If serial is "NA" or empty, treat as null (fallback to station ID)
+                if (string.IsNullOrWhiteSpace(serial) || serial.Equals("NA", StringComparison.OrdinalIgnoreCase))
+                    return null;
+
+                return serial;
+            }
+            return null;
+        }
+
         public async Task SyncBatchStatusAsync(string qrCode)
         {
-         //   if (!_settings.IsMacMiniEnabled)
             if (!Settings.IsMacMiniEnabled)
             {
                 _logger.LogInfo("[ExtIf] Mac Mini Disabled. Sending ALL OK.", LogType.Audit);
@@ -83,6 +99,8 @@ namespace IPCSoftware.CoreService.Services.External
                 return;
             }
 
+            _cachedSerials = /*data.Serials ?? */new Dictionary<int, string>();
+
             try
             {
                 // A. Generate Combined String (For API/Logic trace)
@@ -91,15 +109,15 @@ namespace IPCSoftware.CoreService.Services.External
 
                 // B. Get Data (Simulating API call by reading shared JSON)
                 string fullPath = Path.Combine(_settings.SharedFolderPath, _settings.StatusFileName);
-               // string json = await ReadFileWithRetryAsync(fullPath);
+                // string json = await ReadFileWithRetryAsync(fullPath);
                 //string json = await ReadFileWithRetryAsync(_settings.StatusFileName);
-                string json = await ReadFileWithRetryAsync(Settings.StatusFileName);
+                MacMiniStatusModel statusData = await ReadFileWithRetryAsync(Settings.StatusFileName);
 
-                MacMiniStatusModel statusData = null;
-                if (!string.IsNullOrEmpty(json))
-                {
-                    statusData = JsonConvert.DeserializeObject<MacMiniStatusModel>(json);
-                }
+                //MacMiniStatusModel statusData = null;
+                //if (!string.IsNullOrEmpty(json))
+                //{
+                //    statusData = JsonConvert.DeserializeObject<MacMiniStatusModel>(json);
+                //}
 
                 if (statusData == null)
                 {
@@ -107,9 +125,9 @@ namespace IPCSoftware.CoreService.Services.External
                     Array.Fill(_quarantineFlagsBySequence, true); // Fail safe
                     return;
                 }
-
-                // C. Map Data (Cavity ID -> Sequence Bit)
-                await MapAndWriteToPlc(statusData);
+                _cachedSerials = statusData.Serials;
+              // C. Map Data (Cavity ID -> Sequence Bit)
+              await MapAndWriteToPlc(statusData);
 
             }
             catch (Exception ex)
@@ -188,11 +206,11 @@ namespace IPCSoftware.CoreService.Services.External
             // Just writing 1..12 or the Physical IDs? 
             // Usually PLC wants to know Physical ID at Sequence X.
             // Requirement says: "The IPC must send the sequence order... one value per register"
-            for (int i = 0; i < 12; i++)
-            {
-                // Writing the Physical Station ID into the Sequence Register
-                await WriteToPlc(ConstantValues.Ext_SeqRegStart + i, stationMap[i]);
-            }
+            //for (int i = 0; i < 12; i++)
+            //{
+            //    // Writing the Physical Station ID into the Sequence Register
+            //    await WriteToPlc(ConstantValues.Ext_SeqRegStart + i, stationMap[i]);
+            //}
 
             // 6. Confirm Data Ready
             await WriteToPlc(ConstantValues.Ext_DataReady, true);
@@ -273,18 +291,18 @@ namespace IPCSoftware.CoreService.Services.External
         //    return null;
         //}
 
-        private async Task<string> ReadFileWithRetryAsync(/*string filePath */ string rawData)
+        private async Task<MacMiniStatusModel> ReadFileWithRetryAsync(/*string filePath */ string rawData)
         {
-            // 1. Raw Input String
-            // "0 SFC_OK 1.J85HNT00000000IS01,OK;2.J85HNT00000000IS02,OK;3.J85HNT00000000IS03,OK;4.NA,1;5.NA,1;6.NA,1;7.NA,1;8.NA,1;9.NA,1;10.NA,1;11.NA,1;12.NA,1"
-           // string rawData = "0 SFC_OK 1.J85HNT00000000IS01,OK;2.J85HNT00000000IS02,OK;3.J85HNT00000000IS03,OK;4.NA,1;5.NA,1;6.NA,1;7.NA,1;8.NA,1;9.NA,1;10.NA,1;11.NA,1;12.NA,1";
-
+  
             // 2. Parse String logic
             var model = new MacMiniStatusModel
             {
                 ok = new List<int>(),
-                sequence = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 } // Default sequence
+                sequence = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }, // Default sequence
+                Serials = new Dictionary<int, string>() // Init Dictionary
             };
+
+            if (string.IsNullOrEmpty(rawData)) return model; /*JsonConvert.SerializeObject(model)*/;
 
             try
             {
@@ -307,19 +325,19 @@ namespace IPCSoftware.CoreService.Services.External
                         int dotIndex = idPart.IndexOf('.');
                         if (dotIndex > 0)
                         {
-                            if (int.TryParse(idPart.Substring(0, dotIndex), out int id))
+                            string idString = idPart.Substring(0, dotIndex);
+                            string serialString = idPart.Substring(dotIndex + 1); // Extract Serial "J85HNT..."
+
+                            if (int.TryParse(idString, out int id))
                             {
-                                // Parse Status from "OK" or "1"
+                                // Store Serial
+                              
+
                                 string status = segments[1].Trim().ToUpper();
-
-                                // Logic: "OK" = Good. "1" = NG? Wait, user said "Na also mean NG and UOP aso mean NG"
-                                // "data is in this form ok mean OK, Na also mean NG and UOP aso mean NG"
-                                // Usually 1 means OK in many systems but user said "4.NA,1".
-                                // Let's assume ONLY "OK" string means OK based on the example provided.
-
-                                if (status == "OK")
+                                if (status == "OK" )
                                 {
                                     model.ok.Add(id);
+                                    model.Serials[id] = serialString;
                                 }
                             }
                         }
@@ -332,8 +350,9 @@ namespace IPCSoftware.CoreService.Services.External
             }
 
             // 3. Return as JSON
-            await Task.Delay(10); // Simulate IO
-            return JsonConvert.SerializeObject(model);
+           // await Task.Delay(10); // Simulate IO
+            //return JsonConvert.SerializeObject(model);
+            return model;
         }
 
 

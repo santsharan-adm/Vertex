@@ -278,6 +278,56 @@ namespace IPCSoftware.App.ViewModels
             get => _cycleTrend;
             set => SetProperty(ref _cycleTrend, value);
         }
+
+        private double _limitX_Min = 3.0;
+        public double LimitX_Min { get => _limitX_Min; set { SetProperty(ref _limitX_Min, value); UpdateStatusColors(); } }
+
+        private double _limitX_Max = 4.0;
+        public double LimitX_Max { get => _limitX_Max; set { SetProperty(ref _limitX_Max, value); UpdateStatusColors(); } }
+
+        private double _limitY_Min = 3.0;
+        public double LimitY_Min { get => _limitY_Min; set { SetProperty(ref _limitY_Min, value); UpdateStatusColors(); } }
+
+        private double _limitY_Max = 4.0;
+        public double LimitY_Max { get => _limitY_Max; set { SetProperty(ref _limitY_Max, value); UpdateStatusColors(); } }
+
+        private double _limitTheta_Min = 0.0;
+        public double LimitTheta_Min { get => _limitTheta_Min; set { SetProperty(ref _limitTheta_Min, value); UpdateStatusColors(); } }
+
+        private double _limitTheta_Max = 0.5;
+        public double LimitTheta_Max { get => _limitTheta_Max; set { SetProperty(ref _limitTheta_Max, value); UpdateStatusColors(); } }
+
+        // --- STATUS BRUSHES (For Green/Red text) ---
+        private Brush _statusBrushX = Brushes.Gray;
+        public Brush StatusBrushX { get => _statusBrushX; set => SetProperty(ref _statusBrushX, value); }
+
+        private Brush _statusBrushY = Brushes.Gray;
+        public Brush StatusBrushY { get => _statusBrushY; set => SetProperty(ref _statusBrushY, value); }
+
+        private Brush _statusBrushTheta = Brushes.Gray;
+        public Brush StatusBrushTheta { get => _statusBrushTheta; set => SetProperty(ref _statusBrushTheta, value); }
+
+        // --- UPDATED PROPERTIES (Call UpdateStatusColors in setters) ---
+       
+
+        // --- LOGIC HELPER ---
+        private void UpdateStatusColors()
+        {
+            // Define your colors (Use DynamicResource logic or hardcoded for now)
+            var successBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#28A745")); // Green
+            var errorBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DC3545"));   // Red
+
+            // Check X
+            StatusBrushX = (LatestX >= LimitX_Min && LatestX <= LimitX_Max) ? successBrush : errorBrush;
+
+            // Check Y
+            StatusBrushY = (LatestY >= LimitY_Min && LatestY <= LimitY_Max) ? successBrush : errorBrush;
+
+            // Check Theta
+            StatusBrushTheta = (LatestTheta >= LimitTheta_Min && LatestTheta <= LimitTheta_Max) ? successBrush : errorBrush;
+        }
+
+
         #endregion
 
 
@@ -595,6 +645,13 @@ namespace IPCSoftware.App.ViewModels
                             LatestX = oeeResult.XValue;
                             LatestY = oeeResult.YValue;
                             LatestTheta = oeeResult.AngleValue; // Assuming Z maps to Theta
+                            LimitX_Min = oeeResult.MinX;
+                            LimitX_Max = oeeResult.MaxX;
+                            LimitY_Min = oeeResult.MinY;
+                            LimitY_Max = oeeResult.MaxY;
+                            LimitTheta_Min = oeeResult.MinZ;
+                            LimitTheta_Max = oeeResult.MaxZ;
+
                         }
                     }
                 }

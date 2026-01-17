@@ -331,13 +331,21 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 int totalParts = GetInt(values, ConstantValues.TAG_InFlow);
                 int okParts = GetInt(values, ConstantValues.TAG_OK);
                 int ngParts = GetInt(values, ConstantValues.TAG_NG);
-                int idealCycle = GetInt(values, ConstantValues.TAG_CycleTime);
+                double idealCycle = ConstantValues.IDEAL_CYCLE_TIME;
 
                 double x = GetDouble(values, ConstantValues.TAG_X);
                 double y = GetDouble(values, ConstantValues.TAG_Y);
                 double z = GetDouble(values, ConstantValues.TAG_Z);
 
+                double minX = GetDouble(values, ConstantValues.MIN_X);
+                double maxX = GetDouble(values, ConstantValues.MAX_X);
+                double minY = GetDouble(values, ConstantValues.MIN_Y);
+                double maxY = GetDouble(values, ConstantValues.MAX_Y);
+                double minZ = GetDouble(values, ConstantValues.MIN_Z);
+                double maxZ = GetDouble(values, ConstantValues.MAX_Z);
                 
+
+
                 // 2. Availability (A) Calculation
                 double totalTimeMin = operatingMin + downTimeMin;
                 r.Availability = 0.0;
@@ -357,7 +365,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 r.Performance = 0.0;
                 if (operatingMin > 0 && idealCycle > 0)
                 {
-                    double operatingSeconds = (double)operatingMin * 60.0;
+                    double operatingSeconds = (double)operatingMin ;
                     if (operatingSeconds > 0)
                     {
                         r.Performance = ((double)idealCycle * totalParts) / operatingSeconds;
@@ -377,6 +385,12 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 r.XValue = x;
                 r.YValue = y;
                 r.AngleValue = z;
+                r.MinX = minX;
+                r.MaxX = maxX;
+                r.MinY = minY;
+                r.MaxY = maxY;
+                r.MinZ = minZ;
+                r.MaxZ = maxZ;
 
 
                 // Return as dictionary with ID 4 (OEE_DATA)

@@ -530,6 +530,10 @@ public class MainWindowViewModel : BaseViewModel
                 case "MacMini Test":
                     _nav.NavigateMain<ApiTestView>();
                     break;
+
+                case "AE Limit":
+                    _nav.NavigateMain<AeLimitView>();
+                    break;
             }
         }
         catch (Exception ex)

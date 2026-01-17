@@ -33,6 +33,13 @@ namespace IPCSoftware.Shared.Models
         public static int TAG_OK;
         public static int TAG_NG;
         public static double IDEAL_CYCLE_TIME;
+        public static int MIN_X;
+        public static int MAX_X;
+        public static int MIN_Y;
+        public static int MAX_Y;
+        public static int MIN_Z;
+        public static int MAX_Z;
+
 
         public static int RESET_TAG_ID ; // B26 (Your Reset/Start Command)
         public static int RESET_ACK_TAG_ID ;
@@ -160,6 +167,13 @@ namespace IPCSoftware.Shared.Models
                 TAG_OK = oee.OK;
                 TAG_NG = oee.NG;
                 IDEAL_CYCLE_TIME = oee.IdealCycleTime;
+                MIN_X = oee.MinX;
+                MAX_X = oee.MaxX;
+                MIN_Y= oee.MinY;
+                MAX_Y = oee.MaxY;
+                MIN_Z = oee.MinZ;
+                MAX_Z = oee.MaxZ;
+
 
                 // Modes
                 var modes = tags.Modes;

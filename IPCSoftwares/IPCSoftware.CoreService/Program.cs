@@ -89,6 +89,7 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<ILogManagerService, LogManagerService>();
                             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
                             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
+                            services.AddSingleton<IAeLimitService, AeLimitService>();
                             services.AddSingleton<ExternalInterfaceService>();
                             services.AddSingleton<ICycleManagerService, CycleManagerService>();
                             services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();

@@ -25,6 +25,10 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public string Remark { get; set; }
         public bool Enabled { get; set; }
 
+        public string ProductionImagePath { get; set; }
+        public string ProductionImageBackupPath { get; set; }
+
+
         public LogConfigurationModel()
         {
             // Default values
@@ -55,7 +59,9 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 BackupDayOfWeek = this.BackupDayOfWeek,
                 Description = this.Description,
                 Remark = this.Remark,
-                Enabled = this.Enabled
+                Enabled = this.Enabled,
+                 ProductionImagePath = this.ProductionImagePath,
+                ProductionImageBackupPath = this.ProductionImageBackupPath
             };
         }
     }

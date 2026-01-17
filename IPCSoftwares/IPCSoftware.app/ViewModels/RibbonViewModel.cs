@@ -174,8 +174,9 @@ public class RibbonViewModel : BaseViewModel
                 "Servo Parameters",
                 "Time Sync",
                 "Diagnostic",
-                "External Interface",
-                "MacMini Test"
+                
+                "MacMini Test",
+                "AE Limit"
             };
 
             // 3. Logic: Only Admin can see "User Config"

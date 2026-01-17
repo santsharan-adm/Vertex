@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Media3D;
 using LogType = IPCSoftware.Shared.Models.ConfigModels.LogType;
 
 namespace IPCSoftware.Services.ConfigServices
@@ -61,21 +62,7 @@ namespace IPCSoftware.Services.ConfigServices
 
         private async Task InitializeDefaultConfigurationsAsync()
         {
-            //try
-            //{
-            //    // Try to extract embedded resource first
-            //    if (await ExtractEmbeddedResourceAsync())
-            //    {
-            //        Console.WriteLine("Log configurations initialized from embedded resource.");
-            //        return;
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine($"Could not extract embedded resource: {ex.Message}. Using hardcoded defaults.");
-            //}
-
-            // Fallback to hardcoded defaults
+   
             await CreateHardcodedDefaultsAsync();
         }
       
@@ -128,7 +115,9 @@ namespace IPCSoftware.Services.ConfigServices
                         BackupDayOfWeek = "Monday",
                         Description = "Production log configuration",
                         Remark = "Production system logs",
-                        Enabled = true
+                        Enabled = true,
+                         ProductionImagePath = Path.Combine(baseDir, "ProductionImages"),
+                        ProductionImageBackupPath = Path.Combine(baseDir, "ProductionImagesBackup")
                     },
                     new LogConfigurationModel
                     {
@@ -369,8 +358,8 @@ namespace IPCSoftware.Services.ConfigServices
                 var sb = new StringBuilder();
 
                 // Header - updated to include new backup fields
-                sb.AppendLine("Id,LogName,LogType,DataFolder,BackupFolder,FileName,LogRetentionTime,LogRetentionFileSize,AutoPurge,BackupSchedule,BackupTime,BackupDay,BackupDayOfWeek,Description,Remark,Enabled");
-
+              //  sb.AppendLine("Id,LogName,LogType,DataFolder,BackupFolder,FileName,LogRetentionTime,LogRetentionFileSize,AutoPurge,BackupSchedule,BackupTime,BackupDay,BackupDayOfWeek,Description,Remark,Enabled");
+                sb.AppendLine("Id,LogName,LogType,DataFolder,BackupFolder,FileName,LogRetentionTime,LogRetentionFileSize,AutoPurge,BackupSchedule,BackupTime,BackupDay,BackupDayOfWeek,Description,Remark,Enabled,ProductionImagePath,ProductionImageBackupPath");
                 // Data rows
                 foreach (var config in _configurations)
                 {
@@ -385,7 +374,7 @@ namespace IPCSoftware.Services.ConfigServices
                 throw;
             }
         }
-
+            
         private string ToCsvLine(LogConfigurationModel config)
         {
             try
@@ -407,7 +396,9 @@ namespace IPCSoftware.Services.ConfigServices
                        $"\"{EscapeCsv(config.BackupDayOfWeek)}\"," +
                        $"\"{EscapeCsv(config.Description)}\"," +
                        $"\"{EscapeCsv(config.Remark)}\"," +
-                       $"{config.Enabled}";
+                        $"{config.Enabled}," +
+                       $"\"{EscapeCsv(config.ProductionImagePath)}\"," +
+                       $"\"{EscapeCsv(config.ProductionImageBackupPath)}\"";
             }
             catch (Exception ex)
             {
@@ -426,7 +417,7 @@ namespace IPCSoftware.Services.ConfigServices
                 if (values.Count < 16)
                     return null;
 
-                return new LogConfigurationModel
+                var model = new LogConfigurationModel
                 {
                     Id = int.Parse(values[0]),
                     LogName = values[1],
@@ -445,6 +436,19 @@ namespace IPCSoftware.Services.ConfigServices
                     Remark = values[14],
                     Enabled = bool.Parse(values[15])
                 };
+
+                if (values.Count >= 18)
+                {
+                    model.ProductionImagePath = values[16];
+                    model.ProductionImageBackupPath = values[17];
+                }
+                else
+                {
+                    // Fallback for old files: Set empty or default if needed
+                    model.ProductionImagePath = "";
+                    model.ProductionImageBackupPath = "";
+                }
+                return model;
             }
             catch
             {
