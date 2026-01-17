@@ -58,5 +58,7 @@ namespace IPCSoftware.Shared.Models
         // You mentioned "list of sequence". If the JSON also contains the order (e.g. "sequence": [12, 11, ...])
         // add it here. For now, assuming static sequence or default.
         public List<int> sequence { get; set; }
+
+        public Dictionary<int, string> Serials { get; set; } = new Dictionary<int, string>();
     }
 }

@@ -71,17 +71,17 @@ namespace IPCSoftware.Services.AppLoggerServices
                 }
 
                 // 2. Special Case: Production Images
-                /*if (config.LogType == LogType.Production)
+                if (config.LogType == LogType.Production)
                 {
-                 
-                  //  string sourceImages = _ccdSettings.BaseOutputDir;
-                    string backupImages = _ccdSettings.BaseOutputDirBackup;
+
+                    string sourceImages = config.ProductionImagePath;
+                    string backupImages = config.ProductionImageBackupPath ;
 
                     if (Directory.Exists(sourceImages) && !string.IsNullOrEmpty(backupImages))
                     {
                         CopyDirectory(sourceImages, backupImages);
                     }
-                }*/
+                }
             }
             catch (Exception ex)
             {
@@ -95,7 +95,6 @@ namespace IPCSoftware.Services.AppLoggerServices
         {
             try
             {
-             
                 if (Directory.Exists(config.BackupFolder) && !string.IsNullOrEmpty(config.DataFolder))
                 {
                   //  CopyDirectory(config.DataFolder, config.BackupFolder);
@@ -103,17 +102,17 @@ namespace IPCSoftware.Services.AppLoggerServices
                 }
 
                 // 2. Special Case: Production Images
-                //if (config.LogType == LogType.Production)
-                //{
+                if (config.LogType == LogType.Production)
+                {
 
-                //    string sourceImages = _ccdSettings.BaseOutputDir;
-                //    string backupImages = _ccdSettings.BaseOutputDirBackup;
+                    string sourceImages = config.ProductionImagePath;
+                    string backupImages = config.ProductionImageBackupPath;
 
-                //    if (Directory.Exists(backupImages) && !string.IsNullOrEmpty(sourceImages))
-                //    {
-                //        CopyDirectory(backupImages, sourceImages);
-                //    }
-                //}
+                    if (Directory.Exists(backupImages) && !string.IsNullOrEmpty(sourceImages))
+                    {
+                        CopyDirectory(backupImages, sourceImages);
+                    }
+                }
             }
             catch (Exception ex)
             {

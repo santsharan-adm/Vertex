@@ -32,7 +32,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         /// <param name="tempFilePath">Full path to the source file (e.g. inside CCD folder)</param>
         /// <param name="uniqueDataString">The 40-char unique string</param>
         /// <param name="stNo">Station Number (1-12)</param>
-        public string ProcessAndMoveImage(string tempFilePath, string baseImagePath,  string uniqueDataString, int stNo,
+        public string ProcessAndMoveImage(string tempFilePath, string baseImagePath,  string uniqueDataString, string stNo,
             double x = 0, double y = 0, double z = 0, bool qrCodeFile = false)
         {
             try
@@ -138,7 +138,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         }
 
         // Helper to update dynamic runtime values into the metadata object
-        private T CloneAndUpdate<T>(T source, string serial, int stNo, string date, string time, string nickName, double x, double y , double z) where T : MetaDataBase, new()
+        private T CloneAndUpdate<T>(T source, string serial, string stNo, string date, string time, string nickName, double x, double y , double z) where T : MetaDataBase, new()
         {
             // Create a shallow copy manually or use JSON serialization for deep copy. 
             // Since MetaDataBase is flat strings, we can just map a new object.

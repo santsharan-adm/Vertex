@@ -6,6 +6,7 @@ using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.AeLimit;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Services.CCD
@@ -25,6 +27,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         private readonly ProductionImageService _imageService;
         private readonly IServoCalibrationService _servoService;
         private readonly ExternalInterfaceService _extService;
+        private readonly IAeLimitService _aeLimitService;
 
         private string _activeBatchId = string.Empty;
         private int _currentSequenceStep = 0;
@@ -33,6 +36,8 @@ namespace IPCSoftware.CoreService.Services.CCD
         private readonly string _imageBaseOutputPath;
         private int[] _stationMap;
         public bool IsCycleResetCompleted { get; private set; }
+        private string _tempImageFolderPath;
+
 
 
         public CycleManagerService(
@@ -43,22 +48,24 @@ namespace IPCSoftware.CoreService.Services.CCD
             IServoCalibrationService servoService,
             ProductionImageService imageService,
             ExternalInterfaceService extService,
+            IAeLimitService aeLimitService,
             IAppLogger logger) : base(logger)
         {
             var ccd = appSettings.Value;
+            _tempImageFolderPath = ccd.TempImgFolder;
             _tagService = tagService;
             _plcManager = plcManager;
             _imageService = imageService;
             _servoService = servoService;
             _extService = extService;
+            _aeLimitService = aeLimitService;
 
             _stateFilePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
             var logs =  logConfig.GetAllAsync();
             var allLogs = logConfig.GetAllAsync().GetAwaiter().GetResult();
             var config = allLogs.FirstOrDefault(c => c.LogType == LogType.Production);
-            var baseProductionPath = config.DataFolder;
-            string baseOut = ccd.ImageFolderName;
-            var basePath = Path.Combine(baseProductionPath, baseOut);
+            var basePath = config.ProductionImagePath;
+
             _imageBaseOutputPath = basePath;
             _quarantinePath = Path.Combine(basePath, "Quarantine");
             if (!Directory.Exists(_quarantinePath)) Directory.CreateDirectory(_quarantinePath);
@@ -84,36 +91,40 @@ namespace IPCSoftware.CoreService.Services.CCD
             catch { _stationMap = new int[] { 1, 2, 3, 6, 5, 4, 7, 8, 9, 12, 11, 10 }; }
         }
 
-        public void HandleIncomingData(string tempImagePath, Dictionary<string, object> stationData, string qrString = null)
+        public async Task HandleIncomingData(string tempImagePath, Dictionary<string, object> stationData, string qrString = null)
         {
             if (_currentSequenceStep == 0 && string.IsNullOrEmpty(_activeBatchId)) _ = LoadStationMapAsync();
 
             if (string.IsNullOrEmpty(_activeBatchId))
             {
-                if (!string.IsNullOrEmpty(qrString)) StartNewCycle(tempImagePath, qrString);
-                IsCycleResetCompleted = false;
+                if (!string.IsNullOrEmpty(qrString)) 
+                    await StartNewCycle(tempImagePath, qrString);
             }
             else
             {
-                HandleInspectionStep(tempImagePath, stationData);
+               await HandleInspectionStep(tempImagePath, stationData);
             }
         }
 
-        private void StartNewCycle(string tempImagePath, string qrString)
+        private async Task StartNewCycle(string tempImagePath, string qrString)
         {
             try
             {
+                IsCycleResetCompleted = false;
                 Console.WriteLine($"--- NEW CYCLE START: {qrString} ---");
                 _logger.LogInfo($"--- NEW CYCLE START: {qrString} ---", LogType.Diagnostics);
 
                 _activeBatchId = qrString;
                 _currentSequenceStep = 0;
+                _aeLimitService.BeginCycle(_activeBatchId, qrString);
 
                 // 1. SYNC WITH MAC MINI
                 // This fetches the JSON, maps it, writes to PLC, and updates internal flags
                 // We use .Result or Wait() here cautiously because this is inside a sync void method called by TriggerService
                 // Ideally trigger service awaits this.
-                _extService.SyncBatchStatusAsync(qrString).Wait();
+
+
+               await  _extService.SyncBatchStatusAsync(qrString);
 
                 if (File.Exists(_stateFilePath)) File.Delete(_stateFilePath);
 
@@ -122,9 +133,19 @@ namespace IPCSoftware.CoreService.Services.CCD
                 InitializeCycleStateWithExternalStatus();
 
                 // 3. Process QR Image
-                string destPath = _imageService.ProcessAndMoveImage(tempImagePath, _imageBaseOutputPath, _activeBatchId, 0, 0, 0, 0, true);
+                string destPath = _imageService.ProcessAndMoveImage(tempImagePath, _imageBaseOutputPath, _activeBatchId, 0.ToString(), 0, 0, 0, true);
                 // Update QR entry in JSON (Station 0)
                 UpdateJsonEntry(0, destPath, "OK", 0, 0, 0);
+                _aeLimitService.UpdateStation(new AeStationUpdate
+                {
+                    StationId = 0,
+                    SerialNumber = _activeBatchId,
+                    CarrierSerial = _activeBatchId,
+                    ValueX = 0,
+                    ValueY = 0,
+                    Angle = 0,
+                    CycleTime = null
+                });
             }
             catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); }
         }
@@ -160,12 +181,12 @@ namespace IPCSoftware.CoreService.Services.CCD
             catch { }
         }
 
-        private void HandleInspectionStep(string tempImagePath, Dictionary<string, object> data)
+        private async Task HandleInspectionStep(string tempImagePath, Dictionary<string, object> data)
         {
             try
             {
                 if (_stationMap == null || _stationMap.Length == 0) return;
-                if (_currentSequenceStep >= _stationMap.Length) { IsCycleResetCompleted = true; ForceResetCycle(); return; }
+                if (_currentSequenceStep >= _stationMap.Length) {   RequestReset(false); return; }
 
                 int physicalStationId = _stationMap[_currentSequenceStep];
                 Console.WriteLine($"--- PROCESSING STATION {physicalStationId} (Seq {_currentSequenceStep}) ---");
@@ -177,6 +198,16 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                 // 2. CHECK STATUS (Using Sequence Step Index)
                 bool isExternalNg = _extService.IsSequenceRestricted(_currentSequenceStep);
+
+                // --- NEW: GET SERIAL NUMBER ---
+                // Try to get Serial from External Service
+                string serialNumber = _extService.GetSerialNumber(physicalStationId);
+
+                // Fallback Logic: If serial is null (Mac Mini off/disconnected/NA), use Station ID string
+                string identifierForImage = !string.IsNullOrEmpty(serialNumber)
+                                            ? serialNumber
+                                            : physicalStationId.ToString();
+
                 string destUiPath;
 
                 if (isExternalNg)
@@ -187,23 +218,54 @@ namespace IPCSoftware.CoreService.Services.CCD
                     // Move to Quarantine
                     string fileName = Path.GetFileName(tempImagePath);
                     if (!Directory.Exists(_quarantinePath)) Directory.CreateDirectory(_quarantinePath);
-                    string destFile = Path.Combine(_quarantinePath, $"{DateTime.Now:yyyyMMdd_HHmmss}_{fileName}");
-                    File.Move(tempImagePath, destFile);
+                    string metaDate = DateTime.Now.ToString("yyyy_MM_dd");
+                    string folderName = $"{metaDate}-{_activeBatchId}".Replace("\0", "_");
+                    string destDir = Path.Combine(_quarantinePath, folderName);
+
+                    // ✅ Ensure directory exists
+                    Directory.CreateDirectory(destDir);
+
+                    string destFile = Path.Combine(destDir, $"{identifierForImage}_{_activeBatchId}_{DateTime.Now:yyyyMMdd_HHmmss}_raw.bmp");
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        try
+                        {
+                            File.Move(tempImagePath, destFile);
+                            break;
+                        }
+                        catch
+                        {
+                            Thread.Sleep(50);
+                        }
+                    }
+                  
                     destUiPath = string.Empty;
                 }
                 else
                 {
-                    destUiPath = _imageService.ProcessAndMoveImage(tempImagePath, _imageBaseOutputPath, _activeBatchId, physicalStationId, x, y, z);
+                    destUiPath = _imageService.ProcessAndMoveImage(tempImagePath, _imageBaseOutputPath, _activeBatchId, identifierForImage, x, y, z);
                 }
 
                 UpdateJsonEntry(physicalStationId, destUiPath, status, x, y, z);
+                _aeLimitService.UpdateStation(new AeStationUpdate
+                {
+                    StationId = physicalStationId,
+                    SerialNumber = _activeBatchId,
+                    CarrierSerial = _activeBatchId,
+                    ValueX = x,
+                    ValueY = y,
+                    Angle = z,
+                    CycleTime = data.TryGetValue("CycleTime", out var ctObj) ? Convert.ToDouble(ctObj) : (double?)null
+                });
 
                 _currentSequenceStep++;
 
                 if (_currentSequenceStep >= _stationMap.Length)
                 {
                     Console.WriteLine("--- CYCLE COMPLETE ---");
-                    Task.Run(async () => { await Task.Delay(100); IsCycleResetCompleted = true; ForceResetCycle(); });
+                    _ = _aeLimitService.CompleteCycleAsync();
+                    Task.Run(async () => { await Task.Delay(100); RequestReset(false); });
                 }
             }
             catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); }
@@ -275,17 +337,50 @@ namespace IPCSoftware.CoreService.Services.CCD
             catch (Exception ex) { _logger.LogError($"Ext Write Error ({tagId}): {ex.Message}", LogType.Diagnostics); }
         }
 
-        public void ForceResetCycle(bool ccdReset = false)
+
+        private int _resetInProgress = 0;
+
+        public void RequestReset(bool fromCcd = false)
+        {
+            // Atomic gate FIRST
+            if (Interlocked.Exchange(ref _resetInProgress, 1) == 1)
+                return;
+
+            try
+            {
+                if (IsCycleResetCompleted)
+                    return;
+
+                IsCycleResetCompleted = true; // 🔥 set BEFORE reset
+                ForceResetCycle(fromCcd);
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _resetInProgress, 0);
+            }
+        }
+
+
+        private void ForceResetCycle(bool ccdReset = false)
         {
             try
             {
                 _activeBatchId = string.Empty;
                 _currentSequenceStep = 0;
+                _aeLimitService.AbortCycle();
 
              
                 string folder = Path.GetDirectoryName(_stateFilePath);
+                
 
 
+                if (Directory.Exists(_tempImageFolderPath))
+                {
+                    foreach (var file in Directory.GetFiles(_tempImageFolderPath))
+                    {
+                        File.Delete(file);
+                    }
+                }
                 if (Directory.Exists(folder))
                 {
                     // Delete all files
@@ -303,7 +398,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                     if (ccdReset)
                     {
 
-                    _logger.LogError("[CycleManager] Cycle Reset — By CCD Service .", LogType.Error);
+                    _logger.LogError("[CycleManager] Cycle Reset — By CCDTrigger .", LogType.Error);
                     }
                 }
             }
