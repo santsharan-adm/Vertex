@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.CoreService.Services.External;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models;
@@ -15,6 +16,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
     {
         private readonly PLCClientManager _plcManager;
         private readonly IPLCTagConfigurationService _tagService;
+        private readonly ExternalInterfaceService _extService;
 
         // --- HEARTBEAT STATE ---
         private bool? _lastPlcPulse = null;      // Nullable to detect first read
@@ -32,10 +34,12 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         public SystemMonitorService(
             PLCClientManager plcManager,
             IPLCTagConfigurationService tagService,
+            ExternalInterfaceService extService,
             IAppLogger logger) : base(logger)
         {
             _plcManager = plcManager;
             _tagService = tagService;
+            _extService = extService;
 
             // Initialize timestamps
             _lastPlcChangeTime = DateTime.Now;
@@ -117,18 +121,19 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 // =========================================================
                 // Return a simple list: [PLC_Connected, Time_Synced(Dummy True)]
                 // Maintaining structure for Dashboard compatibility
-                var statusFlags = new List<bool> { isPlcConnected, true };
-              /*  if (isPlcConnected)
-                {
-                 _logger.LogInfo($"PLC Connected", LogType.Audit);
-                }
-                else
-                {
-                 _logger.LogInfo($"PLC Not Connected", LogType.Audit);
+                bool isMacMiniConnected = _extService.IsConnected;
+                var statusFlags = new List<bool> { isPlcConnected, true, isMacMiniConnected };
+                /*  if (isPlcConnected)
+                  {
+                   _logger.LogInfo($"PLC Connected", LogType.Audit);
+                  }
+                  else
+                  {
+                   _logger.LogInfo($"PLC Not Connected", LogType.Audit);
 
-                }*/
+                  }*/
 
-                    return new Dictionary<int, object> { { 1, statusFlags } };
+                return new Dictionary<int, object> { { 1, statusFlags } };
             }
             catch (Exception ex)
             {

@@ -466,7 +466,7 @@
                                         <Setter Property="Fill" Value="#2EE36B"/>
                                         <!-- Default: Connected -->
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsConnected2}" Value="False">
+                                            <DataTrigger Binding="{Binding MacMiniConnected}" Value="False">
                                                 <Setter Property="Fill" Value="Red"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -480,7 +480,7 @@
                                         <Setter Property="Text" Value="MAC MINI CONNECTED"/>
                                         <Setter Property="Foreground" Value="#2EE36B"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsConnected2}" Value="False">
+                                            <DataTrigger Binding="{Binding MacMiniConnected}" Value="False">
                                                 <Setter Property="Text" Value="MAC MINI DISCONNECTED"/>
                                                 <Setter Property="Foreground" Value="Red"/>
                                             </DataTrigger>

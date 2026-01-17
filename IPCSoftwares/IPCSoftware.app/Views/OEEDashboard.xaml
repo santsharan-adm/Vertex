@@ -160,8 +160,8 @@
                         </Button>
 
                         <Button Command="{Binding ResetCommand}" 
-                       Content="Reset"
-                       Width="100" Height="45"
+                       Content="Reset Counter"
+                       Width="120" Height="45"
                                 Focusable="False"
                        FontSize="16" FontWeight="SemiBold"
                        Margin="0,0,25,0"

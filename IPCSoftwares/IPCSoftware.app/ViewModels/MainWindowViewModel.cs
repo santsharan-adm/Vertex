@@ -99,11 +99,11 @@ public class MainWindowViewModel : BaseViewModel
     }
 
 
-    public bool _isConnected2;
-    public bool IsConnected2
+    public bool _macMiniConnected;
+    public bool MacMiniConnected
     {
-        get => _isConnected2;
-        set => SetProperty(ref _isConnected2, value);
+        get => _macMiniConnected;
+        set => SetProperty(ref _macMiniConnected, value);
     }
 
     public bool _isConnected;
@@ -285,27 +285,47 @@ public class MainWindowViewModel : BaseViewModel
             var boolDict = await _coreClient.GetIoValuesAsync(1);
             if (boolDict != null && boolDict.TryGetValue(1, out object pulseObj))
             {
+                //var json = JsonConvert.SerializeObject(pulseObj);
+                //var pulseResult = JsonConvert.DeserializeObject<List<bool>>(json);
+                //PLCConnected = pulseResult[0];
+                //TimeSynched = pulseResult[1];
+
                 var json = JsonConvert.SerializeObject(pulseObj);
                 var pulseResult = JsonConvert.DeserializeObject<List<bool>>(json);
-                PLCConnected = pulseResult[0];
-                TimeSynched = pulseResult[1];
+
+                // Index 0: PLC
+                if (pulseResult.Count > 0) PLCConnected = pulseResult[0];
+
+                // Index 1: Time Sync
+                if (pulseResult.Count > 1) TimeSynched = pulseResult[1];
+
+                // Index 2: Mac Mini (NEW)
+                if (pulseResult.Count > 2)
+                {
+                    MacMiniConnected = pulseResult[2];
+                }
+                else
+                {
+                    MacMiniConnected = false; // Fallback if backend is old version
+                }
 
             }
             else
             {
                 PLCConnected = false;
                 TimeSynched = false;
+                MacMiniConnected = false;
             }
         }
-        catch(Exception ex )
+        catch (Exception ex)
         {
             _logger.LogError(ex.Message, LogType.Diagnostics);
             PLCConnected = false;
             TimeSynched = false;
+            MacMiniConnected = false;
             CurrentMachineMode = "UNKNOWN";
-
         }
-       
+
     }
 
 

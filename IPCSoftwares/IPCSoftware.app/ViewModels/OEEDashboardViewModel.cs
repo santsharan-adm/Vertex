@@ -392,25 +392,30 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                bool newState = !IsMacMiniEnabled;
-
-                // 1. Update Runtime UI immediately
-                IsMacMiniEnabled = newState;
-                OnPropertyChanged(nameof(MacMiniStatusText));
-                OnPropertyChanged(nameof(MacMiniStatusColor));
-
-                // 2. Write to appsettings.json
-                string appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
-                var json = File.ReadAllText(appSettingsPath);
-                var jsonObj = JObject.Parse(json);
-
-                if (jsonObj["External"] != null)
+                bool confirm = _dialog.ShowYesNo("Do you want to confirm?", "Confirmation");
+                if (confirm)
                 {
-                    jsonObj["External"]["IsMacMiniEnabled"] = newState;
-                    File.WriteAllText(appSettingsPath, jsonObj.ToString());
+                    bool newState = !IsMacMiniEnabled;
 
-                    // Log
-                    // _logger.LogInfo($"Mac Mini Logic set to: {newState}", LogType.Audit);
+                    // 1. Update Runtime UI immediately
+                    IsMacMiniEnabled = newState;
+                    OnPropertyChanged(nameof(MacMiniStatusText));
+                    OnPropertyChanged(nameof(MacMiniStatusColor));
+
+                    // 2. Write to appsettings.json
+                    string appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+                    var json = File.ReadAllText(appSettingsPath);
+                    var jsonObj = JObject.Parse(json);
+
+                    if (jsonObj["External"] != null)
+                    {
+                        jsonObj["External"]["IsMacMiniEnabled"] = newState;
+                        File.WriteAllText(appSettingsPath, jsonObj.ToString());
+
+                        // Log
+                        // _logger.LogInfo($"Mac Mini Logic set to: {newState}", LogType.Audit);
+                    }
+
                 }
             }
             catch (Exception ex)
@@ -878,16 +883,22 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                // Toggle the current state
-                bool newState = !IsConveyorReverseActive;
+                bool confirm = _dialog.ShowYesNo("Are you sure you want to change conveyor direction?", "Confirmation");
+                if (confirm)
+                {
+                    // Toggle the current state
+                    bool newState = !IsConveyorReverseActive;
 
-                _logger.LogInfo($"User toggling Conveyor Direction to: {newState}", LogType.Audit);
+                    _logger.LogInfo($"User toggling Conveyor Direction to: {newState}", LogType.Audit);
 
-                // Write to PLC
-                await _coreClient.WriteTagAsync(ConstantValues.REVERSE_TAG_ID, newState);
+                    // Write to PLC
+                    await _coreClient.WriteTagAsync(ConstantValues.REVERSE_TAG_ID, newState);
 
-                // Optional: Optimistic UI update (makes button feel instant)
-                IsConveyorReverseActive = newState;
+                    // Optional: Optimistic UI update (makes button feel instant)
+                    IsConveyorReverseActive = newState;
+
+                }
+
             }
             catch (Exception ex)
             {
@@ -898,14 +909,18 @@ namespace IPCSoftware.App.ViewModels
 
         private void StartResetSequence()
         {
-            if (_resetState == ResetSequenceState.Idle)
+            bool confirm = _dialog.ShowYesNo("Are you sure you want to reset counter?", "Confirmation");
+            if (confirm)
             {
-                _logger.LogInfo("Reset Sequence Initiated by User.", LogType.Audit);
-                _resetState = ResetSequenceState.TriggerReset;
-            }
-            else
-            {
-                _logger.LogWarning("Reset already in progress.", LogType.Audit);
+                if (_resetState == ResetSequenceState.Idle)
+                {
+                    _logger.LogInfo("Reset Sequence Initiated by User.", LogType.Audit);
+                    _resetState = ResetSequenceState.TriggerReset;
+                }
+                else
+                {
+                    _logger.LogWarning("Reset already in progress.", LogType.Audit);
+                }
             }
         }
 

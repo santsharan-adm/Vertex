@@ -116,7 +116,6 @@ namespace IPCSoftware.CoreService.Services.CCD
 
                 _activeBatchId = qrString;
                 _currentSequenceStep = 0;
-                _aeLimitService.BeginCycle(_activeBatchId, qrString);
 
                 // 1. SYNC WITH MAC MINI
                 // This fetches the JSON, maps it, writes to PLC, and updates internal flags
@@ -125,6 +124,11 @@ namespace IPCSoftware.CoreService.Services.CCD
 
 
                await  _extService.SyncBatchStatusAsync(qrString);
+                if (_extService.Settings.IsMacMiniEnabled)
+                {
+                    _aeLimitService.BeginCycle(_activeBatchId, qrString);
+                }
+           
 
                 if (File.Exists(_stateFilePath)) File.Delete(_stateFilePath);
 
@@ -136,7 +140,10 @@ namespace IPCSoftware.CoreService.Services.CCD
                 string destPath = _imageService.ProcessAndMoveImage(tempImagePath, _imageBaseOutputPath, _activeBatchId, 0.ToString(), 0, 0, 0, true);
                 // Update QR entry in JSON (Station 0)
                 UpdateJsonEntry(0, destPath, "OK", 0, 0, 0);
-                _aeLimitService.UpdateStation(new AeStationUpdate
+                if (_extService.Settings.IsMacMiniEnabled)
+                {
+
+                    _aeLimitService.UpdateStation(new AeStationUpdate
                 {
                     StationId = 0,
                     SerialNumber = _activeBatchId,
@@ -146,6 +153,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                     Angle = 0,
                     CycleTime = null
                 });
+                }
             }
             catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); }
         }
@@ -248,24 +256,32 @@ namespace IPCSoftware.CoreService.Services.CCD
                 }
 
                 UpdateJsonEntry(physicalStationId, destUiPath, status, x, y, z);
-                _aeLimitService.UpdateStation(new AeStationUpdate
+                if (_extService.Settings.IsMacMiniEnabled)
                 {
-                    StationId = physicalStationId,
-                    SerialNumber = _activeBatchId,
-                    CarrierSerial = _activeBatchId,
-                    ValueX = x,
-                    ValueY = y,
-                    Angle = z,
-                    CycleTime = data.TryGetValue("CycleTime", out var ctObj) ? Convert.ToDouble(ctObj) : (double?)null
-                });
+
+                        _aeLimitService.UpdateStation(new AeStationUpdate
+                    {
+                        StationId = physicalStationId,
+                        SerialNumber = _activeBatchId,
+                        CarrierSerial = _activeBatchId,
+                        ValueX = x,
+                        ValueY = y,
+                        Angle = z,
+                        CycleTime = data.TryGetValue("CycleTime", out var ctObj) ? Convert.ToDouble(ctObj) : (double?)null
+                    });
+                }
+
 
                 _currentSequenceStep++;
 
                 if (_currentSequenceStep >= _stationMap.Length)
                 {
-                    Console.WriteLine("--- CYCLE COMPLETE ---");
-                    _ = _aeLimitService.CompleteCycleAsync();
-                    Task.Run(async () => { await Task.Delay(100); RequestReset(false); });
+                    _logger.LogInfo("[CycleManager] Reset skipped - already completed.", LogType.Diagnostics);
+                    if (_extService.Settings.IsMacMiniEnabled)
+                    {
+                        _ = _aeLimitService.CompleteCycleAsync();
+                    }
+                    Task.Run(async () => { ; RequestReset(false); });
                 }
             }
             catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); }
@@ -340,19 +356,32 @@ namespace IPCSoftware.CoreService.Services.CCD
 
         private int _resetInProgress = 0;
 
+       
+
+
         public void RequestReset(bool fromCcd = false)
         {
-            // Atomic gate FIRST
-            if (Interlocked.Exchange(ref _resetInProgress, 1) == 1)
+            // 1. Log who is requesting
+            _logger.LogInfo($"[CycleManager] Reset Requested. Source: {(fromCcd ? "CCD Trigger" : "Cycle Complete")}", LogType.Error);
+
+            // 2. If already reset, we can exit, but LOG IT so we know why.
+            if (IsCycleResetCompleted)
+            {
+                _logger.LogInfo("[CycleManager] Reset skipped - already completed.", LogType.Error);
                 return;
+            }
+
+            // 3. Atomic Lock
+            if (Interlocked.Exchange(ref _resetInProgress, 1) == 1)
+            {
+                _logger.LogInfo("[CycleManager] Reset skipped - another reset is currently in progress.", LogType.Error);
+                return;
+            }
 
             try
             {
-                if (IsCycleResetCompleted)
-                    return;
-
-                IsCycleResetCompleted = true; // 🔥 set BEFORE reset
                 ForceResetCycle(fromCcd);
+                IsCycleResetCompleted = true; // Set AFTER successful reset
             }
             finally
             {
@@ -360,25 +389,45 @@ namespace IPCSoftware.CoreService.Services.CCD
             }
         }
 
-
+       
         private void ForceResetCycle(bool ccdReset = false)
         {
             try
             {
+                _logger.LogInfo("[CycleManager] Executing ForceResetCycle...", LogType.Diagnostics);
+
+                // 1. CRITICAL: Clear State Variables IMMEDIATELY
                 _activeBatchId = string.Empty;
                 _currentSequenceStep = 0;
-                _aeLimitService.AbortCycle();
+                // 2. Reset PLC bits (Fire and Forget to avoid blocking)
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await WriteToPlc(ConstantValues.Return_TAG_ID, 0);
+                        await WriteToPlc(ConstantValues.Ext_DataReady, 0);
+                        await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, 0);
+                        await WriteTagAsync(); // Reset Ack
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"[CycleManager] PLC Reset Error: {ex.Message}", LogType.Diagnostics);
+                    }
+                });
 
-             
+                // 3. Abort AE Limit
+                //if ( _extService.Settings.IsMacMiniEnabled)
+                //{
+                //}
+                    _aeLimitService.AbortCycle();
+
+                // 4. File Cleanup (Can be slow, do last)
                 string folder = Path.GetDirectoryName(_stateFilePath);
-                
-
-
                 if (Directory.Exists(_tempImageFolderPath))
                 {
                     foreach (var file in Directory.GetFiles(_tempImageFolderPath))
                     {
-                        File.Delete(file);
+                        try { File.Delete(file); } catch { }
                     }
                 }
                 if (Directory.Exists(folder))
@@ -386,23 +435,18 @@ namespace IPCSoftware.CoreService.Services.CCD
                     // Delete all files
                     foreach (var file in Directory.GetFiles(folder))
                     {
-                        File.Delete(file);
-                    }
-                    WriteToPlc(ConstantValues.Return_TAG_ID, 0);
-                     WriteToPlc(ConstantValues.Ext_DataReady, 0);
-                      
-                    WriteTagAsync(); // Reset Ack
-                    Console.WriteLine("[System] Cycle Reset.");
-
-                    _logger.LogError("[System] Cycle Reset — Folder cleared completely.", LogType.Error);
-                    if (ccdReset)
-                    {
-
-                    _logger.LogError("[CycleManager] Cycle Reset — By CCDTrigger .", LogType.Error);
+                        try { File.Delete(file); } catch { }
                     }
                 }
+                    Console.WriteLine("[System] Cycle Reset.");
+                _logger.LogError("[System] Cycle Reset — Folder cleared completely.", LogType.Error);
             }
-            catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[CycleManager] Reset Error: {ex.Message}", LogType.Diagnostics);
+            }
         }
+
+
     }
 }

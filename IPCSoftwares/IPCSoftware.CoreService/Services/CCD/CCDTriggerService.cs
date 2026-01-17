@@ -67,21 +67,21 @@ namespace IPCSoftware.CoreService.Services.CCD
                 }
 
               
-                // DETECT RESET CONDITION (Falling Edge: True -> False)
-                // Or just check if it is False to enforce Reset state continuously
+               
                 if (!isCycleEnabled && _lastCycleStartState)
                 {
-                    Console.WriteLine("[CCD] Cycle Start Bit went LOW. Forcing Reset.");
-                  //  await WriteAckToPlcAsync(false);
-                    // Call the reset logic immediately
-                  if (!_cycleManager.IsCycleResetCompleted)
+                    if (!_cycleManager.IsCycleResetCompleted)
                     {
-                    _logger.LogInfo("[CCD] Cycle Start Bit went LOW. Forcing Reset.", LogType.Error);
+                        _logger.LogInfo("[CCD] Cycle Start Falling Edge -> Requesting Reset.", LogType.Error);
                         _cycleManager.RequestReset(true);
                     }
-
-                    // Optional: Write "Unchecked" or Reset status to PLC if needed
+                    else
+                    {
+                        // Add this log to see if it's being skipped intentionally
+                        _logger.LogInfo("[CCD] Cycle Start Falling Edge -> Reset already done.", LogType.Error);
+                    }
                 }
+
 
                 _lastCycleStartState = isCycleEnabled; 
 
