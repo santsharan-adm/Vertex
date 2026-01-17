@@ -73,7 +73,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                     if (!_cycleManager.IsCycleResetCompleted)
                     {
                         _logger.LogInfo("[CCD] Cycle Start Falling Edge -> Requesting Reset.", LogType.Error);
-                        _cycleManager.RequestReset(true);
+                        _ = Task.Run(() => _cycleManager.RequestReset(true));
                     }
                     else
                     {
@@ -93,7 +93,8 @@ namespace IPCSoftware.CoreService.Services.CCD
                         {
                             if (bVal == true)
                             {
-                                WriteAckToPlcAsync(false);
+                                _ = Task.Run(() => WriteAckToPlcAsync(false));
+                             
                                 _logger.LogInfo($"Writing B5 to false which was not written flase in previous cycle.", LogType.Error);
                             }
                         }
@@ -126,40 +127,53 @@ namespace IPCSoftware.CoreService.Services.CCD
                 // 2. Rising Edge Detection (False -> True)
                 if (currentTriggerState && !_lastTriggerState)
                 {
-                    if (_isProcessing)
-                        return;
-                    _isProcessing = true;
+                    if (!_isProcessing)
+                    {
 
-                    // e.g. 08-12-2025
-                    Console.WriteLine($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID}");
-                    _logger.LogInfo($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID} {DateTime.Now.ToString("HH-mm-ss-fff")} ", LogType.Error);
+                        _isProcessing = true;
 
-                    // 3. Gather Data
-                    string qrCode = tagValues.ContainsKey(ConstantValues.TAG_QR_DATA) ? tagValues[ConstantValues.TAG_QR_DATA]?.ToString() : null;
+                        // e.g. 08-12-2025
+                        Console.WriteLine($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID}");
+                        _logger.LogInfo($"[CCD] Trigger Detected on Tag {ConstantValues.TRIGGER_TAG_ID} {DateTime.Now.ToString("HH-mm-ss-fff")} ", LogType.Error);
 
-                    var stationData = new Dictionary<string, object>();
+                        // 3. Gather Data
+                        string qrCode = tagValues.ContainsKey(ConstantValues.TAG_QR_DATA) ? tagValues[ConstantValues.TAG_QR_DATA]?.ToString() : null;
 
-                    // Fetch X, Y, Z, Status from tag dictionary
-                  //  stationData["Status"] = tagValues.ContainsKey(ConstantValues.TAG_STATUS) ? tagValues[ConstantValues.TAG_STATUS].ToString() : "OK";
-                    var rawStatus = tagValues.ContainsKey(ConstantValues.TAG_STATUS)
-                    ? tagValues[ConstantValues.TAG_STATUS]
-                    : null;
-                    stationData["Status"] = MapStatus(rawStatus);
+                        var stationData = new Dictionary<string, object>();
+
+                        // Fetch X, Y, Z, Status from tag dictionary
+                      //  stationData["Status"] = tagValues.ContainsKey(ConstantValues.TAG_STATUS) ? tagValues[ConstantValues.TAG_STATUS].ToString() : "OK";
+                        var rawStatus = tagValues.ContainsKey(ConstantValues.TAG_STATUS)
+                        ? tagValues[ConstantValues.TAG_STATUS]
+                        : null;
+                        stationData["Status"] = MapStatus(rawStatus);
 
 
-                    stationData["X"] = tagValues.ContainsKey(ConstantValues.TAG_X) ? tagValues[ConstantValues.TAG_X] : 0.0;
-                    stationData["Y"] = tagValues.ContainsKey(ConstantValues.TAG_Y) ? tagValues[ConstantValues.TAG_Y] : 0.0;
-                    stationData["Z"] = tagValues.ContainsKey(ConstantValues.TAG_Z) ? tagValues[ConstantValues.TAG_Z] : 0.0;
-                    stationData["CycleTime"] = tagValues.ContainsKey(ConstantValues.TAG_CycleTime) ? tagValues[ConstantValues.TAG_CycleTime] : 0.0;
+                        stationData["X"] = tagValues.ContainsKey(ConstantValues.TAG_X) ? tagValues[ConstantValues.TAG_X] : 0.0;
+                        stationData["Y"] = tagValues.ContainsKey(ConstantValues.TAG_Y) ? tagValues[ConstantValues.TAG_Y] : 0.0;
+                        stationData["Z"] = tagValues.ContainsKey(ConstantValues.TAG_Z) ? tagValues[ConstantValues.TAG_Z] : 0.0;
+                        stationData["CycleTime"] = tagValues.ContainsKey(ConstantValues.TAG_CycleTime) ? tagValues[ConstantValues.TAG_CycleTime] : 0.0;
 
-                    // 4. Execute Async Workflow
-                    await ExecuteWorkflowAsync(qrCode, stationData);
-                    _isProcessing = false;
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await ExecuteWorkflowAsync(qrCode, stationData);
+                            }
+                            finally
+                            {
+                                _isProcessing = false;
+                            }
+                        });
+                    }
+                   
+                 
 
                 }
                 if (!currentTriggerState && _lastTriggerState)
                 {
-                    await WriteAckToPlcAsync(false);
+                   
+                    _ = Task.Run(() => WriteAckToPlcAsync(false));
                     //_logger.LogInfo($"[CCD] Cycle {currentTriggerState} {_lastTriggerState}  reached at line 144.", LogType.Error);
                 }
                // _logger.LogInfo($"[CCD] Cycle {currentTriggerState} {_lastTriggerState}  reached at line 146.", LogType.Error);

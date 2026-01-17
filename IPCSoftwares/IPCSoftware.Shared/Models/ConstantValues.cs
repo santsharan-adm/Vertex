@@ -34,12 +34,13 @@ namespace IPCSoftware.Shared.Models
         public static int TAG_OK;
         public static int TAG_NG;
         public static double IDEAL_CYCLE_TIME;
-        public static int MIN_X;
-        public static int MAX_X;
-        public static int MIN_Y;
-        public static int MAX_Y;
-        public static int MIN_Z;
-        public static int MAX_Z;
+        public static int ACK_LIMIT_WRITE;
+        public static TagPair MIN_X = new();
+        public static TagPair MAX_X = new();
+        public static TagPair MIN_Y = new();
+        public static TagPair MAX_Y = new();
+        public static TagPair MIN_Z = new();
+        public static TagPair MAX_Z = new();
 
 
         public static int RESET_TAG_ID ; // B26 (Your Reset/Start Command)
