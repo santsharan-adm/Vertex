@@ -56,15 +56,6 @@ namespace IPCSoftware.CoreService.Services.External
             _ = StartConnectionMonitor();
         }
 
-        // --- PUBLIC METHODS CALLED BY CYCLE MANAGER ---
-
-        /// <summary>
-        /// 1. Generates Combined String (QR + PrevCode + AOICode).
-        /// 2. Fetches Data (Mocked via File Read).
-        /// 3. Maps Cavity ID -> Sequence Index.
-        /// 4. Writes Result to PLC.
-        /// </summary>
-        /// 
 
         public string GetSerialNumber(int stationId)
         {
@@ -108,7 +99,7 @@ namespace IPCSoftware.CoreService.Services.External
                 _logger.LogInfo($"[ExtIf] Requesting Status for: {combinedId}", LogType.Production);
 
                 // B. Get Data (Simulating API call by reading shared JSON)
-                string fullPath = Path.Combine(_settings.SharedFolderPath, _settings.StatusFileName);
+              //  string fullPath = Path.Combine(_settings.SharedFolderPath, _settings.StatusFileName);
                 // string json = await ReadFileWithRetryAsync(fullPath);
                 //string json = await ReadFileWithRetryAsync(_settings.StatusFileName);
                 MacMiniStatusModel statusData = await ReadFileWithRetryAsync(Settings.StatusFileName);
@@ -245,7 +236,9 @@ namespace IPCSoftware.CoreService.Services.External
                     if (Settings.IsMacMiniEnabled)
                     {
                         bool prev = _isMacMiniConnected;
-                        _isMacMiniConnected = true; // await PingHost(_settings.MacMiniIpAddress);
+                       // _isMacMiniConnected = true;
+                        _isMacMiniConnected = await PingHost(_settings.MacMiniIpAddress);
+                       // await PingHost(_settings.MacMiniIpAddress);
 
                         if (prev && !_isMacMiniConnected)
                             _logger.LogError("[ExtIf] Mac Mini Connection Lost!", LogType.Error);

@@ -60,7 +60,9 @@ namespace IPCSoftware.Shared.Models
     public class ExternalSettings
     {
         public bool IsMacMiniEnabled { get; set; } 
+        public string Protocol { get; set; } 
         public string MacMiniIpAddress { get; set; } 
+        public string EndPoint { get; set; } 
         public string SharedFolderPath { get; set; } 
         public string StatusFileName { get; set; } 
         public int PingTimeoutMs { get; set; } = 1000;
