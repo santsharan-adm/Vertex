@@ -3,14 +3,16 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using IPCSoftware.Services.AppLoggerServices;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace IPCSoftware_UnitTesting.Service_Tests
 {
     public class BackupServiceTests
     {
-        private static BackupService CreateService() => new BackupService();
+        private static BackupService CreateService() => new BackupService(Options.Create(new CcdSettings()));
 
         private static LogConfigurationModel CreateDefaultConfig(string backupFolder)
             => new LogConfigurationModel
@@ -18,7 +20,8 @@ namespace IPCSoftware_UnitTesting.Service_Tests
                 BackupFolder = backupFolder,
                 FileName = "log_{yyyyMMdd}",
                 BackupSchedule = BackupScheduleType.Daily,
-                BackupTime = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, 0)
+                BackupTime = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, 0),
+                Enabled = true
             };
 
         private static object InvokeIsBackupDue(BackupService svc, LogConfigurationModel config)
@@ -84,26 +87,26 @@ namespace IPCSoftware_UnitTesting.Service_Tests
             var svc = CreateService();
             var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempDir);
-            var source = Path.Combine(tempDir, "source.txt");
-            File.WriteAllText(source, "data");
+            var sourceFile = Path.Combine(tempDir, "source.txt");
+            File.WriteAllText(sourceFile, "data");
 
             var backupFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
             var config = CreateDefaultConfig(backupFolder);
             config.BackupSchedule = BackupScheduleType.Manual;
+            config.Enabled = false; // when manual and not enabled, PerformBackup returns immediately
+            config.DataFolder = tempDir;
 
-            svc.PerformBackup(config, source);
+            svc.PerformBackup(config);
 
-            // Backup folder should not be created (manual means no auto backup)
+            // Backup folder should not be created (manual & disabled means no auto backup)
             Assert.False(Directory.Exists(backupFolder));
 
             // cleanup
             Directory.Delete(tempDir, true);
         }
 
-
-
         [Fact]
-        public void PerformBackup_Daily_CreatesBackupFile()
+        public void PerformBackup_CopiesDirectoryContents()
         {
             var svc = CreateService();
             var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
@@ -112,33 +115,39 @@ namespace IPCSoftware_UnitTesting.Service_Tests
             var sourceContent = "line1\nline2";
             File.WriteAllText(source, sourceContent);
 
+            var subDir = Path.Combine(tempDir, "sub");
+            Directory.CreateDirectory(subDir);
+            var subFile = Path.Combine(subDir, "inner.txt");
+            File.WriteAllText(subFile, "inner");
+
             var backupFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
-            var now = DateTime.Now;
             var config = CreateDefaultConfig(backupFolder);
             config.BackupSchedule = BackupScheduleType.Daily;
-            config.BackupTime = new TimeSpan(now.Hour, now.Minute, 0);
+            config.BackupTime = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, 0);
             config.FileName = "mylog_{yyyyMMdd}";
+            config.DataFolder = tempDir;
 
             // Ensure target folder does not exist so PerformBackup will create it
             if (Directory.Exists(backupFolder))
                 Directory.Delete(backupFolder, true);
 
-            svc.PerformBackup(config, source);
+            svc.PerformBackup(config);
 
             try
             {
                 Assert.True(Directory.Exists(backupFolder), "Backup folder was not created");
 
-                var files = Directory.GetFiles(backupFolder);
+                var files = Directory.GetFiles(backupFolder, "*", SearchOption.AllDirectories);
                 Assert.NotEmpty(files);
 
-                // Expect one backup file with pattern containing "_backup_"
-                var match = files.FirstOrDefault(f => Path.GetFileName(f).Contains("_backup_") && f.EndsWith(".csv", StringComparison.OrdinalIgnoreCase));
-                Assert.NotNull(match);
+                // Expect copied files to include source.log and sub/inner.txt
+                var copiedSource = Path.Combine(backupFolder, Path.GetFileName(source));
+                Assert.True(File.Exists(copiedSource));
+                Assert.Equal(sourceContent, File.ReadAllText(copiedSource));
 
-                // The copied file should contain the same content
-                var copiedContent = File.ReadAllText(match);
-                Assert.Equal(sourceContent, copiedContent);
+                var copiedInner = Path.Combine(backupFolder, "sub", Path.GetFileName(subFile));
+                Assert.True(File.Exists(copiedInner));
+                Assert.Equal("inner", File.ReadAllText(copiedInner));
             }
             finally
             {
@@ -151,7 +160,7 @@ namespace IPCSoftware_UnitTesting.Service_Tests
         }
 
         [Fact]
-        public void PerformBackup_SourceMissing_ExceptionIsSwallowed()
+        public void PerformBackup_SourceMissing_NoExceptionAndNoBackupCreated()
         {
             var svc = CreateService();
             var backupFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
@@ -159,19 +168,92 @@ namespace IPCSoftware_UnitTesting.Service_Tests
             config.BackupSchedule = BackupScheduleType.Daily;
             config.BackupTime = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, 0);
 
-            // Source file does not exist
-            var nonExistentSource = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"), "nope.txt");
+            // DataFolder does not exist
+            config.DataFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
 
-            // Should not throw even though source is missing (method swallows exceptions)
-            Exception ex = Record.Exception(() => svc.PerformBackup(config, nonExistentSource));
+            // Should not throw even though source folder is missing (method swallows exceptions)
+            Exception ex = Record.Exception(() => svc.PerformBackup(config));
             Assert.Null(ex);
 
-            // Backup folder should have been created before copy attempt
-            Assert.True(Directory.Exists(backupFolder));
+            // Backup folder should NOT have been created because data folder missing
+            Assert.False(Directory.Exists(backupFolder));
+        }
 
-            // cleanup
-            if (Directory.Exists(backupFolder))
-                Directory.Delete(backupFolder, true);
+        [Fact]
+        public void PerformRestore_RestoresDirectoryContents()
+        {
+            var svc = CreateService();
+            var backupFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(backupFolder);
+            var backupFile = Path.Combine(backupFolder, "b.txt");
+            File.WriteAllText(backupFile, "backupdata");
+
+            var destFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            var config = CreateDefaultConfig(backupFolder);
+            config.BackupFolder = backupFolder;
+            config.DataFolder = destFolder;
+
+            svc.PerformRestore(config);
+
+            try
+            {
+                Assert.True(Directory.Exists(destFolder));
+                var restored = Path.Combine(destFolder, Path.GetFileName(backupFile));
+                Assert.True(File.Exists(restored));
+                Assert.Equal("backupdata", File.ReadAllText(restored));
+            }
+            finally
+            {
+                if (Directory.Exists(backupFolder))
+                    Directory.Delete(backupFolder, true);
+                if (Directory.Exists(destFolder))
+                    Directory.Delete(destFolder, true);
+            }
+        }
+
+        [Fact]
+        public void PerformBackupAndRestore_ProductionImages_AreHandled()
+        {
+            var svc = CreateService();
+
+            // Setup production images source and backup
+            var prodSource = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            var prodBackup = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(prodSource);
+            var img = Path.Combine(prodSource, "img.png");
+            File.WriteAllText(img, "imgdata");
+
+            var config = CreateDefaultConfig(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));
+            config.DataFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            config.ProductionImagePath = prodSource;
+            config.ProductionImageBackupPath = prodBackup;
+            config.LogType = LogType.Production;
+
+            // Perform backup should copy production images to backup path
+            svc.PerformBackup(config);
+            try
+            {
+                Assert.True(Directory.Exists(prodBackup));
+                var backedImg = Path.Combine(prodBackup, Path.GetFileName(img));
+                Assert.True(File.Exists(backedImg));
+                Assert.Equal("imgdata", File.ReadAllText(backedImg));
+
+                // Now clear original and restore from backup
+                Directory.Delete(prodSource, true);
+                svc.PerformRestore(config);
+
+                Assert.True(Directory.Exists(prodSource));
+                var restoredImg = Path.Combine(prodSource, Path.GetFileName(img));
+                Assert.True(File.Exists(restoredImg));
+                Assert.Equal("imgdata", File.ReadAllText(restoredImg));
+            }
+            finally
+            {
+                if (Directory.Exists(prodSource)) Directory.Delete(prodSource, true);
+                if (Directory.Exists(prodBackup)) Directory.Delete(prodBackup, true);
+                if (Directory.Exists(config.BackupFolder)) Directory.Delete(config.BackupFolder, true);
+                if (Directory.Exists(config.DataFolder)) Directory.Delete(config.DataFolder, true);
+            }
         }
     }
 }

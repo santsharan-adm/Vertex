@@ -1,11 +1,14 @@
 using IPCSoftware.App.Services;
+using IPCSoftware.App.Services.UI;
 using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
 using IPCSoftware.Core;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Options;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -16,7 +19,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xunit;
-using IPCSoftware.App.Services.UI;
 
 //namespace IPCSoftware.App.Tests
 namespace IPCSoftware_UnitTesting
@@ -26,14 +28,22 @@ namespace IPCSoftware_UnitTesting
  private readonly Mock<INavigationService> _navMock = new();
  private readonly Mock<IDialogService> _dialogMock = new();
  private readonly Mock<IAppLogger> _loggerMock = new();
- //private readonly Mock<CoreClient> _coreClientMock = new();
- //private readonly Mock<AlarmViewModel> _alarmVmMock = new();
+        private readonly Mock<IOptions<ExternalSettings>> _extSettingsMock = new();
+        private readonly Func<ProcessSequenceWindow> _sequenceWindowFactory;
+        //private readonly Mock<CoreClient> _coreClientMock = new();
+        //private readonly Mock<AlarmViewModel> _alarmVmMock = new();
 
 
- [Fact]
+        private RibbonViewModel CreateVm()
+        {
+            return new RibbonViewModel(_extSettingsMock.Object, _navMock.Object, _dialogMock.Object, _sequenceWindowFactory, _loggerMock.Object);
+        }
+
+        [Fact]
  public void Constructor_Sets_Initial_Values()
  {
-            var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            //var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var ribbon = CreateVm();
             var uiTcpClient = new UiTcpClientFake(_dialogMock.Object,_loggerMock.Object) { IsConnected = false };
             var coreClient = new CoreClient(uiTcpClient, _loggerMock.Object);
             var alarmview = new AlarmViewModel(coreClient, _loggerMock.Object);
@@ -51,7 +61,8 @@ namespace IPCSoftware_UnitTesting
  [Fact]
  public void ResetLandingState_Closes_Sidebar_And_Undocks()
  {
-            var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+          //  var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var ribbon = CreateVm();
             var uiTcpClient = new UiTcpClientFake(_dialogMock.Object, _loggerMock.Object) { IsConnected = false };
             var coreClient = new CoreClient(uiTcpClient, _loggerMock.Object);
             var alarmview = new AlarmViewModel(coreClient, _loggerMock.Object);
@@ -75,7 +86,8 @@ namespace IPCSoftware_UnitTesting
  [Fact]
  public void LoadSidebarMenu_Adds_Items_And_Opens()
  {
-            var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+          //  var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var ribbon = CreateVm();
             var uiTcpClient = new UiTcpClientFake(_dialogMock.Object, _loggerMock.Object) { IsConnected = false };
             var coreClient = new CoreClient(uiTcpClient, _loggerMock.Object);
             var alarmview = new AlarmViewModel(coreClient, _loggerMock.Object);
@@ -100,7 +112,8 @@ namespace IPCSoftware_UnitTesting
  [Fact]
  public void LoadSidebarMenu_Toggles_When_SameKey_And_NotDocked()
  {
-            var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+           // var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var ribbon = CreateVm();
             var uiTcpClient = new UiTcpClientFake(_dialogMock.Object, _loggerMock.Object) { IsConnected = false };
             var coreClient = new CoreClient(uiTcpClient, _loggerMock.Object);
             var alarmview = new AlarmViewModel(coreClient, _loggerMock.Object);
@@ -125,7 +138,8 @@ namespace IPCSoftware_UnitTesting
  [Fact]
  public void OnSidebarItemClick_Navigates_To_OEEDashboard()
  {
-            var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+          //  var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var ribbon = CreateVm();
             var uiTcpClient = new UiTcpClientFake(_dialogMock.Object, _loggerMock.Object) { IsConnected = false };
             var coreClient = new CoreClient(uiTcpClient, _loggerMock.Object);
             var alarmview = new AlarmViewModel(coreClient, _loggerMock.Object);
@@ -141,7 +155,8 @@ namespace IPCSoftware_UnitTesting
  [Fact]
  public void OnSidebarItemClick_Navigates_To_AuditLogs()
  {
-            var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+           // var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var ribbon = CreateVm();
             var uiTcpClient = new UiTcpClientFake(_dialogMock.Object, _loggerMock.Object) { IsConnected = false };
             var coreClient = new CoreClient(uiTcpClient, _loggerMock.Object);
             var alarmview = new AlarmViewModel(coreClient, _loggerMock.Object);
@@ -157,7 +172,8 @@ namespace IPCSoftware_UnitTesting
  [Fact]
  public void ExecuteCloseApp_Calls_Dialog_ShowYesNo()
  {
-            var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+          //  var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var ribbon = CreateVm();
             var uiTcpClient = new UiTcpClientFake(_dialogMock.Object, _loggerMock.Object) { IsConnected = false };
             var coreClient = new CoreClient(uiTcpClient, _loggerMock.Object);
             var alarmview = new AlarmViewModel(coreClient, _loggerMock.Object);
@@ -173,7 +189,8 @@ namespace IPCSoftware_UnitTesting
  [Fact]
  public void CloseAlarmBannerCommand_Hides_Banner()
  {
-            var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+           // var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var ribbon = CreateVm();
             var uiTcpClient = new UiTcpClientFake(_dialogMock.Object, _loggerMock.Object) { IsConnected = false };
             var coreClient = new CoreClient(uiTcpClient, _loggerMock.Object);
             var alarmview = new AlarmViewModel(coreClient, _loggerMock.Object);
@@ -190,7 +207,8 @@ namespace IPCSoftware_UnitTesting
  [Fact]
  public void AcknowledgeBannerAlarmCommand_CanExecute_Based_On_State()
  {
-            var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+          //  var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var ribbon = CreateVm();
             var uiTcpClient = new UiTcpClientFake(_dialogMock.Object, _loggerMock.Object) { IsConnected = false };
             var coreClient = new CoreClient(uiTcpClient, _loggerMock.Object);
             var alarmview = new AlarmViewModel(coreClient, _loggerMock.Object);

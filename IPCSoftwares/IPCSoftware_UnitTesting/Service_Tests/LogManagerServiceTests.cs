@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Collections.Generic;
 using IPCSoftware.Core.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace IPCSoftware_UnitTesting.Service_Tests
 {
@@ -22,7 +23,7 @@ namespace IPCSoftware_UnitTesting.Service_Tests
  public LogManagerServiceTests()
  {
  _configServiceMock = new Mock<ILogConfigurationService>(MockBehavior.Strict);
- _backupService = new BackupService();
+ _backupService = new BackupService(Options.Create(new CcdSettings()));
  _tempDir = Path.Combine(Path.GetTempPath(), "LogManagerTests", Guid.NewGuid().ToString("N"));
  Directory.CreateDirectory(_tempDir);
  }
@@ -194,11 +195,7 @@ namespace IPCSoftware_UnitTesting.Service_Tests
  string fullPath = Path.Combine(cfg.DataFolder, fileName);
 
  // write header + two lines (one with comma inside quotes)
- File.WriteAllLines(fullPath, new[] {
- "Timestamp,Level,Message,Source",
- "2026-01-0112:00:00,INFO,\"Hello, world\",MyApp",
- "2026-01-0113:00:00,WARN,Simple message,MyApp"
- });
+ File.WriteAllLines(fullPath, new[] { "Timestamp,Level,Message,Source", "2026-01-01 12:00:00,INFO,\"UI Client Connected\",AOIApp","2026-01-01 13:00:00,WARN,Warining Message,AOIApp"});
 
  _configServiceMock.Setup(s => s.GetAllAsync()).ReturnsAsync(new List<LogConfigurationModel> { cfg });
  var svc = new LogManagerService(_configServiceMock.Object, _backupService);
@@ -210,12 +207,13 @@ namespace IPCSoftware_UnitTesting.Service_Tests
  // Assert
  Assert.Equal(2, entries.Count);
  Assert.Equal("INFO", entries[0].Level);
- Assert.Equal("Hello, world", entries[0].Message);
- Assert.Equal("MyApp", entries[0].Source);
+ Assert.Equal("UI Client Connected", entries[0].Message);
+ Assert.Equal("AOIApp", entries[0].Source);
 
  Assert.Equal("WARN", entries[1].Level);
- Assert.Equal("Simple message", entries[1].Message);
- }
+ Assert.Equal("Warining Message", entries[1].Message);
+ Assert.Equal("AOIApp" , entries[1].Source);
+        }
 
  [Fact]
  public async Task ReadLogs_FileMissing_ReturnsEmpty()

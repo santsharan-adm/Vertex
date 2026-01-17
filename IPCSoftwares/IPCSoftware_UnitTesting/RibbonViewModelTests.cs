@@ -3,6 +3,8 @@ using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models;
+using Microsoft.Extensions.Options;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -17,12 +19,26 @@ namespace IPCSoftware_UnitTesting
         private readonly Mock<INavigationService> _navMock = new();
         private readonly Mock<IDialogService> _dialogMock = new();
         private readonly Mock<IAppLogger> _loggerMock = new();
+        private readonly Mock<IOptions<ExternalSettings>> _extSettingsMock = new();
+        private readonly Func<ProcessSequenceWindow> _sequenceWindowFactory;
+
 
         public RibbonViewModelTests()
         {
             // Ensure a clean session for each test
             UserSession.Clear();
 
+            var extSettings = new ExternalSettings { IsMacMiniEnabled = false };
+            _extSettingsMock.Setup(s => s.Value).Returns(extSettings);
+
+            _sequenceWindowFactory = () => null;
+
+        }
+
+
+        private RibbonViewModel CreateVm()
+        {
+            return new RibbonViewModel(_extSettingsMock.Object, _navMock.Object, _dialogMock.Object, _sequenceWindowFactory, _loggerMock.Object);
         }
 
         //private RibbonViewModel CreateVm()
@@ -36,7 +52,8 @@ namespace IPCSoftware_UnitTesting
         public void Constructor_Initializes_Commands()
         {
             //var vm = CreateVm();
-            var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            //var vm = new RibbonViewModel(_extSettingsMock.Object,_navMock.Object,_dialogMock.Object,_sequenceWindowFactory,_loggerMock.Object);
+            var vm = CreateVm();
             // string un = UserSession.Username;
             Assert.NotNull(vm.NavigateDashboardCommand);
            //Assert.NotNull(vm.NavigateSettingsCommand);
@@ -50,7 +67,8 @@ namespace IPCSoftware_UnitTesting
         public void OpenDashboardMenu_Invokes_ShowSidebar_With_DashboardItems() ///// Collection: ["OEE Dashboard", "Time Sync", "Alarm View"] /////
         {
             //var vm = CreateVm();
-            var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+           // var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var vm = CreateVm();
             (string Key, List<string> Items)? captured = null;
             vm.ShowSidebar = t => captured = t;
             vm.NavigateDashboardCommand.Execute(null);
@@ -67,7 +85,8 @@ namespace IPCSoftware_UnitTesting
         public void OpenSettingsMenu_Invokes_ShowSidebar_With_SettingsItems() //// Collection: ["Mode Of Operation", "Servo Parameters", "PLC IO", "Diagnostic"]
         {
             //var vm = CreateVm();
-            var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            //var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var vm = CreateVm();
             (string Key, List<string> Items)? captured = null;
 
             vm.ShowSidebar = t => captured = t;
@@ -89,7 +108,8 @@ namespace IPCSoftware_UnitTesting
         public void OpenLogsMenu_Invokes_ShowSidebar_With_LogsItems()
         {
             //var vm = CreateVm();
-            var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            //var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var vm = CreateVm();
             (string Key, List<string> Items)? captured = null;
             vm.ShowSidebar = t => captured = t;
 
@@ -108,7 +128,8 @@ namespace IPCSoftware_UnitTesting
         {
             UserSession.Set("Rishabh", "User");
             //var vm = CreateVm();
-            var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            // var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var vm = CreateVm();
             bool called = false;
             vm.ShowSidebar = _ => called = true;
 
@@ -122,7 +143,8 @@ namespace IPCSoftware_UnitTesting
         {
             UserSession.Set("alice", "Admin");
             //var vm = CreateVm();
-            var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            // var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var vm = CreateVm();
             (string Key, List<string> Items)? captured = null;
             vm.ShowSidebar = t => captured = t;
 
@@ -142,7 +164,8 @@ namespace IPCSoftware_UnitTesting
             UserSession.Set("john", "Admin");
             _dialogMock.Setup(d => d.ShowYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
             // var vm = CreateVm();
-            var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            //  var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var vm = CreateVm();
             bool logoutCalled = false;
             vm.OnLogout = () => logoutCalled = true;
 
@@ -162,7 +185,8 @@ namespace IPCSoftware_UnitTesting
         public void OpenLandingPage_Invokes_OnLandingPageRequested_And_Navigates_Dashboard()
         {
             // var vm = CreateVm();
-            var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            // var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            var vm = CreateVm();
             bool requested = false;
             vm.OnLandingPageRequested = () => requested = true;
 
