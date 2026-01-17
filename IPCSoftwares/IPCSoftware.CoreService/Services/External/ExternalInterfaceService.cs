@@ -24,7 +24,7 @@ namespace IPCSoftware.CoreService.Services.External
 
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
         private Dictionary<int, string> _cachedSerials = new Dictionary<int, string>();
-        private ExternalSettings Settings => _settingsMonitor.CurrentValue;
+        public ExternalSettings Settings => _settingsMonitor.CurrentValue;
 
         // Connectivity State
         private bool _isMacMiniConnected = false;
@@ -56,19 +56,10 @@ namespace IPCSoftware.CoreService.Services.External
             _ = StartConnectionMonitor();
         }
 
-        // --- PUBLIC METHODS CALLED BY CYCLE MANAGER ---
-
-        /// <summary>
-        /// 1. Generates Combined String (QR + PrevCode + AOICode).
-        /// 2. Fetches Data (Mocked via File Read).
-        /// 3. Maps Cavity ID -> Sequence Index.
-        /// 4. Writes Result to PLC.
-        /// </summary>
-        /// 
 
         public string GetSerialNumber(int stationId)
         {
-            if (!Settings.IsMacMiniEnabled || !_isMacMiniConnected) return null;
+            if (!Settings.IsMacMiniEnabled || !IsConnected) return null;
 
             if (_cachedSerials.TryGetValue(stationId, out string serial))
             {
@@ -81,7 +72,115 @@ namespace IPCSoftware.CoreService.Services.External
             return null;
         }
 
+        private async Task<MacMiniStatusModel?> WaitForStatusAsync(
+            string statusFileName,
+            TimeSpan timeout,
+            TimeSpan pollInterval)
+                {
+                    var deadline = DateTime.Now + timeout;
+
+                    while (DateTime.Now < deadline)
+                    {
+                        try
+                        {
+                            var data = await ReadFileWithRetryAsync(statusFileName);
+                            if (data != null && data.Serials.Count > 0)
+                            return data;
+                        }
+                        catch
+                        {
+                            // ignore and retry
+                        }
+
+                        await Task.Delay(pollInterval);
+                    }
+
+                    return null; // timeout
+        }
+
+        private async Task<bool> WaitForMacMiniConnectionAsync(
+                                TimeSpan timeout,
+                                TimeSpan pollInterval)
+        {
+            var deadline = DateTime.UtcNow + timeout;
+            while (DateTime.UtcNow < deadline)
+            {
+                if (IsConnected)
+                    return true;
+
+                await Task.Delay(pollInterval);
+            }
+
+            return false;
+        }
+
+
+
         public async Task SyncBatchStatusAsync(string qrCode)
+        {
+            if (!Settings.IsMacMiniEnabled)
+            {
+                _logger.LogInfo("Mac Mini Disabled. Sending ALL OK.", LogType.Error);
+                await SyncAllOkToPlc();
+                return;
+            }
+
+            if (!IsConnected)
+            {
+                _logger.LogWarning(
+                    "Mac Mini not connected. Waiting up to 30s before giving up.",
+                    LogType.Error);
+
+                var status= await WaitForMacMiniConnectionAsync( TimeSpan.FromSeconds(8),
+                    TimeSpan.FromMilliseconds(500));
+                if (!status)
+                {
+                    await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, true);
+                    await Task.Delay(1000);
+                    return;
+                }
+
+            }
+
+            _cachedSerials.Clear();
+
+            try
+            {
+                string combinedId =
+                    $"{qrCode}_{Settings.PreviousMachineCode}_{Settings.AOIMachineCode}";
+
+                _logger.LogInfo($"[ExtIf] Requesting Status for: {combinedId}", LogType.Production);
+
+                // ✅ WAIT up to 30 seconds
+                var statusData = await WaitForStatusAsync(
+                    Settings.StatusFileName,
+                     TimeSpan.FromSeconds(3),
+                    TimeSpan.FromMilliseconds(500));
+
+                if (statusData == null)
+                {
+                    _logger.LogWarning(
+                        "Mac Mini status not received within 10s.",
+                        LogType.Error);
+                    await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, true);
+                    await Task.Delay(1000);
+                    return;
+                }
+
+                _cachedSerials = statusData.Serials;
+
+                await MapAndWriteToPlc(statusData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[ExtIf] Sync Failed: {ex.Message}", LogType.Diagnostics);
+                // ❗ Do not force NG here either
+            }
+        }
+
+
+
+      /*  public async Task SyncBatchStatusAsync(string qrCode)
         {
             if (!Settings.IsMacMiniEnabled)
             {
@@ -92,23 +191,23 @@ namespace IPCSoftware.CoreService.Services.External
 
             if (!_isMacMiniConnected)
             {
-                _logger.LogError("[ExtIf] Mac Mini Disconnected during Sync! Defaulting to ALL NG.", LogType.Diagnostics);
+                _logger.LogError("[ExtIf] Mac Mini Disconnected during Sync! Defaulting to ALL NG.", LogType.Error);
                 // Set all to NG locally to force quarantine
-                Array.Fill(_quarantineFlagsBySequence, false);
+                Array.Fill(_quarantineFlagsBySequence, true);
                 // Do NOT write to PLC (or write all 0), let it fail/timeout or handle manually
                 return;
             }
 
-            _cachedSerials = /*data.Serials ?? */new Dictionary<int, string>();
+            _cachedSerials = *//*data.Serials ?? *//*new Dictionary<int, string>();
 
             try
             {
                 // A. Generate Combined String (For API/Logic trace)
-                string combinedId = $"{qrCode}_{_settings.PreviousMachineCode}_{_settings.AOIMachineCode}";
+                string combinedId = $"{qrCode}_{Settings.PreviousMachineCode}_{Settings.AOIMachineCode}";
                 _logger.LogInfo($"[ExtIf] Requesting Status for: {combinedId}", LogType.Production);
 
                 // B. Get Data (Simulating API call by reading shared JSON)
-                string fullPath = Path.Combine(_settings.SharedFolderPath, _settings.StatusFileName);
+              //  string fullPath = Path.Combine(_settings.SharedFolderPath, _settings.StatusFileName);
                 // string json = await ReadFileWithRetryAsync(fullPath);
                 //string json = await ReadFileWithRetryAsync(_settings.StatusFileName);
                 MacMiniStatusModel statusData = await ReadFileWithRetryAsync(Settings.StatusFileName);
@@ -137,6 +236,7 @@ namespace IPCSoftware.CoreService.Services.External
             }
         }
 
+*/
         /// <summary>
         /// Returns the quarantine flag for a specific SEQUENCE STEP.
         /// </summary>
@@ -201,18 +301,6 @@ namespace IPCSoftware.CoreService.Services.External
 
             // 4. Write Status Word (520)
             await WriteToPlc(ConstantValues.Ext_CavityStatus, statusWord);
-
-            // 5. Write Sequence Order (for reference)
-            // Just writing 1..12 or the Physical IDs? 
-            // Usually PLC wants to know Physical ID at Sequence X.
-            // Requirement says: "The IPC must send the sequence order... one value per register"
-            //for (int i = 0; i < 12; i++)
-            //{
-            //    // Writing the Physical Station ID into the Sequence Register
-            //    await WriteToPlc(ConstantValues.Ext_SeqRegStart + i, stationMap[i]);
-            //}
-
-            // 6. Confirm Data Ready
             await WriteToPlc(ConstantValues.Ext_DataReady, true);
 
             _logger.LogInfo($"[ExtIf] Synced. Word: {statusWord:X4}. Ready Sent.", LogType.Production);
@@ -245,7 +333,9 @@ namespace IPCSoftware.CoreService.Services.External
                     if (Settings.IsMacMiniEnabled)
                     {
                         bool prev = _isMacMiniConnected;
-                        _isMacMiniConnected = true; // await PingHost(_settings.MacMiniIpAddress);
+                       // _isMacMiniConnected = true;
+                        _isMacMiniConnected = await PingHost(Settings.MacMiniIpAddress);
+                       // await PingHost(_settings.MacMiniIpAddress);
 
                         if (prev && !_isMacMiniConnected)
                             _logger.LogError("[ExtIf] Mac Mini Connection Lost!", LogType.Error);
@@ -257,7 +347,7 @@ namespace IPCSoftware.CoreService.Services.External
                 {
                     _logger.LogError($"Ping Error: {ex.Message}", LogType.Diagnostics);
                 }
-                await Task.Delay(2000);
+             
             }
         }
 
@@ -282,7 +372,7 @@ namespace IPCSoftware.CoreService.Services.External
 
         private async Task<bool> PingHost(string address)
         {
-            try { using var p = new Ping(); var r = await p.SendPingAsync(address, _settings.PingTimeoutMs); return r.Status == IPStatus.Success; } catch { return false; }
+            try { using var p = new Ping(); var r = await p.SendPingAsync(address, Settings.PingTimeoutMs); return r.Status == IPStatus.Success; } catch { return false; }
         }
 
         //private async Task<string> ReadFileWithRetryAsync(string filePath)
