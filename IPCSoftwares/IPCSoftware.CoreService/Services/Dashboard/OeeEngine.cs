@@ -269,7 +269,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
                 if (operatingMin > 0 && idealCycle > 0)
                 {
-                    double operatingSeconds = (double)operatingMin * 60.0;
+                    double operatingSeconds = (double)operatingMin;
                     if (operatingSeconds > 0)
                         performance = ((double)idealCycle * totalParts) / operatingSeconds;
                 }

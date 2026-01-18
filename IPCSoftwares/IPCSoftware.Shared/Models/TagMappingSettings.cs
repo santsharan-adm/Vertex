@@ -57,7 +57,6 @@ namespace IPCSoftware.Shared.Models
     {
         public int CavityStatus { get; set; }
         public int DataReady { get; set; }
-        public int SeqRegStart { get; set; }
     
     }
 
@@ -137,6 +136,8 @@ namespace IPCSoftware.Shared.Models
         public int ParamA2 { get; set; }
         public int ParamA3 { get; set; }
         public int ParamA4 { get; set; }
+        public int ServoSeqStart { get; set; }
+
         public int ManualB12 { get; set; }
         public int ManualB16 { get; set; }
 

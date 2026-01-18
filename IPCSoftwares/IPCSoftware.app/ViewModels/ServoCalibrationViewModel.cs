@@ -517,6 +517,27 @@ namespace IPCSoftware.App.ViewModels
                         _dialog.ShowWarning("Validation Failed: Sequence numbers must be between 1 and 12.");
                         return;
                     }
+
+                    _logger.LogInfo("[Servo] Writing Sequence Map to PLC...", LogType.Audit);
+
+                    for (int i = 1; i <= 12; i++)
+                    {
+                        // 1. Find which PositionId is assigned to Sequence 'i'
+                        var positionAtThisStep = Positions.FirstOrDefault(p => p.PositionId == i);
+
+                        // 2. Get the Value (Position ID) - Default to 0 if not found
+                        int seqIdToWrite = positionAtThisStep != null ? positionAtThisStep.SequenceIndex : 0;
+
+                        // 3. Calculate Tag ID (Start + Offset)
+                        // Seq 1 writes to BaseTag + 0
+                        // Seq 2 writes to BaseTag + 1 ...
+                        int targetTagId = ConstantValues.Servo_Seq_Start + (i - 1);
+
+                        // 4. Write to PLC
+                        await _coreClient.WriteTagAsync(targetTagId, seqIdToWrite);
+                    }
+                    _logger.LogInfo("[Servo] Sequence Map Written Successfully.", LogType.Audit);
+
                 }
 
                 _logger.LogInfo($"Confirming {description}...", LogType.Audit);

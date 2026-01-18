@@ -434,12 +434,7 @@ namespace IPCSoftware.CoreService.Services.External
             // Write All 1s (4095)
             await WriteToPlc(ConstantValues.Ext_CavityStatus, 4095);
 
-            // Write Default Sequence (Linear 1-12)
-            for (int i = 0; i < 12; i++)
-            {
-                await WriteToPlc(ConstantValues.Ext_SeqRegStart + i, i + 1);
-            }
-
+         
             await WriteToPlc(ConstantValues.Ext_DataReady, true);
         }
 
