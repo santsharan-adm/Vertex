@@ -269,7 +269,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
                 if (operatingMin > 0 && idealCycle > 0)
                 {
-                    double operatingSeconds = (double)operatingMin * 60.0;
+                    double operatingSeconds = (double)operatingMin;
                     if (operatingSeconds > 0)
                         performance = ((double)idealCycle * totalParts) / operatingSeconds;
                 }
@@ -337,12 +337,12 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 double y = GetDouble(values, ConstantValues.TAG_Y);
                 double z = GetDouble(values, ConstantValues.TAG_Z);
 
-                double minX = GetDouble(values, ConstantValues.MIN_X);
-                double maxX = GetDouble(values, ConstantValues.MAX_X);
-                double minY = GetDouble(values, ConstantValues.MIN_Y);
-                double maxY = GetDouble(values, ConstantValues.MAX_Y);
-                double minZ = GetDouble(values, ConstantValues.MIN_Z);
-                double maxZ = GetDouble(values, ConstantValues.MAX_Z);
+                double minX = GetDouble(values, ConstantValues.MIN_X.Read);
+                double maxX = GetDouble(values, ConstantValues.MAX_X.Read);
+                double minY = GetDouble(values, ConstantValues.MIN_Y.Read);
+                double maxY = GetDouble(values, ConstantValues.MAX_Y.Read);
+                double minZ = GetDouble(values, ConstantValues.MIN_Z.Read);
+                double maxZ = GetDouble(values, ConstantValues.MAX_Z.Read);
                 
 
 

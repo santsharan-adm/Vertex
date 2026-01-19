@@ -4,16 +4,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             d:DesignHeight="800"
+             d:DesignHeight="900"
              d:DesignWidth="1400">
+
     <UserControl.Resources>
         <SolidColorBrush x:Key="CardBackground" Color="#FFFFFFFF" />
         <SolidColorBrush x:Key="CardBorder" Color="#E2E6EF" />
+
         <Style x:Key="InputLabel" TargetType="TextBlock">
             <Setter Property="FontSize" Value="14" />
             <Setter Property="Foreground" Value="#4B5563" />
             <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
+
         <Style x:Key="InputTextBox" TargetType="TextBox">
             <Setter Property="Margin" Value="0,6,0,0" />
             <Setter Property="Padding" Value="10,6" />
@@ -22,11 +25,13 @@
             <Setter Property="BorderBrush" Value="#CBD5F5" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Height" Value="36" />
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
+
         <Style x:Key="OutlineButton" TargetType="Button">
-            <Setter Property="Height" Value="40" />
-            <Setter Property="MinWidth" Value="120" />
-            <Setter Property="Padding" Value="16,0" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="MinWidth" Value="80" />
+            <Setter Property="Padding" Value="10,0" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="#2563EB" />
@@ -36,32 +41,22 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="10"
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"
-                                              RecognizesAccessKey="True" />
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="BorderBrush" Value="#1D4ED8" />
                                 <Setter TargetName="border" Property="Background" Value="#EEF2FF" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="border" Property="Background" Value="#DBEAFE" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="border" Property="Opacity" Value="0.5" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
         <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource OutlineButton}">
             <Setter Property="Background" Value="#22C55E" />
             <Setter Property="BorderBrush" Value="#22C55E" />
@@ -69,14 +64,8 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="10"
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center" />
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -85,34 +74,46 @@
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="border" Property="Background" Value="#0F8A3C" />
                             </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="border" Property="Opacity" Value="0.6" />
-                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="SetButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Background" Value="#E67E22" />
+            <Setter Property="BorderBrush" Value="#E67E22" />
+        </Style>
+
         <Style x:Key="MatrixHeaderText" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontSize" Value="15" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Foreground" Value="#1F2937" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,0,10"/>
         </Style>
+
         <Style x:Key="MatrixLabelText" TargetType="TextBlock">
             <Setter Property="FontSize" Value="16" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="#111827" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="10,0,0,0"/>
         </Style>
+
         <Style x:Key="MatrixValueText" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Foreground" Value="#111827" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="RowBorder" TargetType="Border">
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Padding" Value="5,15"/>
         </Style>
     </UserControl.Resources>
 
@@ -122,124 +123,30 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Single heading and actions -->
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock Text="AE Limit Configuration"
-                       FontSize="32"
-                       Foreground="#1F2937"
-                       FontWeight="Bold" />
-            <StackPanel Orientation="Horizontal"
-                        Grid.Column="1"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom">
-                <Button Content="Refresh"
-                        Command="{Binding RefreshCommand}"
-                        Style="{StaticResource OutlineButton}"
-                        Margin="0,0,12,0" />
-                <Button Content="Save"
-                        Command="{Binding SaveCommand}"
-                        Style="{StaticResource PrimaryButton}" />
+            <TextBlock Text="AE Limit Configuration" FontSize="32" Foreground="#1F2937" FontWeight="Bold" />
+            <StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Bottom">
+                <Button Content="Refresh" Command="{Binding RefreshCommand}" Style="{StaticResource OutlineButton}" Margin="0,0,12,0" />
+                <Button Content="Save Settings" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" />
             </StackPanel>
         </Grid>
 
-        <!-- Entire form -->
-        <Border Grid.Row="1"
-                Background="{StaticResource CardBackground}"
-                BorderBrush="{StaticResource CardBorder}"
-                BorderThickness="1"
-                CornerRadius="16"
-                Padding="24"
-                Margin="0,24,0,0">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,24,0,0">
             <StackPanel>
-                <Grid Margin="0,0,0,16">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
 
-                    <!-- Row 0 -->
-                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,24,20">
-                        <TextBlock Text="DUT Position" Style="{StaticResource InputLabel}" />
-                        <TextBox Text="{Binding Stations[0].DutPositionLabel}" Style="{StaticResource InputTextBox}" IsReadOnly="True" />
-                    </StackPanel>
-                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,24,20">
-                        <TextBlock Text="MLB AP SN" Style="{StaticResource InputLabel}" />
-                        <TextBox Text="{Binding MLBSerial, FallbackValue='-'}" Style="{StaticResource InputTextBox}" IsReadOnly="True" />
-                    </StackPanel>
-                    <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,20">
-                        <TextBlock Text="2D Code (Carrier SN)" Style="{StaticResource InputLabel}" />
-                        <TextBox Text="{Binding CarrierSerial, FallbackValue='-'}" Style="{StaticResource InputTextBox}" IsReadOnly="True" />
-                    </StackPanel>
-
-                    <!-- Row 1 -->
-                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,24,20">
-                        <TextBlock Text="Cavity" Style="{StaticResource InputLabel}" />
-                        <TextBox Text="{Binding Stations[0].Cavity}" Style="{StaticResource InputTextBox}" IsReadOnly="True" />
-                    </StackPanel>
-                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,24,20">
-                        <TextBlock Text="Vendor" Style="{StaticResource InputLabel}" />
-                        <TextBox Text="{Binding VendorCode}" Style="{StaticResource InputTextBox}" />
-                    </StackPanel>
-                    <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,20">
-                        <TextBlock Text="Tossing" Style="{StaticResource InputLabel}" />
-                        <TextBox Text="{Binding TossingDefault}" Style="{StaticResource InputTextBox}" />
-                    </StackPanel>
-
-                    <!-- Row 2 -->
-                    <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,24,20">
-                        <TextBlock Text="Machine ID" Style="{StaticResource InputLabel}" />
-                        <TextBox Text="{Binding MachineId}" Style="{StaticResource InputTextBox}" />
-                    </StackPanel>
-                    <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,0,24,20">
-                        <TextBlock Text="Online" Style="{StaticResource InputLabel}" />
-                        <TextBox Text="{Binding OnlineFlag}" Style="{StaticResource InputTextBox}" />
-                    </StackPanel>
-                    <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,20">
-                        <TextBlock Text="Operator ID" Style="{StaticResource InputLabel}" />
-                        <TextBox Text="{Binding OperatorIdDefault}" Style="{StaticResource InputTextBox}" />
-                    </StackPanel>
-
-                    <!-- Row 3 -->
-                    <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,24,20">
-                        <TextBlock Text="Mode" Style="{StaticResource InputLabel}" />
-                        <TextBox Text="{Binding ModeDefault}" Style="{StaticResource InputTextBox}" />
-                    </StackPanel>
-                    <StackPanel Grid.Row="3" Grid.Column="1" Margin="0,0,24,20">
-                        <TextBlock Text="Test Series ID" Style="{StaticResource InputLabel}" />
-                        <TextBox Text="{Binding TestSeriesDefault}" Style="{StaticResource InputTextBox}" />
-                    </StackPanel>
-                    <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,20">
-                        <TextBlock Text="Priority" Style="{StaticResource InputLabel}" />
-                        <TextBox Text="{Binding PriorityDefault}" Style="{StaticResource InputTextBox}" />
-                    </StackPanel>
-
-                    <!-- Row 4 -->
-                    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,0">
-                        <TextBlock Text="Submit ID" Style="{StaticResource InputLabel}" />
-                        <TextBox Text="{Binding SubmitId}" Style="{StaticResource InputTextBox}" />
-                    </StackPanel>
-                </Grid>
-
-                <!-- Measurement matrix -->
-                <Border Margin="0,12,0,0"
-                        Padding="12"
-                        CornerRadius="12"
-                        Background="#F7F8FC"
-                        BorderBrush="#E2E6EF"
-                        BorderThickness="1">
-                    <Grid HorizontalAlignment="Stretch">
+                <Border Background="{StaticResource CardBackground}" BorderBrush="{StaticResource CardBorder}" BorderThickness="1" CornerRadius="16" Padding="24" Margin="0,0,0,24">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -247,85 +154,148 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.5*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="0.8*" />
-                        </Grid.ColumnDefinitions>
 
-                        <!-- Headers -->
-                        <Border Grid.Row="0" Grid.Column="0" Margin="4" Padding="12,8" Background="#E5E7EB" CornerRadius="10">
-                            <TextBlock Text="Measurement" Style="{StaticResource MatrixHeaderText}" />
-                        </Border>
-                        <Border Grid.Row="0" Grid.Column="1" Margin="4" Padding="12,8" Background="#E5E7EB" CornerRadius="10">
-                            <TextBlock Text="Min" Style="{StaticResource MatrixHeaderText}" />
-                        </Border>
-                        <Border Grid.Row="0" Grid.Column="2" Margin="4" Padding="12,8" Background="#E5E7EB" CornerRadius="10">
-                            <TextBlock Text="Max" Style="{StaticResource MatrixHeaderText}" />
-                        </Border>
-                        <Border Grid.Row="0" Grid.Column="3" Margin="4" Padding="12,8" Background="#E5E7EB" CornerRadius="10">
-                            <TextBlock Text="Unit" Style="{StaticResource MatrixHeaderText}" />
-                        </Border>
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,20">
+                            <TextBlock Text="DUT Position" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding Stations[0].DutPositionLabel}" Style="{StaticResource InputTextBox}" IsReadOnly="True" Background="#EEEEEE"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,20">
+                            <TextBlock Text="MLB AP SN" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding MLBSerial, FallbackValue='-'}" Style="{StaticResource InputTextBox}" IsReadOnly="True" Background="#EEEEEE"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="4" Margin="0,0,0,20">
+                            <TextBlock Text="2D Code (Carrier SN)" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding CarrierSerial, FallbackValue='-'}" Style="{StaticResource InputTextBox}" IsReadOnly="True" Background="#EEEEEE"/>
+                        </StackPanel>
 
-                        <!-- Inspection X -->
-                        <Border Grid.Row="1" Grid.Column="0" Margin="4" Padding="12,8" Background="#FFFFFF" CornerRadius="10">
-                            <TextBlock Text="Inspection X" Style="{StaticResource MatrixLabelText}" />
-                        </Border>
-                        <Border Grid.Row="1" Grid.Column="1" Margin="4" Padding="12,8" Background="#F9FAFB" CornerRadius="10">
-                            <TextBlock Text="{Binding Stations[0].InspectionX.Lower, StringFormat=F3}" Style="{StaticResource MatrixValueText}" />
-                        </Border>
-                        <Border Grid.Row="1" Grid.Column="2" Margin="4" Padding="12,8" Background="#F9FAFB" CornerRadius="10">
-                            <TextBlock Text="{Binding Stations[0].InspectionX.Upper, StringFormat=F3}" Style="{StaticResource MatrixValueText}" />
-                        </Border>
-                        <Border Grid.Row="1" Grid.Column="3" Margin="4" Padding="12,8" Background="#F9FAFB" CornerRadius="10">
-                            <TextBlock Text="{Binding Stations[0].InspectionX.Unit}" Style="{StaticResource MatrixValueText}" />
-                        </Border>
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,20">
+                            <TextBlock Text="Cavity" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding Stations[0].Cavity}" Style="{StaticResource InputTextBox}" IsReadOnly="True" Background="#EEEEEE"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,20">
+                            <TextBlock Text="Vendor" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding VendorCode}" Style="{StaticResource InputTextBox}" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="4" Margin="0,0,0,20">
+                            <TextBlock Text="Tossing" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding TossingDefault}" Style="{StaticResource InputTextBox}" />
+                        </StackPanel>
 
-                        <!-- Inspection Y -->
-                        <Border Grid.Row="2" Grid.Column="0" Margin="4" Padding="12,8" Background="#FFFFFF" CornerRadius="10">
-                            <TextBlock Text="Inspection Y" Style="{StaticResource MatrixLabelText}" />
-                        </Border>
-                        <Border Grid.Row="2" Grid.Column="1" Margin="4" Padding="12,8" Background="#F9FAFB" CornerRadius="10">
-                            <TextBlock Text="{Binding Stations[0].InspectionY.Lower, StringFormat=F3}" Style="{StaticResource MatrixValueText}" />
-                        </Border>
-                        <Border Grid.Row="2" Grid.Column="2" Margin="4" Padding="12,8" Background="#F9FAFB" CornerRadius="10">
-                            <TextBlock Text="{Binding Stations[0].InspectionY.Upper, StringFormat=F3}" Style="{StaticResource MatrixValueText}" />
-                        </Border>
-                        <Border Grid.Row="2" Grid.Column="3" Margin="4" Padding="12,8" Background="#F9FAFB" CornerRadius="10">
-                            <TextBlock Text="{Binding Stations[0].InspectionY.Unit}" Style="{StaticResource MatrixValueText}" />
-                        </Border>
+                        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,20">
+                            <TextBlock Text="Machine ID" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding MachineId}" Style="{StaticResource InputTextBox}" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,20">
+                            <TextBlock Text="Online" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding OnlineFlag}" Style="{StaticResource InputTextBox}" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Grid.Column="4" Margin="0,0,0,20">
+                            <TextBlock Text="Operator ID" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding OperatorIdDefault}" Style="{StaticResource InputTextBox}" />
+                        </StackPanel>
 
-                        <!-- Inspection Angle -->
-                        <Border Grid.Row="3" Grid.Column="0" Margin="4" Padding="12,8" Background="#FFFFFF" CornerRadius="10">
-                            <TextBlock Text="Inspection Angle" Style="{StaticResource MatrixLabelText}" />
-                        </Border>
-                        <Border Grid.Row="3" Grid.Column="1" Margin="4" Padding="12,8" Background="#F9FAFB" CornerRadius="10">
-                            <TextBlock Text="{Binding Stations[0].InspectionAngle.Lower, StringFormat=F3}" Style="{StaticResource MatrixValueText}" />
-                        </Border>
-                        <Border Grid.Row="3" Grid.Column="2" Margin="4" Padding="12,8" Background="#F9FAFB" CornerRadius="10">
-                            <TextBlock Text="{Binding Stations[0].InspectionAngle.Upper, StringFormat=F3}" Style="{StaticResource MatrixValueText}" />
-                        </Border>
-                        <Border Grid.Row="3" Grid.Column="3" Margin="4" Padding="12,8" Background="#F9FAFB" CornerRadius="10">
-                            <TextBlock Text="{Binding Stations[0].InspectionAngle.Unit}" Style="{StaticResource MatrixValueText}" />
-                        </Border>
+                        <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,0,20">
+                            <TextBlock Text="Mode" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding ModeDefault}" Style="{StaticResource InputTextBox}" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,20">
+                            <TextBlock Text="Test Series ID" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding TestSeriesDefault}" Style="{StaticResource InputTextBox}" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="3" Grid.Column="4" Margin="0,0,0,20">
+                            <TextBlock Text="Priority" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding PriorityDefault}" Style="{StaticResource InputTextBox}" />
+                        </StackPanel>
 
-                        <!-- Cycle Time -->
-                        <Border Grid.Row="4" Grid.Column="0" Margin="4" Padding="12,8" Background="#FFFFFF" CornerRadius="10">
-                            <TextBlock Text="Cycle Time" Style="{StaticResource MatrixLabelText}" />
-                        </Border>
-                        <Border Grid.Row="4" Grid.Column="1" Margin="4" Padding="12,8" Background="#F9FAFB" CornerRadius="10">
-                            <TextBlock Text="{Binding Stations[0].CycleTime.Lower, StringFormat=F2}" Style="{StaticResource MatrixValueText}" />
-                        </Border>
-                        <Border Grid.Row="4" Grid.Column="2" Margin="4" Padding="12,8" Background="#F9FAFB" CornerRadius="10">
-                            <TextBlock Text="{Binding Stations[0].CycleTime.Upper, StringFormat=F2}" Style="{StaticResource MatrixValueText}" />
-                        </Border>
-                        <Border Grid.Row="4" Grid.Column="3" Margin="4" Padding="12,8" Background="#F9FAFB" CornerRadius="10">
-                            <TextBlock Text="{Binding Stations[0].CycleTime.Unit}" Style="{StaticResource MatrixValueText}" />
-                        </Border>
+                        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="5" Margin="0,0,0,0">
+                            <TextBlock Text="Submit ID" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding SubmitId}" Style="{StaticResource InputTextBox}" />
+                        </StackPanel>
                     </Grid>
                 </Border>
-             </StackPanel>
-         </Border>
-     </Grid>
- </UserControl>
+
+                <Border Background="#F7F8FC" BorderBrush="#E2E6EF" BorderThickness="1" CornerRadius="12" Padding="20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1.2*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1.2*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="0.8*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Measurement" Style="{StaticResource MatrixHeaderText}" HorizontalAlignment="Left" Margin="10,0,0,10"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Min (Live)" Style="{StaticResource MatrixHeaderText}" />
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="New Min" Style="{StaticResource MatrixHeaderText}" />
+                        <TextBlock Grid.Row="0" Grid.Column="5" Text="Max (Live)" Style="{StaticResource MatrixHeaderText}" />
+                        <TextBlock Grid.Row="0" Grid.Column="6" Text="New Max" Style="{StaticResource MatrixHeaderText}" />
+                        <TextBlock Grid.Row="0" Grid.Column="8" Text="Unit" Style="{StaticResource MatrixHeaderText}" />
+
+                        <Border Grid.Row="1" Grid.ColumnSpan="9" Style="{StaticResource RowBorder}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Inspection X" Style="{StaticResource MatrixLabelText}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding MinX.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixValueText}" Foreground="#007ACC"/>
+                        <TextBox   Grid.Row="1" Grid.Column="2" Text="{Binding MinX.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" Margin="5,2"/>
+                        <Button    Grid.Row="1" Grid.Column="3" Content="SET" Command="{Binding WriteParamCommand}" CommandParameter="{Binding MinX}" Style="{StaticResource SetButton}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="5" Text="{Binding MaxX.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixValueText}" Foreground="#007ACC"/>
+                        <TextBox   Grid.Row="1" Grid.Column="6" Text="{Binding MaxX.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" Margin="5,2"/>
+                        <Button    Grid.Row="1" Grid.Column="7" Content="SET" Command="{Binding WriteParamCommand}" CommandParameter="{Binding MaxX}" Style="{StaticResource SetButton}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="8" Text="mm" Style="{StaticResource MatrixValueText}" Foreground="#666"/>
+
+                        <Border Grid.Row="2" Grid.ColumnSpan="9" Style="{StaticResource RowBorder}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Inspection Y" Style="{StaticResource MatrixLabelText}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding MinY.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixValueText}" Foreground="#007ACC"/>
+                        <TextBox   Grid.Row="2" Grid.Column="2" Text="{Binding MinY.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" Margin="5,2"/>
+                        <Button    Grid.Row="2" Grid.Column="3" Content="SET" Command="{Binding WriteParamCommand}" CommandParameter="{Binding MinY}" Style="{StaticResource SetButton}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="5" Text="{Binding MaxY.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixValueText}" Foreground="#007ACC"/>
+                        <TextBox   Grid.Row="2" Grid.Column="6" Text="{Binding MaxY.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" Margin="5,2"/>
+                        <Button    Grid.Row="2" Grid.Column="7" Content="SET" Command="{Binding WriteParamCommand}" CommandParameter="{Binding MaxY}" Style="{StaticResource SetButton}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="8" Text="mm" Style="{StaticResource MatrixValueText}" Foreground="#666"/>
+
+                        <Border Grid.Row="3" Grid.ColumnSpan="9" Style="{StaticResource RowBorder}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Inspection Angle" Style="{StaticResource MatrixLabelText}"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding MinZ.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixValueText}" Foreground="#007ACC"/>
+                        <TextBox   Grid.Row="3" Grid.Column="2" Text="{Binding MinZ.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" Margin="5,2"/>
+                        <Button    Grid.Row="3" Grid.Column="3" Content="SET" Command="{Binding WriteParamCommand}" CommandParameter="{Binding MinZ}" Style="{StaticResource SetButton}"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="5" Text="{Binding MaxZ.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixValueText}" Foreground="#007ACC"/>
+                        <TextBox   Grid.Row="3" Grid.Column="6" Text="{Binding MaxZ.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" Margin="5,2"/>
+                        <Button    Grid.Row="3" Grid.Column="7" Content="SET" Command="{Binding WriteParamCommand}" CommandParameter="{Binding MaxZ}" Style="{StaticResource SetButton}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="8" Text="deg" Style="{StaticResource MatrixValueText}" Foreground="#666"/>
+
+                        <Border Grid.Row="4" Grid.ColumnSpan="9" Style="{StaticResource RowBorder}" BorderThickness="0"/>
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Cycle Time (JSON)" Style="{StaticResource MatrixLabelText}"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Stations[0].CycleTime.Lower, StringFormat=F2}" Style="{StaticResource MatrixValueText}" Foreground="#555"/>
+                        <TextBlock Grid.Row="4" Grid.Column="5" Grid.ColumnSpan="2" Text="{Binding Stations[0].CycleTime.Upper, StringFormat=F2}" Style="{StaticResource MatrixValueText}" Foreground="#555"/>
+                        <TextBlock Grid.Row="4" Grid.Column="8" Text="s" Style="{StaticResource MatrixValueText}" Foreground="#666"/>
+
+                        <!--<Button Grid.Row="5" Grid.Column="5" Grid.ColumnSpan="3"
+                                Content="SAVE TO PLC" 
+                                Command="{Binding AckSaveCommand}"
+                                Style="{StaticResource PrimaryButton}" Background="#E67E22"
+                                Margin="0,20,0,0" Height="50" FontSize="16"/>-->
+
+                    </Grid>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

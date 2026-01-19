@@ -13,7 +13,7 @@ namespace IPCSoftware.Shared.Models
         // NEW: External Interface Tags
         public static int Ext_CavityStatus;
         public static int Ext_DataReady;
-        public static int Ext_SeqRegStart;
+
         public static int MACMINI_NOTCONNECTED;
 
 
@@ -34,12 +34,13 @@ namespace IPCSoftware.Shared.Models
         public static int TAG_OK;
         public static int TAG_NG;
         public static double IDEAL_CYCLE_TIME;
-        public static int MIN_X;
-        public static int MAX_X;
-        public static int MIN_Y;
-        public static int MAX_Y;
-        public static int MIN_Z;
-        public static int MAX_Z;
+        public static int ACK_LIMIT_WRITE;
+        public static TagPair MIN_X = new();
+        public static TagPair MAX_X = new();
+        public static TagPair MIN_Y = new();
+        public static TagPair MAX_Y = new();
+        public static TagPair MIN_Z = new();
+        public static TagPair MAX_Z = new();
 
 
         public static int RESET_TAG_ID ; // B26 (Your Reset/Start Command)
@@ -102,6 +103,7 @@ namespace IPCSoftware.Shared.Models
         public static int Servo_ParamA2;
         public static int Servo_CoordSave;
         public static int Servo_XYOrigin;
+        public static int Servo_Seq_Start;
         public static int Servo_XYOriginReadX;
         public static int Servo_XYOriginReadY;
 
@@ -175,6 +177,7 @@ namespace IPCSoftware.Shared.Models
                 MAX_Y = oee.MaxY;
                 MIN_Z = oee.MinZ;
                 MAX_Z = oee.MaxZ;
+                ACK_LIMIT_WRITE = oee.AckLimitWrite;
 
 
                 // Modes
@@ -217,6 +220,8 @@ namespace IPCSoftware.Shared.Models
                 Servo_ParamA2 = s.ParamA2;
                 Servo_CoordSave= s.ParamA3;
                 Servo_XYOrigin = s.ParamA4;
+                Servo_Seq_Start = s.ServoSeqStart;
+
                 Servo_XYOriginReadX = s.ManualB12;
                 Servo_XYOriginReadY = s.ManualB16;
 
@@ -233,8 +238,7 @@ namespace IPCSoftware.Shared.Models
                 {
                     Ext_CavityStatus = e.CavityStatus;
                     Ext_DataReady = e.DataReady;
-                  
-                    Ext_SeqRegStart = e.SeqRegStart;
+
                 }
             }
         }
