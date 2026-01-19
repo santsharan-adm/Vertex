@@ -357,10 +357,8 @@
                                         <!-- Dynamic Arc -->
                                         <!-- Data is bound to OverallOEE using the converter -->
                                         <Path StrokeThickness="20" 
-                                              HorizontalAlignment="Center" 
-                                              VerticalAlignment="Center" 
-                                              StrokeStartLineCap="Round" 
-                                              StrokeEndLineCap="Round"
+                                              StrokeStartLineCap="Flat"
+                                              StrokeEndLineCap="Flat"
                                               Data="{Binding OverallOEE, Converter={StaticResource OeeToGeometry}}"
                                               Stroke="{Binding OverallOEE, Converter={StaticResource OeeToColor}}">
                                         </Path>
