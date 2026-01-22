@@ -3,12 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:IPCSoftware.App"
              StartupUri="MainWindow.xaml">
+
     <Application.Resources>
         <ResourceDictionary>
+
             <ResourceDictionary.MergedDictionaries>
+
+                <!-- 🔹 ADDED: Default Language (DO NOT REMOVE) -->
+                <ResourceDictionary Source="Resources/Strings.en.xaml"/>
+
                 <!-- Touch buttons Style -->
                 <ResourceDictionary Source="Styles/TouchButtons.xaml"/>
                 <ResourceDictionary Source="Styles/DataGridStyles.xaml"/>
+
             </ResourceDictionary.MergedDictionaries>
 
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -26,7 +33,8 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
                             <Border Background="{TemplateBinding Background}" CornerRadius="5">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
@@ -50,34 +58,49 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ScrollBar">
-                            <Grid x:Name="GridRoot" Width="{TemplateBinding Width}" Background="{TemplateBinding Background}">
-                                <Track x:Name="PART_Track" IsDirectionReversed="true" Focusable="false">
+                            <Grid x:Name="GridRoot"
+                                  Width="{TemplateBinding Width}"
+                                  Background="{TemplateBinding Background}">
+                                <Track x:Name="PART_Track"
+                                       IsDirectionReversed="true"
+                                       Focusable="false">
                                     <Track.Thumb>
                                         <Thumb>
                                             <Thumb.Template>
                                                 <ControlTemplate TargetType="Thumb">
-                                                    <Border x:Name="ThumbBorder" 
-                                                            Background="#B0B0B0" 
-                                                            CornerRadius="10" 
+                                                    <Border x:Name="ThumbBorder"
+                                                            Background="#B0B0B0"
+                                                            CornerRadius="10"
                                                             Margin="4,2"/>
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="ThumbBorder" Property="Background" Value="#888888"/>
+                                                            <Setter TargetName="ThumbBorder"
+                                                                    Property="Background"
+                                                                    Value="#888888"/>
                                                         </Trigger>
                                                         <Trigger Property="IsDragging" Value="True">
-                                                            <Setter TargetName="ThumbBorder" Property="Background" Value="#555555"/>
+                                                            <Setter TargetName="ThumbBorder"
+                                                                    Property="Background"
+                                                                    Value="#555555"/>
                                                         </Trigger>
                                                     </ControlTemplate.Triggers>
                                                 </ControlTemplate>
                                             </Thumb.Template>
                                         </Thumb>
                                     </Track.Thumb>
+
                                     <!-- Hide Standard Arrows -->
                                     <Track.IncreaseRepeatButton>
-                                        <RepeatButton Command="ScrollBar.LineDownCommand" Opacity="0" Focusable="false" Height="0"/>
+                                        <RepeatButton Command="ScrollBar.LineDownCommand"
+                                                      Opacity="0"
+                                                      Focusable="false"
+                                                      Height="0"/>
                                     </Track.IncreaseRepeatButton>
                                     <Track.DecreaseRepeatButton>
-                                        <RepeatButton Command="ScrollBar.LineUpCommand" Opacity="0" Focusable="false" Height="0"/>
+                                        <RepeatButton Command="ScrollBar.LineUpCommand"
+                                                      Opacity="0"
+                                                      Focusable="false"
+                                                      Height="0"/>
                                     </Track.DecreaseRepeatButton>
                                 </Track>
                             </Grid>
@@ -90,12 +113,9 @@
             <!-- 2. APPLY GLOBALLY TO ALL DATAGRIDS -->
             <!-- =============================================== -->
             <Style TargetType="DataGrid">
-                <!-- 
-                   This injects the ScrollBar style into the DataGrid's scope 
-                   without using the invalid "Setter Property='Resources'" syntax. 
-                -->
                 <Style.Resources>
-                    <Style TargetType="ScrollBar" BasedOn="{StaticResource CustomScrollBarStyle}"/>
+                    <Style TargetType="ScrollBar"
+                           BasedOn="{StaticResource CustomScrollBarStyle}"/>
                 </Style.Resources>
             </Style>
 

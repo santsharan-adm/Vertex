@@ -141,4 +141,13 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="Properties\Strings.hi.xaml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Page>
+    <Page Update="Resources\Strings.en.xaml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Page>
+  </ItemGroup>
+
 </Project>
