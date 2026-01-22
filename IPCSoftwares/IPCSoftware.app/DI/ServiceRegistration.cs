@@ -27,7 +27,7 @@ namespace IPCSoftware.App.DI
 {
     public static class ServiceRegistration
     {
-        public static void RegisterServices(IServiceCollection services/*, IConfiguration configuration*/)
+        public static void RegisterServices(IServiceCollection services)
         {
             // services.AddHostedService<Worker>();
             services.AddSingleton<IAppLogger, AppLoggerService>();
@@ -74,7 +74,7 @@ namespace IPCSoftware.App.DI
             //Auth service
             services.AddSingleton<IAuthService, AuthService>();
             //Credentials
-            services.AddSingleton<ICredentialsService, CredentialsService>();
+            //services.AddSingleton<ICredentialsService, CredentialsService>();
             services.AddSingleton<IAeLimitService, AeLimitService>();
             //Navigation
             services.AddSingleton<INavigationService, NavigationService>();
@@ -88,10 +88,8 @@ namespace IPCSoftware.App.DI
 
 
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
-           // services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
             services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
             services.AddSingleton<IUserManagementService, UserManagementService>();
-          //  services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
 
 
             // CCD Serive
@@ -232,16 +230,6 @@ namespace IPCSoftware.App.DI
             services.AddTransient<SystemSettingViewModel>();
             services.AddTransient<IPLCService, PlcService>();
 
-            // --- New Registration in ServiceRegistration.cs ---
-
-            //  // Define the constants used for the network client
-            //  const string IpAddress = "127.0.0.1";
-            //  const int Port = 5050; // Or whatever port you are using
-
-            //  // Register UiTcpClient with a factory method to supply constructor arguments
-            ////  services.AddSingleton<UiTcpClient>(s => new UiTcpClient(IpAddress, Port));
-
-            //  // Register CoreClient (which consumes UiTcpClient)
             services.AddSingleton<CoreClient>();
 
 
