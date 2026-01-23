@@ -7,7 +7,7 @@ using IPCSoftware.Shared.Models.ConfigModels;
 using Moq;
 using Xunit;
 
-namespace IPCSoftware.Services.Tests
+namespace IPCSoftware_UnitTesting.Service_Tests
 {
     public class AuthServiceTests
     {

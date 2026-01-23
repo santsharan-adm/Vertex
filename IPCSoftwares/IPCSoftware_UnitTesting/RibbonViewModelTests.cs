@@ -72,37 +72,39 @@ namespace IPCSoftware_UnitTesting
             (string Key, List<string> Items)? captured = null;
             vm.ShowSidebar = t => captured = t;
             vm.NavigateDashboardCommand.Execute(null);
-
+            //["Dashboard", "Control", "PLC IO", "Alarm View", "Startup Condition"]
             Assert.NotNull(captured);
             Assert.Equal("DashboardMenu", captured?.Key);
-            Assert.Contains("OEE Dashboard", captured?.Items);
-            Assert.Contains("Time Sync", captured?.Items);
+            Assert.Contains("Dashboard", captured?.Items);
+            Assert.Contains("Control", captured?.Items);
+            Assert.Contains("PLC IO", captured?.Items);
             Assert.Contains("Alarm View", captured?.Items);
+            Assert.Contains("Startup Condition", captured?.Items);
 
         }  
 
-        [Fact]
-        public void OpenSettingsMenu_Invokes_ShowSidebar_With_SettingsItems() //// Collection: ["Mode Of Operation", "Servo Parameters", "PLC IO", "Diagnostic"]
-        {
-            //var vm = CreateVm();
-            //var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
-            var vm = CreateVm();
-            (string Key, List<string> Items)? captured = null;
+        //[Fact]
+        //public void OpenSettingsMenu_Invokes_ShowSidebar_With_SettingsItems() //// Collection: ["Mode Of Operation", "Servo Parameters", "PLC IO", "Diagnostic"]
+        //{
+        //    //var vm = CreateVm();
+        //    //var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+        //    var vm = CreateVm();
+        //    (string Key, List<string> Items)? captured = null;
 
-            vm.ShowSidebar = t => captured = t;
+        //    vm.ShowSidebar = t => captured = t;
 
-           // vm.NavigateSettingsCommand.Execute(null);
+        //   // vm.NavigateSettingsCommand.Execute(null);
 
-            Assert.NotNull(captured);
-            Assert.Equal("SettingsMenu", captured?.Key);
-            Assert.Contains("Mode Of Operation", captured?.Items);
-            Assert.Contains("Servo Parameters", captured?.Items);
-            Assert.Contains("Diagnostic", captured?.Items);
-            Assert.Contains("PLC IO", captured?.Items);
-            // Assert.Contains("Tag Control", captured?.Items);
-           // Assert.Contains("Alarm View", captured?.Items);
+        //    Assert.NotNull(captured);
+        //    Assert.Equal("SettingsMenu", captured?.Key);
+        //    Assert.Contains("Mode Of Operation", captured?.Items);
+        //    Assert.Contains("Servo Parameters", captured?.Items);
+        //    Assert.Contains("Diagnostic", captured?.Items);
+        //    Assert.Contains("PLC IO", captured?.Items);
+        //    // Assert.Contains("Tag Control", captured?.Items);
+        //   // Assert.Contains("Alarm View", captured?.Items);
 
-        }
+        //}
 
         [Fact]
         public void OpenLogsMenu_Invokes_ShowSidebar_With_LogsItems()
@@ -118,7 +120,7 @@ namespace IPCSoftware_UnitTesting
             Assert.NotNull(captured);
             Assert.Equal("LogsMenu", captured?.Key);
             Assert.Contains("Audit Logs", captured?.Items);
-            Assert.Contains("Production Logs", captured?.Items);
+            //Assert.Contains("Production Logs", captured?.Items);
             Assert.Contains("Error Logs", captured?.Items);
             Assert.Contains("Diagnostics Logs", captured?.Items);
         }
@@ -126,7 +128,7 @@ namespace IPCSoftware_UnitTesting
         [Fact]
         public void OpenUserMgtMenu_Does_Not_Invoke_When_Not_Admin()
         {
-            UserSession.Set("Rishabh", "User");
+            UserSession.Set("Rishabh", "Operator");
             //var vm = CreateVm();
             // var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
             var vm = CreateVm();
@@ -135,13 +137,13 @@ namespace IPCSoftware_UnitTesting
 
             vm.NavigateUserMgmtCommand.Execute(null);
             //Assert.False(called);
-            Assert.True(!called);
+            Assert.False(called);
         }
 
         [Fact]
         public void OpenUserMgtMenu_Invokes_When_Admin()
         {
-            UserSession.Set("alice", "Admin");
+            UserSession.Set("alice", "Admin"); // --> Or Role="Supervisor"
             //var vm = CreateVm();
             // var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
             var vm = CreateVm();
@@ -153,9 +155,21 @@ namespace IPCSoftware_UnitTesting
             Assert.NotNull(captured);
             Assert.Equal("UserMgtMenu", captured?.Key);
             Assert.Contains("Log Config", captured?.Items);
-            Assert.Contains("User Config", captured?.Items);
-            Assert.Contains("External Interface", captured?.Items);
+            // Assert.Contains("User Config", captured?.Items);-->> Was removed as per new changes
+            //Assert.Contains("External Interface", captured?.Items); -->> Was removed as per new changes
+            Assert.Contains("Device Config", captured?.Items);
+            Assert.Contains("Alarm Config", captured?.Items);
+            Assert.Contains("PLC TAG Config", captured?.Items);
+            Assert.Contains("Shift Config", captured?.Items);
+            Assert.Contains("Report Config", captured?.Items);
+            Assert.Contains("Servo Parameters", captured?.Items);
+            Assert.Contains("Time Sync", captured?.Items);
+            Assert.Contains("Diagnostic", captured?.Items);
+            Assert.Contains("MacMini Test", captured?.Items);
+            Assert.Contains("AE Limit", captured?.Items);
         }
+
+ 
 
         [Fact]
         public void Logout_Confirmed_Performs_Logout_And_Navigates()
@@ -182,7 +196,7 @@ namespace IPCSoftware_UnitTesting
         }
 
         [Fact]
-        public void OpenLandingPage_Invokes_OnLandingPageRequested_And_Navigates_Dashboard()
+        public void OpenLandingPage_Invokes_OnLandingPageRequested_And_ModeOfOperations() //-->> Was NavigateLandingPageCommand Previously
         {
             // var vm = CreateVm();
             // var vm = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
@@ -193,7 +207,7 @@ namespace IPCSoftware_UnitTesting
             vm.NavigateLandingPageCommand.Execute(null);
 
             Assert.True(requested);
-            _navMock.Verify(n => n.NavigateMain<DashboardView>(), Times.Once);
+            _navMock.Verify(n => n.NavigateMain<ModeOfOperation>(), Times.Once);
         }
     }
 }

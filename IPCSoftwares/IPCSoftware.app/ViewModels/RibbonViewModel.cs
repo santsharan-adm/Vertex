@@ -49,7 +49,7 @@ public class RibbonViewModel : BaseViewModel
         Func<ProcessSequenceWindow> sequenceWindowFactory,
         IAppLogger logger) : base(logger)
     {
-        MachineName = extSetting.Value.AOIMachineCode;
+        //MachineName = extSetting.Value.AOIMachineCode;
         _nav = nav;
         _dialog = dialog;
         _sequenceWindowFactory = sequenceWindowFactory;

@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.PortableExecutable;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,10 +25,13 @@ using Xunit;
 namespace IPCSoftware_UnitTesting
 {
  public class MainWindowViewModelTests
- {
- private readonly Mock<INavigationService> _navMock = new();
- private readonly Mock<IDialogService> _dialogMock = new();
- private readonly Mock<IAppLogger> _loggerMock = new();
+ {      
+      
+        private readonly Mock<INavigationService> _navMock = new();
+        private readonly Mock<IDialogService> _dialogMock = new();
+        private readonly Mock<IAppLogger> _loggerMock = new();
+
+
         private readonly Mock<IOptions<ExternalSettings>> _extSettingsMock = new();
         private readonly Func<ProcessSequenceWindow> _sequenceWindowFactory;
         //private readonly Mock<CoreClient> _coreClientMock = new();
@@ -67,20 +71,20 @@ namespace IPCSoftware_UnitTesting
             var coreClient = new CoreClient(uiTcpClient, _loggerMock.Object);
             var alarmview = new AlarmViewModel(coreClient, _loggerMock.Object);
             var vmObj = new MainWindowViewModel(_navMock.Object, coreClient, _dialogMock.Object, ribbon, alarmview, _loggerMock.Object);
- var mainType = vmObj.GetType();
+            var mainType = vmObj.GetType();
 
- // Set states
- var propIsSidebarOpen = mainType.GetProperty("IsSidebarOpen");
- var propIsSidebarDocked = mainType.GetProperty("IsSidebarDocked");
- propIsSidebarOpen.SetValue(vmObj, true);
- propIsSidebarDocked.SetValue(vmObj, true);
+             // Set states
+            var propIsSidebarOpen = mainType.GetProperty("IsSidebarOpen");
+            var propIsSidebarDocked = mainType.GetProperty("IsSidebarDocked");
+                propIsSidebarOpen.SetValue(vmObj, true);
+                propIsSidebarDocked.SetValue(vmObj, true);
 
- // Invoke private ResetLandingState
- var method = mainType.GetMethod("ResetLandingState", BindingFlags.NonPublic | BindingFlags.Instance);
- method.Invoke(vmObj, null);
+            // Invoke private ResetLandingState
+            var method = mainType.GetMethod("ResetLandingState", BindingFlags.NonPublic | BindingFlags.Instance);
+            method.Invoke(vmObj, null);
 
- Assert.False((bool)propIsSidebarOpen.GetValue(vmObj));
- Assert.False((bool)propIsSidebarDocked.GetValue(vmObj));
+            Assert.False((bool)propIsSidebarOpen.GetValue(vmObj));
+            Assert.False((bool)propIsSidebarDocked.GetValue(vmObj));
  }
 
  [Fact]
@@ -94,19 +98,19 @@ namespace IPCSoftware_UnitTesting
             var vmObj = new MainWindowViewModel(_navMock.Object, coreClient, _dialogMock.Object, ribbon, alarmview, _loggerMock.Object);
             var mainType = vmObj.GetType();
 
- var items = new List<string> { "A", "B" };
- var tuple = (Key: "menu1", Items: items);
+            var items = new List<string> { "A", "B" };
+            var tuple = (Key: "menu1", Items: items);
 
- var method = mainType.GetMethod("LoadSidebarMenu", BindingFlags.NonPublic | BindingFlags.Instance);
+            var method = mainType.GetMethod("LoadSidebarMenu", BindingFlags.NonPublic | BindingFlags.Instance);
             method.Invoke(vmObj, new object[] { tuple });
 
- var sidebarItemsProp = mainType.GetProperty("SidebarItems");
- var sidebarItems = (System.Collections.ICollection)sidebarItemsProp.GetValue(vmObj);
+            var sidebarItemsProp = mainType.GetProperty("SidebarItems");
+            var sidebarItems = (System.Collections.ICollection)sidebarItemsProp.GetValue(vmObj);
 
- Assert.Equal(2, sidebarItems.Count);
+            Assert.Equal(2, sidebarItems.Count);
 
- var isOpenProp = mainType.GetProperty("IsSidebarOpen");
- Assert.True((bool)isOpenProp.GetValue(vmObj));
+            var isOpenProp = mainType.GetProperty("IsSidebarOpen");
+            Assert.True((bool)isOpenProp.GetValue(vmObj));
  }
 
  [Fact]
@@ -138,7 +142,8 @@ namespace IPCSoftware_UnitTesting
  [Fact]
  public void OnSidebarItemClick_Navigates_To_OEEDashboard()
  {
-          //  var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            //  var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            _navMock.Setup(n => n.CanNavigateFromCurrent()).Returns(true);
             var ribbon = CreateVm();
             var uiTcpClient = new UiTcpClientFake(_dialogMock.Object, _loggerMock.Object) { IsConnected = false };
             var coreClient = new CoreClient(uiTcpClient, _loggerMock.Object);
@@ -146,16 +151,17 @@ namespace IPCSoftware_UnitTesting
             var vmObj = new MainWindowViewModel(_navMock.Object, coreClient, _dialogMock.Object, ribbon, alarmview, _loggerMock.Object);
             var mainType = vmObj.GetType();
 
- var method = mainType.GetMethod("OnSidebarItemClick", BindingFlags.NonPublic | BindingFlags.Instance);
- method.Invoke(vmObj, new object[] { "OEE Dashboard" });
+            var method = mainType.GetMethod("OnSidebarItemClick", BindingFlags.NonPublic | BindingFlags.Instance);
+            method.Invoke(vmObj, new object[] { "Dashboard" });
 
- _navMock.Verify(n => n.NavigateMain<IPCSoftware.App.Views.OEEDashboard>(), Times.Once);
+            _navMock.Verify(n => n.NavigateMain<IPCSoftware.App.Views.OEEDashboard>(), Times.Once);
  }
 
  [Fact]
  public void OnSidebarItemClick_Navigates_To_AuditLogs()
  {
-           // var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            // var ribbon = new RibbonViewModel(_navMock.Object, _dialogMock.Object, _loggerMock.Object);
+            _navMock.Setup(n => n.CanNavigateFromCurrent()).Returns(true);
             var ribbon = CreateVm();
             var uiTcpClient = new UiTcpClientFake(_dialogMock.Object, _loggerMock.Object) { IsConnected = false };
             var coreClient = new CoreClient(uiTcpClient, _loggerMock.Object);
@@ -163,10 +169,10 @@ namespace IPCSoftware_UnitTesting
             var vmObj = new MainWindowViewModel(_navMock.Object, coreClient, _dialogMock.Object, ribbon, alarmview, _loggerMock.Object);
             var mainType = vmObj.GetType();
 
- var method = mainType.GetMethod("OnSidebarItemClick", BindingFlags.NonPublic | BindingFlags.Instance);
- method.Invoke(vmObj, new object[] { "Audit Logs" });
+            var method = mainType.GetMethod("OnSidebarItemClick", BindingFlags.NonPublic | BindingFlags.Instance);
+            method.Invoke(vmObj, new object[] { "Audit Logs" });
 
- _navMock.Verify(n => n.NavigateToLogs(IPCSoftware.Shared.Models.ConfigModels.LogType.Audit), Times.Once);
+            _navMock.Verify(n => n.NavigateToLogs(LogType.Audit), Times.Once);
  }
 
  [Fact]
