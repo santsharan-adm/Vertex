@@ -12,7 +12,7 @@ namespace IPCSoftware.Shared
     {
    
         public event PropertyChangedEventHandler PropertyChanged;
-        public bool IsDirty { get; set; }
+
         protected void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
@@ -24,7 +24,7 @@ namespace IPCSoftware.Shared
 
             storage = value;
             OnPropertyChanged(propertyName);
-            IsDirty = true;
+         
             return true;
         }
     }

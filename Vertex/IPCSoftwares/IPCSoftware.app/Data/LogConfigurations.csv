@@ -1,8 +1,0 @@
-﻿Id,LogName,LogType,DataFolder,BackupFolder,FileName,LogRetentionTime,LogRetentionFileSize,AutoPurge,BackupSchedule,BackupTime,BackupDay,BackupDayOfWeek,Description,Remark,Enabled
-1,"Audit","Audit","C:\MSTLDev\AOI\Logs\Audit","C:\MSTLDev\AOI\LogsBackup\Audit","Audit_yyyyMMdd",90,5,False,"Monthly","02:00:00",1,"","Audit log configuration","System audit trail logs",True
-2,"Production","Production","C:\MSTLDev\AOI\Logs\Production","C:\MSTLDev\AOI\LogsBackup\Production","Production_yyyyMMdd",30,5,True,"Weekly","03:00:00",0,"Monday","Production log configuration","Production system logs",True
-3,"Error","Error","C:\MSTLDev\AOI\Logs\Error","C:\MSTLDev\AOI\LogsBackup\Error","Error_yyyyMMdd",60,5,False,"Monthly","04:00:00",1,"","Error log configuration","System error logs",True
-4,"Diagnostics","Diagnostics","C:\MSTLDev\AOI\Logs\Diagnostics","C:\MSTLDev\AOI\LogsBackup\Diagnostics","Diagnostics_yyyyMMdd",60,5,False,"Monthly","04:00:00",1,"","Diagnostics log configuration","System Diagnostics logs",True
-
-
-

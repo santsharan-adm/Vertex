@@ -356,15 +356,15 @@
 
                                         <!-- Dynamic Arc -->
                                         <!-- Data is bound to OverallOEE using the converter -->
-                                        <Path StrokeThickness="20" 
-                                              StrokeStartLineCap="Flat"
-                                              StrokeEndLineCap="Flat"
+                                        <Path StrokeThickness="21" 
+                                              StrokeStartLineCap="Round"
+                                              StrokeEndLineCap="Round"
                                               Data="{Binding OverallOEE, Converter={StaticResource OeeToGeometry}}"
                                               Stroke="{Binding OverallOEE, Converter={StaticResource OeeToColor}}">
                                         </Path>
 
                                         <!-- Inner Circle Mask -->
-                                        <Ellipse Width="150" Height="150" Fill="{DynamicResource CardBackgroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        <Ellipse Width="155" Height="155" Fill="{DynamicResource CardBackgroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                                         <!-- Text Value -->
                                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
