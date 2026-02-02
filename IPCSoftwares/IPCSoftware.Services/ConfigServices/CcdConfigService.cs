@@ -29,7 +29,7 @@ namespace IPCSoftware.Services.ConfigServices
 
             // LOGIC: If we are in Development, prefer the Development JSON.
             // Otherwise (Production), use the standard appsettings.json.
-            if (env.IsDevelopment())
+            if (env.IsDevelopment()) 
             {
                 string devPath = Path.Combine(configDir, "appsettings.Development.json");
                 // Only use Dev file if it actually exists, otherwise fall back to standard
