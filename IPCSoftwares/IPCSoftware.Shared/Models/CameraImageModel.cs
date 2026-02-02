@@ -7,7 +7,7 @@ using System.Windows.Media;
 
 namespace IPCSoftware.Shared.Models
 {
-    public class CameraImageItem : BaseViewModel
+    public class CameraImageItem : ObservableObjectVM
     {
         private int _stationNumber;
         public int StationNumber

@@ -20,12 +20,17 @@ namespace IPCSoftware.Services.AppLoggerServices
 
         private readonly BackupService _backupService;
 
-        public LogManagerService(ILogConfigurationService logConfigService)
+        private readonly Dictionary<int, DateTime> _lastBackupRun = new();
+
+        public LogManagerService(
+            ILogConfigurationService logConfigService,
+            BackupService backupService
+            )
         {
             _logConfigService = logConfigService;
             _logConfigs = new List<LogConfigurationModel>();
             // _ = LoadDataAsync();
-            _backupService = new BackupService(); // new line
+            _backupService = backupService; // new line
             _logConfigService.ConfigurationChanged += async (s, e) => await ReloadConfigAsync();
         }
 
@@ -35,23 +40,100 @@ namespace IPCSoftware.Services.AppLoggerServices
             await ReloadConfigAsync();
         }
 
-        // Extract loading logic to a separate method
         private async Task ReloadConfigAsync()
         {
             var logs = await _logConfigService.GetAllAsync();
-
-
-            // Create a NEW list first (Thread safety best practice)
-            // If a log is writing RIGHT NOW, we don't want to Clear() the list while it's reading it.
-            var newConfigList = new List<LogConfigurationModel>();
-
-            foreach (var log in logs)
-            {
-                newConfigList.Add(log);
-            }
-
-            // Swap the reference
+            var newConfigList = new List<LogConfigurationModel>(logs);
             _logConfigs = newConfigList;
+        }
+
+
+        // Called periodically by Core Service Worker
+        public void CheckAndPerformBackups()
+        {
+            var now = DateTime.Now;
+
+            foreach (var config in _logConfigs.Where(c => c.Enabled && c.BackupSchedule != BackupScheduleType.Manual))
+            {
+                // 1. Check if backup was already done recently (within same minute)
+                if (_lastBackupRun.TryGetValue(config.Id, out var lastRun))
+                {
+                    if (now.Date == lastRun.Date && now.Hour == lastRun.Hour && now.Minute == lastRun.Minute)
+                        continue; // Already ran this minute
+                }
+
+                // 2. Check if Schedule Matches
+                bool isDue = false;
+
+                // Time check (Hour & Minute match)
+                if (now.Hour == config.BackupTime.Hours && now.Minute == config.BackupTime.Minutes)
+                {
+                    switch (config.BackupSchedule)
+                    {
+                        case BackupScheduleType.Daily:
+                            isDue = true;
+                            break;
+
+                        case BackupScheduleType.Weekly:
+                            if (now.DayOfWeek.ToString() == config.BackupDayOfWeek)
+                                isDue = true;
+                            break;
+
+                        case BackupScheduleType.Monthly:
+                            if (now.Day == config.BackupDay)
+                                isDue = true;
+                            break;
+                    }
+                }
+
+                // 3. Perform Backup
+                if (isDue)
+                {
+                    PerformBackupForConfig(config);
+                    _lastBackupRun[config.Id] = now;
+                }
+            }
+        }
+
+        // --- MANUAL BACKUP LOGIC ---
+        // Called by UI ViewModel
+        public void PerformManualBackup(int logConfigId)
+        {
+            var config = _logConfigs.FirstOrDefault(c => c.Id == logConfigId);
+            if (config != null)
+            {
+                PerformBackupForConfig(config);
+            }
+        }
+
+        public void PerformManualRestore(int logConfigId)
+        {
+            var config = _logConfigs.FirstOrDefault(c => c.Id == logConfigId);
+            if (config != null)
+            {
+                PerformRestoreForConfig(config);
+            }
+        }
+
+
+        private void PerformBackupForConfig(LogConfigurationModel config)
+        {
+            // Resolve current active file
+            //string currentFile = ResolveLogFile(config.LogType);
+          /*  if (!string.IsNullOrEmpty(currentFile) && File.Exists(currentFile))
+            {
+            }*/
+                _backupService.PerformBackup(config);
+        }
+
+        private void PerformRestoreForConfig(LogConfigurationModel config)
+        {
+            // Resolve current active file
+            //string currentFile = ResolveLogFile(config.LogType);
+          /*  if (!string.IsNullOrEmpty(currentFile) && File.Exists(currentFile))
+            {
+            }*/
+                _backupService.PerformRestore(config);
         }
 
         private string[] SplitCsv(string line)
@@ -114,65 +196,38 @@ namespace IPCSoftware.Services.AppLoggerServices
             return fullPath;
         }
 
-        // Called by AppLogger to perform maintenance checks
         public void ApplyMaintenance(LogConfigurationModel config, string filePath)
         {
-            if (config == null)
-                return;
+            // ... (Existing logic for size check & purge) ...
+            if (config == null) return;
 
             // 1) File size retention (Audit + Error)
-            if (config.LogType != LogType.Production &&
-                config.LogRetentionFileSize > 0)
+            if (config.LogType != LogType.Production && config.LogRetentionFileSize > 0)
             {
                 long currentSizeMB = new FileInfo(filePath).Length / (1024 * 1024);
-
                 if (currentSizeMB >= config.LogRetentionFileSize)
                 {
-                    string newName = Path.Combine(
-                        config.DataFolder,
-                        config.FileName.Replace("{yyyyMMdd}",
-                        DateTime.Now.ToString("yyyyMMdd")) + "_" +
-                        Guid.NewGuid().ToString("N") + ".csv");
-
+                    string newName = Path.Combine(config.DataFolder,
+                        config.FileName.Replace("{yyyyMMdd}", DateTime.Now.ToString("yyyyMMdd")) + "_" + Guid.NewGuid().ToString("N") + ".csv");
                     File.Move(filePath, newName);
-
-                    // Create fresh file
                     File.WriteAllText(filePath, "Timestamp,Level,Message,Source\n");
                 }
             }
 
-            // 2) Time-based retention (Production only)
-            if (config.LogType == LogType.Production &&
-                config.LogRetentionTime > 0)
+            // 2) Time-based & Auto Purge
+            if (config.AutoPurge || (config.LogType == LogType.Production && config.LogRetentionTime > 0))
             {
                 foreach (var file in Directory.GetFiles(config.DataFolder))
                 {
-                    DateTime lastWrite = File.GetLastWriteTime(file);
-                    if ((DateTime.Now - lastWrite).TotalDays > config.LogRetentionTime)
+                    if ((DateTime.Now - File.GetLastWriteTime(file)).TotalDays > config.LogRetentionTime)
                     {
                         File.Delete(file);
                     }
                 }
             }
-
-            // 3) Auto Purge after retention
-            if (config.AutoPurge)
-            {
-                foreach (var file in Directory.GetFiles(config.DataFolder))
-                {
-                    DateTime lastWrite = File.GetLastWriteTime(file);
-                    if ((DateTime.Now - lastWrite).TotalDays > config.LogRetentionTime)
-                    {
-                        File.Delete(file);
-                    }
-                }
-            }
-
-            //do backuP
-            _backupService.PerformBackup(config, filePath);
         }
-
-
+            
+   
         public LogConfigurationModel GetConfig(LogType type)
         {
             return _logConfigs.FirstOrDefault(x => x.LogType == type && x.Enabled);

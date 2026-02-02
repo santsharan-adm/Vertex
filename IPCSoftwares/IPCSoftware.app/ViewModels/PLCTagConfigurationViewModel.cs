@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -17,6 +18,7 @@ namespace IPCSoftware.App.ViewModels
     public class PLCTagConfigurationViewModel : BaseViewModel
     {
         private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _deviceConfigService;
         private PLCTagConfigurationModel _currentTag;
         private bool _isEditMode;
         private string _title;
@@ -50,6 +52,8 @@ namespace IPCSoftware.App.ViewModels
         }
 
         private int _plcNo;
+
+
         public int PLCNo
         {
             get => _plcNo;
@@ -62,6 +66,14 @@ namespace IPCSoftware.App.ViewModels
             get => _modbusAddress;
             set => SetProperty(ref _modbusAddress, value);
         }
+
+        private string _dmAddress;
+        public string DMAddress
+        {
+            get => _dmAddress;
+            set => SetProperty(ref _dmAddress, value);
+        }
+
 
         private int _length;
         public int Length
@@ -87,6 +99,16 @@ namespace IPCSoftware.App.ViewModels
             //set => SetProperty(ref _selectedAlgorithm, value);
         }
 
+
+        private string _selectedIOType;
+        public string SelectedIOType
+        {
+            get => _selectedIOType;
+            set => SetProperty(ref _selectedIOType, value);
+            
+        }
+
+        public ObservableCollection<string> IOTypes { get; }
         private int _dataType;
         public int DataType
         {
@@ -101,15 +123,15 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _bitNo, value);
         }
 
-        private int _offset;
-        public int Offset
+        private double _offset;
+        public double Offset
         {
             get => _offset;
             set => SetProperty(ref _offset, value);
         }
 
-        private int _span;
-        public int Span
+        private double _span=0.0f;
+        public double Span
         {
             get => _span;
             set => SetProperty(ref _span, value);
@@ -155,6 +177,8 @@ namespace IPCSoftware.App.ViewModels
 
         // UPDATED: Collection of AlgorithmType objects
         public ObservableCollection<AlgorithmType> AlgorithmTypes { get; }
+        public ObservableCollection<DataTypeOption> DataTypes { get; }
+        public ObservableCollection<DeviceInterfaceModel> AvailablePLCs { get; }
 
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
@@ -162,17 +186,47 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public PLCTagConfigurationViewModel(IPLCTagConfigurationService tagService, IDialogService dialog)
+        public PLCTagConfigurationViewModel(
+            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService deviceConfigService,
+            IDialogService dialog,
+            IAppLogger logger) : base(logger)
         {
             _tagService = tagService;
+            _deviceConfigService = deviceConfigService;
             _dialog = dialog;
+
+
+            IOTypes = new ObservableCollection<string>
+            {
+                "Input",
+                "Output",
+                "None"
+            };
+
+            DataTypes = new ObservableCollection<DataTypeOption>
+            {
+                new DataTypeOption { Id = 1, Name = "Int16" },
+                new DataTypeOption { Id = 2, Name = "Word" },
+                new DataTypeOption { Id = 3, Name = "Bit" },
+                new DataTypeOption { Id = 4, Name = "Float" },
+                new DataTypeOption { Id = 5, Name = "String" },
+                new DataTypeOption { Id = 6, Name = "UInt16" },
+                new DataTypeOption { Id = 7, Name = "UInt32" }
+            };
+
             // Initialize algorithm types with Value and DisplayName
             AlgorithmTypes = new ObservableCollection<AlgorithmType>
             {
+                new AlgorithmType(0, "None"),
                 new AlgorithmType(1, "Linear scale"),
                 new AlgorithmType(2, "FP"),
                 new AlgorithmType(3, "String")
             };
+            AvailablePLCs = new ObservableCollection<DeviceInterfaceModel>();
+
+            // Fire and forget load (or call from a parent OnNavigatedTo)
+            Task.Run(LoadPlcDevicesAsync);
 
             SaveCommand = new RelayCommand(async () => await OnSaveAsync(), CanSave);
             CancelCommand = new RelayCommand(OnCancel);
@@ -188,6 +242,28 @@ namespace IPCSoftware.App.ViewModels
             LoadFromModel(_currentTag);
         }
 
+        private async Task LoadPlcDevicesAsync()
+        {
+            try
+            {
+                var plcs = await _deviceConfigService.GetPlcDevicesAsync();
+
+                // Marshal to UI Thread to update Collection
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    AvailablePLCs.Clear();
+                    foreach (var plc in plcs)
+                    {
+                        AvailablePLCs.Add(plc);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to load PLCs: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+
         public void LoadForEdit(PLCTagConfigurationModel tag)
         {
             Title = "PLC Tag Configuration - Edit";
@@ -198,45 +274,65 @@ namespace IPCSoftware.App.ViewModels
 
         private void LoadFromModel(PLCTagConfigurationModel tag)
         {
-            TagNo = tag.TagNo;
-            Name = tag.Name;
-            PLCNo = tag.PLCNo;
-            ModbusAddress = tag.ModbusAddress;
-            Length = tag.Length;
+            try
+            {
+                TagNo = tag.TagNo;
+                Name = tag.Name;
+                PLCNo = tag.PLCNo;
+                ModbusAddress = tag.ModbusAddress;
+              //  DMAddress = tag.DMAddress; // Bind DMAddress
+                Length = tag.Length;
 
-            // Map int AlgNo to AlgorithmType object
-            SelectedAlgorithm = AlgorithmTypes.FirstOrDefault(a => a.Value == tag.AlgNo)
-                                ?? AlgorithmTypes[0]; // Default to first (Linear scale)
+                // Map int AlgNo to AlgorithmType object
+                SelectedAlgorithm = AlgorithmTypes.FirstOrDefault(a => a.Value == tag.AlgNo)
+                                    ?? AlgorithmTypes[0]; // Default to first (Linear scale)
 
-            DataType = tag.DataType;
-            BitNo = tag.BitNo;
+                DataType = tag.DataType;
+                BitNo = tag.BitNo;
 
-            Offset = tag.Offset;
-            Span = tag.Span;
-            Description = tag.Description;
-            Remark = tag.Remark;
-            CanWrite = tag.CanWrite;
-            UpdateAlgorithmState();
+                Offset = tag.Offset;
+                Span = tag.Span;
+                Description = tag.Description;
+                Remark = tag.Remark;
+                CanWrite = tag.CanWrite;
+                // Bind IOType
+                SelectedIOType = tag.IOType;
+                UpdateAlgorithmState();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void SaveToModel()
         {
-            _currentTag.TagNo = TagNo;
-            _currentTag.Name = Name;
-            _currentTag.PLCNo = PLCNo;
-            _currentTag.ModbusAddress = ModbusAddress;
-            _currentTag.Length = Length;
+            try
+            {
+                _currentTag.TagNo = TagNo;
+                _currentTag.Name = Name;
+                _currentTag.PLCNo = PLCNo;
+                _currentTag.ModbusAddress = ModbusAddress;
+               // _currentTag.DMAddress = DMAddress;
+                _currentTag.Length = Length;
 
-            // Save the numeric value (1, 2, or 3)
-            _currentTag.AlgNo = SelectedAlgorithm?.Value ?? 1;
-            _currentTag.DataType = DataType;
-            _currentTag.BitNo = BitNo;
+                // Save the numeric value (1, 2, or 3)
+                _currentTag.AlgNo = SelectedAlgorithm?.Value ?? 1;
+                _currentTag.DataType = DataType;
+                _currentTag.BitNo = BitNo;
 
-            _currentTag.Offset = Offset;
-            _currentTag.Span = Span;
-            _currentTag.Description = Description;
-            _currentTag.Remark = Remark;
-            _currentTag.CanWrite = CanWrite;
+                _currentTag.Offset = Offset;
+                _currentTag.Span = Span;
+                _currentTag.Description = Description;
+                _currentTag.Remark = Remark;
+                _currentTag.CanWrite = CanWrite;
+
+                _currentTag.IOType = SelectedIOType;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private bool CanSave()
@@ -251,16 +347,17 @@ namespace IPCSoftware.App.ViewModels
             SaveToModel();
             try
             {
-                if (IsEditMode)
-            {
-                await _tagService.UpdateTagAsync(_currentTag);
-            }
-            else
-            {
-                await _tagService.AddTagAsync(_currentTag);
-            }
 
-            SaveCompleted?.Invoke(this, EventArgs.Empty);
+                if (IsEditMode)
+                {
+                    await _tagService.UpdateTagAsync(_currentTag);
+                }
+                else
+                {
+                    await _tagService.AddTagAsync(_currentTag);
+                }
+
+                SaveCompleted?.Invoke(this, EventArgs.Empty);
             }
             catch (InvalidOperationException ex)
             {
@@ -270,8 +367,7 @@ namespace IPCSoftware.App.ViewModels
             }
             catch (Exception ex)
             {
-                // Handle generic errors
-                // ErrorMessage = "An unexpected error occurred: " + ex.Message;
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
@@ -302,6 +398,14 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
+   
+
 
     }
+    public class DataTypeOption
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+    //
 }

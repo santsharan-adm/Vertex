@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
@@ -45,7 +46,10 @@ namespace IPCSoftware.App.ViewModels
         public ICommand DeleteInterfaceCommand { get; }
         public ICommand BackCommand { get; }
 
-        public DeviceDetailViewModel(IDeviceConfigurationService deviceService, INavigationService nav)
+        public DeviceDetailViewModel(
+            IDeviceConfigurationService deviceService, 
+            INavigationService nav,
+            IAppLogger logger) : base(logger)
         {
             _deviceService = deviceService;
             _nav = nav;
@@ -66,41 +70,69 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task LoadInterfacesAsync()
         {
-            if (CurrentDevice == null) return;
-
-            var interfaces = await _deviceService.GetInterfacesByDeviceNoAsync(CurrentDevice.DeviceNo);
-            Interfaces.Clear();
-            foreach (var iface in interfaces)
+            try
             {
-                Interfaces.Add(iface);
+                if (CurrentDevice == null) return;
+
+                var interfaces = await _deviceService.GetInterfacesByDeviceNoAsync(CurrentDevice.DeviceNo);
+                Interfaces.Clear();
+                foreach (var iface in interfaces)
+                {
+                    Interfaces.Add(iface);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
         private void OnAddInterface()
         {
-            _nav.NavigateToInterfaceConfiguration(CurrentDevice, null, async () =>
+            try
             {
-                await LoadInterfacesAsync();
-            });
+                _nav.NavigateToInterfaceConfiguration(CurrentDevice, null, async () =>
+                {
+                    await LoadInterfacesAsync();
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void OnEditInterface(DeviceInterfaceModel deviceInterface)
         {
-            if (deviceInterface == null) return;
-
-            _nav.NavigateToInterfaceConfiguration(CurrentDevice, deviceInterface, async () =>
+            try
             {
-                await LoadInterfacesAsync();
-            });
+                if (deviceInterface == null) return;
+
+                _nav.NavigateToInterfaceConfiguration(CurrentDevice, deviceInterface, async () =>
+                {
+                    await LoadInterfacesAsync();
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private async void OnDeleteInterface(DeviceInterfaceModel deviceInterface)
         {
-            if (deviceInterface == null) return;
+            try
+            {
+                if (deviceInterface == null) return;
 
-            // TODO: Add confirmation dialog
-            await _deviceService.DeleteInterfaceAsync(deviceInterface.Id);
-            await LoadInterfacesAsync();
+                // TODO: Add confirmation dialog
+                await _deviceService.DeleteInterfaceAsync(deviceInterface.Id);
+                await LoadInterfacesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void OnBack()

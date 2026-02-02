@@ -19,10 +19,10 @@ namespace IPCSoftware.App.NavServices
             return ShowWindow(vm);
         }
 
-        public void ShowMessage(string message)
+        public void ShowMessage(string message, string DialogBoxName = "Information")
         {
             // FALSE = Info (Blue button, Hide Cancel)
-            var vm = new CustomMessageBoxViewModel(message, "Information", "OK", "", false);
+            var vm = new CustomMessageBoxViewModel(message, DialogBoxName, "OK", "", false);
             ShowWindow(vm);
         }
 

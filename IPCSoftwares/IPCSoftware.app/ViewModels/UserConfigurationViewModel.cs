@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -84,12 +85,15 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public UserConfigurationViewModel(IUserManagementService userService, IDialogService dialog)
+        public UserConfigurationViewModel(
+            IUserManagementService userService, 
+            IDialogService dialog,
+        IAppLogger logger) : base(logger)
         {
             _userService = userService;
             _dialog = dialog;
 
-            Roles = new ObservableCollection<string> { "Admin", "User", "Operator", "Viewer" };
+            Roles = new ObservableCollection<string> { "Admin", "Supervisor", "Operator"};
 
             SaveCommand = new RelayCommand(async () => await OnSaveAsync(), CanSave);
             CancelCommand = new RelayCommand(OnCancel);
@@ -115,30 +119,72 @@ namespace IPCSoftware.App.ViewModels
 
         private void LoadFromModel(UserConfigurationModel user)
         {
-            FirstName = user.FirstName;
-            LastName = user.LastName;
-            UserName = user.UserName;
-            Password = user.Password;
-            SelectedRole = user.Role ?? "User";
-            IsActive = user.IsActive;
+            try
+            {
+                FirstName = user.FirstName;
+                LastName = user.LastName;
+                UserName = user.UserName;
+                 Password = "";
+               // Password = user.Password;
+                SelectedRole = user.Role ?? "User";
+                IsActive = user.IsActive;
+
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void SaveToModel()
         {
-            _currentUser.FirstName = FirstName;
-            _currentUser.LastName = LastName;
-            _currentUser.UserName = UserName;
-            _currentUser.Password = Password;
-            _currentUser.Role = SelectedRole;
-            _currentUser.IsActive = IsActive;
+            try
+            {
+                _currentUser.FirstName = FirstName;
+                _currentUser.LastName = LastName;
+                _currentUser.UserName = UserName;
+                _currentUser.Password = Password;
+                _currentUser.Role = SelectedRole;
+                _currentUser.IsActive = IsActive;
+                if (!string.IsNullOrEmpty(Password))
+                {
+                    _currentUser.PlainTextPassword = Password;
+                }
+                else
+                {
+                    _currentUser.PlainTextPassword = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
-        private bool CanSave()
+     /*   private bool CanSave()
         {
             return !string.IsNullOrWhiteSpace(FirstName) &&
                    !string.IsNullOrWhiteSpace(LastName) &&
                    !string.IsNullOrWhiteSpace(UserName) &&
                    !string.IsNullOrWhiteSpace(Password);
+        }
+*/
+        private bool CanSave()
+        {
+            if (IsEditMode)
+            {
+                // On Edit, Password can be empty (meaning keep existing)
+                return !string.IsNullOrWhiteSpace(FirstName) &&
+                       !string.IsNullOrWhiteSpace(UserName);
+            }
+            else
+            {
+                // On New, Password is required
+                return !string.IsNullOrWhiteSpace(FirstName) &&
+                       !string.IsNullOrWhiteSpace(UserName) &&
+                       !string.IsNullOrWhiteSpace(Password);
+            }
         }
 
         private string _errorMessage;
@@ -173,12 +219,14 @@ namespace IPCSoftware.App.ViewModels
             {
                 // Capture the "Username taken" message and show it in the UI
 
+                _logger.LogError(ex.Message, LogType.Diagnostics);
                 _dialog.ShowWarning(ex.Message);    
                 
                 ErrorMessage = ex.Message;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
                 // Handle generic errors
                // ErrorMessage = "An unexpected error occurred: " + ex.Message;
             }

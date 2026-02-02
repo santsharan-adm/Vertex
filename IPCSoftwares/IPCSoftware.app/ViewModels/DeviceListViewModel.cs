@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -37,7 +38,9 @@ namespace IPCSoftware.App.ViewModels
         public ICommand ConfigDeviceCommand { get; }  // Opens device detail with interfaces
         public ICommand RowDoubleClickCommand { get; }
 
-        public DeviceListViewModel(IDeviceConfigurationService deviceService, INavigationService nav)
+        public DeviceListViewModel(
+            IDeviceConfigurationService deviceService, 
+            INavigationService nav, IAppLogger logger) : base(logger)
         {
             _deviceService = deviceService;
             _nav = nav;
@@ -54,59 +57,94 @@ namespace IPCSoftware.App.ViewModels
 
         public async Task LoadDataAsync()
         {
-            var devices = await _deviceService.GetAllDevicesAsync();
-            Devices.Clear();
-            foreach (var device in devices)
+            try
             {
-                Devices.Add(device);
+                var devices = await _deviceService.GetAllDevicesAsync();
+                Devices.Clear();
+                foreach (var device in devices)
+                {
+                    Devices.Add(device);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
         private void OnAddDevice()
         {
-            _nav.NavigateToDeviceConfiguration(null, async () =>
+             try
             {
-                await LoadDataAsync();
-            });
+                _nav.NavigateToDeviceConfiguration(null, async () =>
+                {
+                    await LoadDataAsync();
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void OnEditDevice(DeviceModel device)
         {
-            if (device == null) return;
-
-            _nav.NavigateToDeviceConfiguration(device, async () =>
+            try
             {
-                await LoadDataAsync();
-            });
+                if (device == null) return;
+
+                _nav.NavigateToDeviceConfiguration(device, async () =>
+                {
+                    await LoadDataAsync();
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private async void OnDeleteDevice(DeviceModel device)
         {
-            if (device == null) return;
+            try
+            {
+                if (device == null) return;
 
-            // TODO: Add confirmation dialog
-            await _deviceService.DeleteDeviceAsync(device.Id);
-            await LoadDataAsync();
+                // TODO: Add confirmation dialog
+                await _deviceService.DeleteDeviceAsync(device.Id);
+                await LoadDataAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         // Opens device detail view showing interfaces
         private void OnConfigDevice(DeviceModel device)
         {
-            if (device == null) return;
+            try
+            {
+                if (device == null) return;
 
-            // Route based on device type
-            if (device.DeviceType == "PLC")
-            {
-                _nav.NavigateToDeviceDetail(device);  // Opens DeviceDetailView (PLC interfaces)
+                // Route based on device type
+                if (device.DeviceType == "PLC")
+                {
+                    _nav.NavigateToDeviceDetail(device);  // Opens DeviceDetailView (PLC interfaces)
+                }
+                else if (device.DeviceType == "CCD")
+                {
+                    _nav.NavigateToCameraDetail(device);  // Opens CameraDetailView (Camera interfaces)
+                }
+                else if (device.DeviceType == "Robot")
+                {
+                    // TODO: Navigate to RobotDetailView when implemented
+                    _nav.NavigateToDeviceDetail(device);  // Fallback to PLC view for now
+                }
             }
-            else if (device.DeviceType == "CCD")
+            catch (Exception ex)
             {
-                _nav.NavigateToCameraDetail(device);  // Opens CameraDetailView (Camera interfaces)
-            }
-            else if (device.DeviceType == "Robot")
-            {
-                // TODO: Navigate to RobotDetailView when implemented
-                _nav.NavigateToDeviceDetail(device);  // Fallback to PLC view for now
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
     }

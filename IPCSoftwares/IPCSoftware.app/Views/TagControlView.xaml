@@ -6,6 +6,7 @@
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:TagControlViewModel}"
+             helpers:DisposeBehavior.AutoDispose="True"
                     Unloaded="UserControl_Unloaded"
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920"
@@ -53,7 +54,7 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <TextBlock Text="Manual Tag Control" 
+        <TextBlock Text="Diagnostic" 
                    FontSize="48" FontWeight="Bold" Foreground="#333"
                    Margin="0,0,0,20"/>
 

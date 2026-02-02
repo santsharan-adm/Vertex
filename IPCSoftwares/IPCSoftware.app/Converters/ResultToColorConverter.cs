@@ -30,4 +30,27 @@ namespace IPCSoftware.App.Converters
         }
     }
 
+
+    public class MsToSecondsConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return 0.0;
+
+            // Attempt to convert input to double (handles int, double, string)
+            if (double.TryParse(value.ToString(), out double milliseconds))
+            {
+                // Divide by 1000 to get seconds
+                return milliseconds / 100.0;
+            }
+
+            return 0.0;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }

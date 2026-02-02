@@ -6,7 +6,9 @@
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:PLCIOViewModel}"
-              Unloaded="UserControl_Unloaded"
+               
+     helpers:DisposeBehavior.AutoDispose="True"
+            
              xmlns:converters="clr-namespace:IPCSoftware.App.Converters"
  mc:Ignorable="d"
              d:DesignHeight="1080" d:DesignWidth="1920"
@@ -209,11 +211,13 @@
 								<DataGridTextColumn Header="SrNo" Binding="{Binding Id}" Width="150" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
 
 								<!-- Name -->
-								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
-								<DataGridTextColumn Header="Status" Binding="{Binding Value}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+							
+                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+                                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+                                <!--<DataGridTextColumn Header="Status" Binding="{Binding Value}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>-->
 
 								<!-- Status (Light Indicator) -->
-								<!--<DataGridTemplateColumn Header="Status" Width="200">
+								<DataGridTemplateColumn Header="Status" Width="200">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<Border Width="50" Height="50" CornerRadius="25"
@@ -226,7 +230,7 @@
 											</Border>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>-->
+								</DataGridTemplateColumn>
 						
                             </DataGrid.Columns>
 						</DataGrid>
@@ -273,8 +277,9 @@
 
 								<!-- Name -->
 								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
-
-								<!-- Status (Light Indicator) -->
+                                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
+                                <!--<DataGridTextColumn Header="Status" Binding="{Binding Value}" Width="*" CellStyle="{StaticResource LeftAlignedCellStyle}"/>-->
+                                <!-- Status (Light Indicator) -->
 								<DataGridTemplateColumn Header="Status" Width="200">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
@@ -290,7 +295,7 @@
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
 
-								<!-- Toggle Action Button (Mobile Switch Style) -->
+								<!-- Toggle Action Button (Mobile Switch Style) --><!--
 								<DataGridTemplateColumn Header="Action" Width="250">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
@@ -300,7 +305,9 @@
                                                           CommandParameter="{Binding}"/>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>
+								</DataGridTemplateColumn>-->
+                                
+                                
 							</DataGrid.Columns>
 						</DataGrid>
 					</Border>

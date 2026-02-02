@@ -11,12 +11,15 @@ using System.Windows.Input;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using IPCSoftware.Core.Interfaces;
 using System.IO;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 
 namespace IPCSoftware.App.ViewModels
 {
     public class LogConfigurationViewModel : BaseViewModel
     {
         private readonly ILogConfigurationService _logService;
+        private readonly ILogManagerService _logManager;
+        private readonly IDialogService _dialog;
         private LogConfigurationModel _currentLog;
         private bool _isEditMode;
         private string _title;
@@ -41,7 +44,20 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _logName, value);
         }
 
+
         private string _selectedLogType;
+    /*    public string SelectedLogType
+        {
+            get => _selectedLogType;
+            set
+            {
+                if (SetProperty(ref _selectedLogType, value))
+                {
+                    UpdateFileName();
+                }
+            }
+        }
+*/
         public string SelectedLogType
         {
             get => _selectedLogType;
@@ -50,6 +66,9 @@ namespace IPCSoftware.App.ViewModels
                 if (SetProperty(ref _selectedLogType, value))
                 {
                     UpdateFileName();
+
+                    // 2. Determine if we are in Production Mode
+                    IsProductionLog = (value == "Production");
                 }
             }
         }
@@ -66,6 +85,27 @@ namespace IPCSoftware.App.ViewModels
         {
             get => _backupFolder;
             set => SetProperty(ref _backupFolder, value);
+        }
+
+        private string _productionImagePath;
+        public string ProductionImagePath
+        {
+            get => _productionImagePath;
+            set => SetProperty(ref _productionImagePath, value);
+        }
+
+        private string _productionImageBackupPath;
+        public string ProductionImageBackupPath
+        {
+            get => _productionImageBackupPath;
+            set => SetProperty(ref _productionImageBackupPath, value);
+        }
+
+        private bool _isProductionLog;
+        public bool IsProductionLog
+        {
+            get => _isProductionLog;
+            set => SetProperty(ref _isProductionLog, value);
         }
 
         private string _fileName;
@@ -161,17 +201,26 @@ namespace IPCSoftware.App.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
         public ICommand BackUpCommand { get; }
+        public ICommand RestoreCommand { get; }
         public ICommand BrowseDataFolderCommand { get; }
         public ICommand BrowseBackupFolderCommand { get; }
+
+        public ICommand BrowseProdImageCommand { get; }
+        public ICommand BrowseProdBackupCommand { get; }
 
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public LogConfigurationViewModel(ILogConfigurationService logService)
+        public LogConfigurationViewModel(ILogConfigurationService logService,
+            IDialogService dialog,
+            ILogManagerService logManager,
+             IAppLogger logger) : base(logger)
         {
+            _dialog = dialog;
+            _logManager = logManager;
             _logService = logService;
 
-            LogTypes = new ObservableCollection<string> { "Production", "Audit", "Error" };
+            LogTypes = new ObservableCollection<string> { "Production", "Audit", "Error", "Diagnostics" };
             BackupSchedules = new ObservableCollection<string> { "Manual", "Daily", "Weekly", "Monthly" };
 
             // Days 1-28 for monthly backup
@@ -188,6 +237,9 @@ namespace IPCSoftware.App.ViewModels
             BrowseDataFolderCommand = new RelayCommand(() => OnBrowseDataFolder());
             BrowseBackupFolderCommand = new RelayCommand(() => OnBrowseBackupFolder());
             BackUpCommand = new RelayCommand(() => OnBackUp());
+            RestoreCommand = new RelayCommand(() => OnRestore());
+            BrowseProdImageCommand = new RelayCommand(() => ProductionImagePath = BrowseFolder("Select Production Image Folder"));
+            BrowseProdBackupCommand = new RelayCommand(() => ProductionImageBackupPath = BrowseFolder("Select Production Backup Folder"));
 
             InitializeNewLog();
         }
@@ -201,6 +253,8 @@ namespace IPCSoftware.App.ViewModels
             LoadFromModel(_currentLog);
         }
 
+     
+
         public void LoadForEdit(LogConfigurationModel log)
         {
             Title = "System Log Configuration - Edit";
@@ -211,63 +265,81 @@ namespace IPCSoftware.App.ViewModels
 
         private void LoadFromModel(LogConfigurationModel log)
         {
-            LogName = log.LogName;
-            SelectedLogType = log.LogType.ToString() ?? "Production";
-            DataFolder = log.DataFolder;
-            BackupFolder = log.BackupFolder;
-            FileName = log.FileName;
-            LogRetentionDays = log.LogRetentionTime;
-            FileSize = log.LogRetentionFileSize;
-            AutoPurge = log.AutoPurge;
-            SelectedBackupSchedule = log.BackupSchedule.ToString() ?? "Manual";
-            BackupTime = log.BackupTime;
-            SelectedBackupDay = log.BackupDay > 0 ? log.BackupDay : 1;
-            SelectedBackupDayOfWeek = log.BackupDayOfWeek ?? "Monday";
-            Description = log.Description;
-            Remark = log.Remark;
-            Enabled = log.Enabled;
+            try
+            {
+                LogName = log.LogName;
+                SelectedLogType = log.LogType.ToString() ?? "Production";
+                DataFolder = log.DataFolder;
+                BackupFolder = log.BackupFolder;
+                FileName = log.FileName;
+                LogRetentionDays = log.LogRetentionTime;
+                FileSize = log.LogRetentionFileSize;
+                AutoPurge = log.AutoPurge;
+                SelectedBackupSchedule = log.BackupSchedule.ToString() ?? "Manual";
+                BackupTime = log.BackupTime;
+                SelectedBackupDay = log.BackupDay > 0 ? log.BackupDay : 1;
+                SelectedBackupDayOfWeek = log.BackupDayOfWeek ?? "Monday";
+                Description = log.Description;
+                Remark = log.Remark;
+                Enabled = log.Enabled;
+                ProductionImagePath = log.ProductionImagePath;
+                ProductionImageBackupPath = log.ProductionImageBackupPath;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private void SaveToModel()
         {
-            _currentLog.LogName = LogName;
-            _currentLog.LogType = Enum.Parse<LogType>(SelectedLogType);
-            _currentLog.DataFolder = DataFolder;
-            _currentLog.BackupFolder = BackupFolder;
-            _currentLog.FileName = FileName;
-            _currentLog.LogRetentionTime = LogRetentionDays;
-            _currentLog.LogRetentionFileSize = FileSize;
-            _currentLog.AutoPurge = AutoPurge;
-            _currentLog.BackupSchedule = Enum.Parse<BackupScheduleType>( SelectedBackupSchedule);
-            _currentLog.BackupTime = BackupTime;
-
-            // Reset backup-related values based on schedule type
-            switch (SelectedBackupSchedule)
+            try
             {
-                case "Manual":
-                    _currentLog.BackupDay = 0;
-                    _currentLog.BackupDayOfWeek = null;
-                    break;
+                _currentLog.LogName = LogName;
+                _currentLog.LogType = Enum.Parse<LogType>(SelectedLogType);
+                _currentLog.DataFolder = DataFolder;
+                _currentLog.BackupFolder = BackupFolder;
+                _currentLog.FileName = FileName;
+                _currentLog.LogRetentionTime = LogRetentionDays;
+                _currentLog.LogRetentionFileSize = FileSize;
+                _currentLog.AutoPurge = AutoPurge;
+                _currentLog.BackupSchedule = Enum.Parse<BackupScheduleType>( SelectedBackupSchedule);
+                _currentLog.BackupTime = BackupTime;
 
-                case "Daily":
-                    _currentLog.BackupDay = 0;
-                    _currentLog.BackupDayOfWeek = null;
-                    break;
+                // Reset backup-related values based on schedule type
+                switch (SelectedBackupSchedule)
+                {
+                    case "Manual":
+                        _currentLog.BackupDay = 0;
+                        _currentLog.BackupDayOfWeek = null;
+                        break;
 
-                case "Weekly":
-                    _currentLog.BackupDay = 0;
-                    _currentLog.BackupDayOfWeek = SelectedBackupDayOfWeek;
-                    break;
+                    case "Daily":
+                        _currentLog.BackupDay = 0;
+                        _currentLog.BackupDayOfWeek = null;
+                        break;
 
-                case "Monthly":
-                    _currentLog.BackupDay = SelectedBackupDay;
-                    _currentLog.BackupDayOfWeek = null;
-                    break;
+                    case "Weekly":
+                        _currentLog.BackupDay = 0;
+                        _currentLog.BackupDayOfWeek = SelectedBackupDayOfWeek;
+                        break;
+
+                    case "Monthly":
+                        _currentLog.BackupDay = SelectedBackupDay;
+                        _currentLog.BackupDayOfWeek = null;
+                        break;
+                }
+
+                _currentLog.Description = Description;
+                _currentLog.Remark = Remark;
+                _currentLog.Enabled = Enabled;
+                _currentLog.ProductionImagePath = ProductionImagePath;
+                _currentLog.ProductionImageBackupPath = ProductionImageBackupPath;
             }
-
-            _currentLog.Description = Description;
-            _currentLog.Remark = Remark;
-            _currentLog.Enabled = Enabled;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
         private bool CanSave()
@@ -278,51 +350,90 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task OnSaveAsync()
         {
-            SaveToModel();
-
-            if (IsEditMode)
+            try
             {
-                await _logService.UpdateAsync(_currentLog);
-            }
-            else
-            {
-                await _logService.AddAsync(_currentLog);
-            }
+                SaveToModel();
+              
 
-            SaveCompleted?.Invoke(this, EventArgs.Empty);
+                if (IsEditMode)
+                {
+                    await _logService.UpdateAsync(_currentLog);
+                }
+                else
+                {
+                    await _logService.AddAsync(_currentLog);
+                }
+
+                SaveCompleted?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
+        }
+
+        private string BrowseFolder(string title)
+        {
+            try
+            {
+                var dialog = new CommonOpenFileDialog
+                {
+                    IsFolderPicker = true,
+                    Title = title,
+                    AllowNonFileSystemItems = false,
+                    Multiselect = false
+                };
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok) return dialog.FileName;
+            }
+            catch { }
+            return string.Empty;
         }
 
         private void OnBrowseDataFolder()
         {
-            var dialog = new CommonOpenFileDialog
+            try
             {
-                IsFolderPicker = true,
-                Title = "Select Data Folder",
-                AllowNonFileSystemItems = false,
-                Multiselect = false
-            };
+                var dialog = new CommonOpenFileDialog
+                {
+                    IsFolderPicker = true,
+                    Title = "Select Data Folder",
+                    AllowNonFileSystemItems = false,
+                    Multiselect = false
+                };
 
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    DataFolder = Path.Combine(dialog.FileName, "Logs", SelectedLogType);
+
+                }
+            }
+            catch (Exception ex)
             {
-                DataFolder = Path.Combine(dialog.FileName, "Logs", SelectedLogType);
-
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
 
         private void OnBrowseBackupFolder()
         {
-            var dialog = new CommonOpenFileDialog
+            try
             {
-                IsFolderPicker = true,
-                Title = "Select Backup Folder",
-                AllowNonFileSystemItems = false,
-                Multiselect = false
-            };
+                var dialog = new CommonOpenFileDialog
+                {
+                    IsFolderPicker = true,
+                    Title = "Select Backup Folder",
+                    AllowNonFileSystemItems = false,
+                    Multiselect = false
+                };
 
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    BackupFolder = Path.Combine(dialog.FileName, "LogsBackup", SelectedLogType);
+                }
+            }
+            catch (Exception ex)
             {
-                BackupFolder = Path.Combine(dialog.FileName, "LogsBackup", SelectedLogType);
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
@@ -336,32 +447,55 @@ namespace IPCSoftware.App.ViewModels
 
         private void OnBackUp()
         {
+            _logManager.PerformManualBackup(_currentLog.Id);
+
+            Task.Delay(1599);
+            _dialog.ShowMessage("Backup completed sucessfully.");
             // Execute manual backup logic
             // TODO: Implement backup logic
         }
 
+        private void OnRestore()
+        {
+            _logManager.PerformManualRestore(_currentLog.Id);
+
+            Task.Delay(1599);
+            _dialog.ShowMessage("Backup completed sucessfully.");
+            // Execute manual backup logic
+            // TODO: Implement backup logic
+        }
+
+
+
         private void OnBackupScheduleChanged()
         {
-            // Reset values when schedule changes
-            if (SelectedBackupSchedule == "Manual")
+            try
             {
-                SelectedBackupDay = 1;
-                SelectedBackupDayOfWeek = "Monday";
+                // Reset values when schedule changes
+                if (SelectedBackupSchedule == "Manual")
+                {
+                    SelectedBackupDay = 1;
+                    SelectedBackupDayOfWeek = "Monday";
+                }
+                else if (SelectedBackupSchedule == "Daily")
+                {
+                    SelectedBackupDay = 1;
+                    SelectedBackupDayOfWeek = "Monday";
+                }
+                else if (SelectedBackupSchedule == "Weekly")
+                {
+                    SelectedBackupDay = 1;
+                    // Keep SelectedBackupDayOfWeek
+                }
+                else if (SelectedBackupSchedule == "Monthly")
+                {
+                    // Keep SelectedBackupDay
+                    SelectedBackupDayOfWeek = "Monday";
+                }
             }
-            else if (SelectedBackupSchedule == "Daily")
+            catch (Exception ex)
             {
-                SelectedBackupDay = 1;
-                SelectedBackupDayOfWeek = "Monday";
-            }
-            else if (SelectedBackupSchedule == "Weekly")
-            {
-                SelectedBackupDay = 1;
-                // Keep SelectedBackupDayOfWeek
-            }
-            else if (SelectedBackupSchedule == "Monthly")
-            {
-                // Keep SelectedBackupDay
-                SelectedBackupDayOfWeek = "Monday";
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 

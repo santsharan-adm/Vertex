@@ -1,0 +1,112 @@
+﻿<UserControl x:Class="IPCSoftware.App.Views.StartupConditionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:StartupConditionViewModel}"
+             helpers:DisposeBehavior.AutoDispose="True"
+             Background="{DynamicResource CardBackgroundBrush}">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="80"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="STARTUP CONDITIONS" 
+                   FontSize="36" FontWeight="Bold" 
+                   Foreground="{DynamicResource PrimaryTextBrush}"
+                   HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Conditions}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="2" VerticalAlignment="Top"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="10" Height="80" CornerRadius="10" BorderThickness="2">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="BorderBrush" Value="#444"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMet}" Value="True">
+                                            <Setter Property="Background">
+                                                <Setter.Value>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                        <GradientStop Color="#0F9D58" Offset="0"/>
+                                                        <GradientStop Color="#0F9D58" Offset="1"/>
+                                                    </LinearGradientBrush>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Setter Property="BorderBrush" Value="#0F9D58"/>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding IsMet}" Value="False">
+                                            <Setter Property="Background" Value="#E0E0E0"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                            <TextBlock Text="{Binding Description}" 
+                                       FontSize="24" FontWeight="SemiBold"
+                                       TextWrapping="Wrap" TextAlignment="Center"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#555"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMet}" Value="True">
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect ShadowDepth="1" BlurRadius="2" Opacity="0.5"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Border Grid.Row="2" CornerRadius="10" Margin="10,10,10,0">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background" Value="#E0E0E0"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding AllConditionsMet}" Value="True">
+                            <Setter Property="Background" Value="#0F9D58"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+
+            <TextBlock FontSize="32" FontWeight="Bold" 
+                       HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Text" Value="WAITING FOR CONDITIONS..."/>
+                        <Setter Property="Foreground" Value="#666"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding AllConditionsMet}" Value="True">
+                                <Setter Property="Text" Value="START CONDITIONS MATCH"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Border>
+
+    </Grid>
+</UserControl>

@@ -50,35 +50,37 @@ namespace IPCSoftware.App.Converters
 
             var mode = (ManualOperationMode)value;
 
-            // UPDATED: All Caps, Removed "Pos" prefix
             return mode switch
             {
                 // Tray Lift
                 ManualOperationMode.TrayLiftUp => "▲ UP",
                 ManualOperationMode.TrayLiftDown => "▼ DOWN",
 
-                // Positioning Cylinder
+                // Cylinder
                 ManualOperationMode.PositioningCylinderUp => "▲ UP",
                 ManualOperationMode.PositioningCylinderDown => "▼ DOWN",
 
-                // Transport Conveyor
+                // Conveyor
                 ManualOperationMode.TransportConveyorReverse => "◀ REV",
                 ManualOperationMode.TransportConveyorForward => "▶ FWD",
                 ManualOperationMode.TransportConveyorStop => "■ STOP",
-                ManualOperationMode.TransportConveyorSpeedSwitching => "⚡ SPEED",
+                ManualOperationMode.TransportConveyorLowSpeed => " ⏪ LOW",
+                ManualOperationMode.TransportConveyorHighSpeed => "⏩ HIGH",
 
-                // X-Axis Jog
-                ManualOperationMode.ManualXAxisJogBackward => "◀ BACK",
-                ManualOperationMode.ManualXAxisJogForward => "▶ FWD",
-                ManualOperationMode.XAxisJogSpeedSwitching => "⚡ SPEED",
+                // X-Axis
+                ManualOperationMode.ManualXAxisJogBackward => "◀ JOG -",
+                ManualOperationMode.ManualXAxisJogForward => "▶ JOG +",
+             /*   ManualOperationMode.XAxisJogLowSpeed => "⏪ LOW",
+                ManualOperationMode.XAxisJogHighSpeed => "⏩ HIGH",*/
 
-                // Y-Axis Jog
-                ManualOperationMode.ManualYAxisJogForward => "▲ UP",
-                ManualOperationMode.ManualYAxisJogBackward => "▼ DOWN",
-                ManualOperationMode.YAxisJogSpeedSwitching => "⚡ SPEED",
+                // Y-Axis
+                ManualOperationMode.ManualYAxisJogBackward => "◀ JOG -",
+                ManualOperationMode.ManualYAxisJogForward => "▶ JOG +",
+         /*       ManualOperationMode.YAxisJogLowSpeed => "⏪ LOW",
+                ManualOperationMode.YAxisJogHighSpeed => "⏩ HIGH",*/
 
-                // Positions (Just numbers now)
-                ManualOperationMode.MoveToPos0 => "HOM POS",
+                // Positions
+                ManualOperationMode.MoveToPos0 => "HOME",
                 ManualOperationMode.MoveToPos1 => "1",
                 ManualOperationMode.MoveToPos2 => "2",
                 ManualOperationMode.MoveToPos3 => "3",
@@ -95,6 +97,7 @@ namespace IPCSoftware.App.Converters
                 _ => value.ToString().ToUpper()
             };
         }
+
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();

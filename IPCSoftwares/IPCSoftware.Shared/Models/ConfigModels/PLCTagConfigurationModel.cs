@@ -13,28 +13,32 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public string Name { get; set; }
         public int PLCNo { get; set; }
         public int ModbusAddress { get; set; }
+       // public string DMAddress { get; set; } // NEW: DM Address (e.g., DM100)
         public int Length { get; set; }
         public int AlgNo { get; set; }
-        public int DataType { get; set; }   // NEW
-        public int BitNo { get; set; }      // NEW
-
-        public int Offset { get; set; }
-        public int Span { get; set; }
+        public int DataType { get; set; }
+        public int BitNo { get; set; }
+        public bool UseEngMinMax { get; set; }
+        public double Offset { get; set; }
+        public double Span { get; set; }
         public string Description { get; set; }
         public string Remark { get; set; }
 
         public bool CanWrite { get; set; }
+        public string IOType { get; set; } // NEW: Input/Output
 
         public PLCTagConfigurationModel()
         {
             Length = 1;
-            AlgNo = 0;      // default Raw (per your rule)
-            DataType = 1;   // default Int16
-            BitNo = 0;      // safe default
+            AlgNo = 0;
+            DataType = 1;
+            BitNo = 0;
 
             Offset = 0;
-            Span = 100;
-            CanWrite = false; 
+            Span = 0;
+            CanWrite = false;
+            IOType = "None"; // Default
+           // DMAddress = string.Empty;
         }
 
         public PLCTagConfigurationModel Clone()
@@ -46,6 +50,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 Name = this.Name,
                 PLCNo = this.PLCNo,
                 ModbusAddress = this.ModbusAddress,
+              //  DMAddress = this.DMAddress, // Clone new field
                 Length = this.Length,
                 AlgNo = this.AlgNo,
 
@@ -56,9 +61,9 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 Span = this.Span,
                 Description = this.Description,
                 Remark = this.Remark,
-                CanWrite = this.CanWrite
+                CanWrite = this.CanWrite,
+                IOType = this.IOType // Clone new field
             };
         }
     }
-
 }

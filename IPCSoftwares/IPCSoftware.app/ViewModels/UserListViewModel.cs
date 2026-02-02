@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -55,7 +56,10 @@ namespace IPCSoftware.App.ViewModels
         public ICommand EditUserCommand { get; }
         public ICommand DeleteUserCommand { get; }
 
-        public UserListViewModel(IUserManagementService userService, INavigationService nav)
+        public UserListViewModel(
+            IUserManagementService userService, 
+            INavigationService nav,
+        IAppLogger logger) : base(logger)
         {
             _userService = userService;
             _nav = nav;
@@ -71,14 +75,21 @@ namespace IPCSoftware.App.ViewModels
 
         public async Task LoadDataAsync()
         {
-            var users = await _userService.GetAllUsersAsync();
-            Users.Clear();
-            FilteredUsers.Clear();
-
-            foreach (var user in users)
+            try
             {
-                Users.Add(user);
-                FilteredUsers.Add(user);
+                var users = await _userService.GetAllUsersAsync();
+                Users.Clear();
+                FilteredUsers.Clear();
+
+                foreach (var user in users)
+                {
+                    Users.Add(user);
+                    FilteredUsers.Add(user);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
@@ -129,11 +140,18 @@ namespace IPCSoftware.App.ViewModels
 
         private async void OnDeleteUser(UserConfigurationModel user)
         {
-            if (user == null) return;
+            try
+            {
+                if (user == null) return;
 
-            // TODO: Add confirmation dialog
-            await _userService.DeleteUserAsync(user.Id);
-            await LoadDataAsync();
+                // TODO: Add confirmation dialog
+                await _userService.DeleteUserAsync(user.Id);
+                await LoadDataAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
     }
 }

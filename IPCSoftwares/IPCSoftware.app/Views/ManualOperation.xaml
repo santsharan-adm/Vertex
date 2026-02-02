@@ -4,104 +4,110 @@
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ManualOperationViewModel}"
              Background="#F0F2F5">
 
     <UserControl.Resources>
-        <Geometry x:Key="Icon_Up">M6,18V10H2L12,0L22,10H18V18H6Z</Geometry>
-        <Geometry x:Key="Icon_Down">M18,6V14H22L12,24L2,14H6V6H18Z</Geometry>
-        <Geometry x:Key="Icon_Forward">M6,6H14V2L24,12L14,22V18H6V6Z</Geometry>
-        <Geometry x:Key="Icon_Backward">M18,18H10V22L0,12L10,2V6H18V18Z</Geometry>
-
-        <conv:EqualityConverter x:Key="EqualityConverter"/>
         <conv:EnumToSymbolConverter x:Key="EnumToSymbolConverter"/>
-        <conv:GroupVisibilityConverter x:Key="GroupVisibilityConverter"/>
-        <!--<conv:EnumToPathConverter x:Key="EnumToPathConverter"/>-->
+        <conv:EqualityConverter x:Key="EqualityConverter"/>
 
+        <!-- JOG BUTTON STYLE (Base) -->
+        <Style x:Key="JogButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="120"/>
+            <Setter Property="Width" Value="220"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <!-- Default Background if not overridden -->
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="12" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.6"/>
+                                <Setter TargetName="border" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.95" ScaleY="0.95" CenterX="100" CenterY="40"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Styles -->
         <Style x:Key="CardStyle" TargetType="Border">
             <Setter Property="Background" Value="White"/>
-            <Setter Property="CornerRadius" Value="8"/>
-            <Setter Property="Padding" Value="15"/>
-            <Setter Property="Margin" Value="8"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="10"/>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="2" Opacity="0.1"/>
+                    <DropShadowEffect Color="Black" BlurRadius="15" ShadowDepth="2" Opacity="0.1"/>
                 </Setter.Value>
             </Setter>
         </Style>
 
         <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="30"/>
-            <Setter Property="FontWeight" Value="DemiBold"/>
-            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontSize" Value="32"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#333"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
         </Style>
 
+        <!-- Button Style (Taller, Squarer) -->
         <Style x:Key="ManualModeButtonStyle" TargetType="Button">
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-            <Setter Property="Height" Value="110"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="6"/>
-            <Setter Property="FontSize" Value="24"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Height" Value="150"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Background" Value="#E8E8E8"/>
-            <Setter Property="Foreground" Value="#444"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border"
-                                CornerRadius="6"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="#CCCCCC"
-                                BorderThickness="1">
-                            <ContentPresenter HorizontalAlignment="Center" 
-                                              VerticalAlignment="Center"
-                                              Margin="10"/>
+                        <Border x:Name="border" CornerRadius="12" Background="#E8E8E8" BorderBrush="#CCC" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <MultiDataTrigger>
-                                <MultiDataTrigger.Conditions>
-                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
-                                    <Condition Value="False">
-                                        <Condition.Binding>
-                                            <MultiBinding Converter="{StaticResource EqualityConverter}">
-                                                <Binding Path="DataContext.SelectedGroupButtons" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
-                                                <Binding Path="Group"/>
-                                                <Binding Path="Mode"/>
-                                            </MultiBinding>
-                                        </Condition.Binding>
-                                    </Condition>
-                                </MultiDataTrigger.Conditions>
-                                <Setter TargetName="border" Property="Background" Value="#D6D6D6"/>
-                            </MultiDataTrigger>
-
+                            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#0F9D58"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsBlinking}" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFC107"/>
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard Name="BlinkAnim">
+                                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                            <DoubleAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Opacity" From="1.0" To="0.4" Duration="0:0:0.5"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <StopStoryboard BeginStoryboardName="BlinkAnim"/>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Opacity" To="1.0" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="border" Property="RenderTransform">
                                     <Setter.Value>
-                                        <TranslateTransform Y="1"/>
+                                        <TranslateTransform Y="2"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
-
-                            <DataTrigger Value="True">
-                                <DataTrigger.Binding>
-                                    <MultiBinding Converter="{StaticResource EqualityConverter}">
-                                        <Binding Path="DataContext.SelectedGroupButtons" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
-                                        <Binding Path="Group"/>
-                                        <Binding Path="Mode"/>
-                                    </MultiBinding>
-                                </DataTrigger.Binding>
-                                <Setter TargetName="border" Property="Background" Value="#0F9D58"/>
-                                <Setter Property="Foreground" Value="White"/>
-                                <Setter TargetName="border" Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect Color="#0F9D58" BlurRadius="10" ShadowDepth="0" Opacity="0.4"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </DataTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -114,231 +120,589 @@
         </Style>
 
         <DataTemplate x:Key="SharedButtonTemplate">
-            <Button Style="{StaticResource ManualModeButtonStyle}"
-            Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-            CommandParameter="{Binding Mode}">
-                <Grid>
-                    <Path x:Name="IconPath"
-                  Stretch="Uniform"
-                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                  Width="50" Height="50"
-                  Visibility="Collapsed"/>
-
-                    <TextBlock x:Name="TextLabel"
-                       Text="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
-                       FontSize="40" FontWeight="Bold"
-                       Visibility="Visible"/>
-                </Grid>
+            <Button Style="{StaticResource ManualModeButtonStyle}" Height="108"
+                    Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    CommandParameter="{Binding Mode}">
+                <TextBlock Text="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"
+                           FontSize="32" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center"/>
             </Button>
-            <!--<DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Mode}" Value="TrayLiftUp">
-                    <Setter TargetName="IconPath" Property="Visibility" Value="Visible"/>
-                    <Setter TargetName="TextLabel" Property="Visibility" Value="Collapsed"/>
-                    <Setter TargetName="IconPath" Property="Data" Value="{StaticResource Icon_Up}"/>
-                </DataTrigger>
-
-                <DataTrigger Binding="{Binding Mode}" Value="TrayLiftDown">
-                    <Setter TargetName="IconPath" Property="Visibility" Value="Visible"/>
-                    <Setter TargetName="TextLabel" Property="Visibility" Value="Collapsed"/>
-                    <Setter TargetName="IconPath" Property="Data" Value="{StaticResource Icon_Down}"/>
-                </DataTrigger>
-
-                <DataTrigger Binding="{Binding Mode}" Value="PositioningCylinderUp">
-                    <Setter TargetName="IconPath" Property="Visibility" Value="Visible"/>
-                    <Setter TargetName="TextLabel" Property="Visibility" Value="Collapsed"/>
-                    <Setter TargetName="IconPath" Property="Data" Value="{StaticResource Icon_Up}"/>
-                </DataTrigger>
-                
-                <DataTrigger Binding="{Binding Mode}" Value="PositioningCylinderUp">
-                    <Setter TargetName="IconPath" Property="Visibility" Value="Visible"/>
-                    <Setter TargetName="TextLabel" Property="Visibility" Value="Collapsed"/>
-                    <Setter TargetName="IconPath" Property="Data" Value="{StaticResource Icon_Up}"/>
-                </DataTrigger>
-
-            </DataTemplate.Triggers>-->
         </DataTemplate>
-
     </UserControl.Resources>
 
-    <Viewbox Stretch="Uniform">
-        <Grid Margin="20">
+    <!-- Full Screen Grid -->
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Text="Manual Operation Panel" FontSize="46" FontWeight="Bold" Foreground="#444" Margin="10,0,0,30"/>
+
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0">
+            <!-- LEFT COLUMN -->
+            <Grid Grid.Column="0" Margin="0,0,15,0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="1.4*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
+                <!-- Row 1: Tray, Cyl, Conveyor -->
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2.3*"/>
                     </Grid.ColumnDefinitions>
 
+                    <!-- Tray Lift -->
                     <Border Grid.Column="0" Style="{StaticResource CardStyle}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="Tray Lift" Style="{StaticResource SectionHeaderStyle}"/>
-                            <ItemsControl Grid.Row="1" ItemsSource="{Binding TrayModes}" 
-                                          ItemTemplate="{StaticResource SharedButtonTemplate}"
-                                          ItemContainerStyle="{StaticResource StretchItemStyle}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Columns="1"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
-                        </Grid>
-                    </Border>
+                        <StackPanel>
+                            <TextBlock Text="Tray Lift" Margin="0 0 0 40" Style="{StaticResource SectionHeaderStyle}"/>
 
-                    <Border Grid.Column="1" Style="{StaticResource CardStyle}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="Pos. Cylinder" Style="{StaticResource SectionHeaderStyle}"/>
-                            <ItemsControl Grid.Row="1" ItemsSource="{Binding CylinderModes}" 
-                                          ItemTemplate="{StaticResource SharedButtonTemplate}"
-                                          ItemContainerStyle="{StaticResource StretchItemStyle}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Columns="1"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
-                        </Grid>
-                    </Border>
-                </Grid>
-
-                <Border Grid.Row="1" Style="{StaticResource CardStyle}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Manual X-Axis" Style="{StaticResource SectionHeaderStyle}"/>
-                        <ItemsControl Grid.Row="1" ItemsSource="{Binding XAxisModes}" 
-                                      ItemTemplate="{StaticResource SharedButtonTemplate}"
-                                      ItemContainerStyle="{StaticResource StretchItemStyle}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="3"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Row="2" Style="{StaticResource CardStyle}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Manual Y-Axis" Style="{StaticResource SectionHeaderStyle}"/>
-                        <ItemsControl Grid.Row="1" ItemsSource="{Binding YAxisModes}" 
-                                      ItemTemplate="{StaticResource SharedButtonTemplate}"
-                                      ItemContainerStyle="{StaticResource StretchItemStyle}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="3"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                    </Grid>
-                </Border>
-            </Grid>
-
-            <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <Border Grid.Row="0" Style="{StaticResource CardStyle}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Move to Position" Style="{StaticResource SectionHeaderStyle}"/>
-
-                        <Grid Grid.Row="1" Margin="0,0,0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="1" Grid.ColumnSpan="2"
-                                    Content="HOME POS"
-                                    FontWeight="Bold"
-                                    FontSize="36"
-                                    Style="{StaticResource ManualModeButtonStyle}"
-                                    DataContext="{Binding HomePositionMode}"
-                                    Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding Mode}">
-                                <Button.Resources>
-                                    <Style TargetType="Button" BasedOn="{StaticResource ManualModeButtonStyle}">
+                            <!-- TRAY UP (Hardcoded with Style Trigger) -->
+                            <Button Content="▲ UP" Width="180" Margin="0 0 0 20" HorizontalAlignment="Center">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
                                         <Style.Triggers>
-                                            <DataTrigger Value="True">
-                                                <DataTrigger.Binding>
-                                                    <MultiBinding Converter="{StaticResource EqualityConverter}">
-                                                        <Binding Path="DataContext.SelectedGroupButtons" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
-                                                        <Binding Path="Group"/>
-                                                        <Binding Path="Mode"/>
-                                                    </MultiBinding>
-                                                </DataTrigger.Binding>
+                                            <DataTrigger Binding="{Binding IsTrayUpActive}" Value="True">
                                                 <Setter Property="Background" Value="#0F9D58"/>
                                                 <Setter Property="Foreground" Value="White"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </Button.Resources>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostMouseCapture">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayUP|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
                             </Button>
-                        </Grid>
 
-                        <ItemsControl Grid.Row="2" ItemsSource="{Binding GridPositionModes}" 
-                                      ItemTemplate="{StaticResource SharedButtonTemplate}"
-                                      ItemContainerStyle="{StaticResource StretchItemStyle}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="4"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                    </Grid>
-                </Border>
+                            <!-- TRAY DOWN -->
+                            <Button Content="▼ DOWN" Width="180" HorizontalAlignment="Center">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsTrayDownActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostMouseCapture">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding TrayLiftCommand}" CommandParameter="TrayDOWN|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                        </StackPanel>
+                    </Border>
 
-                <Border Grid.Row="1" Style="{StaticResource CardStyle}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Transport Conveyor" Style="{StaticResource SectionHeaderStyle}"/>
-                        <ItemsControl Grid.Row="1" ItemsSource="{Binding ConveyorModes}" 
-                                      ItemTemplate="{StaticResource SharedButtonTemplate}"
-                                      ItemContainerStyle="{StaticResource StretchItemStyle}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="4"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                    </Grid>
-                </Border>
+                    <!-- Positioning Cylinder -->
+                    <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Pos. Cylinder" Margin="0 0 0 40 " Style="{StaticResource SectionHeaderStyle}"/>
+
+                            <!-- CYL UP -->
+                            <Button Content="▲ UP" Width="180" Margin="0 0 0 20" HorizontalAlignment="Center">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCylUpActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostMouseCapture">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylUP|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                            <!-- CYL DOWN -->
+                            <Button Content="▼ DOWN" Width="180" HorizontalAlignment="Center">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCylDownActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostMouseCapture">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding CylPosCommand}" CommandParameter="CylDOWN|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                            
+                            
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Conveyor -->
+                    <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock  Text="Transport Conveyor" Style="{StaticResource SectionHeaderStyle}"/>
+                            <WrapPanel Margin="20 20 0 20" >
+
+                                <Button Content= "◀ REV" Width="150" Margin="0 10 0 10" HorizontalAlignment="Center">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsConvRevActive}" Value="True">
+                                                    <Setter Property="Background" Value="#0F9D58"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostMouseCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvRev|False"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+
+                                <Button Content= "▶ FWD" Width="150" Margin=" 20 10 0 10"  HorizontalAlignment="Center">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsConvFwdActive}" Value="True">
+                                                    <Setter Property="Background" Value="#0F9D58"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostMouseCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvDirCommand}" CommandParameter="ConvFwd|False"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+
+
+                                <Button Content="■ STOP" Width="150" Margin=" 20 10 0 10" HorizontalAlignment="Center">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsConvStopActive}" Value="True">
+                                                    <Setter Property="Background" Value="#0F9D58"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostMouseCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvStopCommand}" CommandParameter="ConStop|False"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+                                <Button Content="⏪ LOW" Width="150" Margin=" 0 10 10 10" HorizontalAlignment="Center">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsConvLowActive}" Value="True">
+                                                    <Setter Property="Background" Value="#0F9D58"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostMouseCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvLow|False"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+
+                                <Button Content="⏩ HIGH" Width="150" Margin=" 10 10 10 10"  HorizontalAlignment="Center">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsConvHighActive}" Value="True">
+                                                    <Setter Property="Background" Value="#0F9D58"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostMouseCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchDown">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostTouchCapture">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|False"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewTouchUp">
+                                            <i:InvokeCommandAction Command="{Binding ConvSpeedCommand}" CommandParameter="ConvHigh|False"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+                            </WrapPanel>
+
+
+
+
+                            <!--<ItemsControl ItemsSource="{Binding ConveyorModes}" Margin="0 20 0 20" ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="3"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>-->
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Bottom Group: Jog Controls -->
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- X Axis -->
+                    <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="Manual X-Axis Jog" Style="{StaticResource SectionHeaderStyle}"/>
+
+                            <Button Content="◀ X JOG -" HorizontalAlignment="Right">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <!--<Setter Property="Background" Value="Coral"/>-->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsJogXMinusActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostMouseCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                            <Button Content="▶ X JOG +" HorizontalAlignment="Right">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <!--<Setter Property="Background" Value="Coral"/>-->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsJogXPlusActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostMouseCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Y Axis -->
+                    <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="Manual Y-Axis Jog" Style="{StaticResource SectionHeaderStyle}"/>
+
+                            <Button Content="◀ Y JOG -" HorizontalAlignment="Right">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <!--<Setter Property="Background" Value="LightGreen"/>-->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsJogYMinusActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostMouseCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                            <Button Content="▶ Y JOG +" HorizontalAlignment="Right">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                        <!--<Setter Property="Background" Value="LightGreen"/>-->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsJogYPlusActive}" Value="True">
+                                                <Setter Property="Background" Value="#0F9D58"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostMouseCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                        </DockPanel>
+                    </Border>
+                </Grid>
             </Grid>
+
+            <!-- RIGHT COLUMN: Positions -->
+            <Border Grid.Column="1" Style="{StaticResource CardStyle}" Margin="15,10,10,10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Move to Position" Style="{StaticResource SectionHeaderStyle}"/>
+
+                    <!-- Home Button (Large) -->
+                    <Button Grid.Row="1" Margin="10,0,10,20" Content="X-Y ORIGIN" FontWeight="Bold" FontSize="36" Height="120"
+                             Command="{Binding ConfirmYCoordsCommand}"
+                            
+                            Style="{StaticResource ManualModeButtonStyle}" 
+                          
+                          />
+                    
+                    
+                    <!-- Home Button (Large) -->
+                    <Button Grid.Row="1" Grid.Column="1" Margin="10,0,10,20" Content="Position 0" FontWeight="Bold" FontSize="36" Height="120"
+                            Style="{StaticResource ManualModeButtonStyle}" DataContext="{Binding HomePositionMode}"
+                            Command="{Binding DataContext.ButtonClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding Mode}"/>
+
+                    <!-- Grid 1-12 -->
+                    <ItemsControl Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding GridPositionModes}"  ItemTemplate="{StaticResource SharedButtonTemplate}" ItemContainerStyle="{StaticResource StretchItemStyle}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="3"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+
         </Grid>
-    </Viewbox>
+    </Grid>
 </UserControl>

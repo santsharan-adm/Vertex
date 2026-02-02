@@ -48,14 +48,14 @@
 
                                     <StackPanel Grid.Column ="1" Margin="20,0,0,30">
                                         <TextBlock Text="Log Type" Style="{StaticResource HmiLabelStyle}"/>
-                                        <ComboBox ItemsSource="{Binding LogTypes}" 
+                                        <ComboBox IsEnabled="False" ItemsSource="{Binding LogTypes}" 
                                                   SelectedItem="{Binding SelectedLogType}" 
                                                   Style="{StaticResource HmiComboBoxStyle}"/>
                                 </StackPanel>
                                 </Grid>
 
 
-                                <StackPanel Margin="0,0,0,50">
+                                <StackPanel Margin="0,0,0,30">
                                     <TextBlock Text="Data Folder" Style="{StaticResource HmiLabelStyle}"/>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -84,6 +84,49 @@
                                     </Grid>
 
                                 </StackPanel>
+
+                                <StackPanel Margin="0,0,0,30">
+
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsProductionLog}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+
+                                    <TextBlock Text="Production Image Path" Style="{StaticResource HmiLabelStyle}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox Grid.Column="0" Text="{Binding ProductionImagePath, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource HmiTextBoxStyle}"/>
+                                        <Button Grid.Column="1" Content="Browse" 
+                    Command="{Binding BrowseProdImageCommand}"
+                    Height="50" Width="120" Margin="15,0,0,0"
+                    Background="#E1E1E1" BorderThickness="0" FontSize="20"/>
+                                    </Grid>
+
+                                    <TextBlock Text="Production Image Backup " Style="{StaticResource HmiLabelStyle}" Margin="0,20,0,0"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox Grid.Column="0" Text="{Binding ProductionImageBackupPath, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource HmiTextBoxStyle}"/>
+                                        <Button Grid.Column="1" Content="Browse" 
+                Command="{Binding BrowseProdBackupCommand}"
+                Height="50" Width="120" Margin="15,0,0,0"
+                Background="#E1E1E1" BorderThickness="0" FontSize="20"/>
+                                    </Grid>
+                                </StackPanel>
+
+
+
 
                                 <StackPanel Margin="0,0,0,30">
                                     <TextBlock Text="File Name" Style="{StaticResource HmiLabelStyle}"/>
@@ -129,7 +172,22 @@
 
                         <Border Style="{StaticResource CardStyle}">
                             <StackPanel>
+                                <Grid >
+                                    
                                 <TextBlock Text="Backup Configuration" FontSize="32" FontWeight="Bold" Margin="0,0,0,30"/>
+                                    <Button Content="Restore" HorizontalAlignment="Right"
+                                          Command="{Binding RestoreCommand}"
+                                          Width="200" Height="70"
+                                          FontSize="28" FontWeight="Bold"
+                                          Background="#007ACC" Foreground="White"
+                                          BorderThickness="0">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </Grid>
 
                                 <StackPanel Margin="0,0,0,30">
                                     <TextBlock Text="Schedule Frequency" Style="{StaticResource HmiLabelStyle}"/>

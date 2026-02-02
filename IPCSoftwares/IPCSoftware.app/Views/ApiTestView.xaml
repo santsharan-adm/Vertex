@@ -1,0 +1,120 @@
+<UserControl x:Class="IPCSoftware.App.Views.ApiTestView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ApiTestViewModel}">
+    <Grid Background="#F5F7FA" Margin="40" TextElement.FontSize="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Margin="0,0,30,0">
+            <TextBlock Text="API Test Console" FontSize="46" FontWeight="Bold" Foreground="#333" />
+            <Border Background="White" CornerRadius="12" Padding="25" BorderBrush="#E0E0E0" BorderThickness="1">
+                <StackPanel>
+                    <UniformGrid Columns="2" Rows="3" Margin="0,0,0,10">
+                        <StackPanel Margin="0,0,15,10">
+                            <TextBlock Text="Protocol"  FontWeight="SemiBold" />
+                            <ComboBox ItemsSource="{Binding ProtocolOptions}"
+                                      SelectedItem="{Binding SelectedProtocol}"
+                                      Height="40" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,15,10">
+                            <TextBlock Text="Host" FontWeight="SemiBold" />
+                            <TextBox Text="{Binding Host, UpdateSourceTrigger=PropertyChanged}"
+                                     Height="40" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,15,10">
+                            <TextBlock Text="Endpoint" FontWeight="SemiBold" />
+                            <TextBox Text="{Binding Endpoint, UpdateSourceTrigger=PropertyChanged}"
+                                     Height="40" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,15,10">
+                            <TextBlock Text="Carrier Serial Number (carrier_sn)" FontWeight="SemiBold" />
+                            <TextBox Text="{Binding TwoDCodeData, UpdateSourceTrigger=PropertyChanged}"
+                                     Height="40" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,15,10">
+                            <TextBlock Text="Previous Station Name (station_code)" FontWeight="SemiBold" />
+                            <TextBox Text="{Binding PreviousStationCode, UpdateSourceTrigger=PropertyChanged}"
+                                     Height="40" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,15,10">
+                            <TextBlock Text="Current Station Name (station_id)" FontWeight="SemiBold" />
+                            <TextBox Text="{Binding CurrentMachineCode, UpdateSourceTrigger=PropertyChanged}"
+                                     Height="40" />
+                        </StackPanel>
+                    </UniformGrid>
+                    <StackPanel
+                        Visibility="{Binding HasRequestPreview, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <TextBlock Text="Request Preview" FontWeight="SemiBold" />
+                        <TextBox Text="{Binding RequestPreview}" IsReadOnly="True" Height="200" Background="#F0F3F8" />
+                    </StackPanel>
+                    <StackPanel Margin="0,12,0,0"
+                                Visibility="{Binding HasFinalQueryPreview, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <TextBlock Text="Final Query (endpoint@parameters)" FontWeight="SemiBold" />
+                        <TextBox Text="{Binding FinalQueryPreview}" IsReadOnly="True" Height="80" Background="#FDF2F8" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Left">
+                        <Button Content="Ping Test"
+                                 Height="60"
+                                 Width="150"
+                                 Margin="0,0,12,0"
+                                 FontSize="22"
+                                 FontWeight="SemiBold"
+                                 Background="#6366F1"
+                                 Foreground="White"
+                                 Command="{Binding PingTestCommand}" />
+                        <Button Content="Save Settings"
+                                 Height="60"
+                                 Width="160"
+                                 Margin="0,0,12,0"
+                                 FontSize="22"
+                                 FontWeight="SemiBold"
+                                 Background="#10B981"
+                                 Foreground="White"
+                                 Command="{Binding SaveSettingsCommand}" />
+                        <Button Content="GET / TEST"
+                                 Height="60"
+                                 Width="180"
+                                 FontSize="24"
+                                 FontWeight="Bold"
+                                 Background="#007ACC"
+                                 Foreground="White"
+                                 Command="{Binding TestApiCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        <Border Grid.Column="1" Background="White" CornerRadius="12" Padding="20" BorderBrush="#E0E0E0" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="Ping Result" FontSize="30" FontWeight="SemiBold" Margin="0,0,0,10" />
+                <TextBox Text="{Binding PingResult}"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         Background="#F9FAFB"
+                         Foreground="#111827"
+                         FontFamily="Consolas"
+                         FontSize="18"
+                         MinHeight="80" />
+                <TextBlock Text="Response" FontSize="30" FontWeight="SemiBold" Margin="0,10,0,10" />
+                <TextBox Text="{Binding ResultText}"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Auto"
+                         MinHeight="300"
+                         Background="#0A0A0F"
+                         Foreground="#D4F1FF"
+                         FontFamily="Consolas"
+                         FontSize="18" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

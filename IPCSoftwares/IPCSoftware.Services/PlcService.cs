@@ -1,13 +1,15 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 
 namespace IPCSoftware.Services
 {
-    public class PlcService : IPLCService
+    public class PlcService : BaseService, IPLCService
     {
         private DateTime _simulatedPlcTime;
 
-        public PlcService()
+        public PlcService(IAppLogger logger) : base(logger) 
         {
             // Initial PLC time = machine boot-up time (simulated)
             _simulatedPlcTime = DateTime.Now.AddSeconds(-5);
@@ -25,8 +27,11 @@ namespace IPCSoftware.Services
 
                 return _simulatedPlcTime;
             }
-            catch
+            catch(Exception ex) 
             {
+                
+                    _logger.LogError(ex.Message, LogType.Diagnostics);
+                
                 return null;
             }
         }
@@ -42,8 +47,9 @@ namespace IPCSoftware.Services
                 _simulatedPlcTime = dt;
                 return true;
             }
-            catch
+            catch( Exception ex ) 
             {
+                    _logger.LogError(ex.Message, LogType.Diagnostics);
                 return false;
             }
         }

@@ -10,7 +10,7 @@
         Title="IPC HMI Software" 
         Height="1080" Width="1920"
         WindowState="Maximized" 
-        WindowStyle="None"
+       WindowStyle="None"
         Background="#F3F3F3" 
         ResizeMode="NoResize">
 
@@ -179,6 +179,39 @@
                         </Style>
                     </Border.Style>
 
+                    <!--<Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="⚠️" FontSize="32" Foreground="White" VerticalAlignment="Center" Margin="30,0">
+                            <TextBlock.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.3" Duration="0:0:0.5"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </TextBlock.Triggers>
+                        </TextBlock>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="CRITICAL SYSTEM ALARM" Foreground="White" Opacity="0.8" FontSize="12" FontWeight="Bold" />
+                            <TextBlock Text="{Binding AlarmBannerTotalMessage}" Foreground="White" FontSize="24" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="2" 
+                                Command="{Binding CloseAlarmBannerCommand}"
+                                Content="✕"
+                                Width="60" 
+                                Background="Transparent" BorderThickness="0"
+                                Foreground="White" FontSize="24" FontWeight="Bold"
+                                Cursor="Hand" Margin="0,0,20,0"/>
+                    </Grid>-->
+
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -200,16 +233,32 @@
 
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="CRITICAL SYSTEM ALARM" Foreground="White" Opacity="0.8" FontSize="12" FontWeight="Bold" />
-                            <TextBlock Text="{Binding AlarmBannerMessage}" Foreground="White" FontSize="24" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="{Binding AlarmBannerTotalMessage}" Foreground="White" FontSize="24" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
                         </StackPanel>
 
-                        <Button Grid.Column="2" 
-                                Command="{Binding CloseAlarmBannerCommand}"
-                                Content="✕"
-                                Width="60" 
-                                Background="Transparent" BorderThickness="0"
-                                Foreground="White" FontSize="24" FontWeight="Bold"
-                                Cursor="Hand" Margin="0,0,20,0"/>
+                        <StackPanel Grid.Column="2" 
+                Orientation="Horizontal" 
+                VerticalAlignment="Center" 
+                Margin="0,0,20,0">
+
+                            <!--<Button Content="ACK"
+                Command="{Binding AcknowledgeCommand}" 
+                
+                CommandParameter="{Binding CurrentAlarm}" 
+                
+                Background="#FFC107" BorderThickness="0"
+                Foreground="Black" FontSize="14" FontWeight="Bold"
+                Width="80" Height="40"
+                Margin="0,0,10,0"
+                Cursor="Hand"/>-->
+
+                            <Button Command="{Binding CloseAlarmBannerCommand}"
+                Content="✕"
+                Width="40" 
+                Background="Transparent" BorderThickness="0"
+                Foreground="White" FontSize="24" FontWeight="Bold"
+                Cursor="Hand"/>
+                        </StackPanel>
                     </Grid>
                 </Border>
 
@@ -318,8 +367,12 @@
                             </Grid>
                         </Border>
 
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" Margin="0,20,0,0">
-                            <ItemsControl ItemsSource="{Binding SidebarItems}">
+                        <!--<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" Margin="0,20,0,0">-->
+                            <ScrollViewer Grid.Row="1" 
+              VerticalScrollBarVisibility="Hidden" 
+              Margin="0,20,0,0"
+              PanningMode="VerticalOnly">
+                            <ItemsControl ItemsSource="{Binding SidebarItems}" Background="Transparent" >
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Button Content="{Binding}" Style="{StaticResource SidebarButtonStyle}"
@@ -341,7 +394,6 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Margin="20,0,20,0" Text="{Binding AppVersion}" Foreground="#AAAAAA" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                         <!-- STATUS INDICATOR -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -350,10 +402,10 @@
                             <Ellipse Width="16" Height="16" Margin="0,0,8,0">
                                 <Ellipse.Style>
                                     <Style TargetType="Ellipse">
-                                        <Setter Property="Fill" Value="Green"/>
+                                        <Setter Property="Fill" Value="#2EE36B"/>
                                         <!-- Default: Connected -->
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                                            <DataTrigger Binding="{Binding PLCConnected}" Value="False">
                                                 <Setter Property="Fill" Value="Red"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -365,11 +417,11 @@
                             <TextBlock FontSize="20" FontWeight="Bold" VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
-                                        <Setter Property="Text" Value="MACHINE CONNECTED"/>
-                                        <Setter Property="Foreground" Value="Green"/>
+                                        <Setter Property="Text" Value="PLC CONNECTED"/>
+                                        <Setter Property="Foreground" Value="#2EE36B"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsConnected}" Value="False">
-                                                <Setter Property="Text" Value="MACHINE NOT CONNECTED"/>
+                                            <DataTrigger Binding="{Binding PLCConnected}" Value="False">
+                                                <Setter Property="Text" Value="PLC DISCONNECTED"/>
                                                 <Setter Property="Foreground" Value="Red"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -377,10 +429,83 @@
                                 </TextBlock.Style>
                             </TextBlock>
 
+
+                            <Ellipse Width="16" Height="16" Margin="20,0,8,0">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="#2EE36B"/>
+                                        <!-- Default: Connected -->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                                                <Setter Property="Fill" Value="Red"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+
+                            <TextBlock FontSize="20" FontWeight="Bold" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="SERVICE CONNECTED"/>
+                                        <Setter Property="Foreground" Value="#2EE36B"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                                                <Setter Property="Text" Value="SERVICE DISCONNECTED"/>
+                                                <Setter Property="Foreground" Value="Red"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            
+                            
+                            <Ellipse Width="16" Height="16" Margin="20,0,8,0">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="#2EE36B"/>
+                                        <!-- Default: Connected -->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding MacMiniConnected}" Value="False">
+                                                <Setter Property="Fill" Value="Red"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+
+                            <TextBlock FontSize="20" FontWeight="Bold" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="MAC MINI CONNECTED"/>
+                                        <Setter Property="Foreground" Value="#2EE36B"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding MacMiniConnected}" Value="False">
+                                                <Setter Property="Text" Value="MAC MINI DISCONNECTED"/>
+                                                <Setter Property="Foreground" Value="Red"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+
+
+                            <TextBlock FontSize="20"  Margin="20,0,8,0"  Foreground ="#2EE36B" Text="CURRENT MODE:" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="20"  Margin="0,0,8,0"  Foreground ="#2EE36B" Text="{Binding CurrentMachineMode}" FontWeight="Bold" VerticalAlignment="Center"/>
+
+                           
+                            
+
                         </StackPanel>
                     </StackPanel>
 
-                    <TextBlock Text="{Binding SystemTime}" Typography.NumeralAlignment="Tabular" Foreground="#AAAAAA" Margin="0,0,20,0" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center">
+                        
+                    <TextBlock Text="{Binding SystemTime}" Typography.NumeralAlignment="Tabular" Foreground="#AAAAAA" Margin="0,0,20,0" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                      <TextBlock Margin="0,0,20,0" Text="{Binding AppVersion}" Foreground="#AAAAAA" FontSize="13" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                    </StackPanel >
+
                 </Grid>
             </Border>
 

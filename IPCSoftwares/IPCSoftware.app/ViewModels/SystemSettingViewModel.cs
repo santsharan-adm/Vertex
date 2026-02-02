@@ -1,151 +1,186 @@
-﻿
-using IPCSoftware.Core.Interfaces;
+﻿using IPCSoftware.App.Helpers;
+using IPCSoftware.App.Services;
+using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Threading; // Required for Timer
+using System.Windows.Threading;
 
-public class SystemSettingViewModel : BaseViewModel
+namespace IPCSoftware.App.ViewModels
 {
-    private readonly IPLCService _plc;
-    private readonly IAppLogger _logger;
-    private readonly DispatcherTimer _clockTimer; // Timer for Live Clock
-
-    public SystemSettingViewModel(IPLCService plcService, IAppLogger logger)
+    public class SystemSettingViewModel : BaseViewModel, IDisposable
     {
-        _plc = plcService;
-        _logger = logger;
-        AuditLogs = new ObservableCollection<AuditLogModel>();
+        private readonly CoreClient _coreClient;
 
-        SyncCommand = new RelayCommand(async () => await SyncTime());
+        private readonly SafePoller _clockPoller;
+        private readonly SafePoller _plcPoller;
 
-        // 1. Initialize and Start Live Clock Timer
-        _clockTimer = new DispatcherTimer
+
+        // --- Properties ---
+        private string _plcDate = "--/--/----";
+        public string PlcDate { get => _plcDate; set => SetProperty(ref _plcDate, value); }
+
+        private string _plcTime = "--:--:--";
+        public string PlcTime { get => _plcTime; set => SetProperty(ref _plcTime, value); }
+
+        private string _ipcDate;
+        public string IpcDate { get => _ipcDate; set => SetProperty(ref _ipcDate, value); }
+
+        private string _ipcTime;
+        public string IpcTime { get => _ipcTime; set => SetProperty(ref _ipcTime, value); }
+
+        private string _syncState = "Idle";
+        public string SyncState { get => _syncState; set => SetProperty(ref _syncState, value); }
+
+        public ObservableCollection<AuditLogModel> AuditLogs { get; set; } = new ObservableCollection<AuditLogModel>();
+
+        public ICommand SyncCommand { get; }
+
+        public SystemSettingViewModel(CoreClient coreClient, IAppLogger logger) : base(logger)
         {
-            Interval = TimeSpan.FromSeconds(1)
-        };
-        _clockTimer.Tick += (s, e) => UpdateIpcTime();
-        _clockTimer.Start();
+            _coreClient = coreClient;
 
-        // Initial Load
-        UpdateIpcTime();
-        LoadPlcTime();
-    }
+            SyncCommand = new RelayCommand(async () => await SyncTime());
 
-    #region PROPERTIES
+            _clockPoller = new SafePoller(
+            TimeSpan.FromSeconds(1),
+            UpdateIpcTimeAsync  // Pass the method directly
+          );
+            _clockPoller.Start();
 
-    // PLC Time
-    private string _plcDate = "--/--/----";
-    public string PlcDate
-    {
-        get => _plcDate;
-        set => SetProperty(ref _plcDate, value);
-    }
+            _plcPoller = new SafePoller(
+             TimeSpan.FromMilliseconds(500),
+             PlcPollTickAsync,
+             ex => _logger.LogError($"PLC Poll Error: {ex.Message}", LogType.Diagnostics)
+         );
+            _plcPoller.Start();
 
-    private string _plcTime = "--:--:--";
-    public string PlcTime
-    {
-        get => _plcTime;
-        set => SetProperty(ref _plcTime, value);
-    }
-
-    // IPC Time (Live)
-    private string _ipcDate;
-    public string IpcDate
-    {
-        get => _ipcDate;
-        set => SetProperty(ref _ipcDate, value);
-    }
-
-    private string _ipcTime;
-    public string IpcTime
-    {
-        get => _ipcTime;
-        set => SetProperty(ref _ipcTime, value);
-    }
-
-    private string _syncState = "Idle";
-    public string SyncState
-    {
-        get => _syncState;
-        set => SetProperty(ref _syncState, value);
-    }
-
-    public ObservableCollection<AuditLogModel> AuditLogs { get; set; }
-
-    #endregion
-
-    public ICommand SyncCommand { get; }
-
-    // 2. Method to update IPC UI Time
-    private void UpdateIpcTime()
-    {
-        var now = DateTime.Now;
-        IpcDate = now.ToString("dd-MMM-yyyy");
-        IpcTime = now.ToString("HH:mm:ss");
-    }
-
-    private void LoadPlcTime()
-    {
-        var plcDt = _plc.ReadPlcDateTime();
-        if (plcDt != null)
-        {
-            PlcDate = plcDt.Value.ToString("dd-MMM-yyyy");
-            PlcTime = plcDt.Value.ToString("HH:mm:ss");
+            UpdateIpcTimeAsync();
         }
-    }
+      
 
-    private async Task SyncTime()
-    {
-        try
+
+        private Task UpdateIpcTimeAsync()
         {
-            SyncState = "Syncing";
-            AddAudit("Sync triggered");
+            var now = DateTime.Now;
+            IpcDate = now.ToString("dd-MMM-yyyy");
+            IpcTime = now.ToString("HH:mm:ss");
+            IpcTime = DateTime.Now.ToString("HH:mm:ss");
+            // Trigger PropertyChanged if needed, or use [ObservableProperty]
+            OnPropertyChanged(nameof(IpcTime));
 
-            await Task.Delay(1000); // Visual delay for effect
+            return Task.CompletedTask;
+        }
 
-            // 3. Get Exact System Time
-            DateTime timeToSync = DateTime.Now;
+        private async Task PlcPollTickAsync()
+        {
+            // No need for _isBusy flags or try/catch here! 
+            // SafePoller handles all of that.
 
-            var result = _plc.WritePlcDateTime(timeToSync);
+            var data = await _coreClient.GetIoValuesAsync(5); // Example ID
 
-            if (result)
+            if (data.Count > 0)
             {
-                SyncState = "Synced";
-                AddAudit("PLC time synchronized successfully");
+                // Read Time Parts
+                int y = GetInt(data, ConstantValues.TAG_Time_Year.Read);
+                int M = GetInt(data, ConstantValues.TAG_Time_Month.Read);
+                int d = GetInt(data, ConstantValues.TAG_Time_Day.Read);
+                int h = GetInt(data, ConstantValues.TAG_Time_Hour.Read);
+                int m = GetInt(data, ConstantValues.TAG_Time_Minute.Read);
+                int s = GetInt(data, ConstantValues.TAG_Time_Second.Read);
 
-                // 4. Immediately update UI to reflect the synced time
-                PlcDate = timeToSync.ToString("dd-MMM-yyyy");
-                PlcTime = timeToSync.ToString("HH:mm:ss");
+                // Validate & Format
+                if (y > 0 && M > 0 && d > 0)
+                {
+                    // Handle 2-digit vs 4-digit year if needed
+                    if (y < 100) y += 2000;
+
+                    try
+                    {
+                        var dt = new DateTime(y, M, d, h, m, s);
+                        PlcDate = dt.ToString("dd-MMM-yyyy");
+                        PlcTime = dt.ToString("HH:mm:ss");
+                    }
+                    catch (Exception ex)
+                    {
+                        // Invalid date from PLC (e.g. 0/0/0)
+                        PlcDate = "--/--/----";
+                        PlcTime = "--:--:--";
+                    }
+                }
             }
-            else
+        }
+
+
+
+        private async Task SyncTime()
+        {
+            try
+            {
+                SyncState = "Syncing";
+                AddAudit("Sync triggered");
+
+                // 1. Calculate Target Time (+2 Seconds Margin)
+                DateTime targetTime = DateTime.Now;
+
+                _logger.LogInfo($"Syncing PLC Time to: {targetTime:yyyy-MM-dd HH:mm:ss}", LogType.Audit);
+
+                // 2. Write Time Values
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Year.Write, targetTime.Year);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Month.Write, targetTime.Month);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Day.Write, targetTime.Day);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Hour.Write, targetTime.Hour);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Minute.Write, targetTime.Minute);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Second.Write, targetTime.Second);
+
+                // 3. Pulse Trigger (A1)
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, 1);
+                await Task.Delay(200); // Hold pulse
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, 0);
+
+                SyncState = "Synced";
+                AddAudit("PLC time sync command sent.");
+            }
+            catch (Exception ex)
             {
                 SyncState = "Error";
-                AddAudit("PLC sync failed");
+                AddAudit($"Sync failed: {ex.Message}");
+                _logger.LogError(ex.Message, LogType.Diagnostics);
             }
-        }
-        catch (Exception ex)
-        {
-            SyncState = "Error";
-            AddAudit($"PLC sync exception: {ex.Message}");
+
+            await Task.Delay(2000);
+            SyncState = "Idle";
         }
 
-        // Reset button state after a few seconds
-        await Task.Delay(2000);
-        SyncState = "Idle";
-    }
-
-    private void AddAudit(string message)
-    {
-        // Insert at top so newest is first
-        AuditLogs.Insert(0, new AuditLogModel
+        private int GetInt(Dictionary<int, object> data, int tagId)
         {
-            Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-            Message = message
-        });
+            if (data.TryGetValue(tagId, out object val))
+            {
+                try { return Convert.ToInt32(val); } catch { }
+            }
+            return 0;
+        }
+
+        private void AddAudit(string message)
+        {
+            AuditLogs.Insert(0, new AuditLogModel
+            {
+                Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                Message = message
+            });
+        }
+
+
+        public void Dispose()
+        {
+            // Just dispose the pollers. They automatically stop and unsubscribe.
+            _clockPoller.Dispose();
+            _plcPoller.Dispose();
+        }
     }
 }

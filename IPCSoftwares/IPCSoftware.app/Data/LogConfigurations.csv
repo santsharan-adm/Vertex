@@ -1,8 +1,5 @@
 ﻿Id,LogName,LogType,DataFolder,BackupFolder,FileName,LogRetentionTime,LogRetentionFileSize,AutoPurge,BackupSchedule,BackupTime,BackupDay,BackupDayOfWeek,Description,Remark,Enabled
-1,"Audit","Audit","D:\Repos\Vertex\Logs\Audit","D:\Repos\Vertex\IPCSoftwares\IPCSoftware.app\bin\Debug\net8.0-windows\LogsBackup\Audit","Audit_yyyyMMdd",90,5,False,"Monthly","02:00:00",1,"","Audit log configuration","System audit trail logs",True
-2,"Production","Production","D:\Repos\Vertex\Logs\Production","D:\Repos\Vertex\IPCSoftwares\IPCSoftware.app\bin\Debug\net8.0-windows\LogsBackup\Production","Production_yyyyMMdd",30,5,True,"Weekly","03:00:00",0,"Monday","Production log configuration","Production system logs",True
-3,"Error","Error","D:\Repos\Vertex\Logs\Error","D:\Repos\Vertex\IPCSoftwares\IPCSoftware.app\bin\Debug\net8.0-windows\LogsBackup\Error","Error_yyyyMMdd",60,5,False,"Monthly","04:00:00",1,"","Error log configuration","System error logs",True
-4,"Diagnostics","Diagnostics","D:\Repos\Vertex\Logs\Diagnostics","D:\Repos\Vertex\IPCSoftwares\IPCSoftware.app\bin\Debug\net8.0-windows\LogsBackup\Diagnostics","Diagnostics_yyyyMMdd",60,5,False,"Monthly","04:00:00",1,"","Diagnostics log configuration","System Diagnostics logs",True
-
-
-
+1,"Audit","Audit","C:\Datalog\Logs\Audit","D:\Logs\Backup\Audit","Audit_yyyyMMdd",90,5,False,"Monthly","02:00:00",1,"","Audit log configuration","System audit trail logs",True
+2,"Production","Production","C:\Datalog\Logs\Production","D:\Logs\Production\ReportLogs","Production_{yyyyMMdd}",30,5,True,"Manual","00:00:00",0,"","Production log configuration","Production system logs",True
+3,"Error","Error","C:\Datalog\Logs\Error","D:\Logs\Backup\Error","Error_yyyyMMdd",60,5,False,"Monthly","04:00:00",1,"","Error log configuration","System error logs",True
+4,"Diagnostics","Diagnostics","C:\Datalog\Logs\Diagnostics","D:\Logs\Backup\Diagnostics","Diagnostics_yyyyMMdd",60,5,False,"Monthly","04:00:00",1,"","Diagnostics log configuration","System Diagnostics logs",True

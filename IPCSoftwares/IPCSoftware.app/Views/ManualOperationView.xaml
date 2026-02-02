@@ -1,0 +1,367 @@
+﻿<UserControl x:Class="IPCSoftware.App.Views.ManualOperationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ManualOpViewModel}"
+     helpers:DisposeBehavior.AutoDispose="True"
+             Background="#F0F2F5">
+
+    <UserControl.Resources>
+        <conv:EnumToSymbolConverter x:Key="EnumToSymbolConverter"/>
+
+        <Style x:Key="JogButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="120"/>
+            <Setter Property="Width" Value="220"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="12" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PositionButtonStyle" TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+            <Setter Property="Height" Value="108"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="Background" Value="#E8E8E8"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsActive}" Value="True">
+                    <Setter Property="Background" Value="#0F9D58"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" BlurRadius="15" ShadowDepth="2" Opacity="0.1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="32"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+        </Style>
+
+        <DataTemplate x:Key="PositionButtonTemplate">
+            <Button Style="{StaticResource PositionButtonStyle}" Width="210" >
+                <i:Interaction.Behaviors>
+                    <helpers:MomentaryBehavior 
+                        Command="{Binding DataContext.UnifiedOperationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        CommandParameter="{Binding Mode}"/>
+                </i:Interaction.Behaviors>
+                <TextBlock Text="{Binding Mode, Converter={StaticResource EnumToSymbolConverter}}"/>
+            </Button>
+        </DataTemplate>
+        <Geometry x:Key="Icon_ArrowBack">M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z</Geometry>
+    </UserControl.Resources>
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Manual Operation Panel" FontSize="46" FontWeight="Bold" Foreground="#444" Margin="10,0,0,30"/>
+        <Button HorizontalAlignment="Right"
+            Command="{Binding NavigateBackCommand}"
+            Cursor="Hand" Width=" 150"
+            Background="Transparent" 
+            BorderThickness="2" 
+                Margin="0 10 50 10"
+            BorderBrush="#CCC"
+            Padding="15,5">
+
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border" 
+                        Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}" 
+                        CornerRadius="8">
+
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Path x:Name="icon" 
+                              Data="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"
+                              Fill="#666" 
+                              Height="24" Width="24" 
+                              Stretch="Uniform" 
+                              Margin="0,0,10,0"/>
+
+                            <TextBlock x:Name="text" 
+                                   Text="BACK" 
+                                   FontSize="34" 
+                                   FontWeight="Bold" 
+                                   Foreground="#666" 
+                                   VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="#2196F3"/>
+                            <Setter TargetName="border" Property="Background" Value="#E3F2FD"/>
+                            <Setter TargetName="icon" Property="Fill" Value="#2196F3"/>
+                            <Setter TargetName="text" Property="Foreground" Value="#2196F3"/>
+                        </Trigger>
+
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#BBDEFB"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" Margin="0,0,15,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1.4*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2.3*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Tray Lift" Margin="0 0 0 40" Style="{StaticResource SectionHeaderStyle}"/>
+
+                            <Button Content="▲ UP" Width="180" Margin="0 0 0 20" HorizontalAlignment="Center" Style="{StaticResource JogButtonStyle}">
+                                <i:Interaction.Behaviors>
+                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TrayLiftUp"/>
+                                </i:Interaction.Behaviors>
+                                <Button.Background>
+                                    <SolidColorBrush Color="{Binding IsTrayUpActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                </Button.Background>
+                            </Button>
+
+                            <Button Content="▼ DOWN" Width="180" HorizontalAlignment="Center" Style="{StaticResource JogButtonStyle}">
+                                <i:Interaction.Behaviors>
+                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TrayLiftDown"/>
+                                </i:Interaction.Behaviors>
+                                <Button.Background>
+                                    <SolidColorBrush Color="{Binding IsTrayDownActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                </Button.Background>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Pos. Cylinder" Margin="0 0 0 40" Style="{StaticResource SectionHeaderStyle}"/>
+
+                            <Button Content="▲ UP" Width="180" Margin="0 0 0 20" HorizontalAlignment="Center" Style="{StaticResource JogButtonStyle}">
+                                <i:Interaction.Behaviors>
+                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="PositioningCylinderUp"/>
+                                </i:Interaction.Behaviors>
+                                <Button.Background>
+                                    <SolidColorBrush Color="{Binding IsCylUpActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                </Button.Background>
+                            </Button>
+
+                            <Button Content="▼ DOWN" Width="180" HorizontalAlignment="Center" Style="{StaticResource JogButtonStyle}">
+                                <i:Interaction.Behaviors>
+                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="PositioningCylinderDown"/>
+                                </i:Interaction.Behaviors>
+                                <Button.Background>
+                                    <SolidColorBrush Color="{Binding IsCylDownActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                </Button.Background>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Transport Conveyor" Style="{StaticResource SectionHeaderStyle}"/>
+                            <WrapPanel Margin="20 20 0 20">
+
+                                <Button Content="◀ REV" Width="150" Margin="0 10 0 10" Style="{StaticResource JogButtonStyle}">
+                                    <i:Interaction.Behaviors>
+                                        <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorReverse"/>
+                                    </i:Interaction.Behaviors>
+                                    <Button.Background>
+                                        <SolidColorBrush Color="{Binding IsConvRevActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                    </Button.Background>
+                                </Button>
+
+                                <Button Content="▶ FWD" Width="150" Margin="20 10 0 10" Style="{StaticResource JogButtonStyle}">
+                                    <i:Interaction.Behaviors>
+                                        <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorForward"/>
+                                    </i:Interaction.Behaviors>
+                                    <Button.Background>
+                                        <SolidColorBrush Color="{Binding IsConvFwdActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                    </Button.Background>
+                                </Button>
+
+                                <Button Content="■ STOP" Width="150" Margin="20 10 0 10" Style="{StaticResource JogButtonStyle}">
+                                    <i:Interaction.Behaviors>
+                                        <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorStop"/>
+                                    </i:Interaction.Behaviors>
+                                    <Button.Background>
+                                        <SolidColorBrush Color="{Binding IsConvStopActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                    </Button.Background>
+                                </Button>
+
+                                <Button Content="⏪ LOW" Width="150" Margin="0 10 10 10" Style="{StaticResource JogButtonStyle}">
+                                    <i:Interaction.Behaviors>
+                                        <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorLowSpeed"/>
+                                    </i:Interaction.Behaviors>
+                                    <Button.Background>
+                                        <SolidColorBrush Color="{Binding IsConvLowActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                    </Button.Background>
+                                </Button>
+
+                                <Button Content="⏩ HIGH" Width="150" Margin="10 10 10 10" Style="{StaticResource JogButtonStyle}">
+                                    <i:Interaction.Behaviors>
+                                        <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorHighSpeed"/>
+                                    </i:Interaction.Behaviors>
+                                    <Button.Background>
+                                        <SolidColorBrush Color="{Binding IsConvHighActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                    </Button.Background>
+                                </Button>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="Manual X-Axis Jog" Style="{StaticResource SectionHeaderStyle}"/>
+                            <Button Content="◀ X JOG -" HorizontalAlignment="Left" Style="{StaticResource JogButtonStyle}">
+                                <i:Interaction.Behaviors>
+                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="ManualXAxisJogBackward"/>
+                                </i:Interaction.Behaviors>
+                                <Button.Background>
+                                    <SolidColorBrush Color="{Binding IsJogXMinusActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                </Button.Background>
+                            </Button>
+                            <Button Content="▶ X JOG +" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}">
+                                <i:Interaction.Behaviors>
+                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="ManualXAxisJogForward"/>
+                                </i:Interaction.Behaviors>
+                                <Button.Background>
+                                    <SolidColorBrush Color="{Binding IsJogXPlusActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                </Button.Background>
+                            </Button>
+                        </DockPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="Manual Y-Axis Jog" Style="{StaticResource SectionHeaderStyle}"/>
+                            <Button Content="◀ Y JOG -" HorizontalAlignment="Left" Style="{StaticResource JogButtonStyle}">
+                                <i:Interaction.Behaviors>
+                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="ManualYAxisJogBackward"/>
+                                </i:Interaction.Behaviors>
+                                <Button.Background>
+                                    <SolidColorBrush Color="{Binding IsJogYMinusActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                </Button.Background>
+                            </Button>
+                            <Button Content="▶ Y JOG +" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}">
+                                <i:Interaction.Behaviors>
+                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="ManualYAxisJogForward"/>
+                                </i:Interaction.Behaviors>
+                                <Button.Background>
+                                    <SolidColorBrush Color="{Binding IsJogYPlusActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                </Button.Background>
+                            </Button>
+                        </DockPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <Border Grid.Column="1" Style="{StaticResource CardStyle}" Margin="15,10,10,10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Move to Position" Grid.ColumnSpan="2" Style="{StaticResource SectionHeaderStyle}"/>
+
+                    <Button Grid.Row="1" Margin="10,0,10,20" Content="X-Y ORIGIN" FontWeight="Bold" Width="270" FontSize="36" Height="120"
+        Command="{Binding OriginCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                            </Style>
+                        </Button.Style>
+
+                        <Button.Background>
+                            <SolidColorBrush Color="{Binding IsOriginActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E8E8E8}}"/>
+                        </Button.Background>
+                    </Button>
+
+                    <Button Grid.Row="1" Grid.Column="1" Margin="10,0,10,20" Content="Position 0" FontWeight="Bold" Width="270" FontSize="36" Height="120">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource JogButtonStyle}">
+                                <Setter Property="Background" Value="#E8E8E8"/>
+                            </Style>
+                        </Button.Style>
+
+                        <i:Interaction.Behaviors>
+                            <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="MoveToPos0"/>
+                        </i:Interaction.Behaviors>
+
+                        <Button.Background>
+                            <SolidColorBrush Color="{Binding IsPos0Active, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E8E8E8}}"/>
+                        </Button.Background>
+                    </Button>
+
+                    <ItemsControl Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding GridPositionModes}" 
+                                  ItemTemplate="{StaticResource PositionButtonTemplate}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="3"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

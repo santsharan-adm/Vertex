@@ -1,5 +1,7 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
 using System;
@@ -10,13 +12,14 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Services.Algorithm
 {
-    public class AlgorithmAnalysisService
+    public class AlgorithmAnalysisService : BaseService
     {
         // Removed 'readonly' keyword for dynamic update support
         private List<PLCTagConfigurationModel> _tags;
         private readonly IPLCTagConfigurationService _tagService;
         public List<PLCTagConfigurationModel> Tags => _tags;
         private readonly bool _swapBytes;
+        private readonly bool _swapStringBytes;
 
         // Constants matching definitions in TagConfigLoader (after necessary mapping)
         private const int AlgoNo_Raw = 0;
@@ -32,10 +35,14 @@ namespace IPCSoftware.CoreService.Services.Algorithm
 
 
 
-        public AlgorithmAnalysisService(IPLCTagConfigurationService tagService, IOptions<ConfigSettings> config)
+        public AlgorithmAnalysisService(
+            IPLCTagConfigurationService tagService,
+            IOptions<ConfigSettings> config,
+            IAppLogger logger) : base(logger)
         {
             _tagService = tagService;
             _swapBytes = config.Value.SwapBytes;
+            _swapStringBytes = config.Value.SwapStringBytes;
             _ = GetTags();
         }
 
@@ -56,7 +63,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
         /// Applies data conversion (Word/FP/String) and configured algorithm (Raw/Scale).
         /// </summary>
         /// <param name="rawModbusData">Dictionary keyed by Modbus start address, containing raw ushort[] registers.</param>
-        public Dictionary<int, object> Apply(int plcNo, Dictionary<uint, object> rawModbusData)
+        public Dictionary<int, object>  Apply(int plcNo, Dictionary<uint, object> rawModbusData)
         {
             var result = new Dictionary<int, object>();
 
@@ -82,6 +89,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
                     // --- DEBUG OUTPUT ---
                     string algoName = tag.AlgNo == 1 ? "Scaled" : "Raw";
                     Console.WriteLine($"[ALGO_DEBUG] Tag: {tag.Name} (ID:{tag.Id}) | Value: {finalValue} | Type: {tag.DataType} | Algo: {algoName}");
+                    //_logger.LogInfo($"[ALGO_DEBUG] Tag: {tag.Name} (ID:{tag.Id}) | Value: {finalValue} | Type: {tag.DataType} | Algo: {algoName}", LogType.Diagnostics);
                     // --- END DEBUG OUTPUT ---
 
                     // Add using Tag Id (for Dashboard cache)
@@ -95,50 +103,51 @@ namespace IPCSoftware.CoreService.Services.Algorithm
         // --- Data Type Conversion and Extraction ---
         private object ConvertData(object rawModbusObj, PLCTagConfigurationModel tag)
         {
-            ushort[] registers;
-
-            if (rawModbusObj is ushort singleReg) registers = new ushort[] { singleReg };
-            else if (rawModbusObj is ushort[] regArray) registers = regArray.Take(tag.Length).ToArray();
-            else return null;
-
-            if (registers.Length == 0) return null;
-
-            // --- CRITICAL FIX: WORD SWAPPING ---
-            // This is required for Big Endian Modbus slaves transmitting 32-bit values.
-            //  bool requiresSwap = (tag.DataType == DataType_Word32 || tag.DataType == DataType_FP) && registers.Length >= 2;
-            bool is32BitType = tag.DataType == DataType_Word32 || tag.DataType == DataType_UInt32 || tag.DataType == DataType_FP;
-            //bool requiresSwap = (tag.DataType == DataType_Word32) && registers.Length >= 2;
-
-            if (_swapBytes && is32BitType && registers.Length >= 2)
-            {
-                // Swap Word 1 <-> Word 2
-                ushort reg1 = registers[0];
-                ushort reg2 = registers[1];
-                registers[0] = reg2;
-                registers[1] = reg1;
-            }
-
-            /* if (requiresSwap)
-             {
-                 // Swap the order of the 16-bit registers (Word 1 <-> Word 2)
-                 // 
-                 ushort reg1 = registers[0];
-                 ushort reg2 = registers[1];
-                 registers[0] = reg2;
-                 registers[1] = reg1;
-             }*/
-            // ------------------------------------
-
-            // 2. Combine registers (now in the correct order) into a byte array
-            var bytes = new List<byte>();
-            foreach (var reg in registers)
-            {
-                bytes.AddRange(BitConverter.GetBytes(reg));
-            }
-            byte[] byteArray = bytes.ToArray();
-
             try
             {
+                ushort[] registers;
+
+                if (rawModbusObj is ushort singleReg) registers = new ushort[] { singleReg };
+                else if (rawModbusObj is ushort[] regArray) registers = regArray.Take(tag.Length).ToArray();
+                else return null;
+
+                if (registers.Length == 0) return null;
+
+                // --- CRITICAL FIX: WORD SWAPPING ---
+                // This is required for Big Endian Modbus slaves transmitting 32-bit values.
+                //  bool requiresSwap = (tag.DataType == DataType_Word32 || tag.DataType == DataType_FP) && registers.Length >= 2;
+                bool is32BitType = tag.DataType == DataType_Word32 || tag.DataType == DataType_UInt32 || tag.DataType == DataType_FP;
+                //bool requiresSwap = (tag.DataType == DataType_Word32) && registers.Length >= 2;
+
+                if (_swapBytes && is32BitType && registers.Length >= 2)
+                {
+                    // Swap Word 1 <-> Word 2
+                    ushort reg1 = registers[0];
+                    ushort reg2 = registers[1];
+                    registers[0] = reg2;
+                    registers[1] = reg1;
+                }
+
+                /* if (requiresSwap)
+                 {
+                     // Swap the order of the 16-bit registers (Word 1 <-> Word 2)
+                     // 
+                     ushort reg1 = registers[0];
+                     ushort reg2 = registers[1];
+                     registers[0] = reg2;
+                     registers[1] = reg1;
+                 }*/
+                // ------------------------------------
+
+                // 2. Combine registers (now in the correct order) into a byte array
+                var bytes = new List<byte>();
+                foreach (var reg in registers)
+                {
+                    bytes.AddRange(BitConverter.GetBytes(reg));
+                }
+                byte[] byteArray = bytes.ToArray();
+
+
                 switch (tag.DataType)
                 {
                     case DataType_Bit:
@@ -149,7 +158,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
                     case DataType_String:
                         byte[] bytesToDecode = byteArray;
                         // --- CONFIGURABLE BYTE SWAP (String) ---
-                        if (_swapBytes)
+                        if (_swapStringBytes)
                         {
                             bytesToDecode = SwapEveryTwoBytes(byteArray);
                         }
@@ -180,47 +189,84 @@ namespace IPCSoftware.CoreService.Services.Algorithm
             catch (Exception ex)
             {
                 Console.WriteLine($"[ALGO_ERROR] Failed to convert data for Tag {tag.Name} (Type {tag.DataType}): {ex.Message}");
+                _logger.LogError($"[ALGO_ERROR] Failed to convert data for Tag {tag.Name} (Type {tag.DataType}): {ex.Message}", LogType.Diagnostics);
                 return null;
             }
         }
 
 
-       
+
 
         // --- Algorithm Application (Scaling) ---
         private object ApplyScaling(object rawTypedValue, PLCTagConfigurationModel tag)
         {
-            if (tag.AlgNo == AlgoNo_Raw)
+            try
             {
+                if (tag.AlgNo == AlgoNo_Raw)
+                {
+                    return rawTypedValue;
+                }
+
+                if (tag.AlgNo == AlgoNo_LinearScale)
+                {
+                    // Rule: Linear Scale only applies to Int16 (1) and Word32 (2)
+                    if (tag.DataType == DataType_Int16 || tag.DataType == DataType_UInt32 || tag.DataType == DataType_UInt16 || tag.DataType == DataType_Word32)
+                    {
+                        double rawNumericValue = Convert.ToDouble(rawTypedValue);
+                        if (tag.UseEngMinMax)
+                        {
+                            return LinearScale_EngMinMax(rawNumericValue, tag);
+                        }
+                        else
+                        {
+                            return LinearScale_GainOffset(rawNumericValue, tag);
+                        }
+                        
+                    }
+                }
+
+                // Fallback for types that shouldn't be scaled (Bit, String, FP)
                 return rawTypedValue;
             }
-
-            if (tag.AlgNo == AlgoNo_LinearScale)
+            catch (Exception ex)
             {
-                // Rule: Linear Scale only applies to Int16 (1) and Word32 (2)
-                if (tag.DataType == DataType_Int16 || tag.DataType == DataType_Word32)
-                {
-                    double rawNumericValue = Convert.ToDouble(rawTypedValue);
-                    return LinearScale(rawNumericValue, tag);
-                }
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return rawTypedValue;
             }
-
-            // Fallback for types that shouldn't be scaled (Bit, String, FP)
-            return rawTypedValue;
         }
 
 
-        private double LinearScale(double rawValue, PLCTagConfigurationModel tag)
+        private double LinearScale_EngMinMax(double rawValue, PLCTagConfigurationModel tag)
         {
-            double plcRawMax = (tag.DataType == DataType_Int16) ? 65535.0 : 2147483647.0;
-            double plcRawMin = 0.0;
+            /*      double plcRawMax = (tag.DataType == DataType_Int16) ? 65535.0 : 2147483647.0;
+                  double plcRawMin = 0.0;*/
+
+            double plcRawMax = tag.DataType.GetMaxValue(); //  (tag.DataType == DataType_Int16) ? 65535.0 : 2147483647.0;
+            double plcRawMin = tag.DataType.GetMinValue();
             double engMin = tag.Offset;
             double engMax = tag.Offset + tag.Span;
+            //double engMax = tag.Span;
             double rawRange = plcRawMax - plcRawMin;
 
             if (Math.Abs(rawRange) < double.Epsilon) return engMin;
 
             return (rawValue - plcRawMin) * (engMax - engMin) / rawRange + engMin;
+            // return (rawValue - plcRawMin) * (engMax)  + engMin;
+        }
+
+        private double LinearScale_GainOffset(double rawValue, PLCTagConfigurationModel tag)
+        {
+            double plcRawMax = tag.DataType.GetMaxValue(); //  (tag.DataType == DataType_Int16) ? 65535.0 : 2147483647.0;
+            double plcRawMin = tag.DataType.GetMinValue();
+            double offset = tag.Offset;
+            //double engMax = tag.Offset + tag.Span;
+            double gain = tag.Span;
+            double rawRange = plcRawMax - plcRawMin;
+
+            if (Math.Abs(rawRange) < double.Epsilon) return offset;
+
+            //return (rawValue - plcRawMin) * (engMax - engMin) / rawRange + engMin;
+             return (rawValue - plcRawMin) / (gain)  + offset;
         }
 
         byte[] SwapEveryTwoBytes(byte[] src)
@@ -230,12 +276,80 @@ namespace IPCSoftware.CoreService.Services.Algorithm
             for (int i = 0; i < src.Length; i += 2)
             {
                 dst[i] = src[i + 1];
-                dst[i + 1] = src[i];    
+                dst[i + 1] = src[i];
             }
             return dst;
         }
 
 
+
+    }
+
+
+    public static class GetMinMax
+    {
+        public static double GetMaxValue(this int type)
+        {
+            switch (type)
+            {
+                case DataType_Int16:     // short
+                    return short.MaxValue;          // 32767
+
+                case DataType_Word32:    // DWord / Int32 / Word
+                                         // Choose ONE depending on your protocol meaning:
+                    return uint.MaxValue;           // 4294967295 (DWord)
+                                                    // return int.MaxValue;         // 2147483647 (Int32)
+
+                case DataType_FP:        // float / real
+                    return float.MaxValue;          // 3.4028235E38
+
+                case DataType_UInt16:    // ushort
+                    return ushort.MaxValue;         // 65535
+
+                case DataType_UInt32:    // uint
+                    return uint.MaxValue;           // 4294967295
+
+                default:
+                    return short.MaxValue;
+            }
+        }
+
+       public static  double GetMinValue(this int type)
+        {
+            switch (type)
+            {
+                case DataType_Int16:     // short
+                    return short.MinValue;          // 32767
+
+                case DataType_Word32:    // DWord / Int32 / Word
+                                         // Choose ONE depending on your protocol meaning:
+                    return uint.MinValue;           // 4294967295 (DWord)
+                                                    // return int.MaxValue;         // 2147483647 (Int32)
+
+                case DataType_FP:        // float / real
+                    return float.MinValue;          // 3.4028235E38
+
+                case DataType_UInt16:    // ushort
+                    return ushort.MinValue;         // 65535
+
+                case DataType_UInt32:    // uint
+                    return uint.MinValue;           // 4294967295
+
+                default:
+                    return short.MinValue;
+            }
+        }
+
+
+
+        private const int DataType_Int16 = 1;
+        private const int DataType_Word32 = 2; // DWord, Int32, Word
+        private const int DataType_Bit = 3;
+        private const int DataType_FP = 4; // Real, Float
+        private const int DataType_String = 5;
+
+        private const int DataType_UInt16 = 6;
+        private const int DataType_UInt32 = 7;
 
     }
 }

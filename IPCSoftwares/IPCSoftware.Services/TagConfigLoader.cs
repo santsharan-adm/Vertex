@@ -1,11 +1,14 @@
-﻿using IPCSoftware.Shared.Models.ConfigModels;
+﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace IPCSoftware.Services
 {
-    public class TagConfigLoader
+    public class TagConfigLoader : BaseService
     {
+        public TagConfigLoader(IAppLogger logger) : base(logger)
+        { }
         // Constants matching definitions in AlgorithmAnalysisService/Requirements
         private const int DataType_Int16 = 1;
         private const int DataType_Word32 = 2;
@@ -17,57 +20,69 @@ namespace IPCSoftware.Services
 
         public List<PLCTagConfigurationModel> Load(string filePath)
         {
-            var rows = CsvReader.Read(filePath);
-            var tags = new List<PLCTagConfigurationModel>();
-
-            foreach (var r in rows)
+            try
             {
-                // Ensure the row has enough columns (at least 14 columns, including CanWrite at [13])
-                if (r.Length < 14) continue;
 
-                try
+                var rows = CsvReader.Read(filePath);
+                var tags = new List<PLCTagConfigurationModel>();
+
+                foreach (var r in rows)
                 {
-                    // 1. Parse Data Type and Bit No first, as they determine Length
-                    int dataType = ParseDataType(r[7]);
-                    int bitNo = ParseBitNo(r[7], r[8]);
-                    int configuredLength = int.Parse(r[5]);
+                    // Ensure the row has enough columns (at least 14 columns, including CanWrite at [13])
+                    if (r.Length < 14) continue;
 
-                    // 2. Apply Length Enforcement (Fix for requirements C, D, F, G)
-                    int enforcedLength = EnforceDataLength(dataType, configuredLength);
-
-                    // 3. Load the base model
-                    var tag = new PLCTagConfigurationModel
+                    try
                     {
-                        Id = int.Parse(r[0]),
-                        TagNo = int.Parse(r[1]),
-                        Name = r[2],
-                        PLCNo = int.Parse(r[3]),
-                        ModbusAddress = int.Parse(r[4]),
+                        // 1. Parse Data Type and Bit No first, as they determine Length
+                        int dataType = ParseDataType(r[7]);
+                        int bitNo = ParseBitNo(r[7], r[8]);
+                        int configuredLength = int.Parse(r[5]);
 
-                        // Use the enforced length
-                        Length = enforcedLength,
+                        // 2. Apply Length Enforcement (Fix for requirements C, D, F, G)
+                        int enforcedLength = EnforceDataLength(dataType, configuredLength);
 
-                        AlgNo = int.Parse(r[6]),
-                        DataType = dataType,
-                        BitNo = bitNo,
-                        Offset = int.Parse(r[9]),
-                        Span = int.Parse(r[10]),
-                        Description = r[11],
-                        Remark = r[12],
+                        // 3. Load the base model
+                        var tag = new PLCTagConfigurationModel
+                        {
+                            Id = int.Parse(r[0]),
+                            TagNo = int.Parse(r[1]),
+                            Name = r[2],
+                            PLCNo = int.Parse(r[3]),
+                            ModbusAddress = int.Parse(r[4]),
 
-                        // NEW: Read CanWrite (assuming column [13])
-                        CanWrite = ParseBoolean(r[13])
-                    };
+                            // Use the enforced length
+                            Length = enforcedLength,
 
-                    tags.Add(tag);
+                            AlgNo = int.Parse(r[6]),
+                            DataType = dataType,
+                            BitNo = bitNo,
+                            Offset = double.Parse(r[9]),
+                            Span = double.Parse(r[10]),
+                            Description = r[11],
+                            Remark = r[12],
+
+                            // NEW: Read CanWrite (assuming column [13])
+                            CanWrite = ParseBoolean(r[13]),
+                            IOType = r[14]
+                            //DMAddress = r[15]
+
+                        };
+
+                        tags.Add(tag);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex.Message, LogType.Diagnostics);
+                    }
                 }
-                catch
-                {
-                    // skip bad rows
-                }
+
+                return tags;
             }
-
-            return tags;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return null;
+            }
         }
 
         // --- Existing Helper Methods (Simplified for context) ---
@@ -117,17 +132,25 @@ namespace IPCSoftware.Services
 
         private int ParseBitNo(string dataTypeText, string bitValue)
         {
-            // Logic to extract BitNo (0-15) only if dataTypeText is "Bit"
-            if (!string.Equals(dataTypeText, "Bit", StringComparison.OrdinalIgnoreCase))
-                return 0;
-
-            if (int.TryParse(bitValue, out int bitNo))
+            try
             {
-                // Enforce range 0 to 15
-                return Math.Clamp(bitNo, 0, 15);
-            }
+                if (!string.Equals(dataTypeText, "Bit", StringComparison.OrdinalIgnoreCase))
+                    return 0;
 
-            return 0;
+                if (int.TryParse(bitValue, out int bitNo))
+                {
+                    // Enforce range 0 to 15
+                    return Math.Clamp(bitNo, 0, 15);
+                }
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return 0;
+            }
+            // Logic to extract BitNo (0-15) only if dataTypeText is "Bit"
         }
 
         // --- NEW Helper Methods ---
@@ -163,9 +186,17 @@ namespace IPCSoftware.Services
         /// </summary>
         private bool ParseBoolean(string s)
         {
-            if (string.IsNullOrWhiteSpace(s)) return false;
-            s = s.Trim().ToLowerInvariant();
-            return s == "true" || s == "1";
+            try
+            {
+                if (string.IsNullOrWhiteSpace(s)) return false;
+                s = s.Trim().ToLowerInvariant();
+                return s == "true" || s == "1";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
     }
 }

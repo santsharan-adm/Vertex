@@ -1,4 +1,6 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -6,12 +8,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace IPCSoftware.Services.ConfigServices
 {
-    public class DeviceConfigurationService : IDeviceConfigurationService
+    public class DeviceConfigurationService :BaseService , IDeviceConfigurationService
     {
         private readonly string _dataFolder;
         private readonly string _devicesCsvPath;
@@ -26,7 +29,9 @@ namespace IPCSoftware.Services.ConfigServices
         private int _nextDeviceId = 1;
         private int _nextInterfaceId = 1;
 
-        public DeviceConfigurationService(IOptions<ConfigSettings> configSettings)
+        public DeviceConfigurationService(
+            IOptions<ConfigSettings> configSettings,
+            IAppLogger logger) : base (logger)
         {
             var config = configSettings.Value;
             string dataFolderPath = config.DataFolder;
@@ -49,9 +54,16 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task InitializeAsync()
         {
-            await LoadDevicesFromCsvAsync();
-            await LoadInterfacesFromCsvAsync();
-            await LoadCameraInterfacesFromCsvAsync();
+            try
+            {
+                await LoadDevicesFromCsvAsync();
+                await LoadInterfacesFromCsvAsync();
+                await LoadCameraInterfacesFromCsvAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
         }
 
 
@@ -65,25 +77,37 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task<List<DeviceInterfaceModel>> GetPlcDevicesAsync()
         {
-            if (_interfaces.Count == 0)
+            try
             {
-                await LoadInterfacesFromCsvAsync();
+                if (_interfaces.Count == 0)
+                {
+                    await LoadInterfacesFromCsvAsync();
+                }
+                return _interfaces.ToList();
             }
-            return _interfaces.ToList();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return _interfaces.ToList();
+            }
         }
 
         public async Task<List<CameraInterfaceModel>> GetCameraDevicesAsync()
         {
-            if (_cameraInterfaces.Count == 0)
+            try
             {
-                await LoadCameraInterfacesFromCsvAsync();
+                if (_cameraInterfaces.Count == 0)
+                {
+                    await LoadCameraInterfacesFromCsvAsync();
+                }
+                return _cameraInterfaces.ToList();
             }
-            return _cameraInterfaces.ToList();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return _cameraInterfaces.ToList();
+            }
         }
-
-
-
-
 
         public async Task<DeviceModel> GetDeviceByIdAsync(int id)
         {
@@ -92,46 +116,70 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task<DeviceModel> AddDeviceAsync(DeviceModel device)
         {
-            device.Id = _nextDeviceId++;
-            _devices.Add(device);
-            await SaveDevicesToCsvAsync();
-            return device;
+            try
+            {
+                device.Id = _nextDeviceId++;
+                _devices.Add(device);
+                await SaveDevicesToCsvAsync();
+                return device;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return device;
+            }
         }
 
         public async Task<bool> UpdateDeviceAsync(DeviceModel device)
         {
-            var existing = _devices.FirstOrDefault(d => d.Id == device.Id);
-            if (existing == null) return false;
+            try
+            {
+                var existing = _devices.FirstOrDefault(d => d.Id == device.Id);
+                if (existing == null) return false;
 
-            var index = _devices.IndexOf(existing);
-            _devices[index] = device;
-            await SaveDevicesToCsvAsync();
-            return true;
+                var index = _devices.IndexOf(existing);
+                _devices[index] = device;
+                await SaveDevicesToCsvAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
 
         public async Task<bool> DeleteDeviceAsync(int id)
         {
-            var device = _devices.FirstOrDefault(d => d.Id == id);
-            if (device == null) return false;
-
-            // Also delete all interfaces for this device
-            var interfacesToDelete = _interfaces.Where(i => i.DeviceNo == device.DeviceNo).ToList();
-            foreach (var iface in interfacesToDelete)
+            try
             {
-                _interfaces.Remove(iface);
-            }
+                var device = _devices.FirstOrDefault(d => d.Id == id);
+                if (device == null) return false;
 
-            var cameraInterfacesToDelete = _cameraInterfaces.Where(i => i.DeviceNo == device.DeviceNo).ToList();
-            foreach (var camIface in cameraInterfacesToDelete)
+                // Also delete all interfaces for this device
+                var interfacesToDelete = _interfaces.Where(i => i.DeviceNo == device.DeviceNo).ToList();
+                foreach (var iface in interfacesToDelete)
+                {
+                    _interfaces.Remove(iface);
+                }
+
+                var cameraInterfacesToDelete = _cameraInterfaces.Where(i => i.DeviceNo == device.DeviceNo).ToList();
+                foreach (var camIface in cameraInterfacesToDelete)
+                {
+                    _cameraInterfaces.Remove(camIface);
+                }
+
+                _devices.Remove(device);
+                await SaveDevicesToCsvAsync();
+                await SaveInterfacesToCsvAsync();
+                await SaveCameraInterfacesToCsvAsync();
+                return true;
+            }
+            catch (Exception ex)
             {
-                _cameraInterfaces.Remove(camIface);
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
             }
-
-            _devices.Remove(device);
-            await SaveDevicesToCsvAsync();
-            await SaveInterfacesToCsvAsync();
-            await SaveCameraInterfacesToCsvAsync();
-            return true;
         }
 
         // ==================== INTERFACE OPERATIONS ====================
@@ -162,64 +210,113 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task<DeviceInterfaceModel> AddInterfaceAsync(DeviceInterfaceModel deviceInterface)
         {
-            deviceInterface.Id = _nextInterfaceId++;
-            _interfaces.Add(deviceInterface);
-            await SaveInterfacesToCsvAsync();
-            return deviceInterface;
+            try
+            {
+                deviceInterface.Id = _nextInterfaceId++;
+                _interfaces.Add(deviceInterface);
+                await SaveInterfacesToCsvAsync();
+                return deviceInterface;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                throw;
+            }
+
         }
 
         public async Task<bool> UpdateInterfaceAsync(DeviceInterfaceModel deviceInterface)
         {
-            var existing = _interfaces.FirstOrDefault(i => i.Id == deviceInterface.Id);
-            if (existing == null) return false;
+            try
+            {
+                var existing = _interfaces.FirstOrDefault(i => i.Id == deviceInterface.Id);
+                if (existing == null) return false;
 
-            var index = _interfaces.IndexOf(existing);
-            _interfaces[index] = deviceInterface;
-            await SaveInterfacesToCsvAsync();
-            return true;
+                var index = _interfaces.IndexOf(existing);
+                _interfaces[index] = deviceInterface;
+                await SaveInterfacesToCsvAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
 
         public async Task<bool> DeleteInterfaceAsync(int id)
         {
-            var iface = _interfaces.FirstOrDefault(i => i.Id == id);
-            if (iface == null) return false;
+            try
+            {
+                var iface = _interfaces.FirstOrDefault(i => i.Id == id);
+                if (iface == null) return false;
 
-            _interfaces.Remove(iface);
-            await SaveInterfacesToCsvAsync();
-            return true;
+                _interfaces.Remove(iface);
+                await SaveInterfacesToCsvAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false ;
+            }
         }
 
 
         public async Task<CameraInterfaceModel> AddCameraInterfaceAsync(CameraInterfaceModel cameraInterface)
         {
-            cameraInterface.Id = _cameraInterfaces.Any()
-                ? _cameraInterfaces.Max(i => i.Id) + 1
-                : 1;
+            try
+            {
+                cameraInterface.Id = _cameraInterfaces.Any()
+                    ? _cameraInterfaces.Max(i => i.Id) + 1
+                    : 1;
 
-            _cameraInterfaces.Add(cameraInterface);
-            await SaveCameraInterfacesToCsvAsync();
-            return cameraInterface;
+                _cameraInterfaces.Add(cameraInterface);
+                await SaveCameraInterfacesToCsvAsync();
+                return cameraInterface;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                throw;
+            }
         }
 
         public async Task<bool> UpdateCameraInterfaceAsync(CameraInterfaceModel cameraInterface)
         {
-            var existing = _cameraInterfaces.FirstOrDefault(i => i.Id == cameraInterface.Id);
-            if (existing == null) return false;
+            try
+            {
+                var existing = _cameraInterfaces.FirstOrDefault(i => i.Id == cameraInterface.Id);
+                if (existing == null) return false;
 
-            var index = _cameraInterfaces.IndexOf(existing);
-            _cameraInterfaces[index] = cameraInterface;
-            await SaveCameraInterfacesToCsvAsync();
-            return true;
+                var index = _cameraInterfaces.IndexOf(existing);
+                _cameraInterfaces[index] = cameraInterface;
+                await SaveCameraInterfacesToCsvAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
 
         public async Task<bool> DeleteCameraInterfaceAsync(int id)
         {
-            var cameraInterface = _cameraInterfaces.FirstOrDefault(i => i.Id == id);
-            if (cameraInterface == null) return false;
+            try
+            {
+                var cameraInterface = _cameraInterfaces.FirstOrDefault(i => i.Id == id);
+                if (cameraInterface == null) return false;
 
-            _cameraInterfaces.Remove(cameraInterface);
-            await SaveCameraInterfacesToCsvAsync();
-            return true;
+                _cameraInterfaces.Remove(cameraInterface);
+                await SaveCameraInterfacesToCsvAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return false;
+            }
         }
 
 
@@ -227,14 +324,16 @@ namespace IPCSoftware.Services.ConfigServices
 
         private async Task LoadDevicesFromCsvAsync()
         {
+            try
+            {
+            
             if (!File.Exists(_devicesCsvPath))
             {
                 await SaveDevicesToCsvAsync();
                 return;
             }
 
-            try
-            {
+           
                 var lines = await File.ReadAllLinesAsync(_devicesCsvPath);
                 if (lines.Length <= 1) return;
 
@@ -252,7 +351,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading devices CSV: {ex.Message}");
+                _logger.LogError($"Error loading devices CSV: {ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -279,7 +378,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving devices CSV: {ex.Message}");
+                _logger.LogError($"Error saving devices CSV: {ex.Message}", LogType.Diagnostics);
                 throw;
             }
         }
@@ -289,14 +388,14 @@ namespace IPCSoftware.Services.ConfigServices
         // Camera Interface CSV Methods
         private async Task LoadCameraInterfacesFromCsvAsync()
         {
+
+            try
+            {
             if (!File.Exists(_cameraInterfacesCsvPath))
             {
                 await SaveCameraInterfacesToCsvAsync();
                 return;
             }
-
-            try
-            {
                 var lines = await File.ReadAllLinesAsync(_cameraInterfacesCsvPath);
                 if (lines.Length <= 1) return;
 
@@ -312,7 +411,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading camera interfaces CSV: {ex.Message}");
+                _logger.LogError($"Error loading camera interfaces CSV: {ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -347,7 +446,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving camera interfaces CSV: {ex.Message}");
+                _logger.LogError($"Error saving camera interfaces CSV: {ex.Message}", LogType.Diagnostics);
                 throw;
             }
         }
@@ -420,15 +519,15 @@ namespace IPCSoftware.Services.ConfigServices
 
         private async Task LoadInterfacesFromCsvAsync()
         {
+            try
+            {
+                var lines = await File.ReadAllLinesAsync(_interfacesCsvPath);
             if (!File.Exists(_interfacesCsvPath))
             {
                 await SaveInterfacesToCsvAsync();
                 return;
             }
 
-            try
-            {
-                var lines = await File.ReadAllLinesAsync(_interfacesCsvPath);
                 if (lines.Length <= 1) return;
 
                 _interfaces.Clear();
@@ -445,7 +544,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading interfaces CSV: {ex.Message}");
+                _logger.LogError($"Error loading interfaces CSV: {ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -475,7 +574,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving interfaces CSV: {ex.Message}");
+                    _logger.LogError($"Error saving interfaces CSV: {ex.Message}", LogType.Diagnostics);
                 throw;
             }
         }

@@ -1,0 +1,594 @@
+﻿<UserControl x:Class="IPCSoftware.App.Views.ServoCalibrationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ServoCalibrationViewModel}"
+             
+     helpers:DisposeBehavior.AutoDispose="True"
+             Background="#F3F3F3">
+
+    <UserControl.Resources>
+        <!-- SCALED UP HMI Styles (Kept Large) -->
+        <Style x:Key="HmiColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Height" Value="80"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+        <Style x:Key="HmiCellStyle" TargetType="DataGridCell">
+            <Setter Property="FontSize" Value="26"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" BorderThickness="0" SnapsToDevicePixels="True">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#CCE8FF"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="TabItem">
+            <Setter Property="FontSize" Value="32"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="30,15"/>
+            <Setter Property="Height" Value="80"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Grid>
+                            <Border Name="Border" Background="#E0E0E0" BorderBrush="#CCC" BorderThickness="1,1,1,0" CornerRadius="10,10,0,0" Margin="0,0,5,0">
+                                <ContentPresenter x:Name="ContentSite"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"
+                                                  ContentSource="Header"
+                                                  Margin="{TemplateBinding Padding}"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#1E4FA8"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="#DDD"/>
+                                <Setter Property="Foreground" Value="#555"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- JOG BUTTON STYLE -->
+        <Style x:Key="JogButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="80"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="12" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.6"/>
+                                <Setter TargetName="border" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.95" ScaleY="0.95" CenterX="100" CenterY="40"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="40">
+        <TabControl Background="Transparent"  helpers:BlockTabChangeBehavior.BlockWhen="{Binding HasUnsavedChanges}"  BorderThickness="0">
+            
+
+            <!-- TAB 1: SETUP & LIVE DATA -->
+            <TabItem Header="Servo Params">
+                <!-- ... (Content same as before) ... -->
+                <Grid Margin="0,30,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,0,0,30">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="Servo Parameters" FontSize="36" FontWeight="Bold" Foreground="#333"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- LEFT: X Axis Config -->
+                        <Border Grid.Column="0" Background="White" CornerRadius="15" BorderBrush="#CCC" BorderThickness="1" Padding="5">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="X-Axis Parameters" FontSize="32" FontWeight="SemiBold" Margin="15" Foreground="#1E4FA8"/>
+
+                                <DataGrid Grid.Row="1" ItemsSource="{Binding XParameters}" 
+                                          AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" RowHeight="80" 
+                                          ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}" CellStyle="{StaticResource HmiCellStyle}"
+                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#EEE" BorderThickness="0" Background="White">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Parameter" Binding="{Binding Name}" Width="250" FontWeight="SemiBold"/>
+                                        <DataGridTextColumn Header="Val" Binding="{Binding CurrentValue}" Width="100" Foreground="#007ACC"/>
+                                        <DataGridTemplateColumn Header="Set New" Width="150">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBox Text="{Binding NewValue, UpdateSourceTrigger=PropertyChanged}" 
+                                                             FontSize="26" FontWeight="Bold" Width="120" Height="50"
+                                                             VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                                             Padding="5" BorderBrush="#999" BorderThickness="1"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Header=" " Width="*">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="SET" Command="{Binding DataContext.WriteParamCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}" Background="#E67E22" Foreground="White" FontSize="18" FontWeight="Bold"
+                                                            Height="50" Width="90" Cursor="Hand"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                               
+                                
+                            </Grid>
+                        </Border>
+
+                        <!-- RIGHT: Y Axis Config -->
+                        <Border Grid.Column="2" Background="White" CornerRadius="15" BorderBrush="#CCC" BorderThickness="1" Padding="5">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Y-Axis Parameters" FontSize="32" FontWeight="SemiBold" Margin="15" Foreground="#1E4FA8"/>
+
+                                <DataGrid Grid.Row="1" ItemsSource="{Binding YParameters}" 
+                                          AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" RowHeight="80" 
+                                          ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}" CellStyle="{StaticResource HmiCellStyle}"
+                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#EEE" BorderThickness="0" Background="White">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Parameter" Binding="{Binding Name}" Width="250" FontWeight="SemiBold"/>
+                                        <DataGridTextColumn Header="Val" Binding="{Binding CurrentValue}" Width="100" Foreground="#007ACC"/>
+                                        <DataGridTemplateColumn Header="Set New" Width="150">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBox Text="{Binding NewValue, UpdateSourceTrigger=PropertyChanged}" 
+                                                             FontSize="26" FontWeight="Bold" Width="120" Height="50"
+                                                             VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                                             Padding="5" BorderBrush="#999" BorderThickness="1"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Header=" " Width="*">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="SET" Command="{Binding DataContext.WriteParamCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}" Background="#E67E22" Foreground="White" FontSize="18" FontWeight="Bold"
+                                                            Height="50" Width="90" Cursor="Hand"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <!--<Button Grid.Row="2" Content="CONFIRM Y PARAMS" Command="{Binding ConfirmYParamsCommand}"
+                                        Background="#007ACC" Foreground="White" FontSize="24" FontWeight="Bold"
+                                        Height="70" Margin="15" Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Opacity" Value="0.8"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>-->
+                            </Grid>
+                        </Border>
+                        
+                        
+                        
+                    </Grid>
+
+                    <Button Grid.Row="2" Content="SAVE" Width=" 400" HorizontalAlignment="Center" Command="{Binding ConfirmXParamsCommand}"
+             Background="#007ACC" Foreground="White" FontSize="24" FontWeight="Bold"
+             Height="70" Margin="15" Cursor="Hand">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/> 
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter Property="Opacity" Value="0.8"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                </Grid>
+            </TabItem>
+
+            <!-- TAB 2: TEACH POSITIONS -->
+            <TabItem Header="Set Coords">
+                <Grid Margin="0,30,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,0,0,30">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="Position Teaching" FontSize="36" FontWeight="Bold" Foreground="#333"/>
+                        </StackPanel>
+
+                        <!-- Live Value Card -->
+                        <Border Grid.Column="1" Background="#1E4FA8" CornerRadius="20" Padding="25,25" MinWidth="500">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="30" Opacity="0.3"/>
+                            </Border.Effect>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <StackPanel Margin="0,0,60,0">
+                                    <TextBlock Text="LIVE X" Foreground="#CCC" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding LiveX, StringFormat=F2, UpdateSourceTrigger=PropertyChanged}" Foreground="White" FontSize="60" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                                <Border Width="2" Background="#FFFFFF" Opacity="0.3" Margin="0,10"/>
+                                <StackPanel Margin="60,0,0,0">
+                                    <TextBlock Text="LIVE Y" Foreground="#CCC" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding LiveY, StringFormat=F2, UpdateSourceTrigger=PropertyChanged}" Foreground="White" FontSize="60" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Position List -->
+                    <Border Grid.Row="1" Background="White" CornerRadius="15" BorderBrush="#CCC" BorderThickness="1">
+                        <DataGrid ItemsSource="{Binding Positions}" 
+                                  AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="False" RowHeight="90" 
+                                  ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}" CellStyle="{StaticResource HmiCellStyle}"
+                                  GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#EEE" VerticalGridLinesBrush="Transparent"
+                                  BorderThickness="0" Background="White" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID" Binding="{Binding PositionId}" Width="150" FontWeight="Bold"/>
+                                <DataGridTextColumn Header="Position Name" Binding="{Binding Name}" Width="300"/>
+
+                                <DataGridTemplateColumn Header="Sequence" Width="200">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ContentControl Content="{Binding}">
+                                                <ContentControl.Style>
+                                                    <Style TargetType="ContentControl">
+                                                        <Setter Property="ContentTemplate">
+                                                            <Setter.Value>
+                                                                <DataTemplate>
+                                                                    <ComboBox ItemsSource="{Binding DataContext.AvailableSequences, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                              SelectedItem="{Binding SequenceIndex, UpdateSourceTrigger=PropertyChanged}"
+                                                                              FontSize="24" FontWeight="Bold" 
+                                                                              Height="60" Width="100"
+                                                                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                                                </DataTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding PositionId}" Value="0">
+                                                                <Setter Property="ContentTemplate">
+                                                                    <Setter.Value>
+                                                                        <DataTemplate>
+                                                                            <TextBlock Text="0" FontSize="24" FontWeight="Bold" Foreground="#666" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                        </DataTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </ContentControl.Style>
+                                            </ContentControl>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Saved X" Width="300">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding X, StringFormat=F2, UpdateSourceTrigger=LostFocus}" 
+                                                     FontSize="26" FontWeight="Bold" Foreground="#28A745"
+                                                     VerticalContentAlignment="Center" Padding="5" 
+                                                     BorderBrush="Transparent" Background="Transparent"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <!-- EDITABLE Y Coordinate -->
+                                <DataGridTemplateColumn Header="Saved Y" Width="300">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Y, StringFormat=F2, UpdateSourceTrigger=LostFocus}" 
+                                                     FontSize="26" FontWeight="Bold" Foreground="#28A745"
+                                                     VerticalContentAlignment="Center" Padding="5" 
+                                                     BorderBrush="Transparent" Background="Transparent"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Action" Width="450">
+                                    <!-- Increased Width -->
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+                                                <!-- TEACH BUTTON (Captures Live) -->
+                                                <Button Command="{Binding DataContext.TeachCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding}"
+                            Background="#007ACC" Foreground="White" 
+                            Height="50" Width="150" Cursor="Hand" Margin="0,0,10,0"
+                            ToolTip="Capture current Live Position">
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                                                                <Viewbox Margin="5">
+                                                                    <TextBlock Text="TEACH" FontWeight="Bold"/>
+                                                                </Viewbox>
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsPressed" Value="True">
+                                                                    <Setter Property="Opacity" Value="0.8"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+
+                                                <!-- WRITE BUTTON (Manual Entry) -->
+                                                <Button Command="{Binding DataContext.WritePositionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding}"
+                            Background="#E67E22" Foreground="White" 
+                            Height="50" Width="150" Cursor="Hand"
+                            ToolTip="Write manually typed value to PLC">
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                                                                <Viewbox Margin="5">
+                                                                    <TextBlock Text="WRITE" FontWeight="Bold"/>
+                                                                </Viewbox>
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsPressed" Value="True">
+                                                                    <Setter Property="Opacity" Value="0.8"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+
+
+
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+
+                    <!-- Footer: Jog Buttons & Save -->
+
+                    <Grid Grid.Row="2"  Margin="0,30,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- HOME POS BUTTON -->
+                        <Button Content="X-Y ORIGIN" Grid.Column="0" HorizontalAlignment="Left" Margin="0,0,20,0"
+Command="{Binding ConfirmYCoordsCommand}" Width="300"
+Height="80" FontSize="24" FontWeight="Bold"
+Background="#1E4FA8" Foreground="White" Cursor="Hand">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="12">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Opacity" Value="0.8"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Center" Orientation="Horizontal" >
+
+
+                        
+                            <!-- JOG BUTTONS (Standard Events) -->
+
+                            <!-- X JOG - -->
+                            <Button Content="X JOG -" HorizontalAlignment="Right" 
+                                    Style="{StaticResource JogButtonStyle}" Background="#007ACC">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostMouseCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XMinus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                            <!-- X JOG + -->
+                            <Button Content="X JOG +" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="#007ACC">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostMouseCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="XPlus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                            
+                            
+                            <!-- Y JOG - -->
+                            <Button Content="Y JOG -" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="#007ACC">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostMouseCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YMinus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                            <!-- Y JOG + -->
+                            <Button Content="Y JOG +" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="#007ACC">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostMouseCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchDown">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|True"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="LostTouchCapture">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="PreviewTouchUp">
+                                        <i:InvokeCommandAction Command="{Binding JogCommand}" CommandParameter="YPlus|False"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+
+                     
+
+                        </StackPanel>
+
+                        <!-- SAVE (Confirm X Coord) -->
+                        <Button Content="SAVE" Grid.Column="2" HorizontalAlignment="Right"
+                Command="{Binding ConfirmXCoordsCommand}"
+                Width="300" Height="80" FontSize="24" FontWeight="Bold"
+                Background="#1E4FA8" Foreground="White" Cursor="Hand" Margin="0,0,20,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="12">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Opacity" Value="0.8"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </Grid>
+               
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</UserControl>

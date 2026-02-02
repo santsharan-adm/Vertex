@@ -7,7 +7,7 @@
              xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
-                  Unloaded="UserControl_Unloaded"
+     helpers:DisposeBehavior.AutoDispose="True"
              helpers:ThemeManager.ThemeSource="{Binding CurrentThemePath}"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:OEEDashboardViewModel}"
              Background="{DynamicResource PageBackgroundBrush}">
@@ -22,6 +22,7 @@
             <!-- Register the new converter -->
             <conv:OeeToGeometryConverter x:Key="OeeToGeometry"/>
             <conv:OeeToColorConverter x:Key="OeeToColor"/>
+            <conv:MsToSecondsConverter x:Key="MsToSeconds"/>
             <Style x:Key="DashboardCard" TargetType="Border">
                 <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
                 <Setter Property="CornerRadius" Value="12"/>
@@ -84,9 +85,101 @@
                                VerticalAlignment="Center"/>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+
+                        <Button Command="{Binding ToggleMacMiniCommand}" 
+                                Content="{Binding MacMiniStatusText}"
+                                Width="160" Height="45"
+                                Margin="0,0,25,0"
+                                Cursor="Hand"
+                                Focusable="False"
+                                Background="{Binding MacMiniStatusColor}" 
+                                Foreground="White"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1"
+                                FontSize="16" 
+                                FontWeight="SemiBold">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </Button.Resources>
+                            <!-- Remove default template triggers that might mess up background binding -->
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" 
+                                            BorderBrush="{TemplateBinding BorderBrush}" 
+                                            BorderThickness="{TemplateBinding BorderThickness}" 
+                                            CornerRadius="8">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Opacity" Value="0.8"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <Button Command="{Binding ReverseCommand}" 
+                        Width="140" Height="45"
+                        Margin="0,0,25,0"
+                        Cursor="Hand"
+                                Focusable="False"
+                        Background="{DynamicResource CardBackgroundBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1">
+
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </Button.Resources>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" 
+                           Text="{Binding ConveyorDirectionIcon}" 
+                           FontSize="24" 
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource PrimaryTextBrush}" 
+                           VerticalAlignment="Center" 
+                           Margin="0,0,10,0"/>
+
+                                <TextBlock Grid.Column="1" 
+                               Text="{Binding ConveyorDirectionText}" 
+                               FontSize="16" 
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource PrimaryTextBrush}" 
+                               VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+
+                        <Button Command="{Binding ResetCommand}" 
+                       Content="Reset Counter"
+                       Width="120" Height="45"
+                                Focusable="False"
+                       FontSize="16" FontWeight="SemiBold"
+                       Margin="0,0,25,0"
+                       Background="{DynamicResource CardBackgroundBrush}"
+                       Foreground="{DynamicResource PrimaryTextBrush}"
+                       BorderBrush="{DynamicResource BorderBrush}"
+                       BorderThickness="1">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="6"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+
                         <Button Command="{Binding ToggleThemeCommand}" 
                                 Content="🌗 Theme"
-                                Width="110" Height="36"
+                                Width="110" Height="45"
+                                Focusable="False"
                                 FontSize="16" FontWeight="SemiBold"
                                 Margin="0,0,25,0"
                                 Background="{DynamicResource CardBackgroundBrush}"
@@ -100,8 +193,8 @@
                             </Button.Resources>
                         </Button>
 
-                        <Ellipse Width="16" Height="16" Fill="{DynamicResource TableHeaderBrush}" Margin="0,0,8,0"/>
-                        <TextBlock Text="MACHINE STATUS" Foreground="{DynamicResource TableHeaderBrush}" FontSize="20" FontWeight="Bold"/>
+                        <!--<Ellipse Width="16" Height="16" Fill="{DynamicResource TableHeaderBrush}" Margin="0,0,8,0"/>-->
+                        <!--<TextBlock Text="MACHINE STATUS" Foreground="{DynamicResource TableHeaderBrush}" FontSize="20" FontWeight="Bold"/>-->
                     </StackPanel>
                 </Grid>
             </Border>
@@ -143,7 +236,7 @@
                     </Border.InputBindings>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Foreground="White" Text="AVG CYCLE (SEC)" Style="{StaticResource KpiLabel}"/>
-                        <TextBlock Text="{Binding CycleTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource KpiValue}" Foreground="White"/>
+                        <TextBlock Text="{Binding CycleTime,Converter={StaticResource MsToSeconds}, StringFormat=F2, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource KpiValue}" Foreground="White"/>
                     </StackPanel>
                 </Border>
 
@@ -263,17 +356,15 @@
 
                                         <!-- Dynamic Arc -->
                                         <!-- Data is bound to OverallOEE using the converter -->
-                                        <Path StrokeThickness="20" 
-                                              HorizontalAlignment="Center" 
-                                              VerticalAlignment="Center" 
-                                              StrokeStartLineCap="Round" 
+                                        <Path StrokeThickness="21" 
+                                              StrokeStartLineCap="Round"
                                               StrokeEndLineCap="Round"
                                               Data="{Binding OverallOEE, Converter={StaticResource OeeToGeometry}}"
                                               Stroke="{Binding OverallOEE, Converter={StaticResource OeeToColor}}">
                                         </Path>
 
                                         <!-- Inner Circle Mask -->
-                                        <Ellipse Width="150" Height="150" Fill="{DynamicResource CardBackgroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        <Ellipse Width="155" Height="155" Fill="{DynamicResource CardBackgroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                                         <!-- Text Value -->
                                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -303,7 +394,7 @@
                                 <controls:TrendChart Grid.Row="1" Values="{Binding CycleTrend}"/>
                             </Grid>
                         </Border>
-
+                        <!-- Latest Measurements Card -->
                         <Border Grid.Column="1" Style="{StaticResource DashboardCard}" Margin="6,6,0,0">
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -311,12 +402,7 @@
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" 
-                   Text="Latest Measurements" 
-                   Foreground="{DynamicResource PrimaryTextBrush}" 
-                   FontSize="24" 
-                   FontWeight="SemiBold" 
-                   Margin="0,0,0,10"/>
+                                <TextBlock Grid.Row="0" Text="Latest Measurements" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,10"/>
 
                                 <Grid Grid.Row="1" VerticalAlignment="Center">
                                     <Grid.RowDefinitions>
@@ -327,43 +413,59 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="0.8*"/>
                                         <ColumnDefinition Width="1.5*"/>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="0.8*"/>
+                                        <ColumnDefinition Width="0.8*"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="PARAMETER" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="PARAM" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold"/>
                                     <TextBlock Grid.Row="0" Grid.Column="1" Text="VALUE" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="SPECS" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="MIN" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="MAX" Foreground="{DynamicResource TableHeaderBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"/>
 
-                                    <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Text="X" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" Margin="0,15,0,0"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="X" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" Margin="0,15,0,0"/>
+
                                     <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
-                                        <TextBlock Text="3.45 mm" Foreground="{DynamicResource SuccessBrush}" FontSize="24" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding LatestX, StringFormat={}{0:F2} mm}" 
+                           Foreground="{Binding StatusBrushX}" 
+                           FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
-                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="3 - 4" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Right" Margin="0,15,0,0"/>
 
-                                    <Border Grid.Row="2" Grid.ColumnSpan="3" Height="1" Background="{DynamicResource BorderBrush}" Margin="0,10"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding LimitX_Min, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center" Margin="0,15,0,0"/>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding LimitX_Max, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center" Margin="0,15,0,0"/>
+
+                                    <Border Grid.Row="2" Grid.ColumnSpan="4" Height="1" Background="{DynamicResource BorderBrush}" Margin="0,10"/>
 
                                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Y" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24"/>
+
                                     <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock Text="5.23 mm" Foreground="{DynamicResource DangerBrush}" FontSize="24" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding LatestY, StringFormat={}{0:F2} mm}" 
+                           Foreground="{Binding StatusBrushY}" 
+                           FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
-                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="3 - 4" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Right"/>
 
-                                    <Border Grid.Row="4" Grid.ColumnSpan="3" Height="1" Background="{DynamicResource BorderBrush}" Margin="0,10"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding LimitY_Min, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding LimitY_Max, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
 
-                                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Z" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24"/>
+                                    <Border Grid.Row="4" Grid.ColumnSpan="4" Height="1" Background="{DynamicResource BorderBrush}" Margin="0,10"/>
+
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Text="θ" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24"/>
+
                                     <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock Text="0.02 mm" Foreground="{DynamicResource SuccessBrush}" FontSize="24" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding LatestTheta, StringFormat={}{0:F2} mm}" 
+                           Foreground="{Binding StatusBrushTheta}" 
+                           FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
-                                    <TextBlock Grid.Row="5" Grid.Column="2" Text="0 - 0.5" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Right"/>
+
+                                    <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding LimitTheta_Min, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding LimitTheta_Max, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
 
                                 </Grid>
                             </Grid>
                         </Border>
-
                     </Grid>
                 </Grid>
 
@@ -388,7 +490,7 @@
                             <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0,0,0">
                                 <TextBlock Text="Active Batch Code" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="16"/>
                                 <TextBlock Text="{Binding QRCodeText, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="32" FontWeight="Bold" Margin="0,2,0,0"/>
-                                <TextBlock Text="Scanned: 10:42 AM" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="14" Margin="0,2,0,0"/>
+                                <!--<TextBlock Text="Scanned: 10:42 AM" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="14" Margin="0,2,0,0"/>-->
                             </StackPanel>
                         </Grid>
                     </Border>

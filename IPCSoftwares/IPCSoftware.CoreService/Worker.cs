@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.CoreService.Services;
 using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
@@ -6,6 +7,8 @@ using IPCSoftware.CoreService.Services.Dashboard;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
+using IPCSoftware.Services.AppLoggerServices;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -19,7 +22,8 @@ namespace IPCSoftware.CoreService
 {
     public class Worker : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
+        private readonly IAppLogger _logger;
+        private readonly ILogManagerService _logManager;
         private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceService;
         private readonly ConfigSettings _configuration;
@@ -32,7 +36,8 @@ namespace IPCSoftware.CoreService
 
         // Removed _plcManager and _dashboard fields; they will be local or managed by DashboardInitializer
 
-        public Worker(ILogger<Worker> logger, 
+        public Worker(IAppLogger logger, 
+            ILogManagerService logManager, 
             IPLCTagConfigurationService tagService,
             AlgorithmAnalysisService algo,
             DashboardInitializer dashboard,
@@ -43,6 +48,7 @@ namespace IPCSoftware.CoreService
             PLCClientManager plcManger,
             UiListener uiListener)
         {
+            _logManager = logManager;
             _deviceService = deviceService;
             _tagService = tagService;
             _logger = logger;
@@ -62,50 +68,78 @@ namespace IPCSoftware.CoreService
             {
                 var devices = await _deviceService.GetPlcDevicesAsync();
                 var cameras = _deviceService.GetCameraDevicesAsync().GetAwaiter().GetResult();
-                _logger.LogInformation($"Loaded {devices.Count} PLC devices.");
-                _logger.LogInformation($"Loaded {cameras.Count} cameras devices.");
+                _logger.LogInfo($"Loaded {devices.Count} PLC devices.", LogType.Diagnostics);
+                _logger.LogInfo($"Loaded {cameras.Count} cameras devices.", LogType.Diagnostics);
                 var tags = await _tagService.GetAllTagsAsync();
-                _logger.LogInformation($"Loaded {tags.Count} Modbus tags.");
+                _logger.LogInfo($"Loaded {tags.Count} Modbus tags.", LogType.Diagnostics);
                 SharedServiceHost.Initialize(_plcManager, _algo);
 
                 // --- START UI LISTENER (TCP SERVER) ---
-                Console.WriteLine("Starting UI Listener in background...");
+                _logger.LogInfo("Starting UI Listener in background...", LogType.Diagnostics);
                 _ = Task.Run(async () =>
-                {
+                {   
                     try { await _uiListener.StartAsync(); }
-                    catch (Exception ex) { Console.WriteLine($"UI Listener Startup Error: {ex.Message}"); }
+                    catch (Exception ex) 
+                    { 
+                        _logger.LogError($"UI Listener Startup Error: {ex.Message}", LogType.Diagnostics);
+                    }
                 });
 
-                CameraInterfaceModel myCamera = cameras.FirstOrDefault();
+                await _logManager.InitializeAsync(); // Ensure configs loaded
 
-                if (myCamera?.Enabled == true)
+             
+
+                _ = Task.Run(async () =>
                 {
-                    Console.WriteLine("Starting Camera FTP Service...");
-
-                    _ = Task.Run(async () =>
+                    while (!stoppingToken.IsCancellationRequested)
                     {
                         try
                         {
-                            await _cameraFtpService.StartAsync(myCamera);
+                            // Trigger Auto-Backup Check
+                            _logManager.CheckAndPerformBackups();
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Camera FTP Service failed: {ex}");
+                            _logger.LogError($"Backup Loop Error: {ex.Message}", LogType.Diagnostics);
                         }
-                    });
-                }
-                else
-                {
-                    Console.WriteLine("Camera FTP Service is disabled in configuration.");
-                }
+
+                        // Wait 60 seconds before next check
+                        await Task.Delay(60000, stoppingToken);
+                    }
+                }, stoppingToken);
+
+
+                /* CameraInterfaceModel myCamera = cameras.FirstOrDefault();
+
+                 if (myCamera?.Enabled == true)
+                 {
+                     Console.WriteLine("Starting Camera FTP Service...");
+
+                     _ = Task.Run(async () =>
+                     {
+                         try
+                         {
+                             await _cameraFtpService.StartAsync(myCamera);
+                         }
+                         catch (Exception ex)
+                         {
+                             _logger.LogError($"Camera FTP Service failed: {ex}", LogType.Diagnostics );
+                         }
+                     });
+                 }
+                 else
+                 {
+
+                     _logger.LogError("Camera FTP Service is disabled in configuration.", LogType.Diagnostics);
+                 }*/
 
                 await _dashboard.StartAsync();
                 await Task.Delay(Timeout.Infinite, stoppingToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "FATAL ERROR during Core Service initialization.");
-               // throw;
+                _logger.LogError($"FATAL ERROR during Core Service initialization: {ex.Message}", LogType.Diagnostics);
+                throw;
             }
 
             finally

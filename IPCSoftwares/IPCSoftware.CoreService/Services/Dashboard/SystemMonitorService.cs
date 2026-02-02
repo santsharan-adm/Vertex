@@ -1,5 +1,10 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.CoreService.Services.External;
 using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.Services;
+using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,22 +12,11 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Services.Dashboard
 {
-    public class SystemMonitorService
+    public class SystemMonitorService : BaseService
     {
         private readonly PLCClientManager _plcManager;
         private readonly IPLCTagConfigurationService _tagService;
-
-        // Tag Constants
-        public const int TAG_HEARTBEAT_PLC = 1;  // DM10000.0 (Read)
-        public const int TAG_TIME_REQ = 476;     // DM10000.1 (Read)
-        public const int TAG_HEARTBEAT_IPC = 2;  // DM10015.0 (Write)
-        public const int TAG_TIME_ACK = 3;       // DM10015.1 (Write)
-        public const int TAG_TIME_YEAR = 4;      // DM10019
-        public const int TAG_TIME_MONTH = 5;
-        public const int TAG_TIME_DAY = 6;
-        public const int TAG_TIME_HOUR = 7;
-        public const int TAG_TIME_MIN = 8;
-        public const int TAG_TIME_SEC = 9;
+        private readonly ExternalInterfaceService _extService;
 
         // --- HEARTBEAT STATE ---
         private bool? _lastPlcPulse = null;      // Nullable to detect first read
@@ -31,19 +25,21 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         private bool _ipcPulseState = false;
         private DateTime _lastIpcToggleTime;
 
-        // --- TIME SYNC STATE ---
-        private bool _lastTimeReqState = false;
-        private bool _isTimeSynced = true;
-
         // --- CONFIGURATION ---
-        private const double HEARTBEAT_TIMEOUT_SECONDS = 5.0;  // Increased from 3 to 5
+        // Description says: "abnormal if no change for 3 s"
+        private const double HEARTBEAT_TIMEOUT_SECONDS = 3.0;
         private const double IPC_TOGGLE_INTERVAL_SECONDS = 1.0;
-        private const double READ_TIMEOUT_SECONDS = 3.0;       // NEW: Detect if we stop receiving data
+        private const double READ_TIMEOUT_SECONDS = 3.0;
 
-        public SystemMonitorService(PLCClientManager plcManager, IPLCTagConfigurationService tagService)
+        public SystemMonitorService(
+            PLCClientManager plcManager,
+            IPLCTagConfigurationService tagService,
+            ExternalInterfaceService extService,
+            IAppLogger logger) : base(logger)
         {
             _plcManager = plcManager;
             _tagService = tagService;
+            _extService = extService;
 
             // Initialize timestamps
             _lastPlcChangeTime = DateTime.Now;
@@ -52,137 +48,97 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         }
 
         /// <summary>
-        /// Processes Heartbeat and Time Sync logic.
-        /// CRITICAL: This must be called continuously with live data
+        /// Processes Heartbeat Logic Only.
+        /// 1. Monitors PLC Pulse (PLC -> IPC)
+        /// 2. Sends IPC Pulse (IPC -> PLC)
         /// </summary>
         public Dictionary<int, object> Process(Dictionary<int, object> tagValues)
         {
-            // ---------------------------------------------------------
-            // 1. HEARTBEAT LOGIC (IMPROVED)
-            // ---------------------------------------------------------
-
-            bool isPlcConnected = false;
-
-            if (tagValues != null && tagValues.Count > 0)
-            {
-                // We're receiving data - update read timestamp
-                _lastSuccessfulRead = DateTime.Now;
-
-                // A. Monitor PLC Pulse (PLC -> IPC)
-                bool currentPlcPulse = GetBool(tagValues, TAG_HEARTBEAT_PLC);
-
-                // First read initialization
-                if (_lastPlcPulse == null)
-                {
-                    _lastPlcPulse = currentPlcPulse;
-                    _lastPlcChangeTime = DateTime.Now;
-                    Console.WriteLine($"[Heartbeat] Initial PLC pulse state: {currentPlcPulse}");
-                }
-                // Detect change
-                else if (currentPlcPulse != _lastPlcPulse.Value)
-                {
-                    _lastPlcChangeTime = DateTime.Now;
-                    _lastPlcPulse = currentPlcPulse;
-                    Console.WriteLine($"[Heartbeat] PLC pulse changed to: {currentPlcPulse}");
-                }
-
-                // Check connection status with multiple criteria
-                double timeSinceLastChange = (DateTime.Now - _lastPlcChangeTime).TotalSeconds;
-                double timeSinceLastRead = (DateTime.Now - _lastSuccessfulRead).TotalSeconds;
-
-                // Connected if:
-                // 1. We received data recently (within 3 seconds)
-                // AND
-                // 2. PLC pulse has changed recently (within 5 seconds)
-                isPlcConnected = (timeSinceLastRead < READ_TIMEOUT_SECONDS) &&
-                                 (timeSinceLastChange < HEARTBEAT_TIMEOUT_SECONDS);
-
-                // Debug logging (remove in production)
-                if (!isPlcConnected)
-                {
-                    Console.WriteLine($"[Heartbeat] DISCONNECTED - Last change: {timeSinceLastChange:F1}s ago, Last read: {timeSinceLastRead:F1}s ago");
-                }
-            }
-            else
-            {
-                // No data received at all
-                double timeSinceLastRead = (DateTime.Now - _lastSuccessfulRead).TotalSeconds;
-                isPlcConnected = timeSinceLastRead < READ_TIMEOUT_SECONDS;
-
-                if (!isPlcConnected)
-                {
-                    Console.WriteLine($"[Heartbeat] NO DATA - Last read: {timeSinceLastRead:F1}s ago");
-                }
-            }
-
-            // B. Generate IPC Pulse (IPC -> PLC) - Toggle every 1s
-            double timeSinceLastToggle = (DateTime.Now - _lastIpcToggleTime).TotalSeconds;
-            if (timeSinceLastToggle >= IPC_TOGGLE_INTERVAL_SECONDS)
-            {
-                _ipcPulseState = !_ipcPulseState;
-                _lastIpcToggleTime = DateTime.Now;
-
-                // Only write if PLC is connected
-                if (isPlcConnected)
-                {
-                    _ = WriteTagAsync(TAG_HEARTBEAT_IPC, _ipcPulseState);
-                    Console.WriteLine($"[Heartbeat] IPC pulse toggled to: {_ipcPulseState}");
-                }
-            }
-
-            // ---------------------------------------------------------
-            // 2. TIME SYNC LOGIC
-            // ---------------------------------------------------------
-            bool currentTimeReq = GetBool(tagValues, TAG_TIME_REQ);
-
-            // Rising Edge Detection (0 -> 1)
-            if (currentTimeReq && !_lastTimeReqState)
-            {
-                Console.WriteLine("[TimeSync] Time Sync Requested by PLC.");
-                _ = HandleTimeSyncAsync();
-            }
-
-            // Falling Edge Logic (Reset Ack)
-            if (!currentTimeReq && _lastTimeReqState)
-            {
-                _ = WriteTagAsync(TAG_TIME_ACK, false);
-                Console.WriteLine("[TimeSync] Time request cleared, ACK reset.");
-            }
-
-            _lastTimeReqState = currentTimeReq;
-
-            // Return status flags
-            var statusFlags = new List<bool> { isPlcConnected, _isTimeSynced };
-            return new Dictionary<int, object> { { 1, statusFlags } };
-        }
-
-        private async Task HandleTimeSyncAsync()
-        {
             try
             {
-                DateTime now = DateTime.Now;
+                bool isPlcConnected = false;
 
-                // Write time data in sequence
-                await WriteTagAsync(TAG_TIME_YEAR, now.Year);
-                await WriteTagAsync(TAG_TIME_MONTH, now.Month);
-                await WriteTagAsync(TAG_TIME_DAY, now.Day);
-                await WriteTagAsync(TAG_TIME_HOUR, now.Hour);
-                await WriteTagAsync(TAG_TIME_MIN, now.Minute);
-                await WriteTagAsync(TAG_TIME_SEC, now.Second);
+                // =========================================================
+                // 1. MONITOR PLC PULSE (PLC -> IPC)
+                // =========================================================
+                if (tagValues != null && tagValues.Count > 0)
+                {
+                    _lastSuccessfulRead = DateTime.Now;
 
-                // Small delay to ensure all writes complete
-                await Task.Delay(100);
+                    // Read current value from Tag Dictionary
+                    bool currentPlcPulse = GetBool(tagValues, ConstantValues.TAG_Heartbeat_PLC);
 
-                // Write acknowledgement
-                await WriteTagAsync(TAG_TIME_ACK, true);
+                    // First read initialization
+                    if (_lastPlcPulse == null)
+                    {
+                        _lastPlcPulse = currentPlcPulse;
+                        _lastPlcChangeTime = DateTime.Now;
+                    }
+                    // Detect Toggle (Change in value)
+                    else if (currentPlcPulse != _lastPlcPulse.Value)
+                    {
+                        _lastPlcChangeTime = DateTime.Now;
+                        _lastPlcPulse = currentPlcPulse;
+                    }
 
-                Console.WriteLine($"[TimeSync] Completed: {now:yyyy-MM-dd HH:mm:ss}");
-                _isTimeSynced = true;
+                    // Check Logic: 
+                    // 1. Data receiving (Read Timeout)
+                    // 2. Value changing (Heartbeat Timeout)
+                    double timeSinceLastChange = (DateTime.Now - _lastPlcChangeTime).TotalSeconds;
+                    double timeSinceLastRead = (DateTime.Now - _lastSuccessfulRead).TotalSeconds;
+
+                    isPlcConnected = (timeSinceLastRead < READ_TIMEOUT_SECONDS) &&
+                                     (timeSinceLastChange < HEARTBEAT_TIMEOUT_SECONDS);
+                }
+                else
+                {
+                    // No data received
+                    double timeSinceLastRead = (DateTime.Now - _lastSuccessfulRead).TotalSeconds;
+                    isPlcConnected = timeSinceLastRead < READ_TIMEOUT_SECONDS;
+                }
+
+                // =========================================================
+                // 2. SEND IPC PULSE (IPC -> PLC)
+                // =========================================================
+                double timeSinceLastToggle = (DateTime.Now - _lastIpcToggleTime).TotalSeconds;
+
+                if (timeSinceLastToggle >= IPC_TOGGLE_INTERVAL_SECONDS)
+                {
+                    // Toggle state
+                    _ipcPulseState = !_ipcPulseState;
+                    _lastIpcToggleTime = DateTime.Now;
+
+                    // Write to PLC (Fire and Forget)
+                    // We write regardless of read status to try and wake up connection
+                    _ = WriteTagAsync(ConstantValues.TAG_Heartbeat_IPC, _ipcPulseState);
+
+                    // Optional: Log toggle for debugging
+                    // Console.WriteLine($"[Heartbeat] IPC Pulse: {_ipcPulseState}");
+                }
+
+                // =========================================================
+                // 3. RETURN STATUS
+                // =========================================================
+                // Return a simple list: [PLC_Connected, Time_Synced(Dummy True)]
+                // Maintaining structure for Dashboard compatibility
+                bool isMacMiniConnected = _extService.IsConnected;
+                var statusFlags = new List<bool> { isPlcConnected, true, isMacMiniConnected };
+                /*  if (isPlcConnected)
+                  {
+                   _logger.LogInfo($"PLC Connected", LogType.Audit);
+                  }
+                  else
+                  {
+                   _logger.LogInfo($"PLC Not Connected", LogType.Audit);
+
+                  }*/
+
+                return new Dictionary<int, object> { { 1, statusFlags } };
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[TimeSync] FAILED: {ex.Message}");
-                _isTimeSynced = false;
+                _logger.LogError($"[SystemMonitor] Error: {ex.Message}", LogType.Diagnostics);
+                throw;
             }
         }
 
@@ -190,19 +146,13 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         {
             if (values != null && values.TryGetValue(tagId, out object val))
             {
-                // Handle different data types
                 if (val is bool b) return b;
                 if (val is int i) return i > 0;
                 if (val is short s) return s > 0;
-                if (val is long l) return l > 0;
-
-                // Try parsing string
                 if (val is string str)
                 {
-                    if (bool.TryParse(str, out bool result))
-                        return result;
-                    if (int.TryParse(str, out int intResult))
-                        return intResult > 0;
+                    if (bool.TryParse(str, out bool result)) return result;
+                    if (int.TryParse(str, out int intResult)) return intResult > 0;
                 }
             }
             return false;
@@ -212,33 +162,25 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         {
             try
             {
+                // Retrieve Tag Info
                 var allTags = await _tagService.GetAllTagsAsync();
                 var tag = allTags.FirstOrDefault(t => t.TagNo == tagNo);
 
-                if (tag == null)
-                {
-                    Console.WriteLine($"[SystemMonitor] WARNING: Tag {tagNo} not found in configuration");
-                    return;
-                }
+                if (tag == null) return;
 
+                // Get Client
                 var client = _plcManager.GetClient(tag.PLCNo);
-                if (client == null || !client.IsConnected)
+                if (client != null && client.IsConnected)
                 {
-                    Console.WriteLine($"[SystemMonitor] WARNING: PLC {tag.PLCNo} not connected");
-                    return;
+                    await client.WriteAsync(tag, value);
                 }
-
-                await client.WriteAsync(tag, value);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[SystemMonitor] Write error for tag {tagNo}: {ex.Message}");
+                _logger.LogError($"[SystemMonitor] Write Error Tag {tagNo}: {ex.Message}", LogType.Diagnostics);
             }
         }
 
-        /// <summary>
-        /// Call this to manually reset the heartbeat state (e.g., after PLC reconnection)
-        /// </summary>
         public void ResetHeartbeat()
         {
             _lastPlcPulse = null;
@@ -246,7 +188,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             _lastSuccessfulRead = DateTime.Now;
             _ipcPulseState = false;
             _lastIpcToggleTime = DateTime.Now;
-            Console.WriteLine("[Heartbeat] State reset");
+            _logger.LogInfo("[Heartbeat] State reset", LogType.Diagnostics);
         }
     }
 }
