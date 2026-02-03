@@ -77,23 +77,6 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                             _ccdTrigger.ProcessTriggers(processedData, _manager);
                          
                         }
-
-                        // B. CHECK FOR TRIGGERS (This is where the magic happens)
-                        // We call this immediately after processing values, but before updating UI
-                      //  _ccdTrigger.ProcessTriggers(processedData, _manager);
-                                /*bool isAutoRun = false;
-
-                                if (processedData.TryGetValue(ConstantValues.Mode_Auto.Read, out object cycleStartObj))
-                                {
-                                    if (cycleStartObj is bool bVal) isAutoRun = bVal;
-                                    else if (cycleStartObj is int iVal) isAutoRun = iVal > 0;
-                                }
-
-                                if (isAutoRun)
-                                {
-                                }*/
-
-
                         _oee.ProcessCycleTimeLogic(processedData);
                         _oee.Calculate(processedData);
                         _systemMonitor.Process(processedData);

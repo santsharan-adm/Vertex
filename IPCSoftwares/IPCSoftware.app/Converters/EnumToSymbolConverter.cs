@@ -10,38 +10,6 @@ using System.Windows.Data;
 
 namespace IPCSoftware.App.Converters
 {
-    public class EnumToSpacedStringConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value == null) return "";
-
-            string enumName = value.ToString();
-
-            // Get the Group attribute
-            var memberInfo = value.GetType().GetMember(enumName)[0];
-            var groupAttr = memberInfo.GetCustomAttributes(typeof(GroupAttribute), false)
-                                      .Cast<GroupAttribute>()
-                                      .FirstOrDefault();
-
-            if (groupAttr != null)
-            {
-                // Remove group name (spaces removed) from the start of enum name
-                var groupName = groupAttr.Name.Replace(" ", "");
-                if (enumName.StartsWith(groupName))
-                    enumName = enumName.Substring(groupName.Length);
-            }
-
-            return enumName;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-
     public class EnumToSymbolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

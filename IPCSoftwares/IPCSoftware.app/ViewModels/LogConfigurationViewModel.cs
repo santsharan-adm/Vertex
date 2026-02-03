@@ -445,7 +445,35 @@ namespace IPCSoftware.App.ViewModels
             CancelRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnBackUp()
+        private async void OnBackUp()
+        {
+            if (_currentLog == null) return;
+
+            // Run on background thread to prevent UI freezing during file copy
+            var result = await Task.Run(() => _logManager.PerformManualBackup(_currentLog.Id));
+
+            if (result.TotalFiles == 0)
+            {
+                _dialog.ShowMessage("Backup Completed.\nNo files found to backup.");
+            }
+            else
+            {
+                string status = result.FailedFiles == 0 ? "Success" : "Completed with Errors";
+                _dialog.ShowMessage($"Backup {status}.\n\nFiles Found: {result.TotalFiles}\nCopied: {result.CopiedFiles}\nFailed: {result.FailedFiles}");
+            }
+        }
+
+        private async void OnRestore()
+        {
+            if (_currentLog == null) return;
+
+            var result = await Task.Run(() => _logManager.PerformManualRestore(_currentLog.Id));
+
+            string status = result.FailedFiles == 0 ? "Success" : "Completed with Errors";
+            _dialog.ShowMessage($"Restore {status}.\n\nFiles Found: {result.TotalFiles}\nRestored: {result.CopiedFiles}\nFailed: {result.FailedFiles}");
+        }
+
+       /* private void OnBackUp()
         {
             _logManager.PerformManualBackup(_currentLog.Id);
 
@@ -457,13 +485,18 @@ namespace IPCSoftware.App.ViewModels
 
         private void OnRestore()
         {
+            if(_dialog.ShowYesNo("Are you sure you want to restore logs?"))
+            {
+
             _logManager.PerformManualRestore(_currentLog.Id);
 
             Task.Delay(1599);
-            _dialog.ShowMessage("Backup completed sucessfully.");
+            _dialog.ShowMessage("Restore completed sucessfully.");
+            }
+
             // Execute manual backup logic
             // TODO: Implement backup logic
-        }
+        }*/
 
 
 

@@ -117,7 +117,30 @@ namespace IPCSoftware.App.ViewModels
             IsEditMode = false;
             _currentDevice = new DeviceModel();
             LoadFromModel(_currentDevice);
+            _ = GenerateNextDeviceNo();
         }
+
+        private async Task GenerateNextDeviceNo()
+        {
+            try
+            {
+                var devices = await _deviceService.GetAllDevicesAsync();
+                int nextNo = 1;
+                if (devices != null && devices.Any())
+                {
+                    nextNo = devices.Max(d => d.DeviceNo) + 1;
+                }
+
+                // Update UI and Model
+                DeviceNo = nextNo;
+                if (_currentDevice != null) _currentDevice.DeviceNo = nextNo;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error generating device number: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+
 
         public void LoadForEdit(DeviceModel device)
         {

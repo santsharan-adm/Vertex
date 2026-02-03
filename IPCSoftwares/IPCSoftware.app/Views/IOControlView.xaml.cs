@@ -9,5 +9,6 @@ namespace IPCSoftware.App.Views
 {
     public partial class IOControlView : UserControl
     {
+        
     }
 }

@@ -1,4 +1,5 @@
-﻿using IPCSoftware.Shared.Models.ConfigModels;
+﻿using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace IPCSoftware.Core.Interfaces.AppLoggerInterface
 
         // NEW Methods
         void CheckAndPerformBackups(); // Called by Worker
-        void PerformManualBackup(int logConfigId); // Called by UI
-        void PerformManualRestore(int logConfigId); // Called by UI
+        BackupResult PerformManualBackup(int logConfigId);
+        BackupResult PerformManualRestore(int logConfigId);
     }
 }

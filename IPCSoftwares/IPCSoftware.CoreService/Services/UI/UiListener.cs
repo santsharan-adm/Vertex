@@ -61,15 +61,6 @@ namespace IPCSoftware.CoreService.Services.UI
 
                     _ = Task.Run(() => HandleClientAsync(clientConnection));
 
-                  //  _logger.LogInfo("UI CLIENT CONNECTED",LogType.Diagnostics);
-
-               
-                   // NetworkStream stream = client.GetStream();
-
-                    // Add the stream to the active list
-                   // _activeStreams.TryAdd(clientId, stream);
-
-                    //_ = Task.Run(() => HandleClientAsync(client, clientId));
                 }
             }
             catch (Exception ex)
@@ -78,77 +69,6 @@ namespace IPCSoftware.CoreService.Services.UI
             }
         }
 
-
-        /*  private async Task HandleClientAsync(TcpClient client, Guid clientId)
-          {
-              // Use the stream associated with this client
-              if (!_activeStreams.TryGetValue(clientId, out var stream)) return;
-
-              byte[] buffer = new byte[4096];
-              StringBuilder sb = new StringBuilder();
-
-              Console.WriteLine("UI client connected");
-              _logger.LogInfo("UI client connected", LogType.Diagnostics);
-
-              try
-              {
-                  while (true)
-                  {
-                      int read = await stream.ReadAsync(buffer, 0, buffer.Length);
-                      if (read <= 0) break; // Client disconnected
-
-                      sb.Append(Encoding.UTF8.GetString(buffer, 0, read));
-
-                      while (sb.ToString().Contains("\n"))
-                      {
-                          string json = ExtractMessage(ref sb);
-                          if (string.IsNullOrWhiteSpace(json)) continue;
-
-                          RequestPackage? request = null;
-
-                          try
-                          {
-                              request = MessageSerializer.Deserialize<RequestPackage>(json);
-                          }
-                          catch
-                          {
-                              _logger.LogError("Invalid JSON from UI: " + json, LogType.Diagnostics);
-                              continue;
-                          }
-
-                          ResponsePackage response;
-
-                          if (OnRequestReceived != null)
-                          {
-                              response = await OnRequestReceived(request);
-                          }
-                          else
-                          {
-                              response = new ResponsePackage { ResponseId = -1 };
-                          }
-
-                          // Response path: Delimiter is already correctly handled here
-                          string outJson = MessageSerializer.Serialize(response) + "\n";
-                          Console.WriteLine("SENDING TO UI: " + outJson.Trim());
-                        //      _logger.LogInfo("SENDING TO UI: " + outJson.Trim(), LogType.Diagnostics);
-                          await stream.WriteAsync(Encoding.UTF8.GetBytes(outJson));
-                      }
-                  }
-              }
-              catch (Exception ex)
-              {
-                  _logger.LogError("UI listener error: " + ex.Message, LogType.Diagnostics);
-              }
-              finally
-              {
-                  // Ensure stream is removed on disconnection
-                  _activeStreams.TryRemove(clientId, out _);
-                  stream?.Dispose();
-                  client?.Close();
-              }
-          }
-
-  */
 
         private async Task HandleClientAsync(ClientConnection connection)
         {
