@@ -97,22 +97,24 @@ namespace IPCSoftware.Services.AppLoggerServices
 
         // --- MANUAL BACKUP LOGIC ---
         // Called by UI ViewModel
-        public void PerformManualBackup(int logConfigId)
+        public BackupResult PerformManualBackup(int logConfigId)
         {
             var config = _logConfigs.FirstOrDefault(c => c.Id == logConfigId);
             if (config != null)
             {
-                PerformBackupForConfig(config);
+                return _backupService.PerformBackup(config);
             }
+            return new BackupResult { FailedFiles = 0, CopiedFiles = 0, TotalFiles = 0 }; // Or error state
         }
 
-        public void PerformManualRestore(int logConfigId)
+        public BackupResult PerformManualRestore(int logConfigId)
         {
             var config = _logConfigs.FirstOrDefault(c => c.Id == logConfigId);
             if (config != null)
             {
-                PerformRestoreForConfig(config);
+                return _backupService.PerformRestore(config);
             }
+            return new BackupResult();
         }
 
 

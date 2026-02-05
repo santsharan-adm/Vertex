@@ -21,131 +21,148 @@ namespace IPCSoftware.Services.AppLoggerServices
             _ccdSettings = ccd.Value;
         }
 
-      /*  public void PerformBackup(LogConfigurationModel config, string filePath)
+        /*  public void PerformBackup(LogConfigurationModel config, string filePath)
+          {
+              try
+              {
+                  if (config.BackupSchedule == BackupScheduleType.Manual)
+                      return;
+
+                  // Backup folder validation
+                  if (!Directory.Exists(config.BackupFolder))
+                      Directory.CreateDirectory(config.BackupFolder);
+
+                  // Check if it's time to backup
+                  if (!IsBackupDue(config))
+                      return;
+
+                  // Backup filename
+                  string backupFileName = $"{config.FileName.Replace("{yyyyMMdd}",
+                      DateTime.Now.ToString("yyyyMMdd"))}_backup_{DateTime.Now:HHmmss}.csv";
+
+                  string backupFilePath = Path.Combine(config.BackupFolder, backupFileName);
+
+                  // Copy file
+                  File.Copy(filePath, backupFilePath, true);
+              }
+              catch (Exception ex)
+              {
+                 // _logger.LogError(ex.Message, LogType.Diagnostics);
+              }
+          }*/
+
+
+        public BackupResult PerformBackup(LogConfigurationModel config)
         {
-            try
-            {
-                if (config.BackupSchedule == BackupScheduleType.Manual)
-                    return;
-
-                // Backup folder validation
-                if (!Directory.Exists(config.BackupFolder))
-                    Directory.CreateDirectory(config.BackupFolder);
-
-                // Check if it's time to backup
-                if (!IsBackupDue(config))
-                    return;
-
-                // Backup filename
-                string backupFileName = $"{config.FileName.Replace("{yyyyMMdd}",
-                    DateTime.Now.ToString("yyyyMMdd"))}_backup_{DateTime.Now:HHmmss}.csv";
-
-                string backupFilePath = Path.Combine(config.BackupFolder, backupFileName);
-
-                // Copy file
-                File.Copy(filePath, backupFilePath, true);
-            }
-            catch (Exception ex)
-            {
-               // _logger.LogError(ex.Message, LogType.Diagnostics);
-            }
-        }*/
-
-
-        public void PerformBackup(LogConfigurationModel config)
-        {
+            var result = new BackupResult();
             try
             {
                 if (config.BackupSchedule == BackupScheduleType.Manual && !config.Enabled)
-                    return; // Or allow Manual even if disabled? Usually yes.
+                    return result;
 
                 // 1. Backup Log Data Folder
                 if (Directory.Exists(config.DataFolder) && !string.IsNullOrEmpty(config.BackupFolder))
                 {
-                    // Create timestamped subfolder or just overwrite?
-                    // "you will just overwrite whole data at backup folder form datafolder" -> Implies mirroring.
-                    // If you want history, we'd append a timestamp folder. 
-                    // Based on "overwrite whole data", we copy directly to BackupFolder.
-
-                    CopyDirectory(config.DataFolder, config.BackupFolder);
+                    CopyDirectory(config.DataFolder, config.BackupFolder, result);
                 }
 
                 // 2. Special Case: Production Images
                 if (config.LogType == LogType.Production)
                 {
-
                     string sourceImages = config.ProductionImagePath;
-                    string backupImages = config.ProductionImageBackupPath ;
+                    string backupImages = config.ProductionImageBackupPath;
 
                     if (Directory.Exists(sourceImages) && !string.IsNullOrEmpty(backupImages))
                     {
-                        CopyDirectory(sourceImages, backupImages);
+                        CopyDirectory(sourceImages, backupImages, result);
                     }
                 }
             }
             catch (Exception ex)
             {
-                // Log error (inject logger if needed, or swallow/debug print)
-                System.Diagnostics.Debug.WriteLine($"Backup Error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Backup Logic Error: {ex.Message}");
+                // Treat top-level exception as a failure, though technically files might have copied
             }
+            return result;
         }
 
 
-        public void PerformRestore(LogConfigurationModel config)
+        public BackupResult PerformRestore(LogConfigurationModel config)
         {
+            var result = new BackupResult();
             try
             {
+                // 1. Restore Logs
                 if (Directory.Exists(config.BackupFolder) && !string.IsNullOrEmpty(config.DataFolder))
                 {
-                  //  CopyDirectory(config.DataFolder, config.BackupFolder);
-                    CopyDirectory(config.BackupFolder, config.DataFolder);
+                    CopyDirectory(config.BackupFolder, config.DataFolder, result);
                 }
 
                 // 2. Special Case: Production Images
                 if (config.LogType == LogType.Production)
                 {
-
                     string sourceImages = config.ProductionImagePath;
                     string backupImages = config.ProductionImageBackupPath;
 
                     if (Directory.Exists(backupImages) && !string.IsNullOrEmpty(sourceImages))
                     {
-                        CopyDirectory(backupImages, sourceImages);
+                        CopyDirectory(backupImages, sourceImages, result);
                     }
                 }
             }
             catch (Exception ex)
             {
-                // Log error (inject logger if needed, or swallow/debug print)
-                System.Diagnostics.Debug.WriteLine($"Backup Error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Restore Error: {ex.Message}");
             }
+            return result;
         }
 
-
-        private void CopyDirectory(string sourceDir, string destDir)
+        private void CopyDirectory(string sourceDir, string destDir, BackupResult result)
         {
             if (!Directory.Exists(destDir))
             {
-                Directory.CreateDirectory(destDir);
+                try { Directory.CreateDirectory(destDir); } catch { /* Ignore directory creation fail, file copy will fail next */ }
             }
 
             var dir = new DirectoryInfo(sourceDir);
 
+            // Get files
+            FileInfo[] files;
+            try { files = dir.GetFiles(); }
+            catch { return; } // Access denied to source dir
+
             // Copy all files
-            foreach (FileInfo file in dir.GetFiles())
+            foreach (FileInfo file in files)
             {
-                string targetFilePath = Path.Combine(destDir, file.Name);
-                file.CopyTo(targetFilePath, true); // true = overwrite
+                result.TotalFiles++;
+                try
+                {
+                    string targetFilePath = Path.Combine(destDir, file.Name);
+
+                    // Check if file exists and is newer? 
+                    // Requirement: "overwrite whole data".
+
+                    file.CopyTo(targetFilePath, true); // true = overwrite
+                    result.CopiedFiles++;
+                }
+                catch (Exception ex)
+                {
+                    result.FailedFiles++;
+                    System.Diagnostics.Debug.WriteLine($"Failed to copy {file.Name}: {ex.Message}");
+                }
             }
 
             // Copy all subdirectories (Recursive)
-            foreach (DirectoryInfo subDir in dir.GetDirectories())
+            DirectoryInfo[] subDirs;
+            try { subDirs = dir.GetDirectories(); }
+            catch { return; }
+
+            foreach (DirectoryInfo subDir in subDirs)
             {
                 string newDestDir = Path.Combine(destDir, subDir.Name);
-                CopyDirectory(subDir.FullName, newDestDir);
+                CopyDirectory(subDir.FullName, newDestDir, result);
             }
         }
-
 
 
 

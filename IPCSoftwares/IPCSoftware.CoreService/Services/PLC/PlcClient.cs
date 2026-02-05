@@ -27,7 +27,7 @@ namespace IPCSoftware.CoreService.Services.PLC
         public event Action<int, Dictionary<uint, object>>? OnPlcDataReceived;
 
         private readonly DeviceInterfaceModel _device;
-        private List<PLCTagConfigurationModel> _tags; // 'readonly' removed for dynamic update
+        private List<PLCTagConfigurationModel> _tags; 
 
         private TcpClient? _tcp;
         private IModbusMaster? _master;
@@ -218,51 +218,6 @@ namespace IPCSoftware.CoreService.Services.PLC
 
             return result;
         }
-
-
-        // ---------------------------------------------------------
-        // POLL ALL TAG GROUPS (Fixed for Multi-Register Reading)
-        // ---------------------------------------------------------
-        /*  private async Task<Dictionary<uint, object>> PollAllGroups()
-          {
-              var result = new Dictionary<uint, object>();
-
-              try
-              {
-                  var groups = _tags
-                      .GroupBy(t => t.ModbusAddress)
-                      .ToList();
-
-                  foreach (var g in groups)
-                  {
-                      int baseAddress = g.Key;
-                      ushort startOffset = (ushort)(baseAddress - _modbusAddress);
-                      //  ushort startOffset = (ushort)(baseAddress - 40000);
-                      ushort maxLength = (ushort)g.Max(t => t.Length);
-
-                      // Read the holding registers from the PLC.
-                      ushort[] rawRegisters = await _master.ReadHoldingRegistersAsync(1, startOffset, maxLength);
-
-                      // Pass the raw register block for the start address.
-                      result[(uint)baseAddress] = rawRegisters;
-
-                      // NEW DEBUG LOG: Confirming successful Modbus read
-                      Console.WriteLine($"PLC[{_device.DeviceName}] [DEBUG] Read Addr {baseAddress}, Len {maxLength} successful.");
-                      _logger.LogInfo($"PLC[{_device.DeviceName}] [DEBUG] Read Addr {baseAddress}, Len {maxLength} successful.", LogType.Diagnostics);
-                  }
-              }
-              catch (Exception ex)
-              {
-                  // This exception will be caught by the outer StartAsync loop's CATCH-ALL.
-                  Console.WriteLine($"PLC[{_device.DeviceName}] [CRITICAL] Modbus Read Failed! Message: {ex.Message}");
-                  _logger.LogError($"PLC[{_device.DeviceName}] [CRITICAL] Modbus Read Failed! Message: {ex.Message}", LogType.Diagnostics);
-                  // Rethrow to break the polling cycle and force a Disconnect/Reconnect sequence
-                  throw;
-              }
-
-              return result;
-          }*/
-
 
 
         public void UpdateTags(List<PLCTagConfigurationModel> allNewTags)

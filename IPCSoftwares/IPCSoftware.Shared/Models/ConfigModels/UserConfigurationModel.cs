@@ -29,20 +29,6 @@ namespace IPCSoftware.Shared.Models.ConfigModels
             Role = "User";
         }
 
-       /* public UserConfigurationModel Clone()
-        {
-            return new UserConfigurationModel
-            {
-                Id = this.Id,
-                FirstName = this.FirstName,
-                LastName = this.LastName,
-                UserName = this.UserName,
-                Password = this.Password,
-                Role = this.Role,
-                IsActive = this.IsActive
-            };
-        }*/
-
         public UserConfigurationModel Clone()
         {
             return (UserConfigurationModel)this.MemberwiseClone();
