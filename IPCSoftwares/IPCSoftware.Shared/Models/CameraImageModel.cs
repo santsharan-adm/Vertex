@@ -16,6 +16,13 @@ namespace IPCSoftware.Shared.Models
             set => SetProperty(ref _stationNumber, value);
         }
 
+        private bool _isEnabled = true;
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            set => SetProperty(ref _isEnabled, value);
+        }
+
         private ImageSource _imagePath;
         public ImageSource ImagePath
         {

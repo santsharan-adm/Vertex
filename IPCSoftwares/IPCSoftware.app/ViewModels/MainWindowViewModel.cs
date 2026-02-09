@@ -493,6 +493,10 @@ public class MainWindowViewModel : BaseViewModel
                     _nav.NavigateMain<UserListView>();
                     break;
 
+                case "Product Settings":
+                    _nav.NavigateMain<ProductSettingsView>();
+                    break;
+
                 case "Manual Operation":
                     //_nav.NavigateMain<ManualOperation>();
                     _nav.NavigateMain<ManualOperationView>();
@@ -547,7 +551,7 @@ public class MainWindowViewModel : BaseViewModel
                     _nav.NavigateToLogs(LogType.Diagnostics);
                     break;
                 
-                case "MacMini Test":
+                case "External Interface":
                     _nav.NavigateMain<ApiTestView>();
                     break;
 

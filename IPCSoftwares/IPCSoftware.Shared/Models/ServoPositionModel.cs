@@ -36,6 +36,12 @@ namespace IPCSoftware.Shared.Models
    
 
         public string Description { get; set; }
+        private bool _isEnabled = true;
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            set { _isEnabled = value; OnPropertyChanged(); }
+        }
     }
 
     public class ServoParameterItem : ObservableObjectVM

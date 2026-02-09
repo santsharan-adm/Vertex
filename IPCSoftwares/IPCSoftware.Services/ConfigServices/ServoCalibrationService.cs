@@ -14,15 +14,17 @@ namespace IPCSoftware.Services.ConfigServices
     {
         private readonly string _filePath;  
         private readonly string _dataFolder;
+        private readonly IProductConfigurationService _productService;
 
 
-        public ServoCalibrationService(IOptions<ConfigSettings> configSettings)
+        public ServoCalibrationService(IOptions<ConfigSettings> configSettings,
+              IProductConfigurationService productService)
         {
             //string folder = configSettings.Value.DataFolder ?? AppContext.BaseDirectory;
 
             var config = configSettings.Value;
             string dataFolderPath = config.DataFolder;
-
+            _productService = productService;
             _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
           //  _filePath = Path.Combine(folder, "ServoCalibration.json");
             _filePath =  Path.Combine(_dataFolder, config.ServoCalibrationFileName );
@@ -33,7 +35,7 @@ namespace IPCSoftware.Services.ConfigServices
         {
             if (!File.Exists(_filePath))
             {
-                return CreateDefaultPositions();
+                return await CreateDefaultPositionsAsync();
             }
 
             try
@@ -42,15 +44,15 @@ namespace IPCSoftware.Services.ConfigServices
                 var data = JsonSerializer.Deserialize<List<ServoPositionModel>>(json);
 
                 // Integrity check: If file exists but is empty or missing sequences
-                if (data == null || data.Count == 0 || data.All(p => p.SequenceIndex == 0))
+                if (data == null || data.Count == 0)
                 {
-                    return CreateDefaultPositions();
+                    return await CreateDefaultPositionsAsync();
                 }
                 return data;
             }
             catch
             {
-                return CreateDefaultPositions();
+                return await CreateDefaultPositionsAsync();
             }
         }
 
@@ -61,9 +63,12 @@ namespace IPCSoftware.Services.ConfigServices
             await File.WriteAllTextAsync(_filePath, json);
         }
 
-        private List<ServoPositionModel> CreateDefaultPositions()
+        private async Task<List<ServoPositionModel>> CreateDefaultPositionsAsync()
         {
             var list = new List<ServoPositionModel>();
+            var productSettings = await _productService.LoadAsync();
+            int totalItems = productSettings.TotalItems > 0 ? productSettings.TotalItems : 12; // Default 12 if 0
+
 
             // Define Default Snake Pattern Map
             // Map: [Physical ID] -> [Sequence Index]
@@ -86,7 +91,7 @@ namespace IPCSoftware.Services.ConfigServices
             });
 
             // Positions 1-12
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= totalItems; i++)
             {
                 int seq = snakeMap.ContainsKey(i) ? snakeMap[i] : i;
 

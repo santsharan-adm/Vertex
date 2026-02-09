@@ -1,0 +1,81 @@
+﻿<UserControl x:Class="IPCSoftware.App.Views.ProductSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ProductSettingsViewModel}"
+             Background="#F3F3F3">
+
+    <Grid Margin="40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Product Setup" FontSize="48" FontWeight="Bold" Foreground="#333" Margin="0,0,0,40"/>
+
+        <Border Grid.Row="1" Background="White" CornerRadius="12" Padding="40" VerticalAlignment="Top">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" BlurRadius="20" Opacity="0.1"/>
+            </Border.Effect>
+
+            <StackPanel Width="600" HorizontalAlignment="Left">
+                <!-- Product Name -->
+                <TextBlock Text="Product Name" FontSize="20" Foreground="#555" Margin="0,0,0,10"/>
+                <TextBox Text="{Binding ProductName, UpdateSourceTrigger=PropertyChanged}" 
+                         FontSize="24" Padding="10" Margin="0,0,0,30" BorderBrush="#CCC"/>
+
+                <!-- Product Code -->
+                <TextBlock Text="Product Code" FontSize="20" Foreground="#555" Margin="0,0,0,10"/>
+                <TextBox Text="{Binding ProductCode, UpdateSourceTrigger=PropertyChanged}" 
+                         FontSize="24" Padding="10" Margin="0,0,0,30" BorderBrush="#CCC"/>
+
+                <!-- Item Count -->
+                <TextBlock Text="Total Active Items (to process)" FontSize="20" Foreground="#555" Margin="0,0,0,10"/>
+                <ComboBox ItemsSource="{Binding ItemCounts}" 
+                          SelectedItem="{Binding SelectedItemCount}"
+                          FontSize="24" Padding="10" Margin="0,0,0,30" HorizontalContentAlignment="Center"/>
+
+                <!-- Grid Layout -->
+                <TextBlock Text="Dashboard Grid Layout (Rows x Columns)" FontSize="20" Foreground="#555" Margin="0,0,0,10"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,50">
+                    <StackPanel Margin="0,0,20,0">
+                        <TextBlock Text="Rows" FontSize="16" Foreground="#777" Margin="0,0,0,5"/>
+                        <ComboBox ItemsSource="{Binding RowOptions}" 
+                                  SelectedItem="{Binding GridRows}"
+                                  Width="120" FontSize="24" Padding="10"/>
+                    </StackPanel>
+
+                    <TextBlock Text="X" FontSize="24" VerticalAlignment="Center" Margin="0,20,20,0" Foreground="#777" FontWeight="Bold"/>
+
+                    <StackPanel>
+                        <TextBlock Text="Columns" FontSize="16" Foreground="#777" Margin="0,0,0,5"/>
+                        <ComboBox ItemsSource="{Binding ColumnOptions}" 
+                                  SelectedItem="{Binding GridColumns}"
+                                  Width="120" FontSize="24" Padding="10"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Save -->
+                <Button Content="SAVE SETTINGS" 
+                        Command="{Binding SaveCommand}"
+                        Background="#007ACC" Foreground="White"
+                        FontSize="24" FontWeight="Bold"
+                        Height="70" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Opacity" Value="0.8"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
