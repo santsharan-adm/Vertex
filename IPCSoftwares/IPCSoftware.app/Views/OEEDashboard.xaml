@@ -506,30 +506,51 @@
                             <ItemsControl Grid.Row="1" ItemsSource="{Binding CameraImages}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <UniformGrid Rows="4" Columns="3"/>
+                                        <!-- Bind UniformGrid Rows and Columns dynamically -->
+                                        <UniformGrid Rows="{Binding DataContext.DynamicRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                         Columns="{Binding DataContext.DynamicColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
+
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border CornerRadius="6" Margin="4" 
-                                                Background="#111" 
-                                                BorderBrush="{Binding Result, Converter={StaticResource ResultToColor}}" 
-                                                BorderThickness="3">
+                                        <!-- Use a Style Trigger to handle the Disabled state visual -->
+                                        <Border CornerRadius="6" Margin="4" BorderThickness="3">
                                             <Border.Style>
                                                 <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="#111"/>
+                                                    <Setter Property="BorderBrush" Value="{Binding Result, Converter={StaticResource ResultToColor}}"/>
+
+                                                    <!-- Default triggers for hover -->
                                                     <Style.Triggers>
                                                         <Trigger Property="IsMouseOver" Value="True">
                                                             <Setter Property="Opacity" Value="0.8"/>
                                                             <Setter Property="Cursor" Value="Hand"/>
                                                         </Trigger>
+
+                                                        <!-- NEW: Disabled Trigger -->
+                                                        <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                                                            <Setter Property="Opacity" Value="0.2"/>
+                                                            <Setter Property="Background" Value="#222"/>
+                                                            <Setter Property="BorderBrush" Value="#444"/>
+                                                        </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </Border.Style>
-                                            <Image Source="{Binding ImagePath}" Stretch="UniformToFill">
-                                                <i:Interaction.Behaviors>
-                                                    <helpers:ImageClickBehavior Command="{Binding DataContext.ShowImageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                                                </i:Interaction.Behaviors>
-                                            </Image>
+
+                                            <!-- Image Content -->
+                                            <Grid>
+                                                <Image Source="{Binding ImagePath}" Stretch="UniformToFill">
+                                                    <i:Interaction.Behaviors>
+                                                        <helpers:ImageClickBehavior Command="{Binding DataContext.ShowImageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                                    </i:Interaction.Behaviors>
+                                                </Image>
+
+                                                <!-- Optional: Overlay Station ID for clarity -->
+                                                <!--<TextBlock Text="{Binding StationNumber}" Foreground="White" FontWeight="Bold" 
+                               HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" 
+                               FontSize="14" Opacity="0.5" IsHitTestVisible="False"/>-->
+                                            </Grid>
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

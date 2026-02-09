@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
-                helpers:DisposeBehavior.AutoDispose="True"
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             helpers:DisposeBehavior.AutoDispose="True"
              mc:Ignorable="d"
              d:DesignHeight="1080" d:DesignWidth="1920"
              Background="#F3F3F3" >
@@ -12,11 +12,12 @@
     <UserControl.Resources>
         <Geometry x:Key="SyncArrowGeometry">M16,12V15H22V12H25.5L21.5,8L17.5,12H21V12H16M19,20V17H13V20H9.5L13.5,24L17.5,20H14V20H19M4,2H18A2,2 0 0,1 20,4V10H18V4H4V20H11.5V22H4A2,2 0 0,1 2,20V4A2,2 0 0,1 4,2Z</Geometry>
         <Geometry x:Key="ArrowRightGeometry">M4,10 H16 V6 L22,12 L16,18 V14 H4 Z</Geometry>
+
         <Style x:Key="SystemCardStyle" TargetType="Border">
             <Setter Property="Background" Value="White"/>
             <Setter Property="CornerRadius" Value="15"/>
             <Setter Property="Padding" Value="30"/>
-            <Setter Property="Margin" Value="20"/>
+            <Setter Property="Margin" Value="10"/>
             <Setter Property="Effect">
                 <Setter.Value>
                     <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="5" Opacity="0.1"/>
@@ -70,29 +71,17 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border"
-                                CornerRadius="20" 
-                                Background="{TemplateBinding Background}"
-                                BorderThickness="4"
-                                BorderBrush="White">
-
+                        <Border x:Name="border" CornerRadius="20" Background="{TemplateBinding Background}" BorderThickness="4" BorderBrush="White">
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="15" ShadowDepth="5" Opacity="0.3"/>
                             </Border.Effect>
-
                             <Grid>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <ContentPresenter/>
-                                    <Path Data="{StaticResource ArrowRightGeometry}" 
-                                          Fill="White" 
-                                          Height="40" Width="40" 
-                                          Stretch="Uniform"
-                                          Margin="15,0,0,0"
-                                          VerticalAlignment="Center"/>
+                                    <Path Data="{StaticResource ArrowRightGeometry}" Fill="White" Height="40" Width="40" Stretch="Uniform" Margin="15,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
-
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="border" Property="RenderTransform">
@@ -105,30 +94,18 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-
             <Style.Triggers>
                 <DataTrigger Binding="{Binding SyncState}" Value="Syncing">
                     <Setter Property="Background" Value="#245CFF"/>
-                    <DataTrigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard RepeatBehavior="Forever" AutoReverse="True">
-                                <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
-                                                From="#245CFF" To="#6699FF" Duration="0:0:0.5"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.EnterActions>
                 </DataTrigger>
-
                 <DataTrigger Binding="{Binding SyncState}" Value="Synced">
                     <Setter Property="Background" Value="#28A745"/>
                 </DataTrigger>
-
                 <DataTrigger Binding="{Binding SyncState}" Value="Error">
                     <Setter Property="Background" Value="#DC3545"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-
     </UserControl.Resources>
 
     <Viewbox Stretch="Uniform">
@@ -139,86 +116,105 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" 
-                       Text="System Synchronization" 
-                       FontSize="60" 
-                       FontWeight="Bold" 
-                       Foreground="#333"
-                       Margin="0,0,0,40"/>
+            <TextBlock Grid.Row="0" Text="System Settings" FontSize="60" FontWeight="Bold" Foreground="#333" Margin="0,0,0,40"/>
 
+            <!-- TOP ROW: Time Sync & Service Control -->
             <Grid Grid.Row="1" Margin="0,0,0,50">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <!-- Extra column for Service Control -->
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="2" Style="{StaticResource SystemCardStyle}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Border Background="#F0F0F0" CornerRadius="12" Width="140" Height="140" VerticalAlignment="Center">
-                            <TextBlock Text="PLC" FontSize="48" FontWeight="Bold" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="40,0,0,0">
-                            <TextBlock Text="{Binding PlcDate, TargetNullValue='--/--/----'}" 
-                                       FontSize="48" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,10"/>
-                            <TextBlock Text="{Binding PlcTime, TargetNullValue='--:--:--'}" 
-                                       FontSize="48" FontWeight="Bold" Foreground="#007ACC"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <Button Grid.Column="1"
-                        x:Name="SyncBtn"
-                        Command="{Binding SyncCommand}"
-                        Content="SYNC"
-                        Width="250" Height="100"
-                        Style="{StaticResource SyncButtonStyle}"
-                        Cursor="Hand"
-                        VerticalAlignment="Center" 
-                        Margin="20,0"/>
-
+                <!-- IPC Time -->
                 <Border Grid.Column="0" Style="{StaticResource SystemCardStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-
                         <Border Background="#F0F0F0" CornerRadius="12" Width="140" Height="140" VerticalAlignment="Center">
                             <TextBlock Text="IPC" FontSize="48" FontWeight="Bold" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="40,0,0,0">
-                            <TextBlock Text="{Binding IpcDate}" 
-                                       FontSize="48" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,10"/>
-                            <TextBlock Text="{Binding IpcTime}" 
-                                       FontSize="48" FontWeight="Bold" Foreground="#007ACC"/>
+                            <TextBlock Text="{Binding IpcDate}" FontSize="48" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding IpcTime}" FontSize="48" FontWeight="Bold" Foreground="#007ACC"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Sync Button -->
+                <Button Grid.Column="1" x:Name="SyncBtn" Command="{Binding SyncCommand}" Content="SYNC" Width="200" Height="100" Style="{StaticResource SyncButtonStyle}" Cursor="Hand" VerticalAlignment="Center" Margin="10,0"/>
+
+                <!-- PLC Time -->
+                <Border Grid.Column="2" Style="{StaticResource SystemCardStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Background="#F0F0F0" CornerRadius="12" Width="140" Height="140" VerticalAlignment="Center">
+                            <TextBlock Text="PLC" FontSize="48" FontWeight="Bold" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="40,0,0,0">
+                            <TextBlock Text="{Binding PlcDate, TargetNullValue='--/--/----'}" FontSize="48" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding PlcTime, TargetNullValue='--:--:--'}" FontSize="48" FontWeight="Bold" Foreground="#007ACC"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- NEW: Service Control Card -->
+                <Border Grid.Column="3" Style="{StaticResource SystemCardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Core Service" FontSize="28" FontWeight="Bold" Foreground="#555"/>
+                        <TextBlock Text="{Binding ServiceStatus}" FontSize="24" FontWeight="SemiBold" Foreground="{Binding ServiceStatusColor}" HorizontalAlignment="Right"/>
+
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                            <Button Content="START" Command="{Binding StartServiceCommand}" Width="160" Height="70" Background="#28A745" Foreground="White" FontSize="24" FontWeight="Bold" Margin="0,0,20,0" BorderThickness="0">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="10"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button Content="STOP" Command="{Binding StopServiceCommand}" Width="160" Height="70" Background="#DC3545" Foreground="White" FontSize="24" FontWeight="Bold" BorderThickness="0">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="10"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </Border>
             </Grid>
 
+            <!-- BOTTOM ROW: Audit Logs -->
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="Audit Trail Log" FontSize="36" FontWeight="SemiBold" Foreground="#555" Margin="20,0,0,20"/>
+                <DockPanel Margin="20,0,0,20">
+                    <TextBlock Text="Service Audit Log" FontSize="36" FontWeight="SemiBold" Foreground="#555" VerticalAlignment="Center"/>
+                    <!--<Button Content="REFRESH" Command="{Binding RefreshLogCommand}" HorizontalAlignment="Right" Width="150" Height="50" Background="#007ACC" Foreground="White" FontSize="20" FontWeight="Bold" BorderThickness="0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>-->
+                </DockPanel>
 
-                <Border Grid.Row="1" 
-                        Background="White" 
-                        CornerRadius="12" 
-                        BorderBrush="#CCCCCC" 
-                        BorderThickness="1"
-                        ClipToBounds="True">
-
+                <Border Grid.Row="1" Background="White" CornerRadius="12" BorderBrush="#CCCCCC" BorderThickness="1" ClipToBounds="True">
                     <DataGrid ItemsSource="{Binding AuditLogs}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
@@ -245,20 +241,12 @@
                         <DataGrid.AlternationCount>2</DataGrid.AlternationCount>
 
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Timestamp" 
-                                                Binding="{Binding Time}" 
-                                                Width="400" 
-                                                CellStyle="{StaticResource HmiCellStyle}"/>
-
-                            <DataGridTextColumn Header="Event Message" 
-                                                Binding="{Binding Message}" 
-                                                Width="*" 
-                                                CellStyle="{StaticResource HmiCellStyle}"/>
+                            <DataGridTextColumn Header="Timestamp" Binding="{Binding Time}" Width="400" CellStyle="{StaticResource HmiCellStyle}"/>
+                            <DataGridTextColumn Header="Event Message" Binding="{Binding Message}" Width="*" CellStyle="{StaticResource HmiCellStyle}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>
             </Grid>
-
         </Grid>
     </Viewbox>
 </UserControl>

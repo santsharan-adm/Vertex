@@ -28,6 +28,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         private readonly IServoCalibrationService _servoService;
         private readonly ExternalInterfaceService _extService;
         private readonly IAeLimitService _aeLimitService;
+        private readonly IProductConfigurationService _productService;
 
         private string _activeBatchId = string.Empty;
         private int _currentSequenceStep = 0;
@@ -49,6 +50,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             ProductionImageService imageService,
             ExternalInterfaceService extService,
             IAeLimitService aeLimitService,
+             IProductConfigurationService productService,
             IAppLogger logger) : base(logger)
         {
             var ccd = appSettings.Value;
@@ -59,7 +61,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             _servoService = servoService;
             _extService = extService;
             _aeLimitService = aeLimitService;
-
+            _productService = productService;
             _stateFilePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
             var logs =  logConfig.GetAllAsync();
             var allLogs = logConfig.GetAllAsync().GetAwaiter().GetResult();
@@ -77,6 +79,39 @@ namespace IPCSoftware.CoreService.Services.CCD
         {
             try
             {
+                // 1. Load Product Config to determine Limit
+                var prodConfig = await _productService.LoadAsync();
+                int limit = prodConfig.TotalItems;
+
+                var positions = await _servoService.LoadPositionsAsync();
+                if (positions != null && positions.Count > 0)
+                {
+                    // 2. Filter and Limit the Map
+                    _stationMap = positions
+                        .Where(p => p.PositionId != 0 && p.SequenceIndex > 0)
+                        .OrderBy(p => p.SequenceIndex)
+                        .Select(p => p.PositionId)
+                        .Take(limit) // Limit sequence to configured count
+                        .ToArray();
+
+                    Console.WriteLine($"[CycleManager] Loaded sequence ({_stationMap.Length} items): {string.Join("->", _stationMap)}");
+                }
+                else
+                {
+                    // Default Fallback
+                    _stationMap = Enumerable.Range(1, 12).ToArray();
+                }
+            }
+            catch   
+            {
+                _stationMap = Enumerable.Range(1, 12).ToArray();
+            }
+        }
+
+/*        private async Task LoadStationMapAsync()
+        {
+            try
+            {
                 var positions = await _servoService.LoadPositionsAsync();
                 if (positions != null && positions.Count > 0)
                 {
@@ -89,7 +124,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 else _stationMap = new int[] { 1, 2, 3, 6, 5, 4, 7, 8, 9, 12, 11, 10 };
             }
             catch { _stationMap = new int[] { 1, 2, 3, 6, 5, 4, 7, 8, 9, 12, 11, 10 }; }
-        }
+        }*/
 
         public async Task HandleIncomingData(string tempImagePath, Dictionary<string, object> stationData, string qrString = null)
         {
@@ -167,8 +202,9 @@ namespace IPCSoftware.CoreService.Services.CCD
                 var state = new CycleStateModel { BatchId = _activeBatchId, LastUpdated = DateTime.Now };
 
                 // Populate placeholders for all 12 stations based on External Status
-                for (int i = 0; i < 12; i++)
-                {
+               // for (int i = 0; i < 12; i++)
+                    for (int i = 0; i < _stationMap.Length; i++)
+                    {
                     // Map sequence index 'i' to physical station
                     int physId = _stationMap.Length > i ? _stationMap[i] : (i + 1);
 

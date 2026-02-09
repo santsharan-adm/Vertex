@@ -25,9 +25,10 @@ namespace IPCSoftware.App.ViewModels
         private readonly SafePoller _liveDataTimer;
         private readonly IServoCalibrationService _servoService; // Injected Service
         private readonly IDialogService _dialog; // Injected Service
+        private readonly IProductConfigurationService _productService;
 
         private bool _initialPlcLoadDone = false;
-      
+        private ProductSettingsModel _productSettings;
 
         private bool _hasUnsavedChanges;
         public bool HasUnsavedChanges
@@ -97,7 +98,9 @@ namespace IPCSoftware.App.ViewModels
         public ObservableCollection<ServoParameterItem> XParameters { get; } = new();
         public ObservableCollection<ServoParameterItem> YParameters { get; } = new();
 
-        public List<int> AvailableSequences { get; } = Enumerable.Range(1, 12).ToList();
+       // public List<int> AvailableSequences { get; } = Enumerable.Range(1, 12).ToList();
+        public ObservableCollection<int> AvailableSequences { get; } = new ObservableCollection<int>();
+
         private ServoPositionModel ClonePosition(ServoPositionModel p) => new ServoPositionModel { PositionId = p.PositionId, Name = p.Name, Description = p.Description, SequenceIndex = p.SequenceIndex, X = p.X, Y = p.Y };
 
         // Commands
@@ -115,13 +118,17 @@ namespace IPCSoftware.App.ViewModels
         // NEW: Jog Command (Takes [Direction, IsPressed])
         public ICommand JogCommand { get; }
 
-        public ServoCalibrationViewModel(CoreClient coreClient, 
-            IServoCalibrationService servoService,IDialogService dialog, IAppLogger logger)
+        public ServoCalibrationViewModel(CoreClient coreClient,
+            IServoCalibrationService servoService,
+            IDialogService dialog,
+             IProductConfigurationService productService,
+            IAppLogger logger)
              : base(logger)
         {
             _dialog = dialog;
             _coreClient = coreClient;
-            _servoService = servoService; // Assign injected service
+            _servoService = servoService; 
+            _productService = productService;
 
             TeachCommand = new RelayCommand<ServoPositionModel>(OnTeachPosition);
             WritePositionCommand = new RelayCommand<ServoPositionModel>(OnWritePositionManual);
@@ -236,7 +243,7 @@ namespace IPCSoftware.App.ViewModels
             
 
        
-        private async Task InitializePositionsAsync()
+       /* private async Task InitializePositionsAsync()
         {
             try
             {
@@ -251,6 +258,61 @@ namespace IPCSoftware.App.ViewModels
                 }
                 // Ensure ordered by ID for UI consistency
                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Init Positions Error: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+*/
+        private async Task InitializePositionsAsync()
+        {
+            try
+            {
+                // 1. Load Product Config
+            
+                var prodConfig = await _productService.LoadAsync();
+                int totalItems = prodConfig.TotalItems;
+                AvailableSequences.Clear();
+                for (int i = 1; i <= totalItems; i++)
+                {
+                    AvailableSequences.Add(i);
+                }
+
+                var savedPositions = await _servoService.LoadPositionsAsync();
+
+                // 4. Populate List for UI
+                Positions.Clear();
+
+                // Ensure Position 0 (Home) exists
+                var homePos = savedPositions.FirstOrDefault(p => p.PositionId == 0) ?? new ServoPositionModel { PositionId = 0, Name = "Position 0 (Home)", SequenceIndex = 0 };
+                homePos.IsEnabled = true;
+                Positions.Add(homePos);
+
+                // Add only the number of items configured (1 to TotalItems)
+                for (int i = 1; i <= totalItems; i++)
+                {
+                    var existingPos = savedPositions.FirstOrDefault(p => p.PositionId == i);
+
+                    if (existingPos != null)
+                    {
+                        existingPos.IsEnabled = true;
+                        Positions.Add(existingPos);
+                    }
+                    else
+                    {
+                        // Create fresh if not found in JSON (e.g., config increased)
+                        Positions.Add(new ServoPositionModel
+                        {
+                            PositionId = i,
+                            Name = $"Position {i}",
+                            SequenceIndex = i,
+                            X = 0,
+                            Y = 0,
+                            IsEnabled = true
+                        });
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -502,7 +564,10 @@ namespace IPCSoftware.App.ViewModels
                 if (description.Contains("Coordinates"))
                 {
                     // --- VALIDATION LOGIC START ---
-                    var userSequences = Positions.Where(p => p.PositionId != 0).Select(p => p.SequenceIndex).ToList();
+                    var userSequences = Positions
+                        .Where(p => p.PositionId != 0 )
+                        .Select(p => p.SequenceIndex)
+                        .ToList();
 
                     // 1. Check for Duplicates
                     if (userSequences.Distinct().Count() != userSequences.Count)
@@ -512,15 +577,25 @@ namespace IPCSoftware.App.ViewModels
                     }
 
                     // 2. Check Range (Just in case)
-                    if (userSequences.Any(s => s < 1 || s > 12))
+                    int maxSeq = Positions.Count - 1;
+                    if (userSequences.Any(s => s < 1 || s > maxSeq))
                     {
                         _dialog.ShowWarning("Validation Failed: Sequence numbers must be between 1 and 12.");
                         return;
                     }
 
                     _logger.LogInfo("[Servo] Writing Sequence Map to PLC...", LogType.Audit);
+                    foreach (var pos in Positions.Where(p => p.PositionId != 0))
+                    {
+                        // Tag Address Calculation: Base + (PositionIndex - 1)
+                        // This assumes PLC sequence tags are sequential: 540, 541, 542...
+                        // Ensure PLC memory supports 'maxSeq' registers.
+                        int targetTagId = ConstantValues.Servo_Seq_Start + (pos.PositionId - 1);
 
-                    for (int i = 1; i <= 12; i++)
+                        await _coreClient.WriteTagAsync(targetTagId, pos.SequenceIndex);
+                    }
+
+                   /* for (int i = 1; i <= 12; i++)
                     {
                         // 1. Find which PositionId is assigned to Sequence 'i'
                         var positionAtThisStep = Positions.FirstOrDefault(p => p.PositionId == i);
@@ -535,7 +610,7 @@ namespace IPCSoftware.App.ViewModels
 
                         // 4. Write to PLC
                         await _coreClient.WriteTagAsync(targetTagId, seqIdToWrite);
-                    }
+                    }*/
                     _logger.LogInfo("[Servo] Sequence Map Written Successfully.", LogType.Audit);
 
                 }

@@ -33,8 +33,18 @@ namespace IPCSoftware.App.ViewModels
         private readonly IDialogService _dialog;
         private readonly string _prodCsvFolder;
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
+        private readonly IProductConfigurationService _productService; // NEW Injection
+
 
         private ExternalSettings Settings => _settingsMonitor.CurrentValue;
+
+        // --- Dynamic Grid Properties ---
+        private int _dynamicRows = 4;
+        public int DynamicRows { get => _dynamicRows; set => SetProperty(ref _dynamicRows, value); }
+
+        private int _dynamicColumns = 3;
+        public int DynamicColumns { get => _dynamicColumns; set => SetProperty(ref _dynamicColumns, value); }
+
 
         // --- Timers ---
         // 1. For Live Data (TCP Polling) - e.g. OEE, Machine Status
@@ -77,7 +87,7 @@ namespace IPCSoftware.App.ViewModels
 
 
 
-        // Map Grid Index(0-11) to Physical Station Number(1-12)
+        // Map Grid Index(0-11) to Physxical Station Number(1-12)
         private readonly int[] _visualToStationMap = new int[]
         {
                 1, 2, 3,
@@ -339,6 +349,7 @@ namespace IPCSoftware.App.ViewModels
             CoreClient coreClient,
             IDialogService dialog,
             ILogConfigurationService logConfigService,
+            IProductConfigurationService productService,
             IAppLogger logger) : base(logger)
         {
             var ccd = ccdSettng.Value;
@@ -346,6 +357,7 @@ namespace IPCSoftware.App.ViewModels
             _tagService = tagService;
             _coreClient = coreClient;
             _dialog = dialog;
+            _productService = productService;
             SwitchDirection = configSettng.Value.SwitchConveyorDirection;
             IsMacMiniEnabled = _settingsMonitor.CurrentValue.IsMacMiniEnabled;
 
@@ -383,7 +395,7 @@ namespace IPCSoftware.App.ViewModels
             _resetLogicTimer.Start();
 
             // Force initial sync
-            SyncUiWithJson();
+            //SyncUiWithJson();
         }
 
         #region Data Intilization
@@ -527,18 +539,27 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        private void InitializeCameraGrid()
+        private async void InitializeCameraGrid()
         {
             try
             {
                 // Populate the collection with 12 empty items
+                var prodConfig = await _productService.LoadAsync();
+
+                // 2. Set Grid Dimensions
+                DynamicRows = prodConfig.GridRows > 0 ? prodConfig.GridRows : 4;
+                DynamicColumns = prodConfig.GridColumns > 0 ? prodConfig.GridColumns : 3;
+                int totalCells = DynamicRows * DynamicColumns;
+                int activeItems = prodConfig.TotalItems;
                 CameraImages.Clear();
-                for (int i = 0; i < 12; i++)
+                for (int i = 0; i < totalCells; i++)
                 {
+                    int stationId = i + 1;
                     CameraImages.Add(new CameraImageItem
                     {
-                        StationNumber = _visualToStationMap[i],
+                        StationNumber = stationId,
                         Result = "Unchecked",
+                        IsEnabled = (i < activeItems),
                         ImagePath = null,
                         ValX = 0,
                         ValY = 0,
