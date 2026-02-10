@@ -32,6 +32,7 @@ namespace IPCSoftware.Shared.Models
     public class SystemTags
     {
         public int MacMiniNotConnected { get; set; }
+        public int NoOfStation { get; set; }
         public int HeartbeatPLC { get; set; }
         public int HeartbeatIPC { get; set; }
         public int TimeSyncReq { get; set; }

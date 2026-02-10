@@ -15,6 +15,7 @@ namespace IPCSoftware.Shared.Models
         public static int Ext_DataReady;
 
         public static int MACMINI_NOTCONNECTED;
+        public static int NO_OF_Station;
 
 
         public static int CYCLE_START_TRIGGER_TAG_ID ;
@@ -134,6 +135,7 @@ namespace IPCSoftware.Shared.Models
                 var sys = tags.System;
                 TAG_Heartbeat_PLC = sys.HeartbeatPLC;
                 MACMINI_NOTCONNECTED = sys.MacMiniNotConnected;
+                NO_OF_Station = sys.NoOfStation;
                 TAG_Heartbeat_IPC = sys.HeartbeatIPC;
                 TAG_TimeSync_Req = sys.TimeSyncReq;
                 TAG_TimeSync_Ack = sys.TimeSyncAck;

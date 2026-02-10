@@ -260,7 +260,7 @@ namespace IPCSoftware.App.ViewModels
             SyncState = "Idle";
         }
 
-        private int GetInt(System.Collections.Generic.Dictionary<int, object> data, int tagId)
+        private int GetInt(Dictionary<int, object> data, int tagId)
         {
             if (data.TryGetValue(tagId, out object val))
             {
