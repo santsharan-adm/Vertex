@@ -83,6 +83,8 @@ namespace IPCSoftware.CoreService.Services.CCD
                 var prodConfig = await _productService.LoadAsync();
                 int limit = prodConfig.TotalItems;
 
+                await SyncTotalStationsToPlc(limit);
+
                 var positions = await _servoService.LoadPositionsAsync();
                 if (positions != null && positions.Count > 0)
                 {
@@ -108,23 +110,53 @@ namespace IPCSoftware.CoreService.Services.CCD
             }
         }
 
-/*        private async Task LoadStationMapAsync()
+        private async Task SyncTotalStationsToPlc(int totalItems)
         {
             try
             {
-                var positions = await _servoService.LoadPositionsAsync();
-                if (positions != null && positions.Count > 0)
+                // We write the value from JSON to PLC to enforce synchronization.
+                // Reading first to compare is possible but writing ensures Source of Truth (JSON) is applied.
+
+                int tagId = ConstantValues.NO_OF_Station;
+                var allTags = await _tagService.GetAllTagsAsync();
+                var tagConfig = allTags.FirstOrDefault(t => t.TagNo == tagId);
+
+                if (tagConfig != null)
                 {
-                    _stationMap = positions
-                        .Where(p => p.PositionId != 0 && p.SequenceIndex > 0)
-                        .OrderBy(p => p.SequenceIndex)
-                        .Select(p => p.PositionId)
-                        .ToArray();
+                    var client = _plcManager.GetClient(tagConfig.PLCNo);
+                    if (client != null)
+                    {
+                        // Optional: Read first to see if write is needed
+                        // But sticking to requirement: "make sure value of plc remian in sync with value of json"
+                        // Writing forcefully is the safest way to ensure this state.
+                        await client.WriteAsync(tagConfig, totalItems);
+                        _logger.LogInfo($"[CycleManager] Synced PLC Total Stations to {totalItems} (Tag {tagId})", LogType.Error);
+                    }
                 }
-                else _stationMap = new int[] { 1, 2, 3, 6, 5, 4, 7, 8, 9, 12, 11, 10 };
             }
-            catch { _stationMap = new int[] { 1, 2, 3, 6, 5, 4, 7, 8, 9, 12, 11, 10 }; }
-        }*/
+            catch (Exception ex)
+            {
+                _logger.LogError($"[CycleManager] Failed to sync Total Stations to PLC: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+
+        /*        private async Task LoadStationMapAsync()
+                {
+                    try
+                    {
+                        var positions = await _servoService.LoadPositionsAsync();
+                        if (positions != null && positions.Count > 0)
+                        {
+                            _stationMap = positions
+                                .Where(p => p.PositionId != 0 && p.SequenceIndex > 0)
+                                .OrderBy(p => p.SequenceIndex)
+                                .Select(p => p.PositionId)
+                                .ToArray();
+                        }
+                        else _stationMap = new int[] { 1, 2, 3, 6, 5, 4, 7, 8, 9, 12, 11, 10 };
+                    }
+                    catch { _stationMap = new int[] { 1, 2, 3, 6, 5, 4, 7, 8, 9, 12, 11, 10 }; }
+                }*/
 
         public async Task HandleIncomingData(string tempImagePath, Dictionary<string, object> stationData, string qrString = null)
         {

@@ -57,6 +57,6 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 _logger.LogError($"Product Config Save Error: {ex.Message}", LogType.Diagnostics);
             }
-        }
+        }   
     }
 }
