@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="xunit" Version="2.5.3" />
+    <PackageReference Include="xunit.core" Version="2.5.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IPCSoftware.app\IPCSoftware.App.csproj" />
+    <ProjectReference Include="..\IPCSoftware.CoreService\IPCSoftware.CoreService.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
+    <ProjectReference Include="..\IPCSoftware.DataLogger\IPCSoftware.DataLogger.csproj" />
+    <ProjectReference Include="..\IPCSoftware.FileManager\IPCSoftware.FileManager.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Helpers\IPCSoftware.Helpers.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ViewModelTests\" />
+  </ItemGroup>
+
+</Project>
