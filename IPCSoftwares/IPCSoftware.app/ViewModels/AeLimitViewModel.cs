@@ -23,88 +23,49 @@ namespace IPCSoftware.App.ViewModels
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
         private readonly SafePoller _liveDataTimer;
-        public ICommand WriteParamCommand { get; }
-        public ICommand AckSaveCommand { get; }     // Ack Button
+
+        // Commands
+        public ICommand RefreshCommand { get; }
+        public ICommand SaveCommand { get; }
+
+        // Parameters
         public AeLimitParameterItem MinX { get; }
         public AeLimitParameterItem MaxX { get; }
         public AeLimitParameterItem MinY { get; }
         public AeLimitParameterItem MaxY { get; }
         public AeLimitParameterItem MinZ { get; }
         public AeLimitParameterItem MaxZ { get; }
+
         private readonly AeLimitParameterItem[] _allLiveParams;
 
         public ObservableCollection<AeLimitStationConfig> Stations { get; } = new();
 
+        #region Properties
         public string MachineId
         {
             get => _settings?.MachineId;
             set { if (_settings != null) { _settings.MachineId = value; OnPropertyChanged(); } }
         }
-
-        public string SubmitId
-        {
-            get => _settings?.SubmitId;
-            set { if (_settings != null) { _settings.SubmitId = value; OnPropertyChanged(); } }
-        }
-
-        public string VendorCode
-        {
-            get => _settings?.VendorCode;
-            set { if (_settings != null) { _settings.VendorCode = value; OnPropertyChanged(); } }
-        }
-
-        public string TossingDefault
-        {
-            get => _settings?.TossingDefault;
-            set { if (_settings != null) { _settings.TossingDefault = value; OnPropertyChanged(); } }
-        }
-
-        public string OperatorIdDefault
-        {
-            get => _settings?.OperatorIdDefault;
-            set { if (_settings != null) { _settings.OperatorIdDefault = value; OnPropertyChanged(); } }
-        }
-
-        public string ModeDefault
-        {
-            get => _settings?.ModeDefault;
-            set { if (_settings != null) { _settings.ModeDefault = value; OnPropertyChanged(); } }
-        }
-
-        public string TestSeriesDefault
-        {
-            get => _settings?.TestSeriesIdDefault;
-            set { if (_settings != null) { _settings.TestSeriesIdDefault = value; OnPropertyChanged(); } }
-        }
-
-        public string PriorityDefault
-        {
-            get => _settings?.PriorityDefault;
-            set { if (_settings != null) { _settings.PriorityDefault = value; OnPropertyChanged(); } }
-        }
-
-        public string OnlineFlag
-        {
-            get => _settings?.OnlineFlagDefault;
-            set { if (_settings != null) { _settings.OnlineFlagDefault = value; OnPropertyChanged(); } }
-        }
-
-        public ICommand RefreshCommand { get; }
-        public ICommand SaveCommand { get; }
+        // ... (Other properties like SubmitId, VendorCode etc. assumed unchanged from your snippet)
+        public string SubmitId { get => _settings?.SubmitId; set { if (_settings != null) { _settings.SubmitId = value; OnPropertyChanged(); } } }
+        public string VendorCode { get => _settings?.VendorCode; set { if (_settings != null) { _settings.VendorCode = value; OnPropertyChanged(); } } }
+        public string TossingDefault { get => _settings?.TossingDefault; set { if (_settings != null) { _settings.TossingDefault = value; OnPropertyChanged(); } } }
+        public string OperatorIdDefault { get => _settings?.OperatorIdDefault; set { if (_settings != null) { _settings.OperatorIdDefault = value; OnPropertyChanged(); } } }
+        public string ModeDefault { get => _settings?.ModeDefault; set { if (_settings != null) { _settings.ModeDefault = value; OnPropertyChanged(); } } }
+        public string TestSeriesDefault { get => _settings?.TestSeriesIdDefault; set { if (_settings != null) { _settings.TestSeriesIdDefault = value; OnPropertyChanged(); } } }
+        public string PriorityDefault { get => _settings?.PriorityDefault; set { if (_settings != null) { _settings.PriorityDefault = value; OnPropertyChanged(); } } }
+        public string OnlineFlag { get => _settings?.OnlineFlagDefault; set { if (_settings != null) { _settings.OnlineFlagDefault = value; OnPropertyChanged(); } } }
+        #endregion
 
         public AeLimitViewModel(IAeLimitService aeLimitService,
               CoreClient coreClient,
-            IDialogService dialog, IAppLogger logger) : base(logger)
-
+              IDialogService dialog, IAppLogger logger) : base(logger)
         {
             _coreClient = coreClient;
             _dialog = dialog;
             _aeLimitService = aeLimitService;
-            WriteParamCommand = new RelayCommand<AeLimitParameterItem>(OnWriteParameter);
-            RefreshCommand = new RelayCommand(async () => await LoadAsync(), () => !_isBusy);
-            SaveCommand = new RelayCommand(async () => await SaveAsync(), () => !_isBusy && _settings != null);
-            _ = LoadAsync();
-            AckSaveCommand = new RelayCommand(async () => await OnAckSave());
+
+            // Initialize Parameters
             MinX = CreateParam("Min X", ConstantValues.MIN_X);
             MaxX = CreateParam("Max X", ConstantValues.MAX_X);
             MinY = CreateParam("Min Y", ConstantValues.MIN_Y);
@@ -113,12 +74,19 @@ namespace IPCSoftware.App.ViewModels
             MaxZ = CreateParam("Max Angle", ConstantValues.MAX_Z);
             _allLiveParams = new[] { MinX, MaxX, MinY, MaxY, MinZ, MaxZ };
 
-        
+            RefreshCommand = new RelayCommand(async () => await LoadAsync(), () => !_isBusy);
 
-            // 2. Start Live Polling (Every 200ms)
+            // Save Command now triggers the bulk write + handshake logic
+            SaveCommand = new RelayCommand(async () => await SaveAndTransferAsync(), () => !_isBusy && _settings != null);
+
+            // Start Live Polling (Every 200ms)
             _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(200), OnLiveDataTick);
             _liveDataTimer.Start();
+
+            // Initial Load
+            _ = LoadAsync();
         }
+
         private AeLimitParameterItem CreateParam(string name, TagPair tagPair)
         {
             return new AeLimitParameterItem
@@ -129,13 +97,11 @@ namespace IPCSoftware.App.ViewModels
             };
         }
 
-
-
         private async Task OnLiveDataTick()
         {
             try
             {
-                var data = await _coreClient.GetIoValuesAsync(5); // Adjust ID if needed
+                var data = await _coreClient.GetIoValuesAsync(5);
                 if (data != null)
                 {
                     foreach (var param in _allLiveParams)
@@ -150,57 +116,96 @@ namespace IPCSoftware.App.ViewModels
             catch { }
         }
 
-        private async void OnWriteParameter(AeLimitParameterItem param)
+        private async Task SaveAndTransferAsync()
         {
-            if (param == null) return;
-
-            bool confirm = _dialog.ShowYesNo($"Update {param.Name} to {param.NewValue}?", "Confirm Update");
-            if (!confirm) return;
+            if (_isBusy || _settings == null) return;
+            _isBusy = true;
+            CommandManager.InvalidateRequerySuggested();
 
             try
             {
-                _logger.LogInfo($"[AE UI] Writing {param.Name} -> {param.NewValue}", LogType.Audit);
+                // 1. Save Settings to JSON
+                _settings.Stations = Stations.Select(s => s.Clone()).ToList();
+                await _aeLimitService.SaveSettingsAsync(_settings);
+                _logger.LogInfo("[AE UI] Configuration saved to JSON.", LogType.Audit);
 
-                // Write to the WRITE Tag ID
-                bool success = await _coreClient.WriteTagAsync(param.WriteTagId, param.NewValue);
+                // 2. Write All Parameters to PLC (NewValues)
+                _logger.LogInfo("[AE UI] Transferring parameters to PLC...", LogType.Audit);
+                bool allWritesSuccess = true;
 
-                if (success)
+                foreach (var param in _allLiveParams)
                 {
-                    _dialog.ShowMessage("Value updated successfully.");
+                    // Write NewValue to the WriteTagId
+                    bool success = await _coreClient.WriteTagAsync(param.WriteTagId, param.NewValue);
+                    if (!success) allWritesSuccess = false;
+                }
+
+                if (!allWritesSuccess)
+                {
+                    _dialog.ShowWarning("Failed to write some parameters to PLC. Aborting handshake.");
+                    return;
+                }
+
+                // 3. Handshake Logic
+                // Set DM10301.0 (Start) -> 1
+                _logger.LogInfo("[AE UI] Setting Transfer Start (DM10301.0 = 1)...", LogType.Audit);
+                await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1); // Start Bit
+
+                // 4. Wait for Confirmation (DM10480.0)
+                bool transferComplete = await WaitForPlcConfirmationAsync();
+
+                // 5. Reset Start Bit (DM10301.0 = 0)
+                await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
+
+                if (transferComplete)
+                {
+                    _logger.LogInfo("[AE UI] PLC Confirmation Received (DM10480.0).", LogType.Audit);
+                    _dialog.ShowMessage("Settings Saved & Transferred Successfully!");
                 }
                 else
                 {
-                    _dialog.ShowWarning("Failed to update value. Check logs.");
+                    _logger.LogWarning("[AE UI] PLC Transfer Timeout. No Confirmation received.", LogType.Diagnostics);
+                    _dialog.ShowWarning("Settings Saved, but PLC Confirmation timed out.\nPlease check PLC status.");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[AE UI] Write Error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[AE UI] Save/Transfer Failed: {ex.Message}", LogType.Diagnostics);
+                _dialog.ShowMessage("An error occurred during save.");
+            }
+            finally
+            {
+                _isBusy = false;
+                CommandManager.InvalidateRequerySuggested();
             }
         }
 
-        private async Task OnAckSave()
+        private async Task<bool> WaitForPlcConfirmationAsync()
         {
-            try
+            // Wait up to 5 seconds for the PLC to set DM10480.0 (Read Tag) to 1
+            int timeoutMs = 5000;
+            int delayMs = 200;
+            int elapsed = 0;
+
+            while (elapsed < timeoutMs)
             {
-                _logger.LogInfo("[AE UI] Sending ACK_LIMIT_WRITE...", LogType.Audit);
+                // Read fresh data
+                var data = await _coreClient.GetIoValuesAsync(5);
+                if (data != null && data.TryGetValue(ConstantValues.ACK_LIMIT.Read, out object val))
+                {
+                    // Assuming ACK_LIMIT.Read maps to DM10480.0
+                    bool isComplete = false;
+                    if (val is bool bVal) isComplete = bVal;
+                    else if (val is int iVal) isComplete = (iVal > 0);
 
-                // Pulse Logic: 1 -> Wait -> 0
-                await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT_WRITE, 1);
-                await Task.Delay(200);
-                await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT_WRITE, 0);
+                    if (isComplete) return true;
+                }
 
-                _dialog.ShowMessage("Value Saved sucessfully.");
+                await Task.Delay(delayMs);
+                elapsed += delayMs;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError($"[AE UI] Ack Error: {ex.Message}", LogType.Diagnostics);
-            }
-        }
 
-        public void Dispose()
-        {
-            _liveDataTimer?.Dispose();
+            return false;
         }
 
         private async Task LoadAsync()
@@ -210,8 +215,16 @@ namespace IPCSoftware.App.ViewModels
             try
             {
                 _settings = await _aeLimitService.GetSettingsAsync();
-                UpdateCollections();
-                RaiseGlobals();
+                Stations.Clear();
+                if (_settings?.Stations != null)
+                {
+                    foreach (var station in _settings.Stations.OrderBy(s => s.SequenceIndex))
+                    {
+                        Stations.Add(station.Clone());
+                    }
+                }
+                // Notify property changes for global settings
+                OnPropertyChanged(string.Empty);
             }
             catch (Exception ex)
             {
@@ -223,63 +236,9 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        private async Task SaveAsync()
+        public void Dispose()
         {
-            if (_isBusy || _settings == null) return;
-            _isBusy = true;
-            try
-            {
-                _settings.Stations = Stations.Select(s => s.Clone()).ToList();
-                await _aeLimitService.SaveSettingsAsync(_settings);
-                _logger.LogInfo("[AE UI] Settings saved.", LogType.Audit);
-
-                try
-                {
-                    _logger.LogInfo("[AE UI] Sending ACK_LIMIT_WRITE...", LogType.Audit);
-
-                    // Pulse Logic: 1 -> Wait -> 0
-                    await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT_WRITE, 1);
-                    await Task.Delay(200);
-                    await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT_WRITE, 0);
-
-                    _dialog.ShowMessage("Value Saved sucessfully.");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"[AE UI] Ack Error: {ex.Message}", LogType.Diagnostics);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"[AE UI] Save failed: {ex.Message}", LogType.Diagnostics);
-            }
-            finally
-            {
-                _isBusy = false;
-            }
-        }
-
-        private void UpdateCollections()
-        {
-            Stations.Clear();
-            if (_settings?.Stations == null) return;
-            foreach (var station in _settings.Stations.OrderBy(s => s.SequenceIndex))
-            {
-                Stations.Add(station.Clone());
-            }
-        }
-
-        private void RaiseGlobals()
-        {
-            OnPropertyChanged(nameof(MachineId));
-            OnPropertyChanged(nameof(SubmitId));
-            OnPropertyChanged(nameof(VendorCode));
-            OnPropertyChanged(nameof(TossingDefault));
-            OnPropertyChanged(nameof(OperatorIdDefault));
-            OnPropertyChanged(nameof(ModeDefault));
-            OnPropertyChanged(nameof(TestSeriesDefault));
-            OnPropertyChanged(nameof(PriorityDefault));
-            OnPropertyChanged(nameof(OnlineFlag));
+            _liveDataTimer?.Dispose();
         }
     }
 
@@ -304,3 +263,4 @@ namespace IPCSoftware.App.ViewModels
         }
     }
 }
+
