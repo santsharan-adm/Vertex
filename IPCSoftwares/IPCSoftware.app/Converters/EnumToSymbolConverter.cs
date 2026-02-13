@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -17,6 +18,17 @@ namespace IPCSoftware.App.Converters
             if (value == null) return "";
 
             var mode = (ManualOperationMode)value;
+            string modeString = mode.ToString();
+
+            // Dynamic handling for "MoveToPosN"
+            if (modeString.StartsWith("MoveToPos"))
+            {
+                if (mode == ManualOperationMode.MoveToPos0) return "HOME";
+
+                // Extract number: "MoveToPos12" -> "12"
+                var match = Regex.Match(modeString, @"\d+");
+                if (match.Success) return match.Value;
+            }
 
             return mode switch
             {
@@ -48,21 +60,22 @@ namespace IPCSoftware.App.Converters
                 ManualOperationMode.YAxisJogHighSpeed => "⏩ HIGH",*/
 
                 // Positions
-                ManualOperationMode.MoveToPos0 => "HOME",
-                ManualOperationMode.MoveToPos1 => "1",
-                ManualOperationMode.MoveToPos2 => "2",
-                ManualOperationMode.MoveToPos3 => "3",
-                ManualOperationMode.MoveToPos4 => "4",
-                ManualOperationMode.MoveToPos5 => "5",
-                ManualOperationMode.MoveToPos6 => "6",
-                ManualOperationMode.MoveToPos7 => "7",
-                ManualOperationMode.MoveToPos8 => "8",
-                ManualOperationMode.MoveToPos9 => "9",
-                ManualOperationMode.MoveToPos10 => "10",
-                ManualOperationMode.MoveToPos11 => "11",
-                ManualOperationMode.MoveToPos12 => "12",
+                //ManualOperationMode.MoveToPos0 => "HOME",
+                //ManualOperationMode.MoveToPos1 => "1",
+                //ManualOperationMode.MoveToPos2 => "2",
+                //ManualOperationMode.MoveToPos3 => "3",
+                //ManualOperationMode.MoveToPos4 => "4",
+                //ManualOperationMode.MoveToPos5 => "5",
+                //ManualOperationMode.MoveToPos6 => "6",
+                //ManualOperationMode.MoveToPos7 => "7",
+                //ManualOperationMode.MoveToPos8 => "8",
+                //ManualOperationMode.MoveToPos9 => "9",
+                //ManualOperationMode.MoveToPos10 => "10",
+                //ManualOperationMode.MoveToPos11 => "11",
+                //ManualOperationMode.MoveToPos12 => "12",
 
-                _ => value.ToString().ToUpper()
+               // _ => value.ToString().ToUpper()
+                 _ => modeString.ToUpper()
             };
         }
 

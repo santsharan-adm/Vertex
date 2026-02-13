@@ -1,22 +1,15 @@
-﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+﻿using IPCSoftware.App.Helpers;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
-using IPCSoftware.Shared.Models.ConfigModels;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public partial class FullImageViewModel :ObservableObjectVM
+    public class FullImageViewModel : BaseViewModel
     {
-
         private ImageSource _imagePath;
-
         public ImageSource ImagePath
         {
             get => _imagePath;
@@ -24,56 +17,85 @@ namespace IPCSoftware.App.ViewModels
         }
 
         private string _measurementTitle;
-
         public string MeasurementTitle
         {
             get => _measurementTitle;
             set => SetProperty(ref _measurementTitle, value);
         }
 
-        private double _xValue = 0;
-        private double _yValue = 0; // Logic to determine color can be added later
-      private double _zValue = 0;
-
+        private double _xValue;
         public double XValue
         {
             get => _xValue;
             set => SetProperty(ref _xValue, value);
         }
+
+        private double _yValue;
         public double YValue
         {
             get => _yValue;
             set => SetProperty(ref _yValue, value);
         }
+
+        private double _zValue;
         public double ZValue
         {
             get => _zValue;
             set => SetProperty(ref _zValue, value);
         }
 
+        // --- LIMITS (Read-only, passed from Dashboard) ---
+        public double LimitX_Min { get; }
+        public double LimitX_Max { get; }
+        public double LimitY_Min { get; }
+        public double LimitY_Max { get; }
+        public double LimitZ_Min { get; }
+        public double LimitZ_Max { get; }
 
+        // --- DYNAMIC COLORS ---
+        public Brush StatusBrushX => GetStatusBrush(XValue, LimitX_Min, LimitX_Max);
+        public Brush StatusBrushY => GetStatusBrush(YValue, LimitY_Min, LimitY_Max);
+        public Brush StatusBrushZ => GetStatusBrush(ZValue, LimitZ_Min, LimitZ_Max);
 
-        // 2. The Logic (Close Command)
-        // We use an Action to request the View to close itself (MVVM-safe way)
+        // --- COMMANDS ---
         public Action RequestClose;
-
         public ICommand CloseCommand { get; }
 
-        // Constructor Injection: Pass the dependency here!
-        public FullImageViewModel(CameraImageItem item, 
-            string measurementName) 
+        public FullImageViewModel(
+            CameraImageItem item,
+            string measurementName,
+            double xMin, double xMax,
+            double yMin, double yMax,
+            double zMin, double zMax) : base(null)
         {
-            ImagePath = item.ImagePath;
+            // Data
+            ImagePath = item.ImagePath as ImageSource; // Cast object back to ImageSource
             XValue = item.ValX;
             YValue = item.ValY;
             ZValue = item.ValZ;
-            MeasurementTitle = measurementName; // Store it
+            MeasurementTitle = measurementName;
+
+            // Limits
+            LimitX_Min = xMin;
+            LimitX_Max = xMax;
+            LimitY_Min = yMin;
+            LimitY_Max = yMax;
+            LimitZ_Min = zMin;
+            LimitZ_Max = zMax;
+
             CloseCommand = new RelayCommand(Close);
         }
 
         private void Close()
         {
             RequestClose?.Invoke();
+        }
+
+        private Brush GetStatusBrush(double val, double min, double max)
+        {
+            bool isOk = val >= min && val <= max;
+            var colorCode = isOk ? "#28A745" : "#DC3545"; // Green : Red
+            return new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorCode));
         }
     }
 }

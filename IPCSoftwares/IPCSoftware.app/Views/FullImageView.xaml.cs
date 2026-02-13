@@ -14,12 +14,17 @@ namespace IPCSoftware.App.Views
 {
     public partial class FullImageView : Window
     {
-        public FullImageView(CameraImageItem img, string title)
+        public FullImageView(
+            CameraImageItem img,
+            string title,
+            double xMin, double xMax,
+            double yMin, double yMax,
+            double zMin, double zMax)
         {
             InitializeComponent();
 
-            // 1. Create ViewModel with Dependency
-            var viewModel = new FullImageViewModel(img, title);
+            // 1. Create ViewModel with all limits
+            var viewModel = new FullImageViewModel(img, title, xMin, xMax, yMin, yMax, zMin, zMax);
 
             // 2. Hook up the Close Action
             viewModel.RequestClose += () => this.Close();
@@ -28,7 +33,6 @@ namespace IPCSoftware.App.Views
             this.DataContext = viewModel;
         }
 
-        // Keep drag logic here (View-specific behavior)
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
