@@ -1,7 +1,7 @@
 {
   "ProductName": "Default Product",
   "ProductCode": "DEF-001",
-  "TotalItems": 1,
-  "GridRows": 1,
-  "GridColumns": 1
+  "TotalItems": 9,
+  "GridRows": 3,
+  "GridColumns": 3
 }
