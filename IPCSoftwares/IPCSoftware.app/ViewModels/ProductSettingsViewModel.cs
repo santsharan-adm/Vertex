@@ -68,7 +68,7 @@ namespace IPCSoftware.App.ViewModels
         {
             if (await IsMachineRunningAsync())
             {
-                _dialog.ShowWarning("Cannot save settings while Machine is running (Auto/Dry Run).\nPlease stop the machine first.");
+                _dialog.ShowWarning("Cannot save settings while Machine is running (Auto/Dry Run).");
                 return;
             }
 

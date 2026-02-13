@@ -82,7 +82,8 @@ namespace IPCSoftware.Shared.Models
         public int NG { get; set; }
         public double IdealCycleTime { get; set; }
 
-        public int AckLimitWrite { get; set; }
+       // public int AckLimitWrite { get; set; }
+        public TagPair AckLimit { get; set; }
         public TagPair MinX { get; set; }
         public TagPair MaxX { get; set; }
         public TagPair MinY { get; set; }

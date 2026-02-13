@@ -1,12 +1,17 @@
+using IPCSoftware.App.Helpers;
+using IPCSoftware.App.Services;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.CoreService.Services.CCD;
 using IPCSoftware.Shared;
-using IPCSoftware.Shared.Models.ApiTest;
-using LogTypeEnum = IPCSoftware.Shared.Models.ConfigModels.LogType;
+using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.ConfigModels; // Using ExternalSettings
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
+using System.IO;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -18,138 +23,91 @@ namespace IPCSoftware.App.ViewModels
     public class ApiTestViewModel : BaseViewModel, IDisposable
     {
         private readonly HttpClient _httpClient = new();
-        private readonly IApiTestSettingsService _settingsService;
-        private bool _settingsLoaded;
+        private readonly MacMiniTcpClient _tcpClient = new();
+        private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
+        private readonly IDialogService _dialog; // For Save confirmation
+        private readonly string _appSettingsPath;
+
         private bool _isPingBusy;
+        private bool _isBusy;
 
         public ObservableCollection<string> ProtocolOptions { get; } = new()
         {
-            "https",
-            "http"
+            "TCP",
+            "HTTP",
+            "HTTPS"
         };
 
-        private string _selectedProtocol = "https";
+        // --- UI Properties ---
+
+        private string _selectedProtocol;
         public string SelectedProtocol
         {
             get => _selectedProtocol;
-            set
-            {
-                if (SetProperty(ref _selectedProtocol, value))
-                {
-                    CommandManager.InvalidateRequerySuggested();
-                    UpdatePreview();
-                }
-            }
+            set { if (SetProperty(ref _selectedProtocol, value)) { CommandManager.InvalidateRequerySuggested(); UpdatePreview(); } }
         }
 
-        private string _host = "localhost:5000";
+        private string _host;
         public string Host
         {
             get => _host;
-            set
-            {
-                if (SetProperty(ref _host, value))
-                {
-                    CommandManager.InvalidateRequerySuggested();
-                    UpdatePreview();
-                }
-            }
+            set { if (SetProperty(ref _host, value)) { CommandManager.InvalidateRequerySuggested(); UpdatePreview(); } }
         }
 
-        private readonly string[] _baseQueryParts = new[]
-        {
-            "c=QUERY_4_SFC",
-            "subcmd=carrier_query"
-        };
-
-        private string _endpoint = "sfc_post";
+        private string _endpoint;
         public string Endpoint
         {
             get => _endpoint;
-            set
-            {
-                if (SetProperty(ref _endpoint, value))
-                {
-                    CommandManager.InvalidateRequerySuggested();
-                    UpdatePreview();
-                }
-            }
+            set { if (SetProperty(ref _endpoint, value)) { CommandManager.InvalidateRequerySuggested(); UpdatePreview(); } }
         }
 
         private string _twoDCodeData;
         public string TwoDCodeData
         {
             get => _twoDCodeData;
-            set
-            {
-                if (SetProperty(ref _twoDCodeData, value))
-                {
-                    UpdatePreview();
-                }
-            }
+            set { if (SetProperty(ref _twoDCodeData, value)) { UpdatePreview(); } }
         }
 
         private string _previousStationCode;
         public string PreviousStationCode
         {
             get => _previousStationCode;
-            set
-            {
-                if (SetProperty(ref _previousStationCode, value))
-                {
-                    UpdatePreview();
-                }
-            }
+            set { if (SetProperty(ref _previousStationCode, value)) { UpdatePreview(); } }
         }
 
         private string _currentMachineCode;
         public string CurrentMachineCode
         {
             get => _currentMachineCode;
-            set
-            {
-                if (SetProperty(ref _currentMachineCode, value))
-                {
-                    UpdatePreview();
-                }
-            }
+            set { if (SetProperty(ref _currentMachineCode, value)) { UpdatePreview(); } }
         }
+
+        // --- Preview & Results ---
 
         private string _requestPreview;
         public string RequestPreview
         {
             get => _requestPreview;
-            set
-            {
-                if (SetProperty(ref _requestPreview, value))
-                {
-                    OnPropertyChanged(nameof(HasRequestPreview));
-                }
-            }
+            set { if (SetProperty(ref _requestPreview, value)) { OnPropertyChanged(nameof(HasRequestPreview)); } }
         }
 
-        private string _resultText = "Ready to test an endpoint.";
+        public bool HasRequestPreview => !string.IsNullOrWhiteSpace(_requestPreview);
+
+        private string _finalQueryPreview;
+        public string FinalQueryPreview
+        {
+            get => _finalQueryPreview;
+            set { if (SetProperty(ref _finalQueryPreview, value)) { OnPropertyChanged(nameof(HasFinalQueryPreview)); } }
+        }
+
+        public bool HasFinalQueryPreview => !string.IsNullOrWhiteSpace(_finalQueryPreview);
+
+        private string _resultText = "Ready to test.";
         public string ResultText
         {
             get => _resultText;
             set => SetProperty(ref _resultText, value);
         }
-
-        private string _finalQueryPreview = "Final query not available.";
-        public string FinalQueryPreview
-        {
-            get => _finalQueryPreview;
-            set
-            {
-                if (SetProperty(ref _finalQueryPreview, value))
-                {
-                    OnPropertyChanged(nameof(HasFinalQueryPreview));
-                }
-            }
-        }
-
-        public bool HasRequestPreview => !string.IsNullOrWhiteSpace(_requestPreview);
-        public bool HasFinalQueryPreview => !string.IsNullOrWhiteSpace(_finalQueryPreview);
 
         private string _pingResult = "Ping not executed.";
         public string PingResult
@@ -158,31 +116,124 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _pingResult, value);
         }
 
-        private bool _isBusy;
         public bool IsBusy
         {
             get => _isBusy;
-            set
-            {
-                if (SetProperty(ref _isBusy, value))
-                {
-                    CommandManager.InvalidateRequerySuggested();
-                }
-            }
+            set { if (SetProperty(ref _isBusy, value)) { CommandManager.InvalidateRequerySuggested(); } }
         }
+
+        // --- Commands ---
 
         public ICommand TestApiCommand { get; }
         public ICommand SaveSettingsCommand { get; }
         public ICommand PingTestCommand { get; }
+        public ICommand CloseTcpCommand { get; }
 
-        public ApiTestViewModel(IAppLogger logger, IApiTestSettingsService settingsService) : base(logger)
+        public ApiTestViewModel(
+            IAppLogger logger,
+            IOptionsMonitor<ExternalSettings> settingsMonitor,
+            IDialogService dialog) : base(logger)
         {
-            _settingsService = settingsService;
+            _settingsMonitor = settingsMonitor;
+            _dialog = dialog;
+            _appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+
             TestApiCommand = new RelayCommand(async () => await ExecuteTestAsync(), CanExecuteTest);
-            SaveSettingsCommand = new RelayCommand(async () => await SaveSettingsAsync(), () => _settingsLoaded);
+            SaveSettingsCommand = new RelayCommand(SaveSettings);
             PingTestCommand = new RelayCommand(async () => await ExecutePingAsync(), CanExecutePing);
+
+            CloseTcpCommand = new RelayCommand(() =>
+            {
+                _tcpClient.Disconnect();
+                ResultText += "\n[TCP] Connection closed by user.";
+            });
+
+            // Load initial values from ExternalSettings
+            LoadSettingsFromConfig();
             UpdatePreview();
-            _ = LoadPersistedSettingsAsync();
+        }
+
+        private void LoadSettingsFromConfig()
+        {
+            try
+            {
+                var config = _settingsMonitor.CurrentValue;
+
+                // Map ExternalSettings to UI
+                SelectedProtocol = config.Protocol?.ToUpper() ?? "TCP";
+                Endpoint = config.EndPoint;
+                PreviousStationCode = config.PreviousMachineCode;
+                CurrentMachineCode = config.AOIMachineCode;
+
+                // Handle Host (Combine IP and Port for TCP, or just IP for HTTP)
+                if (SelectedProtocol == "TCP")
+                {
+                    Host = $"{config.MacMiniIpAddress}:{config.Port}";
+                }
+                else
+                {
+                    Host = config.MacMiniIpAddress;
+                }
+
+                // TwoDCodeData is not stored in config, defaulting for test convenience
+                TwoDCodeData = "TEST_QR_CODE";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading settings: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+
+        private void SaveSettings()
+        {
+            try
+            {
+                // 1. Parse Host field into IP and Port
+                string ip = Host;
+                int port = 5000; // Default
+
+                if (!string.IsNullOrWhiteSpace(Host))
+                {
+                    var parts = Host.Split(':');
+                    ip = parts[0];
+                    if (parts.Length > 1 && int.TryParse(parts[1], out int p))
+                    {
+                        port = p;
+                    }
+                }
+
+                // 2. Read appsettings.json
+                var json = File.ReadAllText(_appSettingsPath);
+                var jsonObj = JObject.Parse(json);
+
+                // 3. Ensure External section
+                if (jsonObj["External"] == null)
+                {
+                    jsonObj["External"] = new JObject();
+                }
+
+                // 4. Update Values
+                var ext = jsonObj["External"];
+                ext["Protocol"] = SelectedProtocol;
+                ext["MacMiniIpAddress"] = ip;
+                ext["Port"] = port;
+                ext["EndPoint"] = Endpoint;
+                ext["PreviousMachineCode"] = PreviousStationCode;
+                ext["AOIMachineCode"] = CurrentMachineCode;
+
+                // Keep other existing settings intact (IsMacMiniEnabled, SharedFolderPath, etc.)
+                // if they are not bound here.
+
+                // 5. Write back
+                File.WriteAllText(_appSettingsPath, jsonObj.ToString());
+
+                _dialog.ShowMessage("External Interface Settings saved to appsettings.json.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to save settings: {ex.Message}", LogType.Diagnostics);
+                _dialog.ShowWarning("Failed to save settings. Check logs.");
+            }
         }
 
         private bool CanExecuteTest()
@@ -195,44 +246,24 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task ExecuteTestAsync()
         {
-            if (!CanExecuteTest())
-            {
-                ResultText = "Provide protocol, host, and endpoint before testing.";
-                return;
-            }
+            if (!CanExecuteTest()) return;
 
-            Uri requestUri;
+            IsBusy = true;
             try
             {
-                requestUri = BuildRequestUri(out _);
-            }
-            catch (Exception ex)
-            {
-                ResultText = $"Invalid URL: {ex.Message}";
-                return;
-            }
-
-            RequestPreview = requestUri.ToString();
-
-            try
-            {
-                IsBusy = true;
-
-                var response = await _httpClient.GetAsync(requestUri);
-                var body = await response.Content.ReadAsStringAsync();
-
-                var sb = new StringBuilder();
-                sb.AppendLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] GET {requestUri}");
-                sb.AppendLine($"Status: {(int)response.StatusCode} {response.ReasonPhrase}");
-                sb.AppendLine();
-                sb.Append(body);
-
-                ResultText = sb.ToString();
+                if (SelectedProtocol == "TCP")
+                {
+                    await ExecuteTcpTestAsync();
+                }
+                else
+                {
+                    await ExecuteHttpTestAsync();
+                }
             }
             catch (Exception ex)
             {
                 ResultText = $"Request failed: {ex.Message}";
-                _logger.LogError($"API test failed: {ex.Message}", LogTypeEnum.Diagnostics);
+                _logger.LogError($"API test failed: {ex.Message}", LogType.Diagnostics);
             }
             finally
             {
@@ -240,270 +271,169 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
+        private async Task ExecuteTcpTestAsync()
+        {
+            // Parse IP/Port locally
+            string ip = Host;
+            int port = 5000;
+
+            if (Host.Contains(':'))
+            {
+                var parts = Host.Split(':');
+                ip = parts[0];
+                if (parts.Length > 1) int.TryParse(parts[1], out port);
+            }
+
+            string payload = BuildTcpPayload(out _);
+            RequestPreview = $"[TCP] Target: {ip}:{port}\nPayload: {payload}";
+
+            try
+            {
+                if (!_tcpClient.IsConnected)
+                {
+                    ResultText = $"Connecting to {ip}:{port} ...";
+                    await _tcpClient.ConnectAsync(ip, port);
+                    ResultText += " Connected.\n";
+                }
+                else
+                {
+                    ResultText = "Using existing connection.\n";
+                }
+
+                ResultText += $"Sending: {payload}\nWaiting for response...";
+                var response = await _tcpClient.SendAndReceiveAsync(payload);
+                ResultText += $"\n\nReceived:\n{response}";
+            }
+            catch (Exception ex)
+            {
+                _tcpClient.Disconnect();
+                throw new Exception($"TCP Error: {ex.Message}");
+            }
+        }
+
+        private async Task ExecuteHttpTestAsync()
+        {
+            var uri = BuildRequestUri(out _);
+            RequestPreview = uri.ToString();
+
+            ResultText = $"GET {uri}\nWaiting...";
+            var response = await _httpClient.GetAsync(uri);
+            var body = await response.Content.ReadAsStringAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"Status: {(int)response.StatusCode} {response.ReasonPhrase}");
+            sb.AppendLine();
+            sb.Append(body);
+            ResultText = sb.ToString();
+        }
+
+        // --- Helper: Shared Parameter Logic ---
+        private List<string> GetCommonQueryParameters()
+        {
+            var queryParts = new List<string>
+            {
+                "c=QUERY_4_SFC",
+                "subcmd=carrier_query"
+            };
+
+            if (!string.IsNullOrWhiteSpace(TwoDCodeData))
+                queryParts.Add($"carrier_sn={Uri.EscapeDataString(TwoDCodeData)}");
+
+            if (!string.IsNullOrWhiteSpace(PreviousStationCode))
+                queryParts.Add($"station_code={Uri.EscapeDataString(PreviousStationCode)}");
+
+            if (!string.IsNullOrWhiteSpace(CurrentMachineCode))
+                queryParts.Add($"station_id={Uri.EscapeDataString(CurrentMachineCode)}");
+
+            return queryParts;
+        }
+
+        private string BuildTcpPayload(out string finalQuery)
+        {
+            var paramsList = GetCommonQueryParameters();
+            string paramString = string.Join("&", paramsList);
+
+            // Format: Endpoint@Params (e.g. sfc_post@c=QUERY...)
+            string endpoint = (Endpoint ?? "").Trim().TrimStart('/');
+            string payload = $"{endpoint}@{paramString}";
+
+            finalQuery = payload;
+            return payload;
+        }
+
         private Uri BuildRequestUri(out string finalQuery)
         {
-            var hostValue = NormalizeHostValue();
-            if (string.IsNullOrWhiteSpace(hostValue))
-            {
-                throw new InvalidOperationException("Host is required.");
-            }
-
-            var protocol = SelectedProtocol?.Trim().ToLowerInvariant() == "http" ? "http" : "https";
-
-            var endpoint = (Endpoint ?? string.Empty).Trim();
-            if (endpoint.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || endpoint.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new InvalidOperationException("Endpoint should not include protocol. Use the Protocol selector instead.");
-            }
-
-            var slashIndex = hostValue.IndexOf('/');
-            string hostOnly = hostValue;
-            string hostPath = string.Empty;
-            if (slashIndex >= 0)
-            {
-                hostOnly = hostValue[..slashIndex];
-                hostPath = hostValue[(slashIndex + 1)..];
-            }
-
-            if (!string.IsNullOrWhiteSpace(hostPath))
-            {
-                endpoint = $"/{hostPath.Trim('/')}/{endpoint.TrimStart('/')}";
-            }
-
-            if (!endpoint.StartsWith("/"))
-            {
-                endpoint = "/" + endpoint;
-            }
+            var hostValue = Host.Trim();
+            // Basic cleanup if user pasted protocol
+            if (hostValue.StartsWith("http")) hostValue = hostValue.Substring(hostValue.IndexOf("://") + 3);
 
             var builder = new UriBuilder
             {
-                Scheme = protocol,
-                Host = hostOnly,
+                Scheme = SelectedProtocol.ToLower() == "http" ? "http" : "https",
+                Host = hostValue,
                 Port = -1
             };
 
-            if (hostOnly.Contains(':'))
+            if (hostValue.Contains(':'))
             {
-                var split = hostOnly.Split(':');
+                var split = hostValue.Split(':');
                 builder.Host = split[0];
-                if (split.Length > 1 && int.TryParse(split[1], out var port))
-                {
-                    builder.Port = port;
-                }
+                if (split.Length > 1 && int.TryParse(split[1], out var port)) builder.Port = port;
             }
 
-            builder.Path = endpoint;
-            var queryParts = new List<string>();
-            var hasDynamicParams = !string.IsNullOrWhiteSpace(TwoDCodeData)
-                                   || !string.IsNullOrWhiteSpace(PreviousStationCode)
-                                   || !string.IsNullOrWhiteSpace(CurrentMachineCode);
+            builder.Path = Endpoint;
+            var queryParts = GetCommonQueryParameters();
+            if (queryParts.Count > 0) builder.Query = string.Join("&", queryParts);
 
-            if (hasDynamicParams)
-            {
-                queryParts.AddRange(_baseQueryParts);
-                AppendQueryPart(queryParts, "carrier_sn", TwoDCodeData);
-                AppendQueryPart(queryParts, "station_code", PreviousStationCode);
-                AppendQueryPart(queryParts, "station_id", CurrentMachineCode);
-            }
-
-            if (queryParts.Count > 0)
-            {
-                builder.Query = string.Join("&", queryParts);
-            }
-            else
-            {
-                builder.Query = null;
-            }
-
-            if (queryParts.Count > 0)
-            {
-                var pathSegment = builder.Path?.TrimStart('/') ?? string.Empty;
-                var querySegment = builder.Query?.TrimStart('?') ?? string.Empty;
-                finalQuery = string.IsNullOrWhiteSpace(pathSegment)
-                    ? querySegment
-                    : $"{pathSegment}@{querySegment}";
-            }
-            else
-            {
-                finalQuery = string.Empty;
-            }
-
+            finalQuery = builder.Uri.ToString();
             return builder.Uri;
-        }
-
-        private void AppendQueryPart(List<string> parts, string key, string value)
-        {
-            var part = CreateQueryPart(key, value);
-            if (!string.IsNullOrEmpty(part))
-            {
-                parts.Add(part);
-            }
-        }
-
-        private static string CreateQueryPart(string key, string value)
-        {
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                return null;
-            }
-
-            var safeValue = value ?? string.Empty;
-            return $"{key}={Uri.EscapeDataString(safeValue)}";
         }
 
         private void UpdatePreview()
         {
             try
             {
-                var uri = BuildRequestUri(out var finalQuery);
-                RequestPreview = uri.ToString();
-                FinalQueryPreview = finalQuery;
+                if (SelectedProtocol == "TCP")
+                {
+                    BuildTcpPayload(out var fq);
+                    RequestPreview = $"TCP://{Host} -> Send: {fq}";
+                    FinalQueryPreview = fq;
+                }
+                else
+                {
+                    var uri = BuildRequestUri(out var fq);
+                    RequestPreview = uri.ToString();
+                    FinalQueryPreview = fq;
+                }
             }
             catch
             {
-                RequestPreview = string.Empty;
-                FinalQueryPreview = string.Empty;
+                RequestPreview = "Invalid Configuration";
             }
+        }
+
+        private bool CanExecutePing() => !_isPingBusy && !string.IsNullOrWhiteSpace(Host);
+
+        private async Task ExecutePingAsync()
+        {
+            string ip = Host.Split(':')[0];
+            if (string.IsNullOrWhiteSpace(ip)) return;
+
+            try
+            {
+                _isPingBusy = true; CommandManager.InvalidateRequerySuggested();
+                using var ping = new Ping();
+                var reply = await ping.SendPingAsync(ip, 2000);
+                PingResult = reply.Status == IPStatus.Success ? $"Success ({reply.RoundtripTime}ms)" : $"Failed: {reply.Status}";
+            }
+            catch (Exception ex) { PingResult = $"Error: {ex.Message}"; }
+            finally { _isPingBusy = false; CommandManager.InvalidateRequerySuggested(); }
         }
 
         public void Dispose()
         {
             _httpClient?.Dispose();
-        }
-
-        private async Task LoadPersistedSettingsAsync()
-        {
-            if (_settingsService == null)
-            {
-                _settingsLoaded = true;
-                return;
-            }
-
-            try
-            {
-                var stored = await _settingsService.LoadAsync().ConfigureAwait(false);
-
-                SelectedProtocol = stored.Protocol ?? _selectedProtocol;
-                Host = stored.Host ?? _host;
-                Endpoint = stored.Endpoint ?? _endpoint;
-                TwoDCodeData = stored.TwoDCodeData ?? string.Empty;
-                PreviousStationCode = stored.PreviousStationCode ?? string.Empty;
-                CurrentMachineCode = stored.CurrentMachineCode ?? string.Empty;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"[API TEST] Failed to load saved settings: {ex.Message}", LogTypeEnum.Diagnostics);
-            }
-            finally
-            {
-                _settingsLoaded = true;
-                CommandManager.InvalidateRequerySuggested();
-            }
-        }
-
-        private async Task SaveSettingsAsync()
-        {
-            if (_settingsService == null)
-            {
-                ResultText = "Settings service not available.";
-                return;
-            }
-
-            try
-            {
-                var snapshot = new ApiTestSettings
-                {
-                    Protocol = SelectedProtocol,
-                    Host = Host,
-                    Endpoint = Endpoint,
-                    TwoDCodeData = TwoDCodeData,
-                    PreviousStationCode = PreviousStationCode,
-                    CurrentMachineCode = CurrentMachineCode
-                };
-
-                await _settingsService.SaveAsync(snapshot).ConfigureAwait(false);
-                ResultText = "Settings saved to ApiTestSettings.json.";
-            }
-            catch (Exception ex)
-            {
-                ResultText = $"Failed to save settings: {ex.Message}";
-                _logger.LogError($"[API TEST] Failed to save settings: {ex.Message}", LogTypeEnum.Diagnostics);
-            }
-        }
-
-        private bool CanExecutePing()
-        {
-            return !_isPingBusy && !string.IsNullOrWhiteSpace(Host);
-        }
-
-        private async Task ExecutePingAsync()
-        {
-            var hostOnly = ExtractHostName();
-            if (string.IsNullOrWhiteSpace(hostOnly))
-            {
-                PingResult = "Enter a valid host to ping.";
-                return;
-            }
-
-            try
-            {
-                _isPingBusy = true;
-                CommandManager.InvalidateRequerySuggested();
-
-                using var ping = new Ping();
-                var reply = await ping.SendPingAsync(hostOnly, 2000);
-
-                if (reply.Status == IPStatus.Success)
-                {
-                    PingResult = $"Ping to {hostOnly} succeeded in {reply.RoundtripTime} ms (IP {reply.Address}).";
-                }
-                else
-                {
-                    PingResult = $"Ping to {hostOnly} failed: {reply.Status}.";
-                }
-            }
-            catch (Exception ex)
-            {
-                PingResult = $"Ping error: {ex.Message}";
-                _logger.LogError($"[API TEST] Ping failed: {ex.Message}", LogTypeEnum.Diagnostics);
-            }
-            finally
-            {
-                _isPingBusy = false;
-                CommandManager.InvalidateRequerySuggested();
-            }
-        }
-
-        private string NormalizeHostValue()
-        {
-            var hostValue = (Host ?? string.Empty).Trim();
-            if (hostValue.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
-            {
-                hostValue = hostValue.Substring(7);
-            }
-            else if (hostValue.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-            {
-                hostValue = hostValue.Substring(8);
-            }
-
-            return hostValue.Trim().TrimStart('/').TrimEnd('/');
-        }
-
-        private string ExtractHostName()
-        {
-            var hostValue = NormalizeHostValue();
-            if (string.IsNullOrWhiteSpace(hostValue))
-            {
-                return null;
-            }
-
-            var slashIndex = hostValue.IndexOf('/');
-            if (slashIndex >= 0)
-            {
-                hostValue = hostValue[..slashIndex];
-            }
-
-            return hostValue;
+            _tcpClient?.Dispose();
         }
     }
 }
