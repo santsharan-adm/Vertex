@@ -14,21 +14,21 @@ using System.Windows.Input;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public class AeLimitViewModel : BaseViewModel
+    public class AeLimitViewModel : BaseViewModel, IDisposable
     {
         private readonly IAeLimitService _aeLimitService;
-        private AeLimitSettings _settings;
-        private bool _isBusy;
-
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
         private readonly SafePoller _liveDataTimer;
+
+        private AeLimitSettings _settings;
+        private bool _isBusy;
 
         // Commands
         public ICommand RefreshCommand { get; }
         public ICommand SaveCommand { get; }
 
-        // Parameters
+        // Parameters (Live Limits)
         public AeLimitParameterItem MinX { get; }
         public AeLimitParameterItem MaxX { get; }
         public AeLimitParameterItem MinY { get; }
@@ -38,34 +38,20 @@ namespace IPCSoftware.App.ViewModels
 
         private readonly AeLimitParameterItem[] _allLiveParams;
 
+        // Collection to hold station data structure for JSON saving
         public ObservableCollection<AeLimitStationConfig> Stations { get; } = new();
 
-        #region Properties
-        public string MachineId
-        {
-            get => _settings?.MachineId;
-            set { if (_settings != null) { _settings.MachineId = value; OnPropertyChanged(); } }
-        }
-        // ... (Other properties like SubmitId, VendorCode etc. assumed unchanged from your snippet)
-        public string SubmitId { get => _settings?.SubmitId; set { if (_settings != null) { _settings.SubmitId = value; OnPropertyChanged(); } } }
-        public string VendorCode { get => _settings?.VendorCode; set { if (_settings != null) { _settings.VendorCode = value; OnPropertyChanged(); } } }
-        public string TossingDefault { get => _settings?.TossingDefault; set { if (_settings != null) { _settings.TossingDefault = value; OnPropertyChanged(); } } }
-        public string OperatorIdDefault { get => _settings?.OperatorIdDefault; set { if (_settings != null) { _settings.OperatorIdDefault = value; OnPropertyChanged(); } } }
-        public string ModeDefault { get => _settings?.ModeDefault; set { if (_settings != null) { _settings.ModeDefault = value; OnPropertyChanged(); } } }
-        public string TestSeriesDefault { get => _settings?.TestSeriesIdDefault; set { if (_settings != null) { _settings.TestSeriesIdDefault = value; OnPropertyChanged(); } } }
-        public string PriorityDefault { get => _settings?.PriorityDefault; set { if (_settings != null) { _settings.PriorityDefault = value; OnPropertyChanged(); } } }
-        public string OnlineFlag { get => _settings?.OnlineFlagDefault; set { if (_settings != null) { _settings.OnlineFlagDefault = value; OnPropertyChanged(); } } }
-        #endregion
-
-        public AeLimitViewModel(IAeLimitService aeLimitService,
-              CoreClient coreClient,
-              IDialogService dialog, IAppLogger logger) : base(logger)
+        public AeLimitViewModel(
+            IAeLimitService aeLimitService,
+            CoreClient coreClient,
+            IDialogService dialog,
+            IAppLogger logger) : base(logger)
         {
             _coreClient = coreClient;
             _dialog = dialog;
             _aeLimitService = aeLimitService;
 
-            // Initialize Parameters
+            // Initialize Parameters (Tags from ConstantValues)
             MinX = CreateParam("Min X", ConstantValues.MIN_X);
             MaxX = CreateParam("Max X", ConstantValues.MAX_X);
             MinY = CreateParam("Min Y", ConstantValues.MIN_Y);
@@ -76,10 +62,10 @@ namespace IPCSoftware.App.ViewModels
 
             RefreshCommand = new RelayCommand(async () => await LoadAsync(), () => !_isBusy);
 
-            // Save Command now triggers the bulk write + handshake logic
-            SaveCommand = new RelayCommand(async () => await SaveAndTransferAsync(), () => !_isBusy && _settings != null);
+            // Save Command triggers bulk write + handshake
+            SaveCommand = new RelayCommand(async () => await SaveAndTransferAsync(), () => !_isBusy);
 
-            // Start Live Polling (Every 200ms)
+            // Start Live Polling (Every 200ms) for PLC Feedback values if needed
             _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(200), OnLiveDataTick);
             _liveDataTimer.Start();
 
@@ -101,6 +87,7 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
+                // Read values to show "Min (Live)" column
                 var data = await _coreClient.GetIoValuesAsync(5);
                 if (data != null)
                 {
@@ -118,24 +105,35 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task SaveAndTransferAsync()
         {
-            if (_isBusy || _settings == null) return;
+            if (_isBusy) return;
             _isBusy = true;
             CommandManager.InvalidateRequerySuggested();
 
             try
             {
-                // 1. Save Settings to JSON
-                _settings.Stations = Stations.Select(s => s.Clone()).ToList();
-                await _aeLimitService.SaveSettingsAsync(_settings);
-                _logger.LogInfo("[AE UI] Configuration saved to JSON.", LogType.Audit);
+                // 1. Load latest settings first to ensure we don't overwrite PDCA data
+    /*            _settings = await _aeLimitService.GetSettingsAsync();
+                if (_settings == null) _settings = new AeLimitSettings();
 
-                // 2. Write All Parameters to PLC (NewValues)
+                // 2. Update Station Limits in the Settings object based on "NewValue"
+                // Assuming Station 0 is the one we are editing limits for
+                if (_settings.Stations.Count > 0)
+                {
+                    // Map NewValues to the JSON model if required for persistence
+                    // (Assuming you want to save the new limits to JSON as well)
+                    // Example: _settings.Stations[0].Limits.MinX = MinX.NewValue; 
+                    // This depends on your specific mapping logic between UI Params and JSON Model
+                }
+
+                await _aeLimitService.SaveSettingsAsync(_settings);
+                _logger.LogInfo("[AE UI] Limits saved to JSON.", LogType.Audit);*/
+
+                // 3. Write All Parameters to PLC (NewValues)
                 _logger.LogInfo("[AE UI] Transferring parameters to PLC...", LogType.Audit);
                 bool allWritesSuccess = true;
 
                 foreach (var param in _allLiveParams)
                 {
-                    // Write NewValue to the WriteTagId
                     bool success = await _coreClient.WriteTagAsync(param.WriteTagId, param.NewValue);
                     if (!success) allWritesSuccess = false;
                 }
@@ -146,32 +144,30 @@ namespace IPCSoftware.App.ViewModels
                     return;
                 }
 
-                // 3. Handshake Logic
-                // Set DM10301.0 (Start) -> 1
+                // 4. Handshake Logic
                 _logger.LogInfo("[AE UI] Setting Transfer Start (DM10301.0 = 1)...", LogType.Audit);
                 await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1); // Start Bit
 
-                // 4. Wait for Confirmation (DM10480.0)
                 bool transferComplete = await WaitForPlcConfirmationAsync();
 
-                // 5. Reset Start Bit (DM10301.0 = 0)
+                // Reset Start Bit
                 await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
 
                 if (transferComplete)
                 {
-                    _logger.LogInfo("[AE UI] PLC Confirmation Received (DM10480.0).", LogType.Audit);
-                    _dialog.ShowMessage("Settings Saved & Transferred Successfully!");
+                    _logger.LogInfo("[AE UI] PLC Confirmation Received.", LogType.Audit);
+                    _dialog.ShowMessage("Limits Saved & Transferred Successfully!");
                 }
                 else
                 {
-                    _logger.LogWarning("[AE UI] PLC Transfer Timeout. No Confirmation received.", LogType.Diagnostics);
+                    _logger.LogWarning("[AE UI] PLC Transfer Timeout.", LogType.Diagnostics);
                     _dialog.ShowWarning("Settings Saved, but PLC Confirmation timed out.\nPlease check PLC status.");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"[AE UI] Save/Transfer Failed: {ex.Message}", LogType.Diagnostics);
-                _dialog.ShowMessage("An error occurred during save.");
+                _dialog.ShowMessage("An error occurred during save.", "Error");
             }
             finally
             {
@@ -182,29 +178,24 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task<bool> WaitForPlcConfirmationAsync()
         {
-            // Wait up to 5 seconds for the PLC to set DM10480.0 (Read Tag) to 1
             int timeoutMs = 5000;
             int delayMs = 200;
             int elapsed = 0;
 
             while (elapsed < timeoutMs)
             {
-                // Read fresh data
                 var data = await _coreClient.GetIoValuesAsync(5);
                 if (data != null && data.TryGetValue(ConstantValues.ACK_LIMIT.Read, out object val))
                 {
-                    // Assuming ACK_LIMIT.Read maps to DM10480.0
                     bool isComplete = false;
                     if (val is bool bVal) isComplete = bVal;
                     else if (val is int iVal) isComplete = (iVal > 0);
 
                     if (isComplete) return true;
                 }
-
                 await Task.Delay(delayMs);
                 elapsed += delayMs;
             }
-
             return false;
         }
 
@@ -215,16 +206,9 @@ namespace IPCSoftware.App.ViewModels
             try
             {
                 _settings = await _aeLimitService.GetSettingsAsync();
-                Stations.Clear();
-                if (_settings?.Stations != null)
-                {
-                    foreach (var station in _settings.Stations.OrderBy(s => s.SequenceIndex))
-                    {
-                        Stations.Add(station.Clone());
-                    }
-                }
-                // Notify property changes for global settings
-                OnPropertyChanged(string.Empty);
+
+                // If you need to populate "NewValue" boxes with current JSON values, do it here.
+                // For now, assuming NewValue starts at 0 or user entry.
             }
             catch (Exception ex)
             {
@@ -263,4 +247,3 @@ namespace IPCSoftware.App.ViewModels
         }
     }
 }
-

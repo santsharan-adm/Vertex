@@ -141,7 +141,7 @@ namespace IPCSoftware.CoreService.Services.External
 
             try
             {
-                _logger.LogInfo($"[ExtIf] Requesting Status ({Settings.Protocol}) for: {qrCode}", LogType.Production);
+                _logger.LogInfo($"[ExtIf] Requesting Status ({Settings.Protocol}) for: {qrCode}", LogType.Error);
 
                 MacMiniStatusModel statusData = null;
                 string rawResponse = string.Empty;
@@ -452,6 +452,54 @@ namespace IPCSoftware.CoreService.Services.External
                 }
             }
             catch (Exception ex) { _logger.LogError($"Ext Write Error ({tagId}): {ex.Message}", LogType.Diagnostics); }
+        }
+
+        public async Task SendPdcaDataAsync(string payload)
+        {
+            if (!Settings.IsMacMiniEnabled) return;
+
+            try
+            {
+                _logger.LogInfo("[ExtIf] Sending PDCA Data...", LogType.Production);
+
+                // 1. Ensure Connected
+                if (!_tcpClient.IsConnected)
+                {
+                    await _tcpClient.ConnectAsync(Settings.MacMiniIpAddress, Settings.Port);
+                }
+
+                // 2. Send Plain Text
+                string response = await _tcpClient.SendAndReceiveAsync(payload);
+
+                // 3. Validate Response
+                // Requirement: "We will receive same response with ok in front of it"
+                // Checking if it contains "OK" or "Success" (Case insensitive)
+                bool isSuccess = !string.IsNullOrEmpty(response) &&
+                                 (response.Contains("OK", StringComparison.OrdinalIgnoreCase) ||
+                                  response.Contains("Success", StringComparison.OrdinalIgnoreCase));
+
+                if (isSuccess)
+                {
+                    _logger.LogInfo("[ExtIf] Data Sent Successfully. Response OK.", LogType.Error);
+
+                    // CLEAR ALARM (0)
+                   // await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, false);
+                }
+                else
+                {
+                    _logger.LogError($"[ExtIf] Data Send Failed. Response: {response}", LogType.Error);
+
+                    // RAISE ALARM (1)
+                    await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[ExtIf] TCP Send Error: {ex.Message}", LogType.Diagnostics);
+
+                // RAISE ALARM (1) on Exception (Connection lost, timeout, etc.)
+                await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, true);
+            }
         }
 
         public void Dispose()

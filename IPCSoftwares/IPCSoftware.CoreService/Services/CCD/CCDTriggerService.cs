@@ -68,7 +68,7 @@ namespace IPCSoftware.CoreService.Services.CCD
 
               
                
-                if (!isCycleEnabled && _lastCycleStartState)
+                if (isCycleEnabled && !_lastCycleStartState)
                 {
                     if (!_cycleManager.IsCycleResetCompleted)
                     {
@@ -270,7 +270,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             try
             {
                 var pollInterval = TimeSpan.FromMilliseconds(200);
-                var quickWindow = TimeSpan.FromSeconds(3);
+                var quickWindow = TimeSpan.FromSeconds( 3);
                 var maxWindow = TimeSpan.FromSeconds(5);
 
                 DateTime start = DateTime.Now;

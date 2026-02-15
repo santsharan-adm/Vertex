@@ -8,82 +8,258 @@
              mc:Ignorable="d"
              d:DesignHeight="1080" d:DesignWidth="1920"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ApiTestViewModel}">
-    <Grid Background="#F5F7FA" Margin="40" TextElement.FontSize="16">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0" Margin="0,0,30,0">
-            <TextBlock Text="API Test Console" FontSize="46" FontWeight="Bold" Foreground="#333" />
-            <Border Background="White" CornerRadius="12" Padding="25" BorderBrush="#E0E0E0" BorderThickness="1">
-                <StackPanel>
-                    <!-- ... Existing Inputs (Protocol, Host, Endpoint, Params) ... -->
-                    <UniformGrid Columns="2" Rows="3" Margin="0,0,0,10">
-                        <StackPanel Margin="0,0,15,10">
-                            <TextBlock Text="Protocol" FontWeight="SemiBold" />
-                            <ComboBox ItemsSource="{Binding ProtocolOptions}" SelectedItem="{Binding SelectedProtocol}" Height="40" />
-                        </StackPanel>
-                        <StackPanel Margin="0,0,15,10">
-                            <TextBlock Text="Host (IP:Port for TCP)" FontWeight="SemiBold" />
-                            <TextBox Text="{Binding Host, UpdateSourceTrigger=PropertyChanged}" Height="40" />
-                        </StackPanel>
-                        <StackPanel Margin="0,0,15,10">
-                            <TextBlock Text="Endpoint / Prefix" FontWeight="SemiBold" />
-                            <TextBox Text="{Binding Endpoint, UpdateSourceTrigger=PropertyChanged}" Height="40" />
-                        </StackPanel>
-                        <StackPanel Margin="0,0,15,10">
-                            <TextBlock Text="Carrier Serial Number" FontWeight="SemiBold" />
-                            <TextBox Text="{Binding TwoDCodeData, UpdateSourceTrigger=PropertyChanged}" Height="40" />
-                        </StackPanel>
-                        <StackPanel Margin="0,0,15,10">
-                            <TextBlock Text="Previous Station Code" FontWeight="SemiBold" />
-                            <TextBox Text="{Binding PreviousStationCode, UpdateSourceTrigger=PropertyChanged}" Height="40" />
-                        </StackPanel>
-                        <StackPanel Margin="0,0,15,10">
-                            <TextBlock Text="Current Station ID" FontWeight="SemiBold" />
-                            <TextBox Text="{Binding CurrentMachineCode, UpdateSourceTrigger=PropertyChanged}" Height="40" />
-                        </StackPanel>
-                    </UniformGrid>
 
-                    <!-- Preview Section -->
-                    <StackPanel Visibility="{Binding HasRequestPreview, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <TextBlock Text="Request Preview" FontWeight="SemiBold" />
-                        <TextBox Text="{Binding RequestPreview}" IsReadOnly="True" Height="80" Background="#F0F3F8" TextWrapping="Wrap"/>
+    <UserControl.Resources>
+        <Style TargetType="TabItem">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#555"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="border" BorderThickness="0,0,0,3" BorderBrush="Transparent" Background="Transparent" Margin="0,0,10,0" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter ContentSource="Header" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#007ACC"/>
+                                <Setter Property="Foreground" Value="#007ACC"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#005A9E"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="InputLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Foreground" Value="#4B5563" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+        <Style x:Key="InputTextBox" TargetType="TextBox">
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Background" Value="#F9FAFB" />
+            <Setter Property="BorderBrush" Value="#CBD5F5" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="#F5F7FA" Margin="40">
+        <TabControl Background="Transparent" BorderThickness="0">
+
+            <!-- TAB 1: EXTERNAL INTERFACE -->
+            <TabItem Header="External Interface">
+                <Grid Margin="0,20,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,30,0">
+                        <Border Background="White" CornerRadius="12" Padding="25" BorderBrush="#E0E0E0" BorderThickness="1">
+                            <StackPanel>
+                                <UniformGrid Columns="2" Rows="3" Margin="0,0,0,10">
+                                    <StackPanel Margin="0,0,15,10">
+                                        <TextBlock Text="Protocol" Style="{StaticResource InputLabel}" />
+                                        <ComboBox ItemsSource="{Binding ProtocolOptions}" SelectedItem="{Binding SelectedProtocol}" Height="40" FontSize="16"/>
+                                    </StackPanel>
+
+                                    <Grid Margin="0,0,15,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Host / IP Address" Style="{StaticResource InputLabel}" />
+                                            <TextBox Text="{Binding Host, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" />
+                                        </StackPanel>
+                                        <Border Grid.Column="1" Width="15" Visibility="{Binding IsPortVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        <StackPanel Grid.Column="2" Width="100" Visibility="{Binding IsPortVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                                            <TextBlock Text="Port" Style="{StaticResource InputLabel}" />
+                                            <TextBox Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" />
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <StackPanel Margin="0,0,15,10">
+                                        <TextBlock Text="Endpoint / Prefix" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding Endpoint, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,15,10">
+                                        <TextBlock Text="Carrier Serial Number" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding TwoDCodeData, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,15,10">
+                                        <TextBlock Text="Previous Station Code" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding PreviousStationCode, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,15,10">
+                                        <TextBlock Text="Current Station ID" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding CurrentMachineCode, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" />
+                                    </StackPanel>
+                                </UniformGrid>
+
+                                <StackPanel Visibility="{Binding HasRequestPreview, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <TextBlock Text="Request Preview" Style="{StaticResource InputLabel}" />
+                                    <TextBox Text="{Binding RequestPreview}" IsReadOnly="True" Height="80" Background="#F0F3F8" TextWrapping="Wrap" Style="{StaticResource InputTextBox}"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Left">
+                                    <Button Content="Ping Test" Height="50" Width="120" Margin="0,0,10,0" Background="#6366F1" Foreground="White" Command="{Binding PingTestCommand}" FontWeight="Bold" FontSize="16">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                    <Button Content="Save Settings" Height="50" Width="140" Margin="0,0,10,0" Background="#10B981" Foreground="White" Command="{Binding SaveSettingsCommand}" FontWeight="Bold" FontSize="16">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                    <Button Content="TEST" Height="50" Width="120" FontWeight="Bold" Background="#007ACC" Foreground="White" Command="{Binding TestApiCommand}">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+
+                                    <Button Content="Disconnect TCP" Height="50" Width="140" Margin="10,0,0,0" Background="#EF4444" Foreground="White" Command="{Binding CloseTcpCommand}" FontWeight="Bold" FontSize="16">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Resources>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="CornerRadius" Value="8"/>
+                                                    </Style>
+                                                </Style.Resources>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedProtocol}" Value="tcp">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding SelectedProtocol}" Value="TCP">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
 
-                    <!-- Action Buttons -->
-                    <StackPanel Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Left">
-                        <Button Content="Ping Test" Height="50" Width="120" Margin="0,0,10,0" Background="#6366F1" Foreground="White" Command="{Binding PingTestCommand}" />
-                        <Button Content="Save Settings" Height="50" Width="140" Margin="0,0,10,0" Background="#10B981" Foreground="White" Command="{Binding SaveSettingsCommand}" />
-                        <Button Content="TEST" Height="50" Width="120" FontWeight="Bold" Background="#007ACC" Foreground="White" Command="{Binding TestApiCommand}" />
+                    <Border Grid.Column="1" Background="White" CornerRadius="12" Padding="20" BorderBrush="#E0E0E0" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Ping Result" Style="{StaticResource InputLabel}" />
+                            <TextBox Text="{Binding PingResult}" IsReadOnly="True" TextWrapping="Wrap" Background="#F9FAFB" Height="80" Style="{StaticResource InputTextBox}"/>
+                            <TextBlock Text="Response Log" Style="{StaticResource InputLabel}" Margin="0,20,0,5"/>
+                            <TextBox Text="{Binding ResultText}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Height="500" Background="#0A0A0F" Foreground="#D4F1FF" FontFamily="Consolas" FontSize="14" Padding="10"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
 
-                        <!-- NEW: Disconnect Button for TCP -->
-                        <Button Content="Disconnect TCP" Height="50" Width="140" Margin="10,0,0,0" Background="#EF4444" Foreground="White" Command="{Binding CloseTcpCommand}">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedProtocol}" Value="tcp">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-        </StackPanel>
+            <!-- TAB 2: PDCA DATA -->
+            <TabItem Header="PDCA Configuration">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="0,20,0,0">
+                        <Border Background="White" CornerRadius="12" Padding="30" BorderBrush="#E0E0E0" BorderThickness="1" HorizontalAlignment="Left" Width="1000">
+                            <StackPanel>
+                                <TextBlock Text="PDCA Data Configuration" FontSize="32" FontWeight="Bold" Foreground="#333" Margin="0,0,0,30"/>
 
-        <!-- Right Column: Results -->
-        <Border Grid.Column="1" Background="White" CornerRadius="12" Padding="20" BorderBrush="#E0E0E0" BorderThickness="1">
-            <StackPanel>
-                <TextBlock Text="Ping Result" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,10" />
-                <TextBox Text="{Binding PingResult}" IsReadOnly="True" TextWrapping="Wrap" Background="#F9FAFB" Height="80" />
+                                <UniformGrid Columns="3" Rows="5">
+                                    <!-- Row 1 -->
+                                    <StackPanel Margin="0,0,20,20">
+                                        <TextBlock Text="DUT Position (Read-Only)" Style="{StaticResource InputLabel}" />
+                                        <!-- FIX: Added Mode=OneWay -->
+                                        <TextBox Text="{Binding DutPositionLabel, Mode=OneWay}" IsReadOnly="True" Background="#EEE" Style="{StaticResource InputTextBox}"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,20,20">
+                                        <TextBlock Text="Cavity (Read-Only)" Style="{StaticResource InputLabel}" />
+                                        <!-- FIX: Added Mode=OneWay -->
+                                        <TextBox Text="{Binding Cavity, Mode=OneWay}" IsReadOnly="True" Background="#EEE" Style="{StaticResource InputTextBox}"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,0,20">
+                                        <TextBlock Text="Vendor Code" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding VendorCode}" Style="{StaticResource InputTextBox}"/>
+                                    </StackPanel>
 
-                <TextBlock Text="Response Log" FontSize="20" FontWeight="SemiBold" Margin="0,20,0,10" />
-                <TextBox Text="{Binding ResultText}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Height="400" Background="#0A0A0F" Foreground="#D4F1FF" FontFamily="Consolas" />
-            </StackPanel>
-        </Border>
+                                    <!-- Row 2 -->
+                                    <StackPanel Margin="0,0,20,20">
+                                        <TextBlock Text="Tossing" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding TossingDefault}" Style="{StaticResource InputTextBox}"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,20,20">
+                                        <TextBlock Text="Machine ID" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding MachineId}" Style="{StaticResource InputTextBox}"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,0,20">
+                                        <TextBlock Text="Online Flag" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding OnlineFlag}" Style="{StaticResource InputTextBox}"/>
+                                    </StackPanel>
+
+                                    <!-- Row 3 -->
+                                    <StackPanel Margin="0,0,20,20">
+                                        <TextBlock Text="Operator ID" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding OperatorIdDefault}" Style="{StaticResource InputTextBox}"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,20,20">
+                                        <TextBlock Text="Mode" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding ModeDefault}" Style="{StaticResource InputTextBox}"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,0,20">
+                                        <TextBlock Text="Test Series ID" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding TestSeriesDefault}" Style="{StaticResource InputTextBox}"/>
+                                    </StackPanel>
+
+                                    <!-- Row 4 -->
+                                    <StackPanel Margin="0,0,20,20">
+                                        <TextBlock Text="Priority" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding PriorityDefault}" Style="{StaticResource InputTextBox}"/>
+                                    </StackPanel>
+
+                                    <!-- Cycle Time Row -->
+                                    <StackPanel Margin="0,0,20,20">
+                                        <TextBlock Text="Cycle Time Min (s)" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding CycleTimeMin}" Style="{StaticResource InputTextBox}"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,0,20">
+                                        <TextBlock Text="Cycle Time Max (s)" Style="{StaticResource InputLabel}" />
+                                        <TextBox Text="{Binding CycleTimeMax}" Style="{StaticResource InputTextBox}"/>
+                                    </StackPanel>
+                                </UniformGrid>
+
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock Text="Submit ID" Style="{StaticResource InputLabel}" />
+                                    <TextBox Text="{Binding SubmitId}" Style="{StaticResource InputTextBox}"/>
+                                </StackPanel>
+
+                                <Button Content="Save PDCA Settings" Command="{Binding SavePdcaCommand}" HorizontalAlignment="Right" Width="250" Height="50" Background="#007ACC" Foreground="White" FontSize="18" FontWeight="Bold">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="8"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+        </TabControl>
     </Grid>
 </UserControl>
