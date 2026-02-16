@@ -262,7 +262,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             try
             {
                 if (_stationMap == null || _stationMap.Length == 0) return;
-                if (_currentSequenceStep >= _stationMap.Length) {   RequestReset(false); return; }
+               // if (_currentSequenceStep >= _stationMap.Length) {   RequestReset(false); return; }
 
                 int physicalStationId = _stationMap[_currentSequenceStep];
                 Console.WriteLine($"--- PROCESSING STATION {physicalStationId} (Seq {_currentSequenceStep}) ---");
@@ -347,9 +347,21 @@ namespace IPCSoftware.CoreService.Services.CCD
                     _logger.LogInfo("[CycleManager] Reset skipped - already completed.", LogType.Diagnostics);
                     if (_extService.Settings.IsMacMiniEnabled)
                     {
-                        _ = _aeLimitService.CompleteCycleAsync();
+                        // 1. Generate the Payload (Tuple: FilePath, TcpPayload)
+                        var result = await _aeLimitService.CompleteCycleAsync();
+
+                        // 2. Send via TCP to Mac Mini
+                        // The SendPdcaDataAsync method handles:
+                        // - TCP connection
+                        // - Sending the string
+                        // - Checking response for "OK"
+                        // - Raising/Clearing Alarm Bit (MACMINI_NOTCONNECTED)
+                        if (!string.IsNullOrEmpty(result.TcpPayload))
+                        {
+                            await _extService.SendPdcaDataAsync(result.TcpPayload);
+                        }
                     }
-                    Task.Run(async () => { ; RequestReset(false); });
+                    //Task.Run(async () => { ; RequestReset(false); });
                 }
             }
             catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); }

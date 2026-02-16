@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -24,8 +25,9 @@ namespace IPCSoftware.App.ViewModels
         private readonly CoreClient _coreClient;
         private readonly SafePoller _feedbackTimer;
         private readonly INavigationService _nav;
+        private readonly IProductConfigurationService _productService;
         private bool _isPositionLocked = false;
-
+        private int _configuredTotalItems = 12;
 
 
         // --- Tag Maps ---
@@ -33,7 +35,7 @@ namespace IPCSoftware.App.ViewModels
         private readonly Dictionary<ManualOperationMode, int> _readTags = new();
 
         // --- Collections ---
-        public ObservableCollection<ModeItem> Modes { get; }
+        public ObservableCollection<ModeItem> Modes { get; } = new ObservableCollection<ModeItem>();
 
         // --- Commands ---
         public ICommand UnifiedOperationCommand { get; }
@@ -41,7 +43,8 @@ namespace IPCSoftware.App.ViewModels
         public ICommand NavigateBackCommand { get; }
 
         // --- Filtered Lists for UI ItemsControl ---
-        public IEnumerable<ModeItem> GridPositionModes => Modes.Where(x => x.Group == "Move to Position" && x.Mode != ManualOperationMode.MoveToPos0);
+        // DYNAMIC FILTER: Show only configured positions
+        public IEnumerable<ModeItem> GridPositionModes => Modes.Where(x => x.Group == "Move to Position" && x.Mode != ManualOperationMode.MoveToPos0)  .Take(_configuredTotalItems);
 
         // --- Individual Properties for UI Binding (Reduced Logic) ---
         // These look up the ModeItem in the list dynamically to save state management code
@@ -75,19 +78,22 @@ namespace IPCSoftware.App.ViewModels
         private bool GetState(ManualOperationMode mode) => Modes.FirstOrDefault(x => x.Mode == mode)?.IsActive ?? false;
 
 
-        public ManualOpViewModel(IAppLogger logger, CoreClient coreClient, INavigationService nav) : base(logger)
+        public ManualOpViewModel(IAppLogger logger, CoreClient coreClient,
+               IProductConfigurationService productService, INavigationService nav) : base(logger)
         {
             _coreClient = coreClient;
             _nav = nav;
+            _productService = productService;
 
             // 1. Initialize Modes List
-            Modes = new ObservableCollection<ModeItem>(
+      /*      Modes = new ObservableCollection<ModeItem>(
                 Enum.GetValues(typeof(ManualOperationMode))
                     .Cast<ManualOperationMode>()
-                    .Select(m => new ModeItem { Mode = m, Group = GetGroupName(m) }));
+                    .Select(m => new ModeItem { Mode = m, Group = GetGroupName(m) }));*/
 
             // 2. Map All Tags
-            InitializeTags();
+            //InitializeTags();
+            InitializeAsync();
 
             // 3. Unified Command used by EVERY button
             UnifiedOperationCommand = new RelayCommand<string>(async (args) => await ExecuteOperationAsync(args));
@@ -104,6 +110,39 @@ namespace IPCSoftware.App.ViewModels
             // 5. Feedback Timer
             _feedbackTimer = new SafePoller ( TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
             _feedbackTimer.Start();
+        }
+
+        private async void InitializeAsync()
+        {
+            try
+            {
+                // A. Load Settings
+                var config = await _productService.LoadAsync();
+                _configuredTotalItems = config.TotalItems > 0 ? config.TotalItems : 12;
+
+                // B. Initialize Modes Collection
+                // We load ALL enum values first, then GridPositionModes filters them for display.
+                // This ensures "Map" logic works even if we have more enum values than config.
+                var allModes = Enum.GetValues(typeof(ManualOperationMode))
+                                   .Cast<ManualOperationMode>()
+                                   .Select(m => new ModeItem { Mode = m, Group = GetGroupName(m) });
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Modes.Clear();
+                    foreach (var m in allModes) Modes.Add(m);
+
+                    // Notify UI that the list changed
+                    OnPropertyChanged(nameof(GridPositionModes));
+                });
+
+                // C. Map Tags
+                InitializeTags();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"ManualOp Init Error: {ex.Message}", LogType.Diagnostics);
+            }
         }
 
         private void InitializeTags()
@@ -139,6 +178,7 @@ namespace IPCSoftware.App.ViewModels
                     Map(mode, posOffset);
                 }
             }
+
         }
 
         private void  OnBackClick()
@@ -213,40 +253,7 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        private async Task StopConveyorLogic(int stopTagId)
-        {
-            // A. Visually turn off other buttons immediately
-            // Note: This relies on the property change notifications to update the UI
-            var fwd = Modes.First(x => x.Mode == ManualOperationMode.TransportConveyorForward);
-            var rev = Modes.First(x => x.Mode == ManualOperationMode.TransportConveyorReverse);
-            var low = Modes.First(x => x.Mode == ManualOperationMode.TransportConveyorLowSpeed);
-            var high = Modes.First(x => x.Mode == ManualOperationMode.TransportConveyorHighSpeed);
-
-            fwd.IsActive = false;
-            rev.IsActive = false;
-            low.IsActive = false;
-            high.IsActive = false;
-
-            // Trigger UI updates
-            OnPropertyChanged(nameof(IsConvFwdActive));
-            OnPropertyChanged(nameof(IsConvRevActive));
-            OnPropertyChanged(nameof(IsConvLowActive));
-            OnPropertyChanged(nameof(IsConvHighActive));
-
-            // B. Send Stop Command to PLC (Pulse)
-            await _coreClient.WriteTagAsync(stopTagId, 1);
-
-            // C. Safety: Turn off the Motion/Speed Write Tags in PLC
-            if (_writeTags.TryGetValue(ManualOperationMode.TransportConveyorForward, out int tFwd)) await _coreClient.WriteTagAsync(tFwd, 0);
-            if (_writeTags.TryGetValue(ManualOperationMode.TransportConveyorReverse, out int tRev)) await _coreClient.WriteTagAsync(tRev, 0);
-            if (_writeTags.TryGetValue(ManualOperationMode.TransportConveyorLowSpeed, out int tLow)) await _coreClient.WriteTagAsync(tLow, 0);
-            if (_writeTags.TryGetValue(ManualOperationMode.TransportConveyorHighSpeed, out int tHigh)) await _coreClient.WriteTagAsync(tHigh, 0);
-
-            // D. Finish Pulse
-            await Task.Delay(100);
-            await _coreClient.WriteTagAsync(stopTagId, 0);
-        }
-
+      
         private async Task FeedbackLoop_Tick()
         {
             try
@@ -318,6 +325,41 @@ namespace IPCSoftware.App.ViewModels
         {
             _feedbackTimer.Dispose();
         }
+
+        private async Task StopConveyorLogic(int stopTagId)
+        {
+            // A. Visually turn off other buttons immediately
+            // Note: This relies on the property change notifications to update the UI
+            var fwd = Modes.First(x => x.Mode == ManualOperationMode.TransportConveyorForward);
+            var rev = Modes.First(x => x.Mode == ManualOperationMode.TransportConveyorReverse);
+            var low = Modes.First(x => x.Mode == ManualOperationMode.TransportConveyorLowSpeed);
+            var high = Modes.First(x => x.Mode == ManualOperationMode.TransportConveyorHighSpeed);
+
+            fwd.IsActive = false;
+            rev.IsActive = false;
+            low.IsActive = false;
+            high.IsActive = false;
+
+            // Trigger UI updates
+            OnPropertyChanged(nameof(IsConvFwdActive));
+            OnPropertyChanged(nameof(IsConvRevActive));
+            OnPropertyChanged(nameof(IsConvLowActive));
+            OnPropertyChanged(nameof(IsConvHighActive));
+
+            // B. Send Stop Command to PLC (Pulse)
+            await _coreClient.WriteTagAsync(stopTagId, 1);
+
+            // C. Safety: Turn off the Motion/Speed Write Tags in PLC
+            if (_writeTags.TryGetValue(ManualOperationMode.TransportConveyorForward, out int tFwd)) await _coreClient.WriteTagAsync(tFwd, 0);
+            if (_writeTags.TryGetValue(ManualOperationMode.TransportConveyorReverse, out int tRev)) await _coreClient.WriteTagAsync(tRev, 0);
+            if (_writeTags.TryGetValue(ManualOperationMode.TransportConveyorLowSpeed, out int tLow)) await _coreClient.WriteTagAsync(tLow, 0);
+            if (_writeTags.TryGetValue(ManualOperationMode.TransportConveyorHighSpeed, out int tHigh)) await _coreClient.WriteTagAsync(tHigh, 0);
+
+            // D. Finish Pulse
+            await Task.Delay(100);
+            await _coreClient.WriteTagAsync(stopTagId, 0);
+        }
+
     }
 
 }
