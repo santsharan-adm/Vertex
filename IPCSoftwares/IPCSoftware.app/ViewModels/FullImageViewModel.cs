@@ -51,6 +51,10 @@ namespace IPCSoftware.App.ViewModels
         public double LimitY_Max { get; }
         public double LimitZ_Min { get; }
         public double LimitZ_Max { get; }
+        public string XUOM { get; }
+        public string YUOM { get; }
+        public string ZUOM { get; }
+
 
         // --- DYNAMIC COLORS ---
         public Brush StatusBrushX => GetStatusBrush(XValue, LimitX_Min, LimitX_Max);
@@ -66,7 +70,8 @@ namespace IPCSoftware.App.ViewModels
             string measurementName,
             double xMin, double xMax,
             double yMin, double yMax,
-            double zMin, double zMax) : base(null)
+            double zMin, double zMax,
+            string xUOM, string yUOM, string zUOM) : base(null)
         {
             // Data
             ImagePath = item.ImagePath as ImageSource; // Cast object back to ImageSource
@@ -82,6 +87,9 @@ namespace IPCSoftware.App.ViewModels
             LimitY_Max = yMax;
             LimitZ_Min = zMin;
             LimitZ_Max = zMax;
+            XUOM = xUOM;
+            YUOM = yUOM;
+            ZUOM = zUOM;
 
             CloseCommand = new RelayCommand(Close);
         }

@@ -991,7 +991,8 @@ namespace IPCSoftware.App.ViewModels
                 var window = new FullImageView(img, title,
              LimitX_Min,  LimitX_Max,
              LimitY_Min,  LimitY_Max,
-            _limitTheta_Min,  _limitTheta_Max);
+            _limitTheta_Min,  _limitTheta_Max, UnitX, UnitY,
+            UnitTheta);
                 window.ShowDialog();
             }
             catch (Exception ex)
