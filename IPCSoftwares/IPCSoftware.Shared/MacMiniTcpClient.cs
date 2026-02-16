@@ -14,7 +14,18 @@ namespace IPCSoftware.Shared
         private string _connectedHost;
         private int _connectedPort;
 
-        public bool IsConnected => _client != null && _client.Connected;
+        // FIXED: Now checks real socket state, not just the cached 'Connected' flag
+        public bool IsConnected
+        {
+            get
+            {
+                if (_client == null || !_client.Connected || _client.Client == null)
+                    return false;
+
+                // Perform a non-blocking poll to check if connection is actually alive
+                return IsSocketConnected(_client.Client);
+            }
+        }
 
         public async Task ConnectAsync(string host, int port)
         {
@@ -23,7 +34,7 @@ namespace IPCSoftware.Shared
                 // If connecting to the same host/port and it's alive, reuse it
                 if (IsConnected && _connectedHost == host && _connectedPort == port)
                 {
-                    if (IsSocketConnected(_client.Client)) return;
+                    return;
                 }
 
                 Disconnect(); // Ensure clean slate
@@ -49,27 +60,28 @@ namespace IPCSoftware.Shared
         {
             if (!IsConnected || _stream == null) throw new InvalidOperationException("TCP Client not connected.");
 
-            // 1. Clean buffers
-            if (_client.Available > 0)
-            {
-                byte[] garbage = new byte[_client.Available];
-                await _stream.ReadAsync(garbage, 0, garbage.Length);
-            }
-
-            // 2. Send Data
-            byte[] data = Encoding.ASCII.GetBytes(message);
-            await _stream.WriteAsync(data, 0, data.Length);
-
-            // 3. Read Response
-            byte[] buffer = new byte[8192];
             try
             {
+                // 1. Clean buffers (optional, but good for request/response protocols)
+                if (_client.Available > 0)
+                {
+                    byte[] garbage = new byte[_client.Available];
+                    await _stream.ReadAsync(garbage, 0, garbage.Length);
+                }
+
+                // 2. Send Data
+                byte[] data = Encoding.ASCII.GetBytes(message);
+                await _stream.WriteAsync(data, 0, data.Length);
+
+                // 3. Read Response
+                byte[] buffer = new byte[16384]; // Increased buffer size just in case
+
                 // ReadAsync will wait until data arrives or connection closes
                 int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
 
                 if (bytesRead == 0)
                 {
-                    Disconnect(); // Server closed connection
+                    Disconnect(); // Server closed connection cleanly (FIN)
                     return string.Empty;
                 }
 
@@ -77,7 +89,7 @@ namespace IPCSoftware.Shared
             }
             catch (Exception)
             {
-                // Timeout or socket error
+                // Timeout or socket error (RST)
                 Disconnect();
                 throw;
             }
@@ -89,12 +101,16 @@ namespace IPCSoftware.Shared
         private bool IsSocketConnected(Socket s)
         {
             if (s == null) return false;
+
             // Poll returns true if:
             // A) connection is closed, reset, terminated (check Available==0)
             // B) connection is active and there is data to read
             bool part1 = s.Poll(1000, SelectMode.SelectRead);
             bool part2 = (s.Available == 0);
-            if (part1 && part2) return false; // Connection closed
+
+            // If Poll is true AND no data is available, it means the socket was closed by the peer
+            if (part1 && part2) return false;
+
             return true;
         }
 

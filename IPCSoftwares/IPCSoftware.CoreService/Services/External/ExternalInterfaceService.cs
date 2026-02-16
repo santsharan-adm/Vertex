@@ -119,7 +119,7 @@ namespace IPCSoftware.CoreService.Services.External
             if (!Settings.IsMacMiniEnabled) return new bool[_totalItems]; // All False
             return (bool[])_quarantineFlagsBySequence.Clone();
         }
-
+            
         public async Task SyncBatchStatusAsync(string qrCode)
         {
             // 1. Ensure we have the latest item count
@@ -200,27 +200,6 @@ namespace IPCSoftware.CoreService.Services.External
             }
         }
 
-      /*  private async Task MapAndWriteToPlc(MacMiniStatusModel data)
-        {
-            int[] stationMap = await GetStationMapAsync();
-            Array.Fill(_quarantineFlagsBySequence, true);
-            ushort statusWord = 0;
-
-            for (int i = 0; i < 12; i++)
-            {
-                int physId = stationMap[i];
-                if (data.ok.Contains(physId))
-                {
-                    _quarantineFlagsBySequence[i] = false;
-                    statusWord |= (ushort)(1 << i);
-                }
-            }
-
-            await WriteToPlc(ConstantValues.Ext_CavityStatus, statusWord);
-            await WriteToPlc(ConstantValues.Ext_DataReady, true);
-            _logger.LogInfo($"[ExtIf] Synced. Word: {statusWord:X4}", LogType.Production);
-        }
-*/
 
         private async Task MapAndWriteToPlc(MacMiniStatusModel data)
         {
@@ -379,8 +358,7 @@ namespace IPCSoftware.CoreService.Services.External
             {
                 try
                 {
-                    if (Settings.IsMacMiniEnabled)
-                    {
+                  
                         bool prev = _isMacMiniConnected;
                         bool current = false;
 
@@ -401,12 +379,23 @@ namespace IPCSoftware.CoreService.Services.External
                         if (prev != current)
                         {
                             _isMacMiniConnected = current;
-                            if (!current) _logger.LogError("[ExtIf] Connection Lost!", LogType.Error);
-                            else _logger.LogInfo("[ExtIf] Connected.", LogType.Error);
+                            if (Settings.IsMacMiniEnabled)
+                            {
+                                if (!current) _logger.LogError("[ExtIf] Connection Lost!", LogType.Error);
+                                else _logger.LogInfo("[ExtIf] Connected.", LogType.Error);
 
-                            await UpdateMacMiniConnectionStateAsync(current);
+                                // Only update PLC alarm if the feature is enabled
+                                await UpdateMacMiniConnectionStateAsync(current);
+                            }
+                            else
+                            {
+                                // If disabled, just log for debug, don't raise production alarms
+                                // SystemMonitorService will pick up _isMacMiniConnected for UI display
+                            }
+
+                     
                         }
-                    }
+                    
                 }
                 catch { }
                 await Task.Delay(2000);
@@ -423,11 +412,7 @@ namespace IPCSoftware.CoreService.Services.External
             try { using var p = new Ping(); var r = await p.SendPingAsync(address, Settings.PingTimeoutMs); return r.Status == IPStatus.Success; } catch { return false; }
         }
 
-        private async Task<string> ReadFileWithRetryAsync(string filePath)
-        {
-            // Placeholder for real file logic if needed
-            return null;
-        }
+     
 
         private Uri BuildApiUri(string protocol, string host, string endpoint, string sn, string prev, string curr)
         {
@@ -509,6 +494,8 @@ namespace IPCSoftware.CoreService.Services.External
         }
     }
 }
+
+#region Old Code
 
 
 
@@ -1134,3 +1121,4 @@ namespace IPCSoftware.CoreService.Services.External
         }
     }
 }*/
+#endregion

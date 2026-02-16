@@ -10,6 +10,7 @@ using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Printing;
@@ -127,9 +128,10 @@ public class MainWindowViewModel : BaseViewModel
         set => SetProperty(ref _timeSynched, value);
     }
 
+    private readonly IOptionsMonitor<AboutSettings> _aboutMonitor;
 
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
-    public string AppVersion => "AOI System v1.0.3";
+    public string AppVersion => _aboutMonitor.CurrentValue.ProductVersion;
 
     public MainWindowViewModel(
         INavigationService nav,
@@ -137,10 +139,12 @@ public class MainWindowViewModel : BaseViewModel
         IDialogService dialog,
         RibbonViewModel ribbonVM,
         AlarmViewModel alarmVM,
+        IOptionsMonitor<AboutSettings> aboutMonitor,
         IAppLogger logger) : base(logger)
     {
         _coreClient = coreClient;
         _dialog = dialog;
+        _aboutMonitor = aboutMonitor;
         _nav = nav;
         _alarmVM = alarmVM;
         _alarmVM.ActiveAlarms.CollectionChanged += (s, e) => RefreshAlarmBanner();
@@ -174,6 +178,11 @@ public class MainWindowViewModel : BaseViewModel
             OnPropertyChanged(nameof(CurrentUserRole));
             OnPropertyChanged(nameof(IsAdmin));
         };
+
+        _aboutMonitor.OnChange(settings => {
+            OnPropertyChanged(nameof(AppVersion));
+         
+        });
     }
     private bool CanExecuteAcknowledgeBannerAlarm()
     {

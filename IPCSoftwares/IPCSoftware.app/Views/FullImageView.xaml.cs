@@ -19,12 +19,15 @@ namespace IPCSoftware.App.Views
             string title,
             double xMin, double xMax,
             double yMin, double yMax,
-            double zMin, double zMax)
+            double zMin, double zMax,
+            string xUOM, string yUOM, string zUOM)
         {
             InitializeComponent();
 
             // 1. Create ViewModel with all limits
-            var viewModel = new FullImageViewModel(img, title, xMin, xMax, yMin, yMax, zMin, zMax);
+            var viewModel = new FullImageViewModel(img, title, xMin, xMax, yMin, yMax,
+                zMin, zMax,xUOM,yUOM, zUOM
+                );
 
             // 2. Hook up the Close Action
             viewModel.RequestClose += () => this.Close();
