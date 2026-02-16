@@ -6,8 +6,11 @@ using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.AeLimit;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq; // For JObject
 using System;
 using System.Collections.ObjectModel;
+using System.IO; // For File
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -20,9 +23,11 @@ namespace IPCSoftware.App.ViewModels
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
         private readonly SafePoller _liveDataTimer;
+        private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
 
         private AeLimitSettings _settings;
         private bool _isBusy;
+        private readonly string _appSettingsPath; // For saving units
 
         // Commands
         public ICommand RefreshCommand { get; }
@@ -38,34 +43,49 @@ namespace IPCSoftware.App.ViewModels
 
         private readonly AeLimitParameterItem[] _allLiveParams;
 
-        // Collection to hold station data structure for JSON saving
+        // Collection to hold station data structure for JSON saving logic
         public ObservableCollection<AeLimitStationConfig> Stations { get; } = new();
+
+        // Configurable Units (Editable)
+        private string _unitX;
+        public string UnitX { get => _unitX; set => SetProperty(ref _unitX, value); }
+
+        private string _unitY;
+        public string UnitY { get => _unitY; set => SetProperty(ref _unitY, value); }
+
+        private string _unitAngle;
+        public string UnitAngle { get => _unitAngle; set => SetProperty(ref _unitAngle, value); }
 
         public AeLimitViewModel(
             IAeLimitService aeLimitService,
             CoreClient coreClient,
             IDialogService dialog,
+            IOptionsMonitor<ExternalSettings> settingsMonitor,
             IAppLogger logger) : base(logger)
         {
             _coreClient = coreClient;
             _dialog = dialog;
             _aeLimitService = aeLimitService;
+            _settingsMonitor = settingsMonitor;
 
-            // Initialize Parameters (Tags from ConstantValues)
+            _appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+
+            // Initialize Parameters using ConstantValues tags
             MinX = CreateParam("Min X", ConstantValues.MIN_X);
             MaxX = CreateParam("Max X", ConstantValues.MAX_X);
             MinY = CreateParam("Min Y", ConstantValues.MIN_Y);
             MaxY = CreateParam("Max Y", ConstantValues.MAX_Y);
             MinZ = CreateParam("Min Angle", ConstantValues.MIN_Z);
             MaxZ = CreateParam("Max Angle", ConstantValues.MAX_Z);
+
             _allLiveParams = new[] { MinX, MaxX, MinY, MaxY, MinZ, MaxZ };
 
             RefreshCommand = new RelayCommand(async () => await LoadAsync(), () => !_isBusy);
 
-            // Save Command triggers bulk write + handshake
+            // Save Command triggers bulk write + handshake + Unit Save
             SaveCommand = new RelayCommand(async () => await SaveAndTransferAsync(), () => !_isBusy);
 
-            // Start Live Polling (Every 200ms) for PLC Feedback values if needed
+            // Start Live Polling (Every 200ms) for PLC Feedback values
             _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(200), OnLiveDataTick);
             _liveDataTimer.Start();
 
@@ -111,24 +131,53 @@ namespace IPCSoftware.App.ViewModels
 
             try
             {
-                // 1. Load latest settings first to ensure we don't overwrite PDCA data
-    /*            _settings = await _aeLimitService.GetSettingsAsync();
+                // --- 1. Save Unit Settings to appsettings.json ---
+                try
+                {
+                    var json = File.ReadAllText(_appSettingsPath);
+                    var jsonObj = JObject.Parse(json);
+                    if (jsonObj["External"] == null) jsonObj["External"] = new JObject();
+
+                    var ext = jsonObj["External"];
+                    ext["InspectionXUnit"] = UnitX;
+                    ext["InspectionYUnit"] = UnitY;
+                    ext["InspectionAngleUnit"] = UnitAngle;
+
+                    File.WriteAllText(_appSettingsPath, jsonObj.ToString());
+                    _logger.LogInfo("[AE UI] Units saved to appsettings.json.", LogType.Audit);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"[AE UI] Failed to save Units: {ex.Message}", LogType.Diagnostics);
+                }
+
+                // --- 2. Save Limits to AELimit.json ---
+                _settings = await _aeLimitService.GetSettingsAsync();
                 if (_settings == null) _settings = new AeLimitSettings();
 
-                // 2. Update Station Limits in the Settings object based on "NewValue"
-                // Assuming Station 0 is the one we are editing limits for
-                if (_settings.Stations.Count > 0)
+                // Sync UI Limit values into JSON model (global update for all stations)
+                if (_settings.Stations != null)
                 {
-                    // Map NewValues to the JSON model if required for persistence
-                    // (Assuming you want to save the new limits to JSON as well)
-                    // Example: _settings.Stations[0].Limits.MinX = MinX.NewValue; 
-                    // This depends on your specific mapping logic between UI Params and JSON Model
+                    foreach (var station in _settings.Stations)
+                    {
+                        station.InspectionX.Lower = MinX.NewValue;
+                        station.InspectionX.Upper = MaxX.NewValue;
+                        station.InspectionX.Unit = UnitX; // Also sync unit to internal JSON
+
+                        station.InspectionY.Lower = MinY.NewValue;
+                        station.InspectionY.Upper = MaxY.NewValue;
+                        station.InspectionY.Unit = UnitY;
+
+                        station.InspectionAngle.Lower = MinZ.NewValue;
+                        station.InspectionAngle.Upper = MaxZ.NewValue;
+                        station.InspectionAngle.Unit = UnitAngle;
+                    }
                 }
 
                 await _aeLimitService.SaveSettingsAsync(_settings);
-                _logger.LogInfo("[AE UI] Limits saved to JSON.", LogType.Audit);*/
+                _logger.LogInfo("[AE UI] Limits saved to JSON.", LogType.Audit);
 
-                // 3. Write All Parameters to PLC (NewValues)
+                // --- 3. Write All Parameters to PLC (NewValues) ---
                 _logger.LogInfo("[AE UI] Transferring parameters to PLC...", LogType.Audit);
                 bool allWritesSuccess = true;
 
@@ -144,13 +193,15 @@ namespace IPCSoftware.App.ViewModels
                     return;
                 }
 
-                // 4. Handshake Logic
-                _logger.LogInfo("[AE UI] Setting Transfer Start (DM10301.0 = 1)...", LogType.Audit);
-                await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1); // Start Bit
+                // --- 4. Handshake Logic ---
+                // Set Transfer Start (DM10301.0) -> 1
+                _logger.LogInfo("[AE UI] Setting Transfer Start...", LogType.Audit);
+                await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1);
 
+                // Wait for Confirmation (DM10480.0)
                 bool transferComplete = await WaitForPlcConfirmationAsync();
 
-                // Reset Start Bit
+                // Reset Start Bit -> 0
                 await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
 
                 if (transferComplete)
@@ -167,7 +218,7 @@ namespace IPCSoftware.App.ViewModels
             catch (Exception ex)
             {
                 _logger.LogError($"[AE UI] Save/Transfer Failed: {ex.Message}", LogType.Diagnostics);
-                _dialog.ShowMessage("An error occurred during save.", "Error");
+                _dialog.ShowWarning("An error occurred during save.");
             }
             finally
             {
@@ -178,7 +229,7 @@ namespace IPCSoftware.App.ViewModels
 
         private async Task<bool> WaitForPlcConfirmationAsync()
         {
-            int timeoutMs = 5000;
+            int timeoutMs = 5000; // 5 Seconds Timeout
             int delayMs = 200;
             int elapsed = 0;
 
@@ -205,10 +256,26 @@ namespace IPCSoftware.App.ViewModels
             _isBusy = true;
             try
             {
+                // Load Units from Config
+                var extConfig = _settingsMonitor.CurrentValue;
+                UnitX = !string.IsNullOrEmpty(extConfig.InspectionXUnit) ? extConfig.InspectionXUnit : "mm";
+                UnitY = !string.IsNullOrEmpty(extConfig.InspectionYUnit) ? extConfig.InspectionYUnit : "mm";
+                UnitAngle = !string.IsNullOrEmpty(extConfig.InspectionAngleUnit) ? extConfig.InspectionAngleUnit : "deg";
+
+                // Load Limits
                 _settings = await _aeLimitService.GetSettingsAsync();
 
-                // If you need to populate "NewValue" boxes with current JSON values, do it here.
-                // For now, assuming NewValue starts at 0 or user entry.
+                // Populate "NewValue" boxes with values from JSON (using Station 0 as reference)
+                if (_settings?.Stations != null && _settings.Stations.Count > 0)
+                {
+                    var refStation = _settings.Stations[0];
+                    MinX.NewValue = refStation.InspectionX.Lower;
+                    MaxX.NewValue = refStation.InspectionX.Upper;
+                    MinY.NewValue = refStation.InspectionY.Lower;
+                    MaxY.NewValue = refStation.InspectionY.Upper;
+                    MinZ.NewValue = refStation.InspectionAngle.Lower;
+                    MaxZ.NewValue = refStation.InspectionAngle.Upper;
+                }
             }
             catch (Exception ex)
             {

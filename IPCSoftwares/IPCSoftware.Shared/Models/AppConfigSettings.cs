@@ -37,6 +37,8 @@ namespace IPCSoftware.Shared.Models
 
     }
 
+
+
     public class CcdSettings
     {
   
@@ -69,7 +71,22 @@ namespace IPCSoftware.Shared.Models
         public int PingTimeoutMs { get; set; } = 1000;
 
         public string PreviousMachineCode { get; set; } 
-        public string AOIMachineCode { get; set; } 
+        public string AOIMachineCode { get; set; }
+        public string InspectionXUnit { get; set; } = "mm";
+        public string InspectionYUnit { get; set; } = "mm";
+        public string InspectionAngleUnit { get; set; } = "deg";
+    }
+
+    public class AboutSettings
+    {
+        public string ProductName { get; set; } = "IPC Automated Inspection System";
+
+        // If left empty in JSON, the application will use the internal Assembly Version
+        public string ProductVersion { get; set; } = "";
+
+        public string LicenseTo { get; set; } = "Vertex Automation";
+        public string LicenseType { get; set; } = "Perpetual";
+        public string Copyright { get; set; } = $"© {DateTime.Now.Year} Vertex Automation. All rights reserved.";
     }
 
 }

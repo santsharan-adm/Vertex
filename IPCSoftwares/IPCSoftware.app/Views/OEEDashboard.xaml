@@ -428,9 +428,9 @@
                                     <TextBlock Grid.Row="1" Grid.Column="0" Text="X" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" Margin="0,15,0,0"/>
 
                                     <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
-                                        <TextBlock Text="{Binding LatestX, StringFormat={}{0:F2} mm}" 
-                           Foreground="{Binding StatusBrushX}" 
-                           FontSize="24" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding LatestX, StringFormat={}{0:F2}}" Foreground="{Binding StatusBrushX}" FontSize="24" FontWeight="Bold"/>
+                                        <!-- Bind Unit -->
+                                        <TextBlock Text="{Binding UnitX, StringFormat=' {0}'}" Foreground="{Binding StatusBrushX}" FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
 
                                     <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding LimitX_Min, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center" Margin="0,15,0,0"/>
@@ -442,9 +442,9 @@
                                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Y" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24"/>
 
                                     <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock Text="{Binding LatestY, StringFormat={}{0:F2} mm}" 
-                           Foreground="{Binding StatusBrushY}" 
-                           FontSize="24" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding LatestY, StringFormat={}{0:F2}}" Foreground="{Binding StatusBrushY}" FontSize="24" FontWeight="Bold"/>
+                                        <!-- Bind Unit -->
+                                        <TextBlock Text="{Binding UnitY, StringFormat=' {0}'}" Foreground="{Binding StatusBrushY}" FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
 
                                     <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding LimitY_Min, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
@@ -455,9 +455,9 @@
                                     <TextBlock Grid.Row="5" Grid.Column="0" Text="θ" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24"/>
 
                                     <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock Text="{Binding LatestTheta, StringFormat={}{0:F2} mm}" 
-                           Foreground="{Binding StatusBrushTheta}" 
-                           FontSize="24" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding LatestTheta, StringFormat={}{0:F2}}" Foreground="{Binding StatusBrushTheta}" FontSize="24" FontWeight="Bold"/>
+                                        <!-- Bind Unit -->
+                                        <TextBlock Text="{Binding UnitTheta, StringFormat=' {0}'}" Foreground="{Binding StatusBrushTheta}" FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
 
                                     <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding LimitTheta_Min, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>

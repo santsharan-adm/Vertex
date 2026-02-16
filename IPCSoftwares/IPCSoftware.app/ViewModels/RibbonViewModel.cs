@@ -88,7 +88,8 @@ public class RibbonViewModel : BaseViewModel
                
                 "PLC IO",
                 "Alarm View",
-                "Startup Condition"
+                "Startup Condition",
+                "About"
               
 
             }, nameof(OpenDashboardMenu));

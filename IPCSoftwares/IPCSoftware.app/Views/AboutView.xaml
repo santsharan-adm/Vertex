@@ -1,0 +1,109 @@
+﻿<UserControl x:Class="IPCSoftware.App.Views.AboutView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800"
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:AboutViewModel}"
+             Background="#F3F4F6">
+
+    <UserControl.Resources>
+        <Style TargetType="TextBlock" x:Key="LabelText">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Foreground" Value="#6B7280"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="ValueText">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Foreground" Value="#111827"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="Border" x:Key="SeparatorLine">
+            <Setter Property="Height" Value="1"/>
+            <Setter Property="Background" Value="#E5E7EB"/>
+            <Setter Property="Margin" Value="0,15"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Border Background="White" CornerRadius="16" Width="500" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="40">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="5" Opacity="0.1"/>
+            </Border.Effect>
+
+            <StackPanel>
+                <!-- Header / Logo Area -->
+                <StackPanel HorizontalAlignment="Center" Margin="0,0,0,30">
+                    <!-- Placeholder for Logo if needed -->
+                    <Border Width="80" Height="80" CornerRadius="12" Background="#007ACC" Margin="0,0,0,15">
+                        <TextBlock Text="IPC" Foreground="White" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="About Application" FontSize="28" FontWeight="Bold" Foreground="#333" HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Information List -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Name -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Sep -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Version -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Sep -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- License To -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Sep -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- License Type -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Sep -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Copyright -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Product Name -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Product Name" Style="{StaticResource LabelText}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ProductName}" Style="{StaticResource ValueText}"/>
+                    <Border Grid.Row="1" Grid.ColumnSpan="2" Style="{StaticResource SeparatorLine}"/>
+
+                    <!-- Version -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Version" Style="{StaticResource LabelText}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding ProductVersion}" Style="{StaticResource ValueText}" Foreground="#007ACC"/>
+                    <Border Grid.Row="3" Grid.ColumnSpan="2" Style="{StaticResource SeparatorLine}"/>
+
+                    <!-- License To -->
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Licensed To" Style="{StaticResource LabelText}"/>
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding LicenseTo}" Style="{StaticResource ValueText}"/>
+                    <Border Grid.Row="5" Grid.ColumnSpan="2" Style="{StaticResource SeparatorLine}"/>
+
+                    <!-- License Type -->
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="License Type" Style="{StaticResource LabelText}"/>
+                    <Border Grid.Row="6" Grid.Column="1" Background="#DCFCE7" CornerRadius="4" Padding="8,2" HorizontalAlignment="Left">
+                        <TextBlock Text="{Binding LicenseType}" FontSize="14" FontWeight="Bold" Foreground="#166534"/>
+                    </Border>
+                    <Border Grid.Row="7" Grid.ColumnSpan="2" Style="{StaticResource SeparatorLine}"/>
+
+                    <!-- Copyright -->
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Copyright" Style="{StaticResource LabelText}"/>
+                    <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding Copyright}" FontSize="14" Foreground="#6B7280" TextWrapping="Wrap"/>
+                </Grid>
+
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

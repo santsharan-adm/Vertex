@@ -558,6 +558,9 @@ public class MainWindowViewModel : BaseViewModel
                 case "AE Limit":
                     _nav.NavigateMain<AeLimitView>();
                     break;
+                case "About":
+                    _nav.NavigateMain<AboutView>();
+                    break;
             }
         }
         catch (Exception ex)

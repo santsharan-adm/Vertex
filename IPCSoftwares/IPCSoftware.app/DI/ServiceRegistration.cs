@@ -132,8 +132,11 @@ namespace IPCSoftware.App.DI
             services.AddTransient<CameraDetailViewModel>();
             services.AddTransient<CameraInterfaceConfigurationViewModel>();
             
-            services.AddTransient<AeLimitViewModel>();
             services.AddTransient<AeLimitView>();
+            services.AddTransient<AeLimitViewModel>();
+
+            services.AddTransient<AboutView>();
+            services.AddTransient<AboutViewModel>();
 
 
             // ===== Produciton Image ViewModel =====
