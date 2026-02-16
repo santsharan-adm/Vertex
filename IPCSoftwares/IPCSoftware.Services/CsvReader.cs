@@ -16,7 +16,7 @@ public static class CsvReader
             using (var reader = new StreamReader(filePath))
             {
                 bool isHeader = true;
-
+                
                 while (!reader.EndOfStream)
                 {
                     string line = reader.ReadLine();

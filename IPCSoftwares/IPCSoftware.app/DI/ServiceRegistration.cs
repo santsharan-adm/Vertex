@@ -81,10 +81,10 @@ namespace IPCSoftware.App.DI
             //Dialog service
             services.AddSingleton<IDialogService, DialogService>();
             //AppLogger 
-      
+
             services.AddSingleton<ILogManagerService, LogManagerService>();
             services.AddSingleton<IShiftManagementService, ShiftManagementService>();
-          
+
 
 
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
@@ -94,7 +94,7 @@ namespace IPCSoftware.App.DI
 
 
             // CCD Serive
-           // services.AddSingleton<ICycleManagerService, CycleManagerService>();
+            // services.AddSingleton<ICycleManagerService, CycleManagerService>();
 
             services.AddSingleton<ILogService, LogService>();
 
@@ -103,7 +103,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<RibbonViewModel>();
             services.AddSingleton<MainWindowViewModel>();
             services.AddTransient<OEEDashboardViewModel>();
-        //    services.AddSingleton<OeeDashboardNewViewModel>();
+            //    services.AddSingleton<OeeDashboardNewViewModel>();
             services.AddSingleton<UiTcpClient>();
             services.AddSingleton<ShiftResetService>();
 
@@ -131,7 +131,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceInterfaceConfigurationViewModel>();
             services.AddTransient<CameraDetailViewModel>();
             services.AddTransient<CameraInterfaceConfigurationViewModel>();
-            
+
             services.AddTransient<AeLimitView>();
             services.AddTransient<AeLimitViewModel>();
 
@@ -152,7 +152,7 @@ namespace IPCSoftware.App.DI
             // ========== ALARM CONFIGURATION VIEWMODELS (Transient) ========== 
             services.AddTransient<AlarmListViewModel>();
             services.AddTransient<AlarmConfigurationViewModel>();
-            services.AddTransient< BackupService>();
+            services.AddTransient<BackupService>();
             services.AddTransient<TagConfigLoader>();
 
 
@@ -179,8 +179,8 @@ namespace IPCSoftware.App.DI
             // Views
             services.AddTransient<RibbonView>();
             services.AddTransient<OEEDashboard>();
-       
-      
+
+
             services.AddTransient<DashboardView>();
 
             services.AddTransient<PLCIOView>();
@@ -209,9 +209,9 @@ namespace IPCSoftware.App.DI
             services.AddTransient<UserConfigurationView>();
 
             services.AddTransient<ModeOfOperation>();
-          //  services.AddTransient<ManualOperation>();
+            //  services.AddTransient<ManualOperation>();
             services.AddTransient<ManualOperationView>();
-      
+
 
             services.AddTransient<ModeOfOperationViewModel>();
             services.AddTransient<ManualOpViewModel>();

@@ -134,10 +134,10 @@ public class MainWindowViewModel : BaseViewModel
     public string AppVersion => _aboutMonitor.CurrentValue.ProductVersion;
 
     public MainWindowViewModel(
-        INavigationService nav, 
+        INavigationService nav,
         CoreClient coreClient,
         IDialogService dialog,
-        RibbonViewModel ribbonVM, 
+        RibbonViewModel ribbonVM,
         AlarmViewModel alarmVM,
         IOptionsMonitor<AboutSettings> aboutMonitor,
         IAppLogger logger) : base(logger)
@@ -150,7 +150,7 @@ public class MainWindowViewModel : BaseViewModel
         _alarmVM.ActiveAlarms.CollectionChanged += (s, e) => RefreshAlarmBanner();
         _timer = new SafePoller
         (TimeSpan.FromSeconds(1), LiveDataTimerTick);
-        _timer.Start(); 
+        _timer.Start();
         // 3. Subscribe to Alarm Events
         _coreClient.OnAlarmMessageReceived += OnAlarmReceived;
 
@@ -159,7 +159,7 @@ public class MainWindowViewModel : BaseViewModel
 
         RibbonVM = ribbonVM;
         RibbonVM.ShowSidebar = LoadSidebarMenu;
-        RibbonVM.OnLogout = ResetLandingState; 
+        RibbonVM.OnLogout = ResetLandingState;
         RibbonVM.OnLandingPageRequested = ResetLandingState;
 
         CloseAppCommand = new RelayCommand(ExecuteCloseApp);
@@ -273,9 +273,9 @@ public class MainWindowViewModel : BaseViewModel
 
     private async Task LiveDataTimerTick()
     {
-        try 
+        try
         {
-            IsConnected =  _coreClient.isConnected;
+            IsConnected = _coreClient.isConnected;
 
             var liveData = await _coreClient.GetIoValuesAsync(5);
 
@@ -360,7 +360,7 @@ public class MainWindowViewModel : BaseViewModel
     // ==============================
     public bool IsRibbonVisible => UserSession.IsLoggedIn;
     public string CurrentUserName => UserSession.Username ?? "Guest";
-    public string CurrentUserRole=> UserSession.Role ?? "Guest";
+    public string CurrentUserRole => UserSession.Role ?? "Guest";
     public bool IsAdmin => UserSession.Role == "Admin";
 
     // ==============================
@@ -397,7 +397,7 @@ public class MainWindowViewModel : BaseViewModel
 
             foreach (var item in menu.Items)
                 SidebarItems.Add(item);
-            if (currentRibbonKey == menu.Key )
+            if (currentRibbonKey == menu.Key)
             {
                 if (!IsSidebarDocked)
                 {
@@ -435,7 +435,7 @@ public class MainWindowViewModel : BaseViewModel
         {
             Application.Current.Shutdown();
         }
-           
+
 
     }
 
@@ -449,7 +449,7 @@ public class MainWindowViewModel : BaseViewModel
             // Close sidebar
             if (!IsSidebarDocked)
             {
-              IsSidebarOpen = false;
+                IsSidebarOpen = false;
             }
             if (string.IsNullOrWhiteSpace(existingUserControl))
             {
@@ -474,7 +474,7 @@ public class MainWindowViewModel : BaseViewModel
                     break;
 
                 case "Machine Summary":
-                   // _nav.NavigateMain<ServoCalibrationView>();
+                    // _nav.NavigateMain<ServoCalibrationView>();
                     break;
                 case "Servo Parameters":
                     _nav.NavigateMain<ServoCalibrationView>();
@@ -534,14 +534,14 @@ public class MainWindowViewModel : BaseViewModel
                     _nav.NavigateMain<ReportConfigView>();
                     break;
 
-                case "Alarm View": 
+                case "Alarm View":
                     _nav.NavigateMain<AlarmView>(); break;
 
-                case "Production Data": 
+                case "Production Data":
                     _nav.NavigateMain<ReportViewerView>(); break;
 
 
-                case "Production Images": 
+                case "Production Images":
                     _nav.NavigateMain<ProductionImageView>(); break;
 
 
@@ -559,7 +559,7 @@ public class MainWindowViewModel : BaseViewModel
                 case "Diagnostics Logs":
                     _nav.NavigateToLogs(LogType.Diagnostics);
                     break;
-                
+
                 case "External Interface":
                     _nav.NavigateMain<ApiTestView>();
                     break;
