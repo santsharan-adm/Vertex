@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
-              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              mc:Ignorable="d"
-              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:AeLimitViewModel}"
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:AeLimitViewModel}"
              d:DesignHeight="900"
              d:DesignWidth="1400">
 
@@ -14,6 +14,7 @@
         <SolidColorBrush x:Key="CardBackground" Color="#FFFFFFFF" />
         <SolidColorBrush x:Key="CardBorder" Color="#E2E6EF" />
 
+        <!-- Input Style -->
         <Style x:Key="InputTextBox" TargetType="TextBox">
             <Setter Property="FontSize" Value="24" />
             <Setter Property="FontWeight" Value="SemiBold" />
@@ -23,26 +24,78 @@
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="BorderBrush" Value="#CBD5F5" />
             <Setter Property="Background" Value="White" />
-        </Style>
-
-        <Style x:Key="PrimaryButton" TargetType="Button">
-            <Setter Property="Height" Value="50" />
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Background" Value="#22C55E" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
+        <!-- Save Button Style -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Height" Value="50" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Background" Value="#22C55E" />
+            <Setter Property="BorderBrush" Value="#22C55E" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#16A34A" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#0F8A3C" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Refresh Button Style -->
+        <Style x:Key="OutlineButton" TargetType="Button">
+            <Setter Property="Height" Value="50" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#007ACC" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="Foreground" Value="#007ACC" />
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#E3F2FD" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#BBDEFB" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Text Styles -->
         <Style x:Key="MatrixHeader" TargetType="TextBlock">
             <Setter Property="FontSize" Value="26"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -87,7 +140,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Header -->
+        <!-- Page Header -->
         <Grid Grid.Row="0" Margin="0,0,0,40">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -95,19 +148,13 @@
             </Grid.ColumnDefinitions>
             <TextBlock Text="AE Limit Configuration" FontSize="48" Foreground="#1F2937" FontWeight="Bold" />
             <StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center">
-                <!--<Button Content="Refresh" Command="{Binding RefreshCommand}" Width="150" Height="60" Margin="0,0,20,0" Background="Transparent" BorderBrush="#007ACC" BorderThickness="2" Foreground="#007ACC" FontSize="20" FontWeight="Bold">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="8"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>-->
-                <Button Content="Save"  Margin="10" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" Width="250" Height="60"/>
+                <Button Content="Refresh" Command="{Binding RefreshCommand}" Style="{StaticResource OutlineButton}" Width="150" Margin="0,0,20,0" />
+                <Button Content="Save &amp; Transfer" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" Width="250" />
             </StackPanel>
         </Grid>
 
-        <!-- Matrix -->
-        <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource CardBorder}" BorderThickness="1" CornerRadius="16" Padding="60">
+        <!-- Limit Matrix Card -->
+        <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource CardBorder}" BorderThickness="1" CornerRadius="16" Padding="60" VerticalAlignment="Top">
             <Grid VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*" />
@@ -115,13 +162,13 @@
                     <ColumnDefinition Width="1.5*" />
                     <!-- Live Min -->
                     <ColumnDefinition Width="1.5*" />
-                    <!-- New Min -->
+                    <!-- New Min Input -->
                     <ColumnDefinition Width="50" />
                     <!-- Gap -->
                     <ColumnDefinition Width="1.5*" />
                     <!-- Live Max -->
                     <ColumnDefinition Width="1.5*" />
-                    <!-- New Max -->
+                    <!-- New Max Input -->
                     <ColumnDefinition Width="0.5*" />
                     <!-- Unit -->
                 </Grid.ColumnDefinitions>
@@ -147,36 +194,42 @@
 
                 <Border Grid.Row="1" Grid.ColumnSpan="7" BorderBrush="#333" BorderThickness="0,0,0,3" Margin="0,0,0,40"/>
 
-                <!-- Row X -->
+                <!-- Row 1: X Direction -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Inspection X" Style="{StaticResource MatrixRowLabel}"/>
                 <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding MinX.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixLiveValue}"/>
                 <TextBox    Grid.Row="2" Grid.Column="2" Text="{Binding MinX.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}"/>
 
                 <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding MaxX.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixLiveValue}"/>
                 <TextBox    Grid.Row="2" Grid.Column="5" Text="{Binding MaxX.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}"/>
-                <TextBlock Grid.Row="2" Grid.Column="6" Text="mm" Style="{StaticResource MatrixUnit}"/>
 
-                <Border Grid.Row="2" Grid.ColumnSpan="7" Style="{StaticResource RowBorder}"/>
+                <!-- EDITED: Unit is now a TextBox -->
+                <TextBox Grid.Row="2" Grid.Column="6" Text="{Binding UnitX, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" FontWeight="Normal" Foreground="#666"/>
 
-                <!-- Row Y -->
+                <!--<Border Grid.Row="2" Grid.ColumnSpan="7" Style="{StaticResource RowBorder}"/>-->
+
+                <!-- Row 2: Y Direction -->
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Inspection Y" Style="{StaticResource MatrixRowLabel}"/>
                 <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding MinY.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixLiveValue}"/>
                 <TextBox    Grid.Row="3" Grid.Column="2" Text="{Binding MinY.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}"/>
 
                 <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding MaxY.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixLiveValue}"/>
                 <TextBox    Grid.Row="3" Grid.Column="5" Text="{Binding MaxY.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}"/>
-                <TextBlock Grid.Row="3" Grid.Column="6" Text="mm" Style="{StaticResource MatrixUnit}"/>
 
-                <Border Grid.Row="3" Grid.ColumnSpan="7" Style="{StaticResource RowBorder}"/>
+                <!-- EDITED: Unit is now a TextBox -->
+                <TextBox Grid.Row="3" Grid.Column="6" Text="{Binding UnitY, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" FontWeight="Normal" Foreground="#666"/>
 
-                <!-- Row Z -->
+                <!--<Border Grid.Row="3" Grid.ColumnSpan="7" Style="{StaticResource RowBorder}"/>-->
+
+                <!-- Row 3: Angle/Z -->
                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Inspection Angle" Style="{StaticResource MatrixRowLabel}"/>
                 <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding MinZ.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixLiveValue}"/>
                 <TextBox    Grid.Row="4" Grid.Column="2" Text="{Binding MinZ.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}"/>
 
                 <TextBlock Grid.Row="4" Grid.Column="4" Text="{Binding MaxZ.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixLiveValue}"/>
                 <TextBox    Grid.Row="4" Grid.Column="5" Text="{Binding MaxZ.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}"/>
-                <TextBlock Grid.Row="4" Grid.Column="6" Text="deg" Style="{StaticResource MatrixUnit}"/>
+
+                <!-- EDITED: Unit is now a TextBox -->
+                <TextBox Grid.Row="4" Grid.Column="6" Text="{Binding UnitAngle, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}" FontWeight="Normal" Foreground="#666"/>
 
             </Grid>
         </Border>

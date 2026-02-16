@@ -133,6 +133,10 @@ namespace IPCSoftware.App.ViewModels
         // The Collection for the 12 Grid Stations
         public ObservableCollection<CameraImageItem> CameraImages { get; } = new ObservableCollection<CameraImageItem>();
 
+        public string UnitX => _settingsMonitor.CurrentValue.InspectionXUnit;
+        public string UnitY => _settingsMonitor.CurrentValue.InspectionYUnit;
+        public string UnitTheta => _settingsMonitor.CurrentValue.InspectionAngleUnit;
+
         private double _latestX;
         public double LatestX
         {
@@ -393,6 +397,12 @@ namespace IPCSoftware.App.ViewModels
 
             _resetLogicTimer = new SafePoller(TimeSpan.FromMilliseconds(200), ResetSequenceTick);
             _resetLogicTimer.Start();
+
+            _settingsMonitor.OnChange(settings => {
+                OnPropertyChanged(nameof(UnitX));
+                OnPropertyChanged(nameof(UnitY));
+                OnPropertyChanged(nameof(UnitTheta));
+            });
 
             // Force initial sync
             //SyncUiWithJson();
