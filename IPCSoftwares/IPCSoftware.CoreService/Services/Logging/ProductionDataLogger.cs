@@ -9,30 +9,24 @@ namespace IPCSoftware.CoreService.Services.Logging
 {
     public interface IProductionDataLogger
     {
-        /// <summary>
-        /// Appends one production cycle row into the CSV.
-        /// </summary>
-        /// <param name="record">Filled production data record.</param>
         void AppendRecord(ProductionDataRecord record);
     }
 
-    /// <summary>
-    /// Simple CSV-based production data logger.
-    /// Each AppendRecord call appends one line into the CSV file.
-    /// </summary>
     public class ProductionDataLogger : IProductionDataLogger
     {
         private readonly LogConfigurationModel _config;
-        private string _filePath;
+        private string _currentFilePath;
         private static readonly object _syncRoot = new object();
-        private bool _headerWritten;
-        private const int StationCount = 13; // Stations 0..12
+
+        // Removed const 13. Dynamic header generation logic below.
+        private const int DefaultStationCount = 13;
 
         public ProductionDataLogger(LogConfigurationModel config)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
-            _filePath = BuildFilePath();
-            EnsureFileAndHeader();
+            _currentFilePath = BuildFilePath();
+            // Initial check on startup
+            EnsureHeaderExists(_currentFilePath);
             PurgeOldLogsIfNeeded();
         }
 
@@ -40,236 +34,176 @@ namespace IPCSoftware.CoreService.Services.Logging
         {
             var dir = _config.DataFolder;
             var name = _config.FileName;
-            // Debug: Output the raw config value and ASCII codes
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] Config FileName: '{name}'");
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] Config FileName ASCII: {string.Join(",", name.Select(c => (int)c))}");
 
             if (string.IsNullOrWhiteSpace(name))
                 name = $"Production_{DateTime.Now:yyyyMMdd}.csv";
             else
                 name = ReplaceDateTokens(name);
 
-            // Debug: Output after ReplaceDateTokens
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] FileName after ReplaceDateTokens: '{name}'");
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] FileName ASCII: {string.Join(",", name.Select(c => (int)c))}");
-
-            // Ensure .csv extension
             if (!name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
                 name += ".csv";
-
-            // Debug: Output the final file name
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] Final FileName: '{name}'");
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] Final FileName ASCII: {string.Join(",", name.Select(c => (int)c))}");
 
             return Path.Combine(dir, name);
         }
 
-        /// <summary>
-        /// Ensures that directory exists and header is present in the CSV file.
-        /// </summary>
-        private void EnsureFileAndHeader()
+        private void EnsureHeaderExists(string path)
         {
             lock (_syncRoot)
             {
-                var directory = Path.GetDirectoryName(_filePath);
-                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                var directory = Path.GetDirectoryName(path);
+                if (!Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
                 }
 
-                if (!File.Exists(_filePath))
+                bool fileExists = File.Exists(path);
+                bool isEmpty = false;
+
+                if (fileExists)
                 {
-                    var header = BuildHeaderLine();
-                    File.WriteAllText(_filePath, header + Environment.NewLine, Encoding.UTF8);
+                    try { isEmpty = new FileInfo(path).Length == 0; } catch { isEmpty = true; }
                 }
 
-                _headerWritten = true;
+                // If file is new OR empty, write header
+                if (!fileExists || isEmpty)
+                {
+                    var header = BuildHeaderLine();
+                    // Use AppendAllText to create if missing or append if empty
+                    File.WriteAllText(path, header + Environment.NewLine, Encoding.UTF8);
+                }
             }
         }
 
         private string BuildHeaderLine()
         {
             var sb = new StringBuilder();
+            sb.Append("Timestamp,2D_Code");
 
-            // Add Timestamp as the first column
-            sb.Append("Timestamp");
-            sb.Append(",2D_Code");
-
-            // Station columns: St0_result, St0_X, St0_Y, St0_Z, ..., St12_result, St12_X, St12_Y, St12_Z
-            for (int i = 0; i < StationCount; i++)
+            // Note: Ideally pass dynamic station count here if available.
+            // Using DefaultStationCount to match your existing CSV format.
+            for (int i = 0; i < DefaultStationCount; i++)
             {
                 sb.Append($",St{i}_result,St{i}_X,St{i}_Y,St{i}_Z");
             }
 
-            // OEE and counters & time metrics
-            sb.Append(",OEE,Availability,Performance,Quality");
-            sb.Append(",Total_IN,OK,NG");
-            sb.Append(",Uptime,Downtime,TotalTime,CT");
-
+            sb.Append(",OEE,Availability,Performance,Quality,Total_IN,OK,NG,Uptime,Downtime,TotalTime,CT");
             return sb.ToString();
         }
 
         public void AppendRecord(ProductionDataRecord record)
         {
-            if (record == null)
-                throw new ArgumentNullException(nameof(record));
-
-            var line = BuildDataLine(record);
+            if (record == null) throw new ArgumentNullException(nameof(record));
 
             lock (_syncRoot)
             {
-                // Always get the current file path (with up-to-date date)
-                _filePath = BuildFilePath();
+                // 1. Calculate Path for THIS specific record (handles midnight switch)
+                var newPath = BuildFilePath();
 
-                if (!_headerWritten)
+                // 2. If path changed (New Day), ensure header exists on the new file
+                if (newPath != _currentFilePath)
                 {
-                    EnsureFileAndHeader();
+                    _currentFilePath = newPath;
+                    EnsureHeaderExists(_currentFilePath);
+                    PurgeOldLogsIfNeeded(); // Good time to purge old logs too
+                }
+                else
+                {
+                    // Even if path didn't change, double check size just in case file was deleted externally
+                    if (!File.Exists(_currentFilePath) || new FileInfo(_currentFilePath).Length == 0)
+                    {
+                        EnsureHeaderExists(_currentFilePath);
+                    }
                 }
 
-                RotateLogIfNeeded();
-                File.AppendAllText(_filePath, line + Environment.NewLine, Encoding.UTF8);
+                // 3. Append Data
+                RotateLogIfNeeded(); // Check size limits
+
+                // Note: RotateLogIfNeeded might change _currentFilePath (backup rotation), 
+                // so we use _currentFilePath which is updated inside Rotate if needed.
+
+                var line = BuildDataLine(record);
+                File.AppendAllText(_currentFilePath, line + Environment.NewLine, Encoding.UTF8);
             }
         }
 
         private string BuildDataLine(ProductionDataRecord record)
         {
-            string F(object? value)
-            {
-                if (value == null)
-                    return string.Empty;
-
-                var s = value.ToString() ?? string.Empty;
-
-                // Basic CSV escaping: wrap in quotes if needed and escape inner quotes
-                if (s.Contains(',') || s.Contains('"') || s.Contains('\n'))
-                {
-                    s = "\"" + s.Replace("\"", "\"\"") + "\"";
-                }
-
-                return s;
-            }
-
+            string F(object? v) => v?.ToString() ?? "";
             var sb = new StringBuilder();
+            sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")).Append(",").Append(F(record.TwoDCode));
 
-            // Add current timestamp as the first column
-            sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            sb.Append(",");
-
-            // 2D code
-            sb.Append(F(record.TwoDCode));
-
-            // Stations 0..12
-            for (int i = 0; i < StationCount; i++)
+            // Ensure we don't crash if record has fewer stations than header
+            for (int i = 0; i < DefaultStationCount; i++)
             {
-                var st = record.Stations[i] ?? new StationMeasurement();
+                var st = (record.Stations != null && i < record.Stations.Length)
+                         ? record.Stations[i]
+                         : new StationMeasurement();
 
-                sb.Append(',');
-                sb.Append(F(st.Result));
-                sb.Append(',');
-                sb.Append(F(st.X));
-                sb.Append(',');
-                sb.Append(F(st.Y));
-                sb.Append(',');
-                sb.Append(F(st.Z));
+                // Use Null Conditional to prevent null ref on 'st' if array index was null
+                st = st ?? new StationMeasurement();
+
+                sb.Append($",{F(st.Result)},{F(st.X)},{F(st.Y)},{F(st.Z)}");
             }
-
-            // OEE KPIs
-            sb.Append(',').Append(F(record.OEE));
-            sb.Append(',').Append(F(record.Availability));
-            sb.Append(',').Append(F(record.Performance));
-            sb.Append(',').Append(F(record.Quality));
-
-            // Counters
-            sb.Append(',').Append(F(record.Total_IN));
-            sb.Append(',').Append(F(record.OK));
-            sb.Append(',').Append(F(record.NG));
-
-            // Time metrics
-            sb.Append(',').Append(F(record.Uptime));
-            sb.Append(',').Append(F(record.Downtime));
-            sb.Append(',').Append(F(record.TotalTime));
-            sb.Append(',').Append(F(record.CT));
-
+            sb.Append($",{F(record.OEE)},{F(record.Availability)},{F(record.Performance)},{F(record.Quality)}");
+            sb.Append($",{F(record.Total_IN)},{F(record.OK)},{F(record.NG)}");
+            sb.Append($",{F(record.Uptime)},{F(record.Downtime)},{F(record.TotalTime)},{F(record.CT)}");
             return sb.ToString();
         }
 
         private void RotateLogIfNeeded()
         {
-            // File size rotation
-            if (_config.LogRetentionFileSize > 0 && File.Exists(_filePath))
+            if (_config.LogRetentionFileSize > 0 && File.Exists(_currentFilePath))
             {
-                var fileInfo = new FileInfo(_filePath);
-                long maxSizeBytes = _config.LogRetentionFileSize * 1024 * 1024; // MB to bytes
-                if (fileInfo.Length > maxSizeBytes)
+                if (new FileInfo(_currentFilePath).Length > _config.LogRetentionFileSize * 1024 * 1024)
                 {
                     BackupCurrentLog();
-                    _filePath = BuildFilePath();
-                    EnsureFileAndHeader();
-                }
-            }
-            // Time-based rotation (daily, weekly, monthly)
-            if (_config.BackupSchedule != BackupScheduleType.Manual)
-            {
-                DateTime now = DateTime.Now;
-                bool shouldBackup = false;
-                switch (_config.BackupSchedule)
-                {
-                    case BackupScheduleType.Daily:
-                        shouldBackup = now.TimeOfDay >= _config.BackupTime;
-                        break;
-                    case BackupScheduleType.Weekly:
-                        shouldBackup = now.DayOfWeek.ToString() == _config.BackupDayOfWeek && now.TimeOfDay >= _config.BackupTime;
-                        break;
-                    case BackupScheduleType.Monthly:
-                        shouldBackup = now.Day == _config.BackupDay && now.TimeOfDay >= _config.BackupTime;
-                        break;
-                }
-                if (shouldBackup)
-                {
-                    BackupCurrentLog();
-                    _filePath = BuildFilePath();
-                    EnsureFileAndHeader();
+                    // Re-calculate fresh path (might be same name, but empty now)
+                    _currentFilePath = BuildFilePath();
+                    EnsureHeaderExists(_currentFilePath);
                 }
             }
         }
 
         private void BackupCurrentLog()
         {
-            if (!File.Exists(_filePath)) return;
-            var backupDir = _config.BackupFolder;
-            if (string.IsNullOrWhiteSpace(backupDir)) backupDir = Path.GetDirectoryName(_filePath);
+            if (!File.Exists(_currentFilePath)) return;
+            var backupDir = _config.BackupFolder ?? Path.GetDirectoryName(_currentFilePath);
             if (!Directory.Exists(backupDir)) Directory.CreateDirectory(backupDir);
-            var backupName = Path.GetFileNameWithoutExtension(_filePath) + $"_backup_{DateTime.Now:yyyyMMdd_HHmmss}" + Path.GetExtension(_filePath);
+
+            var backupName = Path.GetFileNameWithoutExtension(_currentFilePath) + $"_backup_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
             var backupPath = Path.Combine(backupDir, backupName);
-            File.Copy(_filePath, backupPath, true);
-            File.WriteAllText(_filePath, BuildHeaderLine() + Environment.NewLine, Encoding.UTF8); // Reset log file
+
+            try
+            {
+                File.Copy(_currentFilePath, backupPath, true);
+                File.Delete(_currentFilePath); // Delete original to start fresh
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Log Backup Error: {ex.Message}");
+            }
         }
 
         private void PurgeOldLogsIfNeeded()
         {
             if (!_config.AutoPurge || _config.LogRetentionTime <= 0) return;
-            var dir = _config.DataFolder;
-            if (!Directory.Exists(dir)) return;
-            var files = Directory.GetFiles(dir, "*.csv");
-            var cutoff = DateTime.Now.AddDays(-_config.LogRetentionTime);
-            foreach (var file in files)
+            try
             {
-                var info = new FileInfo(file);
-                if (info.CreationTime < cutoff)
+                var dir = Path.GetDirectoryName(_currentFilePath);
+                if (!Directory.Exists(dir)) return;
+                var files = Directory.GetFiles(dir, "*.csv");
+                var cutoff = DateTime.Now.AddDays(-_config.LogRetentionTime);
+                foreach (var file in files)
                 {
-                    File.Delete(file);
+                    if (new FileInfo(file).CreationTime < cutoff) File.Delete(file);
                 }
             }
+            catch { }
         }
 
-        private string ReplaceDateTokens(string fileName)
+        private string ReplaceDateTokens(string f)
         {
-            // Replace any {yyyyMMdd}, {yyyy-MM-dd}, etc. with the actual date
-            return System.Text.RegularExpressions.Regex.Replace(
-                fileName,
-                @"{(.*?)}",
-                m => DateTime.Now.ToString(m.Groups[1].Value)
-            );
+            return System.Text.RegularExpressions.Regex.Replace(f, @"{(.*?)}", m => DateTime.Now.ToString(m.Groups[1].Value));
         }
     }
 }

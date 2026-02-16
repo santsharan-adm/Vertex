@@ -978,7 +978,10 @@ namespace IPCSoftware.App.ViewModels
             {
                 if (img == null) return;
                 string title = $"INSPECTION POSITION {img.StationNumber}"; // Use StationNumber or Id
-                var window = new FullImageView(img, title);
+                var window = new FullImageView(img, title,
+             LimitX_Min,  LimitX_Max,
+             LimitY_Min,  LimitY_Max,
+            _limitTheta_Min,  _limitTheta_Max);
                 window.ShowDialog();
             }
             catch (Exception ex)

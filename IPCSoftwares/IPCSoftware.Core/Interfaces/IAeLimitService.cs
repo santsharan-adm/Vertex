@@ -11,7 +11,10 @@ namespace IPCSoftware.Core.Interfaces
 
         void BeginCycle(string serialNumber, string carrierSerial);
         void UpdateStation(AeStationUpdate update);
-        Task<string> CompleteCycleAsync(bool success = true);
+       // Task<string> CompleteCycleAsync(bool success = true);
+        Task<(string FilePath, string TcpPayload)> CompleteCycleAsync(bool success = true);
         void AbortCycle();
     }
+
+
 }
