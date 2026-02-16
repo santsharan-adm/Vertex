@@ -9,12 +9,9 @@ namespace IPCSoftware.App.Views
     {
         public AeLimitView()
         {
+            InitializeComponent();
         }
 
-    /*    private void LoadContent()
-        {
-            var resourceLocater = new Uri("/IPCSoftware.App;component/Views/AeLimitView.xaml", UriKind.Relative);
-            Application.LoadComponent(this, resourceLocater);
-        }*/
+
     }
 }

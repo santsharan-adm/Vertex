@@ -17,6 +17,7 @@ using System.Text.Json;
 using System.Windows;
 
 
+
 namespace IPCSoftware.App
 {
     public partial class App : Application
@@ -103,6 +104,8 @@ namespace IPCSoftware.App
                     services.Configure<ConfigSettings>(hostContext.Configuration.GetSection("Config"));
                     services.Configure<CcdSettings>(hostContext.Configuration.GetSection("CCD"));
                     services.Configure<ExternalSettings>(hostContext.Configuration.GetSection("External"));
+                    services.Configure<AboutSettings>(hostContext.Configuration.GetSection("About"));
+
                     ServiceRegistration.RegisterServices(services);
                 })
                 .Build();
@@ -113,11 +116,13 @@ namespace IPCSoftware.App
             var configSettings = new ConfigSettings();
             var ccdSettings = new CcdSettings();
             var external = new ExternalSettings();
+            var about = new AboutSettings();
 
             // 2. Bind the specific sections from JSON to these objects
             config.GetSection("Config").Bind(configSettings);
             config.GetSection("CCD").Bind(ccdSettings);
             config.GetSection("External").Bind(ccdSettings);
+            config.GetSection("About").Bind(about);
 
             // 3. Initialize Constants without needing AppConfigSettings wrapper
             ConstantValues.Initialize(configSettings);
@@ -317,7 +322,7 @@ namespace IPCSoftware.App
             }
         }
 
-      
+
         protected override void OnExit(ExitEventArgs e)
         {
             _appCts.Cancel();
