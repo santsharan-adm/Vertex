@@ -289,7 +289,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 if (isExternalNg)
                 {
                     status = "NG";
-                    _logger.LogWarning($"[Cycle] Seq {_currentSequenceStep} (Stn {physicalStationId}) quarantined.", LogType.Production);
+                    _logger.LogWarning($"[Cycle] Seq {_currentSequenceStep} (Stn {physicalStationId}) quarantined.", LogType.Error);
 
                     // Move to Quarantine
                     string fileName = Path.GetFileName(tempImagePath);
