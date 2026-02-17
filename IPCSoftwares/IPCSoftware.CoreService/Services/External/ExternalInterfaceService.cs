@@ -244,7 +244,7 @@ namespace IPCSoftware.CoreService.Services.External
             // for (int i = _totalItems; i < 12; i++) await WriteToPlc(ConstantValues.Ext_SeqRegStart + i, 0);
 
             await WriteToPlc(ConstantValues.Ext_DataReady, true);
-            _logger.LogInfo($"[ExtIf] Synced. Items: {_totalItems}, Word: {statusWord:X4}", LogType.Production);
+            _logger.LogInfo($"[ExtIf] Synced. Items: {_totalItems}, Word: {statusWord:X4}", LogType.Error);
         }
 
         private async Task SyncAllOkToPlc()
@@ -263,23 +263,12 @@ namespace IPCSoftware.CoreService.Services.External
           /*  int[] map = await GetStationMapAsync();
             for (int i = 0; i < _totalItems; i++)
             {
-                int val = (i < map.Length) ? map[i] : (i + 1);
+                int val = (i < map.Length) ? m  ap[i] : (i + 1);
                 await WriteToPlc(ConstantValues.NO_OF_Station + i, val);
             }*/
 
             await WriteToPlc(ConstantValues.Ext_DataReady, true);
         }
-
-
-  /*   
-        private async Task SyncAllOkToPlc()
-        {
-            Array.Fill(_quarantineFlagsBySequence, false);
-            await WriteToPlc(ConstantValues.Ext_CavityStatus, 4095);
-            await WriteToPlc(ConstantValues.Ext_DataReady, true);
-        }
-*/
-
 
 
         public async Task ResetPlcInterfaceAsync()
@@ -404,7 +393,14 @@ namespace IPCSoftware.CoreService.Services.External
 
         private async Task UpdateMacMiniConnectionStateAsync(bool isConnected)
         {
-            try { await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, !isConnected); } catch { }
+            try 
+            {
+                await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, !isConnected); 
+            } 
+            catch 
+            { 
+
+            }
         }
 
         private async Task<bool> PingHost(string address)
@@ -445,7 +441,7 @@ namespace IPCSoftware.CoreService.Services.External
 
             try
             {
-                _logger.LogInfo("[ExtIf] Sending PDCA Data...", LogType.Production);
+                _logger.LogInfo("[ExtIf] Sending PDCA Data...", LogType.Error);
 
                 // 1. Ensure Connected
                 if (!_tcpClient.IsConnected)
