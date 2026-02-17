@@ -75,6 +75,7 @@ namespace IPCSoftware.Shared.Models
         public string InspectionXUnit { get; set; } = "mm";
         public string InspectionYUnit { get; set; } = "mm";
         public string InspectionAngleUnit { get; set; } = "deg";
+        public bool EnableTcpTrafficLogging { get; set; } 
     }
 
     public class AboutSettings
