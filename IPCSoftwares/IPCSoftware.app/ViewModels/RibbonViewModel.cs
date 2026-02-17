@@ -125,7 +125,8 @@ public class RibbonViewModel : BaseViewModel
             {
                 "Audit Logs",
                 "Error Logs",
-                "Diagnostics Logs"
+                "Diagnostics Logs",
+                "Alarm Logs"
             }, nameof(OpenLogsMenu));
         }
         catch (Exception ex)

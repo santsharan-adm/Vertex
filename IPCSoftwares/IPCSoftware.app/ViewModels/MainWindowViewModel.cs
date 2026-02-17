@@ -559,6 +559,10 @@ public class MainWindowViewModel : BaseViewModel
                 case "Diagnostics Logs":
                     _nav.NavigateToLogs(LogType.Diagnostics);
                     break;
+
+                case "Alarm Logs":
+                    _nav.NavigateMain<AlarmLogView>();
+                    break;
                 
                 case "External Interface":
                     _nav.NavigateMain<ApiTestView>();
