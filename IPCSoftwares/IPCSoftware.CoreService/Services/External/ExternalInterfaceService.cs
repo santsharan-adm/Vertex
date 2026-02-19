@@ -25,6 +25,7 @@ namespace IPCSoftware.CoreService.Services.External
         private readonly IProductConfigurationService _productService; // NEW Injection
         private readonly IServoCalibrationService _servoService;
         private readonly HttpClient _httpClient;
+        private readonly ITcpTrafficLogger _trafficLogger;
 
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
         private readonly MacMiniTcpClient _tcpClient;
@@ -46,7 +47,7 @@ namespace IPCSoftware.CoreService.Services.External
             IPLCTagConfigurationService tagService,
             IServoCalibrationService servoService,
             IProductConfigurationService productService, // Inject Product Service
-            IAppLogger logger,
+            IAppLogger logger,ITcpTrafficLogger trafficLogger,
             IOptionsMonitor<ExternalSettings> settingsMonitor)
         {
             _plcManager = plcManager;
@@ -55,7 +56,7 @@ namespace IPCSoftware.CoreService.Services.External
             _productService = productService;
             _logger = logger;
             _settingsMonitor = settingsMonitor;
-
+            _trafficLogger = trafficLogger;
             _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
             _tcpClient = new MacMiniTcpClient();
 
@@ -145,6 +146,7 @@ namespace IPCSoftware.CoreService.Services.External
 
                 MacMiniStatusModel statusData = null;
                 string rawResponse = string.Empty;
+                string querySent = string.Empty;
 
                 // --- 1. TCP/IP ---
                 if (Settings.Protocol.ToUpper() == "TCP")
@@ -155,21 +157,33 @@ namespace IPCSoftware.CoreService.Services.External
                     {
                         await _tcpClient.ConnectAsync(Settings.MacMiniIpAddress, Settings.Port);
                     }
+                    await _trafficLogger.LogTrafficAsync("SEND", query, "SFC_QUERY");
                     rawResponse = await _tcpClient.SendAndReceiveAsync(query);
+                    await _trafficLogger.LogTrafficAsync("RECV", rawResponse, "SFC_QUERY");
+
                     statusData = await ParseRawStatusStringAsync(rawResponse);
                 }
                 // --- 2. HTTP/HTTPS ---
                 else if (Settings.Protocol.ToUpper() == "HTTP" || Settings.Protocol.ToUpper() == "HTTPS")
                 {
                     var uri = BuildApiUri(Settings.Protocol, Settings.MacMiniIpAddress, Settings.EndPoint, qrCode, Settings.PreviousMachineCode, Settings.AOIMachineCode);
+                    querySent = uri.ToString();
+
+                    await _trafficLogger.LogTrafficAsync("SEND", querySent, "SFC_QUERY_HTTP");
+
                     var response = await _httpClient.GetAsync(uri);
                     if (response.IsSuccessStatusCode)
                     {
                         rawResponse = await response.Content.ReadAsStringAsync();
+                        await _trafficLogger.LogTrafficAsync("RECV", rawResponse, "SFC_QUERY_HTTP");
+
                         statusData = await ParseRawStatusStringAsync(rawResponse);
                     }
                     else
                     {
+                        string errorMsg = $"HTTP Error: {response.StatusCode}";
+                        await _trafficLogger.LogTrafficAsync("ERROR", errorMsg, "SFC_QUERY_HTTP");
+
                         _logger.LogError($"[ExtIf] HTTP Error: {response.StatusCode}", LogType.Error);
                     }
                 }
@@ -194,6 +208,8 @@ namespace IPCSoftware.CoreService.Services.External
             }
             catch (Exception ex)
             {
+                await _trafficLogger.LogTrafficAsync("ERROR", ex.Message, "SFC_QUERY");
+
                 _logger.LogError($"[ExtIf] Sync Failed: {ex.Message}", LogType.Diagnostics);
                 Array.Fill(_quarantineFlagsBySequence, true);
                 await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, true);
@@ -450,7 +466,9 @@ namespace IPCSoftware.CoreService.Services.External
                 }
 
                 // 2. Send Plain Text
+                await _trafficLogger.LogTrafficAsync("SEND", payload, "PDCA_DATA");
                 string response = await _tcpClient.SendAndReceiveAsync(payload);
+                await _trafficLogger.LogTrafficAsync("RECV", response, "PDCA_DATA");
 
                 // 3. Validate Response
                 // Requirement: "We will receive same response with ok in front of it"
@@ -476,6 +494,7 @@ namespace IPCSoftware.CoreService.Services.External
             }
             catch (Exception ex)
             {
+                await _trafficLogger.LogTrafficAsync("ERROR", ex.Message, "PDCA_DATA");
                 _logger.LogError($"[ExtIf] TCP Send Error: {ex.Message}", LogType.Diagnostics);
 
                 // RAISE ALARM (1) on Exception (Connection lost, timeout, etc.)
