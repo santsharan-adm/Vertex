@@ -4,7 +4,7 @@ using IPCSoftware.Services;
 using Moq;
 using Xunit;
 
-namespace IPCSoftware.Services.Tests
+namespace IPCSoftware_UnitTesting.Service_Tests
 {
     public class PlcServiceTests
     {

@@ -17,6 +17,7 @@ using System.Text.Json;
 using System.Windows;
 
 
+
 namespace IPCSoftware.App
 {
     public partial class App : Application
@@ -321,7 +322,7 @@ namespace IPCSoftware.App
             }
         }
 
-      
+
         protected override void OnExit(ExitEventArgs e)
         {
             _appCts.Cancel();

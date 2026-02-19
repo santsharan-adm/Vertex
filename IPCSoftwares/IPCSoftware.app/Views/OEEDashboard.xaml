@@ -207,7 +207,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
-                  
+
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0" Background="Blue" Style="{StaticResource DashboardCard}">

@@ -23,11 +23,11 @@ public class RibbonViewModel : BaseViewModel
 
     public ICommand NavigateDashboardCommand { get; }
 
-   // public ICommand NavigateSettingsCommand { get; }
+    // public ICommand NavigateSettingsCommand { get; }
     public ICommand NavigateLogsCommand { get; }
     public ICommand NavigateUserMgmtCommand { get; }
     public ICommand NavigateLandingPageCommand { get; }
-   // public ICommand NavigateReportConfigCommand { get; }
+    // public ICommand NavigateReportConfigCommand { get; }
     public ICommand NavigateReportsCommand { get; }
 
     public ICommand LogoutCommand { get; }
@@ -55,7 +55,7 @@ public class RibbonViewModel : BaseViewModel
         _sequenceWindowFactory = sequenceWindowFactory;
 
         NavigateDashboardCommand = new RelayCommand(OpenDashboardMenu);
-       // NavigateSettingsCommand = new RelayCommand(OpenSettingsMenu);
+        // NavigateSettingsCommand = new RelayCommand(OpenSettingsMenu);
         NavigateLogsCommand = new RelayCommand(OpenLogsMenu);
         NavigateUserMgmtCommand = new RelayCommand(OpenUserMgtMenu);
         NavigateReportsCommand = new RelayCommand(OpenReportsView);
@@ -71,7 +71,7 @@ public class RibbonViewModel : BaseViewModel
     public bool IsOperator => string.Equals(UserSession.Role, "Operator", StringComparison.OrdinalIgnoreCase);
 
     public string CurrentUserName => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Username.ToLower()) ?? "Guest";
-    public string CurrentUserRole=> CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Role.ToLower()) ?? "Guest";
+    public string CurrentUserRole => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Role.ToLower()) ?? "Guest";
     public bool IsConfigRibbonVisible => IsAdmin || IsSupervisor;
 
 
@@ -85,12 +85,12 @@ public class RibbonViewModel : BaseViewModel
             {
                 "Dashboard",
                 "Control",
-               
+
                 "PLC IO",
                 "Alarm View",
                 "Startup Condition",
                 "About"
-              
+
 
             }, nameof(OpenDashboardMenu));
         }
@@ -106,9 +106,9 @@ public class RibbonViewModel : BaseViewModel
     //    {
     //        LoadMenu(new List<string>
     //        {
-               
-             
-                
+
+
+
     //        }, nameof(OpenSettingsMenu));
     //    }
     //    catch (Exception ex)
@@ -133,7 +133,7 @@ public class RibbonViewModel : BaseViewModel
         {
             _logger.LogError(ex.Message, LogType.Diagnostics);
         }
-     
+
     }
 
     private void OpenReportsView()
@@ -151,7 +151,7 @@ public class RibbonViewModel : BaseViewModel
         {
             _logger.LogError(ex.Message, LogType.Diagnostics);
         }
-       // _nav.NavigateMain<ReportViewerView>();
+        // _nav.NavigateMain<ReportViewerView>();
     }
 
 
