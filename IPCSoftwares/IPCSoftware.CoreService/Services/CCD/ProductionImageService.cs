@@ -65,7 +65,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                 // Format: uniqueString_DateOfToday
                 //  string folderName = $"{uniqueDataString}_{dateStr}".Replace("\0", "_");
                 string machineCode = _extSetting.AOIMachineCode;
-                string productionFolder = "Production Images";
+                string productionFolder = _ccd.ImageRootFolder;// "Production Images";
 
                 string folderName = $"{metaDate}-{uniqueDataString}".Replace("\0", "_");
                 var finalfolderName = Path.Combine(machineCode, productionFolder, folderName);

@@ -36,11 +36,7 @@ namespace IPCSoftware.App.ViewModels
             {
                 ProductVersion = _settings.ProductVersion;
             }
-            else
-            {
-                var version = Assembly.GetExecutingAssembly().GetName().Version;
-                ProductVersion = $"v{version?.Major ?? 1}.{version?.Minor ?? 0}.{version?.Build ?? 0}";
-            }
+           
         }
     }
 }

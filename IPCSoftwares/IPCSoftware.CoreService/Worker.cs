@@ -97,6 +97,7 @@ namespace IPCSoftware.CoreService
                         {
                             // Trigger Auto-Backup Check
                             _logManager.CheckAndPerformBackups();
+                            _logManager.CheckAndPerformPurge();
                         }
                         catch (Exception ex)
                         {

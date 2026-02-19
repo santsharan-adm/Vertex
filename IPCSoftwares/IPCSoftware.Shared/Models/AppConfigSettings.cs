@@ -44,6 +44,7 @@ namespace IPCSoftware.Shared.Models
   
         public string QrCodeImagePath { get; set; }
         public string TempImgFolder { get; set; }
+        public string ImageRootFolder { get; set; }
   
         public string MetadataStyle { get; set; }
         public string CurrentCycleStateFileName { get; set; }

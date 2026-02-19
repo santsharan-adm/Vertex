@@ -78,7 +78,7 @@ namespace IPCSoftware.CoreService.Services.External
             }
             catch
             {
-                // Swallow logging errors to not break prod flow
+                
             }
             finally
             {

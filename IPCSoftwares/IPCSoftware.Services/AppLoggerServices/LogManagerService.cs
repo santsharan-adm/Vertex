@@ -3,6 +3,7 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,16 +18,24 @@ namespace IPCSoftware.Services.AppLoggerServices
         //  private readonly List<LogConfig> _configs;
         private  List<LogConfigurationModel> _logConfigs;
         private readonly ILogConfigurationService _logConfigService;
+        private readonly CcdSettings _ccdSettings;
+        private readonly ExternalSettings _extSettings;
 
         private readonly BackupService _backupService;
 
         private readonly Dictionary<int, DateTime> _lastBackupRun = new();
+        private readonly Dictionary<int, DateTime> _lastPurgeRun = new();
 
         public LogManagerService(
             ILogConfigurationService logConfigService,
+            IOptions <CcdSettings> ccdSettings,
+            IOptions <ExternalSettings> extSettings,
+
             BackupService backupService
             )
         {
+            _ccdSettings = ccdSettings.Value;
+            _extSettings = extSettings.Value;
             _logConfigService = logConfigService;
             _logConfigs = new List<LogConfigurationModel>();
             // _ = LoadDataAsync();
@@ -198,38 +207,77 @@ namespace IPCSoftware.Services.AppLoggerServices
             return fullPath;
         }
 
-        public void ApplyMaintenance(LogConfigurationModel config, string filePath)
+        public void CheckAndPerformPurge()
         {
-            // ... (Existing logic for size check & purge) ...
-            if (config == null) return;
+            var now = DateTime.Now;
 
-            // 1) File size retention (Audit + Error)
-            if (config.LogType != LogType.Production && config.LogRetentionFileSize > 0)
+            foreach (var config in _logConfigs.Where(c => c.Enabled && c.AutoPurge && c.LogRetentionTime > 0))
             {
-                long currentSizeMB = new FileInfo(filePath).Length / (1024 * 1024);
-                if (currentSizeMB >= config.LogRetentionFileSize)
+                // 1. Throttle: Only run heavy disk-scanning purge once an hour PER CONFIG
+                if (_lastPurgeRun.TryGetValue(config.Id, out var lastRun))
                 {
-                    string newName = Path.Combine(config.DataFolder,
-                        config.FileName.Replace("{yyyyMMdd}", DateTime.Now.ToString("yyyyMMdd")) + "_" + Guid.NewGuid().ToString("N") + ".csv");
-                    File.Move(filePath, newName);
-                    File.WriteAllText(filePath, "Timestamp,Level,Message,Source\n");
+                    if ((now - lastRun).TotalHours < 1)
+                        continue;
                 }
-            }
 
-            // 2) Time-based & Auto Purge
-            if (config.AutoPurge || (config.LogType == LogType.Production && config.LogRetentionTime > 0))
-            {
-                foreach (var file in Directory.GetFiles(config.DataFolder))
+                try
                 {
-                    if ((DateTime.Now - File.GetLastWriteTime(file)).TotalDays > config.LogRetentionTime)
+                    // Calculate the exact date/time threshold for deletion
+                    var cutoffDate = now.AddDays(-config.LogRetentionTime);
+
+                    // 2. Purge DataFolder 
+                    // Using EnumerateFiles instead of GetFiles prevents massive RAM spikes with millions of files
+                    if (Directory.Exists(config.DataFolder))
                     {
-                        File.Delete(file);
+                        foreach (var file in Directory.EnumerateFiles(config.DataFolder))
+                        {
+                            var fileInfo = new FileInfo(file);
+                            // Check if file is older than cutoff (No longer restricting to just .csv)
+                            if (fileInfo.LastWriteTime < cutoffDate)
+                            {
+                                try { fileInfo.Delete(); } catch { }
+                            }
+                        }
                     }
+
+                    // 3. Purge Production Images (High Volume handling)
+                    if (config.LogType == LogType.Production && !string.IsNullOrEmpty(config.ProductionImagePath))
+                    {
+                        string machineCode = _extSettings.AOIMachineCode ;
+                        string exactTargetPath = Path.Combine(config.ProductionImagePath, machineCode, _ccdSettings.ImageRootFolder);
+                        if (Directory.Exists(exactTargetPath))
+                        {
+                            // Enumerate directories (Batch folders) to save memory
+                            foreach (var dir in Directory.EnumerateDirectories(exactTargetPath))
+                            {
+                                var dirInfo = new DirectoryInfo(dir);
+                                if (dirInfo.CreationTime < cutoffDate)
+                                {
+                                    try { dirInfo.Delete(true); } catch { } // true = recursive delete
+                                }
+                            }
+
+                            // Enumerate loose files in the root of the production folder just in case
+                            foreach (var file in Directory.EnumerateFiles(config.ProductionImagePath))
+                            {
+                                var fileInfo = new FileInfo(file);
+                                if (fileInfo.LastWriteTime < cutoffDate)
+                                {
+                                    try { fileInfo.Delete(); } catch { }
+                                }
+                            }
+                        }
+                    }
+
+                    // Update last run time for this specific config
+                    _lastPurgeRun[config.Id] = now;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Auto-Purge Error for {config.LogName}: {ex.Message}");
                 }
             }
         }
-            
-   
         public LogConfigurationModel GetConfig(LogType type)
         {
             return _logConfigs.FirstOrDefault(x => x.LogType == type && x.Enabled);
