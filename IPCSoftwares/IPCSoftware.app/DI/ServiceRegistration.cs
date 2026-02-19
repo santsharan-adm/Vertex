@@ -41,6 +41,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<OeeEngine>();
             services.AddSingleton<SystemMonitorService>();
             services.AddSingleton<IAlarmHistoryService, AlarmHistoryService>();
+            services.AddSingleton<ITcpTrafficLogger, TcpTrafficLogger>();
             // --- Updated registration for IProductionDataLogger ---
             services.AddSingleton<IProductionDataLogger>(sp =>
             {
@@ -146,6 +147,9 @@ namespace IPCSoftware.App.DI
             // ===== Produciton Image ViewModel =====
             services.AddTransient<ProductSettingsView>();
             services.AddTransient<ProductSettingsViewModel>();
+
+            services.AddTransient<AlarmLogView>();
+            services.AddTransient<AlarmLogViewModel>();
 
 
 

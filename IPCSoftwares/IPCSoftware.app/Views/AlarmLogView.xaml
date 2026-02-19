@@ -1,0 +1,194 @@
+﻿<UserControl x:Class="IPCSoftware.App.Views.AlarmLogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
+             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             mc:Ignorable="d"
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:AlarmLogViewModel}"
+             Background="#F3F3F3">
+
+    <UserControl.Resources>
+        <!-- Reusing the style you liked -->
+        <Style x:Key="HmiColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="15,0"/>
+        </Style>
+
+        <Style x:Key="HmiCellStyle" TargetType="DataGridCell">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#CCE8FF"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="FileListItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#007ACC"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#007ACC"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- LEFT PANEL: FILE LIST -->
+        <Border Grid.Column="0" Background="White" BorderBrush="#DDD" BorderThickness="0,0,1,0">
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                    <TextBlock Text="Alarm Logs" FontSize="36" FontWeight="Bold" Foreground="#333" Margin="0,0,0,10"/>
+                    <Button Content="REFRESH FILES" Command="{Binding RefreshFilesCommand}" 
+                            Height="60" FontSize="20" FontWeight="Bold" 
+                            Background="#F0F0F0" Foreground="#333" BorderThickness="0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="5"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </StackPanel>
+
+                <ListBox Grid.Row="1" ItemsSource="{Binding AlarmFiles}" SelectedItem="{Binding SelectedFile}" 
+                         Background="Transparent" BorderThickness="0" ItemContainerStyle="{StaticResource FileListItemStyle}" 
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{Binding FileName}" FontSize="20" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding LastModified, StringFormat='{}Mod: {0:yyyy-MM-dd HH:mm}'}" FontSize="14" Opacity="0.7"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Border>
+
+        <!-- RIGHT PANEL: ALARM DATA -->
+        <Grid Grid.Column="1" Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                <TextBlock Text="Historical Alarm Records" Foreground="#999" FontSize="24"/>
+                <TextBlock Text="{Binding SelectedFile.FileName, FallbackValue='Select a file'}" Foreground="#333" FontSize="48" FontWeight="Bold"/>
+            </StackPanel>
+
+            <Border Grid.Row="1" Background="White" CornerRadius="12" BorderBrush="#CCC" BorderThickness="1">
+                <DataGrid ItemsSource="{Binding SelectedAlarmRecords}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="#E0E0E0"
+                          VerticalGridLinesBrush="Transparent"
+                          BorderThickness="0"
+                          Background="White"
+                          RowHeight="60"
+                          ColumnHeaderStyle="{StaticResource HmiColumnHeaderStyle}"
+                          CellStyle="{StaticResource HmiCellStyle}">
+
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Background" Value="White"/>
+                            <Style.Triggers>
+                                <Trigger Property="AlternationIndex" Value="1">
+                                    <Setter Property="Background" Value="#FAFAFA"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.AlternationCount>2</DataGrid.AlternationCount>
+
+                    <DataGrid.Columns>
+                        <!-- 1. Alarm No -->
+                        <DataGridTextColumn Header="No." Binding="{Binding AlarmNo}" Width="100"/>
+
+                        <!-- 2. Severity -->
+                        <DataGridTextColumn Header="Severity" Binding="{Binding Severity}" Width="150">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="15,0"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Severity}" Value="High">
+                                            <Setter Property="Foreground" Value="Red"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Severity}" Value="Warning">
+                                            <Setter Property="Foreground" Value="Orange"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <!-- 3. Message -->
+                        <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*"/>
+
+                        <!-- 4. Raised At -->
+                        <DataGridTextColumn Header="Raised At" Binding="{Binding RaisedAt, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="300"/>
+
+                        <!-- 5. Reset At -->
+                        <DataGridTextColumn Header="Reset At" Binding="{Binding ResetAt, TargetNullValue='-', StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="300"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
