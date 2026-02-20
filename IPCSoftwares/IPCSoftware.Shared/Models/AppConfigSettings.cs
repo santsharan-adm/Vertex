@@ -28,7 +28,7 @@ namespace IPCSoftware.Shared.Models
         public string ServoCalibrationFileName { get; set; }
         public string UserFileName { get; set; }
 
-        public bool SwitchConveyorDirection { get; set; } 
+        public bool SwitchConveyorDirection { get; set; }
         public bool SwapBytes { get; set; } = true;
         public bool SwapStringBytes { get; set; } = true;
         public int DefaultModBusAddress { get; set; }
@@ -41,14 +41,14 @@ namespace IPCSoftware.Shared.Models
 
     public class CcdSettings
     {
-  
+
         public string QrCodeImagePath { get; set; }
         public string TempImgFolder { get; set; }
         public string ImageRootFolder { get; set; }
   
         public string MetadataStyle { get; set; }
         public string CurrentCycleStateFileName { get; set; }
-       // [JsonProperty("AppleMetaDataParams")]
+        // [JsonProperty("AppleMetaDataParams")]
         public ClientMetaData ClientMetaDataParams { get; set; }
         //[JsonProperty("VendorMetaDataParams")]
         public VendorMetaData VendorMetaDataParams { get; set; }
@@ -62,16 +62,16 @@ namespace IPCSoftware.Shared.Models
 
     public class ExternalSettings
     {
-        public bool IsMacMiniEnabled { get; set; } 
-        public string Protocol { get; set; } 
+        public bool IsMacMiniEnabled { get; set; }
+        public string Protocol { get; set; }
         public string MacMiniIpAddress { get; set; }
         public int Port { get; set; } = 5000;
-        public string EndPoint { get; set; } 
-        public string SharedFolderPath { get; set; } 
-        public string StatusFileName { get; set; } 
+        public string EndPoint { get; set; }
+        public string SharedFolderPath { get; set; }
+        public string StatusFileName { get; set; }
         public int PingTimeoutMs { get; set; } = 1000;
 
-        public string PreviousMachineCode { get; set; } 
+        public string PreviousMachineCode { get; set; }
         public string AOIMachineCode { get; set; }
         public string InspectionXUnit { get; set; } = "mm";
         public string InspectionYUnit { get; set; } = "mm";
@@ -92,5 +92,4 @@ namespace IPCSoftware.Shared.Models
     }
 
 }
-
 

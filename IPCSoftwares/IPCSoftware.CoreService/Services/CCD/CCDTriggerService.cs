@@ -163,7 +163,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                         stationData["CycleTime"] = tagValues.ContainsKey(ConstantValues.TAG_CycleTime) ? tagValues[ConstantValues.TAG_CycleTime] : 0.0;
 
                         _ = Task.Run(async () =>
-                        {   
+                        {
                             try
                             {
                                 await ExecuteWorkflowAsync(qrCode, stationData);

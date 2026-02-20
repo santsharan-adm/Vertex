@@ -1,544 +1,545 @@
-﻿Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark,CanWrite,IOType
-1,1,CD_COM_PULSE_PLC,1,40000,1,0,Bit,0,0,0,"DM10000, Heart beat signal1","Pulse PLC to IPC, PLC?IPC Heartbeat SignalEvery 1 second, send a signal of 0?1/1?0Received by polling every 1 second / If there is no change for 3 seconds,it is considered an abnormality",True,None
-2,2,CD_COM_PULSE_IPC,1,40015,1,0,Bit,0,0,0,"DM10015, Heart beat signal2","Pulse IPC to PLC, SignalEvery 1 second, send a signal of 0?1/1?0Received by polling every 1 second / If there is no change for 3 seconds, it is considered an abnormality",True,None
-3,3,SYS_DATA_B1,1,40015,1,0,Bit,1,0,0,"DM10015, System Data B1","Time storage completion signalWhen time storage is complete, set it to 0?1.Always see a 0 or 1 change at scan time",True,None
-4,4,SYS_DATA_B2,1,40019,1,0,UInt16,0,0,0,"DM10019, System Data B2","Yearly DataStore year data in UINT format (e.g., 2025,2026)When the time storage completion signal reaches 0?1, check the IN data on the PLC",True,None
-5,5,SYS_DATA_B3,1,40020,1,0,UInt16,0,0,0,"DM10020, System Data B3","Monthly dataStore monthly data in UINT format (e.g., 1~12)When the time storage completion signal reaches 0?1, check the IN data on the PLC",True,None
-6,6,SYS_DATA_B4,1,40021,1,0,UInt16,0,0,0,"DM10021, System Data B4","Daily DataStore day data in UINT format (e.g., 1~31)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",True,None
-7,7,SYS_DATA_B5,1,40022,1,0,UInt16,0,0,0,"DM10022, System Data B5","Time DataStore time data in UINT format (e.g., 0~24)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",True,None
-8,8,SYS_DATA_B6,1,40023,1,0,UInt16,0,0,0,"DM10023, System Data B6","Minute DataStore minute data in UINT format (e.g., 0~59)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",True,None
-9,9,SYS_DATA_B7,1,40024,1,0,UInt16,0,0,0,"DM10024, System Data B7","Seconds DataStore second data in UINT format (e.g., 0~59)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",True,None
-10,10,CD_DATA_A1,1,40050,1,0,Bit,0,0,0,"DM10050, Control Data A1","PLC Data Reading Command. After writing the CCD data to the DM, change the Bit to 0?1. Received by polling at 0.1 second intervals",True,None
-11,11,CD_DATA_B1,1,40055,1,0,Bit,0,0,0,"DM10055, Control Data B1",Auto Run Start Signal. Create a switch to the IPC monitor and turn on the signal by pressing the switch. Recognize triggers from IPC and turn on PLC devices,True,None
-12,12,CD_DATA_B2,1,40055,1,0,Bit,1,0,0,"DM10055, Control Data B2",Dry Run Start SignalCreate a switch to the IPC monitor and turn on the signal by pressing the switchRecognize triggers from IPC and turn on PLC devices,True,None
-13,13,CD_DATA_B3,1,40055,1,0,Bit,2,0,0,"DM10055, Control Data B3",Cycle Stop Start SignalCreate a switch to the IPC monitor and turn on the signal by pressing the switchRecognize triggers from IPC and turn on PLC devices,True,None
-14,14,CD_DATA_B4,1,40055,1,0,Bit,3,0,0,"DM10055, Control Data B4",Mass return to origin signalCreate a switch to the IPC monitor and turn on the signal by pressing the switchRecognize triggers from IPC and turn on PLC devices,True,None
-15,15,CD_DATA_B5,1,40055,1,0,Bit,4,0,0,"DM10055, Control Data B5","ALL data reading completedOnce you have received all the photos from the CCD and the data from the PLC, turn on the trigger signal.Recognize triggers from IPC and turn on PLC devices",True,None
-16,16,PD_DATA_2DCode,1,40500,20,0,String,0,0,0,"DM10500, Production Data B1 (2D Code)"," (string, length defined in meeting). Reserve 50 character",True,None
-17,17,PD_DATA_B2,1,40520,1,0,UInt16,0,0,0,"DM10520, Production Data B2 (Judgment)","Storing data read from CCD (1????OK, 2????NG)",True,None
-18,18,PD_DATA_B3,1,40522,2,0,Float,0,0,0,"DM10522, Stores data read from CCDs",Stores data read from CCDs,True,None
-19,19,PD_DATA_B4,1,40524,2,0,Float,0,0,0,"DM10524, ",,True,None
-20,20,PD_DATA_B5,1,40526,2,0,Float,0,0,0,"DM10526, ",,True,None
-21,21,CTL_CYCLETIME_A1,1,40100,1,0,Bit,0,0,0,"DM10100, Cycle Time A1","Signal PLC to IPC, 1 cycle complete signal",True,None
-22,22,PD_CYCLETIME,1,40102,1,0,UInt16,0,0,0,"DM10102, Cycle Time",Real cycle time,True,None
-23,23,CTL_CYCLETIME_B1,1,40105,1,0,Bit,0,0,0,"DM10105, Cycle Time B1",Signal IPC to PLC. Cycle time received signal. Turn on the trigger signal when the actual cycle time receipt is completed.,True,None
-24,24,PD_UPTIME,1,40150,2,0,UInt32,0,0,0,"DM10150, Up Time",,True,None
-25,25,PD_ALARM_STOPTIME,1,40152,2,0,UInt32,0,0,0,"DM10152, Alarm stop time",,True,None
-26,26,PD_DOWNTIME,1,40154,2,0,UInt32,0,0,0,"DM10154, Down time",,True,None
-27,27,PD_OEE_A1,1,40156,1,0,UInt16,0,0,0,"DM10156, OEE A1 (Actual Production)",,True,None
-28,28,PD_OEE_A2,1,40157,1,0,UInt16,0,0,0,"DM10157, OEE A2 (Good Products)",,True,None
-29,29,PD_OEE_A3,1,40158,1,0,UInt16,0,0,0,"DM10158, OEE A3 (Defective Products)",,True,None
-30,30,ALM_ALARM_A1,1,40200,1,0,Bit,0,0,0,"DM10200, Alarm A1",,True,None
-31,31,PD_ALARMS1,1,40201,1,0,UInt16,0,0,0,"DM10201, PD_ALARMS1","16 Bit, for 16 alarms",True,None
-32,32,PD_ALARMS2,1,40202,1,0,UInt16,0,0,0,"DM10202, PD_ALARMS2","16 Bit, for 16 alarms",True,None
-33,33,PD_ALARMS3,1,40203,1,0,UInt16,0,0,0,"DM10203, PD_ALARMS3","16 Bit, for 16 alarms",True,None
-34,34,PD_ALARMS4,1,40204,1,0,UInt16,0,0,0,"DM10204, PD_ALARMS4","16 Bit, for 16 alarms",True,None
-35,35,PD_ALARMS5,1,40205,1,0,UInt16,0,0,0,"DM10205, PD_ALARMS5","16 Bit, for 16 alarms",True,None
-36,36,PD_ALARMS6,1,40206,1,0,UInt16,0,0,0,"DM10206, PD_ALARMS6","16 Bit, for 16 alarms",True,None
-37,37,PD_ALARMS7,1,40207,1,0,UInt16,0,0,0,"DM10207, PD_ALARMS7","16 Bit, for 16 alarms",True,None
-38,38,ALM_Alarm B1,1,40208,1,0,Bit,0,0,0,"DM10208, Alarm B1","IPC to PLC, Alarm Data Received SignalTurn on the trigger signal when the alarm code is receivedRecognize triggers from IPC and turn on PLC devices",True,None
-39,39,ALM_Alarm B2,1,40208,1,0,Bit,1,0,0,"DM10208, Alarm B2","IPC to PLC, Alarm Reset SignalCreate a switch to the IPC monitor and turn on the signal by pressing the switchRecognize triggers from IPC and turn on PLC devices",True,None
-40,40,CTL_MANUAL_A1,1,40220,1,0,Bit,0,0,0,"DM10220, Manual Control A1",Tray lift Down signal,True,None
-41,41,CTL_MANUAL_A2,1,40220,1,0,Bit,1,0,0,"DM10220, Manual Control A2",Tray lift rising signal,True,None
-42,42,CTL_MANUAL_A3,1,40220,1,0,Bit,2,0,0,"DM10220, Manual Control A3",Positioning cylinder rising signal,True,None
-43,43,CTL_MANUAL_A4,1,40220,1,0,Bit,3,0,0,"DM10220, Manual Control A4",Positioning cylinder down signal,True,None
-44,44,CTL_MANUAL_A5,1,40220,1,0,Bit,4,0,0,"DM10220, Manual Control A5",Conveyor forward signal,True,None
-45,45,CTL_MANUAL_A6,1,40220,1,0,Bit,5,0,0,"DM10220, Manual Control A6",Conveyor reversing signal,True,None
-46,46,CTL_MANUAL_A7,1,40220,1,0,Bit,6,0,0,"DM10220, Manual Control A7",Conveyor stop signal,True,None
-47,47,CTL_MANUAL_A8,1,40220,1,0,Bit,7,0,0,"DM10220, Manual Control A8",Conveyor low-speed switching signal,True,None
-48,48,CTL_MANUAL_A9,1,40220,1,0,Bit,8,0,0,"DM10220, Manual Control A9",conveyor high-speed switching signal,True,None
-49,49,CTL_MANUAL_A10,1,40220,1,0,Bit,9,0,0,"DM10220, Manual Control A10",X-axis JOG forward signal,True,None
-50,50,CTL_MANUAL_A11,1,40220,1,0,Bit,10,0,0,"DM10220, Manual Control A11",X-axis JOG retreat signal,True,None
-51,51,CTL_MANUAL_A12,1,40220,1,0,Bit,11,0,0,"DM10220, Manual Control A12",X-axis JOG low-speed switching signal,True,None
-52,52,CTL_MANUAL_A13,1,40220,1,0,Bit,12,0,0,"DM10220, Manual Control A13",X-axis JOG high-speed switching signal,True,None
-53,53,CTL_MANUAL_A14,1,40220,1,0,Bit,13,0,0,"DM10220, Manual Control A14",Y-axis JOG forward signal,True,None
-54,54,CTL_MANUAL_A15,1,40220,1,0,Bit,14,0,0,"DM10220, Manual Control A15",Y-axis JOG backward signal,True,None
-55,55,CTL_MANUAL_A16,1,40220,1,0,Bit,15,0,0,"DM10220, Manual Control A16",Y-axis JOG low-speed switching signal,True,None
-56,56,CTL_MANUAL_A17,1,40221,1,0,Bit,0,0,0,"DM10221, Manual Control A17",Y-axis JOG high-speed switching signal,True,None
-57,57,CTL_MANUAL_A18,1,40221,1,0,Bit,1,0,0,"DM10221, Manual Control A18",Pos.0 Movement Signal,True,None
-58,58,CTL_MANUAL_A19,1,40221,1,0,Bit,2,0,0,"DM10221, Manual Control A19",Pos.1 Movement Signal,True,None
-59,59,CTL_MANUAL_A20,1,40221,1,0,Bit,3,0,0,"DM10221, Manual Control A20",Pos.2 Moving Signal,True,None
-60,60,CTL_MANUAL_A21,1,40221,1,0,Bit,4,0,0,"DM10221, Manual Control A21",Pos.3 Moving Signal,True,None
-61,61,CTL_MANUAL_A22,1,40221,1,0,Bit,5,0,0,"DM10221, Manual Control A22",Pos.4 Movement Signal,True,None
-62,62,CTL_MANUAL_A23,1,40221,1,0,Bit,6,0,0,"DM10221, Manual Control A23",Pos.5 Moving Signals,True,None
-63,63,CTL_MANUAL_A24,1,40221,1,0,Bit,7,0,0,"DM10221, Manual Control A24",Pos.6 Moving Signal,True,None
-64,64,CTL_MANUAL_A25,1,40221,1,0,Bit,8,0,0,"DM10221, Manual Control A25",Pos.7 Moving Signal,True,None
-65,65,CTL_MANUAL_A26,1,40221,1,0,Bit,9,0,0,"DM10221, Manual Control A26",Pos.8 Moving Signals,True,None
-66,66,CTL_MANUAL_A27,1,40221,1,0,Bit,10,0,0,"DM10221, Manual Control A27",Pos.9 Moving Signal,True,None
-67,67,CTL_MANUAL_A28,1,40221,1,0,Bit,11,0,0,"DM10221, Manual Control A28",Pos.10 Moving Signals,True,None
-68,68,CTL_MANUAL_A29,1,40221,1,0,Bit,12,0,0,"DM10221, Manual Control A29",Pos.11 Moving Signals,True,None
-69,69,CTL_MANUAL_A30,1,40221,1,0,Bit,13,0,0,"DM10221, Manual Control A30",Pos.12 Moving Signals,True,None
-70,70,CTL_MANUAL_A31,1,40221,1,0,Bit,14,0,0,"DM10221, Manual Control A31",,True,None
-71,71,CTL_MANUAL_A32,1,40221,1,0,Bit,15,0,0,"DM10221, Manual Control A32",,True,None
-72,72,CTL_MANUAL_A33,1,40222,1,0,Bit,0,0,0,"DM10222, Manual Control A33",,True,None
-73,73,CTL_MANUAL_A34,1,40222,1,0,Bit,1,0,0,"DM10222, Manual Control A34",,True,None
-74,74,CTL_MANUAL_A35,1,40222,1,0,Bit,2,0,0,"DM10222, Manual Control A35",,True,None
-75,75,CTL_MANUAL_A36,1,40222,1,0,Bit,3,0,0,"DM10222, Manual Control A36",,True,None
-76,76,CTL_MANUAL_A37,1,40222,1,0,Bit,4,0,0,"DM10222, Manual Control A37",,True,None
-77,77,CTL_MANUAL_A38,1,40222,1,0,Bit,5,0,0,"DM10222, Manual Control A38",,True,None
-78,78,CTL_MANUAL_A39,1,40222,1,0,Bit,6,0,0,"DM10222, Manual Control A39",,True,None
-79,79,CTL_MANUAL_A40,1,40222,1,0,Bit,7,0,0,"DM10222, Manual Control A40",,True,None
-80,80,CTL_MANUAL_B1,1,40225,1,0,Bit,0,0,0,"DM10225, Manual Control B1",Tray lift Descending display,True,None
-81,81,CTL_MANUAL_B2,1,40225,1,0,Bit,1,0,0,"DM10225, Manual Control B2",Tray lift Lift Lift,True,None
-82,82,CTL_MANUAL_B3,1,40225,1,0,Bit,2,0,0,"DM10225, Manual Control B3",Positioning cylinder rise display,True,None
-83,83,CTL_MANUAL_B4,1,40225,1,0,Bit,3,0,0,"DM10225, Manual Control B4",Positioning cylinder lowering display,True,None
-84,84,CTL_MANUAL_B5,1,40225,1,0,Bit,4,0,0,"DM10225, Manual Control B5",Conveyor forward-turning display,True,None
-85,85,CTL_MANUAL_B6,1,40225,1,0,Bit,5,0,0,"DM10225, Manual Control B6",Conveyor reversing display,True,None
-86,86,CTL_MANUAL_B7,1,40225,1,0,Bit,6,0,0,"DM10225, Manual Control B7",Conveyor stopped display,True,None
-87,87,CTL_MANUAL_B8,1,40225,1,0,Bit,7,0,0,"DM10225, Manual Control B8",conveyor low-speed switching display,True,None
-88,88,CTL_MANUAL_B9,1,40225,1,0,Bit,8,0,0,"DM10225, Manual Control B9",conveyor high-speed switching display,True,None
-89,89,CTL_MANUAL_B10,1,40225,1,0,Bit,9,0,0,"DM10225, Manual Control B10",X-axis JOG forward indication,True,None
-90,90,CTL_MANUAL_B11,1,40225,1,0,Bit,10,0,0,"DM10225, Manual Control B11",X-axis JOG backwards indicates,True,None
-91,91,CTL_MANUAL_B12,1,40225,1,0,Bit,11,0,0,"DM10225, Manual Control B12",X-axis JOG low-speed switching representation,True,None
-92,92,CTL_MANUAL_B13,1,40225,1,0,Bit,12,0,0,"DM10225, Manual Control B13",X-axis JOG high-speed switching display,True,None
-93,93,CTL_MANUAL_B14,1,40225,1,0,Bit,13,0,0,"DM10225, Manual Control B14",Y-axis JOG forward display,True,None
-94,94,CTL_MANUAL_B15,1,40225,1,0,Bit,14,0,0,"DM10225, Manual Control B15",Y-axis JOG retracted display,True,None
-95,95,CTL_MANUAL_B16,1,40225,1,0,Bit,15,0,0,"DM10225, Manual Control B16",Y-axis JOG low-speed switching display,True,None
-96,96,CTL_MANUAL_B17,1,40226,1,0,Bit,0,0,0,"DM10226, Manual Control B17",Y-axisJOGhigh-speed switching display,True,None
-97,97,CTL_MANUAL_B18,1,40226,1,0,Bit,1,0,0,"DM10226, Manual Control B18",Pos.0 Positioning Completion Display,True,None
-98,98,CTL_MANUAL_B19,1,40226,1,0,Bit,2,0,0,"DM10226, Manual Control B19",Pos.1 Positioning Completion Display,True,None
-99,99,CTL_MANUAL_B20,1,40226,1,0,Bit,3,0,0,"DM10226, Manual Control B20",Pos.2 Positioning Completion Display,True,None
-100,100,CTL_MANUAL_B21,1,40226,1,0,Bit,4,0,0,"DM10226, Manual Control B21",Pos.3 Positioning Completion Display,True,None
-101,101,CTL_MANUAL_B22,1,40226,1,0,Bit,5,0,0,"DM10226, Manual Control B22",Pos.4 Positioning Completion Display,True,None
-102,102,CTL_MANUAL_B23,1,40226,1,0,Bit,6,0,0,"DM10226, Manual Control B23",Pos.5 Positioning Completion Display,True,None
-103,103,CTL_MANUAL_B24,1,40226,1,0,Bit,7,0,0,"DM10226, Manual Control B24",Pos.6 Positioning Completion Display,True,None
-104,104,CTL_MANUAL_B25,1,40226,1,0,Bit,8,0,0,"DM10226, Manual Control B25",Pos.7 Positioning Completion Display,True,None
-105,105,CTL_MANUAL_B26,1,40226,1,0,Bit,9,0,0,"DM10226, Manual Control B26",Pos.8 Positioning Completion Display,True,None
-106,106,CTL_MANUAL_B27,1,40226,1,0,Bit,10,0,0,"DM10226, Manual Control B27",Pos.9 Positioning Completion Display,True,None
-107,107,CTL_MANUAL_B28,1,40226,1,0,Bit,11,0,0,"DM10226, Manual Control B28",Pos.10 Positioning Completion Display,True,None
-108,108,CTL_MANUAL_B29,1,40226,1,0,Bit,12,0,0,"DM10226, Manual Control B29",Pos.11 Positioning Completion Display,True,None
-109,109,CTL_MANUAL_B30,1,40226,1,0,Bit,13,0,0,"DM10226, Manual Control B30",Pos.12 Positioning Completion Display,True,None
-110,110,SYS_PARAMETER_A1,1,40300,1,0,Bit,0,0,0,"DM10300, System Parameter A1",X-axis_servo parameter determination. Create a switch to the IPC monitor and turn on the signal by pressing the switchConstant monitoring at scan time,True,None
-111,111,SYS_PARAMETER_A2,1,40300,1,0,Bit,1,0,0,"DM10300, System Parameter A2",Y-axis_servo parameter determination. Create a switch to the IPC monitor and turn on the signal by pressing the switchConstant monitoring at scan time,True,None
-112,112,SYS_PARAMETER_A3,1,40300,1,0,Bit,2,0,0,"DM10300, System Parameter A3",X-axis_coordinate registration confirmed. Create a switch to the IPC monitor and turn on the signal by pressing the switchConstant monitoring at scan time,True,None
-113,113,SYS_PARAMETER_A4,1,40300,1,0,Bit,3,0,0,"DM10300, System Parameter A4",Y-axis_coordinate registration confirmedCreate a switch to the IPC monitor and turn on the signal by pressing the switchConstant monitoring at scan time,True,None
-114,114,SYS_PARAMETER_A5,1,40302,2,0,UInt32,0,0,0,"DM10302, System Parameter A5","X-axis _JOG speed (low speed)Store the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",True,None
-115,115,SYS_PARAMETER_A6,1,40304,2,0,UInt32,0,0,0,"DM10304, System Parameter A6","X-axis _JOG speed (high speed)Store the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",True,None
-116,116,SYS_PARAMETER_A7,1,40306,2,0,UInt32,0,0,0,"DM10306, System Parameter A7","X-axis _JOG inch volumeStore the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",True,None
-117,117,SYS_PARAMETER_A8,1,40308,2,0,UInt32,0,0,0,"DM10308, System Parameter A8","X-axis_origin coordinatesStore the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",True,None
-118,118,SYS_PARAMETER_A9,1,40310,2,0,UInt32,0,0,0,"DM10310, System Parameter A9","X-axis_movement speedStore the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",True,None
-119,119,SYS_PARAMETER_A10,1,40312,2,0,UInt32,0,0,0,"DM10312, System Parameter A10","X-axis_movement accelerationStore the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",True,None
-120,120,SYS_PARAMETER_A11,1,40314,2,0,UInt32,0,0,0,"DM10314, System Parameter A11","X-axis_movement decelerationStore the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",True,None
-121,121,SYS_PARAMETER_A12,1,40316,2,0,UInt32,0,0,0,"DM10316, System Parameter A12","Y-axis _JOG speed (low speed)Store the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",True,None
-122,122,SYS_PARAMETER_A13,1,40318,2,0,UInt32,0,0,0,"DM10318, System Parameter A13","Y-axis _JOG speed (high speed)Store the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",True,None
-123,123,SYS_PARAMETER_A14,1,40320,2,0,UInt32,0,0,0,"DM10320, System Parameter A14","Y-axis _JOG inch volumeStore the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",True,None
-124,124,SYS_PARAMETER_A15,1,40322,2,0,UInt32,0,0,0,"DM10322, System Parameter A15","Y-axis_origin coordinatesStore the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",True,None
-125,125,SYS_PARAMETER_A16,1,40324,2,0,UInt32,0,0,0,"DM10324, System Parameter A16","Y-axis_movement speedStore the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",True,None
-126,126,SYS_PARAMETER_A17,1,40326,2,0,UInt32,0,0,0,"DM10326, System Parameter A17","Y-axis_movement accelerationStore the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",True,None
-127,127,SYS_PARAMETER_A18,1,40328,2,0,UInt32,0,0,0,"DM10328, System Parameter A18","Y-axis_movement decelerationStore the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",True,None
-128,128,SYS_PARAMETER_A19,1,40330,2,1,UInt32,0,0,100,"DM10330, System Parameter A19","X-axis _Pos.0 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",True,None
-129,129,SYS_PARAMETER_A20,1,40332,2,1,UInt32,0,0,100,"DM10332, System Parameter A20","X-axis _Pos.1 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",True,None
-130,130,SYS_PARAMETER_A21,1,40334,2,1,UInt32,0,0,100,"DM10334, System Parameter A21","X-axis _Pos.2 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",True,None
-131,131,SYS_PARAMETER_A22,1,40336,2,1,UInt32,0,0,100,"DM10336, System Parameter A22","X-axis _Pos.3 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",True,None
-132,132,SYS_PARAMETER_A23,1,40338,2,1,UInt32,0,0,100,"DM10338, System Parameter A23","X-axis _Pos.4 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",True,None
-133,133,SYS_PARAMETER_A24,1,40340,2,1,UInt32,0,0,100,"DM10340, System Parameter A24","X-axis _Pos.5 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",True,None
-134,134,SYS_PARAMETER_A25,1,40342,2,1,UInt32,0,0,100,"DM10342, System Parameter A25","X-axis _Pos.6 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",True,None
-135,135,SYS_PARAMETER_A26,1,40344,2,1,UInt32,0,0,100,"DM10344, System Parameter A26","X-axis _Pos.7 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",True,None
-136,136,SYS_PARAMETER_A27,1,40346,2,1,UInt32,0,0,100,"DM10346, System Parameter A27","X-axis _Pos.8 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",True,None
-137,137,SYS_PARAMETER_A28,1,40348,2,1,UInt32,0,0,100,"DM10348, System Parameter A28","X-axis _Pos.9 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",True,None
-138,138,SYS_PARAMETER_A29,1,40350,2,1,UInt32,0,0,100,"DM10350, System Parameter A29","X-axis _Pos.10 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",True,None
-139,139,SYS_PARAMETER_A30,1,40352,2,1,UInt32,0,0,100,"DM10352, System Parameter A30","X-Axis_Pos.11 Coordinate RegistrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",True,None
-140,140,SYS_PARAMETER_A31,1,40354,2,1,UInt32,0,0,100,"DM10354, System Parameter A31","X-axis_Pos.12 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",True,None
-141,141,SYS_PARAMETER_A32,1,40356,2,1,UInt32,0,0,100,"DM10356, System Parameter A32","Y-axis _Pos.0 coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",True,None
-142,142,SYS_PARAMETER_A33,1,40358,2,1,UInt32,0,0,100,"DM10358, System Parameter A33","Y-axis _Pos.1 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",True,None
-143,143,SYS_PARAMETER_A34,1,40360,2,1,UInt32,0,0,100,"DM10360, System Parameter A34","Y_Pos.2 Coordinate RegistrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",True,None
-144,144,SYS_PARAMETER_A35,1,40362,2,1,UInt32,0,0,100,"DM10362, System Parameter A35","Y-axis _Pos.3 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",True,None
-145,145,SYS_PARAMETER_A36,1,40364,2,1,UInt32,0,0,100,"DM10364, System Parameter A36","Y-axis _Pos.4 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",True,None
-146,146,SYS_PARAMETER_A37,1,40366,2,1,UInt32,0,0,100,"DM10366, System Parameter A37","Y_Pos.5 Coordinate RegistrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",True,None
-147,147,SYS_PARAMETER_A38,1,40368,2,1,UInt32,0,0,100,"DM10368, System Parameter A38","Y-axis _Pos.6 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",True,None
-148,148,SYS_PARAMETER_A39,1,40370,2,1,UInt32,0,0,100,"DM10370, System Parameter A39","Y-axis_Pos.7 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",True,None
-149,149,SYS_PARAMETER_A40,1,40372,2,1,UInt32,0,0,100,"DM10372, System Parameter A40","Y-axis_Pos.8 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",True,None
-150,150,SYS_PARAMETER_A41,1,40374,2,1,UInt32,0,0,100,"DM10374, System Parameter A41","Y-axis _Pos.9 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",True,None
-151,151,SYS_PARAMETER_A42,1,40376,2,1,UInt32,0,0,100,"DM10376, System Parameter A42","Y_Pos.10 Coordinate RegistrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",True,None
-152,152,SYS_PARAMETER_A43,1,40378,2,1,UInt32,0,0,100,"DM10378, System Parameter A43","Y-axis_Pos.11 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",True,None
-153,153,SYS_PARAMETER_A44,1,40380,2,1,UInt32,0,0,100,"DM10380, System Parameter A44","Y-axis _Pos.12 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",True,None
-154,154,SYS_PARAMETER_B1,1,40450,2,0,Float,0,0,0,"DM10450, System Parameter B1",X-axis_current coordinatesStore the current value in the DMPolling in 0.5 seconds,True,None
-155,155,SYS_PARAMETER_B2,1,40452,2,0,Float,0,0,0,"DM10452, System Parameter B2",Y-axis_current coordinatesStore the current value in the DMPolling in 0.5 seconds,True,None
-156,156,X3000_ ES,1,40250,1,0,Bit,0,0,0,"DM10250, X3000_ emergency stop input RY2",Inputs1,True,Input
-157,157,X3001_FLCS_PB2,1,40250,1,0,Bit,1,0,0,"DM10250, X3001_fluorescent lamp control signal PB2",Inputs2,True,Input
-158,158,X3002_ INPUT_LZ1,1,40250,1,0,Bit,2,0,0,"DM10250, X3002_ input detection LZ1",Inputs3,True,Input
-159,159,X3003_ TRLE_LZ2,1,40250,1,0,Bit,3,0,0,"DM10250, X3003_ table reaches the left edge LZ2",Inputs4,True,Input
-160,160,X3004_TRRL_LZ3,1,40250,1,0,Bit,4,0,0,"DM10250, X3004_ Table Reach Right Edge LZ3",Inputs5,True,Input
-161,161,X3005_ED_LZ4,1,40250,1,0,Bit,5,0,0,"DM10250, X3005_ emission detection LZ4",Inputs6,True,Input
-162,162,X3006_PS1,1,40250,1,0,Bit,6,0,0,"DM10250, X3006_ pressure sensor PS1",Inputs7,True,Input
-163,163,X3007_ PC1L_AS1,1,40250,1,0,Bit,7,0,0,"DM10250, X3007_ positioning cylinder 1 lifting AS1",Inputs8,True,Input
-164,164,X3008_PC1L_ AS2,1,40250,1,0,Bit,8,0,0,"DM10250, X3008_positioning cylinder 1 lowering AS2",Inputs9,True,Input
-165,165,X3009_PC2L_AS3,1,40250,1,0,Bit,9,0,0,"DM10250, X3009_positioning cylinder 2 lifting AS3",Inputs10,True,Input
-166,166,X300A_PC2L_AS4,1,40250,1,0,Bit,10,0,0,"DM10250, X300A_positioning cylinder 2 lowering AS4",Inputs11,True,Input
-167,167,X300B_ Spares,1,40250,1,0,Bit,11,0,0,"DM10250, X300B_ Spares",Inputs12,True,Input
-168,168,X300C_ FDCS_PXS1,1,40250,1,0,Bit,12,0,0,"DM10250, X300C_ front door closing signal PXS1",Inputs13,True,Input
-169,169,X300D_ RDCS_PXS2,1,40250,1,0,Bit,13,0,0,"DM10250, X300D_ rear door closing signal PXS2",Inputs14,True,Input
-170,170,X300E_LDCS_PXS3,1,40250,1,0,Bit,14,0,0,"DM10250, X300E_ left door closing signal PXS3",Inputs15,True,Input
-171,171,X300F_RDCS_PXS4,1,40250,1,0,Bit,15,0,0,"DM10250, X300F_ right door closing signal PXS4",Inputs16,True,Input
-172,172,X3010_ TLLE_PH1,1,40251,1,0,Bit,0,0,0,"DM10251, X3010_ tray lift lower end PH1",Inputs17,True,Input
-173,173,X3011_TLTB_PH2,1,40251,1,0,Bit,1,0,0,"DM10251, X3011_ tray lift top and bottom PH2",Inputs18,True,Input
-174,174,X3012_ Spares,1,40251,1,0,Bit,2,0,0,"DM10251, X3012_ Spares",Inputs19,True,Input
-175,175,X3013_ Spares,1,40251,1,0,Bit,3,0,0,"DM10251, X3013_ Spares",Inputs20,True,Input
-176,176,X3014_ Spares,1,40251,1,0,Bit,4,0,0,"DM10251, X3014_ Spares",Inputs21,True,Input
-177,177,X3015_ Spares,1,40251,1,0,Bit,5,0,0,"DM10251, X3015_ Spares",Inputs22,True,Input
-178,178,X3016_ Spares,1,40251,1,0,Bit,6,0,0,"DM10251, X3016_ Spares",Inputs23,True,Input
-179,179,X3017_ Spares,1,40251,1,0,Bit,7,0,0,"DM10251, X3017_ Spares",Inputs24,True,Input
-180,180,X3018_ Spares,1,40251,1,0,Bit,8,0,0,"DM10251, X3018_ Spares",Inputs25,True,Input
-181,181,X3019_ Spares,1,40251,1,0,Bit,9,0,0,"DM10251, X3019_ Spares",Inputs26,True,Input
-182,182,X301A_ StepperMotor1ALM,1,40251,1,0,Bit,10,0,0,"DM10251, X301A_ Stepper Motor1 ALM",Inputs27,True,Input
-183,183,X301B_ Steppermotor2ALM,1,40251,1,0,Bit,11,0,0,"DM10251, X301B_ stepper motor2 ALM",Inputs28,True,Input
-184,184,X301C_ Spares,1,40251,1,0,Bit,12,0,0,"DM10251, X301C_ Spares",Inputs29,True,Input
-185,185,X301D_ Spares,1,40251,1,0,Bit,13,0,0,"DM10251, X301D_ Spares",Inputs30,True,Input
-186,186,X301E_ Spares,1,40251,1,0,Bit,14,0,0,"DM10251, X301E_ Spares",Inputs31,True,Input
-187,187,X301F_ Spares,1,40251,1,0,Bit,15,0,0,"DM10251, X301F_ Spares",Inputs32,True,Input
-188,188,X3020_ Spares,1,40252,1,0,Bit,0,0,0,"DM10252, X3020_ Spares",Inputs33,True,Input
-189,189,X3021_ Spares,1,40252,1,0,Bit,1,0,0,"DM10252, X3021_ Spares",Inputs34,True,Input
-190,190,X3022_ Spares,1,40252,1,0,Bit,2,0,0,"DM10252, X3022_ Spares",Inputs35,True,Input
-191,191,X3023_ Spares,1,40252,1,0,Bit,3,0,0,"DM10252, X3023_ Spares",Inputs36,True,Input
-192,192,X3024_ Spares,1,40252,1,0,Bit,4,0,0,"DM10252, X3024_ Spares",Inputs37,True,Input
-193,193,X3025_ Spares,1,40252,1,0,Bit,5,0,0,"DM10252, X3025_ Spares",Inputs38,True,Input
-194,194,X3026_ Spares,1,40252,1,0,Bit,6,0,0,"DM10252, X3026_ Spares",Inputs39,True,Input
-195,195,X3027_ Spares,1,40252,1,0,Bit,7,0,0,"DM10252, X3027_ Spares",Inputs40,True,Input
-196,196,X3028_ Spares,1,40252,1,0,Bit,8,0,0,"DM10252, X3028_ Spares",Inputs41,True,Input
-197,197,X3029_ Spares,1,40252,1,0,Bit,9,0,0,"DM10252, X3029_ Spares",Inputs42,True,Input
-198,198,X302A_ DRS_SE,1,40252,1,0,Bit,10,0,0,"DM10252, X302A_ Discharge Requirements Signal (Sub-Engineering)",Inputs43,True,Input
-199,199,X302A_ DRS_SE,1,40252,1,0,Bit,11,0,0,"DM10252, X302A_ Discharge Requirements Signal (Sub-Engineering)",Inputs44,True,Input
-200,200,X302C_ Spares,1,40252,1,0,Bit,12,0,0,"DM10252, X302C_ Spares",Inputs45,True,Input
-201,201,X302D_ Spares,1,40252,1,0,Bit,13,0,0,"DM10252, X302D_ Spares",Inputs46,True,Input
-202,202,X302E_ Spares,1,40252,1,0,Bit,14,0,0,"DM10252, X302E_ Spares",Inputs47,True,Input
-203,203,X302F_ Spares,1,40252,1,0,Bit,15,0,0,"DM10252, X302F_ Spares",Inputs48,True,Input
-204,204,IO_INPUT49,1,40253,1,0,Bit,0,0,0,"DM10253, ",Inputs49,True,Input
-205,205,IO_INPUT50,1,40253,1,0,Bit,1,0,0,"DM10253, ",Inputs50,True,Input
-206,206,IO_INPUT51,1,40253,1,0,Bit,2,0,0,"DM10253, ",Inputs51,True,Input
-207,207,IO_INPUT52,1,40253,1,0,Bit,3,0,0,"DM10253, ",Inputs52,True,Input
-208,208,IO_INPUT53,1,40253,1,0,Bit,4,0,0,"DM10253, ",Inputs53,True,Input
-209,209,IO_INPUT54,1,40253,1,0,Bit,5,0,0,"DM10253, ",Inputs54,True,Input
-210,210,IO_INPUT55,1,40253,1,0,Bit,6,0,0,"DM10253, ",Inputs55,True,Input
-211,211,IO_INPUT56,1,40253,1,0,Bit,7,0,0,"DM10253, ",Inputs56,True,Input
-212,212,IO_INPUT57,1,40253,1,0,Bit,8,0,0,"DM10253, ",Inputs57,True,Input
-213,213,IO_INPUT58,1,40253,1,0,Bit,9,0,0,"DM10253, ",Inputs58,True,Input
-214,214,IO_INPUT59,1,40253,1,0,Bit,10,0,0,"DM10253, ",Inputs59,True,Input
-215,215,IO_INPUT60,1,40253,1,0,Bit,11,0,0,"DM10253, ",Inputs60,True,Input
-216,216,IO_INPUT61,1,40253,1,0,Bit,12,0,0,"DM10253, ",Inputs61,True,Input
-217,217,IO_INPUT62,1,40253,1,0,Bit,13,0,0,"DM10253, ",Inputs62,True,Input
-218,218,IO_INPUT63,1,40253,1,0,Bit,14,0,0,"DM10253, ",Inputs63,True,Input
-219,219,IO_INPUT64,1,40253,1,0,Bit,15,0,0,"DM10253, ",Inputs64,True,Input
-220,220,IO_INPUT65,1,40254,1,0,Bit,0,0,0,"DM10254, ",Inputs65,True,Input
-221,221,IO_INPUT66,1,40254,1,0,Bit,1,0,0,"DM10254, ",Inputs66,True,Input
-222,222,IO_INPUT67,1,40254,1,0,Bit,2,0,0,"DM10254, ",Inputs67,True,Input
-223,223,IO_INPUT68,1,40254,1,0,Bit,3,0,0,"DM10254, ",Inputs68,True,Input
-224,224,IO_INPUT69,1,40254,1,0,Bit,4,0,0,"DM10254, ",Inputs69,True,Input
-225,225,IO_INPUT70,1,40254,1,0,Bit,5,0,0,"DM10254, ",Inputs70,True,Input
-226,226,IO_INPUT71,1,40254,1,0,Bit,6,0,0,"DM10254, ",Inputs71,True,Input
-227,227,IO_INPUT72,1,40254,1,0,Bit,7,0,0,"DM10254, ",Inputs72,True,Input
-228,228,IO_INPUT73,1,40254,1,0,Bit,8,0,0,"DM10254, ",Inputs73,True,Input
-229,229,IO_INPUT74,1,40254,1,0,Bit,9,0,0,"DM10254, ",Inputs74,True,Input
-230,230,IO_INPUT75,1,40254,1,0,Bit,10,0,0,"DM10254, ",Inputs75,True,Input
-231,231,IO_INPUT76,1,40254,1,0,Bit,11,0,0,"DM10254, ",Inputs76,True,Input
-232,232,IO_INPUT77,1,40254,1,0,Bit,12,0,0,"DM10254, ",Inputs77,True,Input
-233,233,IO_INPUT78,1,40254,1,0,Bit,13,0,0,"DM10254, ",Inputs78,True,Input
-234,234,IO_INPUT79,1,40254,1,0,Bit,14,0,0,"DM10254, ",Inputs79,True,Input
-235,235,IO_INPUT80,1,40254,1,0,Bit,15,0,0,"DM10254, ",Inputs80,True,Input
-236,236,IO_INPUT81,1,40255,1,0,Bit,0,0,0,"DM10255, ",Inputs81,True,Input
-237,237,IO_INPUT82,1,40255,1,0,Bit,1,0,0,"DM10255, ",Inputs82,True,Input
-238,238,IO_INPUT83,1,40255,1,0,Bit,2,0,0,"DM10255, ",Inputs83,True,Input
-239,239,IO_INPUT84,1,40255,1,0,Bit,3,0,0,"DM10255, ",Inputs84,True,Input
-240,240,IO_INPUT85,1,40255,1,0,Bit,4,0,0,"DM10255, ",Inputs85,True,Input
-241,241,IO_INPUT86,1,40255,1,0,Bit,5,0,0,"DM10255, ",Inputs86,True,Input
-242,242,IO_INPUT87,1,40255,1,0,Bit,6,0,0,"DM10255, ",Inputs87,True,Input
-243,243,IO_INPUT88,1,40255,1,0,Bit,7,0,0,"DM10255, ",Inputs88,True,Input
-244,244,IO_INPUT89,1,40255,1,0,Bit,8,0,0,"DM10255, ",Inputs89,True,Input
-245,245,IO_INPUT90,1,40255,1,0,Bit,9,0,0,"DM10255, ",Inputs90,True,Input
-246,246,IO_INPUT91,1,40255,1,0,Bit,10,0,0,"DM10255, ",Inputs91,True,Input
-247,247,IO_INPUT92,1,40255,1,0,Bit,11,0,0,"DM10255, ",Inputs92,True,Input
-248,248,IO_INPUT93,1,40255,1,0,Bit,12,0,0,"DM10255, ",Inputs93,True,Input
-249,249,IO_INPUT94,1,40255,1,0,Bit,13,0,0,"DM10255, ",Inputs94,True,Input
-250,250,IO_INPUT95,1,40255,1,0,Bit,14,0,0,"DM10255, ",Inputs95,True,Input
-251,251,IO_INPUT96,1,40255,1,0,Bit,15,0,0,"DM10255, ",Inputs96,True,Input
-252,252,IO_INPUT97,1,40256,1,0,Bit,0,0,0,"DM10256, ",Inputs97,True,Input
-253,253,IO_INPUT98,1,40256,1,0,Bit,1,0,0,"DM10256, ",Inputs98,True,Input
-254,254,IO_INPUT99,1,40256,1,0,Bit,2,0,0,"DM10256, ",Inputs99,True,Input
-255,255,IO_INPUT100,1,40256,1,0,Bit,3,0,0,"DM10256, ",Inputs100,True,Input
-256,256,IO_INPUT101,1,40256,1,0,Bit,4,0,0,"DM10256, ",Inputs101,True,Input
-257,257,IO_INPUT102,1,40256,1,0,Bit,5,0,0,"DM10256, ",Inputs102,True,Input
-258,258,IO_INPUT103,1,40256,1,0,Bit,6,0,0,"DM10256, ",Inputs103,True,Input
-259,259,IO_INPUT104,1,40256,1,0,Bit,7,0,0,"DM10256, ",Inputs104,True,Input
-260,260,IO_INPUT105,1,40256,1,0,Bit,8,0,0,"DM10256, ",Inputs105,True,Input
-261,261,IO_INPUT106,1,40256,1,0,Bit,9,0,0,"DM10256, ",Inputs106,True,Input
-262,262,IO_INPUT107,1,40256,1,0,Bit,10,0,0,"DM10256, ",Inputs107,True,Input
-263,263,IO_INPUT108,1,40256,1,0,Bit,11,0,0,"DM10256, ",Inputs108,True,Input
-264,264,IO_INPUT109,1,40256,1,0,Bit,12,0,0,"DM10256, ",Inputs109,True,Input
-265,265,IO_INPUT110,1,40256,1,0,Bit,13,0,0,"DM10256, ",Inputs110,True,Input
-266,266,IO_INPUT111,1,40256,1,0,Bit,14,0,0,"DM10256, ",Inputs111,True,Input
-267,267,IO_INPUT112,1,40256,1,0,Bit,15,0,0,"DM10256, ",Inputs112,True,Input
-268,268,IO_INPUT113,1,40257,1,0,Bit,0,0,0,"DM10257, ",Inputs113,True,Input
-269,269,IO_INPUT114,1,40257,1,0,Bit,1,0,0,"DM10257, ",Inputs114,True,Input
-270,270,IO_INPUT115,1,40257,1,0,Bit,2,0,0,"DM10257, ",Inputs115,True,Input
-271,271,IO_INPUT116,1,40257,1,0,Bit,3,0,0,"DM10257, ",Inputs116,True,Input
-272,272,IO_INPUT117,1,40257,1,0,Bit,4,0,0,"DM10257, ",Inputs117,True,Input
-273,273,IO_INPUT118,1,40257,1,0,Bit,5,0,0,"DM10257, ",Inputs118,True,Input
-274,274,IO_INPUT119,1,40257,1,0,Bit,6,0,0,"DM10257, ",Inputs119,True,Input
-275,275,IO_INPUT120,1,40257,1,0,Bit,7,0,0,"DM10257, ",Inputs120,True,Input
-276,276,IO_INPUT121,1,40257,1,0,Bit,8,0,0,"DM10257, ",Inputs121,True,Input
-277,277,IO_INPUT122,1,40257,1,0,Bit,9,0,0,"DM10257, ",Inputs122,True,Input
-278,278,IO_INPUT123,1,40257,1,0,Bit,10,0,0,"DM10257, ",Inputs123,True,Input
-279,279,IO_INPUT124,1,40257,1,0,Bit,11,0,0,"DM10257, ",Inputs124,True,Input
-280,280,IO_INPUT125,1,40257,1,0,Bit,12,0,0,"DM10257, ",Inputs125,True,Input
-281,281,IO_INPUT126,1,40257,1,0,Bit,13,0,0,"DM10257, ",Inputs126,True,Input
-282,282,IO_INPUT127,1,40257,1,0,Bit,14,0,0,"DM10257, ",Inputs127,True,Input
-283,283,IO_INPUT128,1,40257,1,0,Bit,15,0,0,"DM10257, ",Inputs128,True,Input
-284,284,IO_INPUT129,1,40258,1,0,Bit,0,0,0,"DM10258, ",Inputs129,True,Input
-285,285,IO_INPUT130,1,40258,1,0,Bit,1,0,0,"DM10258, ",Inputs130,True,Input
-286,286,IO_INPUT131,1,40258,1,0,Bit,2,0,0,"DM10258, ",Inputs131,True,Input
-287,287,IO_INPUT132,1,40258,1,0,Bit,3,0,0,"DM10258, ",Inputs132,True,Input
-288,288,IO_INPUT133,1,40258,1,0,Bit,4,0,0,"DM10258, ",Inputs133,True,Input
-289,289,IO_INPUT134,1,40258,1,0,Bit,5,0,0,"DM10258, ",Inputs134,True,Input
-290,290,IO_INPUT135,1,40258,1,0,Bit,6,0,0,"DM10258, ",Inputs135,True,Input
-291,291,IO_INPUT136,1,40258,1,0,Bit,7,0,0,"DM10258, ",Inputs136,True,Input
-292,292,IO_INPUT137,1,40258,1,0,Bit,8,0,0,"DM10258, ",Inputs137,True,Input
-293,293,IO_INPUT138,1,40258,1,0,Bit,9,0,0,"DM10258, ",Inputs138,True,Input
-294,294,IO_INPUT139,1,40258,1,0,Bit,10,0,0,"DM10258, ",Inputs139,True,Input
-295,295,IO_INPUT140,1,40258,1,0,Bit,11,0,0,"DM10258, ",Inputs140,True,Input
-296,296,IO_INPUT141,1,40258,1,0,Bit,12,0,0,"DM10258, ",Inputs141,True,Input
-297,297,IO_INPUT142,1,40258,1,0,Bit,13,0,0,"DM10258, ",Inputs142,True,Input
-298,298,IO_INPUT143,1,40258,1,0,Bit,14,0,0,"DM10258, ",Inputs143,True,Input
-299,299,IO_INPUT144,1,40258,1,0,Bit,15,0,0,"DM10258, ",Inputs144,True,Input
-300,300,IO_INPUT145,1,40259,1,0,Bit,0,0,0,"DM10259, ",Inputs145,True,Input
-301,301,IO_INPUT146,1,40259,1,0,Bit,1,0,0,"DM10259, ",Inputs146,True,Input
-302,302,IO_INPUT147,1,40259,1,0,Bit,2,0,0,"DM10259, ",Inputs147,True,Input
-303,303,IO_INPUT148,1,40259,1,0,Bit,3,0,0,"DM10259, ",Inputs148,True,Input
-304,304,IO_INPUT149,1,40259,1,0,Bit,4,0,0,"DM10259, ",Inputs149,True,Input
-305,305,IO_INPUT150,1,40259,1,0,Bit,5,0,0,"DM10259, ",Inputs150,True,Input
-306,306,IO_INPUT151,1,40259,1,0,Bit,6,0,0,"DM10259, ",Inputs151,True,Input
-307,307,IO_INPUT152,1,40259,1,0,Bit,7,0,0,"DM10259, ",Inputs152,True,Input
-308,308,IO_INPUT153,1,40259,1,0,Bit,8,0,0,"DM10259, ",Inputs153,True,Input
-309,309,IO_INPUT154,1,40259,1,0,Bit,9,0,0,"DM10259, ",Inputs154,True,Input
-310,310,IO_INPUT155,1,40259,1,0,Bit,10,0,0,"DM10259, ",Inputs155,True,Input
-311,311,IO_INPUT156,1,40259,1,0,Bit,11,0,0,"DM10259, ",Inputs156,True,Input
-312,312,IO_INPUT157,1,40259,1,0,Bit,12,0,0,"DM10259, ",Inputs157,True,Input
-313,313,IO_INPUT158,1,40259,1,0,Bit,13,0,0,"DM10259, ",Inputs158,True,Input
-314,314,IO_INPUT159,1,40259,1,0,Bit,14,0,0,"DM10259, ",Inputs159,True,Input
-315,315,IO_INPUT160,1,40259,1,0,Bit,15,0,0,"DM10259, ",Inputs160,True,Input
-316,316,Y3030_TL_SOL1,1,40260,1,0,Bit,0,0,0,"DM10260, Y3030_ tray lift SOL1",Outputs 1,True,Output
-317,317,Y3031_PC_SOL1_2,1,40260,1,0,Bit,1,0,0,"DM10260, Y3031_ positioning cylinder SOL1_2",Outputs 2,True,Output
-318,318,Y3032_SS,1,40260,1,0,Bit,2,0,0,"DM10260, Y3032_ Solenoid Spare",Outputs 3,True,Output
-319,319,Y3033_SS,1,40260,1,0,Bit,3,0,0,"DM10260, Y3033_ Solenoid Spare",Outputs 4,True,Output
-320,320,Y3034_PLCReady,1,40260,1,0,Bit,4,0,0,"DM10260, Y3034_PLC ready",Outputs 5,True,Output
-321,321,Y3035_FLCS_RY1,1,40260,1,0,Bit,5,0,0,"DM10260, Y3035_fluorescent lamp control signal RY1",Outputs 6,True,Output
-322,322,Y3036_ FLON_PL1,1,40260,1,0,Bit,6,0,0,"DM10260, Y3036_ fluorescent lamp ON PL1",Outputs 7,True,Output
-323,323,Y3037_ Spares,1,40260,1,0,Bit,7,0,0,"DM10260, Y3037_ Spares",Outputs 8,True,Output
-324,324,Y3038_ Spares,1,40260,1,0,Bit,8,0,0,"DM10260, Y3038_ Spares",Outputs 9,True,Output
-325,325,Y3039_ Spares,1,40260,1,0,Bit,9,0,0,"DM10260, Y3039_ Spares",Outputs 10,True,Output
-326,326,Y303A_ PR_PL2,1,40260,1,0,Bit,10,0,0,"DM10260, Y303A_ Patrite Red PL2",Outputs 11,True,Output
-327,327,Y303B_ PY_PL3,1,40260,1,0,Bit,11,0,0,"DM10260, Y303B_ Patrite Yellow PL3",Outputs 12,True,Output
-328,328,Y303C_PG_PL4,1,40260,1,0,Bit,12,0,0,"DM10260, Y303C_ Patrilite Green PL4",Outputs 13,True,Output
-329,329,Y303D_PA_BZ1,1,40260,1,0,Bit,13,0,0,"DM10260, Y303D_ Patrolite Alarm BZ1",Outputs 14,True,Output
-330,330,Y303E_ Spares,1,40260,1,0,Bit,14,0,0,"DM10260, Y303E_ Spares",Outputs 15,True,Output
-331,331,Y304E_ Spares,1,40260,1,0,Bit,15,0,0,"DM10260, Y304E_ Spares",Outputs 16,True,Output
-332,332,Y3040_SM1_FWD,1,40261,1,0,Bit,0,0,0,"DM10261, Y3040_ stepper motor1 FWD",Outputs 17,True,Output
-333,333,Y3041_SM1_RVS,1,40261,1,0,Bit,1,0,0,"DM10261, Y3041_ Stepper Motor1 RVS",Outputs 18,True,Output
-334,334,Y3042_SM1_AWO,1,40261,1,0,Bit,2,0,0,"DM10261, Y3042_ Stepper Motor1 AWO",Outputs 19,True,Output
-335,335,Y3043_SM1_M0,1,40261,1,0,Bit,3,0,0,"DM10261, Y3043_ stepper motor 1 M0",Outputs 20,True,Output
-336,336,Y3044_SM2_FWD,1,40261,1,0,Bit,4,0,0,"DM10261, Y3044_ stepper motor2 FWD",Outputs 21,True,Output
-337,337,Y3045_SM2_RVS,1,40261,1,0,Bit,5,0,0,"DM10261, Y3045_ Stepper Motor 2 RVS",Outputs 22,True,Output
-338,338,Y3046_SM2_AWO,1,40261,1,0,Bit,6,0,0,"DM10261, Y3046_ stepper motor2 AWO",Outputs 23,True,Output
-339,339,Y3047_SM2_M0,1,40261,1,0,Bit,7,0,0,"DM10261, Y3047_ stepper motor 2 M0",Outputs 24,True,Output
-340,340,Y3048_ Spares,1,40261,1,0,Bit,8,0,0,"DM10261, Y3048_ Spares",Outputs 25,True,Output
-341,341,Y3049_ Spares,1,40261,1,0,Bit,9,0,0,"DM10261, Y3049_ Spares",Outputs 26,True,Output
-342,342,Y304A_PDSSP,1,40261,1,0,Bit,10,0,0,"DM10261, Y304A_ Possible Discharge Signal (Secondary Process)",Outputs 27,True,Output
-343,343,Y304B_IRSPE,1,40261,1,0,Bit,11,0,0,"DM10261, Y304B_ input requirement signal (pre-engineering)",Outputs 28,True,Output
-344,344,Y304C_ Spares,1,40261,1,0,Bit,12,0,0,"DM10261, Y304C_ Spares",Outputs 29,True,Output
-345,345,Y304D_ Spares,1,40261,1,0,Bit,13,0,0,"DM10261, Y304D_ Spares",Outputs 30,True,Output
-346,346,Y304E_ Spares,1,40261,1,0,Bit,14,0,0,"DM10261, Y304E_ Spares",Outputs 31,True,Output
-347,347,Y304F_ Spares,1,40261,1,0,Bit,15,0,0,"DM10261, Y304F_ Spares",Outputs 32,True,Output
-348,348,IO_OUTPUT33,1,40262,1,0,Bit,0,0,0,"DM10262, Outputs 33",Outputs 33,True,Output
-349,349,IO_OUTPUT34,1,40262,1,0,Bit,1,0,0,"DM10262, Outputs 34",Outputs 34,True,Output
-350,350,IO_OUTPUT35,1,40262,1,0,Bit,2,0,0,"DM10262, Outputs 35",Outputs 35,True,Output
-351,351,IO_OUTPUT36,1,40262,1,0,Bit,3,0,0,"DM10262, Outputs 36",Outputs 36,True,Output
-352,352,IO_OUTPUT37,1,40262,1,0,Bit,4,0,0,"DM10262, Outputs 37",Outputs 37,True,Output
-353,353,IO_OUTPUT38,1,40262,1,0,Bit,5,0,0,"DM10262, Outputs 38",Outputs 38,True,Output
-354,354,IO_OUTPUT39,1,40262,1,0,Bit,6,0,0,"DM10262, Outputs 39",Outputs 39,True,Output
-355,355,IO_OUTPUT40,1,40262,1,0,Bit,7,0,0,"DM10262, Outputs 40",Outputs 40,True,Output
-356,356,IO_OUTPUT41,1,40262,1,0,Bit,8,0,0,"DM10262, Outputs 41",Outputs 41,True,Output
-357,357,IO_OUTPUT42,1,40262,1,0,Bit,9,0,0,"DM10262, Outputs 42",Outputs 42,True,Output
-358,358,IO_OUTPUT43,1,40262,1,0,Bit,10,0,0,"DM10262, Outputs 43",Outputs 43,True,Output
-359,359,IO_OUTPUT44,1,40262,1,0,Bit,11,0,0,"DM10262, Outputs 44",Outputs 44,True,Output
-360,360,IO_OUTPUT45,1,40262,1,0,Bit,12,0,0,"DM10262, Outputs 45",Outputs 45,True,Output
-361,361,IO_OUTPUT46,1,40262,1,0,Bit,13,0,0,"DM10262, Outputs 46",Outputs 46,True,Output
-362,362,IO_OUTPUT47,1,40262,1,0,Bit,14,0,0,"DM10262, Outputs 47",Outputs 47,True,Output
-363,363,IO_OUTPUT48,1,40262,1,0,Bit,15,0,0,"DM10262, Outputs 48",Outputs 48,True,Output
-364,364,IO_OUTPUT49,1,40263,1,0,Bit,0,0,0,"DM10263, Outputs 49",Outputs 49,True,Output
-365,365,IO_OUTPUT50,1,40263,1,0,Bit,1,0,0,"DM10263, Outputs 50",Outputs 50,True,Output
-366,366,IO_OUTPUT51,1,40263,1,0,Bit,2,0,0,"DM10263, Outputs 51",Outputs 51,True,Output
-367,367,IO_OUTPUT52,1,40263,1,0,Bit,3,0,0,"DM10263, Outputs 52",Outputs 52,True,Output
-368,368,IO_OUTPUT53,1,40263,1,0,Bit,4,0,0,"DM10263, Outputs 53",Outputs 53,True,Output
-369,369,IO_OUTPUT54,1,40263,1,0,Bit,5,0,0,"DM10263, Outputs 54",Outputs 54,True,Output
-370,370,IO_OUTPUT55,1,40263,1,0,Bit,6,0,0,"DM10263, Outputs 55",Outputs 55,True,Output
-371,371,IO_OUTPUT56,1,40263,1,0,Bit,7,0,0,"DM10263, Outputs 56",Outputs 56,True,Output
-372,372,IO_OUTPUT57,1,40263,1,0,Bit,8,0,0,"DM10263, Outputs 57",Outputs 57,True,Output
-373,373,IO_OUTPUT58,1,40263,1,0,Bit,9,0,0,"DM10263, Outputs 58",Outputs 58,True,Output
-374,374,IO_OUTPUT59,1,40263,1,0,Bit,10,0,0,"DM10263, Outputs 59",Outputs 59,True,Output
-375,375,IO_OUTPUT60,1,40263,1,0,Bit,11,0,0,"DM10263, Outputs 60",Outputs 60,True,Output
-376,376,IO_OUTPUT61,1,40263,1,0,Bit,12,0,0,"DM10263, Outputs 61",Outputs 61,True,Output
-377,377,IO_OUTPUT62,1,40263,1,0,Bit,13,0,0,"DM10263, Outputs 62",Outputs 62,True,Output
-378,378,IO_OUTPUT63,1,40263,1,0,Bit,14,0,0,"DM10263, Outputs 63",Outputs 63,True,Output
-379,379,IO_OUTPUT64,1,40263,1,0,Bit,15,0,0,"DM10263, Outputs 64",Outputs 64,True,Output
-380,380,IO_OUTPUT65,1,40264,1,0,Bit,0,0,0,"DM10264, Outputs 65",Outputs 65,True,Output
-381,381,IO_OUTPUT66,1,40264,1,0,Bit,1,0,0,"DM10264, Outputs 66",Outputs 66,True,Output
-382,382,IO_OUTPUT67,1,40264,1,0,Bit,2,0,0,"DM10264, Outputs 67",Outputs 67,True,Output
-383,383,IO_OUTPUT68,1,40264,1,0,Bit,3,0,0,"DM10264, Outputs 68",Outputs 68,True,Output
-384,384,IO_OUTPUT69,1,40264,1,0,Bit,4,0,0,"DM10264, Outputs 69",Outputs 69,True,Output
-385,385,IO_OUTPUT70,1,40264,1,0,Bit,5,0,0,"DM10264, Outputs 70",Outputs 70,True,Output
-386,386,IO_OUTPUT71,1,40264,1,0,Bit,6,0,0,"DM10264, Outputs 71",Outputs 71,True,Output
-387,387,IO_OUTPUT72,1,40264,1,0,Bit,7,0,0,"DM10264, Outputs 72",Outputs 72,True,Output
-388,388,IO_OUTPUT73,1,40264,1,0,Bit,8,0,0,"DM10264, Outputs 73",Outputs 73,True,Output
-389,389,IO_OUTPUT74,1,40264,1,0,Bit,9,0,0,"DM10264, Outputs 74",Outputs 74,True,Output
-390,390,IO_OUTPUT75,1,40264,1,0,Bit,10,0,0,"DM10264, Outputs 75",Outputs 75,True,Output
-391,391,IO_OUTPUT76,1,40264,1,0,Bit,11,0,0,"DM10264, Outputs 76",Outputs 76,True,Output
-392,392,IO_OUTPUT77,1,40264,1,0,Bit,12,0,0,"DM10264, Outputs 77",Outputs 77,True,Output
-393,393,IO_OUTPUT78,1,40264,1,0,Bit,13,0,0,"DM10264, Outputs 78",Outputs 78,True,Output
-394,394,IO_OUTPUT79,1,40264,1,0,Bit,14,0,0,"DM10264, Outputs 79",Outputs 79,True,Output
-395,395,IO_OUTPUT80,1,40264,1,0,Bit,15,0,0,"DM10264, Outputs 80",Outputs 80,True,Output
-396,396,IO_OUTPUT81,1,40265,1,0,Bit,0,0,0,"DM10265, Outputs 81",Outputs 81,True,Output
-397,397,IO_OUTPUT82,1,40265,1,0,Bit,1,0,0,"DM10265, Outputs 82",Outputs 82,True,Output
-398,398,IO_OUTPUT83,1,40265,1,0,Bit,2,0,0,"DM10265, Outputs 83",Outputs 83,True,Output
-399,399,IO_OUTPUT84,1,40265,1,0,Bit,3,0,0,"DM10265, Outputs 84",Outputs 84,True,Output
-400,400,IO_OUTPUT85,1,40265,1,0,Bit,4,0,0,"DM10265, Outputs 85",Outputs 85,True,Output
-401,401,IO_OUTPUT86,1,40265,1,0,Bit,5,0,0,"DM10265, Outputs 86",Outputs 86,True,Output
-402,402,IO_OUTPUT87,1,40265,1,0,Bit,6,0,0,"DM10265, Outputs 87",Outputs 87,True,Output
-403,403,IO_OUTPUT88,1,40265,1,0,Bit,7,0,0,"DM10265, Outputs 88",Outputs 88,True,Output
-404,404,IO_OUTPUT89,1,40265,1,0,Bit,8,0,0,"DM10265, Outputs 89",Outputs 89,True,Output
-405,405,IO_OUTPUT90,1,40265,1,0,Bit,9,0,0,"DM10265, Outputs 90",Outputs 90,True,Output
-406,406,IO_OUTPUT91,1,40265,1,0,Bit,10,0,0,"DM10265, Outputs 91",Outputs 91,True,Output
-407,407,IO_OUTPUT92,1,40265,1,0,Bit,11,0,0,"DM10265, Outputs 92",Outputs 92,True,Output
-408,408,IO_OUTPUT93,1,40265,1,0,Bit,12,0,0,"DM10265, Outputs 93",Outputs 93,True,Output
-409,409,IO_OUTPUT94,1,40265,1,0,Bit,13,0,0,"DM10265, Outputs 94",Outputs 94,True,Output
-410,410,IO_OUTPUT95,1,40265,1,0,Bit,14,0,0,"DM10265, Outputs 95",Outputs 95,True,Output
-411,411,IO_OUTPUT96,1,40265,1,0,Bit,15,0,0,"DM10265, Outputs 96",Outputs 96,True,Output
-412,412,IO_OUTPUT97,1,40266,1,0,Bit,0,0,0,"DM10266, Outputs 97",Outputs 97,True,Output
-413,413,IO_OUTPUT98,1,40266,1,0,Bit,1,0,0,"DM10266, Outputs 98",Outputs 98,True,Output
-414,414,IO_OUTPUT99,1,40266,1,0,Bit,2,0,0,"DM10266, Outputs 99",Outputs 99,True,Output
-415,415,IO_OUTPUT100,1,40266,1,0,Bit,3,0,0,"DM10266, Outputs 100",Outputs 100,True,Output
-416,416,IO_OUTPUT101,1,40266,1,0,Bit,4,0,0,"DM10266, Outputs 101",Outputs 101,True,Output
-417,417,IO_OUTPUT102,1,40266,1,0,Bit,5,0,0,"DM10266, Outputs 102",Outputs 102,True,Output
-418,418,IO_OUTPUT103,1,40266,1,0,Bit,6,0,0,"DM10266, Outputs 103",Outputs 103,True,Output
-419,419,IO_OUTPUT104,1,40266,1,0,Bit,7,0,0,"DM10266, Outputs 104",Outputs 104,True,Output
-420,420,IO_OUTPUT105,1,40266,1,0,Bit,8,0,0,"DM10266, Outputs 105",Outputs 105,True,Output
-421,421,IO_OUTPUT106,1,40266,1,0,Bit,9,0,0,"DM10266, Outputs 106",Outputs 106,True,Output
-422,422,IO_OUTPUT107,1,40266,1,0,Bit,10,0,0,"DM10266, Outputs 107",Outputs 107,True,Output
-423,423,IO_OUTPUT108,1,40266,1,0,Bit,11,0,0,"DM10266, Outputs 108",Outputs 108,True,Output
-424,424,IO_OUTPUT109,1,40266,1,0,Bit,12,0,0,"DM10266, Outputs 109",Outputs 109,True,Output
-425,425,IO_OUTPUT110,1,40266,1,0,Bit,13,0,0,"DM10266, Outputs 110",Outputs 110,True,Output
-426,426,IO_OUTPUT111,1,40266,1,0,Bit,14,0,0,"DM10266, Outputs 111",Outputs 111,True,Output
-427,427,IO_OUTPUT112,1,40266,1,0,Bit,15,0,0,"DM10266, Outputs 112",Outputs 112,True,Output
-428,428,IO_OUTPUT113,1,40267,1,0,Bit,0,0,0,"DM10267, Outputs 113",Outputs 113,True,Output
-429,429,IO_OUTPUT114,1,40267,1,0,Bit,1,0,0,"DM10267, Outputs 114",Outputs 114,True,Output
-430,430,IO_OUTPUT115,1,40267,1,0,Bit,2,0,0,"DM10267, Outputs 115",Outputs 115,True,Output
-431,431,IO_OUTPUT116,1,40267,1,0,Bit,3,0,0,"DM10267, Outputs 116",Outputs 116,True,Output
-432,432,IO_OUTPUT117,1,40267,1,0,Bit,4,0,0,"DM10267, Outputs 117",Outputs 117,True,Output
-433,433,IO_OUTPUT118,1,40267,1,0,Bit,5,0,0,"DM10267, Outputs 118",Outputs 118,True,Output
-434,434,IO_OUTPUT119,1,40267,1,0,Bit,6,0,0,"DM10267, Outputs 119",Outputs 119,True,Output
-435,435,IO_OUTPUT120,1,40267,1,0,Bit,7,0,0,"DM10267, Outputs 120",Outputs 120,True,Output
-436,436,IO_OUTPUT121,1,40267,1,0,Bit,8,0,0,"DM10267, Outputs 121",Outputs 121,True,Output
-437,437,IO_OUTPUT122,1,40267,1,0,Bit,9,0,0,"DM10267, Outputs 122",Outputs 122,True,Output
-438,438,IO_OUTPUT123,1,40267,1,0,Bit,10,0,0,"DM10267, Outputs 123",Outputs 123,True,Output
-439,439,IO_OUTPUT124,1,40267,1,0,Bit,11,0,0,"DM10267, Outputs 124",Outputs 124,True,Output
-440,440,IO_OUTPUT125,1,40267,1,0,Bit,12,0,0,"DM10267, Outputs 125",Outputs 125,True,Output
-441,441,IO_OUTPUT126,1,40267,1,0,Bit,13,0,0,"DM10267, Outputs 126",Outputs 126,True,Output
-442,442,IO_OUTPUT127,1,40267,1,0,Bit,14,0,0,"DM10267, Outputs 127",Outputs 127,True,Output
-443,443,IO_OUTPUT128,1,40267,1,0,Bit,15,0,0,"DM10267, Outputs 128",Outputs 128,True,Output
-444,444,IO_OUTPUT129,1,40268,1,0,Bit,0,0,0,"DM10268, Outputs 129",Outputs 129,True,Output
-445,445,IO_OUTPUT130,1,40268,1,0,Bit,1,0,0,"DM10268, Outputs 130",Outputs 130,True,Output
-446,446,IO_OUTPUT131,1,40268,1,0,Bit,2,0,0,"DM10268, Outputs 131",Outputs 131,True,Output
-447,447,IO_OUTPUT132,1,40268,1,0,Bit,3,0,0,"DM10268, Outputs 132",Outputs 132,True,Output
-448,448,IO_OUTPUT133,1,40268,1,0,Bit,4,0,0,"DM10268, Outputs 133",Outputs 133,True,Output
-449,449,IO_OUTPUT134,1,40268,1,0,Bit,5,0,0,"DM10268, Outputs 134",Outputs 134,True,Output
-450,450,IO_OUTPUT135,1,40268,1,0,Bit,6,0,0,"DM10268, Outputs 135",Outputs 135,True,Output
-451,451,IO_OUTPUT136,1,40268,1,0,Bit,7,0,0,"DM10268, Outputs 136",Outputs 136,True,Output
-452,452,IO_OUTPUT137,1,40268,1,0,Bit,8,0,0,"DM10268, Outputs 137",Outputs 137,True,Output
-453,453,IO_OUTPUT138,1,40268,1,0,Bit,9,0,0,"DM10268, Outputs 138",Outputs 138,True,Output
-454,454,IO_OUTPUT139,1,40268,1,0,Bit,10,0,0,"DM10268, Outputs 139",Outputs 139,True,Output
-455,455,IO_OUTPUT140,1,40268,1,0,Bit,11,0,0,"DM10268, Outputs 140",Outputs 140,True,Output
-456,456,IO_OUTPUT141,1,40268,1,0,Bit,12,0,0,"DM10268, Outputs 141",Outputs 141,True,Output
-457,457,IO_OUTPUT142,1,40268,1,0,Bit,13,0,0,"DM10268, Outputs 142",Outputs 142,True,Output
-458,458,IO_OUTPUT143,1,40268,1,0,Bit,14,0,0,"DM10268, Outputs 143",Outputs 143,True,Output
-459,459,IO_OUTPUT144,1,40268,1,0,Bit,15,0,0,"DM10268, Outputs 144",Outputs 144,True,Output
-460,460,IO_OUTPUT145,1,40269,1,0,Bit,0,0,0,"DM10269, Outputs 145",Outputs 145,True,Output
-461,461,IO_OUTPUT146,1,40269,1,0,Bit,1,0,0,"DM10269, Outputs 146",Outputs 146,True,Output
-462,462,IO_OUTPUT147,1,40269,1,0,Bit,2,0,0,"DM10269, Outputs 147",Outputs 147,True,Output
-463,463,IO_OUTPUT148,1,40269,1,0,Bit,3,0,0,"DM10269, Outputs 148",Outputs 148,True,Output
-464,464,IO_OUTPUT149,1,40269,1,0,Bit,4,0,0,"DM10269, Outputs 149",Outputs 149,True,Output
-465,465,IO_OUTPUT150,1,40269,1,0,Bit,5,0,0,"DM10269, Outputs 150",Outputs 150,True,Output
-466,466,IO_OUTPUT151,1,40269,1,0,Bit,6,0,0,"DM10269, Outputs 151",Outputs 151,True,Output
-467,467,IO_OUTPUT152,1,40269,1,0,Bit,7,0,0,"DM10269, Outputs 152",Outputs 152,True,Output
-468,468,IO_OUTPUT153,1,40269,1,0,Bit,8,0,0,"DM10269, Outputs 153",Outputs 153,True,Output
-469,469,IO_OUTPUT154,1,40269,1,0,Bit,9,0,0,"DM10269, Outputs 154",Outputs 154,True,Output
-470,470,IO_OUTPUT155,1,40269,1,0,Bit,10,0,0,"DM10269, Outputs 155",Outputs 155,True,Output
-471,471,IO_OUTPUT156,1,40269,1,0,Bit,11,0,0,"DM10269, Outputs 156",Outputs 156,True,Output
-472,472,IO_OUTPUT157,1,40269,1,0,Bit,12,0,0,"DM10269, Outputs 157",Outputs 157,True,Output
-473,473,IO_OUTPUT158,1,40269,1,0,Bit,13,0,0,"DM10269, Outputs 158",Outputs 158,True,Output
-474,474,IO_OUTPUT159,1,40269,1,0,Bit,14,0,0,"DM10269, Outputs 159",Outputs 159,True,Output
-475,475,IO_OUTPUT160,1,40269,1,0,Bit,15,0,0,"DM10269, Outputs 160",Outputs 160,True,Output
-476,476,SYS_DATA_A1,1,40000,1,0,Bit,1,0,0,"DM10000, (System Data A1)","Pulse PLC to IPC, Time adjustment start signalWhen time adjustment is required, set to 0?1Receive by polling every 5 seconds and store each data",True,None
-477,477,CD_DATA_A2,1,40050,1,0,Bit,1,0,0,"DM10050, Auto Run Condition Validation Signal",(Control Data A2),True,None
-478,478,CD_DATA_A3,1,40050,1,0,Bit,2,0,0,"DM10050, Dry Run Condition Validation Signal",(Control Data A3),True,None
-479,479,CD_DATA_A4,1,40050,1,0,Bit,3,0,0,"DM10050, Cycle Stop Condition Validation Signal",(Control Data A4),True,None
-480,480,CD_DATA_A5,1,40050,1,0,Bit,4,0,0,"DM10050, Mass return to origin, activation conditions established, signal",(Control Data A5),True,None
-481,481,CD_DATA_A6,1,40050,1,0,Bit,5,0,0,"DM10050, Auto Run Launching",(Control Data A6),True,None
-482,482,CD_DATA_A7,1,40050,1,0,Bit,6,0,0,"DM10050, Dry Run Launching",(Control Data A7),True,None
-483,483,CD_DATA_A8,1,40050,1,0,Bit,7,0,0,"DM10050, Cycle Stop Activating",(Control Data A8),True,None
-484,484,CD_DATA_A9,1,40050,1,0,Bit,8,0,0,"DM10050, Mass return to origin Activation",(Control Data A9),True,None
-485,485,CD_DATA_A10,1,40051,1,0,Bit,0,0,0,Ready to Drive ON,DM10051 (Control Data A10),True,None
-486,486,CD_DATA_A11,1,40051,1,0,Bit,1,0,0,Main air pressure sensor ON,DM10051 (Control Data A11),True,None
-487,487,CD_DATA_A12,1,40051,1,0,Bit,2,0,0,Servo motor 1 (X axis) Ready,DM10051 (Control Data A12),True,None
-488,488,CD_DATA_A13,1,40051,1,0,Bit,3,0,0,Servo motor 2 (Y axis) Ready,DM10051 (Control Data A13),True,None
-489,489,CD_DATA_A14,1,40051,1,0,Bit,4,0,0,Servo motor 1 (X axis) origin position,DM10051 (Control Data A14),True,None
-490,490,CD_DATA_A15,1,40051,1,0,Bit,5,0,0,Servo motor 2 (Y axis) origin position,DM10051 (Control Data A15),True,None
-491,491,CD_DATA_A16,1,40051,1,0,Bit,6,0,0,Conveyor ready,DM10051 (Control Data A16),True,None
-492,492,CD_DATA_A17,1,40051,1,0,Bit,7,0,0,Transport conveyor stopped,DM10051 (Control Data A17),True,None
-493,493,CD_DATA_A18,1,40051,1,0,Bit,8,0,0,Tray lift origin,DM10051 (Control Data A18),True,None
-494,494,CD_DATA_A19,1,40051,1,0,Bit,9,0,0,Positioning cylinder origin,DM10051 (Control Data A19),True,None
-495,495,CD_DATA_A20,1,40051,1,0,Bit,10,0,0,"DM10051, Startup Condition 11",(Control Data A20),True,None
-496,496,CD_DATA_A21,1,40051,1,0,Bit,11,0,0,"DM10051, Startup Condition 12",(Control Data A21),True,None
-497,497,CD_DATA_A22,1,40051,1,0,Bit,12,0,0,"DM10051, Startup Condition 13",(Control Data A22),True,None
-498,498,CD_DATA_A23,1,40051,1,0,Bit,13,0,0,"DM10051, Startup Condition 14",(Control Data A23),True,None
-499,499,CD_DATA_A24,1,40051,1,0,Bit,14,0,0,"DM10051, Startup Condition 15",(Control Data A24),True,None
-500,500,CD_DATA_A25,1,40051,1,0,Bit,15,0,0,"DM10051, Startup Condition 16",(Control Data A25),True,None
-501,501,CTL_EXTINT_DATAIN,1,40059,1,0,Bit,2,0,0,DM10059,After mapping is complete   the IPC sends a confirmation signal to the PLC,True,None
-502,502,CD_DATA_B6,1,40056,1,0,UInt16,0,0,0,D10056,All Cavity  Status (OK_NG),True,None
-503,503,SYS_DATA_READ_B2,1,40004,1,0,UInt16,0,0,0,"DM10004, System Data READ B2","Yearly DataStore year data in UINT format (e.g., 2025,2026)When the time storage completion signal reaches 0?1, check the IN data on the PLC",True,None
-504,504,SYS_DATA_READ_B3,1,40005,1,0,UInt16,0,0,0,"DM10005, System Data READ B3","Monthly dataStore monthly data in UINT format (e.g., 1~12)When the time storage completion signal reaches 0?1, check the IN data on the PLC",True,None
-505,505,SYS_DATA_READ_B4,1,40006,1,0,UInt16,0,0,0,"DM10006, System Data READ B4","Daily DataStore day data in UINT format (e.g., 1~31)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",True,None
-506,506,SYS_DATA_READ_B5,1,40007,1,0,UInt16,0,0,0,"DM10007, System Data READ B5","Time DataStore time data in UINT format (e.g., 0~24)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",True,None
-507,507,SYS_DATA_READ_B6,1,40008,1,0,UInt16,0,0,0,"DM10008, System Data READ B6","Minute DataStore minute data in UINT format (e.g., 0~59)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",True,None
-508,508,SYS_DATA_READ_B7,1,40009,1,0,UInt16,0,0,0,"DM10009, System Data READ B7","Seconds DataStore second data in UINT format (e.g., 0~59)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",True,None
-509,509,Manual B12,1,40225,1,0,Bit,11,0,0,DM10225,X origin,True,None
-510,510,Manual B16,1,40225,1,0,Bit,15,0,0,DM10225,Y origin,True,None
-511,511,CD_DATA_A26,1,40050,1,0,Bit,9,0,0,DM10050,Cycle Squence Start and End,True,None
-512,512,CD_DATA_B26,1,40059,1,0,Bit,0,0,0,DM10059,Reset Oee Params,True,None
-513,513,CD_DATA_A27,1,40054,1,0,Bit,0,0,0,DM10054,Reset ackOee Params,True,None
-514,514,CD_DATA_B27,1,40059,1,0,Bit,1,0,0,DM10059,Reverse Converyor Direct,True,None
-515,515,CD_DATA_A28,1,40054,1,0,Bit,1,0,0,DM10054,Reverse Ack Converyor Direct,True,None
-516,516,PD_DATA_B516,1,40600,2,0,Float,0,0,0,"DM10600, ",,True,None
-517,517,PD_DATA_B517,1,40602,2,0,Float,0,0,0,"DM10602, ",,True,None
-518,518,PD_DATA_B518,1,40604,2,0,Float,0,0,0,"DM10604, ",,True,None
-519,519,PD_DATA_B519,1,40606,2,0,Float,0,0,0,"DM10606, ",,True,None
-520,520,PD_DATA_B520,1,40608,2,0,Float,0,0,0,"DM10608, ",,True,None
-521,521,PD_DATA_B521,1,40610,2,0,Float,0,0,0,"DM10610, ",,True,None
-522,522,SYS_DATA_B8,1,40015,1,0,Bit,2,0,0,DM10015,Mac Mini Not Connected,True,None
-523,523,PD_DATA_A516,1,40430,2,0,Float,0,0,0,"DM10430, ",,True,None
-524,524,PD_DATA_A517,1,40432,2,0,Float,0,0,0,"DM10432, ",,True,None
-525,525,PD_DATA_A518,1,40434,2,0,Float,0,0,0,"DM10434, ",,True,None
-526,526,PD_DATA_A519,1,40436,2,0,Float,0,0,0,"DM10436, ",,True,None
-527,527,PD_DATA_A520,1,40438,2,0,Float,0,0,0,"DM10438, ",,True,None
-528,528,PD_DATA_A521,1,40440,2,0,Float,0,0,0,"DM10440, ",,True,None
-529,529,SYS_DATA_B8,1,40301,1,0,Bit,0,0,0,DM10301,CCD Transfer Start,True,None
-530,530,SYS_DATA_SEQ_1,1,40413,1,0,Int16,0,0,0,DM10413,Sqeucne for Cavity 1,True,None
-531,531,SYS_DATA_SEQ_2,1,40414,1,0,Int16,0,0,0,DM10414,Sqeucne for Cavity 2,True,None
-532,532,SYS_DATA_SEQ_3,1,40415,1,0,Int16,0,0,0,DM10415,Sqeucne for Cavity 3,True,None
-533,533,SYS_DATA_SEQ_4,1,40416,1,0,Int16,0,0,0,DM10416,Sqeucne for Cavity 4,True,None
-534,534,SYS_DATA_SEQ_5,1,40417,1,0,Int16,0,0,0,DM10417,Sqeucne for Cavity 5,True,None
-535,535,SYS_DATA_SEQ_6,1,40418,1,0,Int16,0,0,0,DM10418,Sqeucne for Cavity 6,True,None
-536,536,SYS_DATA_SEQ_7,1,40419,1,0,Int16,0,0,0,DM10419,Sqeucne for Cavity 7,True,None
-537,537,SYS_DATA_SEQ_8,1,40420,1,0,Int16,0,0,0,DM10420,Sqeucne for Cavity 8,True,None
-538,538,SYS_DATA_SEQ_9,1,40421,1,0,Int16,0,0,0,DM10421,Sqeucne for Cavity 9,True,None
-539,539,SYS_DATA_SEQ_10,1,40422,1,0,Int16,0,0,0,DM10422,Sqeucne for Cavity 10,True,None
-540,540,SYS_DATA_SEQ_11,1,40423,1,0,Int16,0,0,0,DM10423,Sqeucne for Cavity 11,True,None
-541,541,SYS_DATA_SEQ_12,1,40424,1,0,Int16,0,0,0,DM10424,Sqeucne for Cavity 12,True,None
-542,542,Control_Data_B10,1,40057,1,0,UInt16,0,0,0,DM10057,Number of Stations,True,None
-543,543,SYS_DATA_B9,1,40480,1,0,Bit,0,0,0,DM10480,CCD Transfer Complete,True,None
+Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark,CanWrite,IOType
+1,1,CD_COM_PULSE_PLC,1,40001,1,0,Bit,0,0,0,"DM10000, Heart beat signal1","Pulse PLC to IPC, PLC?IPC Heartbeat SignalEvery 1 second, send a signal of 0?1/1?0Received by polling every 1 second / If there is no change for 3 seconds,it is considered an abnormality",TRUE,None
+2,2,CD_COM_PULSE_IPC,1,40015,1,0,Bit,0,0,0,"DM10015, Heart beat signal2","Pulse IPC to PLC, SignalEvery 1 second, send a signal of 0?1/1?0Received by polling every 1 second / If there is no change for 3 seconds, it is considered an abnormality",TRUE,None
+3,3,SYS_DATA_B1,1,40015,1,0,Bit,1,0,0,"DM10015, System Data B1","Time storage completion signalWhen time storage is complete, set it to 0?1.Always see a 0 or 1 change at scan time",TRUE,None
+4,4,SYS_DATA_B2,1,40019,1,0,UInt16,0,0,0,"DM10019, System Data B2","Yearly DataStore year data in UINT format (e.g., 2025,2026)When the time storage completion signal reaches 0?1, check the IN data on the PLC",TRUE,None
+5,5,SYS_DATA_B3,1,40020,1,0,UInt16,0,0,0,"DM10020, System Data B3","Monthly dataStore monthly data in UINT format (e.g., 1~12)When the time storage completion signal reaches 0?1, check the IN data on the PLC",TRUE,None
+6,6,SYS_DATA_B4,1,40021,1,0,UInt16,0,0,0,"DM10021, System Data B4","Daily DataStore day data in UINT format (e.g., 1~31)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",TRUE,None
+7,7,SYS_DATA_B5,1,40022,1,0,UInt16,0,0,0,"DM10022, System Data B5","Time DataStore time data in UINT format (e.g., 0~24)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",TRUE,None
+8,8,SYS_DATA_B6,1,40023,1,0,UInt16,0,0,0,"DM10023, System Data B6","Minute DataStore minute data in UINT format (e.g., 0~59)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",TRUE,None
+9,9,SYS_DATA_B7,1,40024,1,0,UInt16,0,0,0,"DM10024, System Data B7","Seconds DataStore second data in UINT format (e.g., 0~59)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",TRUE,None
+10,10,CD_DATA_A1,1,40050,1,0,Bit,0,0,0,"DM10050, Control Data A1","PLC Data Reading Command. After writing the CCD data to the DM, change the Bit to 0?1. Received by polling at 0.1 second intervals",TRUE,None
+11,11,CD_DATA_B1,1,40055,1,0,Bit,0,0,0,"DM10055, Control Data B1",Auto Run Start Signal. Create a switch to the IPC monitor and turn on the signal by pressing the switch. Recognize triggers from IPC and turn on PLC devices,TRUE,None
+12,12,CD_DATA_B2,1,40055,1,0,Bit,1,0,0,"DM10055, Control Data B2",Dry Run Start SignalCreate a switch to the IPC monitor and turn on the signal by pressing the switchRecognize triggers from IPC and turn on PLC devices,TRUE,None
+13,13,CD_DATA_B3,1,40055,1,0,Bit,2,0,0,"DM10055, Control Data B3",Cycle Stop Start SignalCreate a switch to the IPC monitor and turn on the signal by pressing the switchRecognize triggers from IPC and turn on PLC devices,TRUE,None
+14,14,CD_DATA_B4,1,40055,1,0,Bit,3,0,0,"DM10055, Control Data B4",Mass return to origin signalCreate a switch to the IPC monitor and turn on the signal by pressing the switchRecognize triggers from IPC and turn on PLC devices,TRUE,None
+15,15,CD_DATA_B5,1,40055,1,0,Bit,4,0,0,"DM10055, Control Data B5","ALL data reading completedOnce you have received all the photos from the CCD and the data from the PLC, turn on the trigger signal.Recognize triggers from IPC and turn on PLC devices",TRUE,None
+16,16,PD_DATA_2DCode,1,40500,20,0,String,0,0,0,"DM10500, Production Data B1 (2D Code)"," (string, length defined in meeting). Reserve 50 character",TRUE,None
+17,17,PD_DATA_B2,1,40520,1,0,UInt16,0,0,0,"DM10520, Production Data B2 (Judgment)","Storing data read from CCD (1????OK, 2????NG)",TRUE,None
+18,18,PD_DATA_B3,1,40522,2,0,Float,0,0,0,"DM10522, Stores data read from CCDs",Stores data read from CCDs,TRUE,None
+19,19,PD_DATA_B4,1,40524,2,0,Float,0,0,0,"DM10524, ",,TRUE,None
+20,20,PD_DATA_B5,1,40526,2,0,Float,0,0,0,"DM10526, ",,TRUE,None
+21,21,CTL_CYCLETIME_A1,1,40100,1,0,Bit,0,0,0,"DM10100, Cycle Time A1","Signal PLC to IPC, 1 cycle complete signal",TRUE,None
+22,22,PD_CYCLETIME,1,40102,1,0,UInt16,0,0,0,"DM10102, Cycle Time",Real cycle time,TRUE,None
+23,23,CTL_CYCLETIME_B1,1,40105,1,0,Bit,0,0,0,"DM10105, Cycle Time B1",Signal IPC to PLC. Cycle time received signal. Turn on the trigger signal when the actual cycle time receipt is completed.,TRUE,None
+24,24,PD_UPTIME,1,40150,2,0,UInt32,0,0,0,"DM10150, Up Time",,TRUE,None
+25,25,PD_ALARM_STOPTIME,1,40152,2,0,UInt32,0,0,0,"DM10152, Alarm stop time",,TRUE,None
+26,26,PD_DOWNTIME,1,40154,2,0,UInt32,0,0,0,"DM10154, Down time",,TRUE,None
+27,27,PD_OEE_A1,1,40156,1,0,UInt16,0,0,0,"DM10156, OEE A1 (Actual Production)",,TRUE,None
+28,28,PD_OEE_A2,1,40157,1,0,UInt16,0,0,0,"DM10157, OEE A2 (Good Products)",,TRUE,None
+29,29,PD_OEE_A3,1,40158,1,0,UInt16,0,0,0,"DM10158, OEE A3 (Defective Products)",,TRUE,None
+30,30,ALM_ALARM_A1,1,40200,1,0,Bit,0,0,0,"DM10200, Alarm A1",,TRUE,None
+31,31,PD_ALARMS1,1,40201,1,0,UInt16,0,0,0,"DM10201, PD_ALARMS1","16 Bit, for 16 alarms",TRUE,None
+32,32,PD_ALARMS2,1,40202,1,0,UInt16,0,0,0,"DM10202, PD_ALARMS2","16 Bit, for 16 alarms",TRUE,None
+33,33,PD_ALARMS3,1,40203,1,0,UInt16,0,0,0,"DM10203, PD_ALARMS3","16 Bit, for 16 alarms",TRUE,None
+34,34,PD_ALARMS4,1,40204,1,0,UInt16,0,0,0,"DM10204, PD_ALARMS4","16 Bit, for 16 alarms",TRUE,None
+35,35,PD_ALARMS5,1,40205,1,0,UInt16,0,0,0,"DM10205, PD_ALARMS5","16 Bit, for 16 alarms",TRUE,None
+36,36,PD_ALARMS6,1,40206,1,0,UInt16,0,0,0,"DM10206, PD_ALARMS6","16 Bit, for 16 alarms",TRUE,None
+37,37,PD_ALARMS7,1,40207,1,0,UInt16,0,0,0,"DM10207, PD_ALARMS7","16 Bit, for 16 alarms",TRUE,None
+38,38,ALM_Alarm B1,1,40208,1,0,Bit,0,0,0,"DM10208, Alarm B1","IPC to PLC, Alarm Data Received SignalTurn on the trigger signal when the alarm code is receivedRecognize triggers from IPC and turn on PLC devices",TRUE,None
+39,39,ALM_Alarm B2,1,40208,1,0,Bit,1,0,0,"DM10208, Alarm B2","IPC to PLC, Alarm Reset SignalCreate a switch to the IPC monitor and turn on the signal by pressing the switchRecognize triggers from IPC and turn on PLC devices",TRUE,None
+40,40,CTL_MANUAL_A1,1,40220,1,0,Bit,0,0,0,"DM10220, Manual Control A1",Tray lift Down signal,TRUE,None
+41,41,CTL_MANUAL_A2,1,40220,1,0,Bit,1,0,0,"DM10220, Manual Control A2",Tray lift rising signal,TRUE,None
+42,42,CTL_MANUAL_A3,1,40220,1,0,Bit,2,0,0,"DM10220, Manual Control A3",Positioning cylinder rising signal,TRUE,None
+43,43,CTL_MANUAL_A4,1,40220,1,0,Bit,3,0,0,"DM10220, Manual Control A4",Positioning cylinder down signal,TRUE,None
+44,44,CTL_MANUAL_A5,1,40220,1,0,Bit,4,0,0,"DM10220, Manual Control A5",Conveyor forward signal,TRUE,None
+45,45,CTL_MANUAL_A6,1,40220,1,0,Bit,5,0,0,"DM10220, Manual Control A6",Conveyor reversing signal,TRUE,None
+46,46,CTL_MANUAL_A7,1,40220,1,0,Bit,6,0,0,"DM10220, Manual Control A7",Conveyor stop signal,TRUE,None
+47,47,CTL_MANUAL_A8,1,40220,1,0,Bit,7,0,0,"DM10220, Manual Control A8",Conveyor low-speed switching signal,TRUE,None
+48,48,CTL_MANUAL_A9,1,40220,1,0,Bit,8,0,0,"DM10220, Manual Control A9",conveyor high-speed switching signal,TRUE,None
+49,49,CTL_MANUAL_A10,1,40220,1,0,Bit,9,0,0,"DM10220, Manual Control A10",X-axis JOG forward signal,TRUE,None
+50,50,CTL_MANUAL_A11,1,40220,1,0,Bit,10,0,0,"DM10220, Manual Control A11",X-axis JOG retreat signal,TRUE,None
+51,51,CTL_MANUAL_A12,1,40220,1,0,Bit,11,0,0,"DM10220, Manual Control A12",X-axis JOG low-speed switching signal,TRUE,None
+52,52,CTL_MANUAL_A13,1,40220,1,0,Bit,12,0,0,"DM10220, Manual Control A13",X-axis JOG high-speed switching signal,TRUE,None
+53,53,CTL_MANUAL_A14,1,40220,1,0,Bit,13,0,0,"DM10220, Manual Control A14",Y-axis JOG forward signal,TRUE,None
+54,54,CTL_MANUAL_A15,1,40220,1,0,Bit,14,0,0,"DM10220, Manual Control A15",Y-axis JOG backward signal,TRUE,None
+55,55,CTL_MANUAL_A16,1,40220,1,0,Bit,15,0,0,"DM10220, Manual Control A16",Y-axis JOG low-speed switching signal,TRUE,None
+56,56,CTL_MANUAL_A17,1,40221,1,0,Bit,0,0,0,"DM10221, Manual Control A17",Y-axis JOG high-speed switching signal,TRUE,None
+57,57,CTL_MANUAL_A18,1,40221,1,0,Bit,1,0,0,"DM10221, Manual Control A18",Pos.0 Movement Signal,TRUE,None
+58,58,CTL_MANUAL_A19,1,40221,1,0,Bit,2,0,0,"DM10221, Manual Control A19",Pos.1 Movement Signal,TRUE,None
+59,59,CTL_MANUAL_A20,1,40221,1,0,Bit,3,0,0,"DM10221, Manual Control A20",Pos.2 Moving Signal,TRUE,None
+60,60,CTL_MANUAL_A21,1,40221,1,0,Bit,4,0,0,"DM10221, Manual Control A21",Pos.3 Moving Signal,TRUE,None
+61,61,CTL_MANUAL_A22,1,40221,1,0,Bit,5,0,0,"DM10221, Manual Control A22",Pos.4 Movement Signal,TRUE,None
+62,62,CTL_MANUAL_A23,1,40221,1,0,Bit,6,0,0,"DM10221, Manual Control A23",Pos.5 Moving Signals,TRUE,None
+63,63,CTL_MANUAL_A24,1,40221,1,0,Bit,7,0,0,"DM10221, Manual Control A24",Pos.6 Moving Signal,TRUE,None
+64,64,CTL_MANUAL_A25,1,40221,1,0,Bit,8,0,0,"DM10221, Manual Control A25",Pos.7 Moving Signal,TRUE,None
+65,65,CTL_MANUAL_A26,1,40221,1,0,Bit,9,0,0,"DM10221, Manual Control A26",Pos.8 Moving Signals,TRUE,None
+66,66,CTL_MANUAL_A27,1,40221,1,0,Bit,10,0,0,"DM10221, Manual Control A27",Pos.9 Moving Signal,TRUE,None
+67,67,CTL_MANUAL_A28,1,40221,1,0,Bit,11,0,0,"DM10221, Manual Control A28",Pos.10 Moving Signals,TRUE,None
+68,68,CTL_MANUAL_A29,1,40221,1,0,Bit,12,0,0,"DM10221, Manual Control A29",Pos.11 Moving Signals,TRUE,None
+69,69,CTL_MANUAL_A30,1,40221,1,0,Bit,13,0,0,"DM10221, Manual Control A30",Pos.12 Moving Signals,TRUE,None
+70,70,CTL_MANUAL_A31,1,40221,1,0,Bit,14,0,0,"DM10221, Manual Control A31",,TRUE,None
+71,71,CTL_MANUAL_A32,1,40221,1,0,Bit,15,0,0,"DM10221, Manual Control A32",,TRUE,None
+72,72,CTL_MANUAL_A33,1,40222,1,0,Bit,0,0,0,"DM10222, Manual Control A33",,TRUE,None
+73,73,CTL_MANUAL_A34,1,40222,1,0,Bit,1,0,0,"DM10222, Manual Control A34",,TRUE,None
+74,74,CTL_MANUAL_A35,1,40222,1,0,Bit,2,0,0,"DM10222, Manual Control A35",,TRUE,None
+75,75,CTL_MANUAL_A36,1,40222,1,0,Bit,3,0,0,"DM10222, Manual Control A36",,TRUE,None
+76,76,CTL_MANUAL_A37,1,40222,1,0,Bit,4,0,0,"DM10222, Manual Control A37",,TRUE,None
+77,77,CTL_MANUAL_A38,1,40222,1,0,Bit,5,0,0,"DM10222, Manual Control A38",,TRUE,None
+78,78,CTL_MANUAL_A39,1,40222,1,0,Bit,6,0,0,"DM10222, Manual Control A39",,TRUE,None
+79,79,CTL_MANUAL_A40,1,40222,1,0,Bit,7,0,0,"DM10222, Manual Control A40",,TRUE,None
+80,80,CTL_MANUAL_B1,1,40225,1,0,Bit,0,0,0,"DM10225, Manual Control B1",Tray lift Descending display,TRUE,None
+81,81,CTL_MANUAL_B2,1,40225,1,0,Bit,1,0,0,"DM10225, Manual Control B2",Tray lift Lift Lift,TRUE,None
+82,82,CTL_MANUAL_B3,1,40225,1,0,Bit,2,0,0,"DM10225, Manual Control B3",Positioning cylinder rise display,TRUE,None
+83,83,CTL_MANUAL_B4,1,40225,1,0,Bit,3,0,0,"DM10225, Manual Control B4",Positioning cylinder lowering display,TRUE,None
+84,84,CTL_MANUAL_B5,1,40225,1,0,Bit,4,0,0,"DM10225, Manual Control B5",Conveyor forward-turning display,TRUE,None
+85,85,CTL_MANUAL_B6,1,40225,1,0,Bit,5,0,0,"DM10225, Manual Control B6",Conveyor reversing display,TRUE,None
+86,86,CTL_MANUAL_B7,1,40225,1,0,Bit,6,0,0,"DM10225, Manual Control B7",Conveyor stopped display,TRUE,None
+87,87,CTL_MANUAL_B8,1,40225,1,0,Bit,7,0,0,"DM10225, Manual Control B8",conveyor low-speed switching display,TRUE,None
+88,88,CTL_MANUAL_B9,1,40225,1,0,Bit,8,0,0,"DM10225, Manual Control B9",conveyor high-speed switching display,TRUE,None
+89,89,CTL_MANUAL_B10,1,40225,1,0,Bit,9,0,0,"DM10225, Manual Control B10",X-axis JOG forward indication,TRUE,None
+90,90,CTL_MANUAL_B11,1,40225,1,0,Bit,10,0,0,"DM10225, Manual Control B11",X-axis JOG backwards indicates,TRUE,None
+91,91,CTL_MANUAL_B12,1,40225,1,0,Bit,11,0,0,"DM10225, Manual Control B12",X-axis JOG low-speed switching representation,TRUE,None
+92,92,CTL_MANUAL_B13,1,40225,1,0,Bit,12,0,0,"DM10225, Manual Control B13",X-axis JOG high-speed switching display,TRUE,None
+93,93,CTL_MANUAL_B14,1,40225,1,0,Bit,13,0,0,"DM10225, Manual Control B14",Y-axis JOG forward display,TRUE,None
+94,94,CTL_MANUAL_B15,1,40225,1,0,Bit,14,0,0,"DM10225, Manual Control B15",Y-axis JOG retracted display,TRUE,None
+95,95,CTL_MANUAL_B16,1,40225,1,0,Bit,15,0,0,"DM10225, Manual Control B16",Y-axis JOG low-speed switching display,TRUE,None
+96,96,CTL_MANUAL_B17,1,40226,1,0,Bit,0,0,0,"DM10226, Manual Control B17",Y-axisJOGhigh-speed switching display,TRUE,None
+97,97,CTL_MANUAL_B18,1,40226,1,0,Bit,1,0,0,"DM10226, Manual Control B18",Pos.0 Positioning Completion Display,TRUE,None
+98,98,CTL_MANUAL_B19,1,40226,1,0,Bit,2,0,0,"DM10226, Manual Control B19",Pos.1 Positioning Completion Display,TRUE,None
+99,99,CTL_MANUAL_B20,1,40226,1,0,Bit,3,0,0,"DM10226, Manual Control B20",Pos.2 Positioning Completion Display,TRUE,None
+100,100,CTL_MANUAL_B21,1,40226,1,0,Bit,4,0,0,"DM10226, Manual Control B21",Pos.3 Positioning Completion Display,TRUE,None
+101,101,CTL_MANUAL_B22,1,40226,1,0,Bit,5,0,0,"DM10226, Manual Control B22",Pos.4 Positioning Completion Display,TRUE,None
+102,102,CTL_MANUAL_B23,1,40226,1,0,Bit,6,0,0,"DM10226, Manual Control B23",Pos.5 Positioning Completion Display,TRUE,None
+103,103,CTL_MANUAL_B24,1,40226,1,0,Bit,7,0,0,"DM10226, Manual Control B24",Pos.6 Positioning Completion Display,TRUE,None
+104,104,CTL_MANUAL_B25,1,40226,1,0,Bit,8,0,0,"DM10226, Manual Control B25",Pos.7 Positioning Completion Display,TRUE,None
+105,105,CTL_MANUAL_B26,1,40226,1,0,Bit,9,0,0,"DM10226, Manual Control B26",Pos.8 Positioning Completion Display,TRUE,None
+106,106,CTL_MANUAL_B27,1,40226,1,0,Bit,10,0,0,"DM10226, Manual Control B27",Pos.9 Positioning Completion Display,TRUE,None
+107,107,CTL_MANUAL_B28,1,40226,1,0,Bit,11,0,0,"DM10226, Manual Control B28",Pos.10 Positioning Completion Display,TRUE,None
+108,108,CTL_MANUAL_B29,1,40226,1,0,Bit,12,0,0,"DM10226, Manual Control B29",Pos.11 Positioning Completion Display,TRUE,None
+109,109,CTL_MANUAL_B30,1,40226,1,0,Bit,13,0,0,"DM10226, Manual Control B30",Pos.12 Positioning Completion Display,TRUE,None
+110,110,SYS_PARAMETER_A1,1,40300,1,0,Bit,0,0,0,"DM10300, System Parameter A1",X-axis_servo parameter determination. Create a switch to the IPC monitor and turn on the signal by pressing the switchConstant monitoring at scan time,TRUE,None
+111,111,SYS_PARAMETER_A2,1,40300,1,0,Bit,1,0,0,"DM10300, System Parameter A2",Y-axis_servo parameter determination. Create a switch to the IPC monitor and turn on the signal by pressing the switchConstant monitoring at scan time,TRUE,None
+112,112,SYS_PARAMETER_A3,1,40300,1,0,Bit,2,0,0,"DM10300, System Parameter A3",X-axis_coordinate registration confirmed. Create a switch to the IPC monitor and turn on the signal by pressing the switchConstant monitoring at scan time,TRUE,None
+113,113,SYS_PARAMETER_A4,1,40300,1,0,Bit,3,0,0,"DM10300, System Parameter A4",Y-axis_coordinate registration confirmedCreate a switch to the IPC monitor and turn on the signal by pressing the switchConstant monitoring at scan time,TRUE,None
+114,114,SYS_PARAMETER_A5,1,40302,2,0,UInt32,0,0,0,"DM10302, System Parameter A5","X-axis _JOG speed (low speed)Store the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",TRUE,None
+115,115,SYS_PARAMETER_A6,1,40304,2,0,UInt32,0,0,0,"DM10304, System Parameter A6","X-axis _JOG speed (high speed)Store the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",TRUE,None
+116,116,SYS_PARAMETER_A7,1,40306,2,0,UInt32,0,0,0,"DM10306, System Parameter A7","X-axis _JOG inch volumeStore the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",TRUE,None
+117,117,SYS_PARAMETER_A8,1,40308,2,0,UInt32,0,0,0,"DM10308, System Parameter A8","X-axis_origin coordinatesStore the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",TRUE,None
+118,118,SYS_PARAMETER_A9,1,40310,2,0,UInt32,0,0,0,"DM10310, System Parameter A9","X-axis_movement speedStore the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",TRUE,None
+119,119,SYS_PARAMETER_A10,1,40312,2,0,UInt32,0,0,0,"DM10312, System Parameter A10","X-axis_movement accelerationStore the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",TRUE,None
+120,120,SYS_PARAMETER_A11,1,40314,2,0,UInt32,0,0,0,"DM10314, System Parameter A11","X-axis_movement decelerationStore the settings in the DMX-axis_servo parameter After recognizing the determination signal, start reading",TRUE,None
+121,121,SYS_PARAMETER_A12,1,40316,2,0,UInt32,0,0,0,"DM10316, System Parameter A12","Y-axis _JOG speed (low speed)Store the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",TRUE,None
+122,122,SYS_PARAMETER_A13,1,40318,2,0,UInt32,0,0,0,"DM10318, System Parameter A13","Y-axis _JOG speed (high speed)Store the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",TRUE,None
+123,123,SYS_PARAMETER_A14,1,40320,2,0,UInt32,0,0,0,"DM10320, System Parameter A14","Y-axis _JOG inch volumeStore the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",TRUE,None
+124,124,SYS_PARAMETER_A15,1,40322,2,0,UInt32,0,0,0,"DM10322, System Parameter A15","Y-axis_origin coordinatesStore the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",TRUE,None
+125,125,SYS_PARAMETER_A16,1,40324,2,0,UInt32,0,0,0,"DM10324, System Parameter A16","Y-axis_movement speedStore the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",TRUE,None
+126,126,SYS_PARAMETER_A17,1,40326,2,0,UInt32,0,0,0,"DM10326, System Parameter A17","Y-axis_movement accelerationStore the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",TRUE,None
+127,127,SYS_PARAMETER_A18,1,40328,2,0,UInt32,0,0,0,"DM10328, System Parameter A18","Y-axis_movement decelerationStore the settings in the DMY-axis_servo parameter After recognizing the confirmed signal, start reading",TRUE,None
+128,128,SYS_PARAMETER_A19,1,40330,2,1,UInt32,0,0,100,"DM10330, System Parameter A19","X-axis _Pos.0 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+129,129,SYS_PARAMETER_A20,1,40332,2,1,UInt32,0,0,100,"DM10332, System Parameter A20","X-axis _Pos.1 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+130,130,SYS_PARAMETER_A21,1,40334,2,1,UInt32,0,0,100,"DM10334, System Parameter A21","X-axis _Pos.2 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+131,131,SYS_PARAMETER_A22,1,40336,2,1,UInt32,0,0,100,"DM10336, System Parameter A22","X-axis _Pos.3 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+132,132,SYS_PARAMETER_A23,1,40338,2,1,UInt32,0,0,100,"DM10338, System Parameter A23","X-axis _Pos.4 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+133,133,SYS_PARAMETER_A24,1,40340,2,1,UInt32,0,0,100,"DM10340, System Parameter A24","X-axis _Pos.5 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+134,134,SYS_PARAMETER_A25,1,40342,2,1,UInt32,0,0,100,"DM10342, System Parameter A25","X-axis _Pos.6 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+135,135,SYS_PARAMETER_A26,1,40344,2,1,UInt32,0,0,100,"DM10344, System Parameter A26","X-axis _Pos.7 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+136,136,SYS_PARAMETER_A27,1,40346,2,1,UInt32,0,0,100,"DM10346, System Parameter A27","X-axis _Pos.8 coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+137,137,SYS_PARAMETER_A28,1,40348,2,1,UInt32,0,0,100,"DM10348, System Parameter A28","X-axis _Pos.9 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+138,138,SYS_PARAMETER_A29,1,40350,2,1,UInt32,0,0,100,"DM10350, System Parameter A29","X-axis _Pos.10 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+139,139,SYS_PARAMETER_A30,1,40352,2,1,UInt32,0,0,100,"DM10352, System Parameter A30","X-Axis_Pos.11 Coordinate RegistrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+140,140,SYS_PARAMETER_A31,1,40354,2,1,UInt32,0,0,100,"DM10354, System Parameter A31","X-axis_Pos.12 Coordinate registrationStore the settings in the DMX-axis_coordinate registration After the confirmed signal is recognized, start reading",TRUE,None
+141,141,SYS_PARAMETER_A32,1,40356,2,1,UInt32,0,0,100,"DM10356, System Parameter A32","Y-axis _Pos.0 coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+142,142,SYS_PARAMETER_A33,1,40358,2,1,UInt32,0,0,100,"DM10358, System Parameter A33","Y-axis _Pos.1 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+143,143,SYS_PARAMETER_A34,1,40360,2,1,UInt32,0,0,100,"DM10360, System Parameter A34","Y_Pos.2 Coordinate RegistrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+144,144,SYS_PARAMETER_A35,1,40362,2,1,UInt32,0,0,100,"DM10362, System Parameter A35","Y-axis _Pos.3 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+145,145,SYS_PARAMETER_A36,1,40364,2,1,UInt32,0,0,100,"DM10364, System Parameter A36","Y-axis _Pos.4 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+146,146,SYS_PARAMETER_A37,1,40366,2,1,UInt32,0,0,100,"DM10366, System Parameter A37","Y_Pos.5 Coordinate RegistrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+147,147,SYS_PARAMETER_A38,1,40368,2,1,UInt32,0,0,100,"DM10368, System Parameter A38","Y-axis _Pos.6 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+148,148,SYS_PARAMETER_A39,1,40370,2,1,UInt32,0,0,100,"DM10370, System Parameter A39","Y-axis_Pos.7 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+149,149,SYS_PARAMETER_A40,1,40372,2,1,UInt32,0,0,100,"DM10372, System Parameter A40","Y-axis_Pos.8 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+150,150,SYS_PARAMETER_A41,1,40374,2,1,UInt32,0,0,100,"DM10374, System Parameter A41","Y-axis _Pos.9 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+151,151,SYS_PARAMETER_A42,1,40376,2,1,UInt32,0,0,100,"DM10376, System Parameter A42","Y_Pos.10 Coordinate RegistrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+152,152,SYS_PARAMETER_A43,1,40378,2,1,UInt32,0,0,100,"DM10378, System Parameter A43","Y-axis_Pos.11 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+153,153,SYS_PARAMETER_A44,1,40380,2,1,UInt32,0,0,100,"DM10380, System Parameter A44","Y-axis _Pos.12 Coordinate registrationStore the settings in the DMY-axis_After recognizing the confirmed signal for coordinate registration, start reading",TRUE,None
+154,154,SYS_PARAMETER_B1,1,40450,2,0,Float,0,0,0,"DM10450, System Parameter B1",X-axis_current coordinatesStore the current value in the DMPolling in 0.5 seconds,TRUE,None
+155,155,SYS_PARAMETER_B2,1,40452,2,0,Float,0,0,0,"DM10452, System Parameter B2",Y-axis_current coordinatesStore the current value in the DMPolling in 0.5 seconds,TRUE,None
+156,156,X3000_ ES,1,40250,1,0,Bit,0,0,0,"DM10250, X3000_ emergency stop input RY2",Inputs1,TRUE,Input
+157,157,X3001_FLCS_PB2,1,40250,1,0,Bit,1,0,0,"DM10250, X3001_fluorescent lamp control signal PB2",Inputs2,TRUE,Input
+158,158,X3002_ INPUT_LZ1,1,40250,1,0,Bit,2,0,0,"DM10250, X3002_ input detection LZ1",Inputs3,TRUE,Input
+159,159,X3003_ TRLE_LZ2,1,40250,1,0,Bit,3,0,0,"DM10250, X3003_ table reaches the left edge LZ2",Inputs4,TRUE,Input
+160,160,X3004_TRRL_LZ3,1,40250,1,0,Bit,4,0,0,"DM10250, X3004_ Table Reach Right Edge LZ3",Inputs5,TRUE,Input
+161,161,X3005_ED_LZ4,1,40250,1,0,Bit,5,0,0,"DM10250, X3005_ emission detection LZ4",Inputs6,TRUE,Input
+162,162,X3006_PS1,1,40250,1,0,Bit,6,0,0,"DM10250, X3006_ pressure sensor PS1",Inputs7,TRUE,Input
+163,163,X3007_ PC1L_AS1,1,40250,1,0,Bit,7,0,0,"DM10250, X3007_ positioning cylinder 1 lifting AS1",Inputs8,TRUE,Input
+164,164,X3008_PC1L_ AS2,1,40250,1,0,Bit,8,0,0,"DM10250, X3008_positioning cylinder 1 lowering AS2",Inputs9,TRUE,Input
+165,165,X3009_PC2L_AS3,1,40250,1,0,Bit,9,0,0,"DM10250, X3009_positioning cylinder 2 lifting AS3",Inputs10,TRUE,Input
+166,166,X300A_PC2L_AS4,1,40250,1,0,Bit,10,0,0,"DM10250, X300A_positioning cylinder 2 lowering AS4",Inputs11,TRUE,Input
+167,167,X300B_ Spares,1,40250,1,0,Bit,11,0,0,"DM10250, X300B_ Spares",Inputs12,TRUE,Input
+168,168,X300C_ FDCS_PXS1,1,40250,1,0,Bit,12,0,0,"DM10250, X300C_ front door closing signal PXS1",Inputs13,TRUE,Input
+169,169,X300D_ RDCS_PXS2,1,40250,1,0,Bit,13,0,0,"DM10250, X300D_ rear door closing signal PXS2",Inputs14,TRUE,Input
+170,170,X300E_LDCS_PXS3,1,40250,1,0,Bit,14,0,0,"DM10250, X300E_ left door closing signal PXS3",Inputs15,TRUE,Input
+171,171,X300F_RDCS_PXS4,1,40250,1,0,Bit,15,0,0,"DM10250, X300F_ right door closing signal PXS4",Inputs16,TRUE,Input
+172,172,X3010_ TLLE_PH1,1,40251,1,0,Bit,0,0,0,"DM10251, X3010_ tray lift lower end PH1",Inputs17,TRUE,Input
+173,173,X3011_TLTB_PH2,1,40251,1,0,Bit,1,0,0,"DM10251, X3011_ tray lift top and bottom PH2",Inputs18,TRUE,Input
+174,174,X3012_ Spares,1,40251,1,0,Bit,2,0,0,"DM10251, X3012_ Spares",Inputs19,TRUE,Input
+175,175,X3013_ Spares,1,40251,1,0,Bit,3,0,0,"DM10251, X3013_ Spares",Inputs20,TRUE,Input
+176,176,X3014_ Spares,1,40251,1,0,Bit,4,0,0,"DM10251, X3014_ Spares",Inputs21,TRUE,Input
+177,177,X3015_ Spares,1,40251,1,0,Bit,5,0,0,"DM10251, X3015_ Spares",Inputs22,TRUE,Input
+178,178,X3016_ Spares,1,40251,1,0,Bit,6,0,0,"DM10251, X3016_ Spares",Inputs23,TRUE,Input
+179,179,X3017_ Spares,1,40251,1,0,Bit,7,0,0,"DM10251, X3017_ Spares",Inputs24,TRUE,Input
+180,180,X3018_ Spares,1,40251,1,0,Bit,8,0,0,"DM10251, X3018_ Spares",Inputs25,TRUE,Input
+181,181,X3019_ Spares,1,40251,1,0,Bit,9,0,0,"DM10251, X3019_ Spares",Inputs26,TRUE,Input
+182,182,X301A_ StepperMotor1ALM,1,40251,1,0,Bit,10,0,0,"DM10251, X301A_ Stepper Motor1 ALM",Inputs27,TRUE,Input
+183,183,X301B_ Steppermotor2ALM,1,40251,1,0,Bit,11,0,0,"DM10251, X301B_ stepper motor2 ALM",Inputs28,TRUE,Input
+184,184,X301C_ Spares,1,40251,1,0,Bit,12,0,0,"DM10251, X301C_ Spares",Inputs29,TRUE,Input
+185,185,X301D_ Spares,1,40251,1,0,Bit,13,0,0,"DM10251, X301D_ Spares",Inputs30,TRUE,Input
+186,186,X301E_ Spares,1,40251,1,0,Bit,14,0,0,"DM10251, X301E_ Spares",Inputs31,TRUE,Input
+187,187,X301F_ Spares,1,40251,1,0,Bit,15,0,0,"DM10251, X301F_ Spares",Inputs32,TRUE,Input
+188,188,X3020_ Spares,1,40252,1,0,Bit,0,0,0,"DM10252, X3020_ Spares",Inputs33,TRUE,Input
+189,189,X3021_ Spares,1,40252,1,0,Bit,1,0,0,"DM10252, X3021_ Spares",Inputs34,TRUE,Input
+190,190,X3022_ Spares,1,40252,1,0,Bit,2,0,0,"DM10252, X3022_ Spares",Inputs35,TRUE,Input
+191,191,X3023_ Spares,1,40252,1,0,Bit,3,0,0,"DM10252, X3023_ Spares",Inputs36,TRUE,Input
+192,192,X3024_ Spares,1,40252,1,0,Bit,4,0,0,"DM10252, X3024_ Spares",Inputs37,TRUE,Input
+193,193,X3025_ Spares,1,40252,1,0,Bit,5,0,0,"DM10252, X3025_ Spares",Inputs38,TRUE,Input
+194,194,X3026_ Spares,1,40252,1,0,Bit,6,0,0,"DM10252, X3026_ Spares",Inputs39,TRUE,Input
+195,195,X3027_ Spares,1,40252,1,0,Bit,7,0,0,"DM10252, X3027_ Spares",Inputs40,TRUE,Input
+196,196,X3028_ Spares,1,40252,1,0,Bit,8,0,0,"DM10252, X3028_ Spares",Inputs41,TRUE,Input
+197,197,X3029_ Spares,1,40252,1,0,Bit,9,0,0,"DM10252, X3029_ Spares",Inputs42,TRUE,Input
+198,198,X302A_ DRS_SE,1,40252,1,0,Bit,10,0,0,"DM10252, X302A_ Discharge Requirements Signal (Sub-Engineering)",Inputs43,TRUE,Input
+199,199,X302A_ DRS_SE,1,40252,1,0,Bit,11,0,0,"DM10252, X302A_ Discharge Requirements Signal (Sub-Engineering)",Inputs44,TRUE,Input
+200,200,X302C_ Spares,1,40252,1,0,Bit,12,0,0,"DM10252, X302C_ Spares",Inputs45,TRUE,Input
+201,201,X302D_ Spares,1,40252,1,0,Bit,13,0,0,"DM10252, X302D_ Spares",Inputs46,TRUE,Input
+202,202,X302E_ Spares,1,40252,1,0,Bit,14,0,0,"DM10252, X302E_ Spares",Inputs47,TRUE,Input
+203,203,X302F_ Spares,1,40252,1,0,Bit,15,0,0,"DM10252, X302F_ Spares",Inputs48,TRUE,Input
+204,204,IO_INPUT49,1,40253,1,0,Bit,0,0,0,"DM10253, ",Inputs49,TRUE,Input
+205,205,IO_INPUT50,1,40253,1,0,Bit,1,0,0,"DM10253, ",Inputs50,TRUE,Input
+206,206,IO_INPUT51,1,40253,1,0,Bit,2,0,0,"DM10253, ",Inputs51,TRUE,Input
+207,207,IO_INPUT52,1,40253,1,0,Bit,3,0,0,"DM10253, ",Inputs52,TRUE,Input
+208,208,IO_INPUT53,1,40253,1,0,Bit,4,0,0,"DM10253, ",Inputs53,TRUE,Input
+209,209,IO_INPUT54,1,40253,1,0,Bit,5,0,0,"DM10253, ",Inputs54,TRUE,Input
+210,210,IO_INPUT55,1,40253,1,0,Bit,6,0,0,"DM10253, ",Inputs55,TRUE,Input
+211,211,IO_INPUT56,1,40253,1,0,Bit,7,0,0,"DM10253, ",Inputs56,TRUE,Input
+212,212,IO_INPUT57,1,40253,1,0,Bit,8,0,0,"DM10253, ",Inputs57,TRUE,Input
+213,213,IO_INPUT58,1,40253,1,0,Bit,9,0,0,"DM10253, ",Inputs58,TRUE,Input
+214,214,IO_INPUT59,1,40253,1,0,Bit,10,0,0,"DM10253, ",Inputs59,TRUE,Input
+215,215,IO_INPUT60,1,40253,1,0,Bit,11,0,0,"DM10253, ",Inputs60,TRUE,Input
+216,216,IO_INPUT61,1,40253,1,0,Bit,12,0,0,"DM10253, ",Inputs61,TRUE,Input
+217,217,IO_INPUT62,1,40253,1,0,Bit,13,0,0,"DM10253, ",Inputs62,TRUE,Input
+218,218,IO_INPUT63,1,40253,1,0,Bit,14,0,0,"DM10253, ",Inputs63,TRUE,Input
+219,219,IO_INPUT64,1,40253,1,0,Bit,15,0,0,"DM10253, ",Inputs64,TRUE,Input
+220,220,IO_INPUT65,1,40254,1,0,Bit,0,0,0,"DM10254, ",Inputs65,TRUE,Input
+221,221,IO_INPUT66,1,40254,1,0,Bit,1,0,0,"DM10254, ",Inputs66,TRUE,Input
+222,222,IO_INPUT67,1,40254,1,0,Bit,2,0,0,"DM10254, ",Inputs67,TRUE,Input
+223,223,IO_INPUT68,1,40254,1,0,Bit,3,0,0,"DM10254, ",Inputs68,TRUE,Input
+224,224,IO_INPUT69,1,40254,1,0,Bit,4,0,0,"DM10254, ",Inputs69,TRUE,Input
+225,225,IO_INPUT70,1,40254,1,0,Bit,5,0,0,"DM10254, ",Inputs70,TRUE,Input
+226,226,IO_INPUT71,1,40254,1,0,Bit,6,0,0,"DM10254, ",Inputs71,TRUE,Input
+227,227,IO_INPUT72,1,40254,1,0,Bit,7,0,0,"DM10254, ",Inputs72,TRUE,Input
+228,228,IO_INPUT73,1,40254,1,0,Bit,8,0,0,"DM10254, ",Inputs73,TRUE,Input
+229,229,IO_INPUT74,1,40254,1,0,Bit,9,0,0,"DM10254, ",Inputs74,TRUE,Input
+230,230,IO_INPUT75,1,40254,1,0,Bit,10,0,0,"DM10254, ",Inputs75,TRUE,Input
+231,231,IO_INPUT76,1,40254,1,0,Bit,11,0,0,"DM10254, ",Inputs76,TRUE,Input
+232,232,IO_INPUT77,1,40254,1,0,Bit,12,0,0,"DM10254, ",Inputs77,TRUE,Input
+233,233,IO_INPUT78,1,40254,1,0,Bit,13,0,0,"DM10254, ",Inputs78,TRUE,Input
+234,234,IO_INPUT79,1,40254,1,0,Bit,14,0,0,"DM10254, ",Inputs79,TRUE,Input
+235,235,IO_INPUT80,1,40254,1,0,Bit,15,0,0,"DM10254, ",Inputs80,TRUE,Input
+236,236,IO_INPUT81,1,40255,1,0,Bit,0,0,0,"DM10255, ",Inputs81,TRUE,Input
+237,237,IO_INPUT82,1,40255,1,0,Bit,1,0,0,"DM10255, ",Inputs82,TRUE,Input
+238,238,IO_INPUT83,1,40255,1,0,Bit,2,0,0,"DM10255, ",Inputs83,TRUE,Input
+239,239,IO_INPUT84,1,40255,1,0,Bit,3,0,0,"DM10255, ",Inputs84,TRUE,Input
+240,240,IO_INPUT85,1,40255,1,0,Bit,4,0,0,"DM10255, ",Inputs85,TRUE,Input
+241,241,IO_INPUT86,1,40255,1,0,Bit,5,0,0,"DM10255, ",Inputs86,TRUE,Input
+242,242,IO_INPUT87,1,40255,1,0,Bit,6,0,0,"DM10255, ",Inputs87,TRUE,Input
+243,243,IO_INPUT88,1,40255,1,0,Bit,7,0,0,"DM10255, ",Inputs88,TRUE,Input
+244,244,IO_INPUT89,1,40255,1,0,Bit,8,0,0,"DM10255, ",Inputs89,TRUE,Input
+245,245,IO_INPUT90,1,40255,1,0,Bit,9,0,0,"DM10255, ",Inputs90,TRUE,Input
+246,246,IO_INPUT91,1,40255,1,0,Bit,10,0,0,"DM10255, ",Inputs91,TRUE,Input
+247,247,IO_INPUT92,1,40255,1,0,Bit,11,0,0,"DM10255, ",Inputs92,TRUE,Input
+248,248,IO_INPUT93,1,40255,1,0,Bit,12,0,0,"DM10255, ",Inputs93,TRUE,Input
+249,249,IO_INPUT94,1,40255,1,0,Bit,13,0,0,"DM10255, ",Inputs94,TRUE,Input
+250,250,IO_INPUT95,1,40255,1,0,Bit,14,0,0,"DM10255, ",Inputs95,TRUE,Input
+251,251,IO_INPUT96,1,40255,1,0,Bit,15,0,0,"DM10255, ",Inputs96,TRUE,Input
+252,252,IO_INPUT97,1,40256,1,0,Bit,0,0,0,"DM10256, ",Inputs97,TRUE,Input
+253,253,IO_INPUT98,1,40256,1,0,Bit,1,0,0,"DM10256, ",Inputs98,TRUE,Input
+254,254,IO_INPUT99,1,40256,1,0,Bit,2,0,0,"DM10256, ",Inputs99,TRUE,Input
+255,255,IO_INPUT100,1,40256,1,0,Bit,3,0,0,"DM10256, ",Inputs100,TRUE,Input
+256,256,IO_INPUT101,1,40256,1,0,Bit,4,0,0,"DM10256, ",Inputs101,TRUE,Input
+257,257,IO_INPUT102,1,40256,1,0,Bit,5,0,0,"DM10256, ",Inputs102,TRUE,Input
+258,258,IO_INPUT103,1,40256,1,0,Bit,6,0,0,"DM10256, ",Inputs103,TRUE,Input
+259,259,IO_INPUT104,1,40256,1,0,Bit,7,0,0,"DM10256, ",Inputs104,TRUE,Input
+260,260,IO_INPUT105,1,40256,1,0,Bit,8,0,0,"DM10256, ",Inputs105,TRUE,Input
+261,261,IO_INPUT106,1,40256,1,0,Bit,9,0,0,"DM10256, ",Inputs106,TRUE,Input
+262,262,IO_INPUT107,1,40256,1,0,Bit,10,0,0,"DM10256, ",Inputs107,TRUE,Input
+263,263,IO_INPUT108,1,40256,1,0,Bit,11,0,0,"DM10256, ",Inputs108,TRUE,Input
+264,264,IO_INPUT109,1,40256,1,0,Bit,12,0,0,"DM10256, ",Inputs109,TRUE,Input
+265,265,IO_INPUT110,1,40256,1,0,Bit,13,0,0,"DM10256, ",Inputs110,TRUE,Input
+266,266,IO_INPUT111,1,40256,1,0,Bit,14,0,0,"DM10256, ",Inputs111,TRUE,Input
+267,267,IO_INPUT112,1,40256,1,0,Bit,15,0,0,"DM10256, ",Inputs112,TRUE,Input
+268,268,IO_INPUT113,1,40257,1,0,Bit,0,0,0,"DM10257, ",Inputs113,TRUE,Input
+269,269,IO_INPUT114,1,40257,1,0,Bit,1,0,0,"DM10257, ",Inputs114,TRUE,Input
+270,270,IO_INPUT115,1,40257,1,0,Bit,2,0,0,"DM10257, ",Inputs115,TRUE,Input
+271,271,IO_INPUT116,1,40257,1,0,Bit,3,0,0,"DM10257, ",Inputs116,TRUE,Input
+272,272,IO_INPUT117,1,40257,1,0,Bit,4,0,0,"DM10257, ",Inputs117,TRUE,Input
+273,273,IO_INPUT118,1,40257,1,0,Bit,5,0,0,"DM10257, ",Inputs118,TRUE,Input
+274,274,IO_INPUT119,1,40257,1,0,Bit,6,0,0,"DM10257, ",Inputs119,TRUE,Input
+275,275,IO_INPUT120,1,40257,1,0,Bit,7,0,0,"DM10257, ",Inputs120,TRUE,Input
+276,276,IO_INPUT121,1,40257,1,0,Bit,8,0,0,"DM10257, ",Inputs121,TRUE,Input
+277,277,IO_INPUT122,1,40257,1,0,Bit,9,0,0,"DM10257, ",Inputs122,TRUE,Input
+278,278,IO_INPUT123,1,40257,1,0,Bit,10,0,0,"DM10257, ",Inputs123,TRUE,Input
+279,279,IO_INPUT124,1,40257,1,0,Bit,11,0,0,"DM10257, ",Inputs124,TRUE,Input
+280,280,IO_INPUT125,1,40257,1,0,Bit,12,0,0,"DM10257, ",Inputs125,TRUE,Input
+281,281,IO_INPUT126,1,40257,1,0,Bit,13,0,0,"DM10257, ",Inputs126,TRUE,Input
+282,282,IO_INPUT127,1,40257,1,0,Bit,14,0,0,"DM10257, ",Inputs127,TRUE,Input
+283,283,IO_INPUT128,1,40257,1,0,Bit,15,0,0,"DM10257, ",Inputs128,TRUE,Input
+284,284,IO_INPUT129,1,40258,1,0,Bit,0,0,0,"DM10258, ",Inputs129,TRUE,Input
+285,285,IO_INPUT130,1,40258,1,0,Bit,1,0,0,"DM10258, ",Inputs130,TRUE,Input
+286,286,IO_INPUT131,1,40258,1,0,Bit,2,0,0,"DM10258, ",Inputs131,TRUE,Input
+287,287,IO_INPUT132,1,40258,1,0,Bit,3,0,0,"DM10258, ",Inputs132,TRUE,Input
+288,288,IO_INPUT133,1,40258,1,0,Bit,4,0,0,"DM10258, ",Inputs133,TRUE,Input
+289,289,IO_INPUT134,1,40258,1,0,Bit,5,0,0,"DM10258, ",Inputs134,TRUE,Input
+290,290,IO_INPUT135,1,40258,1,0,Bit,6,0,0,"DM10258, ",Inputs135,TRUE,Input
+291,291,IO_INPUT136,1,40258,1,0,Bit,7,0,0,"DM10258, ",Inputs136,TRUE,Input
+292,292,IO_INPUT137,1,40258,1,0,Bit,8,0,0,"DM10258, ",Inputs137,TRUE,Input
+293,293,IO_INPUT138,1,40258,1,0,Bit,9,0,0,"DM10258, ",Inputs138,TRUE,Input
+294,294,IO_INPUT139,1,40258,1,0,Bit,10,0,0,"DM10258, ",Inputs139,TRUE,Input
+295,295,IO_INPUT140,1,40258,1,0,Bit,11,0,0,"DM10258, ",Inputs140,TRUE,Input
+296,296,IO_INPUT141,1,40258,1,0,Bit,12,0,0,"DM10258, ",Inputs141,TRUE,Input
+297,297,IO_INPUT142,1,40258,1,0,Bit,13,0,0,"DM10258, ",Inputs142,TRUE,Input
+298,298,IO_INPUT143,1,40258,1,0,Bit,14,0,0,"DM10258, ",Inputs143,TRUE,Input
+299,299,IO_INPUT144,1,40258,1,0,Bit,15,0,0,"DM10258, ",Inputs144,TRUE,Input
+300,300,IO_INPUT145,1,40259,1,0,Bit,0,0,0,"DM10259, ",Inputs145,TRUE,Input
+301,301,IO_INPUT146,1,40259,1,0,Bit,1,0,0,"DM10259, ",Inputs146,TRUE,Input
+302,302,IO_INPUT147,1,40259,1,0,Bit,2,0,0,"DM10259, ",Inputs147,TRUE,Input
+303,303,IO_INPUT148,1,40259,1,0,Bit,3,0,0,"DM10259, ",Inputs148,TRUE,Input
+304,304,IO_INPUT149,1,40259,1,0,Bit,4,0,0,"DM10259, ",Inputs149,TRUE,Input
+305,305,IO_INPUT150,1,40259,1,0,Bit,5,0,0,"DM10259, ",Inputs150,TRUE,Input
+306,306,IO_INPUT151,1,40259,1,0,Bit,6,0,0,"DM10259, ",Inputs151,TRUE,Input
+307,307,IO_INPUT152,1,40259,1,0,Bit,7,0,0,"DM10259, ",Inputs152,TRUE,Input
+308,308,IO_INPUT153,1,40259,1,0,Bit,8,0,0,"DM10259, ",Inputs153,TRUE,Input
+309,309,IO_INPUT154,1,40259,1,0,Bit,9,0,0,"DM10259, ",Inputs154,TRUE,Input
+310,310,IO_INPUT155,1,40259,1,0,Bit,10,0,0,"DM10259, ",Inputs155,TRUE,Input
+311,311,IO_INPUT156,1,40259,1,0,Bit,11,0,0,"DM10259, ",Inputs156,TRUE,Input
+312,312,IO_INPUT157,1,40259,1,0,Bit,12,0,0,"DM10259, ",Inputs157,TRUE,Input
+313,313,IO_INPUT158,1,40259,1,0,Bit,13,0,0,"DM10259, ",Inputs158,TRUE,Input
+314,314,IO_INPUT159,1,40259,1,0,Bit,14,0,0,"DM10259, ",Inputs159,TRUE,Input
+315,315,IO_INPUT160,1,40259,1,0,Bit,15,0,0,"DM10259, ",Inputs160,TRUE,Input
+316,316,Y3030_TL_SOL1,1,40260,1,0,Bit,0,0,0,"DM10260, Y3030_ tray lift SOL1",Outputs 1,TRUE,Output
+317,317,Y3031_PC_SOL1_2,1,40260,1,0,Bit,1,0,0,"DM10260, Y3031_ positioning cylinder SOL1_2",Outputs 2,TRUE,Output
+318,318,Y3032_SS,1,40260,1,0,Bit,2,0,0,"DM10260, Y3032_ Solenoid Spare",Outputs 3,TRUE,Output
+319,319,Y3033_SS,1,40260,1,0,Bit,3,0,0,"DM10260, Y3033_ Solenoid Spare",Outputs 4,TRUE,Output
+320,320,Y3034_PLCReady,1,40260,1,0,Bit,4,0,0,"DM10260, Y3034_PLC ready",Outputs 5,TRUE,Output
+321,321,Y3035_FLCS_RY1,1,40260,1,0,Bit,5,0,0,"DM10260, Y3035_fluorescent lamp control signal RY1",Outputs 6,TRUE,Output
+322,322,Y3036_ FLON_PL1,1,40260,1,0,Bit,6,0,0,"DM10260, Y3036_ fluorescent lamp ON PL1",Outputs 7,TRUE,Output
+323,323,Y3037_ Spares,1,40260,1,0,Bit,7,0,0,"DM10260, Y3037_ Spares",Outputs 8,TRUE,Output
+324,324,Y3038_ Spares,1,40260,1,0,Bit,8,0,0,"DM10260, Y3038_ Spares",Outputs 9,TRUE,Output
+325,325,Y3039_ Spares,1,40260,1,0,Bit,9,0,0,"DM10260, Y3039_ Spares",Outputs 10,TRUE,Output
+326,326,Y303A_ PR_PL2,1,40260,1,0,Bit,10,0,0,"DM10260, Y303A_ Patrite Red PL2",Outputs 11,TRUE,Output
+327,327,Y303B_ PY_PL3,1,40260,1,0,Bit,11,0,0,"DM10260, Y303B_ Patrite Yellow PL3",Outputs 12,TRUE,Output
+328,328,Y303C_PG_PL4,1,40260,1,0,Bit,12,0,0,"DM10260, Y303C_ Patrilite Green PL4",Outputs 13,TRUE,Output
+329,329,Y303D_PA_BZ1,1,40260,1,0,Bit,13,0,0,"DM10260, Y303D_ Patrolite Alarm BZ1",Outputs 14,TRUE,Output
+330,330,Y303E_ Spares,1,40260,1,0,Bit,14,0,0,"DM10260, Y303E_ Spares",Outputs 15,TRUE,Output
+331,331,Y304E_ Spares,1,40260,1,0,Bit,15,0,0,"DM10260, Y304E_ Spares",Outputs 16,TRUE,Output
+332,332,Y3040_SM1_FWD,1,40261,1,0,Bit,0,0,0,"DM10261, Y3040_ stepper motor1 FWD",Outputs 17,TRUE,Output
+333,333,Y3041_SM1_RVS,1,40261,1,0,Bit,1,0,0,"DM10261, Y3041_ Stepper Motor1 RVS",Outputs 18,TRUE,Output
+334,334,Y3042_SM1_AWO,1,40261,1,0,Bit,2,0,0,"DM10261, Y3042_ Stepper Motor1 AWO",Outputs 19,TRUE,Output
+335,335,Y3043_SM1_M0,1,40261,1,0,Bit,3,0,0,"DM10261, Y3043_ stepper motor 1 M0",Outputs 20,TRUE,Output
+336,336,Y3044_SM2_FWD,1,40261,1,0,Bit,4,0,0,"DM10261, Y3044_ stepper motor2 FWD",Outputs 21,TRUE,Output
+337,337,Y3045_SM2_RVS,1,40261,1,0,Bit,5,0,0,"DM10261, Y3045_ Stepper Motor 2 RVS",Outputs 22,TRUE,Output
+338,338,Y3046_SM2_AWO,1,40261,1,0,Bit,6,0,0,"DM10261, Y3046_ stepper motor2 AWO",Outputs 23,TRUE,Output
+339,339,Y3047_SM2_M0,1,40261,1,0,Bit,7,0,0,"DM10261, Y3047_ stepper motor 2 M0",Outputs 24,TRUE,Output
+340,340,Y3048_ Spares,1,40261,1,0,Bit,8,0,0,"DM10261, Y3048_ Spares",Outputs 25,TRUE,Output
+341,341,Y3049_ Spares,1,40261,1,0,Bit,9,0,0,"DM10261, Y3049_ Spares",Outputs 26,TRUE,Output
+342,342,Y304A_PDSSP,1,40261,1,0,Bit,10,0,0,"DM10261, Y304A_ Possible Discharge Signal (Secondary Process)",Outputs 27,TRUE,Output
+343,343,Y304B_IRSPE,1,40261,1,0,Bit,11,0,0,"DM10261, Y304B_ input requirement signal (pre-engineering)",Outputs 28,TRUE,Output
+344,344,Y304C_ Spares,1,40261,1,0,Bit,12,0,0,"DM10261, Y304C_ Spares",Outputs 29,TRUE,Output
+345,345,Y304D_ Spares,1,40261,1,0,Bit,13,0,0,"DM10261, Y304D_ Spares",Outputs 30,TRUE,Output
+346,346,Y304E_ Spares,1,40261,1,0,Bit,14,0,0,"DM10261, Y304E_ Spares",Outputs 31,TRUE,Output
+347,347,Y304F_ Spares,1,40261,1,0,Bit,15,0,0,"DM10261, Y304F_ Spares",Outputs 32,TRUE,Output
+348,348,IO_OUTPUT33,1,40262,1,0,Bit,0,0,0,"DM10262, Outputs 33",Outputs 33,TRUE,Output
+349,349,IO_OUTPUT34,1,40262,1,0,Bit,1,0,0,"DM10262, Outputs 34",Outputs 34,TRUE,Output
+350,350,IO_OUTPUT35,1,40262,1,0,Bit,2,0,0,"DM10262, Outputs 35",Outputs 35,TRUE,Output
+351,351,IO_OUTPUT36,1,40262,1,0,Bit,3,0,0,"DM10262, Outputs 36",Outputs 36,TRUE,Output
+352,352,IO_OUTPUT37,1,40262,1,0,Bit,4,0,0,"DM10262, Outputs 37",Outputs 37,TRUE,Output
+353,353,IO_OUTPUT38,1,40262,1,0,Bit,5,0,0,"DM10262, Outputs 38",Outputs 38,TRUE,Output
+354,354,IO_OUTPUT39,1,40262,1,0,Bit,6,0,0,"DM10262, Outputs 39",Outputs 39,TRUE,Output
+355,355,IO_OUTPUT40,1,40262,1,0,Bit,7,0,0,"DM10262, Outputs 40",Outputs 40,TRUE,Output
+356,356,IO_OUTPUT41,1,40262,1,0,Bit,8,0,0,"DM10262, Outputs 41",Outputs 41,TRUE,Output
+357,357,IO_OUTPUT42,1,40262,1,0,Bit,9,0,0,"DM10262, Outputs 42",Outputs 42,TRUE,Output
+358,358,IO_OUTPUT43,1,40262,1,0,Bit,10,0,0,"DM10262, Outputs 43",Outputs 43,TRUE,Output
+359,359,IO_OUTPUT44,1,40262,1,0,Bit,11,0,0,"DM10262, Outputs 44",Outputs 44,TRUE,Output
+360,360,IO_OUTPUT45,1,40262,1,0,Bit,12,0,0,"DM10262, Outputs 45",Outputs 45,TRUE,Output
+361,361,IO_OUTPUT46,1,40262,1,0,Bit,13,0,0,"DM10262, Outputs 46",Outputs 46,TRUE,Output
+362,362,IO_OUTPUT47,1,40262,1,0,Bit,14,0,0,"DM10262, Outputs 47",Outputs 47,TRUE,Output
+363,363,IO_OUTPUT48,1,40262,1,0,Bit,15,0,0,"DM10262, Outputs 48",Outputs 48,TRUE,Output
+364,364,IO_OUTPUT49,1,40263,1,0,Bit,0,0,0,"DM10263, Outputs 49",Outputs 49,TRUE,Output
+365,365,IO_OUTPUT50,1,40263,1,0,Bit,1,0,0,"DM10263, Outputs 50",Outputs 50,TRUE,Output
+366,366,IO_OUTPUT51,1,40263,1,0,Bit,2,0,0,"DM10263, Outputs 51",Outputs 51,TRUE,Output
+367,367,IO_OUTPUT52,1,40263,1,0,Bit,3,0,0,"DM10263, Outputs 52",Outputs 52,TRUE,Output
+368,368,IO_OUTPUT53,1,40263,1,0,Bit,4,0,0,"DM10263, Outputs 53",Outputs 53,TRUE,Output
+369,369,IO_OUTPUT54,1,40263,1,0,Bit,5,0,0,"DM10263, Outputs 54",Outputs 54,TRUE,Output
+370,370,IO_OUTPUT55,1,40263,1,0,Bit,6,0,0,"DM10263, Outputs 55",Outputs 55,TRUE,Output
+371,371,IO_OUTPUT56,1,40263,1,0,Bit,7,0,0,"DM10263, Outputs 56",Outputs 56,TRUE,Output
+372,372,IO_OUTPUT57,1,40263,1,0,Bit,8,0,0,"DM10263, Outputs 57",Outputs 57,TRUE,Output
+373,373,IO_OUTPUT58,1,40263,1,0,Bit,9,0,0,"DM10263, Outputs 58",Outputs 58,TRUE,Output
+374,374,IO_OUTPUT59,1,40263,1,0,Bit,10,0,0,"DM10263, Outputs 59",Outputs 59,TRUE,Output
+375,375,IO_OUTPUT60,1,40263,1,0,Bit,11,0,0,"DM10263, Outputs 60",Outputs 60,TRUE,Output
+376,376,IO_OUTPUT61,1,40263,1,0,Bit,12,0,0,"DM10263, Outputs 61",Outputs 61,TRUE,Output
+377,377,IO_OUTPUT62,1,40263,1,0,Bit,13,0,0,"DM10263, Outputs 62",Outputs 62,TRUE,Output
+378,378,IO_OUTPUT63,1,40263,1,0,Bit,14,0,0,"DM10263, Outputs 63",Outputs 63,TRUE,Output
+379,379,IO_OUTPUT64,1,40263,1,0,Bit,15,0,0,"DM10263, Outputs 64",Outputs 64,TRUE,Output
+380,380,IO_OUTPUT65,1,40264,1,0,Bit,0,0,0,"DM10264, Outputs 65",Outputs 65,TRUE,Output
+381,381,IO_OUTPUT66,1,40264,1,0,Bit,1,0,0,"DM10264, Outputs 66",Outputs 66,TRUE,Output
+382,382,IO_OUTPUT67,1,40264,1,0,Bit,2,0,0,"DM10264, Outputs 67",Outputs 67,TRUE,Output
+383,383,IO_OUTPUT68,1,40264,1,0,Bit,3,0,0,"DM10264, Outputs 68",Outputs 68,TRUE,Output
+384,384,IO_OUTPUT69,1,40264,1,0,Bit,4,0,0,"DM10264, Outputs 69",Outputs 69,TRUE,Output
+385,385,IO_OUTPUT70,1,40264,1,0,Bit,5,0,0,"DM10264, Outputs 70",Outputs 70,TRUE,Output
+386,386,IO_OUTPUT71,1,40264,1,0,Bit,6,0,0,"DM10264, Outputs 71",Outputs 71,TRUE,Output
+387,387,IO_OUTPUT72,1,40264,1,0,Bit,7,0,0,"DM10264, Outputs 72",Outputs 72,TRUE,Output
+388,388,IO_OUTPUT73,1,40264,1,0,Bit,8,0,0,"DM10264, Outputs 73",Outputs 73,TRUE,Output
+389,389,IO_OUTPUT74,1,40264,1,0,Bit,9,0,0,"DM10264, Outputs 74",Outputs 74,TRUE,Output
+390,390,IO_OUTPUT75,1,40264,1,0,Bit,10,0,0,"DM10264, Outputs 75",Outputs 75,TRUE,Output
+391,391,IO_OUTPUT76,1,40264,1,0,Bit,11,0,0,"DM10264, Outputs 76",Outputs 76,TRUE,Output
+392,392,IO_OUTPUT77,1,40264,1,0,Bit,12,0,0,"DM10264, Outputs 77",Outputs 77,TRUE,Output
+393,393,IO_OUTPUT78,1,40264,1,0,Bit,13,0,0,"DM10264, Outputs 78",Outputs 78,TRUE,Output
+394,394,IO_OUTPUT79,1,40264,1,0,Bit,14,0,0,"DM10264, Outputs 79",Outputs 79,TRUE,Output
+395,395,IO_OUTPUT80,1,40264,1,0,Bit,15,0,0,"DM10264, Outputs 80",Outputs 80,TRUE,Output
+396,396,IO_OUTPUT81,1,40265,1,0,Bit,0,0,0,"DM10265, Outputs 81",Outputs 81,TRUE,Output
+397,397,IO_OUTPUT82,1,40265,1,0,Bit,1,0,0,"DM10265, Outputs 82",Outputs 82,TRUE,Output
+398,398,IO_OUTPUT83,1,40265,1,0,Bit,2,0,0,"DM10265, Outputs 83",Outputs 83,TRUE,Output
+399,399,IO_OUTPUT84,1,40265,1,0,Bit,3,0,0,"DM10265, Outputs 84",Outputs 84,TRUE,Output
+400,400,IO_OUTPUT85,1,40265,1,0,Bit,4,0,0,"DM10265, Outputs 85",Outputs 85,TRUE,Output
+401,401,IO_OUTPUT86,1,40265,1,0,Bit,5,0,0,"DM10265, Outputs 86",Outputs 86,TRUE,Output
+402,402,IO_OUTPUT87,1,40265,1,0,Bit,6,0,0,"DM10265, Outputs 87",Outputs 87,TRUE,Output
+403,403,IO_OUTPUT88,1,40265,1,0,Bit,7,0,0,"DM10265, Outputs 88",Outputs 88,TRUE,Output
+404,404,IO_OUTPUT89,1,40265,1,0,Bit,8,0,0,"DM10265, Outputs 89",Outputs 89,TRUE,Output
+405,405,IO_OUTPUT90,1,40265,1,0,Bit,9,0,0,"DM10265, Outputs 90",Outputs 90,TRUE,Output
+406,406,IO_OUTPUT91,1,40265,1,0,Bit,10,0,0,"DM10265, Outputs 91",Outputs 91,TRUE,Output
+407,407,IO_OUTPUT92,1,40265,1,0,Bit,11,0,0,"DM10265, Outputs 92",Outputs 92,TRUE,Output
+408,408,IO_OUTPUT93,1,40265,1,0,Bit,12,0,0,"DM10265, Outputs 93",Outputs 93,TRUE,Output
+409,409,IO_OUTPUT94,1,40265,1,0,Bit,13,0,0,"DM10265, Outputs 94",Outputs 94,TRUE,Output
+410,410,IO_OUTPUT95,1,40265,1,0,Bit,14,0,0,"DM10265, Outputs 95",Outputs 95,TRUE,Output
+411,411,IO_OUTPUT96,1,40265,1,0,Bit,15,0,0,"DM10265, Outputs 96",Outputs 96,TRUE,Output
+412,412,IO_OUTPUT97,1,40266,1,0,Bit,0,0,0,"DM10266, Outputs 97",Outputs 97,TRUE,Output
+413,413,IO_OUTPUT98,1,40266,1,0,Bit,1,0,0,"DM10266, Outputs 98",Outputs 98,TRUE,Output
+414,414,IO_OUTPUT99,1,40266,1,0,Bit,2,0,0,"DM10266, Outputs 99",Outputs 99,TRUE,Output
+415,415,IO_OUTPUT100,1,40266,1,0,Bit,3,0,0,"DM10266, Outputs 100",Outputs 100,TRUE,Output
+416,416,IO_OUTPUT101,1,40266,1,0,Bit,4,0,0,"DM10266, Outputs 101",Outputs 101,TRUE,Output
+417,417,IO_OUTPUT102,1,40266,1,0,Bit,5,0,0,"DM10266, Outputs 102",Outputs 102,TRUE,Output
+418,418,IO_OUTPUT103,1,40266,1,0,Bit,6,0,0,"DM10266, Outputs 103",Outputs 103,TRUE,Output
+419,419,IO_OUTPUT104,1,40266,1,0,Bit,7,0,0,"DM10266, Outputs 104",Outputs 104,TRUE,Output
+420,420,IO_OUTPUT105,1,40266,1,0,Bit,8,0,0,"DM10266, Outputs 105",Outputs 105,TRUE,Output
+421,421,IO_OUTPUT106,1,40266,1,0,Bit,9,0,0,"DM10266, Outputs 106",Outputs 106,TRUE,Output
+422,422,IO_OUTPUT107,1,40266,1,0,Bit,10,0,0,"DM10266, Outputs 107",Outputs 107,TRUE,Output
+423,423,IO_OUTPUT108,1,40266,1,0,Bit,11,0,0,"DM10266, Outputs 108",Outputs 108,TRUE,Output
+424,424,IO_OUTPUT109,1,40266,1,0,Bit,12,0,0,"DM10266, Outputs 109",Outputs 109,TRUE,Output
+425,425,IO_OUTPUT110,1,40266,1,0,Bit,13,0,0,"DM10266, Outputs 110",Outputs 110,TRUE,Output
+426,426,IO_OUTPUT111,1,40266,1,0,Bit,14,0,0,"DM10266, Outputs 111",Outputs 111,TRUE,Output
+427,427,IO_OUTPUT112,1,40266,1,0,Bit,15,0,0,"DM10266, Outputs 112",Outputs 112,TRUE,Output
+428,428,IO_OUTPUT113,1,40267,1,0,Bit,0,0,0,"DM10267, Outputs 113",Outputs 113,TRUE,Output
+429,429,IO_OUTPUT114,1,40267,1,0,Bit,1,0,0,"DM10267, Outputs 114",Outputs 114,TRUE,Output
+430,430,IO_OUTPUT115,1,40267,1,0,Bit,2,0,0,"DM10267, Outputs 115",Outputs 115,TRUE,Output
+431,431,IO_OUTPUT116,1,40267,1,0,Bit,3,0,0,"DM10267, Outputs 116",Outputs 116,TRUE,Output
+432,432,IO_OUTPUT117,1,40267,1,0,Bit,4,0,0,"DM10267, Outputs 117",Outputs 117,TRUE,Output
+433,433,IO_OUTPUT118,1,40267,1,0,Bit,5,0,0,"DM10267, Outputs 118",Outputs 118,TRUE,Output
+434,434,IO_OUTPUT119,1,40267,1,0,Bit,6,0,0,"DM10267, Outputs 119",Outputs 119,TRUE,Output
+435,435,IO_OUTPUT120,1,40267,1,0,Bit,7,0,0,"DM10267, Outputs 120",Outputs 120,TRUE,Output
+436,436,IO_OUTPUT121,1,40267,1,0,Bit,8,0,0,"DM10267, Outputs 121",Outputs 121,TRUE,Output
+437,437,IO_OUTPUT122,1,40267,1,0,Bit,9,0,0,"DM10267, Outputs 122",Outputs 122,TRUE,Output
+438,438,IO_OUTPUT123,1,40267,1,0,Bit,10,0,0,"DM10267, Outputs 123",Outputs 123,TRUE,Output
+439,439,IO_OUTPUT124,1,40267,1,0,Bit,11,0,0,"DM10267, Outputs 124",Outputs 124,TRUE,Output
+440,440,IO_OUTPUT125,1,40267,1,0,Bit,12,0,0,"DM10267, Outputs 125",Outputs 125,TRUE,Output
+441,441,IO_OUTPUT126,1,40267,1,0,Bit,13,0,0,"DM10267, Outputs 126",Outputs 126,TRUE,Output
+442,442,IO_OUTPUT127,1,40267,1,0,Bit,14,0,0,"DM10267, Outputs 127",Outputs 127,TRUE,Output
+443,443,IO_OUTPUT128,1,40267,1,0,Bit,15,0,0,"DM10267, Outputs 128",Outputs 128,TRUE,Output
+444,444,IO_OUTPUT129,1,40268,1,0,Bit,0,0,0,"DM10268, Outputs 129",Outputs 129,TRUE,Output
+445,445,IO_OUTPUT130,1,40268,1,0,Bit,1,0,0,"DM10268, Outputs 130",Outputs 130,TRUE,Output
+446,446,IO_OUTPUT131,1,40268,1,0,Bit,2,0,0,"DM10268, Outputs 131",Outputs 131,TRUE,Output
+447,447,IO_OUTPUT132,1,40268,1,0,Bit,3,0,0,"DM10268, Outputs 132",Outputs 132,TRUE,Output
+448,448,IO_OUTPUT133,1,40268,1,0,Bit,4,0,0,"DM10268, Outputs 133",Outputs 133,TRUE,Output
+449,449,IO_OUTPUT134,1,40268,1,0,Bit,5,0,0,"DM10268, Outputs 134",Outputs 134,TRUE,Output
+450,450,IO_OUTPUT135,1,40268,1,0,Bit,6,0,0,"DM10268, Outputs 135",Outputs 135,TRUE,Output
+451,451,IO_OUTPUT136,1,40268,1,0,Bit,7,0,0,"DM10268, Outputs 136",Outputs 136,TRUE,Output
+452,452,IO_OUTPUT137,1,40268,1,0,Bit,8,0,0,"DM10268, Outputs 137",Outputs 137,TRUE,Output
+453,453,IO_OUTPUT138,1,40268,1,0,Bit,9,0,0,"DM10268, Outputs 138",Outputs 138,TRUE,Output
+454,454,IO_OUTPUT139,1,40268,1,0,Bit,10,0,0,"DM10268, Outputs 139",Outputs 139,TRUE,Output
+455,455,IO_OUTPUT140,1,40268,1,0,Bit,11,0,0,"DM10268, Outputs 140",Outputs 140,TRUE,Output
+456,456,IO_OUTPUT141,1,40268,1,0,Bit,12,0,0,"DM10268, Outputs 141",Outputs 141,TRUE,Output
+457,457,IO_OUTPUT142,1,40268,1,0,Bit,13,0,0,"DM10268, Outputs 142",Outputs 142,TRUE,Output
+458,458,IO_OUTPUT143,1,40268,1,0,Bit,14,0,0,"DM10268, Outputs 143",Outputs 143,TRUE,Output
+459,459,IO_OUTPUT144,1,40268,1,0,Bit,15,0,0,"DM10268, Outputs 144",Outputs 144,TRUE,Output
+460,460,IO_OUTPUT145,1,40269,1,0,Bit,0,0,0,"DM10269, Outputs 145",Outputs 145,TRUE,Output
+461,461,IO_OUTPUT146,1,40269,1,0,Bit,1,0,0,"DM10269, Outputs 146",Outputs 146,TRUE,Output
+462,462,IO_OUTPUT147,1,40269,1,0,Bit,2,0,0,"DM10269, Outputs 147",Outputs 147,TRUE,Output
+463,463,IO_OUTPUT148,1,40269,1,0,Bit,3,0,0,"DM10269, Outputs 148",Outputs 148,TRUE,Output
+464,464,IO_OUTPUT149,1,40269,1,0,Bit,4,0,0,"DM10269, Outputs 149",Outputs 149,TRUE,Output
+465,465,IO_OUTPUT150,1,40269,1,0,Bit,5,0,0,"DM10269, Outputs 150",Outputs 150,TRUE,Output
+466,466,IO_OUTPUT151,1,40269,1,0,Bit,6,0,0,"DM10269, Outputs 151",Outputs 151,TRUE,Output
+467,467,IO_OUTPUT152,1,40269,1,0,Bit,7,0,0,"DM10269, Outputs 152",Outputs 152,TRUE,Output
+468,468,IO_OUTPUT153,1,40269,1,0,Bit,8,0,0,"DM10269, Outputs 153",Outputs 153,TRUE,Output
+469,469,IO_OUTPUT154,1,40269,1,0,Bit,9,0,0,"DM10269, Outputs 154",Outputs 154,TRUE,Output
+470,470,IO_OUTPUT155,1,40269,1,0,Bit,10,0,0,"DM10269, Outputs 155",Outputs 155,TRUE,Output
+471,471,IO_OUTPUT156,1,40269,1,0,Bit,11,0,0,"DM10269, Outputs 156",Outputs 156,TRUE,Output
+472,472,IO_OUTPUT157,1,40269,1,0,Bit,12,0,0,"DM10269, Outputs 157",Outputs 157,TRUE,Output
+473,473,IO_OUTPUT158,1,40269,1,0,Bit,13,0,0,"DM10269, Outputs 158",Outputs 158,TRUE,Output
+474,474,IO_OUTPUT159,1,40269,1,0,Bit,14,0,0,"DM10269, Outputs 159",Outputs 159,TRUE,Output
+475,475,IO_OUTPUT160,1,40269,1,0,Bit,15,0,0,"DM10269, Outputs 160",Outputs 160,TRUE,Output
+476,476,SYS_DATA_A1,1,40001,1,0,Bit,1,0,0,"DM10000, (System Data A1)","Pulse PLC to IPC, Time adjustment start signalWhen time adjustment is required, set to 0?1Receive by polling every 5 seconds and store each data",TRUE,None
+477,477,CD_DATA_A2,1,40050,1,0,Bit,1,0,0,"DM10050, Auto Run Condition Validation Signal",(Control Data A2),TRUE,None
+478,478,CD_DATA_A3,1,40050,1,0,Bit,2,0,0,"DM10050, Dry Run Condition Validation Signal",(Control Data A3),TRUE,None
+479,479,CD_DATA_A4,1,40050,1,0,Bit,3,0,0,"DM10050, Cycle Stop Condition Validation Signal",(Control Data A4),TRUE,None
+480,480,CD_DATA_A5,1,40050,1,0,Bit,4,0,0,"DM10050, Mass return to origin, activation conditions established, signal",(Control Data A5),TRUE,None
+481,481,CD_DATA_A6,1,40050,1,0,Bit,5,0,0,"DM10050, Auto Run Launching",(Control Data A6),TRUE,None
+482,482,CD_DATA_A7,1,40050,1,0,Bit,6,0,0,"DM10050, Dry Run Launching",(Control Data A7),TRUE,None
+483,483,CD_DATA_A8,1,40050,1,0,Bit,7,0,0,"DM10050, Cycle Stop Activating",(Control Data A8),TRUE,None
+484,484,CD_DATA_A9,1,40050,1,0,Bit,8,0,0,"DM10050, Mass return to origin Activation",(Control Data A9),TRUE,None
+485,485,CD_DATA_A10,1,40051,1,0,Bit,0,0,0,Ready to Drive ON,DM10051 (Control Data A10),TRUE,None
+486,486,CD_DATA_A11,1,40051,1,0,Bit,1,0,0,Main air pressure sensor ON,DM10051 (Control Data A11),TRUE,None
+487,487,CD_DATA_A12,1,40051,1,0,Bit,2,0,0,Servo motor 1 (X axis) Ready,DM10051 (Control Data A12),TRUE,None
+488,488,CD_DATA_A13,1,40051,1,0,Bit,3,0,0,Servo motor 2 (Y axis) Ready,DM10051 (Control Data A13),TRUE,None
+489,489,CD_DATA_A14,1,40051,1,0,Bit,4,0,0,Servo motor 1 (X axis) origin position,DM10051 (Control Data A14),TRUE,None
+490,490,CD_DATA_A15,1,40051,1,0,Bit,5,0,0,Servo motor 2 (Y axis) origin position,DM10051 (Control Data A15),TRUE,None
+491,491,CD_DATA_A16,1,40051,1,0,Bit,6,0,0,Conveyor ready,DM10051 (Control Data A16),TRUE,None
+492,492,CD_DATA_A17,1,40051,1,0,Bit,7,0,0,Transport conveyor stopped,DM10051 (Control Data A17),TRUE,None
+493,493,CD_DATA_A18,1,40051,1,0,Bit,8,0,0,Tray lift origin,DM10051 (Control Data A18),TRUE,None
+494,494,CD_DATA_A19,1,40051,1,0,Bit,9,0,0,Positioning cylinder origin,DM10051 (Control Data A19),TRUE,None
+495,495,CD_DATA_A20,1,40051,1,0,Bit,10,0,0,"DM10051, Startup Condition 11",(Control Data A20),TRUE,None
+496,496,CD_DATA_A21,1,40051,1,0,Bit,11,0,0,"DM10051, Startup Condition 12",(Control Data A21),TRUE,None
+497,497,CD_DATA_A22,1,40051,1,0,Bit,12,0,0,"DM10051, Startup Condition 13",(Control Data A22),TRUE,None
+498,498,CD_DATA_A23,1,40051,1,0,Bit,13,0,0,"DM10051, Startup Condition 14",(Control Data A23),TRUE,None
+499,499,CD_DATA_A24,1,40051,1,0,Bit,14,0,0,"DM10051, Startup Condition 15",(Control Data A24),TRUE,None
+500,500,CD_DATA_A25,1,40051,1,0,Bit,15,0,0,"DM10051, Startup Condition 16",(Control Data A25),TRUE,None
+501,501,CTL_EXTINT_DATAIN,1,40059,1,0,Bit,2,0,0,DM10059,After mapping is complete   the IPC sends a confirmation signal to the PLC,TRUE,None
+502,502,CD_DATA_B6,1,40056,1,0,UInt16,0,0,0,D10056,All Cavity  Status (OK_NG),TRUE,None
+503,503,SYS_DATA_READ_B2,1,40004,1,0,UInt16,0,0,0,"DM10004, System Data READ B2","Yearly DataStore year data in UINT format (e.g., 2025,2026)When the time storage completion signal reaches 0?1, check the IN data on the PLC",TRUE,None
+504,504,SYS_DATA_READ_B3,1,40005,1,0,UInt16,0,0,0,"DM10005, System Data READ B3","Monthly dataStore monthly data in UINT format (e.g., 1~12)When the time storage completion signal reaches 0?1, check the IN data on the PLC",TRUE,None
+505,505,SYS_DATA_READ_B4,1,40006,1,0,UInt16,0,0,0,"DM10006, System Data READ B4","Daily DataStore day data in UINT format (e.g., 1~31)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",TRUE,None
+506,506,SYS_DATA_READ_B5,1,40007,1,0,UInt16,0,0,0,"DM10007, System Data READ B5","Time DataStore time data in UINT format (e.g., 0~24)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",TRUE,None
+507,507,SYS_DATA_READ_B6,1,40008,1,0,UInt16,0,0,0,"DM10008, System Data READ B6","Minute DataStore minute data in UINT format (e.g., 0~59)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",TRUE,None
+508,508,SYS_DATA_READ_B7,1,40009,1,0,UInt16,0,0,0,"DM10009, System Data READ B7","Seconds DataStore second data in UINT format (e.g., 0~59)When the time storage completion signal reaches 0?1, check the IN data on the PLC.",TRUE,None
+509,509,Manual B12,1,40225,1,0,Bit,11,0,0,DM10225,X origin,TRUE,None
+510,510,Manual B16,1,40225,1,0,Bit,15,0,0,DM10225,Y origin,TRUE,None
+511,511,CD_DATA_A26,1,40050,1,0,Bit,9,0,0,DM10050,Cycle Squence Start and End,TRUE,None
+512,512,CD_DATA_B26,1,40059,1,0,Bit,0,0,0,DM10059,Reset Oee Params,TRUE,None
+513,513,CD_DATA_A27,1,40054,1,0,Bit,0,0,0,DM10054,Reset ackOee Params,TRUE,None
+514,514,CD_DATA_B27,1,40059,1,0,Bit,1,0,0,DM10059,Reverse Converyor Direct,TRUE,None
+515,515,CD_DATA_A28,1,40054,1,0,Bit,1,0,0,DM10054,Reverse Ack Converyor Direct,TRUE,None
+516,516,PD_DATA_B516,1,40600,2,0,Float,0,0,0,"DM10600, ",,TRUE,None
+517,517,PD_DATA_B517,1,40602,2,0,Float,0,0,0,"DM10602, ",,TRUE,None
+518,518,PD_DATA_B518,1,40604,2,0,Float,0,0,0,"DM10604, ",,TRUE,None
+519,519,PD_DATA_B519,1,40606,2,0,Float,0,0,0,"DM10606, ",,TRUE,None
+520,520,PD_DATA_B520,1,40608,2,0,Float,0,0,0,"DM10608, ",,TRUE,None
+521,521,PD_DATA_B521,1,40610,2,0,Float,0,0,0,"DM10610, ",,TRUE,None
+522,522,SYS_DATA_B8,1,40015,1,0,Bit,2,0,0,DM10015,Mac Mini Not Connected,TRUE,None
+523,523,PD_DATA_A516,1,40430,2,0,Float,0,0,0,"DM10430, ",,TRUE,None
+524,524,PD_DATA_A517,1,40432,2,0,Float,0,0,0,"DM10432, ",,TRUE,None
+525,525,PD_DATA_A518,1,40434,2,0,Float,0,0,0,"DM10434, ",,TRUE,None
+526,526,PD_DATA_A519,1,40436,2,0,Float,0,0,0,"DM10436, ",,TRUE,None
+527,527,PD_DATA_A520,1,40438,2,0,Float,0,0,0,"DM10438, ",,TRUE,None
+528,528,PD_DATA_A521,1,40440,2,0,Float,0,0,0,"DM10440, ",,TRUE,None
+529,529,SYS_DATA_B8,1,40301,1,0,Bit,0,0,0,DM10301,CCD Transfer Start,TRUE,None
+530,530,SYS_DATA_SEQ_1,1,40413,1,0,Int16,0,0,0,DM10413,Sqeucne for Cavity 1,TRUE,None
+531,531,SYS_DATA_SEQ_2,1,40414,1,0,Int16,0,0,0,DM10414,Sqeucne for Cavity 2,TRUE,None
+532,532,SYS_DATA_SEQ_3,1,40415,1,0,Int16,0,0,0,DM10415,Sqeucne for Cavity 3,TRUE,None
+533,533,SYS_DATA_SEQ_4,1,40416,1,0,Int16,0,0,0,DM10416,Sqeucne for Cavity 4,TRUE,None
+534,534,SYS_DATA_SEQ_5,1,40417,1,0,Int16,0,0,0,DM10417,Sqeucne for Cavity 5,TRUE,None
+535,535,SYS_DATA_SEQ_6,1,40418,1,0,Int16,0,0,0,DM10418,Sqeucne for Cavity 6,TRUE,None
+536,536,SYS_DATA_SEQ_7,1,40419,1,0,Int16,0,0,0,DM10419,Sqeucne for Cavity 7,TRUE,None
+537,537,SYS_DATA_SEQ_8,1,40420,1,0,Int16,0,0,0,DM10420,Sqeucne for Cavity 8,TRUE,None
+538,538,SYS_DATA_SEQ_9,1,40421,1,0,Int16,0,0,0,DM10421,Sqeucne for Cavity 9,TRUE,None
+539,539,SYS_DATA_SEQ_10,1,40422,1,0,Int16,0,0,0,DM10422,Sqeucne for Cavity 10,TRUE,None
+540,540,SYS_DATA_SEQ_11,1,40423,1,0,Int16,0,0,0,DM10423,Sqeucne for Cavity 11,TRUE,None
+541,541,SYS_DATA_SEQ_12,1,40424,1,0,Int16,0,0,0,DM10424,Sqeucne for Cavity 12,TRUE,None
+542,542,Control_Data_B10,1,40057,1,0,UInt16,0,0,0,DM10057,Number of Stations,TRUE,None
+543,543,SYS_DATA_B9,1,40480,1,0,Bit,0,0,0,DM10480,CCD Transfer Complete,TRUE,None
+

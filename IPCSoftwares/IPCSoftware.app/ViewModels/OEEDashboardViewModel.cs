@@ -322,7 +322,7 @@ namespace IPCSoftware.App.ViewModels
         public Brush StatusBrushTheta { get => _statusBrushTheta; set => SetProperty(ref _statusBrushTheta, value); }
 
         // --- UPDATED PROPERTIES (Call UpdateStatusColors in setters) ---
-       
+
 
         // --- LOGIC HELPER ---
         private void UpdateStatusColors()
@@ -392,7 +392,7 @@ namespace IPCSoftware.App.ViewModels
             _liveDataTimer.Start();
 
             // 2. UI Sync Timer (200ms) - Gets Images and Station Data from JSON (Cycle Synced)
-            _uiSyncTimer = new SafePoller( TimeSpan.FromMilliseconds(100), UiSyncTick);
+            _uiSyncTimer = new SafePoller(TimeSpan.FromMilliseconds(100), UiSyncTick);
             _uiSyncTimer.Start();
 
             _resetLogicTimer = new SafePoller(TimeSpan.FromMilliseconds(200), ResetSequenceTick);
@@ -459,7 +459,7 @@ namespace IPCSoftware.App.ViewModels
             //  GoodUnits = 1325;
             //  RejectedUnits = 48;
             Remarks = "All processes stable.";
-          //  CycleTrend = new List<double> { 2.8, 2.9, 2.7, 3.0, 2.8, 2.9, 2.85, 2.75, 2.9 };
+            //  CycleTrend = new List<double> { 2.8, 2.9, 2.7, 3.0, 2.8, 2.9, 2.85, 2.75, 2.9 };
         }
 
         private async void LoadCycleTimeTrend()
@@ -634,7 +634,7 @@ namespace IPCSoftware.App.ViewModels
                             _dialog.ShowMessage("Cycle Reset Successful.");
                             _resetState = ResetSequenceState.Idle;
                         }
-                       
+
                         break;
                 }
             }
@@ -733,7 +733,7 @@ namespace IPCSoftware.App.ViewModels
         // Loop 2: Cycle Sync (JSON)
         private async Task UiSyncTick()
         {
-          
+
             SyncUiWithJson();
         }
 
@@ -981,7 +981,7 @@ namespace IPCSoftware.App.ViewModels
         private ResetSequenceState _resetState = ResetSequenceState.Idle;
         private DateTime _resetTimeoutStart;
 
-  
+
         private void ShowImage(CameraImageItem img)
         {
             try
@@ -1212,7 +1212,7 @@ namespace IPCSoftware.App.ViewModels
                         case AggregationType.Average:
                             result = values.Average();
                             if (unit.Equals("s", StringComparison.OrdinalIgnoreCase))
-                            result = result / 100.0;
+                                result = result / 100.0;
                             // If unit is %, multiply by 100 if raw data is 0.0-1.0
                             if (unit == "%" && result <= 1.0 && result > 0) result *= 100;
                             return $"{result:F2}{unit}";
@@ -1288,7 +1288,7 @@ namespace IPCSoftware.App.ViewModels
                 _liveDataTimer.Dispose();
 
                 _uiSyncTimer.Dispose();
-                _resetLogicTimer.Dispose(); 
+                _resetLogicTimer.Dispose();
 
             }
             catch (Exception ex)

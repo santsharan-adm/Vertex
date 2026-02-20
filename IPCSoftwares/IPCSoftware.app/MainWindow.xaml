@@ -12,7 +12,7 @@
         WindowState="Maximized" 
        WindowStyle="None"
         Background="#F3F3F3" 
-        ResizeMode="NoResize">
+        ResizeMode="CanResize">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>

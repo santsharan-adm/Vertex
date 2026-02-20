@@ -12,6 +12,6 @@ namespace IPCSoftware.App.Views
             InitializeComponent();
         }
 
-  
+
     }
 }

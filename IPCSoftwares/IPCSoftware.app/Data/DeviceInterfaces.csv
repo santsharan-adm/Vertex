@@ -1,2 +1,3 @@
 ﻿Id,DeviceNo,DeviceName,UnitNo,Name,ComProtocol,IPAddress,PortNo,Gateway,Description,Remark,Enabled
 1,1,"PLC1",1,"Ethernet","Modbus Ethernet","127.0.0.1",502,"","","",True
+
