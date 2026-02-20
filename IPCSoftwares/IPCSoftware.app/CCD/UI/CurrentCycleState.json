@@ -1,0 +1,69 @@
+{
+  "BatchId": "shubham",
+  "LastUpdated": "2026-02-20T22:48:54.4344696+05:30",
+  "Stations": {
+    "3": {
+      "StationNumber": 3,
+      "ImagePath": "D:\\Repos\\Vertex\\IPCSoftwares\\IPCSoftware.app\\CCD\\UI\\3_shubham_2026_02_20_22-47-06-583_raw.bmp",
+      "Status": "Unchecked",
+      "X": 2.450000047683716,
+      "Y": 2.549999952316284,
+      "Z": 0.05999999865889549,
+      "Timestamp": "2026-02-20T22:47:06.7473754+05:30"
+    },
+    "2": {
+      "StationNumber": 2,
+      "ImagePath": "D:\\Repos\\Vertex\\IPCSoftwares\\IPCSoftware.app\\CCD\\UI\\2_shubham_2026_02_20_22-47-25-685_raw.bmp",
+      "Status": "Unchecked",
+      "X": 2.450000047683716,
+      "Y": 2.549999952316284,
+      "Z": 0.05999999865889549,
+      "Timestamp": "2026-02-20T22:47:25.7825329+05:30"
+    },
+    "1": {
+      "StationNumber": 1,
+      "ImagePath": "D:\\Repos\\Vertex\\IPCSoftwares\\IPCSoftware.app\\CCD\\UI\\1_shubham_2026_02_20_22-47-41-609_raw.bmp",
+      "Status": "Unchecked",
+      "X": 2.450000047683716,
+      "Y": 2.549999952316284,
+      "Z": 0.05999999865889549,
+      "Timestamp": "2026-02-20T22:47:41.7383602+05:30"
+    },
+    "4": {
+      "StationNumber": 4,
+      "ImagePath": "D:\\Repos\\Vertex\\IPCSoftwares\\IPCSoftware.app\\CCD\\UI\\4_shubham_2026_02_20_22-48-30-945_raw.bmp",
+      "Status": "Unchecked",
+      "X": 2.450000047683716,
+      "Y": 2.549999952316284,
+      "Z": 0.05999999865889549,
+      "Timestamp": "2026-02-20T22:48:31.0269408+05:30"
+    },
+    "5": {
+      "StationNumber": 5,
+      "ImagePath": "D:\\Repos\\Vertex\\IPCSoftwares\\IPCSoftware.app\\CCD\\UI\\5_shubham_2026_02_20_22-48-54-332_raw.bmp",
+      "Status": "Unchecked",
+      "X": 2.450000047683716,
+      "Y": 2.549999952316284,
+      "Z": 0.05999999865889549,
+      "Timestamp": "2026-02-20T22:48:54.4344687+05:30"
+    },
+    "6": {
+      "StationNumber": 6,
+      "ImagePath": null,
+      "Status": "Unchecked",
+      "X": 0.0,
+      "Y": 0.0,
+      "Z": 0.0,
+      "Timestamp": "2026-02-20T22:46:55.3523707+05:30"
+    },
+    "0": {
+      "StationNumber": 0,
+      "ImagePath": "D:\\Repos\\Vertex\\IPCSoftwares\\IPCSoftware.app\\CCD\\UI\\0_shubham_2026_02_20_22-46-55-353_raw.bmp",
+      "Status": null,
+      "X": 0.0,
+      "Y": 0.0,
+      "Z": 0.0,
+      "Timestamp": "2026-02-20T22:46:55.3794461+05:30"
+    }
+  }
+}

@@ -1,8 +1,8 @@
 {
   "Protocol": "https",
   "Host": "jsonplaceholder.typicode.com",
-  "Endpoint": "todos/1",
-  "TwoDCodeData": "",
+  "Endpoint": "",
+  "TwoDCodeData": "o",
   "PreviousStationCode": "",
   "CurrentMachineCode": ""
 }

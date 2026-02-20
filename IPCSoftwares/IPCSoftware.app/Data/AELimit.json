@@ -22,19 +22,19 @@
       "InspectionX": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionY": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionAngle": {
         "Lower": -0.8,
         "Upper": 0.8,
-        "Unit": "degree",
+        "Unit": "red",
         "HasLimits": true
       },
       "CycleTime": {
@@ -54,19 +54,19 @@
       "InspectionX": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionY": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionAngle": {
         "Lower": -0.8,
         "Upper": 0.8,
-        "Unit": "degree",
+        "Unit": "red",
         "HasLimits": true
       },
       "CycleTime": {
@@ -86,19 +86,19 @@
       "InspectionX": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionY": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionAngle": {
         "Lower": -0.8,
         "Upper": 0.8,
-        "Unit": "degree",
+        "Unit": "red",
         "HasLimits": true
       },
       "CycleTime": {
@@ -118,19 +118,19 @@
       "InspectionX": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionY": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionAngle": {
         "Lower": -0.8,
         "Upper": 0.8,
-        "Unit": "degree",
+        "Unit": "red",
         "HasLimits": true
       },
       "CycleTime": {
@@ -150,19 +150,19 @@
       "InspectionX": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionY": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionAngle": {
         "Lower": -0.8,
         "Upper": 0.8,
-        "Unit": "degree",
+        "Unit": "red",
         "HasLimits": true
       },
       "CycleTime": {
@@ -182,19 +182,19 @@
       "InspectionX": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionY": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionAngle": {
         "Lower": -0.8,
         "Upper": 0.8,
-        "Unit": "degree",
+        "Unit": "red",
         "HasLimits": true
       },
       "CycleTime": {
@@ -214,19 +214,19 @@
       "InspectionX": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionY": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionAngle": {
         "Lower": -0.8,
         "Upper": 0.8,
-        "Unit": "degree",
+        "Unit": "red",
         "HasLimits": true
       },
       "CycleTime": {
@@ -246,19 +246,19 @@
       "InspectionX": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionY": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionAngle": {
         "Lower": -0.8,
         "Upper": 0.8,
-        "Unit": "degree",
+        "Unit": "red",
         "HasLimits": true
       },
       "CycleTime": {
@@ -278,19 +278,19 @@
       "InspectionX": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionY": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionAngle": {
         "Lower": -0.8,
         "Upper": 0.8,
-        "Unit": "degree",
+        "Unit": "red",
         "HasLimits": true
       },
       "CycleTime": {
@@ -310,19 +310,19 @@
       "InspectionX": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionY": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionAngle": {
         "Lower": -0.8,
         "Upper": 0.8,
-        "Unit": "degree",
+        "Unit": "red",
         "HasLimits": true
       },
       "CycleTime": {
@@ -342,19 +342,19 @@
       "InspectionX": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionY": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionAngle": {
         "Lower": -0.8,
         "Upper": 0.8,
-        "Unit": "degree",
+        "Unit": "red",
         "HasLimits": true
       },
       "CycleTime": {
@@ -374,19 +374,19 @@
       "InspectionX": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionY": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionAngle": {
         "Lower": -0.8,
         "Upper": 0.8,
-        "Unit": "degree",
+        "Unit": "red",
         "HasLimits": true
       },
       "CycleTime": {
@@ -406,19 +406,19 @@
       "InspectionX": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionY": {
         "Lower": -0.13,
         "Upper": 0.13,
-        "Unit": "mm",
+        "Unit": "m",
         "HasLimits": true
       },
       "InspectionAngle": {
         "Lower": -0.8,
         "Upper": 0.8,
-        "Unit": "degree",
+        "Unit": "red",
         "HasLimits": true
       },
       "CycleTime": {

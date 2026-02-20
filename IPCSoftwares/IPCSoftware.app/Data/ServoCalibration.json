@@ -11,7 +11,7 @@
   {
     "PositionId": 1,
     "Name": "Position 1",
-    "SequenceIndex": 6,
+    "SequenceIndex": 3,
     "X": 0,
     "Y": 0,
     "Description": null,
@@ -20,7 +20,7 @@
   {
     "PositionId": 2,
     "Name": "Position 2",
-    "SequenceIndex": 5,
+    "SequenceIndex": 2,
     "X": 0,
     "Y": 0,
     "Description": null,
@@ -29,7 +29,7 @@
   {
     "PositionId": 3,
     "Name": "Position 3",
-    "SequenceIndex": 4,
+    "SequenceIndex": 1,
     "X": 0,
     "Y": 0,
     "Description": null,
@@ -38,7 +38,7 @@
   {
     "PositionId": 4,
     "Name": "Position 4",
-    "SequenceIndex": 3,
+    "SequenceIndex": 4,
     "X": 0,
     "Y": 0,
     "Description": null,
@@ -47,7 +47,7 @@
   {
     "PositionId": 5,
     "Name": "Position 5",
-    "SequenceIndex": 2,
+    "SequenceIndex": 5,
     "X": 0,
     "Y": 0,
     "Description": null,
@@ -56,34 +56,7 @@
   {
     "PositionId": 6,
     "Name": "Position 6",
-    "SequenceIndex": 1,
-    "X": 0,
-    "Y": 0,
-    "Description": null,
-    "IsEnabled": true
-  },
-  {
-    "PositionId": 7,
-    "Name": "Position 7",
-    "SequenceIndex": 7,
-    "X": 0,
-    "Y": 0,
-    "Description": null,
-    "IsEnabled": true
-  },
-  {
-    "PositionId": 8,
-    "Name": "Position 8",
-    "SequenceIndex": 8,
-    "X": 0,
-    "Y": 0,
-    "Description": null,
-    "IsEnabled": true
-  },
-  {
-    "PositionId": 9,
-    "Name": "Position 9",
-    "SequenceIndex": 9,
+    "SequenceIndex": 6,
     "X": 0,
     "Y": 0,
     "Description": null,
