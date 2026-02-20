@@ -81,6 +81,14 @@ namespace IPCSoftware.CoreService.Services.CCD
                         _logger.LogInfo("[CCD] Cycle Start Falling Edge -> Reset already done.", LogType.Error);
                     }
                 }
+                if (!isCycleEnabled && _lastCycleStartState)
+                {
+                     _logger.LogInfo("[CCD] Clearing Bits which was on during cycle.", LogType.Error);
+                   
+                    await WriteToPlc(ConstantValues.Return_TAG_ID, 0);
+                    await WriteToPlc(ConstantValues.Ext_DataReady, 0);
+                    await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, 0);
+                }
 
 
                 _lastCycleStartState = isCycleEnabled; 
@@ -189,6 +197,21 @@ namespace IPCSoftware.CoreService.Services.CCD
                 _triggerLock.Release();
             }
 
+        }
+
+        private async Task WriteToPlc(int tagId, object value)
+        {
+            try
+            {
+                var allTags = await _tagService.GetAllTagsAsync();
+                var tagConfig = allTags.FirstOrDefault(t => t.TagNo == tagId);
+                if (tagConfig != null && tagConfig.ModbusAddress > 0)
+                {
+                    var client = _plcManager.GetClient(tagConfig.PLCNo);
+                    if (client != null) await client.WriteAsync(tagConfig, value);
+                }
+            }
+            catch (Exception ex) { _logger.LogError($"Ext Write Error ({tagId}): {ex.Message}", LogType.Diagnostics); }
         }
 
 

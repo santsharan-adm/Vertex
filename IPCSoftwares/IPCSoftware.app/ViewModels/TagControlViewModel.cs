@@ -263,6 +263,7 @@ namespace IPCSoftware.App.ViewModels
                 if (dict.TryGetValue(input.Model.Id, out var live))
                 {
                     input.DisplayValue = live;
+                    input.Description = input.Model.Description;
                 }
             }
         }

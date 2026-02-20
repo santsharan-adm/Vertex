@@ -52,7 +52,7 @@ namespace IPCSoftware.Shared
             catch
             {
                 Disconnect();
-                throw;
+                throw ;
             }
         }
 

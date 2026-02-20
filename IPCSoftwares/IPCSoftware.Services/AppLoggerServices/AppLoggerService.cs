@@ -109,7 +109,7 @@ namespace IPCSoftware.Services.AppLoggerServices
 
             // Perform maintenance (Purging/Size Check) logic from LogManager
             // Doing this here ensures it happens on the background thread, not UI thread
-            _logManager.ApplyMaintenance(config, filePath);
+          //  _logManager.ApplyMaintenance(config, filePath);
 
             string line = $"{entry.Timestamp:yyyy-MM-dd HH:mm:ss:fff},{entry.Level},\"{entry.Message}\",{config.LogName}{Environment.NewLine}";
 

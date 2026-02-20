@@ -105,6 +105,7 @@
                     </DataGridTextColumn>
 
                     <!-- 3. Data Type -->
+                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="Auto" Foreground="#666"/>
                     <DataGridTextColumn Header="Data Type" Binding="{Binding DataTypeDisplay}" Width="Auto" Foreground="#666"/>
                     <DataGridTextColumn Header="Current Value" Binding="{Binding DisplayValue, TargetNullValue=''}"  Width="300" Foreground="#666"/>
 

@@ -190,14 +190,24 @@ namespace IPCSoftware.CoreService.Services.CCD
                 // Ideally trigger service awaits this.
 
 
-               await  _extService.SyncBatchStatusAsync(qrString);
+                try
+                {
+                    if (File.Exists(_stateFilePath)) File.Delete(_stateFilePath);
+                    var initialState = new CycleStateModel { BatchId = _activeBatchId, LastUpdated = DateTime.Now };
+                    File.WriteAllText(_stateFilePath, JsonConvert.SerializeObject(initialState, Formatting.Indented));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Failed to update initial JSON state: {ex.Message}", LogType.Diagnostics);
+                }
+
+                await  _extService.SyncBatchStatusAsync(qrString);
                 if (_extService.Settings.IsMacMiniEnabled)
                 {
                     _aeLimitService.BeginCycle(_activeBatchId, qrString);
                 }
            
 
-                if (File.Exists(_stateFilePath)) File.Delete(_stateFilePath);
 
                 // 2. Initialize JSON State with Pre-Calculated NG status
                 // This ensures UI shows Red immediately for NG parts

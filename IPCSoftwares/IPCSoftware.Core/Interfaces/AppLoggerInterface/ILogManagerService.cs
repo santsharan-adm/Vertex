@@ -14,10 +14,11 @@ namespace IPCSoftware.Core.Interfaces.AppLoggerInterface
         Task InitializeAsync();
         LogConfigurationModel GetConfig(LogType type);
         string ResolveLogFile(LogType type);
-        void ApplyMaintenance(LogConfigurationModel config, string filePath);
+       // void ApplyMaintenance(LogConfigurationModel config, string filePath);
 
         // NEW Methods
         void CheckAndPerformBackups(); // Called by Worker
+        void CheckAndPerformPurge();
         BackupResult PerformManualBackup(int logConfigId);
         BackupResult PerformManualRestore(int logConfigId);
     }

@@ -12,6 +12,14 @@ namespace IPCSoftware.App.ViewModels
     {
         public PLCTagConfigurationModel Model { get; }
 
+        private string _description;
+        public string Description
+        {
+            get => _description;
+            set => SetProperty(ref _description, value);
+        }
+
+
         public string DataTypeDisplay => GetDataTypeName(Model.DataType);
 
         public WritableTagItem(PLCTagConfigurationModel model)
