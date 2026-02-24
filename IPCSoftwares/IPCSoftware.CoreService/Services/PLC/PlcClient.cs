@@ -211,8 +211,9 @@ namespace IPCSoftware.CoreService.Services.PLC
                 }
                 catch (Exception ex)
                 {
-                   // _logger.LogError($"[CHUNK FAIL] Failed to read chunk start {chunk.StartOffset}: {ex.Message}");
+                    // _logger.LogError($"[CHUNK FAIL] Failed to read chunk start {chunk.StartOffset}: {ex.Message}");
                     // Optional: You could choose to throw here if you want to stop everything
+                    Console.WriteLine($" " + ex);
                 }
             }
 

@@ -19,9 +19,9 @@ namespace IPCSoftware.CoreService.Services.Dashboard
     public class DashboardInitializer : BaseService
     {
         private readonly PLCClientManager _manager;
-        private readonly UiListener _ui ;
+        private readonly UiListener _ui;
         private readonly AlgorithmAnalysisService _algo;
-        private readonly OeeEngine _oee ;
+        private readonly OeeEngine _oee;
         private readonly SystemMonitorService _systemMonitor;
         private readonly ShiftResetService _shiftReset;
         private readonly CCDTriggerService _ccdTrigger; // 1. Add field
@@ -44,15 +44,15 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         {
             _ui = ui;
             _shiftReset = shiftReset;
-            _alarmService = alarmService;   
+            _alarmService = alarmService;
             _systemMonitor = systemMonitor;
             _oee = oee;
             _manager = manager;
-            _algo =algo;
+            _algo = algo;
             _ccdTrigger = ccdTrigger;
         }
 
-      
+
 
         public async Task StartAsync()
         {
@@ -61,7 +61,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 _ui.OnRequestReceived = HandleUiRequest;
 
                 // Start UI
-               // var uiTask = _ui.StartAsync();
+                // var uiTask = _ui.StartAsync();
                 // Start PLC read loops
                 var plcTasks = _manager.Clients.Select(client =>
                 {
@@ -75,7 +75,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                         if (qrCodeNullCgeck != null && !(qrCodeNullCgeck.Contains('\0')))
                         {
                             _ccdTrigger.ProcessTriggers(processedData, _manager);
-                         
+
                         }
                         _oee.ProcessCycleTimeLogic(processedData);
                         _oee.Calculate(processedData);
@@ -132,7 +132,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             try
             {
                 Debug.WriteLine($"[Core] HandleUiRequest called → RequestId={request.RequestId}");
-               // _logger.LogInfo($"[Core] HandleUiRequest called → RequestId={request.RequestId}",LogType.Diagnostics);
+                // _logger.LogInfo($"[Core] HandleUiRequest called → RequestId={request.RequestId}",LogType.Diagnostics);
 
                 //---------------------------------------------------------
                 // 6) WRITE REQUEST (RequestId = 6)
@@ -151,19 +151,29 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 //---------------------------------------------------------
                 if (request.RequestId == 5)
                 {
-                    if (!_latestPackets.TryGetValue(1, out var packet))
+                    var allData = new Dictionary<int, object>();
+
+
+                    foreach (var plcPacket in _latestPackets.Values)
                     {
-                        return new ResponsePackage
+                        if (plcPacket?.Values != null)
                         {
-                            ResponseId = 5,
-                            Parameters = _lastValues
-                        };
+                            foreach (var kvp in plcPacket.Values)
+                            {
+                                if (kvp.Key != null)
+                                {
+                                    allData[(int)(uint)kvp.Key] = kvp.Value;
+                                }
+                            }
+                        }
                     }
+
+                    Console.WriteLine($"Request ID=5, Total Tags={allData.Count}, PLCs={_latestPackets.Count}");
 
                     return new ResponsePackage
                     {
                         ResponseId = 5,
-                        Parameters = packet.Values // Dictionary<uint, object>
+                        Parameters = allData
                     };
                 }
 
@@ -180,11 +190,11 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                             Parameters = new Dictionary<int, object>()
                         };
                     }
-                //    _oee.ProcessCycleTimeLogic(packet.Values);
+                    //    _oee.ProcessCycleTimeLogic(packet.Values);
                     return new ResponsePackage
                     {
                         ResponseId = 4,
-                        Parameters =_oee.Calculate( packet.Values)
+                        Parameters = _oee.Calculate(packet.Values)
                     };
                 }
 
@@ -199,9 +209,9 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                             Parameters = new Dictionary<int, object>()
                         };
                     }
-                //    _oee.ProcessCycleTimeLogic(packet.Values);
+                    //    _oee.ProcessCycleTimeLogic(packet.Values);
                     return new ResponsePackage
-                    {   
+                    {
                         ResponseId = 1,
                         Parameters = _systemMonitor.Process(packet.Values)
                     };
@@ -267,7 +277,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
 
                 //_logger.LogInfo($"Tag id  = {tagId} Tag Name = {cfg.Name} Value is = {value}  time is = {DateTime.Now.Millisecond}", LogType.Error);
-              //  Debug.WriteLine($"Tag id  = {tagId} Tag Name = {cfg.Name} Value is = {value}  time is = {DateTime.Now.Millisecond}");
+                //  Debug.WriteLine($"Tag id  = {tagId} Tag Name = {cfg.Name} Value is = {value}  time is = {DateTime.Now.Millisecond}");
                 await plc.WriteAsync(cfg, value);
 
                 SetCachedValue(tagId, value);
