@@ -201,6 +201,27 @@ namespace IPCSoftware.CoreService.Services.Dashboard
 
                 if (request.RequestId == 1)
                 {
+                    //var allprocessData = new Dictionary<int, object>();
+                    //foreach(var plcpacket in _latestPackets.Values)
+                    //{
+                    //    if (plcpacket?.Values != null)
+                    //    {
+                    //        foreach (var kvp in plcpacket.Values)
+                    //        {
+                    //            if (kvp.Key != null)
+                    //            {
+                    //                allprocessData[(int)(uint)kvp.Key] = kvp.Value;
+                    //            }
+                    //        }
+                    //    }
+                    //}
+
+                    //return new ResponsePackage
+                    //{
+                    //    ResponseId = 1,
+                    //    Parameters = allprocessData
+                    //};
+
                     if (!_latestPackets.TryGetValue(1, out var packet))
                     {
                         return new ResponsePackage

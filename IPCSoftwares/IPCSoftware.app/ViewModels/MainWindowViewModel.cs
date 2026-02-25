@@ -13,6 +13,7 @@ using IPCSoftware.Shared.Models.Messaging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
+using System.Dynamic;
 using System.Printing;
 using System.Reflection;
 using System.Windows;
@@ -119,6 +120,12 @@ public class MainWindowViewModel : BaseViewModel
     {
         get => _plcConnected;
         set => SetProperty(ref _plcConnected, value);
+    }
+    public bool _plc2Connected;
+    public bool PLC2Connected
+    {
+        get => _plc2Connected;
+        set => SetProperty(ref _plc2Connected, value);
     }
 
     public bool _timeSynched;
@@ -294,16 +301,13 @@ public class MainWindowViewModel : BaseViewModel
             var boolDict = await _coreClient.GetIoValuesAsync(1);
             if (boolDict != null && boolDict.TryGetValue(1, out object pulseObj))
             {
-                //var json = JsonConvert.SerializeObject(pulseObj);
-                //var pulseResult = JsonConvert.DeserializeObject<List<bool>>(json);
-                //PLCConnected = pulseResult[0];
-                //TimeSynched = pulseResult[1];
 
                 var json = JsonConvert.SerializeObject(pulseObj);
                 var pulseResult = JsonConvert.DeserializeObject<List<bool>>(json);
 
                 // Index 0: PLC
                 if (pulseResult.Count > 0) PLCConnected = pulseResult[0];
+                //if (pulseResult.Count > 0) PLC2Connected = pulseResult[0];
 
                 // Index 1: Time Sync
                 if (pulseResult.Count > 1) TimeSynched = pulseResult[1];
@@ -319,9 +323,12 @@ public class MainWindowViewModel : BaseViewModel
                 }
 
             }
+
+
             else
             {
                 PLCConnected = false;
+                PLC2Connected = false;
                 TimeSynched = false;
                 MacMiniConnected = false;
             }
@@ -330,9 +337,22 @@ public class MainWindowViewModel : BaseViewModel
         {
             _logger.LogError(ex.Message, LogType.Diagnostics);
             PLCConnected = false;
+            PLC2Connected = false;
             TimeSynched = false;
             MacMiniConnected = false;
             CurrentMachineMode = "UNKNOWN";
+        }
+
+        finally
+        {
+            var boolDict = await _coreClient.GetIoValuesAsync(1);
+            if (boolDict != null && boolDict.TryGetValue(1, out object pulse2Obj))
+            {
+                var json = JsonConvert.SerializeObject(pulse2Obj);
+                var pulse2Result = JsonConvert.DeserializeObject<List<bool>>(json);
+                // Index for 2nd device
+                if (pulse2Result.Count > 0) PLC2Connected = pulse2Result[0];
+            }
         }
 
     }
