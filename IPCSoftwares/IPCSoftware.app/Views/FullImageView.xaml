@@ -53,7 +53,7 @@
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="1.2*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -65,7 +65,7 @@
             </Border>
 
             <!-- Right: Details -->
-            <Grid Grid.Column="1" Margin="30">
+            <Grid Grid.Column="1" Margin="15">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -84,7 +84,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="PARAMETER" Foreground="#AAA" FontWeight="Bold" FontSize="12"/>
                     <TextBlock Grid.Column="1" Text="VALUE" Foreground="#AAA" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center"/>
@@ -97,7 +97,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="X" FontSize="18" Foreground="#333" VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
@@ -107,9 +107,9 @@
                         </StackPanel>
                         <!-- Bound limits to LimitX properties -->
                         <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding LimitX_Min, StringFormat=F2}" FontSize="16" Foreground="#555"/>
+                            <TextBlock Text="{Binding LimitX_Min, StringFormat={}{0:+0.000;-0.000;0.000}}" FontSize="16" Foreground="#555"/>
                             <TextBlock Text=" - " FontSize="16" Foreground="#555"/>
-                            <TextBlock Text="{Binding LimitX_Max, StringFormat=F2}" FontSize="16" Foreground="#555"/>
+                            <TextBlock Text="{Binding LimitX_Max, StringFormat={}{0:+0.000;-0.000;0.000}}" FontSize="16" Foreground="#555"/>
                         </StackPanel>
                     </Grid>
                     <Separator Background="#EEE"/>
@@ -119,7 +119,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Y" FontSize="18" Foreground="#333" VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
@@ -129,9 +129,9 @@
                         </StackPanel>
                         <!-- Bound limits to LimitY properties -->
                         <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding LimitY_Min, StringFormat=F2}" FontSize="16" Foreground="#555"/>
+                            <TextBlock Text="{Binding LimitY_Min, StringFormat={}{0:+0.000;-0.000;0.000}}" FontSize="16" Foreground="#555"/>
                             <TextBlock Text=" - " FontSize="16" Foreground="#555"/>
-                            <TextBlock Text="{Binding LimitY_Max, StringFormat=F2}" FontSize="16" Foreground="#555"/>
+                            <TextBlock Text="{Binding LimitY_Max, StringFormat={}{0:+0.000;-0.000;0.000}}" FontSize="16" Foreground="#555"/>
                         </StackPanel>
                     </Grid>
                     <Separator Background="#EEE"/>
@@ -141,7 +141,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="θ" FontSize="18" Foreground="#333" VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
@@ -151,9 +151,9 @@
                         </StackPanel>
                         <!-- Bound limits to LimitZ properties -->
                         <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding LimitZ_Min, StringFormat=F2}" FontSize="16" Foreground="#555"/>
+                            <TextBlock Text="{Binding LimitZ_Min, StringFormat={}{0:+0.000;-0.000;0.000}}" FontSize="16" Foreground="#555"/>
                             <TextBlock Text=" - " FontSize="16" Foreground="#555"/>
-                            <TextBlock Text="{Binding LimitZ_Max, StringFormat=F2}" FontSize="16" Foreground="#555"/>
+                            <TextBlock Text="{Binding LimitZ_Max,StringFormat={}{0:+0.000;-0.000;0.000}}" FontSize="16" Foreground="#555"/>
                         </StackPanel>
                     </Grid>
                     <Separator Background="#EEE"/>

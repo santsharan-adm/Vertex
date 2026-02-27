@@ -113,7 +113,7 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref okNgStatus, value);
         }
 
-        private string _qrCodeText = "Waiting for start...";
+        private string _qrCodeText = "Waiting for Scan...";
         public string QRCodeText
         {
             get => _qrCodeText;
@@ -127,7 +127,28 @@ namespace IPCSoftware.App.ViewModels
         public ImageSource QrCodeImage
         {
             get => _qrCodeImage;
-            set => SetProperty(ref _qrCodeImage, value);
+           // set => SetProperty(ref _qrCodeImage, value);
+            set
+            {
+                if (SetProperty(ref _qrCodeImage, value))
+                    OnPropertyChanged(nameof(IsWaitingForMacMini));
+            }
+        }
+
+
+        public bool IsWaitingForMacMini
+        {
+            get
+            {
+                if (_settingsMonitor == null) return false;
+
+                bool isMacMiniEnabled = _settingsMonitor.CurrentValue.IsMacMiniEnabled;
+                bool hasQrCode = !string.IsNullOrEmpty(QRCodeText) && QRCodeText != "Waiting for Scan...";
+                bool noImageYet = QrCodeImage == null;
+
+                // Show only if Mac Mini is ON, a QR code was scanned, but the station 0 image hasn't arrived yet
+                return isMacMiniEnabled && hasQrCode && noImageYet;
+            }
         }
 
         // The Collection for the 12 Grid Stations

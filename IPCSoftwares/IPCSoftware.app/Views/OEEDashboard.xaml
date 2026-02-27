@@ -433,9 +433,9 @@
                                         <TextBlock Text="{Binding UnitX, StringFormat=' {0}'}" Foreground="{Binding StatusBrushX}" FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
 
-                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding LimitX_Min, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center" Margin="0,15,0,0"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding LimitX_Min, StringFormat={}{0:+0.000;-0.000;0.000}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center" Margin="0,15,0,0"/>
 
-                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding LimitX_Max, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center" Margin="0,15,0,0"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding LimitX_Max,  StringFormat={}{0:+0.000;-0.000;0.000} }" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center" Margin="0,15,0,0"/>
 
                                     <Border Grid.Row="2" Grid.ColumnSpan="4" Height="1" Background="{DynamicResource BorderBrush}" Margin="0,10"/>
 
@@ -447,8 +447,8 @@
                                         <TextBlock Text="{Binding UnitY, StringFormat=' {0}'}" Foreground="{Binding StatusBrushY}" FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
 
-                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding LimitY_Min, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding LimitY_Max, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding LimitY_Min, StringFormat={}{0:+0.000;-0.000;0.000}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding LimitY_Max, StringFormat={}{0:+0.000;-0.000;0.000}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
 
                                     <Border Grid.Row="4" Grid.ColumnSpan="4" Height="1" Background="{DynamicResource BorderBrush}" Margin="0,10"/>
 
@@ -460,8 +460,8 @@
                                         <TextBlock Text="{Binding UnitTheta, StringFormat=' {0}'}" Foreground="{Binding StatusBrushTheta}" FontSize="24" FontWeight="Bold"/>
                                     </StackPanel>
 
-                                    <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding LimitTheta_Min, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding LimitTheta_Max, StringFormat={}{0:F2}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding LimitTheta_Min, StringFormat={}{0:+0.000;-0.000;0.000}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding LimitTheta_Max, StringFormat={}{0:+0.000;-0.000;0.000}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="24" HorizontalAlignment="Center"/>
 
                                 </Grid>
                             </Grid>
@@ -483,8 +483,19 @@
                             </Grid.ColumnDefinitions>
 
                             <Border Background="White" Padding="8" CornerRadius="8">
-                                <!-- Updated: Source is now bound to the ViewModel property -->
-                                <Image Source="{Binding QrCodeImage}" Height="100" Width="100"/>
+                                <Grid>
+                                    <!-- QR Image -->
+                                    <Image Source="{Binding QrCodeImage}" Height="100" Width="100"/>
+
+                                    <!-- WAITING OVERLAY -->
+                                    <Border Background="#E6FFFFFF" CornerRadius="4" Visibility="{Binding IsWaitingForMacMini, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="⏳" FontSize="28" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                                            <TextBlock Text="Waiting for" FontSize="11" FontWeight="Bold" Foreground="#E67E22" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Mac Mini..." FontSize="11" FontWeight="Bold" Foreground="#E67E22" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
                             </Border>
 
                             <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0,0,0">

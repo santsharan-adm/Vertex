@@ -196,10 +196,10 @@
 
                 <!-- Row 1: X Direction -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Inspection X" Style="{StaticResource MatrixRowLabel}"/>
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding MinX.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixLiveValue}"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding MinX.CurrentValue, StringFormat={}{0:+0.000;-0.000;0.000}}" Style="{StaticResource MatrixLiveValue}"/>
                 <TextBox    Grid.Row="2" Grid.Column="2" Text="{Binding MinX.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}"/>
 
-                <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding MaxX.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixLiveValue}"/>
+                <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding MaxX.CurrentValue, StringFormat={}{0:+0.000;-0.000;0.000}}" Style="{StaticResource MatrixLiveValue}"/>
                 <TextBox    Grid.Row="2" Grid.Column="5" Text="{Binding MaxX.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}"/>
 
                 <!-- EDITED: Unit is now a TextBox -->
@@ -209,10 +209,10 @@
 
                 <!-- Row 2: Y Direction -->
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Inspection Y" Style="{StaticResource MatrixRowLabel}"/>
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding MinY.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixLiveValue}"/>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding MinY.CurrentValue, StringFormat={}{0:+0.000;-0.000;0.000}}" Style="{StaticResource MatrixLiveValue}"/>
                 <TextBox    Grid.Row="3" Grid.Column="2" Text="{Binding MinY.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}"/>
 
-                <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding MaxY.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixLiveValue}"/>
+                <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding MaxY.CurrentValue, StringFormat={}{0:+0.000;-0.000;0.000}}" Style="{StaticResource MatrixLiveValue}"/>
                 <TextBox    Grid.Row="3" Grid.Column="5" Text="{Binding MaxY.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}"/>
 
                 <!-- EDITED: Unit is now a TextBox -->
@@ -222,10 +222,10 @@
 
                 <!-- Row 3: Angle/Z -->
                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Inspection Angle" Style="{StaticResource MatrixRowLabel}"/>
-                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding MinZ.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixLiveValue}"/>
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding MinZ.CurrentValue, StringFormat={}{0:+0.000;-0.000;0.000}}" Style="{StaticResource MatrixLiveValue}"/>
                 <TextBox    Grid.Row="4" Grid.Column="2" Text="{Binding MinZ.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}"/>
 
-                <TextBlock Grid.Row="4" Grid.Column="4" Text="{Binding MaxZ.CurrentValue, StringFormat=F3}" Style="{StaticResource MatrixLiveValue}"/>
+                <TextBlock Grid.Row="4" Grid.Column="4" Text="{Binding MaxZ.CurrentValue, StringFormat={}{0:+0.000;-0.000;0.000}}" Style="{StaticResource MatrixLiveValue}"/>
                 <TextBox    Grid.Row="4" Grid.Column="5" Text="{Binding MaxZ.NewValue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputTextBox}"/>
 
                 <!-- EDITED: Unit is now a TextBox -->

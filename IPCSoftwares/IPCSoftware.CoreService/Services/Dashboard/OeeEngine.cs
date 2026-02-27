@@ -74,7 +74,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                     return;
                 }
                 string json = File.ReadAllText(jsonPath);
-                var positions = JsonSerializer.Deserialize<List<PositionConfigJson>>(json);
+                var positions = JsonSerializer.Deserialize<List<ServoPositionModel>>(json);
                 if (positions == null || positions.Count == 0)
                 {
                     _logger.LogError("[OEE] Station positions JSON is empty or could not be deserialized.", LogType.Diagnostics);
@@ -501,14 +501,6 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             }
         }
 
-        private class PositionConfigJson
-        {
-            public int PositionId { get; set; }
-            public string? Name { get; set; }
-            public int SequenceIndex { get; set; }
-            public int X { get; set; }
-            public int Y { get; set; }
-            public string? Description { get; set; }
-        }
+       
     }
 }
