@@ -132,7 +132,16 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                     // If we have an active record mid-cycle, log it now as 'Aborted'
                     if (_currentCycleRecord != null)
                     {
-                        FinalizeAndLogCycle(tagValues, isCycleComplete: false);
+                        int step = _currentSequenceStep;
+                        int maxStations = GetMaxStations();
+                        if (step >= maxStations)
+                        {
+                            FinalizeAndLogCycle(tagValues, isCycleComplete: true);
+                        }
+                        else
+                        {
+                            FinalizeAndLogCycle(tagValues, isCycleComplete: false);
+                        }
                     }
                 }
                 _lastCycleStartTriggerState = currentCycleStartState;
@@ -237,11 +246,14 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 // 1. Ensure record exists
                 if (_currentCycleRecord == null)
                 {
-                    string twoDCode = GetString(tagValues, ConstantValues.TAG_QR_DATA);
+                    _logger.LogInfo("[OEE] Cycle finalized but no active record exists (Empty Cycle). Skipping CSV log.", LogType.Diagnostics);
+                    return; // EXIT IMMEDIATELY. Do not log ghost rows.
+
+                   /* string twoDCode = GetString(tagValues, ConstantValues.TAG_QR_DATA);
                     _currentCycleRecord = new ProductionDataRecord
                     {
                         TwoDCode = string.IsNullOrWhiteSpace(twoDCode) ? "NA" : twoDCode
-                    };
+                    };*/
                 }
 
                 // 2. Read Raw PLC Values

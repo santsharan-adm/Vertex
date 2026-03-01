@@ -222,7 +222,7 @@ namespace IPCSoftware.CoreService.Services.External
 
                 _cachedSerials = statusData.Serials;
                 await MapAndWriteToPlc(statusData);
-                await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, false);
+               // await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, false);
             }
             catch (Exception ex)
             {
