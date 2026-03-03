@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
