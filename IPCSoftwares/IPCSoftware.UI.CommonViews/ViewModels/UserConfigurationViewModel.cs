@@ -1,18 +1,12 @@
-﻿using IPCSoftware.Core.Interfaces;
-using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.Shared;
-using IPCSoftware.Shared.Models;
-using IPCSoftware.Shared.Models.ConfigModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
-namespace IPCSoftware.App.ViewModels
+namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class UserConfigurationViewModel : BaseViewModel
     {
@@ -86,14 +80,14 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler CancelRequested;
 
         public UserConfigurationViewModel(
-            IUserManagementService userService, 
+            IUserManagementService userService,
             IDialogService dialog,
         IAppLogger logger) : base(logger)
         {
             _userService = userService;
             _dialog = dialog;
 
-            Roles = new ObservableCollection<string> { "Admin", "Supervisor", "Operator"};
+            Roles = new ObservableCollection<string> { "Admin", "Supervisor", "Operator" };
 
             SaveCommand = new RelayCommand(async () => await OnSaveAsync(), CanSave);
             CancelCommand = new RelayCommand(OnCancel);
@@ -124,8 +118,8 @@ namespace IPCSoftware.App.ViewModels
                 FirstName = user.FirstName;
                 LastName = user.LastName;
                 UserName = user.UserName;
-                 Password = "";
-               // Password = user.Password;
+                Password = "";
+                // Password = user.Password;
                 SelectedRole = user.Role ?? "User";
                 IsActive = user.IsActive;
 
@@ -162,7 +156,7 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-     
+
         private bool CanSave()
         {
             if (IsEditMode)
@@ -213,15 +207,15 @@ namespace IPCSoftware.App.ViewModels
                 // Capture the "Username taken" message and show it in the UI
 
                 _logger.LogError(ex.Message, LogType.Diagnostics);
-                _dialog.ShowWarning(ex.Message);    
-                
+                _dialog.ShowWarning(ex.Message);
+
                 ErrorMessage = ex.Message;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
                 // Handle generic errors
-               // ErrorMessage = "An unexpected error occurred: " + ex.Message;
+                // ErrorMessage = "An unexpected error occurred: " + ex.Message;
             }
         }
 
