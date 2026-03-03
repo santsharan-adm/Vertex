@@ -10,6 +10,7 @@ using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Win32;
 using Microsoft.Extensions.Options;
+using IPCSoftware.UI.CommonViews.ViewModels;
 
 namespace IPCSoftware.App.ViewModels
 {

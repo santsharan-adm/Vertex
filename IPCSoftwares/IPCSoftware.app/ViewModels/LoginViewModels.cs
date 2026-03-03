@@ -5,6 +5,7 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
 

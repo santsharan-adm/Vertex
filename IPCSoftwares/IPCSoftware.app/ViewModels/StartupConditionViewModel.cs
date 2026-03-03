@@ -5,6 +5,7 @@ using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
