@@ -12,10 +12,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     {
         protected readonly IAppLogger _logger;
 
-        public BaseViewModel(IAppLogger logger)
-        {
-            _logger = logger;
-        }
+        public BaseViewModel(IAppLogger logger) => _logger = logger;
 
     }
 }

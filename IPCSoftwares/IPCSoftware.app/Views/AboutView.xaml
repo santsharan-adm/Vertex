@@ -7,7 +7,6 @@
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800"
-             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:AboutViewModel}"
              Background="#F3F4F6">
 
     <UserControl.Resources>
