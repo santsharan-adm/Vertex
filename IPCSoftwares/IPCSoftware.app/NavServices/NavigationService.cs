@@ -1,8 +1,12 @@
 ﻿using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.UI.CommonViews;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.UI.CommonViews;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualBasic.Logging;
 using System;

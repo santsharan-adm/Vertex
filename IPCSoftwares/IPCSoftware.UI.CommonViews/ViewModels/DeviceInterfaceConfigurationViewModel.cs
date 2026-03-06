@@ -3,7 +3,6 @@ using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 
 using IPCSoftware.Shared.Models.ConfigModels;
-using IPCSoftware.UI.CommonViews.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace IPCSoftware.App.ViewModels
+namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class DeviceInterfaceConfigurationViewModel : BaseViewModel
     {
@@ -121,7 +120,7 @@ namespace IPCSoftware.App.ViewModels
         public event EventHandler CancelRequested;
 
         public DeviceInterfaceConfigurationViewModel(
-            IDeviceConfigurationService deviceService, 
+            IDeviceConfigurationService deviceService,
             IAppLogger logger) : base(logger)
         {
             _deviceService = deviceService;
@@ -155,11 +154,11 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-            _parentDevice = parentDevice;
-            Title = $"Edit Interface - {parentDevice.DeviceName}";
-            IsEditMode = true;
-            _currentInterface = deviceInterface.Clone();
-            LoadFromModel(_currentInterface);
+                _parentDevice = parentDevice;
+                Title = $"Edit Interface - {parentDevice.DeviceName}";
+                IsEditMode = true;
+                _currentInterface = deviceInterface.Clone();
+                LoadFromModel(_currentInterface);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,4 @@
-using IPCSoftware.Shared;
+﻿using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.Logging;
 using System.Collections.ObjectModel;
@@ -9,7 +9,7 @@ using System.Windows.Input;
 using System.Text.Json;
 using System.IO;
 
-namespace IPCSoftware.App.ViewModels
+namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class ReportConfigViewModel : INotifyPropertyChanged
     {

@@ -64,12 +64,13 @@
   <ItemGroup>
     <PackageReference Include="CustomSelectFileDlg" Version="1.0.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IPCSoftware.Common\IPCSoftware.Common.csproj" />
     <ProjectReference Include="..\IPCSoftware.CoreService\IPCSoftware.CoreService.csproj" />
     <ProjectReference Include="..\IPCSoftware.Helpers\IPCSoftware.Helpers.csproj" />
     <ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />

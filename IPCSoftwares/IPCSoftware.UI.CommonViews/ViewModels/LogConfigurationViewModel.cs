@@ -12,9 +12,8 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using IPCSoftware.Core.Interfaces;
 using System.IO;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.UI.CommonViews.ViewModels;
 
-namespace IPCSoftware.App.ViewModels
+namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class LogConfigurationViewModel : BaseViewModel
     {
@@ -47,18 +46,18 @@ namespace IPCSoftware.App.ViewModels
 
 
         private string _selectedLogType;
-    /*    public string SelectedLogType
-        {
-            get => _selectedLogType;
-            set
+        /*    public string SelectedLogType
             {
-                if (SetProperty(ref _selectedLogType, value))
+                get => _selectedLogType;
+                set
                 {
-                    UpdateFileName();
+                    if (SetProperty(ref _selectedLogType, value))
+                    {
+                        UpdateFileName();
+                    }
                 }
             }
-        }
-*/
+    */
         public string SelectedLogType
         {
             get => _selectedLogType;
@@ -69,7 +68,7 @@ namespace IPCSoftware.App.ViewModels
                     UpdateFileName();
 
                     // 2. Determine if we are in Production Mode
-                    IsProductionLog = (value == "Production");
+                    IsProductionLog = value == "Production";
                 }
             }
         }
@@ -254,7 +253,7 @@ namespace IPCSoftware.App.ViewModels
             LoadFromModel(_currentLog);
         }
 
-     
+
 
         public void LoadForEdit(LogConfigurationModel log)
         {
@@ -304,7 +303,7 @@ namespace IPCSoftware.App.ViewModels
                 _currentLog.LogRetentionTime = LogRetentionDays;
                 _currentLog.LogRetentionFileSize = FileSize;
                 _currentLog.AutoPurge = AutoPurge;
-                _currentLog.BackupSchedule = Enum.Parse<BackupScheduleType>( SelectedBackupSchedule);
+                _currentLog.BackupSchedule = Enum.Parse<BackupScheduleType>(SelectedBackupSchedule);
                 _currentLog.BackupTime = BackupTime;
 
                 // Reset backup-related values based on schedule type
@@ -354,7 +353,7 @@ namespace IPCSoftware.App.ViewModels
             try
             {
                 SaveToModel();
-              
+
 
                 if (IsEditMode)
                 {
@@ -474,30 +473,30 @@ namespace IPCSoftware.App.ViewModels
             _dialog.ShowMessage($"Restore {status}.\n\nFiles Found: {result.TotalFiles}\nRestored: {result.CopiedFiles}\nFailed: {result.FailedFiles}");
         }
 
-       /* private void OnBackUp()
-        {
-            _logManager.PerformManualBackup(_currentLog.Id);
+        /* private void OnBackUp()
+         {
+             _logManager.PerformManualBackup(_currentLog.Id);
 
-            Task.Delay(1599);
-            _dialog.ShowMessage("Backup completed sucessfully.");
-            // Execute manual backup logic
-            // TODO: Implement backup logic
-        }
+             Task.Delay(1599);
+             _dialog.ShowMessage("Backup completed sucessfully.");
+             // Execute manual backup logic
+             // TODO: Implement backup logic
+         }
 
-        private void OnRestore()
-        {
-            if(_dialog.ShowYesNo("Are you sure you want to restore logs?"))
-            {
+         private void OnRestore()
+         {
+             if(_dialog.ShowYesNo("Are you sure you want to restore logs?"))
+             {
 
-            _logManager.PerformManualRestore(_currentLog.Id);
+             _logManager.PerformManualRestore(_currentLog.Id);
 
-            Task.Delay(1599);
-            _dialog.ShowMessage("Restore completed sucessfully.");
-            }
+             Task.Delay(1599);
+             _dialog.ShowMessage("Restore completed sucessfully.");
+             }
 
-            // Execute manual backup logic
-            // TODO: Implement backup logic
-        }*/
+             // Execute manual backup logic
+             // TODO: Implement backup logic
+         }*/
 
 
 
@@ -542,4 +541,3 @@ namespace IPCSoftware.App.ViewModels
         }
     }
 }
-    
