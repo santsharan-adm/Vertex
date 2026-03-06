@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.CoreService", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.UI.CommonViews", "IPCSoftware.UI.CommonViews\IPCSoftware.UI.CommonViews.csproj", "{DECF8D79-CDE8-424C-B621-720173EF6329}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.Common", "IPCSoftware.Common\IPCSoftware.Common.csproj", "{6799CD48-CF9A-4771-8DC9-66B044493B5F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
