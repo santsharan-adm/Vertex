@@ -114,7 +114,7 @@ namespace IPCSoftware.App.DI
 
 
             // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
-            services.AddTransient<ShiftConfigurationViewModel>();
+            services.AddTransient<IPCSoftware.UI.CommonViews.ViewModels.ShiftConfigurationViewModel>();
             services.AddTransient<UI.CommonViews.ShiftConfigurationView>();
 
 
