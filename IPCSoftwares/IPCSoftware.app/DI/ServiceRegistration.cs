@@ -157,13 +157,8 @@ namespace IPCSoftware.App.DI
 
             // ========== ALARM CONFIGURATION VIEWMODELS (Transient) ========== 
             services.AddTransient<AlarmListViewModel>();
-<<<<<<< Updated upstream
             services.AddTransient<AlarmConfigurationViewModel>();
             services.AddTransient<BackupService>();
-=======
-            services.AddTransient<UI.CommonViews.ViewModels.AlarmConfigurationViewModel>();
-            services.AddTransient< BackupService>();
->>>>>>> Stashed changes
             services.AddTransient<TagConfigLoader>();
 
 
@@ -209,11 +204,11 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceDetailView>();
             services.AddTransient<DeviceInterfaceConfigurationView>();
             services.AddTransient<CameraDetailView>();
-            services.AddTransient<UI.CommonViews.CameraInterfaceConfigurationView>();
+            services.AddTransient<CameraInterfaceConfigurationView>();
 
             // Alarm Configuration Views 
             services.AddTransient<AlarmListView>();
-            services.AddTransient<UI.CommonViews.AlarmConfigurationView>();
+            services.AddTransient<AlarmConfigurationView>();
 
             // User Management Views 
             services.AddTransient<UserListView>();

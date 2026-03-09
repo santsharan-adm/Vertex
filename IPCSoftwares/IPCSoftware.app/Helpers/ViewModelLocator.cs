@@ -27,7 +27,7 @@ namespace IPCSoftware.App.Helpers
         }
 
         private static void AutoWireViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+            {
             if (e.NewValue is Type viewModelType)
             {
                 var viewModel = App.ServiceProvider.GetService(viewModelType);

@@ -9,23 +9,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
-<<<<<<< Updated upstream
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.3" />
-=======
->>>>>>> Stashed changes
     <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\IPCSoftware.Common\IPCSoftware.Common.csproj" />
-<<<<<<< Updated upstream
-=======
-    <ProjectReference Include="..\IPCSoftware.CoreService\IPCSoftware.CoreService.csproj" />
->>>>>>> Stashed changes
     <ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
-    <ProjectReference Include="..\IPCSoftware.DataLogger\IPCSoftware.DataLogger.csproj" />
-    <ProjectReference Include="..\IPCSoftware.FileManager\IPCSoftware.FileManager.csproj" />
     <ProjectReference Include="..\IPCSoftware.Helpers\IPCSoftware.Helpers.csproj" />
     <ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
     <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
