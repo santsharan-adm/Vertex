@@ -18,7 +18,7 @@ namespace IPCSoftware.UI.CommonViews
     /// <summary>
     /// Interaction logic for AlarmConfigurationView.xaml
     /// </summary>
-    public partial class AlarmConfigurationView : UserControl
+    public partial class AlarmConfigurationView : System.Windows.Controls.UserControl
     {
         public AlarmConfigurationView()
         {

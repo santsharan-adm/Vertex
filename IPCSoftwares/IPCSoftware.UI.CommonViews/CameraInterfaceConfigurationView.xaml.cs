@@ -18,7 +18,7 @@ namespace IPCSoftware.UI.CommonViews
     /// <summary>
     /// Interaction logic for CameraInterfaceConfigurationView.xaml
     /// </summary>
-    public partial class CameraInterfaceConfigurationView : UserControl
+    public partial class CameraInterfaceConfigurationView : System.Windows.Controls.UserControl
     {
         public CameraInterfaceConfigurationView()
         {

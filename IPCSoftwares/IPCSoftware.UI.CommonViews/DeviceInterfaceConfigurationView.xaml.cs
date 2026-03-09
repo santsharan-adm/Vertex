@@ -18,7 +18,7 @@ namespace IPCSoftware.UI.CommonViews
     /// <summary>
     /// Interaction logic for DeviceInterfaceConfigurationView.xaml
     /// </summary>
-    public partial class DeviceInterfaceConfigurationView : UserControl
+    public partial class DeviceInterfaceConfigurationView : System.Windows.Controls.UserControl
     {
         public DeviceInterfaceConfigurationView()
         {

@@ -13,11 +13,10 @@ using System.Windows.Input;
 
 namespace IPCSoftware.UI.CommonViews.ViewModels
 {
-    public class DeviceInterfaceConfigurationViewModel : BaseViewModel
+    public class DeviceConfigurationViewModel : BaseViewModel
     {
         private readonly IDeviceConfigurationService _deviceService;
-        private DeviceInterfaceModel _currentInterface;
-        private DeviceModel _parentDevice;
+        private DeviceModel _currentDevice;
         private bool _isEditMode;
         private string _title;
 
@@ -48,46 +47,25 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             set => SetProperty(ref _deviceName, value);
         }
 
-        private int _unitNo;
-        public int UnitNo
+        private string _selectedDeviceType;
+        public string SelectedDeviceType
         {
-            get => _unitNo;
-            set => SetProperty(ref _unitNo, value);
+            get => _selectedDeviceType;
+            set => SetProperty(ref _selectedDeviceType, value);
         }
 
-        private string _name;
-        public string Name
+        private string _make;
+        public string Make
         {
-            get => _name;
-            set => SetProperty(ref _name, value);
+            get => _make;
+            set => SetProperty(ref _make, value);
         }
 
-        private string _selectedComProtocol;
-        public string SelectedComProtocol
+        private string _model;
+        public string Model
         {
-            get => _selectedComProtocol;
-            set => SetProperty(ref _selectedComProtocol, value);
-        }
-
-        private string _ipAddress;
-        public string IPAddress
-        {
-            get => _ipAddress;
-            set => SetProperty(ref _ipAddress, value);
-        }
-
-        private int _portNo;
-        public int PortNo
-        {
-            get => _portNo;
-            set => SetProperty(ref _portNo, value);
-        }
-
-        private string _gateway;
-        public string Gateway
-        {
-            get => _gateway;
-            set => SetProperty(ref _gateway, value);
+            get => _model;
+            set => SetProperty(ref _model, value);
         }
 
         private string _description;
@@ -111,7 +89,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             set => SetProperty(ref _enabled, value);
         }
 
-        public ObservableCollection<string> ComProtocols { get; }
+        public ObservableCollection<string> DeviceTypes { get; }
 
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
@@ -119,68 +97,71 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public DeviceInterfaceConfigurationViewModel(
+        public DeviceConfigurationViewModel(
             IDeviceConfigurationService deviceService,
             IAppLogger logger) : base(logger)
         {
             _deviceService = deviceService;
 
-            ComProtocols = new ObservableCollection<string>
-            {
-                "Modbus Ethernet",
-                "EthernetIP",
-                "EtherCat",
-                "RTU"
-            };
+            DeviceTypes = new ObservableCollection<string> { "PLC", "Robo", "CCD" };
 
             SaveCommand = new RelayCommand(async () => await OnSaveAsync(), CanSave);
             CancelCommand = new RelayCommand(OnCancel);
+
+            InitializeNewDevice();
         }
 
-        public void InitializeNewInterface(DeviceModel parentDevice)
+        public void InitializeNewDevice()
         {
-            _parentDevice = parentDevice;
-            Title = $"Add Interface - {parentDevice.DeviceName}";
+            Title = "Add Device";
             IsEditMode = false;
-            _currentInterface = new DeviceInterfaceModel
-            {
-                DeviceNo = parentDevice.DeviceNo,
-                DeviceName = parentDevice.DeviceName
-            };
-            LoadFromModel(_currentInterface);
+            _currentDevice = new DeviceModel();
+            LoadFromModel(_currentDevice);
+            _ = GenerateNextDeviceNo();
         }
 
-        public void LoadForEdit(DeviceModel parentDevice, DeviceInterfaceModel deviceInterface)
+        private async Task GenerateNextDeviceNo()
         {
             try
             {
-                _parentDevice = parentDevice;
-                Title = $"Edit Interface - {parentDevice.DeviceName}";
-                IsEditMode = true;
-                _currentInterface = deviceInterface.Clone();
-                LoadFromModel(_currentInterface);
+                var devices = await _deviceService.GetAllDevicesAsync();
+                int nextNo = 1;
+                if (devices != null && devices.Any())
+                {
+                    nextNo = devices.Max(d => d.DeviceNo) + 1;
+                }
+
+                // Update UI and Model
+                DeviceNo = nextNo;
+                if (_currentDevice != null) _currentDevice.DeviceNo = nextNo;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, LogType.Diagnostics);
+                _logger.LogError($"Error generating device number: {ex.Message}", LogType.Diagnostics);
             }
         }
 
-        private void LoadFromModel(DeviceInterfaceModel deviceInterface)
+
+        public void LoadForEdit(DeviceModel device)
+        {
+            Title = "Edit Device";
+            IsEditMode = true;
+            _currentDevice = device.Clone();
+            LoadFromModel(_currentDevice);
+        }
+
+        private void LoadFromModel(DeviceModel device)
         {
             try
             {
-                DeviceNo = deviceInterface.DeviceNo;
-                DeviceName = deviceInterface.DeviceName;
-                UnitNo = deviceInterface.UnitNo;
-                Name = deviceInterface.Name;
-                SelectedComProtocol = deviceInterface.ComProtocol ?? "Modbus Ethernet";
-                IPAddress = deviceInterface.IPAddress;
-                PortNo = deviceInterface.PortNo;
-                Gateway = deviceInterface.Gateway;
-                Description = deviceInterface.Description;
-                Remark = deviceInterface.Remark;
-                Enabled = deviceInterface.Enabled;
+                DeviceNo = device.DeviceNo;
+                DeviceName = device.DeviceName;
+                SelectedDeviceType = device.DeviceType ?? "PLC";
+                Make = device.Make;
+                Model = device.Model;
+                Description = device.Description;
+                Remark = device.Remark;
+                Enabled = device.Enabled;
             }
             catch (Exception ex)
             {
@@ -192,17 +173,14 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             try
             {
-                _currentInterface.DeviceNo = DeviceNo;
-                _currentInterface.DeviceName = DeviceName;
-                _currentInterface.UnitNo = UnitNo;
-                _currentInterface.Name = Name;
-                _currentInterface.ComProtocol = SelectedComProtocol;
-                _currentInterface.IPAddress = IPAddress;
-                _currentInterface.PortNo = PortNo;
-                _currentInterface.Gateway = Gateway;
-                _currentInterface.Description = Description;
-                _currentInterface.Remark = Remark;
-                _currentInterface.Enabled = Enabled;
+                _currentDevice.DeviceNo = DeviceNo;
+                _currentDevice.DeviceName = DeviceName;
+                _currentDevice.DeviceType = SelectedDeviceType;
+                _currentDevice.Make = Make;
+                _currentDevice.Model = Model;
+                _currentDevice.Description = Description;
+                _currentDevice.Remark = Remark;
+                _currentDevice.Enabled = Enabled;
             }
             catch (Exception ex)
             {
@@ -212,8 +190,9 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
         private bool CanSave()
         {
-            return !string.IsNullOrWhiteSpace(Name) &&
-                   !string.IsNullOrWhiteSpace(SelectedComProtocol);
+            return DeviceNo > 0 &&
+                   !string.IsNullOrWhiteSpace(DeviceName) &&
+                   !string.IsNullOrWhiteSpace(SelectedDeviceType);
         }
 
         private async Task OnSaveAsync()
@@ -224,11 +203,11 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
                 if (IsEditMode)
                 {
-                    await _deviceService.UpdateInterfaceAsync(_currentInterface);
+                    await _deviceService.UpdateDeviceAsync(_currentDevice);
                 }
                 else
                 {
-                    await _deviceService.AddInterfaceAsync(_currentInterface);
+                    await _deviceService.AddDeviceAsync(_currentDevice);
                 }
 
                 SaveCompleted?.Invoke(this, EventArgs.Empty);

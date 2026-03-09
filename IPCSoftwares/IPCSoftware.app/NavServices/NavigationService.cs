@@ -1,10 +1,10 @@
-﻿using IPCSoftware.App.ViewModels;
+﻿using IPCSoftware.App.DI;
+using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
-using IPCSoftware.UI.CommonViews;
-using IPCSoftware.UI.CommonViews.ViewModels;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.UI.CommonViews;
 using IPCSoftware.UI.CommonViews;
 using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -197,7 +197,7 @@ namespace IPCSoftware.App.NavServices
             DeviceInterfaceModel interfaceToEdit, Func<Task> onSaveCallback)
         {
             var configView = App.ServiceProvider.GetService<DeviceInterfaceConfigurationView>();
-            var configVM = App.ServiceProvider.GetService<DeviceInterfaceConfigurationViewModel>();
+            var configVM = App.ServiceProvider.GetService<IPCSoftware.UI.CommonViews.ViewModels.DeviceInterfaceConfigurationViewModel>();
 
             configView.DataContext = configVM;
 

@@ -18,7 +18,7 @@ namespace IPCSoftware.UI.CommonViews
     /// <summary>
     /// Interaction logic for ReportConfigView.xaml
     /// </summary>
-    public partial class ReportConfigView : UserControl
+    public partial class ReportConfigView : System.Windows.Controls.UserControl
     {
         public ReportConfigView()
         {

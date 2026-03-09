@@ -18,7 +18,7 @@ namespace IPCSoftware.UI.CommonViews
     /// <summary>
     /// Interaction logic for LogConfigurationView.xaml
     /// </summary>
-    public partial class LogConfigurationView : UserControl
+    public partial class LogConfigurationView : System.Windows.Controls.UserControl
     {
         public LogConfigurationView()
         {

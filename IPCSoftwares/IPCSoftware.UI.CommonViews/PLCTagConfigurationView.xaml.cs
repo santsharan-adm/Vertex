@@ -18,7 +18,7 @@ namespace IPCSoftware.UI.CommonViews
     /// <summary>
     /// Interaction logic for PLCTagConfigurationView.xaml
     /// </summary>
-    public partial class PLCTagConfigurationView : UserControl
+    public partial class PLCTagConfigurationView : System.Windows.Controls.UserControl
     {
         public PLCTagConfigurationView()
         {

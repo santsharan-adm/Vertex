@@ -383,7 +383,8 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                     AllowNonFileSystemItems = false,
                     Multiselect = false
                 };
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok) return dialog.FileName;
+                if ((CommonFileDialogResult)dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                    return dialog.FileName;
             }
             catch { }
             return string.Empty;
@@ -401,7 +402,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                     Multiselect = false
                 };
 
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                if ((CommonFileDialogResult)dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     DataFolder = Path.Combine(dialog.FileName, "Logs", SelectedLogType);
 
@@ -426,7 +427,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                     Multiselect = false
                 };
 
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                if ((CommonFileDialogResult)dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     BackupFolder = Path.Combine(dialog.FileName, "LogsBackup", SelectedLogType);
                 }

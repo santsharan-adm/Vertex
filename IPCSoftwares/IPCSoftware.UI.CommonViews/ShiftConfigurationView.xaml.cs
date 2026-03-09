@@ -18,7 +18,7 @@ namespace IPCSoftware.UI.CommonViews
     /// <summary>
     /// Interaction logic for ShiftConfigurationView.xaml
     /// </summary>
-    public partial class ShiftConfigurationView : UserControl
+    public partial class ShiftConfigurationView : System.Windows.Controls.UserControl
     {
         public ShiftConfigurationView()
         {

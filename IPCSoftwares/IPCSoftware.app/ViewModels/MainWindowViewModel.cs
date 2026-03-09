@@ -526,7 +526,7 @@ public class MainWindowViewModel : BaseViewModel
                     break;
 
                 case "Shift Config":
-                    _nav.NavigateMain<ShiftConfigurationView>();
+                    _nav.NavigateMain<IPCSoftware.UI.CommonViews.ShiftConfigurationView>();
                     break;
 
                 case "PLC TAG Config":

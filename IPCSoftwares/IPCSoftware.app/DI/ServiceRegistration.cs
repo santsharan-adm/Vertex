@@ -115,7 +115,7 @@ namespace IPCSoftware.App.DI
 
             // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
             services.AddTransient<ShiftConfigurationViewModel>();
-            services.AddTransient<ShiftConfigurationView>();
+            services.AddTransient<UI.CommonViews.ShiftConfigurationView>();
 
 
             // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
@@ -131,7 +131,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceListViewModel>();
             services.AddTransient<DeviceConfigurationViewModel>();
             services.AddTransient<DeviceDetailViewModel>();
-            services.AddTransient<DeviceInterfaceConfigurationViewModel>();
+            services.AddTransient<IPCSoftware.UI.CommonViews.ViewModels.DeviceInterfaceConfigurationViewModel>();
             services.AddTransient<CameraDetailViewModel>();
             services.AddTransient<CameraInterfaceConfigurationViewModel>();
 
@@ -157,13 +157,13 @@ namespace IPCSoftware.App.DI
 
             // ========== ALARM CONFIGURATION VIEWMODELS (Transient) ========== 
             services.AddTransient<AlarmListViewModel>();
-<<<<<<< Updated upstream
+
             services.AddTransient<AlarmConfigurationViewModel>();
             services.AddTransient<BackupService>();
-=======
+
             services.AddTransient<UI.CommonViews.ViewModels.AlarmConfigurationViewModel>();
-            services.AddTransient< BackupService>();
->>>>>>> Stashed changes
+            services.AddTransient<BackupService>();
+
             services.AddTransient<TagConfigLoader>();
 
 
@@ -264,4 +264,6 @@ namespace IPCSoftware.App.DI
             services.AddTransient<Func<ProcessSequenceWindow>>(sp => () => sp.GetRequiredService<ProcessSequenceWindow>());
         }
     }
+
 }
+

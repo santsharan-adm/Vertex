@@ -128,6 +128,8 @@ namespace IPCSoftware.App
 
             _host.Start();
             ServiceProvider = (ServiceProvider)_host.Services;
+            
+            IPCSoftware.Common.WPFExtensions.ViewModelLocator.ServiceProvider = ServiceProvider;
 
             TcpClient = ServiceProvider.GetService<UiTcpClient>();
 

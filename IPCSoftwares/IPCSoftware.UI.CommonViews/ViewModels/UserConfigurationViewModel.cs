@@ -1,9 +1,9 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-<<<<<<< Updated upstream
-=======
+
+
 using Microsoft.WindowsAPICodePack.Dialogs;
->>>>>>> Stashed changes
+
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
