@@ -1,9 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-
-
-using Microsoft.WindowsAPICodePack.Dialogs;
-
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;

@@ -5,7 +5,6 @@ using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.UI.CommonViews;
-using IPCSoftware.UI.CommonViews;
 using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualBasic.Logging;
@@ -237,7 +236,7 @@ namespace IPCSoftware.App.NavServices
 
         public void NavigateToCameraInterfaceConfiguration(DeviceModel parentDevice, CameraInterfaceModel cameraInterfaceToEdit, Func<Task> onSaveCallback)
         {
-            var configView = App.ServiceProvider.GetService<UI.CommonViews.CameraInterfaceConfigurationView>();
+            var configView = App.ServiceProvider.GetService<CameraInterfaceConfigurationView>();
             var configVM = App.ServiceProvider.GetService<CameraInterfaceConfigurationViewModel>();
 
             configView.DataContext = configVM;
@@ -335,8 +334,8 @@ namespace IPCSoftware.App.NavServices
 
         public void NavigateToUserConfiguration(UserConfigurationModel userToEdit, Func<Task> onSaveCallback)
         {
-            var configView = App.ServiceProvider.GetService<UI.CommonViews.UserConfigurationView>();
-            var configVM = App.ServiceProvider.GetService<UI.CommonViews.ViewModels.UserConfigurationViewModel>();
+            var configView = App.ServiceProvider.GetService<UserConfigurationView>();
+            var configVM = App.ServiceProvider.GetService<UserConfigurationViewModel>();
 
             configView.DataContext = configVM;
 

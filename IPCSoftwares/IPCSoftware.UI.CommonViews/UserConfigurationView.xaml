@@ -4,9 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:IPCSoftware.UI.CommonViews"
-             xmlns:helpers="clr-namespace:IPCSoftware.Helpers;assembly=IPCSoftware.Helpers" 
-             xmlns:viewmodels="clr-namespace:IPCSoftware.UI.CommonViews.ViewModels;assembly=IPCSoftware.UI.CommonViews"
-             d:DataContext="{d:DesignInstance viewmodels:UserConfigurationViewModel}"
+             xmlns:helpers="clr-namespace:IPCSoftware.Helpers;assembly=IPCSoftware.Helpers"
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920"
              Background="#F3F3F3">
