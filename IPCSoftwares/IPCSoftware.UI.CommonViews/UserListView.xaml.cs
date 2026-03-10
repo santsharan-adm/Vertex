@@ -13,18 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace IPCSoftware.App.Views
+namespace IPCSoftware.UI.CommonViews
 {
     /// <summary>
     /// Interaction logic for UserListView.xaml
     /// </summary>
-    public partial class UserListView : UserControl
+    public partial class UserListView : System.Windows.Controls.UserControl
     {
         public UserListView()
         {
             InitializeComponent();
         }
-
-      
     }
 }

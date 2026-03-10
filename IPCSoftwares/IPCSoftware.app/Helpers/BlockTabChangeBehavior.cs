@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace IPCSoftware.App.Helpers
-{
+using IPCSoftware.Common.WPFExtensions.Converters;
+
     internal class BlockTabChangeBehavior
     {
         public static readonly DependencyProperty BlockWhenProperty =
@@ -78,4 +78,4 @@ namespace IPCSoftware.App.Helpers
             }
         }
     }
-}
+
