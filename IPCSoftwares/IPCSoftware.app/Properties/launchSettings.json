@@ -4,7 +4,7 @@
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development",
-        "CONFIG_DIR": "D:\\Repos\\Vertex\\IPCSoftwares\\IPCSoftware.app"
+        "CONFIG_DIR": "C:\\Users\\V5 IT SOLUTION\\Documents\\GitHub\\Vertex\\IPCSoftwares\\IPCSoftware.app\\Properties\\launchSettings.json"
 
       }
     }

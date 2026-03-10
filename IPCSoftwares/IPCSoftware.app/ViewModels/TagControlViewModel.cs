@@ -1,32 +1,32 @@
-﻿using IPCSoftware.App.Helpers;
-using IPCSoftware.App.Services;
-using IPCSoftware.App.Services.UI;
+﻿using IPCSoftware.Helpers;
+using IPCSoftware.Services;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+
+using IPCSoftware.App.Helpers;
+using IPCSoftware.App.Services;
+
 using IPCSoftware.UI.CommonViews.ViewModels;
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace IPCSoftware.App.ViewModels
 {
     public class TagControlViewModel : BaseViewModel, IDisposable
     {
         private readonly IPLCTagConfigurationService _tagService;
-       // private readonly DispatcherTimer _timer;
         private readonly SafePoller _timer;
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
-
 
         public ObservableCollection<WritableTagItem> WritableTags { get; } = new();
         public ObservableCollection<WritableTagItem> AllInputs { get; } = new();
@@ -58,17 +58,11 @@ namespace IPCSoftware.App.ViewModels
 
             WriteCommand = new RelayCommand<WritableTagItem>(async (item) => await OnWriteAsync(item));
 
-            // Load tags on startup
             InitializeAsync();
 
-            _timer = new SafePoller( TimeSpan.FromMilliseconds(100),
-                                     TimerTick  // Pass the method directly
-                                   );
+            _timer = new SafePoller(TimeSpan.FromMilliseconds(100), TimerTick);
             _timer.Start();
-
-        
         }
-
 
         private async Task TimerTick()
         {
@@ -77,41 +71,31 @@ namespace IPCSoftware.App.ViewModels
                 var liveData = await _coreClient.GetIoValuesAsync(5);
                 UpdateValues(liveData);
             }
-
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
 
-
         private void ApplyFilter()
         {
-            // We are modifying the UI collection, so we clear it first
             WritableTags.Clear();
 
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                // Case 1: No Search - Add everything from Master List to UI List
                 foreach (var item in AllInputs)
-                {
                     WritableTags.Add(item);
-                }
             }
             else
             {
-                // Case 2: Search Active - Filter Master List and add matches to UI List
                 var s = SearchText.Trim().ToLower();
 
                 var matches = AllInputs.Where(t =>
-                    (t.Model.Name != null && t.Model.Name.ToLower().Contains(s)) ||
-                    t.Model.TagNo.ToString().Contains(s) // Searching by TagNo (what is shown in Grid)
-                );
+                    t.Model.Name != null && t.Model.Name.ToLower().Contains(s) ||
+                    t.Model.TagNo.ToString().Contains(s));
 
                 foreach (var item in matches)
-                {
                     WritableTags.Add(item);
-                }
             }
         }
 
@@ -121,21 +105,17 @@ namespace IPCSoftware.App.ViewModels
             {
                 var allTags = await _tagService.GetAllTagsAsync();
 
-                // 1. Clear both lists
                 WritableTags.Clear();
                 AllInputs.Clear();
 
-                // 2. Filter for writable tags only
                 var writable = allTags.Where(t => t.CanWrite).ToList();
 
-                // 3. Populate the Master List (AllInputs)
                 foreach (var tag in writable)
                 {
                     var item = new WritableTagItem(tag);
                     AllInputs.Add(item);
                 }
 
-                // 4. Populate UI list (WritableTags) based on current filter
                 ApplyFilter();
             }
             catch (Exception ex)
@@ -144,24 +124,18 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-
-
-
         private async Task OnWriteAsync(WritableTagItem item)
         {
             try
             {
                 if (item == null) return;
 
-                // 1. Validate Input
                 if (!ValidateInput(item, out object parsedValue))
                 {
                     _dialog.ShowWarning($"Invalid format for {item.DataTypeDisplay}...");
                     return;
                 }
 
-                // [STEP 1] PAUSE THE TIMER
-                // Stop reading background data so we don't overwrite our new value with old data
                 _timer.Stop();
 
                 try
@@ -170,20 +144,11 @@ namespace IPCSoftware.App.ViewModels
 
                     if (success)
                     {
-                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        Application.Current.Dispatcher.Invoke(() =>
                         {
-                            // [STEP 2] OPTIMISTIC UPDATE
-                            // Manually set the DisplayValue to what we just wrote.
-                            // This gives the user instant feedback that it worked.
-
-
-                            // Clear the input box
                             item.InputValue = null;
                         });
 
-                        // [STEP 3] SETTLE DELAY
-                        // Give the PLC a moment (e.g., 500ms) to update its internal memory
-                        // before we start asking it for values again.
                         await Task.Delay(50);
                     }
                 }
@@ -193,11 +158,7 @@ namespace IPCSoftware.App.ViewModels
                 }
                 finally
                 {
-                    // [STEP 4] RESUME TIMER
-                    // Always restart the timer, even if the write failed
-                  
-                        _timer.Start();
-                    
+                    _timer.Start();
                 }
             }
             catch (Exception ex)
@@ -215,45 +176,47 @@ namespace IPCSoftware.App.ViewModels
 
             switch (item.Model.DataType)
             {
-                case 1: // Int / Int16
+                case 1:
                     if (short.TryParse(input, out short sVal)) { result = sVal; return true; }
-                    if (int.TryParse(input, out int iVal) && iVal >= short.MinValue && iVal <= short.MaxValue) { result = (short)iVal; return true; }
+                    if (int.TryParse(input, out int iVal) && iVal >= short.MinValue && iVal <= short.MaxValue)
+                    { result = (short)iVal; return true; }
                     break;
 
-                case 2: // Word / Dint (Int32)
+                case 2:
                     if (int.TryParse(input, out int intVal)) { result = intVal; return true; }
                     break;
 
-                case 3: // Bit / Bool
+                case 3:
                     if (bool.TryParse(input, out bool bVal)) { result = bVal; return true; }
                     if (input == "1") { result = true; return true; }
                     if (input == "0") { result = false; return true; }
                     break;
 
-                case 4: // Float / FP
+                case 4:
                     if (float.TryParse(input, out float fVal)) { result = fVal; return true; }
                     break;
 
-                case 5: // String
+                case 5:
                     result = input;
                     return true;
 
-                case 6: // UINT
+                case 6:
                     if (ushort.TryParse(input, out ushort sVal2)) { result = sVal2; return true; }
-                    if (uint.TryParse(input, out uint iVal2) && iVal2 >= ushort.MinValue && iVal2 <= ushort.MaxValue) { result = (ushort)iVal2; return true; }
+                    if (uint.TryParse(input, out uint iVal2) && iVal2 <= ushort.MaxValue)
+                    { result = (ushort)iVal2; return true; }
                     break;
-                case 7: // unsigned Word / Dint (Int32)
+
+                case 7:
                     if (int.TryParse(input, out int intVal2)) { result = intVal2; return true; }
                     break;
 
-                default: // Fallback to Int
+                default:
                     if (int.TryParse(input, out int defVal)) { result = defVal; return true; }
                     break;
             }
 
             return false;
         }
-
 
         private void UpdateValues(Dictionary<int, object> dict)
         {
@@ -269,25 +232,9 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        private string GetValidationMessage(int dataType)
-        {
-            return dataType switch
-            {
-                1 => "Integer (-32768 to 32767)",
-                2 => "Integer (Whole numbers)",
-                3 => "True/False or 1/0",
-                4 => "Decimal number (e.g., 12.34)",
-                5 => "Text string",
-                _ => "Unknown type"
-            };
-        }
-
- 
         public void Dispose()
         {
-            // Just dispose the pollers. They automatically stop and unsubscribe.
             _timer.Dispose();
         }
     }
-
 }

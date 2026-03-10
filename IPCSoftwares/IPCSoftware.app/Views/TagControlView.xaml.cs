@@ -24,10 +24,5 @@ namespace IPCSoftware.App.Views
         {
             InitializeComponent();
         }
-
-        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
-        {
-            (DataContext as IDisposable)?.Dispose();
-        }
     }
 }

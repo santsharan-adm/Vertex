@@ -167,8 +167,8 @@ namespace IPCSoftware.App.NavServices
         public async void NavigateToDeviceDetail(DeviceModel device)
         {
             if (!CanNavigateFromCurrent()) return;
-            var detailView = App.ServiceProvider.GetService<DeviceDetailView>();
-            var detailVM = App.ServiceProvider.GetService<DeviceDetailViewModel>();
+            var detailView = App.ServiceProvider.GetService<UI.CommonViews.DeviceDetailView>();
+            var detailVM = App.ServiceProvider.GetService<UI.CommonViews.ViewModels.DeviceDetailViewModel>();
              
             detailView.DataContext = detailVM;
             await detailVM.LoadDevice(device);

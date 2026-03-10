@@ -13,12 +13,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace IPCSoftware.App.Views
+namespace IPCSoftware.UI.CommonViews
 {
     /// <summary>
     /// Interaction logic for DeviceDetailView.xaml
     /// </summary>
-    public partial class DeviceDetailView : UserControl
+    public partial class DeviceDetailView : System.Windows.Controls.UserControl
     {
         public DeviceDetailView()
         {

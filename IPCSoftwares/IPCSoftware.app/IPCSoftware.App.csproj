@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="IPCSoftware\**" />
+    <EmbeddedResource Remove="IPCSoftware\**" />
+    <None Remove="IPCSoftware\**" />
+    <Page Remove="IPCSoftware\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="appsettings.Development.json" />
     <None Remove="appsettings.json" />
     <None Remove="Controls\Images\alarm.png" />
@@ -142,10 +149,6 @@
     <Content Include="Data\Users.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="IPCSoftware\UI\CommonViews\ViewModels\" />
   </ItemGroup>
 
 </Project>
