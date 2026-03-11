@@ -1,6 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models;
-using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.App.ViewModels
+namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class AboutViewModel : BaseViewModel
     {
@@ -37,7 +36,7 @@ namespace IPCSoftware.App.ViewModels
             {
                 ProductVersion = _settings.ProductVersion;
             }
-           
+
         }
     }
 }

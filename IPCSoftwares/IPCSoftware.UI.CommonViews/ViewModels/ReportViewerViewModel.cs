@@ -1,4 +1,4 @@
-using IPCSoftware.Shared;
+﻿using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.Logging;
 using System;
@@ -184,7 +184,7 @@ namespace IPCSoftware.App.ViewModels
                 return;
             }
 
-            var saveDialog = new SaveFileDialog
+            var saveDialog = new Microsoft.Win32.SaveFileDialog
             {
                 Filter = "CSV files (*.csv)|*.csv",
                 FileName = $"Report_{SelectedReportFormat?.Name}_{DateTime.Now:yyyyMMdd_HHmmss}.csv"

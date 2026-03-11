@@ -148,4 +148,10 @@
     <Folder Include="IPCSoftware\UI\CommonViews\ViewModels\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Views\AeLimitView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>

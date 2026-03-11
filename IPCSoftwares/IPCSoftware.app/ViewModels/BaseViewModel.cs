@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.App.ViewModels
 {
-   /* public class BaseViewModel : ObservableObjectVM
-    {
-        protected readonly IAppLogger _logger;
+    /* public class BaseViewModel : ObservableObjectVM
+     {
+         protected readonly IAppLogger _logger;
 
-        public BaseViewModel (IAppLogger logger)
-        {
-               _logger = logger;
-        }
+         public BaseViewModel (IAppLogger logger)
+         {
+                _logger = logger;
+         }
 
-    }*/
+     }*/
 }

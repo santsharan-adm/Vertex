@@ -3,7 +3,6 @@ using IPCSoftware.App.Helpers;
 using IPCSoftware.App.Services;
 using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
-
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
@@ -22,6 +21,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using AeLimitView = IPCSoftware.App.Views.AeLimitView;
 
 public class MainWindowViewModel : BaseViewModel
 {

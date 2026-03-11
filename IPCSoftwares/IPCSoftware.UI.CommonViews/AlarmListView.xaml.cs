@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace IPCSoftware.App.Views
+namespace IPCSoftware.UI.CommonViews
 {
     /// <summary>
-    /// Interaction logic for AeLimitView.xaml
+    /// Interaction logic for AlarmListView.xaml
     /// </summary>
-    public partial class AeLimitView : UserControl
+    public partial class AlarmListView : System.Windows.Controls.UserControl
     {
-        public AeLimitView()
+        public AlarmListView()
         {
             InitializeComponent();
         }

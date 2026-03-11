@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="IPCSoftware.App.Views.CameraDetailView"
+﻿<UserControl x:Class="IPCSoftware.UI.CommonViews.CameraDetailView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:IPCSoftware.App.Views"
-             xmlns:converters="clr-namespace:IPCSoftware.App.Converters"
+             xmlns:local="clr-namespace:IPCSoftware.UI.CommonViews"
+             xmlns:converters="clr-namespace:IPCSoftware.Common.WPFExtensions.Converters;assembly=IPCSoftware.Common"
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920"
              Background="#F3F3F3" >
@@ -63,11 +63,16 @@
     <Viewbox Stretch="Uniform">
         <Grid Width="1920" Height="1080" Margin="20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/> <RowDefinition Height="*"/>    </Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Margin="0,0,0,30">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/> <ColumnDefinition Width="*"/>    <ColumnDefinition Width="Auto"/> </Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="0"
                         Content="← Back" 
@@ -113,7 +118,7 @@
                     CornerRadius="12" 
                     BorderBrush="#CCCCCC" 
                     BorderThickness="2">
-                
+
                 <DataGrid ItemsSource="{Binding CameraInterfaces}"
                           SelectedItem="{Binding SelectedCameraInterface}"
                           AutoGenerateColumns="False"
@@ -152,14 +157,14 @@
                             </Style.Triggers>
                         </Style>
                     </DataGrid.RowStyle>
-                    
+
                     <DataGrid.AlternationCount>2</DataGrid.AlternationCount>
 
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="100" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
-                        
+
                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="250" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
-                        
+
                         <DataGridTextColumn Header="Protocol" Binding="{Binding Protocol}" Width="210" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
 
                         <DataGridTextColumn Header="IP Address" Binding="{Binding IPAddress}" Width="250" CellStyle="{StaticResource CenterAlignedCellStyle}"/>

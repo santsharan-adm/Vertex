@@ -1,8 +1,7 @@
-﻿using IPCSoftware.App.Helpers;
+﻿using IPCSoftware.Helpers;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
-using IPCSoftware.UI.CommonViews.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace IPCSoftware.App.ViewModels
+namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class AlarmLogViewModel : BaseViewModel
     {
@@ -133,8 +132,8 @@ namespace IPCSoftware.App.ViewModels
                     AlarmNo = int.TryParse(values[1], out int no) ? no : 0,
                     Severity = values[2],
                     Message = values[3],
-                    RaisedAt = DateTime.TryParse(values[4], out DateTime rt) ? rt : (DateTime?)null,
-                    ResetAt = (values.Count > 7 && DateTime.TryParse(values[7], out DateTime rst)) ? rst : (DateTime?)null
+                    RaisedAt = DateTime.TryParse(values[4], out DateTime rt) ? rt : null,
+                    ResetAt = values.Count > 7 && DateTime.TryParse(values[7], out DateTime rst) ? rst : null
                 };
             }
             catch

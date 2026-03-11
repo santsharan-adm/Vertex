@@ -337,7 +337,7 @@ namespace IPCSoftware.App.Services
                 string json = JsonConvert.SerializeObject(request);
 
                 // 4. Send Data
-              await  _tcpClient.Send(json);
+                await _tcpClient.Send(json);
                 // System.Diagnostics.Debug.WriteLine($"UI -> Sent: {json}");
 
                 // 5. Wait for Response with Timeout (e.g., 3 seconds)

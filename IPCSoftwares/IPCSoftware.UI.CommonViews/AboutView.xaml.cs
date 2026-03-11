@@ -13,12 +13,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace IPCSoftware.App.Views
+namespace IPCSoftware.UI.CommonViews
 {
     /// <summary>
     /// Interaction logic for AboutView.xaml
     /// </summary>
-    public partial class AboutView : UserControl
+    public partial class AboutView : System.Windows.Controls.UserControl
     {
         public AboutView()
         {

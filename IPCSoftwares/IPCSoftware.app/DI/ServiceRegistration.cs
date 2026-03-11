@@ -24,6 +24,7 @@ using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel.Design.Serialization;
 using System.IO;
+using AeLimitView = IPCSoftware.App.Views.AeLimitView;
 
 namespace IPCSoftware.App.DI
 {

@@ -65,7 +65,7 @@ namespace IPCSoftware.App.ViewModels
                 return;
             }
 
-         //   IsLoading = true;
+            //   IsLoading = true;
 
             try
             {
@@ -98,7 +98,7 @@ namespace IPCSoftware.App.ViewModels
                 _navigation.NavigateTop(ribbonView);
 
                 // Load Dashboard
-               // _navigation.NavigateMain<OEEDashboard>();
+                // _navigation.NavigateMain<OEEDashboard>();
                 _navigation.NavigateMain<ModeOfOperation>();
             }
             catch (System.Exception ex)
@@ -106,7 +106,7 @@ namespace IPCSoftware.App.ViewModels
                 _logger.LogError($"Login error: {ex.Message}", LogType.Error);
                 _dialog.ShowMessage($"Login error: {ex.Message}");
             }
-          
+
         }
 
 

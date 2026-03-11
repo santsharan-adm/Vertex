@@ -2,7 +2,6 @@
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
-using IPCSoftware.UI.CommonViews.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace IPCSoftware.App.ViewModels
+namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class AlarmListViewModel : BaseViewModel
     {
@@ -58,7 +57,7 @@ namespace IPCSoftware.App.ViewModels
         public ICommand AcknowledgeAlarmCommand { get; }
 
         public AlarmListViewModel
-            (IAlarmConfigurationService alarmService, 
+            (IAlarmConfigurationService alarmService,
             INavigationService nav,
             IAppLogger logger) : base(logger)
         {
@@ -194,4 +193,3 @@ namespace IPCSoftware.App.ViewModels
         }
     }
 }
-

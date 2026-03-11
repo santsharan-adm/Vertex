@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace IPCSoftware.App.Views
+namespace IPCSoftware.UI.CommonViews
 {
     /// <summary>
-    /// Interaction logic for CameraDetailView.xaml
+    /// Interaction logic for AlarmLogView.xaml
     /// </summary>
-    public partial class CameraDetailView : UserControl
+    public partial class AlarmLogView : System.Windows.Controls.UserControl
     {
-        public CameraDetailView()
+        public AlarmLogView()
         {
             InitializeComponent();
         }

@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace IPCSoftware.App.Views
+namespace IPCSoftware.UI.CommonViews
 {
     /// <summary>
-    /// Interaction logic for AlarmListView.xaml
+    /// Interaction logic for ReportViewerView.xaml
     /// </summary>
-    public partial class AlarmListView : UserControl
+    public partial class ReportViewerView : System.Windows.Controls.UserControl
     {
-        public AlarmListView()
+        public ReportViewerView()
         {
             InitializeComponent();
         }
