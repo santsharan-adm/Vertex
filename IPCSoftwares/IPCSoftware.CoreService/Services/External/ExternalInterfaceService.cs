@@ -36,6 +36,7 @@ namespace IPCSoftware.CoreService.Services.External
         // Connectivity State
         private bool _isMacMiniConnected = false;
         public bool IsConnected => _isMacMiniConnected;
+        public bool IsCycleRunning { get; set; } = false;
 
         // Logic State
         // Dynamically sized based on ProductSettings
@@ -382,10 +383,18 @@ namespace IPCSoftware.CoreService.Services.External
             // Track previous states to detect transitions (toggles)
             bool wasEnabled = Settings.IsMacMiniEnabled;
             bool firstRun = true;
+
+
             while (true)
             {
                 try
                 {
+                    if (IsCycleRunning)
+                    {
+                        await Task.Delay(100);
+                        continue;
+                    }
+
                     bool isEnabled = Settings.IsMacMiniEnabled;
                     bool currentConnection = false;
 
@@ -445,7 +454,7 @@ namespace IPCSoftware.CoreService.Services.External
                 {
                     // Suppress loop errors
                 }
-                await Task.Delay(1000);
+                await Task.Delay(100);
             }
         }
 
@@ -466,7 +475,7 @@ namespace IPCSoftware.CoreService.Services.External
 
         private async Task<bool> PingHost(string address)
         {
-            try { using var p = new Ping(); var r = await p.SendPingAsync(address, Settings.PingTimeoutMs); return r.Status == IPStatus.Success; } catch { return false; }
+            try { using var p = new Ping(); var r = await p.SendPingAsync(address, 0); return r.Status == IPStatus.Success; } catch { return false; }
         }
 
      

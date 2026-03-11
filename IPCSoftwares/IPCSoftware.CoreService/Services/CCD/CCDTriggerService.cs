@@ -87,7 +87,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                    
                     await WriteToPlc(ConstantValues.Return_TAG_ID, 0);
                     await WriteToPlc(ConstantValues.Ext_DataReady, 0);
-                    await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, 0);
+                   // await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, 0);
                 }
 
 
