@@ -12,6 +12,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using IPCSoftware.Core.Interfaces;
 using System.IO;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.UI.CommonViews.ViewModels;
 
 namespace IPCSoftware.App.ViewModels
 {

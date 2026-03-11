@@ -1,6 +1,7 @@
 ﻿using IPCSoftware.App.Helpers;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using System;
 using System.Windows.Input;
 using System.Windows.Media;
