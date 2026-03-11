@@ -20,6 +20,8 @@ namespace IPCSoftware.CoreService.Services.External
     public class ExternalInterfaceService : IDisposable
     {
         private readonly PLCClientManager _plcManager;
+        private readonly MacMiniTcpClient _tcpClient;
+
         private readonly IPLCTagConfigurationService _tagService;
         private readonly IAppLogger _logger;
         private readonly IProductConfigurationService _productService; // NEW Injection
@@ -28,7 +30,7 @@ namespace IPCSoftware.CoreService.Services.External
         private readonly ITcpTrafficLogger _trafficLogger;
 
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
-        private readonly MacMiniTcpClient _tcpClient;
+       
 
         private Dictionary<int, string> _cachedSerials = new Dictionary<int, string>();
         public ExternalSettings Settings => _settingsMonitor.CurrentValue;
@@ -36,6 +38,7 @@ namespace IPCSoftware.CoreService.Services.External
         // Connectivity State
         private bool _isMacMiniConnected = false;
         public bool IsConnected => _isMacMiniConnected;
+        public bool IsCycleRunning { get; set; } = false;
 
         // Logic State
         // Dynamically sized based on ProductSettings
@@ -46,6 +49,7 @@ namespace IPCSoftware.CoreService.Services.External
             PLCClientManager plcManager,
             IPLCTagConfigurationService tagService,
             IServoCalibrationService servoService,
+            MacMiniTcpClient tcpClient,
             IProductConfigurationService productService, // Inject Product Service
             IAppLogger logger,ITcpTrafficLogger trafficLogger,
             IOptionsMonitor<ExternalSettings> settingsMonitor)
@@ -58,7 +62,7 @@ namespace IPCSoftware.CoreService.Services.External
             _settingsMonitor = settingsMonitor;
             _trafficLogger = trafficLogger;
             _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
-            _tcpClient = new MacMiniTcpClient();
+            _tcpClient = tcpClient;
 
             // Initialize defaults (will be resized on first sync)
             _quarantineFlagsBySequence = new bool[_totalItems];
@@ -382,10 +386,18 @@ namespace IPCSoftware.CoreService.Services.External
             // Track previous states to detect transitions (toggles)
             bool wasEnabled = Settings.IsMacMiniEnabled;
             bool firstRun = true;
+
+
             while (true)
             {
                 try
                 {
+                    if (IsCycleRunning)
+                    {
+                        await Task.Delay(100);
+                        continue;
+                    }
+
                     bool isEnabled = Settings.IsMacMiniEnabled;
                     bool currentConnection = false;
 
@@ -445,7 +457,7 @@ namespace IPCSoftware.CoreService.Services.External
                 {
                     // Suppress loop errors
                 }
-                await Task.Delay(1000);
+                await Task.Delay(100);
             }
         }
 
@@ -464,9 +476,9 @@ namespace IPCSoftware.CoreService.Services.External
             }
         }
 
-        private async Task<bool> PingHost(string address)
+        public async Task<bool> PingHost(string address)
         {
-            try { using var p = new Ping(); var r = await p.SendPingAsync(address, Settings.PingTimeoutMs); return r.Status == IPStatus.Success; } catch { return false; }
+            try { using var p = new Ping(); var r = await p.SendPingAsync(address, 0); return r.Status == IPStatus.Success; } catch { return false; }
         }
 
      

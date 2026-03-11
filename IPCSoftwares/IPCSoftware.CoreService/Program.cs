@@ -13,6 +13,7 @@ using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
+using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System.Linq;
@@ -102,6 +103,7 @@ namespace IPCSoftware.CoreService
                             services.AddTransient<TagConfigLoader>();
                             services.AddTransient<BackupService>();
                             services.AddSingleton<ShiftResetService>();
+                            services.AddSingleton<MacMiniTcpClient>();
                             services.AddSingleton<ITcpTrafficLogger, TcpTrafficLogger>();
                             // --- Updated registration for IProductionDataLogger ---
                             services.AddSingleton<IProductionDataLogger>(sp =>

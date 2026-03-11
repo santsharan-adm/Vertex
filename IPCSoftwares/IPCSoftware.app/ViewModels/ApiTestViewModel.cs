@@ -25,7 +25,7 @@ namespace IPCSoftware.App.ViewModels
     public class ApiTestViewModel : BaseViewModel, IDisposable
     {
         private readonly HttpClient _httpClient;
-        private readonly MacMiniTcpClient _tcpClient = new();
+        private readonly MacMiniTcpClient _tcpClient ;
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
         private readonly IDialogService _dialog;
         private readonly string _appSettingsPath;
@@ -107,12 +107,14 @@ namespace IPCSoftware.App.ViewModels
 
         public ApiTestViewModel(
             IAppLogger logger,
+            MacMiniTcpClient tcpClient,
             IOptionsMonitor<ExternalSettings> settingsMonitor,
             IAeLimitService aeLimitService, // Inject
             IDialogService dialog) : base(logger)
         {
             _settingsMonitor = settingsMonitor;
             _aeLimitService = aeLimitService;
+            _tcpClient = tcpClient;
             _dialog = dialog;
             _appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
 

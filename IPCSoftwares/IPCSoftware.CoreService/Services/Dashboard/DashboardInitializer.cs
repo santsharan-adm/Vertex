@@ -2,6 +2,7 @@
 using IPCSoftware.CoreService.Alarm;
 using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.CoreService.Services.CCD;
+using IPCSoftware.CoreService.Services.External;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
@@ -26,6 +27,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         private readonly ShiftResetService _shiftReset;
         private readonly CCDTriggerService _ccdTrigger; // 1. Add field
         private readonly AlarmService _alarmService;
+        private readonly ExternalInterfaceService _extService;
 
         // latest packets per PLC (unitno)
         private readonly Dictionary<int, PlcPacket> _latestPackets = new();
@@ -37,6 +39,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             OeeEngine oee,
             ShiftResetService shiftReset,
             SystemMonitorService systemMonitor,
+             ExternalInterfaceService extService,
           UiListener ui,
           AlarmService alarmService,
             CCDTriggerService ccdTrigger,
@@ -50,6 +53,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             _manager = manager;
             _algo =algo;
             _ccdTrigger = ccdTrigger;
+            _extService = extService;
         }
 
       
@@ -70,6 +74,11 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                         // A. Process Raw Data -> Typed Values (Int/Bool/String)
                         // processedData is Dictionary<int, object> where int is Tag ID
                         var processedData = _algo.Apply(plcNo, values);
+                        if (processedData.TryGetValue(ConstantValues.CYCLE_START_TRIGGER_TAG_ID, out object cycleObj))
+                        {
+                            if (cycleObj is bool bVal) _extService.IsCycleRunning = bVal;
+                            else if (cycleObj is int iVal) _extService.IsCycleRunning = iVal > 0;
+                        }
 
                         string qrCodeNullCgeck = processedData.ContainsKey(ConstantValues.TAG_QR_DATA) ? processedData[ConstantValues.TAG_QR_DATA]?.ToString() : null;
                         if (qrCodeNullCgeck != null && !(qrCodeNullCgeck.Contains('\0')))

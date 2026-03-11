@@ -3,6 +3,7 @@ using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.CoreService.Services.External;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.Services;
+using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System;
@@ -17,6 +18,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         private readonly PLCClientManager _plcManager;
         private readonly IPLCTagConfigurationService _tagService;
         private readonly ExternalInterfaceService _extService;
+        private readonly MacMiniTcpClient _tcpClient;
 
         // --- HEARTBEAT STATE ---
         private bool? _lastPlcPulse = null;      // Nullable to detect first read
@@ -24,6 +26,9 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         private DateTime _lastSuccessfulRead;    // Last time we successfully read the tag
         private bool _ipcPulseState = false;
         private DateTime _lastIpcToggleTime;
+
+        private bool _isMacMiniConnected = false;
+        public bool IsMacMiniConnected => _isMacMiniConnected;
 
         // --- CONFIGURATION ---
         // Description says: "abnormal if no change for 3 s"
@@ -35,16 +40,18 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             PLCClientManager plcManager,
             IPLCTagConfigurationService tagService,
             ExternalInterfaceService extService,
+             MacMiniTcpClient tcpClient,
             IAppLogger logger) : base(logger)
         {
             _plcManager = plcManager;
             _tagService = tagService;
             _extService = extService;
-
+            _tcpClient = tcpClient;
             // Initialize timestamps
             _lastPlcChangeTime = DateTime.Now;
             _lastSuccessfulRead = DateTime.Now;
             _lastIpcToggleTime = DateTime.Now;
+            _ = CheckConnection();
         }
 
         /// <summary>
@@ -121,7 +128,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 // =========================================================
                 // Return a simple list: [PLC_Connected, Time_Synced(Dummy True)]
                 // Maintaining structure for Dashboard compatibility
-                bool isMacMiniConnected = _extService.IsConnected;
+                bool isMacMiniConnected = IsMacMiniConnected;
                 var statusFlags = new List<bool> { isPlcConnected, true, isMacMiniConnected };
                 /*  if (isPlcConnected)
                   {
@@ -141,6 +148,40 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 throw;
             }
         }
+
+
+        private async Task CheckConnection()
+        {
+            while (true)
+            {
+            var settings = _extService.Settings;
+                var currentConnection = false;
+                if (settings.Protocol?.ToUpper() == "TCP")
+                {
+                    if (!_tcpClient.IsConnected)
+                    {
+                        try
+                        {
+                            await _tcpClient.
+                                ConnectAsync(settings.MacMiniIpAddress, settings.Port);
+                            currentConnection = true;
+                        }
+                        catch { currentConnection = false; }
+                    }
+                    else currentConnection = true;
+                }
+                else
+                {
+                    currentConnection = await _extService.PingHost(settings.MacMiniIpAddress);
+                }
+
+
+                _isMacMiniConnected = currentConnection; // Update UI property
+                await Task.Delay(100);
+            }
+
+        }
+
 
         private bool GetBool(Dictionary<int, object> values, int tagId)
         {
