@@ -18,6 +18,7 @@ using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
+using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel.Design.Serialization;
@@ -107,6 +108,7 @@ namespace IPCSoftware.App.DI
         //    services.AddSingleton<OeeDashboardNewViewModel>();
             services.AddSingleton<UiTcpClient>();
             services.AddSingleton<ShiftResetService>();
+            services.AddSingleton<MacMiniTcpClient>();
 
 
 
