@@ -1,14 +1,8 @@
 using IPCSoftware.UI.CommonViews.ViewModels;
 using IPCSoftware.Shared.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace IPCSoftware.App.Views
 {
@@ -24,15 +18,18 @@ namespace IPCSoftware.App.Views
         {
             InitializeComponent();
 
-            // TODO: Phase 2 - Uncomment after moving FullImageViewModel to UI.CommonViews
             try
             {
-                // TEMP: Disabled - FullImageViewModel not yet migrated
-                // var viewModel = new FullImageViewModel(...);
-                // viewModel.RequestClose += () => this.Close();
-                // this.DataContext = viewModel;
+                // 1. Create ViewModel with all limits
+                var viewModel = new FullImageViewModel(img, title, xMin, xMax, yMin, yMax,
+                    zMin, zMax, xUOM, yUOM, zUOM
+               );
 
-                MessageBox.Show("FullImageView: ViewModel not yet migrated (Phase 2 pending)");
+                // 2. Hook up the Close Action
+                viewModel.RequestClose += () => this.Close();
+
+                // 3. Set DataContext
+                this.DataContext = viewModel;
             }
             catch (Exception ex)
             {
