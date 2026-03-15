@@ -1,6 +1,6 @@
-﻿// Inside AlarmView.xaml.cs (Code-Behind)
+// Inside AlarmView.xaml.cs (Code-Behind)
 
-using IPCSoftware.App.ViewModels;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using System.Windows.Controls;
 
 namespace IPCSoftware.App.Views

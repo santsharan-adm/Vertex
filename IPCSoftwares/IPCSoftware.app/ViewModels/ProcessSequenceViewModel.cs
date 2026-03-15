@@ -1,6 +1,8 @@
-using IPCSoftware.App.Helpers;
-using IPCSoftware.App.Models;
-using IPCSoftware.App.Services;
+using IPCSoftware.Common.WPFExtensions;
+using IPCSoftware.Common.UIClientComm;
+using IPCSoftware.Common.CommonExtensions;
+using IPCSoftware.Common.Models;
+using IPCSoftware.Services;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;

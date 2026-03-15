@@ -1,5 +1,5 @@
-﻿using IPCSoftware.App.ViewModels;
-using IPCSoftware.App.Views;
+using IPCSoftware.UI.CommonViews.ViewModels;
+using IPCSoftware.UI.CommonViews;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.DependencyInjection;

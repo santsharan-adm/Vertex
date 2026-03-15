@@ -1,5 +1,5 @@
-﻿using IPCSoftware.App.Services;
-using IPCSoftware.App.ViewModels;
+using IPCSoftware.Services;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using IPCSoftware.Core.Interfaces;
 using System;
 using System.Collections.Generic;

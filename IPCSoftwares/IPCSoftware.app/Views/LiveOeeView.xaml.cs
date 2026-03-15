@@ -1,5 +1,5 @@
-﻿using System.Windows.Controls;
-using IPCSoftware.App.ViewModels;
+using System.Windows.Controls;
+using IPCSoftware.UI.CommonViews.ViewModels;
 
 namespace IPCSoftware.App.Views
 {

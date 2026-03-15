@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using IPCSoftware.Common;
+using System;
 using System.Windows;
 
 namespace IPCSoftware.UI.CommonViews.Locators
@@ -30,7 +27,7 @@ namespace IPCSoftware.UI.CommonViews.Locators
         {
             if (e.NewValue is Type viewModelType)
             {
-                var viewModel = App.ServiceProvider.GetService(viewModelType);
+                var viewModel = ServiceLocator.Current.GetService(viewModelType);
                 if (d is FrameworkElement element)
                 {
                     element.DataContext = viewModel;

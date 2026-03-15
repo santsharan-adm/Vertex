@@ -1,0 +1,97 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ==========================
+         GLOBAL DATAGRID STYLE 
+         Touch Friendly / HMI Optimized
+         ========================== -->
+    <Style TargetType="DataGrid" x:Key="HmiDataGridStyle">
+
+        <!-- BASIC PROPERTIES -->
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="RowHeight" Value="48"/>
+        <Setter Property="HeadersVisibility" Value="Column"/>
+        <Setter Property="GridLinesVisibility" Value="None"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="HorizontalGridLinesBrush" Value="#DDD"/>
+        <Setter Property="VerticalGridLinesBrush" Value="#DDD"/>
+        <Setter Property="RowHeaderWidth" Value="0"/>
+        <Setter Property="Margin" Value="10"/>
+        <Setter Property="CanUserResizeRows" Value="False"/>
+        <Setter Property="CanUserResizeColumns" Value="False"/>
+        <Setter Property="CanUserSortColumns" Value="False"/>
+        <Setter Property="SelectionMode" Value="Single"/>
+        <Setter Property="SelectionUnit" Value="FullRow"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+
+        <!-- HEADER STYLE -->
+        <Setter Property="ColumnHeaderStyle">
+            <Setter.Value>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="FontSize" Value="20"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="Foreground" Value="#1A1A1A"/>
+                    <Setter Property="Padding" Value="10,3"/>
+                    <Setter Property="Background" Value="#F1F4F8"/>
+                    <Setter Property="BorderBrush" Value="#C5CAD3"/>
+                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                </Style>
+            </Setter.Value>
+        </Setter>
+
+        <!-- ROW STYLE -->
+        <Setter Property="RowStyle">
+            <Setter.Value>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="FontSize" Value="18"/>
+                    <Setter Property="Height" Value="48"/>
+                    <Setter Property="Background" Value="White"/>
+                    <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+
+                    <Style.Triggers>
+                        <!-- Row Hover -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#EAF3FF"/>
+                        </Trigger>
+
+                        <!-- Row Selected -->
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#CCE4FF"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <!-- ============ BUTTON STYLES FOR EDIT/DELETE ============ -->
+
+    <Style x:Key="HmiEditButton" TargetType="Button">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Padding" Value="15,5"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value="#2196F3"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border CornerRadius="5" Background="{TemplateBinding Background}">
+                        <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="HmiDeleteButton" TargetType="Button" BasedOn="{StaticResource HmiEditButton}">
+        <Setter Property="Background" Value="#E53935"/>
+    </Style>
+    
+    
+
+</ResourceDictionary>

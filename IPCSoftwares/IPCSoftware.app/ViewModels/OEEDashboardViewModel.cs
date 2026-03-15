@@ -1,8 +1,9 @@
-﻿using IPCSoftware.App.Controls;
-using IPCSoftware.App.Helpers;
-using IPCSoftware.App.Services;
-using IPCSoftware.App.Services.UI;
-using IPCSoftware.App.Views;
+using IPCSoftware.Common.WPFExtensions.Controls;
+using IPCSoftware.Common.WPFExtensions;
+using IPCSoftware.Common.CommonExtensions;
+using IPCSoftware.Services;
+using IPCSoftware.Common.UIClientComm;
+using IPCSoftware.UI.CommonViews;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.CoreService.Services.Dashboard;
@@ -1006,22 +1007,24 @@ namespace IPCSoftware.App.ViewModels
   
         private void ShowImage(CameraImageItem img)
         {
-            try
+       try
             {
-                if (img == null) return;
-                string title = $"INSPECTION POSITION {img.StationNumber}"; // Use StationNumber or Id
-                var window = new FullImageView(img, title,
-             LimitX_Min,  LimitX_Max,
-             LimitY_Min,  LimitY_Max,
-            _limitTheta_Min,  _limitTheta_Max, UnitX, UnitY,
-            UnitTheta);
-                window.ShowDialog();
+      if (img == null) return;
+    string title = $"INSPECTION POSITION {img.StationNumber}";
+              // TODO: Phase 2 - Uncomment after moving FullImageView to UI.CommonViews
+      // var window = new FullImageView(img, title,
+        //     LimitX_Min,  LimitX_Max,
+      //     LimitY_Min,  LimitY_Max,
+        //    _limitTheta_Min,  _limitTheta_Max, UnitX, UnitY,
+           //    UnitTheta);
+         // window.ShowDialog();
+       _logger.LogWarning("ShowImage: FullImageView not yet migrated (Phase 2 pending)", LogType.Diagnostics);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, LogType.Diagnostics);
+    catch (Exception ex)
+          {
+_logger.LogError(ex.Message, LogType.Diagnostics);
             }
-        }
+    }
 
 
         private async void OpenCardDetail(string cardType)
@@ -1108,11 +1111,14 @@ namespace IPCSoftware.App.ViewModels
                     // Must execute UI updates on Dispatcher
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        var win = new DashboardDetailWindow();
-                        win.DataContext = new DashboardDetailViewModel(win, title, data);
-                        win.ShowDialog();
-                    });
-                }
+       // TODO: Phase 2 - Uncomment after moving DashboardDetailWindow to UI.CommonViews
+ // var win = new DashboardDetailWindow();
+              // win.DataContext = new DashboardDetailViewModel(win, title, data);
+      // win.ShowDialog();
+                 
+_logger.LogWarning("OpenCardDetail: DashboardDetailWindow not yet migrated (Phase 2 pending)", LogType.Diagnostics);
+  });
+       }
             }
             catch (Exception ex)
             {

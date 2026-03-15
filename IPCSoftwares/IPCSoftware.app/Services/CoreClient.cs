@@ -1,5 +1,5 @@
-﻿/*using IPCSoftware.App; // UiTcpClient namespace
-using IPCSoftware.App.Services.UI;
+/*using IPCSoftware.App; // UiTcpClient namespace
+using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -232,7 +232,7 @@ namespace IPCSoftware.App.Services
 */
 
 using IPCSoftware.App;
-using IPCSoftware.App.Services.UI;
+using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models.ConfigModels;

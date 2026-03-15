@@ -1,6 +1,7 @@
-﻿using IPCSoftware.App.Helpers;
-using IPCSoftware.App.Services;
-using IPCSoftware.App.Services.UI;
+using IPCSoftware.Common.WPFExtensions;
+using IPCSoftware.Common.CommonExtensions;
+using IPCSoftware.Services;
+using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services.AppLoggerServices; // For LogService
 using IPCSoftware.Shared;

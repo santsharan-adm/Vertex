@@ -1,6 +1,6 @@
-﻿using IPCSoftware.App;
-using IPCSoftware.App.Services;
-using IPCSoftware.App.Services.UI;
+using IPCSoftware.App;
+using IPCSoftware.Services;
+using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;

@@ -1,4 +1,4 @@
-﻿using IPCSoftware.App.ViewModels;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using System.Windows.Controls;

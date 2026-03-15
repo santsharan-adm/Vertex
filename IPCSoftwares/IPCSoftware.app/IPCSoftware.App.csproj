@@ -154,4 +154,17 @@
     </Compile>
   </ItemGroup>
 
+
+  <ItemGroup>
+    <ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
+    <ProjectReference Include="..\IPCSoftware.WPFExtensions\IPCSoftware.WPFExtensions.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Communication.UIClientComm\IPCSoftware.Communication.UIClientComm.csproj" />
+    <ProjectReference Include="..\IPCSoftware.CommonExtensions\IPCSoftware.CommonExtensions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Excluded: CoreClient and UiTcpClient moved to IPCSoftware.Communication.UIClientComm -->
+    <Compile Remove="Services\CoreClient.cs" />
+    <Compile Remove="Services\UI\UiTcpClient.cs" />
+  </ItemGroup>
 </Project>

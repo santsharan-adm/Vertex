@@ -1,4 +1,4 @@
-using IPCSoftware.App.ViewModels;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using System.Windows;
 
 namespace IPCSoftware.App.Views

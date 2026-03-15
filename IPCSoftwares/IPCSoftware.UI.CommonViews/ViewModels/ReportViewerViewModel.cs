@@ -1,4 +1,4 @@
-﻿using IPCSoftware.Shared;
+using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.Logging;
 using System;
@@ -15,7 +15,7 @@ using IPCSoftware.Core.Interfaces;
 using Microsoft.Win32;
 using IPCSoftware.Shared.Models.ConfigModels;
 
-namespace IPCSoftware.App.ViewModels
+namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class ReportViewerViewModel : ObservableObjectVM
     {

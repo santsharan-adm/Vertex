@@ -1,4 +1,4 @@
-﻿using IPCSoftware.App.Helpers;
+using IPCSoftware.Common.WPFExtensions;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.UI.CommonViews.ViewModels;

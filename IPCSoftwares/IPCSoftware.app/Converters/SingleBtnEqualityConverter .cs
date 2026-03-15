@@ -1,4 +1,4 @@
-﻿using IPCSoftware.App.ViewModels;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

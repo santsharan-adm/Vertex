@@ -1,8 +1,9 @@
-﻿using IPCSoftware.App.Helpers;
-using IPCSoftware.App.NavServices;
-using IPCSoftware.App.Services;
-using IPCSoftware.App.Services.UI;
-using IPCSoftware.App.Views;
+using IPCSoftware.Common.WPFExtensions;
+using IPCSoftware.Common.CommonExtensions;
+using IPCSoftware.Common.CommonFunctions;
+using IPCSoftware.Services;
+using IPCSoftware.Common.UIClientComm;
+using IPCSoftware.UI.CommonViews;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
@@ -146,7 +147,7 @@ namespace IPCSoftware.App.ViewModels
                     var btn = GetBtn(OperationMode.Manual);
                     if (isPressed && btn.IsEnabled)
                     {
-                        _navService.NavigateMain<ManualOperationView>();
+                        _navService.NavigateToManualOperation();
                     }
                     return;
                 }

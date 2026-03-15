@@ -1,6 +1,6 @@
-﻿using IPCSoftware.App.Helpers;
+using IPCSoftware.Common.WPFExtensions;
 // Adjust these namespaces to match your project structure
-using IPCSoftware.App.ViewModels;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using System;

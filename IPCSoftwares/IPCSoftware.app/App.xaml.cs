@@ -1,6 +1,7 @@
-﻿using IPCSoftware.App.DI;
-using IPCSoftware.App.Services;
-using IPCSoftware.App.Services.UI;
+using IPCSoftware.Common.CommonFunctions;
+using IPCSoftware.App.DI;
+using IPCSoftware.Services;
+using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
@@ -128,8 +129,9 @@ namespace IPCSoftware.App
 
             _host.Start();
             ServiceProvider = (ServiceProvider)_host.Services;
-            
-            IPCSoftware.Common.WPFExtensions.ViewModelLocator.ServiceProvider = ServiceProvider;
+
+            // Initialize central ServiceLocator so library projects can resolve services
+            IPCSoftware.Common.ServiceLocator.Initialize(ServiceProvider);
 
             TcpClient = ServiceProvider.GetService<UiTcpClient>();
 

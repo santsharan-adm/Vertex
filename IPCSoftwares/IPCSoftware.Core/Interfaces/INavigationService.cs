@@ -46,6 +46,11 @@ namespace IPCSoftware.Core.Interfaces
         // PLC Tag Configuration - NEW
         void NavigateToPLCTagList();
 
+        // App-specific view navigation (types defined in IPCSoftware.app assembly)
+        void NavigateToManualOperation();
+        void NavigateToOEEDashboard();
+        void NavigateToAeLimit();
+
         void NavigateToLogs(LogType logType);
         void NavigateToPLCTagConfiguration(PLCTagConfigurationModel tagToEdit, Func<Task> onSaveCallback);
         bool CanNavigateFromCurrent();

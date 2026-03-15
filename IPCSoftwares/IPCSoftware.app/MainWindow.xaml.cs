@@ -1,4 +1,4 @@
-﻿using IPCSoftware.App.Views;
+using IPCSoftware.UI.CommonViews;
 using IPCSoftware.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;

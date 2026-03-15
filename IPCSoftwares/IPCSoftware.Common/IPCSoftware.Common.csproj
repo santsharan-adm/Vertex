@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0-windows</TargetFramework>
@@ -8,20 +8,23 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="CommonFunctions\**" />
-	  <EmbeddedResource Remove="CommonFunctions\**" />
-	  <None Remove="CommonFunctions\**" />
-	  <Page Remove="CommonFunctions\**" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.3" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 	</ItemGroup>
 
+	<!-- Exclude files moved to UI.CommonViews/Services/ or that depend on higher-level projects -->
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.3" />
-	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
-	  <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="UIClientComm\" />
+		<Compile Remove="CommonFunctions\NavigationService.cs" />
+		<Compile Remove="CommonFunctions\DialogService.cs" />
+		<Compile Remove="CommonFunctions\AppInitializationService.cs" />
+		<Compile Remove="DI\ServiceRegistration.cs" />
+		<!-- WPFExtensions duplicates - canonical versions live in IPCSoftware.WPFExtensions project -->
+		<Compile Remove="WPFExtensions\Behaviors\ListBoxSelectedItemsBehavior.cs" />
+		<Compile Remove="WPFExtensions\BoolToStatusColorConverter.cs" />
+		<Compile Remove="WPFExtensions\Converters\BoolToVisibilityConverter.cs" />
+		<Compile Remove="WPFExtensions\Converters\BooleanToYesNoConverter.cs" />
+		<Compile Remove="WPFExtensions\ViewModelLocator.cs" />
 	</ItemGroup>
 
 </Project>

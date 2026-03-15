@@ -1,5 +1,5 @@
-﻿using IPCSoftware.App.Helpers;
-using IPCSoftware.App.Services.UI; // For IDialogService
+using IPCSoftware.Common.WPFExtensions;
+using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services.ConfigServices;

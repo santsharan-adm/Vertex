@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>IPCSoftware.Common.WPFExtensions</RootNamespace>
+    <AssemblyName>IPCSoftware.WPFExtensions</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IPCSoftware.Common\IPCSoftware.Common.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
+  </ItemGroup>
+  <!-- Exclude converters that depend on app-specific types (ManualOperationMode) -->
+  <!-- Canonical versions are in IPCSoftware.app/Converters/ -->
+  <ItemGroup>
+    <Compile Remove="Convertors\EnumToSymbolConverter.cs" />
+    <Compile Remove="Convertors\EqualityConverter.cs" />
+    <Compile Remove="Convertors\SingleBtnEqualityConverter .cs" />
+  </ItemGroup>
+</Project>

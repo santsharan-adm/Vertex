@@ -1,5 +1,5 @@
-﻿using IPCSoftware.App.Controls;
-using IPCSoftware.App.ViewModels;
+using IPCSoftware.Common.WPFExtensions.Controls;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;

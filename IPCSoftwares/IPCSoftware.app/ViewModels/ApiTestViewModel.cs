@@ -1,5 +1,5 @@
-using IPCSoftware.App.Helpers;
-using IPCSoftware.App.Services;
+using IPCSoftware.Common.WPFExtensions;
+using IPCSoftware.Services;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;

@@ -1,5 +1,5 @@
-﻿using IPCSoftware.App;
-using IPCSoftware.App.ViewModels;
+using IPCSoftware.App;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;

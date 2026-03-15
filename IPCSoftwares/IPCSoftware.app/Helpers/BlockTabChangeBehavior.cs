@@ -1,4 +1,4 @@
-﻿using IPCSoftware.App.NavServices;
+using IPCSoftware.Common.CommonFunctions;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;

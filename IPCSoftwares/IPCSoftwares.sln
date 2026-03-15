@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36623.8
@@ -23,6 +23,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.UI.CommonViews"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.Common", "IPCSoftware.Common\IPCSoftware.Common.csproj", "{6799CD48-CF9A-4771-8DC9-66B044493B5F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.UI.Themes", "IPCSoftware.UI.Themes\IPCSoftware.UI.Themes.csproj", "{85B8BEFD-9F4E-4B69-84C1-F5F8EDF9578C}"
+EndProject
+
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.Communication.UIClientComm", "IPCSoftware.Communication.UIClientComm\IPCSoftware.Communication.UIClientComm.csproj", "{AB305254-0749-42CE-8CC3-0B881607761E}"
+EndProject
+
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.WPFExtensions", "IPCSoftware.WPFExtensions\IPCSoftware.WPFExtensions.csproj", "{222960BB-AE3B-47D4-B360-A94C3CF27CDE}"
+EndProject
+
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.CommonExtensions", "IPCSoftware.CommonExtensions\IPCSoftware.CommonExtensions.csproj", "{740738FF-93E2-4104-B3BF-B6413806001D}"
+EndProject
+
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCSoftware.Visuals", "IPCSoftware.Visuals\IPCSoftware.Visuals.csproj", "{F24060FB-E9C7-4229-A7FD-B5EA58B413F3}"
+EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +84,26 @@ Global
 		{6799CD48-CF9A-4771-8DC9-66B044493B5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6799CD48-CF9A-4771-8DC9-66B044493B5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6799CD48-CF9A-4771-8DC9-66B044493B5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85B8BEFD-9F4E-4B69-84C1-F5F8EDF9578C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85B8BEFD-9F4E-4B69-84C1-F5F8EDF9578C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85B8BEFD-9F4E-4B69-84C1-F5F8EDF9578C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85B8BEFD-9F4E-4B69-84C1-F5F8EDF9578C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB305254-0749-42CE-8CC3-0B881607761E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB305254-0749-42CE-8CC3-0B881607761E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB305254-0749-42CE-8CC3-0B881607761E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB305254-0749-42CE-8CC3-0B881607761E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{222960BB-AE3B-47D4-B360-A94C3CF27CDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{222960BB-AE3B-47D4-B360-A94C3CF27CDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{222960BB-AE3B-47D4-B360-A94C3CF27CDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{222960BB-AE3B-47D4-B360-A94C3CF27CDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{740738FF-93E2-4104-B3BF-B6413806001D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{740738FF-93E2-4104-B3BF-B6413806001D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{740738FF-93E2-4104-B3BF-B6413806001D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{740738FF-93E2-4104-B3BF-B6413806001D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F24060FB-E9C7-4229-A7FD-B5EA58B413F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F24060FB-E9C7-4229-A7FD-B5EA58B413F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F24060FB-E9C7-4229-A7FD-B5EA58B413F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F24060FB-E9C7-4229-A7FD-B5EA58B413F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

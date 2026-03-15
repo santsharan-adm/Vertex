@@ -1,4 +1,4 @@
-﻿using IPCSoftware.App.Services;
+using IPCSoftware.Services;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;

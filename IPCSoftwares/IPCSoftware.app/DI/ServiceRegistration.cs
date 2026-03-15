@@ -1,8 +1,9 @@
-﻿using IPCSoftware.App.NavServices;
-using IPCSoftware.App.Services;
-using IPCSoftware.App.Services.UI;
-using IPCSoftware.App.ViewModels;
-using IPCSoftware.App.Views;
+using IPCSoftware.Common.CommonFunctions;
+using IPCSoftware.Common.UIClientComm;
+using IPCSoftware.Services;
+using IPCSoftware.UI.CommonViews.ViewModels;
+using IPCSoftware.UI.CommonViews;
+using IPCSoftware.UI.CommonViews.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
@@ -15,261 +16,166 @@ using IPCSoftware.CoreService.Services.External;
 using IPCSoftware.CoreService.Services.Logging;
 using IPCSoftware.CoreService.Services.PLC;
 using IPCSoftware.CoreService.Services.UI;
-using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
+using IPCSoftware.App.Services;
 using IPCSoftware.Shared.Models.ConfigModels;
-using IPCSoftware.UI.CommonViews;
-using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel.Design.Serialization;
 using System.IO;
-using AeLimitView = IPCSoftware.App.Views.AeLimitView;
+
+// Aliases for app-specific types (will be migrated in later phases)
+using OEEDashboard = IPCSoftware.App.Views.OEEDashboard;
+using OEEDashboardViewModel = IPCSoftware.App.ViewModels.OEEDashboardViewModel;
+using ManualOperationView = IPCSoftware.App.Views.ManualOperationView;
+using ManualOpViewModel = IPCSoftware.App.ViewModels.ManualOpViewModel;
+using FullImageView = IPCSoftware.App.Views.FullImageView;
+using DashboardDetailWindow = IPCSoftware.App.Views.DashboardDetailWindow;
+using FullImageViewModel = IPCSoftware.App.ViewModels.FullImageViewModel;
+using AeLimitViewModel = IPCSoftware.App.ViewModels.AeLimitViewModel;
 
 namespace IPCSoftware.App.DI
 {
     public static class ServiceRegistration
     {
         public static void RegisterServices(IServiceCollection services)
-        {
-            // services.AddHostedService<Worker>();
-            services.AddSingleton<IAppLogger, AppLoggerService>();
-            services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+    {
+      services.AddSingleton<IAppLogger, AppLoggerService>();
+         services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
             services.AddSingleton<ICycleManagerService, CycleManagerService>();
-            services.AddSingleton<ExternalInterfaceService>();
-            services.AddSingleton<ICcdConfigService, CcdConfigService>();
-            services.AddSingleton<AlgorithmAnalysisService>();
-            services.AddSingleton<DashboardInitializer>();
-            services.AddSingleton<OeeEngine>();
+     services.AddSingleton<ExternalInterfaceService>();
+        services.AddSingleton<ICcdConfigService, CcdConfigService>();
+  services.AddSingleton<AlgorithmAnalysisService>();
+  services.AddSingleton<DashboardInitializer>();
+   services.AddSingleton<OeeEngine>();
             services.AddSingleton<SystemMonitorService>();
-            services.AddSingleton<IAlarmHistoryService, AlarmHistoryService>();
-            services.AddSingleton<ITcpTrafficLogger, TcpTrafficLogger>();
-            // --- Updated registration for IProductionDataLogger ---
-            services.AddSingleton<IProductionDataLogger>(sp =>
-            {
+    services.AddSingleton<IAlarmHistoryService, AlarmHistoryService>();
+      services.AddSingleton<ITcpTrafficLogger, TcpTrafficLogger>();
+       services.AddSingleton<IProductionDataLogger>(sp =>
+          {
                 var logConfigService = sp.GetRequiredService<ILogConfigurationService>();
-                var initTask = logConfigService.InitializeAsync();
-                initTask.Wait();
+   var initTask = logConfigService.InitializeAsync();
+           initTask.Wait();
                 var prodLogConfigTask = logConfigService.GetByLogTypeAsync(LogType.Production);
-                prodLogConfigTask.Wait();
-                var prodLogConfig = prodLogConfigTask.Result;
-                if (prodLogConfig == null || !prodLogConfig.Enabled)
-                    throw new InvalidOperationException("Production log configuration not found or not enabled.");
-
-                return new ProductionDataLogger(prodLogConfig);
+  prodLogConfigTask.Wait();
+         var prodLogConfig = prodLogConfigTask.Result;
+              if (prodLogConfig == null || !prodLogConfig.Enabled)
+   throw new InvalidOperationException("Production log configuration not found or not enabled.");
+        return new ProductionDataLogger(prodLogConfig);
             });
-            services.AddSingleton<CCDTriggerService>();
-            services.AddSingleton<PLCClientManager>();
+     services.AddSingleton<CCDTriggerService>();
+       services.AddSingleton<PLCClientManager>();
             services.AddSingleton<CameraFtpService>();
-            services.AddTransient<ProductionImageService>();
+        services.AddTransient<ProductionImageService>();
             services.AddSingleton<AlarmService>();
-            services.AddSingleton(sp =>
+     services.AddSingleton(sp =>
             {
-                var logger = sp.GetRequiredService<IAppLogger>();
-                return new UiListener(5050, logger);
+        var logger = sp.GetRequiredService<IAppLogger>();
+          return new UiListener(5050, logger);
             });
-            // When someone asks for IMessagePublisher, give them the EXISTING UiListener
-            services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
-            services.AddSingleton<IApiTestSettingsService, ApiTestSettingsService>();
-
-
-            //services.AddSingleton<IConfiguration>(configuration);
-            //Auth service
-            services.AddSingleton<IAuthService, AuthService>();
-            //Credentials
-            //services.AddSingleton<ICredentialsService, CredentialsService>();
-            services.AddSingleton<IAeLimitService, AeLimitService>();
-            //Navigation
+   services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
+ services.AddSingleton<IApiTestSettingsService, ApiTestSettingsService>();
+services.AddSingleton<IAuthService, AuthService>();
+        services.AddSingleton<IAeLimitService, AeLimitService>();
             services.AddSingleton<INavigationService, NavigationService>();
-            //Dialog service
             services.AddSingleton<IDialogService, DialogService>();
-            //AppLogger 
-
             services.AddSingleton<ILogManagerService, LogManagerService>();
-            services.AddSingleton<IShiftManagementService, ShiftManagementService>();
-
-
-
-            services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
-            services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
+  services.AddSingleton<IShiftManagementService, ShiftManagementService>();
+       services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
+       services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
             services.AddSingleton<IUserManagementService, UserManagementService>();
-            services.AddSingleton<IProductConfigurationService, ProductConfigurationService>();
+     services.AddSingleton<IProductConfigurationService, ProductConfigurationService>();
+          services.AddSingleton<ILogService, LogService>();
 
-
-            // CCD Serive
-            // services.AddSingleton<ICycleManagerService, CycleManagerService>();
-
-            services.AddSingleton<ILogService, LogService>();
-
-
-            // ========== MAIN VIEWMODELS (Singleton) ==========
+   // ========== MAIN VIEWMODELS ==========
             services.AddSingleton<RibbonViewModel>();
-            services.AddSingleton<MainWindowViewModel>();
-            services.AddTransient<OEEDashboardViewModel>();
-            //    services.AddSingleton<OeeDashboardNewViewModel>();
-            services.AddSingleton<UiTcpClient>();
+          services.AddSingleton<MainWindowViewModel>();
+  services.AddTransient<OEEDashboardViewModel>();
+ services.AddSingleton<UiTcpClient>();
             services.AddSingleton<ShiftResetService>();
 
-
-
-
-            // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
-            services.AddTransient<IPCSoftware.UI.CommonViews.ViewModels.ShiftConfigurationViewModel>();
-            services.AddTransient<UI.CommonViews.ShiftConfigurationView>();
-
-
-            // ========== LOG CONFIGURATION VIEWMODELS (Transient) ==========
-            services.AddTransient<LogListViewModel>();
+         // ========== COMMON VIEWS & VIEWMODELS ==========
+       services.AddTransient<ShiftConfigurationViewModel>();
+            services.AddTransient<ShiftConfigurationView>();
+     services.AddTransient<LogListViewModel>();
             services.AddTransient<LogConfigurationViewModel>();
-
-
-            // ========== Start Up Condition View (Transient) ==========
-            services.AddTransient<StartupConditionView>();
+       services.AddTransient<StartupConditionView>();
             services.AddTransient<StartupConditionViewModel>();
-
-            // ========== DEVICE CONFIGURATION VIEWMODELS (Transient) ==========
             services.AddTransient<DeviceListViewModel>();
             services.AddTransient<DeviceConfigurationViewModel>();
-            services.AddTransient<DeviceDetailViewModel>();
-            services.AddTransient<IPCSoftware.UI.CommonViews.ViewModels.DeviceInterfaceConfigurationViewModel>();
-            services.AddTransient<CameraDetailViewModel>();
-            services.AddTransient<CameraInterfaceConfigurationViewModel>();
-
-            services.AddTransient<AeLimitView>();
-            services.AddTransient<AeLimitViewModel>();
-
-            services.AddTransient<AboutView>();
+          services.AddTransient<DeviceDetailViewModel>();
+    services.AddTransient<DeviceInterfaceConfigurationViewModel>();
+  services.AddTransient<CameraDetailViewModel>();
+    services.AddTransient<CameraInterfaceConfigurationViewModel>();
+      services.AddTransient<AeLimitView>();
+   services.AddTransient<AeLimitViewModel>();
+  services.AddTransient<AboutView>();
             services.AddTransient<AboutViewModel>();
-
-
-            // ===== Produciton Image ViewModel =====
             services.AddTransient<ProductionImageView>();
-            services.AddTransient<ProductionImageViewModel>();
-
-            // ===== Produciton Image ViewModel =====
-            services.AddTransient<ProductSettingsView>();
-            services.AddTransient<ProductSettingsViewModel>();
-
-            services.AddTransient<AlarmLogView>();
-            services.AddTransient<AlarmLogViewModel>();
-
-
-
-            // ========== ALARM CONFIGURATION VIEWMODELS (Transient) ========== 
+   services.AddTransient<ProductionImageViewModel>();
+  services.AddTransient<ProductSettingsView>();
+  services.AddTransient<ProductSettingsViewModel>();
+   services.AddTransient<AlarmLogView>();
+  services.AddTransient<AlarmLogViewModel>();
             services.AddTransient<AlarmListViewModel>();
-
-
-            services.AddTransient<AlarmConfigurationViewModel>();
-            services.AddTransient<BackupService>();
-
-            services.AddTransient<UI.CommonViews.ViewModels.AlarmConfigurationViewModel>();
-            services.AddTransient<BackupService>();
-
-
-            services.AddTransient<AlarmConfigurationViewModel>();
-            services.AddTransient<BackupService>();
-
-            services.AddTransient<TagConfigLoader>();
-
-
-            // ========== USER MANAGEMENT VIEWMODELS (Transient) ========== 
+   services.AddTransient<AlarmConfigurationViewModel>();
+   services.AddTransient<BackupService>();
+     services.AddTransient<TagConfigLoader>();
             services.AddTransient<UserListViewModel>();
-            services.AddTransient<UserConfigurationViewModel>();
-
-            // ========== Alaram VIEWMODELS (Transient) ========== 
+       services.AddTransient<UserConfigurationViewModel>();
             services.AddTransient<AlarmView>();
             services.AddSingleton<AlarmViewModel>();
-            services.AddSingleton<AlarmService>();
-
-
-            // ========== PLC TAG CONFIGURATION VIEWMODELS (Transient) ========== 
+       services.AddSingleton<AlarmService>();
             services.AddTransient<PLCTagListViewModel>();
             services.AddTransient<PLCTagConfigurationViewModel>();
+     services.AddTransient<ServoCalibrationView>();
+      services.AddTransient<ServoCalibrationViewModel>();
+        services.AddSingleton<IServoCalibrationService, ServoCalibrationService>();
 
-            // ========== PLC TAG CONFIGURATION VIEWMODELS (Transient) ========== 
-            services.AddTransient<ServoCalibrationView>();
-            services.AddTransient<ServoCalibrationViewModel>();
-
-            services.AddSingleton<IServoCalibrationService, ServoCalibrationService>();
-
-            // Views
+         // Views
             services.AddTransient<RibbonView>();
-            services.AddTransient<OEEDashboard>();
-
-
-            services.AddTransient<DashboardView>();
-
+          services.AddTransient<OEEDashboard>();
+services.AddTransient<DashboardView>();
             services.AddTransient<PLCIOView>();
-            services.AddTransient<PLCIOViewModel>();
-
+     services.AddTransient<PLCIOViewModel>();
             services.AddTransient<LogView>();
-
-            // Log Configuration Views
-            services.AddTransient<LogListView>();
-            services.AddTransient<LogConfigurationView>();
-
-            // Device Configuration Views
-            services.AddTransient<DeviceListView>();
+        services.AddTransient<LogListView>();
+        services.AddTransient<LogConfigurationView>();
+      services.AddTransient<DeviceListView>();
             services.AddTransient<DeviceConfigurationView>();
             services.AddTransient<DeviceDetailView>();
             services.AddTransient<DeviceInterfaceConfigurationView>();
-            services.AddTransient<CameraDetailView>();
-            services.AddTransient<CameraInterfaceConfigurationView>();
-
-            // Alarm Configuration Views 
-            services.AddTransient<AlarmListView>();
-            services.AddTransient<AlarmConfigurationView>();
-
-            // User Management Views 
+       services.AddTransient<CameraDetailView>();
+     services.AddTransient<CameraInterfaceConfigurationView>();
+     services.AddTransient<AlarmListView>();
+      services.AddTransient<AlarmConfigurationView>();
             services.AddTransient<UserListView>();
-            services.AddTransient<UserConfigurationView>();
-
-            services.AddTransient<ModeOfOperation>();
-            //  services.AddTransient<ManualOperation>();
-            services.AddTransient<ManualOperationView>();
-
-
+  services.AddTransient<UserConfigurationView>();
+ services.AddTransient<ModeOfOperation>();
+    services.AddTransient<ManualOperationView>();
             services.AddTransient<ModeOfOperationViewModel>();
             services.AddTransient<ManualOpViewModel>();
-            // PLC Tag Configuration Views 
             services.AddTransient<PLCTagListView>();
-            services.AddTransient<PLCTagConfigurationView>();
-
-            services.AddTransient<LogViewerViewModel>();
-
-            services.AddTransient<LoginViewModel>();
+       services.AddTransient<PLCTagConfigurationView>();
+   services.AddTransient<LogViewerViewModel>();
+          services.AddTransient<LoginViewModel>();
             services.AddTransient<LoginView>();
-
-            //Tag Control
-            services.AddTransient<TagControlView>();
-            services.AddTransient<TagControlViewModel>();
-
-            //services.AddTransient<SettingsView>();
-            //services.AddTransient<LogsView>();
-            //services.AddTransient<UserMgmtView>();
-            //System Settings
+       services.AddTransient<TagControlView>();
+          services.AddTransient<TagControlViewModel>();
             services.AddTransient<SystemSettingView>();
-            services.AddTransient<SystemSettingViewModel>();
-            services.AddTransient<IPLCService, PlcService>();
-
+   services.AddTransient<SystemSettingViewModel>();
+ services.AddTransient<IPLCService, PlcService>();
             services.AddSingleton<CoreClient>();
-
-
-            services.AddSingleton<ReportConfigViewModel>();
+       services.AddSingleton<ReportConfigViewModel>();
             services.AddSingleton<ReportConfigView>();
             services.AddSingleton<ReportViewerViewModel>();
             services.AddSingleton<ReportViewerView>();
-
-            services.AddTransient<ApiTestViewModel>();
-            services.AddTransient<ApiTestView>();
-
-            services.AddTransient<ProcessSequenceViewModel>();
-            services.AddTransient<ProcessSequenceWindow>();
-
+        services.AddTransient<ApiTestViewModel>();
+      services.AddTransient<ApiTestView>();
+      services.AddTransient<ProcessSequenceViewModel>();
+     services.AddTransient<ProcessSequenceWindow>();
             services.AddTransient<Func<ProcessSequenceWindow>>(sp => () => sp.GetRequiredService<ProcessSequenceWindow>());
-        }
+     }
     }
-
 }
-

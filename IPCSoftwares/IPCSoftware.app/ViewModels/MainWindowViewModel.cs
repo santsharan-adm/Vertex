@@ -1,8 +1,10 @@
-﻿using IPCSoftware.App;
-using IPCSoftware.App.Helpers;
-using IPCSoftware.App.Services;
-using IPCSoftware.App.ViewModels;
-using IPCSoftware.App.Views;
+using IPCSoftware.App;
+using IPCSoftware.Common.WPFExtensions;
+using IPCSoftware.Common.CommonExtensions;
+using IPCSoftware.Common.UIClientComm;
+using IPCSoftware.Services;
+using IPCSoftware.UI.CommonViews.ViewModels;
+using IPCSoftware.UI.CommonViews;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
@@ -21,7 +23,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using AeLimitView = IPCSoftware.App.Views.AeLimitView;
+// AeLimitView alias no longer needed — navigation uses INavigationService.NavigateToAeLimit()
 
 public class MainWindowViewModel : BaseViewModel
 {
@@ -472,7 +474,7 @@ public class MainWindowViewModel : BaseViewModel
                 // OEEDashboard Menu
                 case "Dashboard":
                     //_nav.NavigateMain<LiveOeeView>();
-                    _nav.NavigateMain<OEEDashboard>();
+                    _nav.NavigateToOEEDashboard();
                     break;
 
                 case "Machine Summary":
@@ -510,7 +512,7 @@ public class MainWindowViewModel : BaseViewModel
 
                 case "Manual Operation":
                     //_nav.NavigateMain<ManualOperation>();
-                    _nav.NavigateMain<ManualOperationView>();
+                    _nav.NavigateToManualOperation();
                     break;
 
                 case "Control":
@@ -571,7 +573,7 @@ public class MainWindowViewModel : BaseViewModel
                     break;
 
                 case "AE Limit":
-                    _nav.NavigateMain<AeLimitView>();
+                    _nav.NavigateToAeLimit();
                     break;
                 case "About":
                     _nav.NavigateMain<AboutView>();

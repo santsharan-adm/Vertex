@@ -1,5 +1,5 @@
-﻿using IPCSoftware.App.NavServices;
-using IPCSoftware.App.Views;
+using IPCSoftware.Common.CommonFunctions;
+using IPCSoftware.UI.CommonViews;
 
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;

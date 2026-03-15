@@ -1,13 +1,10 @@
-﻿using IPCSoftware.App.DI;
-using IPCSoftware.App.ViewModels;
-using IPCSoftware.App.Views;
+using IPCSoftware.Common.CommonFunctions;
+using IPCSoftware.UI.CommonViews.ViewModels;
+using IPCSoftware.UI.CommonViews;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
-using IPCSoftware.UI.CommonViews;
-using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualBasic.Logging;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -469,6 +466,10 @@ namespace IPCSoftware.App.NavServices
             }
             return true; // Safe to navigate
         }
+
+        public void NavigateToManualOperation() => NavigateMain<IPCSoftware.App.Views.ManualOperationView>();
+        public void NavigateToOEEDashboard() => NavigateMain<IPCSoftware.App.Views.OEEDashboard>();
+        public void NavigateToAeLimit() => NavigateMain<IPCSoftware.App.Views.AeLimitView>();
 
 
     }
