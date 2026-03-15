@@ -1111,14 +1111,12 @@ namespace IPCSoftware.App.ViewModels
                     // Must execute UI updates on Dispatcher
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-       // TODO: Phase 2 - Uncomment after moving DashboardDetailWindow to UI.CommonViews
- // var win = new DashboardDetailWindow();
-              // win.DataContext = new DashboardDetailViewModel(win, title, data);
-      // win.ShowDialog();
-                 
-_logger.LogWarning("OpenCardDetail: DashboardDetailWindow not yet migrated (Phase 2 pending)", LogType.Diagnostics);
-  });
-       }
+                        // ✅ NOW WORKING - DashboardDetailWindow has been migrated to UI.CommonViews!
+                        var win = new IPCSoftware.UI.CommonViews.Views.DashboardDetailWindow();
+                        win.DataContext = new IPCSoftware.UI.CommonViews.ViewModels.DashboardDetailViewModel(win, title, data);
+                        win.ShowDialog();
+                    });
+                }
             }
             catch (Exception ex)
             {

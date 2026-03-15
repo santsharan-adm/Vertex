@@ -29,9 +29,10 @@ using OEEDashboard = IPCSoftware.App.Views.OEEDashboard;
 using OEEDashboardViewModel = IPCSoftware.App.ViewModels.OEEDashboardViewModel;
 using ManualOperationView = IPCSoftware.App.Views.ManualOperationView;
 using ManualOpViewModel = IPCSoftware.App.ViewModels.ManualOpViewModel;
-using FullImageView = IPCSoftware.UI.CommonViews.Views.FullImageView;  // ? Updated to UI.CommonViews
-using DashboardDetailWindow = IPCSoftware.App.Views.DashboardDetailWindow;
-using FullImageViewModel = IPCSoftware.UI.CommonViews.ViewModels.FullImageViewModel;  // ? Updated to UI.CommonViews
+using FullImageView = IPCSoftware.UI.CommonViews.Views.FullImageView;  // ? Migrated
+using DashboardDetailWindow = IPCSoftware.UI.CommonViews.Views.DashboardDetailWindow;  // ? Migrated
+using FullImageViewModel = IPCSoftware.UI.CommonViews.ViewModels.FullImageViewModel;  // ? Migrated
+using DashboardDetailViewModel = IPCSoftware.UI.CommonViews.ViewModels.DashboardDetailViewModel;  // ? NEW
 
 namespace IPCSoftware.App.DI
 {
