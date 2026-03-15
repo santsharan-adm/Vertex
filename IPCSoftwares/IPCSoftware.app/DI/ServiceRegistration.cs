@@ -32,14 +32,13 @@ using ManualOpViewModel = IPCSoftware.App.ViewModels.ManualOpViewModel;
 using FullImageView = IPCSoftware.App.Views.FullImageView;
 using DashboardDetailWindow = IPCSoftware.App.Views.DashboardDetailWindow;
 using FullImageViewModel = IPCSoftware.App.ViewModels.FullImageViewModel;
-using AeLimitViewModel = IPCSoftware.App.ViewModels.AeLimitViewModel;
 
 namespace IPCSoftware.App.DI
 {
     public static class ServiceRegistration
     {
         public static void RegisterServices(IServiceCollection services)
-    {
+        {
       services.AddSingleton<IAppLogger, AppLoggerService>();
          services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
