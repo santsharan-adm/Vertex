@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using IPCSoftware.UI.CommonViews.ViewModels;
 
 namespace IPCSoftware.UI.CommonViews
 {
@@ -20,9 +21,10 @@ namespace IPCSoftware.UI.CommonViews
     /// </summary>
     public partial class ReportConfigView : System.Windows.Controls.UserControl
     {
-        public ReportConfigView()
+        public ReportConfigView(ReportConfigViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
     }
 }

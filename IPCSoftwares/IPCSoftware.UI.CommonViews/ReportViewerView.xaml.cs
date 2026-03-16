@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IPCSoftware.UI.CommonViews.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,10 @@ namespace IPCSoftware.UI.CommonViews
     /// </summary>
     public partial class ReportViewerView : System.Windows.Controls.UserControl
     {
-        public ReportViewerView()
+        public ReportViewerView(ReportViewerViewModel viewmodelrepo)
         {
             InitializeComponent();
+            DataContext = viewmodelrepo;
         }
     }
 }
