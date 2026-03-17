@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+        xmlns:wpfext="clr-namespace:IPCSoftware.Common.WPFExtensions;assembly=IPCSoftware.WPFExtensions"
         xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
         mc:Ignorable="d"
         Title="IPC HMI Software" 
@@ -16,7 +17,7 @@
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <helpers:InverseBooleanConverter x:Key="InverseBoolConverter"/>
+        <wpfext:InverseBooleanConverter x:Key="InverseBoolConverter"/>
 
         <Style x:Key="WindowControlButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="60"/>

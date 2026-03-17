@@ -99,7 +99,7 @@ namespace IPCSoftware.App.ViewModels
                 10, 11, 12  // Changed to Linear Order
         };
 
-        private string _currentThemePath = "/IPCSoftware.App;component/Styles/LightTheme.xaml";
+        private string _currentThemePath = "/IPCSoftware.UI.Themes;component/Themes/LightTheme.xaml";
         public string CurrentThemePath
         {
 

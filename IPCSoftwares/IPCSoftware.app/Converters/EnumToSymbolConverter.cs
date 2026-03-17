@@ -1,4 +1,3 @@
-using IPCSoftware.UI.CommonViews.ViewModels;
 using IPCSoftware.App.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -34,46 +33,31 @@ namespace IPCSoftware.App.Converters
             return mode switch
             {
                 // Tray Lift
-                ManualOperationMode.TrayLiftUp => "▲ UP",
-                ManualOperationMode.TrayLiftDown => "▼ DOWN",
+                ManualOperationMode.TrayLiftUp => "? UP",
+                ManualOperationMode.TrayLiftDown => "? DOWN",
 
                 // Cylinder
-                ManualOperationMode.PositioningCylinderUp => "▲ UP",
-                ManualOperationMode.PositioningCylinderDown => "▼ DOWN",
+                ManualOperationMode.PositioningCylinderUp => "? UP",
+                ManualOperationMode.PositioningCylinderDown => "? DOWN",
 
                 // Conveyor
-                ManualOperationMode.TransportConveyorReverse => "◀ REV",
-                ManualOperationMode.TransportConveyorForward => "▶ FWD",
-                ManualOperationMode.TransportConveyorStop => "■ STOP",
-                ManualOperationMode.TransportConveyorLowSpeed => " ⏪ LOW",
-                ManualOperationMode.TransportConveyorHighSpeed => "⏩ HIGH",
+                ManualOperationMode.TransportConveyorReverse => "? REV",
+                ManualOperationMode.TransportConveyorForward => "? FWD",
+                ManualOperationMode.TransportConveyorStop => "? STOP",
+                ManualOperationMode.TransportConveyorLowSpeed => " ? LOW",
+                ManualOperationMode.TransportConveyorHighSpeed => "? HIGH",
 
                 // X-Axis
-                ManualOperationMode.ManualXAxisJogBackward => "◀ JOG -",
-                ManualOperationMode.ManualXAxisJogForward => "▶ JOG +",
-             /*   ManualOperationMode.XAxisJogLowSpeed => "⏪ LOW",
-                ManualOperationMode.XAxisJogHighSpeed => "⏩ HIGH",*/
+                ManualOperationMode.ManualXAxisJogBackward => "? JOG -",
+                ManualOperationMode.ManualXAxisJogForward => "? JOG +",
+             /*   ManualOperationMode.XAxisJogLowSpeed => "? LOW",
+                ManualOperationMode.XAxisJogHighSpeed => "? HIGH",*/
 
                 // Y-Axis
-                ManualOperationMode.ManualYAxisJogBackward => "◀ JOG -",
-                ManualOperationMode.ManualYAxisJogForward => "▶ JOG +",
-         /*       ManualOperationMode.YAxisJogLowSpeed => "⏪ LOW",
-                ManualOperationMode.YAxisJogHighSpeed => "⏩ HIGH",*/
-
-                // Positions
-                //ManualOperationMode.MoveToPos0 => "HOME",
-                //ManualOperationMode.MoveToPos1 => "1",
-                //ManualOperationMode.MoveToPos2 => "2",
-                //ManualOperationMode.MoveToPos3 => "3",
-                //ManualOperationMode.MoveToPos4 => "4",
-                //ManualOperationMode.MoveToPos5 => "5",
-                //ManualOperationMode.MoveToPos6 => "6",
-                //ManualOperationMode.MoveToPos7 => "7",
-                //ManualOperationMode.MoveToPos8 => "8",
-                //ManualOperationMode.MoveToPos9 => "9",
-                //ManualOperationMode.MoveToPos10 => "10",
-                //ManualOperationMode.MoveToPos11 => "11",
-                //ManualOperationMode.MoveToPos12 => "12",
+                ManualOperationMode.ManualYAxisJogBackward => "? JOG -",
+                ManualOperationMode.ManualYAxisJogForward => "? JOG +",
+         /*       ManualOperationMode.YAxisJogLowSpeed => "? LOW",
+                ManualOperationMode.YAxisJogHighSpeed => "? HIGH",*/
 
                // _ => value.ToString().ToUpper()
                  _ => modeString.ToUpper()
@@ -102,8 +86,8 @@ namespace IPCSoftware.App.Converters
             if (value == null || parameter == null)
                 return Visibility.Collapsed;
 
-            string itemGroup = value.ToString();
-            string targetGroup = parameter.ToString();
+            string? itemGroup = value.ToString();
+            string? targetGroup = parameter.ToString();
 
             // Show button only if its group matches the target group
             return itemGroup == targetGroup ? Visibility.Visible : Visibility.Collapsed;
@@ -114,5 +98,4 @@ namespace IPCSoftware.App.Converters
             throw new NotImplementedException();
         }
     }
-
 }

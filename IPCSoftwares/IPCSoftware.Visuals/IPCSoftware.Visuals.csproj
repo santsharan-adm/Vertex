@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>IPCSoftware.Common.Visuals</RootNamespace>
     <AssemblyName>IPCSoftware.Visuals</AssemblyName>

@@ -86,7 +86,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="LogoBorder" Width="80" Height="80" CornerRadius="40" BorderBrush="White" BorderThickness="3">
                             <Border.Background>
-                                <ImageBrush ImageSource="/Controls/Images/AOILogo.png" Stretch="UniformToFill"/>
+                                <ImageBrush ImageSource="pack://application:,,,/IPCSoftware.Visuals;component/Images/AOILogo.png" Stretch="UniformToFill"/>
                             </Border.Background>
                         </Border>
                         <ControlTemplate.Triggers>
