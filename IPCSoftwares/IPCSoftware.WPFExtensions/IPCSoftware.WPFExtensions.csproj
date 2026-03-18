@@ -15,11 +15,7 @@
     <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
     <ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
   </ItemGroup>
-  <!-- Exclude converters that depend on app-specific types (ManualOperationMode) -->
-  <!-- Canonical versions are in IPCSoftware.app/Converters/ -->
   <ItemGroup>
-    <Compile Remove="Convertors\EqualityConverter.cs" />
     <Compile Remove="Convertors\SingleBtnEqualityConverter .cs" />
-    <Compile Remove="Convertors\EnumToSymbolConverter.cs" />
   </ItemGroup>
 </Project>

@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
         xmlns:wpfext="clr-namespace:IPCSoftware.Common.WPFExtensions;assembly=IPCSoftware.WPFExtensions"
         xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
         mc:Ignorable="d"

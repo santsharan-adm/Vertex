@@ -2,10 +2,10 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
-             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
-             xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
+             xmlns:wpfext="clr-namespace:IPCSoftware.Common.WPFExtensions;assembly=IPCSoftware.WPFExtensions"
+             xmlns:conv="clr-namespace:IPCSoftware.Common.WPFExtensions.Convertors;assembly=IPCSoftware.WPFExtensions"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ManualOperationViewModel}"
+             wpfext:ViewModelLocator.AutoWireViewModel="{x:Type vm:ManualOperationViewModel}"
              Background="#F0F2F5">
 
     <UserControl.Resources>

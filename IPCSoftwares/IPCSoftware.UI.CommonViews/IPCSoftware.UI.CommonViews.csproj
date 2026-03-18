@@ -30,4 +30,8 @@
 		<ProjectReference Include="..\IPCSoftware.Visuals\IPCSoftware.Visuals.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Locators\" />
+	</ItemGroup>
+
 </Project>

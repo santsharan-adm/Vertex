@@ -92,7 +92,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="IPCSoftware\UI\CommonViews\ViewModels\" />
     <Folder Include="Models\" />
   </ItemGroup>
 

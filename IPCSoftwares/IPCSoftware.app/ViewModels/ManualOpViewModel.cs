@@ -1,4 +1,3 @@
-
 using IPCSoftware.Common.WPFExtensions;
 using IPCSoftware.Common.CommonExtensions;
 using IPCSoftware.Common.UIClientComm;
@@ -19,6 +18,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using IPCSoftware.Shared.ManualOperationMode;
+using IPCSoftware.Shared.Attribute;
 
 namespace IPCSoftware.App.ViewModels
 {

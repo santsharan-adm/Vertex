@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+             xmlns:wpfext="clr-namespace:IPCSoftware.Common.WPFExtensions;assembly=IPCSoftware.WPFExtensions"
+
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              mc:Ignorable="d"
-             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:AeLimitViewModel}"
+             wpfext:ViewModelLocator.AutoWireViewModel="{x:Type vm:AeLimitViewModel}"
              d:DesignHeight="900"
              d:DesignWidth="1400">
 
