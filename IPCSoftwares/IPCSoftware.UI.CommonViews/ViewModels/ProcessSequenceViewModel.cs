@@ -1,5 +1,4 @@
 using IPCSoftware.Common.WPFExtensions;
-using IPCSoftware.Common.Models;
 using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Common.CommonExtensions;
 using IPCSoftware.Services;

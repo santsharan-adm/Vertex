@@ -10,4 +10,7 @@
   <ItemGroup>
     <Resource Include="Images\**\*" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Remove="Images\favicon.ico" />
+  </ItemGroup>
 </Project>

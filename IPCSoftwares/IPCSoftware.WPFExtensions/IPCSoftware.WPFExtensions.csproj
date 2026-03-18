@@ -11,7 +11,6 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IPCSoftware.Common\IPCSoftware.Common.csproj" />
     <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
     <ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
   </ItemGroup>

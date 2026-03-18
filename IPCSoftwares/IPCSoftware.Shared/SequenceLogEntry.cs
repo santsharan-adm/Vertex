@@ -1,6 +1,6 @@
 using System;
 
-namespace IPCSoftware.Common.Models
+namespace IPCSoftware.Shared
 {
     public class SequenceLogEntry
     {

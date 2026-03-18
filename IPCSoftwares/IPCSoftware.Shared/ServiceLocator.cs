@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IPCSoftware.Common
+namespace IPCSoftware.Shared
 {
     /// <summary>
     /// Central service locator that holds the application's IServiceProvider.

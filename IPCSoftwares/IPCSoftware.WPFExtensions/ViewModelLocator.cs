@@ -1,4 +1,4 @@
-using IPCSoftware.Common;
+using IPCSoftware.Shared;
 using System;
 using System.Windows;
 

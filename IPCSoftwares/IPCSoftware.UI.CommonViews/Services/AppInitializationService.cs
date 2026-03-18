@@ -1,5 +1,5 @@
-using IPCSoftware.Common;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 

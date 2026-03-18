@@ -1,4 +1,4 @@
-﻿using IPCSoftware.Helpers;
+﻿using IPCSoftware.Common.WPFExtensions;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services.ConfigServices;

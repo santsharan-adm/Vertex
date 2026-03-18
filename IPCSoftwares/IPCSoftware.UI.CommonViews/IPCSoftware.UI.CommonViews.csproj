@@ -8,6 +8,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Locators\**" />
+	  <EmbeddedResource Remove="Locators\**" />
+	  <None Remove="Locators\**" />
+	  <Page Remove="Locators\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.3" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
@@ -16,22 +23,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\IPCSoftware.Common\IPCSoftware.Common.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
 		<ProjectReference Include="..\IPCSoftware.CoreService\IPCSoftware.CoreService.csproj" />
 		<ProjectReference Include="..\IPCSoftware.DataLogger\IPCSoftware.DataLogger.csproj" />
 		<ProjectReference Include="..\IPCSoftware.FileManager\IPCSoftware.FileManager.csproj" />
-		<ProjectReference Include="..\IPCSoftware.Helpers\IPCSoftware.Helpers.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
 		<ProjectReference Include="..\IPCSoftware.WPFExtensions\IPCSoftware.WPFExtensions.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Communication.UIClientComm\IPCSoftware.Communication.UIClientComm.csproj" />
 		<ProjectReference Include="..\IPCSoftware.CommonExtensions\IPCSoftware.CommonExtensions.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Visuals\IPCSoftware.Visuals.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Locators\" />
 	</ItemGroup>
 
 </Project>

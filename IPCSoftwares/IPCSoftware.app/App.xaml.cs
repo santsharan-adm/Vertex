@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Windows;
+using IPCSoftware.Shared;
 
 
 namespace IPCSoftware.App
@@ -131,7 +132,7 @@ namespace IPCSoftware.App
             ServiceProvider = (ServiceProvider)_host.Services;
 
             // Initialize central ServiceLocator so library projects can resolve services
-            IPCSoftware.Common.ServiceLocator.Initialize(ServiceProvider);
+            ServiceLocator.Initialize(ServiceProvider);
 
             TcpClient = ServiceProvider.GetService<UiTcpClient>();
 
