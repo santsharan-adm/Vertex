@@ -5,15 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
-              xmlns:converters="clr-namespace:IPCSoftware.App.Converters"
+             xmlns:converters="clr-namespace:IPCSoftware.App.Converters"
+                xmlns:conv="clr-namespace:IPCSoftware.Common.WPFExtensions.Convertors;assembly=IPCSoftware.WPFExtensions"
+       
+             xmlns:behavr="clr-namespace:IPCSoftware.Common.WPFExtensions.Behaviours;assembly=IPCSoftware.WPFExtensions"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ProductionImageViewModel}"
-     helpers:DisposeBehavior.AutoDispose="True"
+     behavr:DisposeBehavior.AutoDispose="True"
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920"
              Background="#F3F3F3">
 
     <UserControl.Resources>
-        <converters:PathToThumbnailConverter x:Key="PathToThumbnailConverter"/>
+        <conv:PathToThumbnailConverter x:Key="PathToThumbnailConverter"/>
         <Style x:Key="FolderItemStyle" TargetType="ListBoxItem">
             <Setter Property="Padding" Value="15,10"/>
             <Setter Property="Margin" Value="0,2"/>

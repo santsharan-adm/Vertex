@@ -1,5 +1,4 @@
-﻿using IPCSoftware.App.Controls;
-using IPCSoftware.App.ViewModels;
+﻿using IPCSoftware.App.ViewModels;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;

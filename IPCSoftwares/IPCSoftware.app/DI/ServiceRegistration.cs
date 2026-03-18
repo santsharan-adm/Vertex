@@ -187,7 +187,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<OEEDashboard>();
        
       
-            services.AddTransient<DashboardView>();
+          //  services.AddTransient<DashboardView>();
 
             services.AddTransient<PLCIOView>();
             services.AddTransient<PLCIOViewModel>();

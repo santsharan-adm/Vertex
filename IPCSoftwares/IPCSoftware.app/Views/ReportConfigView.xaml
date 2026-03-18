@@ -3,6 +3,7 @@
      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:behavr="clr-namespace:IPCSoftware.Common.WPFExtensions.Behaviours;assembly=IPCSoftware.WPFExtensions"
      xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
      xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
      helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ReportConfigViewModel}"
@@ -11,7 +12,7 @@
  Background="#F3F3F3">
 
  <UserControl.Resources>
-        <helpers:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+  
       
   <!-- ListBox Item Style with Borders -->
         <Style x:Key="BorderedListBoxItem" TargetType="ListBoxItem">
@@ -132,7 +133,7 @@
         <Border BorderBrush="#CCCCCC" BorderThickness="2" CornerRadius="4">
  <ListBox ItemsSource="{Binding AvailableColumns}" 
   SelectionMode="Multiple"
-          helpers:ListBoxSelectedItemsBehavior.BindableSelectedItems="{Binding SelectedColumns, Mode=TwoWay}" 
+          behavr:ListBoxSelectedItemsBehavior.BindableSelectedItems="{Binding SelectedColumns, Mode=TwoWay}" 
 Height="380"
                 FontSize="22"
               BorderThickness="0"

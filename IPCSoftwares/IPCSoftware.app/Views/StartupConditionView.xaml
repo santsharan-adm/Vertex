@@ -3,8 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
+               xmlns:behavr="clr-namespace:IPCSoftware.Common.WPFExtensions.Behaviours;assembly=IPCSoftware.WPFExtensions"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:StartupConditionViewModel}"
-             helpers:DisposeBehavior.AutoDispose="True"
+             behavr:DisposeBehavior.AutoDispose="True"
              Background="{DynamicResource CardBackgroundBrush}">
     <Grid Margin="20">
         <Grid.RowDefinitions>

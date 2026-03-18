@@ -4,7 +4,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
-             helpers:DisposeBehavior.AutoDispose="True"
+               xmlns:behavr="clr-namespace:IPCSoftware.Common.WPFExtensions.Behaviours;assembly=IPCSoftware.WPFExtensions"
+             behavr:DisposeBehavior.AutoDispose="True"
              mc:Ignorable="d"
              d:DesignHeight="1080" d:DesignWidth="1920"
              Background="#F3F3F3" >

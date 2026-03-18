@@ -3,10 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
-             xmlns:conv="clr-namespace:IPCSoftware.App.Converters"
+       
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:behavr="clr-namespace:IPCSoftware.Common.WPFExtensions.Behaviours;assembly=IPCSoftware.WPFExtensions"
+             xmlns:conv="clr-namespace:IPCSoftware.Common.WPFExtensions.Convertors;assembly=IPCSoftware.WPFExtensions"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ManualOpViewModel}"
-     helpers:DisposeBehavior.AutoDispose="True"
+        behavr:DisposeBehavior.AutoDispose="True"
              Background="#F0F2F5">
 
     <UserControl.Resources>
@@ -71,7 +73,7 @@
         <DataTemplate x:Key="PositionButtonTemplate">
             <Button Style="{StaticResource PositionButtonStyle}" Width="210" >
                 <i:Interaction.Behaviors>
-                    <helpers:MomentaryBehavior 
+                    <behavr:MomentaryBehavior 
                         Command="{Binding DataContext.UnifiedOperationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         CommandParameter="{Binding Mode}"/>
                 </i:Interaction.Behaviors>
@@ -162,19 +164,19 @@
 
                             <Button Content="▲ UP" Width="180" Margin="0 0 0 20" HorizontalAlignment="Center" Style="{StaticResource JogButtonStyle}">
                                 <i:Interaction.Behaviors>
-                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TrayLiftUp"/>
+                                    <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TrayLiftUp"/>
                                 </i:Interaction.Behaviors>
                                 <Button.Background>
-                                    <SolidColorBrush Color="{Binding IsTrayUpActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                    <SolidColorBrush Color="{Binding IsTrayUpActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
                                 </Button.Background>
                             </Button>
 
                             <Button Content="▼ DOWN" Width="180" HorizontalAlignment="Center" Style="{StaticResource JogButtonStyle}">
                                 <i:Interaction.Behaviors>
-                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TrayLiftDown"/>
+                                    <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TrayLiftDown"/>
                                 </i:Interaction.Behaviors>
                                 <Button.Background>
-                                    <SolidColorBrush Color="{Binding IsTrayDownActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                    <SolidColorBrush Color="{Binding IsTrayDownActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
                                 </Button.Background>
                             </Button>
                         </StackPanel>
@@ -186,19 +188,19 @@
 
                             <Button Content="▲ UP" Width="180" Margin="0 0 0 20" HorizontalAlignment="Center" Style="{StaticResource JogButtonStyle}">
                                 <i:Interaction.Behaviors>
-                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="PositioningCylinderUp"/>
+                                    <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="PositioningCylinderUp"/>
                                 </i:Interaction.Behaviors>
                                 <Button.Background>
-                                    <SolidColorBrush Color="{Binding IsCylUpActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                    <SolidColorBrush Color="{Binding IsCylUpActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
                                 </Button.Background>
                             </Button>
 
                             <Button Content="▼ DOWN" Width="180" HorizontalAlignment="Center" Style="{StaticResource JogButtonStyle}">
                                 <i:Interaction.Behaviors>
-                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="PositioningCylinderDown"/>
+                                    <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="PositioningCylinderDown"/>
                                 </i:Interaction.Behaviors>
                                 <Button.Background>
-                                    <SolidColorBrush Color="{Binding IsCylDownActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                    <SolidColorBrush Color="{Binding IsCylDownActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
                                 </Button.Background>
                             </Button>
                         </StackPanel>
@@ -211,46 +213,46 @@
 
                                 <Button Content="◀ REV" Width="150" Margin="0 10 0 10" Style="{StaticResource JogButtonStyle}">
                                     <i:Interaction.Behaviors>
-                                        <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorReverse"/>
+                                        <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorReverse"/>
                                     </i:Interaction.Behaviors>
                                     <Button.Background>
-                                        <SolidColorBrush Color="{Binding IsConvRevActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                        <SolidColorBrush Color="{Binding IsConvRevActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
                                     </Button.Background>
                                 </Button>
 
                                 <Button Content="▶ FWD" Width="150" Margin="20 10 0 10" Style="{StaticResource JogButtonStyle}">
                                     <i:Interaction.Behaviors>
-                                        <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorForward"/>
+                                        <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorForward"/>
                                     </i:Interaction.Behaviors>
                                     <Button.Background>
-                                        <SolidColorBrush Color="{Binding IsConvFwdActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                        <SolidColorBrush Color="{Binding IsConvFwdActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
                                     </Button.Background>
                                 </Button>
 
                                 <Button Content="■ STOP" Width="150" Margin="20 10 0 10" Style="{StaticResource JogButtonStyle}">
                                     <i:Interaction.Behaviors>
-                                        <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorStop"/>
+                                        <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorStop"/>
                                     </i:Interaction.Behaviors>
                                     <Button.Background>
-                                        <SolidColorBrush Color="{Binding IsConvStopActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                        <SolidColorBrush Color="{Binding IsConvStopActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
                                     </Button.Background>
                                 </Button>
 
                                 <Button Content="⏪ LOW" Width="150" Margin="0 10 10 10" Style="{StaticResource JogButtonStyle}">
                                     <i:Interaction.Behaviors>
-                                        <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorLowSpeed"/>
+                                        <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorLowSpeed"/>
                                     </i:Interaction.Behaviors>
                                     <Button.Background>
-                                        <SolidColorBrush Color="{Binding IsConvLowActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                        <SolidColorBrush Color="{Binding IsConvLowActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
                                     </Button.Background>
                                 </Button>
 
                                 <Button Content="⏩ HIGH" Width="150" Margin="10 10 10 10" Style="{StaticResource JogButtonStyle}">
                                     <i:Interaction.Behaviors>
-                                        <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorHighSpeed"/>
+                                        <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="TransportConveyorHighSpeed"/>
                                     </i:Interaction.Behaviors>
                                     <Button.Background>
-                                        <SolidColorBrush Color="{Binding IsConvHighActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                        <SolidColorBrush Color="{Binding IsConvHighActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
                                     </Button.Background>
                                 </Button>
                             </WrapPanel>
@@ -269,18 +271,18 @@
                             <TextBlock DockPanel.Dock="Top" Text="Manual X-Axis Jog" Style="{StaticResource SectionHeaderStyle}"/>
                             <Button Content="◀ X JOG -" HorizontalAlignment="Left" Style="{StaticResource JogButtonStyle}">
                                 <i:Interaction.Behaviors>
-                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="ManualXAxisJogBackward"/>
+                                    <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="ManualXAxisJogBackward"/>
                                 </i:Interaction.Behaviors>
                                 <Button.Background>
-                                    <SolidColorBrush Color="{Binding IsJogXMinusActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                    <SolidColorBrush Color="{Binding IsJogXMinusActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
                                 </Button.Background>
                             </Button>
                             <Button Content="▶ X JOG +" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}">
                                 <i:Interaction.Behaviors>
-                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="ManualXAxisJogForward"/>
+                                    <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="ManualXAxisJogForward"/>
                                 </i:Interaction.Behaviors>
                                 <Button.Background>
-                                    <SolidColorBrush Color="{Binding IsJogXPlusActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                    <SolidColorBrush Color="{Binding IsJogXPlusActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
                                 </Button.Background>
                             </Button>
                         </DockPanel>
@@ -291,18 +293,18 @@
                             <TextBlock DockPanel.Dock="Top" Text="Manual Y-Axis Jog" Style="{StaticResource SectionHeaderStyle}"/>
                             <Button Content="◀ Y JOG -" HorizontalAlignment="Left" Style="{StaticResource JogButtonStyle}">
                                 <i:Interaction.Behaviors>
-                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="ManualYAxisJogBackward"/>
+                                    <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="ManualYAxisJogBackward"/>
                                 </i:Interaction.Behaviors>
                                 <Button.Background>
-                                    <SolidColorBrush Color="{Binding IsJogYMinusActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                    <SolidColorBrush Color="{Binding IsJogYMinusActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
                                 </Button.Background>
                             </Button>
                             <Button Content="▶ Y JOG +" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}">
                                 <i:Interaction.Behaviors>
-                                    <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="ManualYAxisJogForward"/>
+                                    <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="ManualYAxisJogForward"/>
                                 </i:Interaction.Behaviors>
                                 <Button.Background>
-                                    <SolidColorBrush Color="{Binding IsJogYPlusActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
+                                    <SolidColorBrush Color="{Binding IsJogYPlusActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E0E0E0}}"/>
                                 </Button.Background>
                             </Button>
                         </DockPanel>
@@ -332,7 +334,7 @@
                         </Button.Style>
 
                         <Button.Background>
-                            <SolidColorBrush Color="{Binding IsOriginActive, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E8E8E8}}"/>
+                            <SolidColorBrush Color="{Binding IsOriginActive, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E8E8E8}}"/>
                         </Button.Background>
                     </Button>
 
@@ -344,11 +346,11 @@
                         </Button.Style>
 
                         <i:Interaction.Behaviors>
-                            <helpers:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="MoveToPos0"/>
+                            <behavr:MomentaryBehavior Command="{Binding UnifiedOperationCommand}" CommandParameter="MoveToPos0"/>
                         </i:Interaction.Behaviors>
 
                         <Button.Background>
-                            <SolidColorBrush Color="{Binding IsPos0Active, Converter={helpers:BoolToColorConverter True=#0F9D58, False=#E8E8E8}}"/>
+                            <SolidColorBrush Color="{Binding IsPos0Active, Converter={conv:BoolToColorConverter True=#0F9D58, False=#E8E8E8}}"/>
                         </Button.Background>
                     </Button>
 

@@ -25,7 +25,8 @@
     </UserControl.Resources>
 
     <Grid>
-        <Image Source="/Controls/Images/AOILogin.jpg"
+        <Image
+             Source="/IPCSoftware.Visuals;component/AOILogin.jpg"
                Stretch="UniformToFill"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"/>
@@ -66,8 +67,9 @@
                                         BorderThickness="4"
                                         Margin="0,0,0,30">
                                     <Border.Background>
-                                        <ImageBrush ImageSource="/Controls/Images/AOILogo.png" Stretch="UniformToFill"/>
+                                        <ImageBrush ImageSource="/IPCSoftware.Visuals;component/AOILogo.png"/>
                                     </Border.Background>
+                                    
                                 </Border>
 
                                 <TextBlock Text="AOI SYSTEM"

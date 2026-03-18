@@ -2,30 +2,17 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>Controls\Images\AOILogo.ico</ApplicationIcon>
+    <!--<ApplicationIcon>Controls\Images\AOILogo.ico</ApplicationIcon>-->
+	  <ApplicationIcon>..\IPCSoftware.Visuals\AOILogo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="appsettings.Development.json" />
     <None Remove="appsettings.json" />
-    <None Remove="Controls\Images\alarm.png" />
-    <None Remove="Controls\Images\AOILogin.jpg" />
-    <None Remove="Controls\Images\AOILogo.ico" />
-    <None Remove="Controls\Images\AOILogo.png" />
-    <None Remove="Controls\Images\aoiLogoNew.png" />
-    <None Remove="Controls\Images\Configs.png" />
-    <None Remove="Controls\Images\Dashboard2.png" />
-    <None Remove="Controls\Images\landingpage.jpg" />
-    <None Remove="Controls\Images\landPageGrad.jpeg" />
-    <None Remove="Controls\Images\logfolder.png" />
-    <None Remove="Controls\Images\logout2.png" />
-    <None Remove="Controls\Images\qrcode.png" />
-    <None Remove="Controls\Images\setting2.png" />
-    <None Remove="Controls\Images\TestCamImage.png" />
     <None Remove="Data\AlarmConfigurations.csv" />
     <None Remove="Data\CameraInterfaces.csv" />
     <None Remove="Data\DeviceInterfaces.csv" />
@@ -49,10 +36,6 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-    <Content Include="Controls\Images\AOILogo.ico" />
-    <Content Include="Controls\Images\landingpage.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Data\Shifts.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -74,50 +57,11 @@
     <ProjectReference Include="..\IPCSoftware.Helpers\IPCSoftware.Helpers.csproj" />
     <ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
     <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Visuals\IPCSoftware.Visuals.csproj" />
+    <ProjectReference Include="..\IPCSoftware.WPFExtensions\IPCSoftware.WPFExtensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Controls\Images\alarm.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Controls\Images\AOILogin.jpg" />
-    <Resource Include="Controls\Images\AOILogo.ico" />
-    <Resource Include="Controls\Images\AOILogo.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Controls\Images\aoiLogoNew.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Controls\Images\Configs.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Controls\Images\Dashboard2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Controls\Images\landPageGrad.jpeg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Controls\Images\logfolder.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Controls\Images\logout2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Controls\Images\qrcode.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Controls\Images\setting2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Controls\Images\TestCamImage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Controls\Images\TestCamImage22.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Controls\Images\TestCamImageOLd.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
     <Content Include="Data\AlarmConfigurations.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

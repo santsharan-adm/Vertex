@@ -7,8 +7,9 @@
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels" 
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920"
+               xmlns:behavr="clr-namespace:IPCSoftware.Common.WPFExtensions.Behaviours;assembly=IPCSoftware.WPFExtensions"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:AlarmViewModel}"
-     helpers:DisposeBehavior.AutoDispose="True"
+     behavr:DisposeBehavior.AutoDispose="True"
              Background="#F3F3F3">
 
     <UserControl.Resources>

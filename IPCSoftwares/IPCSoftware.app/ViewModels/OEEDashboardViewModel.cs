@@ -1,5 +1,4 @@
-﻿using IPCSoftware.App.Controls;
-using IPCSoftware.App.Helpers;
+﻿using IPCSoftware.App.Helpers;
 using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.App.Views;

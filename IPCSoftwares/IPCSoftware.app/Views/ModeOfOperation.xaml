@@ -4,8 +4,9 @@
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:behavr="clr-namespace:IPCSoftware.Common.WPFExtensions.Behaviours;assembly=IPCSoftware.WPFExtensions"
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ModeOfOperationViewModel}"
-             helpers:DisposeBehavior.AutoDispose="True"
+             behavr:DisposeBehavior.AutoDispose="True"
              Background="#F3F3F3">
 
  <UserControl.Resources>
@@ -28,7 +29,7 @@
                 IsEnabled="{Binding IsEnabled}">
 
             <i:Interaction.Behaviors>
-                <helpers:MomentaryBehavior 
+                    <behavr:MomentaryBehavior 
                     Command="{Binding DataContext.UnifiedOperationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                     CommandParameter="{Binding Mode}"/>
             </i:Interaction.Behaviors>

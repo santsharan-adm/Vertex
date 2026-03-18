@@ -11,7 +11,7 @@
              Background="#F3F3F3" >
 
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        
 
         <Style x:Key="HmiLabelStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="24"/>
