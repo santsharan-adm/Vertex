@@ -81,16 +81,17 @@ namespace IPCSoftware.Shared.Models
 
     public class AboutSettings
     {
-        public string ProductName { get; set; } = "IPC Automated Inspection System";
+        public string ProductName { get; set; } = "AOI";
 
-        // If left empty in JSON, the application will use the internal Assembly Version
-        public string ProductVersion { get; set; } = "";
+        //If left empty in JSON, the application will use the internal Assembly Version
+        public string ProductVersion { get; set; } = "2.1.0.0";
 
-        public string LicenseTo { get; set; } = "Vertex Automation";
+        public string LicenseTo { get; set; } = "Client Name";
         public string LicenseType { get; set; } = "Perpetual";
-        public string Copyright { get; set; } = $"© {DateTime.Now.Year} Vertex Automation. All rights reserved.";
+        public string Copyright { get; set; } = $"© {DateTime.Now.Year}";
     }
 
 }
 
 
+ 

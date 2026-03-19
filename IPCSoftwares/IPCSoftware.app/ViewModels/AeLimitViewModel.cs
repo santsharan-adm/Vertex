@@ -98,6 +98,8 @@ namespace IPCSoftware.App.ViewModels
 
         private AeLimitParameterItem CreateParam(string name, TagPair tagPair)
         {
+            ArgumentNullException.ThrowIfNull(tagPair, $"TagPair for '{name}' is null. Ensure ConstantValues.Initialize() has been called before resolving AeLimitViewModel.");
+
             return new AeLimitParameterItem
             {
                 Name = name,

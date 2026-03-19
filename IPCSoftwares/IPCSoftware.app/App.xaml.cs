@@ -64,6 +64,19 @@ namespace IPCSoftware.App
 
             base.OnStartup(e);
 
+            // Build configuration FIRST, before host creation, so ConstantValues
+            // is initialized before the DI container resolves any services.
+            IConfiguration earlyConfig = new ConfigurationBuilder()
+                .SetBasePath(GetConfigDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .AddCommandLine(e.Args)
+                .Build();
+
+            var configSettings = new ConfigSettings();
+            earlyConfig.GetSection("Config").Bind(configSettings);
+            ConstantValues.Initialize(configSettings);
+
             _host = Host.CreateDefaultBuilder(e.Args)
                 // You have access to hostContext here:
                 .ConfigureAppConfiguration((hostContext, config) =>
@@ -71,14 +84,7 @@ namespace IPCSoftware.App
 
                     var env = hostContext.HostingEnvironment?.EnvironmentName ?? "Production";
 
-                    // Read the environment variable (use the exact name you set)
-                    var sharedConfigDir = Environment.GetEnvironmentVariable("CONFIG_DIR");
-
-                    // Fallback to the app’s base directory if the shared dir is not available
-                    var baseDir = AppContext.BaseDirectory;
-                    var configDir = !string.IsNullOrWhiteSpace(sharedConfigDir) && Directory.Exists(sharedConfigDir)
-                                    ? sharedConfigDir
-                                    : baseDir;
+                    var configDir = GetConfigDirectory();
 
                     // 🔒 Deterministic: remove defaults and set base path
                     config.Sources.Clear();
@@ -114,19 +120,16 @@ namespace IPCSoftware.App
             var config = _host.Services.GetRequiredService<IConfiguration>();
 
             // 1. Create specific settings objects
-            var configSettings = new ConfigSettings();
             var ccdSettings = new CcdSettings();
             var external = new ExternalSettings();
             var about = new AboutSettings();
 
             // 2. Bind the specific sections from JSON to these objects
-            config.GetSection("Config").Bind(configSettings);
             config.GetSection("CCD").Bind(ccdSettings);
             config.GetSection("External").Bind(ccdSettings);
             config.GetSection("About").Bind(about);
 
-            // 3. Initialize Constants without needing AppConfigSettings wrapper
-            ConstantValues.Initialize(configSettings);
+            // ConstantValues.Initialize already called above — no longer needed here
 
             _host.Start();
             ServiceProvider = (ServiceProvider)_host.Services;
@@ -163,6 +166,7 @@ namespace IPCSoftware.App
             }
 
             // TagConfigProvider.Load("Data/PLCTags.csv");
+
 
 
 
@@ -206,6 +210,18 @@ namespace IPCSoftware.App
             //await ConnectUiTcpAsync();
             _ = Task.Run(async () => await ConnectUiTcpAsync());
 
+        }
+
+        /// <summary>
+        /// Returns the configuration directory, preferring the CONFIG_DIR environment variable.
+        /// </summary>
+        private static string GetConfigDirectory()
+        {
+            var sharedConfigDir = Environment.GetEnvironmentVariable("CONFIG_DIR");
+            var baseDir = AppContext.BaseDirectory;
+            return !string.IsNullOrWhiteSpace(sharedConfigDir) && Directory.Exists(sharedConfigDir)
+                   ? sharedConfigDir
+                   : baseDir;
         }
 
 

@@ -118,6 +118,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<ProductionImageView>();
             services.AddTransient<ProductionImageViewModel>();
             services.AddTransient<ProductSettingsView>();
+            services.AddTransient<IPCSoftware.UI.CommonViews.ProductSettingsView>();
             services.AddTransient<ProductSettingsViewModel>();
             services.AddTransient<AlarmLogView>();
             services.AddTransient<AlarmLogViewModel>();
