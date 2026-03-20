@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace IPCSoftware.CoreService.Services.PLC
+namespace IPCSoftware.Devices.PLC
 {
     public class PLCClientManager:BaseService
     {

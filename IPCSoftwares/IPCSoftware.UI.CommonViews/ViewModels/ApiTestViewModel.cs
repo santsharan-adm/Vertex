@@ -19,6 +19,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using IPCSoftware.Devices.Camera;
 
 namespace IPCSoftware.UI.CommonViews.ViewModels
 {

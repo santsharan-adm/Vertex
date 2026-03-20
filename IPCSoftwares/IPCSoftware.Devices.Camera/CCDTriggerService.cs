@@ -1,7 +1,7 @@
-﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
-using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.Devices.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Shared.Models;
@@ -16,14 +16,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.CoreService.Services.CCD
+namespace IPCSoftware.Devices.Camera
 {
     public class CCDTriggerService : BaseService
     {
         private readonly ICycleManagerService _cycleManager;
-        private  PLCClientManager _plcManager; // 1. Inject PLC Manager
-        private readonly IPLCTagConfigurationService  _tagService; // 2. Store Tag Config
-        private readonly string  _tempImageFolder; 
+        private PLCClientManager _plcManager; // 1. Inject PLC Manager
+        private readonly IPLCTagConfigurationService _tagService; // 2. Store Tag Config
+        private readonly string _tempImageFolder;
         // State tracking
         private bool _lastTriggerState = false;
         private bool _lastCycleStartState = false;
@@ -55,7 +55,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             await _triggerLock.WaitAsync();
             try
             {
-              
+
                 _plcManager = manager;
 
                 bool isCycleEnabled = false;
@@ -66,8 +66,8 @@ namespace IPCSoftware.CoreService.Services.CCD
                     else if (cycleStartObj is int iVal) isCycleEnabled = iVal > 0;
                 }
 
-              
-               
+
+
                 if (isCycleEnabled && !_lastCycleStartState)
                 {
                     if (!_cycleManager.IsCycleResetCompleted)
@@ -83,15 +83,15 @@ namespace IPCSoftware.CoreService.Services.CCD
                 }
                 if (!isCycleEnabled && _lastCycleStartState)
                 {
-                     _logger.LogInfo("[CCD] Clearing Bits which was on during cycle.", LogType.Error);
-                   
+                    _logger.LogInfo("[CCD] Clearing Bits which was on during cycle.", LogType.Error);
+
                     await WriteToPlc(ConstantValues.Return_TAG_ID, 0);
                     await WriteToPlc(ConstantValues.Ext_DataReady, 0);
                     await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, 0);
                 }
 
 
-                _lastCycleStartState = isCycleEnabled; 
+                _lastCycleStartState = isCycleEnabled;
 
                 if (!isCycleEnabled)
                 {
@@ -102,7 +102,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                             if (bVal == true)
                             {
                                 _ = Task.Run(() => WriteAckToPlcAsync(false));
-                             
+
                                 _logger.LogInfo($"Writing B5 to false which was not written flase in previous cycle.", LogType.Error);
                             }
                         }
@@ -131,7 +131,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                     else if (triggerObj is int iVal) currentTriggerState = iVal > 0;
                 }
 
-              //  _logger.LogInfo($"[CCD] Cycle {currentTriggerState } {_lastTriggerState}  reached at line 122.", LogType.Error);
+                //  _logger.LogInfo($"[CCD] Cycle {currentTriggerState } {_lastTriggerState}  reached at line 122.", LogType.Error);
                 // 2. Rising Edge Detection (False -> True)
                 if (currentTriggerState && !_lastTriggerState)
                 {
@@ -150,7 +150,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                         var stationData = new Dictionary<string, object>();
 
                         // Fetch X, Y, Z, Status from tag dictionary
-                      //  stationData["Status"] = tagValues.ContainsKey(ConstantValues.TAG_STATUS) ? tagValues[ConstantValues.TAG_STATUS].ToString() : "OK";
+                        //  stationData["Status"] = tagValues.ContainsKey(ConstantValues.TAG_STATUS) ? tagValues[ConstantValues.TAG_STATUS].ToString() : "OK";
                         var rawStatus = tagValues.ContainsKey(ConstantValues.TAG_STATUS)
                         ? tagValues[ConstantValues.TAG_STATUS]
                         : null;
@@ -163,7 +163,7 @@ namespace IPCSoftware.CoreService.Services.CCD
                         stationData["CycleTime"] = tagValues.ContainsKey(ConstantValues.TAG_CycleTime) ? tagValues[ConstantValues.TAG_CycleTime] : 0.0;
 
                         _ = Task.Run(async () =>
-                        {   
+                        {
                             try
                             {
                                 await ExecuteWorkflowAsync(qrCode, stationData);
@@ -174,17 +174,17 @@ namespace IPCSoftware.CoreService.Services.CCD
                             }
                         });
                     }
-                   
-                 
+
+
 
                 }
                 if (!currentTriggerState && _lastTriggerState)
                 {
-                   
+
                     _ = Task.Run(() => WriteAckToPlcAsync(false));
                     //_logger.LogInfo($"[CCD] Cycle {currentTriggerState} {_lastTriggerState}  reached at line 144.", LogType.Error);
                 }
-               // _logger.LogInfo($"[CCD] Cycle {currentTriggerState} {_lastTriggerState}  reached at line 146.", LogType.Error);
+                // _logger.LogInfo($"[CCD] Cycle {currentTriggerState} {_lastTriggerState}  reached at line 146.", LogType.Error);
                 // 4. Update State
                 _lastTriggerState = currentTriggerState;
             }
@@ -235,18 +235,18 @@ namespace IPCSoftware.CoreService.Services.CCD
             var imagePath = await WaitForImageAsync();
             if (!string.IsNullOrEmpty(imagePath))
             {
-               await  _cycleManager.HandleIncomingData(imagePath, data, qrCode);
+                await _cycleManager.HandleIncomingData(imagePath, data, qrCode);
                 await WriteAckToPlcAsync(true);
             }
             else
             {
                 _logger.LogWarning("[CCD] No image within timeout, Wating for Cycle Timeout trigger.", LogType.Error);
-               // _lastTriggerState = false;
+                // _lastTriggerState = false;
                 //await WriteAckToPlcAsync(true); // or false, depending on PLC contract
             }
         }
 
-       // Stopwatch sp = new Stopwatch();  
+        // Stopwatch sp = new Stopwatch();  
         private async Task WriteAckToPlcAsync(bool writebool)
         {
             try
@@ -260,22 +260,22 @@ namespace IPCSoftware.CoreService.Services.CCD
                     if (client != null)
                     {
                         // Write TRUE to 15 to tell PLC we are done
-                        if (writebool )
+                        if (writebool)
                         {
                             await client.WriteAsync(ackTag, true);
                             _logger.LogInfo($"[CCD] Ack sent {1} to Tag {ConstantValues.Return_TAG_ID} {DateTime.Now.ToString("HH-mm-ss-fff")} ", LogType.Error);
-                           // sp.Start();
+                            // sp.Start();
                         }
                         else
                         {
                             await client.WriteAsync(ackTag, false);
                             _logger.LogInfo($"[CCD] Ack sent {0} by Falling Edge  to Tag {ConstantValues.Return_TAG_ID} {DateTime.Now.ToString("HH-mm-ss-fff")}", LogType.Error);
-                           // sp.Stop();
+                            // sp.Stop();
                         }
                         //if (sp.Elapsed.TotalMilliseconds > 600)
                         //{
                         //    await client.WriteAsync(ackTag, false);
-                        //    _logger.LogInfo($"[CCD] Ack sent {0} by timer  to Tag {ConstantValues.Return_TAG_ID}", LogType.Error);
+                        //    _logger.LogInfo(`[CCD] Ack sent {0} by timer  to Tag {ConstantValues.Return_TAG_ID}`, LogType.Error);
 
                         //    sp.Stop();
                         //}
@@ -293,7 +293,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             try
             {
                 var pollInterval = TimeSpan.FromMilliseconds(200);
-                var quickWindow = TimeSpan.FromSeconds( 3);
+                var quickWindow = TimeSpan.FromSeconds(3);
                 var maxWindow = TimeSpan.FromSeconds(5);
 
                 DateTime start = DateTime.Now;

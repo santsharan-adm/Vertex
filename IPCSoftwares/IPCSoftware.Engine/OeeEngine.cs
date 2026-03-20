@@ -1,7 +1,7 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.CoreService.Services.Logging;
-using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.Datalogger;
+using IPCSoftware.Devices.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
@@ -12,7 +12,7 @@ using System.IO;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 
-namespace IPCSoftware.CoreService.Services.Dashboard
+namespace IPCSoftware.Engine
 {
     public class OeeEngine : BaseService
     {

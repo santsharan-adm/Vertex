@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace IPCSoftware.CoreService.Services.CCD
+namespace IPCSoftware.Devices.Camera
 {
     /// <summary>
     /// Service to handle FTP communication with cameras

@@ -1,4 +1,4 @@
-﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.CoreService.Services.Algorithm
+namespace IPCSoftware.Devices.PLC
 {
     public class AlgorithmAnalysisService : BaseService
     {
@@ -63,7 +63,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
         /// Applies data conversion (Word/FP/String) and configured algorithm (Raw/Scale).
         /// </summary>
         /// <param name="rawModbusData">Dictionary keyed by Modbus start address, containing raw ushort[] registers.</param>
-        public Dictionary<int, object>  Apply(int plcNo, Dictionary<uint, object> rawModbusData)
+        public Dictionary<int, object> Apply(int plcNo, Dictionary<uint, object> rawModbusData)
         {
             var result = new Dictionary<int, object>();
 
@@ -221,7 +221,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
                         {
                             return LinearScale_GainOffset(rawNumericValue, tag);
                         }
-                        
+
                     }
                 }
 
@@ -266,7 +266,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
             if (Math.Abs(rawRange) < double.Epsilon) return offset;
 
             //return (rawValue - plcRawMin) * (engMax - engMin) / rawRange + engMin;
-             return (rawValue - plcRawMin) / (gain)  + offset;
+            return (rawValue - plcRawMin) / (gain) + offset;
         }
 
         byte[] SwapEveryTwoBytes(byte[] src)
@@ -314,7 +314,7 @@ namespace IPCSoftware.CoreService.Services.Algorithm
             }
         }
 
-       public static  double GetMinValue(this int type)
+        public static double GetMinValue(this int type)
         {
             switch (type)
             {

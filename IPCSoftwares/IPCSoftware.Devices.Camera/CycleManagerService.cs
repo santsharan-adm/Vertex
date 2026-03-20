@@ -1,8 +1,8 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
-using IPCSoftware.CoreService.Services.External;
-using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.Communication.External;
+using IPCSoftware.Devices.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
@@ -17,7 +17,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.CoreService.Services.CCD
+namespace IPCSoftware.Devices.Camera
 {
     public class CycleManagerService : BaseService, ICycleManagerService
     {

@@ -1,18 +1,17 @@
 ﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using NModbus;
 using System.Diagnostics;
 using System.Linq;
-using System.Net; // Added for IPAddress
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading; // Added for Interlocked
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.CoreService.Services.PLC
+namespace IPCSoftware.Devices.PLC
 
 {
     public class PlcClient

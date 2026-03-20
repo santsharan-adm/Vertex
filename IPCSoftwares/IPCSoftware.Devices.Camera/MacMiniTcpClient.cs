@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.Shared
+namespace IPCSoftware.Devices.Camera
 {
     public class MacMiniTcpClient : IDisposable
     {

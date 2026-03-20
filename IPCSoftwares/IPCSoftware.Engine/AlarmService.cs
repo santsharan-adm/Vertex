@@ -1,4 +1,4 @@
-﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace IPCSoftware.CoreService.Alarm
+namespace IPCSoftware.Engine
 {
     public class AlarmService : BaseService
     {
@@ -101,8 +101,6 @@ namespace IPCSoftware.CoreService.Alarm
             }
         }
 
-        // Inside IPCSoftware.CoreService.Services.Alarm/AlarmService.cs
-
         private bool CheckAlarmCondition(AlarmConfigurationModel config, object newValue)
         {
             try
@@ -180,7 +178,7 @@ namespace IPCSoftware.CoreService.Alarm
                     Console.WriteLine($"\n*** ALARM RAISED *** No: {config.AlarmNo} | Tag: {config.TagNo} | Bit: {config.AlarmBit} | Text: {config.AlarmText}");
                     _logger.LogInfo($"\n*** ALARM RAISED *** No: {config.AlarmNo} | Tag: {config.TagNo} | Bit: {config.AlarmBit} | Text: {config.AlarmText}", LogType.Diagnostics);
                     Console.ResetColor();
-                    // ⚠️ Publish the new AlarmInstanceModel via your Messaging system
+                    // ?? Publish the new AlarmInstanceModel via your Messaging system
                     // _publisher.Publish(new AlarmMessage { AlarmInstance = newInstance });
                     await _publisher.PublishAsync(new AlarmMessage
                     {
@@ -207,7 +205,7 @@ namespace IPCSoftware.CoreService.Alarm
                     _logger.LogInfo ($"--- ALARM CLEARED: {clearedInstance.AlarmText} ---", LogType.Diagnostics);
                     Console.ResetColor();
 
-                    // ⚠️ Publish the cleared AlarmInstanceModel via your Messaging system
+                    // ?? Publish the cleared AlarmInstanceModel via your Messaging system
                     // _publisher.Publish(new AlarmMessage { AlarmInstance = clearedInstance });
 
                     await _publisher.PublishAsync(new AlarmMessage
@@ -239,7 +237,7 @@ namespace IPCSoftware.CoreService.Alarm
                         alarm.AcknowledgedByUser = userName;
                         Console.WriteLine($"--- ALARM ACKNOWLEDGED: {alarm.AlarmText} by {userName} ---");
                         _logger.LogInfo($"--- ALARM ACKNOWLEDGED: {alarm.AlarmText} by {userName} ---", LogType.Diagnostics);
-                        // ⚠️ Publish the acknowledged AlarmInstanceModel
+                        // ?? Publish the acknowledged AlarmInstanceModel
                         // _publisher.Publish(new AlarmMessage { AlarmInstance = alarm });
                         return true;
                     }

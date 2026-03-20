@@ -3,7 +3,7 @@ using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Text;
 
-namespace IPCSoftware.CoreService.Services.CCD
+namespace IPCSoftware.Devices.Camera
 {
     public static class MetadataFormatter
     {

@@ -5,7 +5,7 @@ using IPCSoftware.Shared.Models.Logging;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System.Linq;
 
-namespace IPCSoftware.CoreService.Services.Logging
+namespace IPCSoftware.Datalogger
 {
     public interface IProductionDataLogger
     {

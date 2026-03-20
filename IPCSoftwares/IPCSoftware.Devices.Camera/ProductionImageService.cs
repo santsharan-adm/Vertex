@@ -11,7 +11,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace IPCSoftware.CoreService.Services.CCD
+namespace IPCSoftware.Devices.Camera
 {
     public class ProductionImageService : BaseService
     {

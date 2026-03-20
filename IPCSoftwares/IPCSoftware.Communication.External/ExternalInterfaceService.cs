@@ -1,8 +1,8 @@
-﻿using IPCSoftware.Core.Interfaces; // For IServoCalibrationService
+﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.CoreService.Services.CCD;
-using IPCSoftware.CoreService.Services.PLC;
-using IPCSoftware.Shared;
+using IPCSoftware.Devices.Camera;
+using IPCSoftware.Devices.PLC;
+using IPCSoftware.Datalogger;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
@@ -15,7 +15,7 @@ using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
 
-namespace IPCSoftware.CoreService.Services.External
+namespace IPCSoftware.Communication.External
 {
     public class ExternalInterfaceService : IDisposable
     {

@@ -1,9 +1,7 @@
 ﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.CoreService.Alarm;
-using IPCSoftware.CoreService.Services.Algorithm;
-using IPCSoftware.CoreService.Services.CCD;
-using IPCSoftware.CoreService.Services.PLC;
-using IPCSoftware.CoreService.Services.UI;
+using IPCSoftware.Devices.PLC;
+using IPCSoftware.Devices.Camera;
+using IPCSoftware.Communication.Common;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -14,7 +12,7 @@ using System.Net.Sockets;
 using System.Text.Json;
 
 
-namespace IPCSoftware.CoreService.Services.Dashboard
+namespace IPCSoftware.Engine
 {
     public class DashboardInitializer : BaseService
     {

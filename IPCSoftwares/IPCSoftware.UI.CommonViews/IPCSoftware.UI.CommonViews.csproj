@@ -19,14 +19,21 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.3" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.3" />
+		<PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.4" />
 		<PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="10.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<Compile Include="..\IPCSoftware.Devices.Camera\MacMiniTcpClient.cs" Link="MacMiniTcpClient.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\IPCSoftware.Communication.Common\IPCSoftware.Communication.Common.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
-		<ProjectReference Include="..\IPCSoftware.CoreService\IPCSoftware.CoreService.csproj" />
-		<ProjectReference Include="..\IPCSoftware.DataLogger\IPCSoftware.DataLogger.csproj" />
-		<ProjectReference Include="..\IPCSoftware.FileManager\IPCSoftware.FileManager.csproj" />
+		<ProjectReference Include="..\IPCSoftware.Datalogger\IPCSoftware.Datalogger.csproj" />
+		<ProjectReference Include="..\IPCSoftware.Devices.PLC\IPCSoftware.Devices.PLC.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
 		<ProjectReference Include="..\IPCSoftware.WPFExtensions\IPCSoftware.WPFExtensions.csproj" />

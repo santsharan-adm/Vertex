@@ -1,7 +1,7 @@
-﻿using System.Net.Sockets;
+using System.Net.Sockets;
 using System.Text;
 
-namespace IPCSoftware.CoreService.Network
+namespace IPCSoftware.Communication.Common
 {
     public abstract class BaseTcpClient
     {
@@ -65,7 +65,6 @@ namespace IPCSoftware.CoreService.Network
 
                 sb.Append(Encoding.UTF8.GetString(buffer, 0, read));
 
-                // Process messages separated by newline
                 while (sb.ToString().Contains("\n"))
                 {
                     string full = ExtractMessage(ref sb);
@@ -90,7 +89,7 @@ namespace IPCSoftware.CoreService.Network
         {
             if (_stream == null) return;
 
-            json = json + "\n"; // VERY IMPORTANT
+            json = json + "\n";
             byte[] data = Encoding.UTF8.GetBytes(json);
             await _stream.WriteAsync(data);
         }

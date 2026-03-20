@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Logging;
 
-namespace IPCSoftware.CoreService.Services.CCD
+namespace IPCSoftware.Devices.Camera
 {
     public class FtpClient
     {

@@ -1,7 +1,7 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.CoreService.Services.External;
-using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.Communication.External;
+using IPCSoftware.Devices.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.CoreService.Services.Dashboard
+namespace IPCSoftware.Engine
 {
     public class SystemMonitorService : BaseService
     {

@@ -1,6 +1,6 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.Devices.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
@@ -12,7 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.CoreService.Services.Dashboard
+namespace IPCSoftware.Engine
 {
     public class ShiftResetService : BaseService
     {

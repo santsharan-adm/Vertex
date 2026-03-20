@@ -1,10 +1,8 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.CoreService.Services;
-using IPCSoftware.CoreService.Services.Algorithm;
-using IPCSoftware.CoreService.Services.CCD;
-using IPCSoftware.CoreService.Services.Dashboard;
-using IPCSoftware.CoreService.Services.PLC;
+using IPCSoftware.Devices.PLC;
+using IPCSoftware.Devices.Camera;
+using IPCSoftware.Engine;
 using IPCSoftware.CoreService.Services.UI;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
