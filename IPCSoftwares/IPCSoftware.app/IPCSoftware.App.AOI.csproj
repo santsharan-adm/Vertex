@@ -110,4 +110,9 @@
     <ProjectReference Include="..\IPCSoftware.Communication.UIClientComm\IPCSoftware.Communication.UIClientComm.csproj" />
     <ProjectReference Include="..\IPCSoftware.CommonExtensions\IPCSoftware.CommonExtensions.csproj" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Services\UI\" />
+  </ItemGroup>
 </Project>
