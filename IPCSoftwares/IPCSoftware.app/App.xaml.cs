@@ -126,7 +126,7 @@ namespace IPCSoftware.App
 
             // 2. Bind the specific sections from JSON to these objects
             config.GetSection("CCD").Bind(ccdSettings);
-            config.GetSection("External").Bind(ccdSettings);
+            config.GetSection("External").Bind(external);
             config.GetSection("About").Bind(about);
 
             // ConstantValues.Initialize already called above — no longer needed here
