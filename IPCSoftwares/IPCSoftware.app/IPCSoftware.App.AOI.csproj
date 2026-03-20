@@ -12,9 +12,13 @@
 
   <ItemGroup>
     <Compile Remove="Models\**" />
+    <Compile Remove="NavServices\**" />
     <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="NavServices\**" />
     <None Remove="Models\**" />
+    <None Remove="NavServices\**" />
     <Page Remove="Models\**" />
+    <Page Remove="NavServices\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -105,10 +109,5 @@
     <ProjectReference Include="..\IPCSoftware.WPFExtensions\IPCSoftware.WPFExtensions.csproj" />
     <ProjectReference Include="..\IPCSoftware.Communication.UIClientComm\IPCSoftware.Communication.UIClientComm.csproj" />
     <ProjectReference Include="..\IPCSoftware.CommonExtensions\IPCSoftware.CommonExtensions.csproj" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="NavServices\" />
   </ItemGroup>
 </Project>
