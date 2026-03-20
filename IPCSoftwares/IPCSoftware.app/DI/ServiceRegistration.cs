@@ -170,7 +170,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<SystemSettingView>();
             services.AddTransient<SystemSettingViewModel>();
             services.AddTransient<IPLCService, PlcService>();
-            services.AddSingleton<CoreClient>();
+            services.AddSingleton<Services.CoreClient>();
             services.AddSingleton<ReportConfigViewModel>();
             services.AddSingleton<ReportConfigView>();
             services.AddSingleton<ReportViewerViewModel>();

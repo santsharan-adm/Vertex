@@ -107,9 +107,8 @@
     <ProjectReference Include="..\IPCSoftware.CommonExtensions\IPCSoftware.CommonExtensions.csproj" />
   </ItemGroup>
 
+
   <ItemGroup>
-    <!-- Excluded: CoreClient and UiTcpClient moved to IPCSoftware.Communication.UIClientComm -->
-    <Compile Remove="Services\CoreClient.cs" />
-    <Compile Remove="Services\UI\UiTcpClient.cs" />
+    <Folder Include="NavServices\" />
   </ItemGroup>
 </Project>
