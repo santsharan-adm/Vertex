@@ -449,17 +449,31 @@ namespace IPCSoftware.Common.CommonFunctions
         }
 
         // App-specific view navigation — types live in IPCSoftware.app assembly.
-        // Use reflection-based late binding so UI.CommonViews has no compile-time dependency on the app project.
+        // Resolve by scanning loaded assemblies and DI container.
         private void NavigateMainByTypeName(string typeName)
         {
             if (!CanNavigateFromCurrent()) return;
-            var viewType = AppDomain.CurrentDomain.GetAssemblies()
+
+            // Find ALL matching UserControl types across all loaded assemblies
+            var candidates = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => !a.IsDynamic)
                 .SelectMany(a => { try { return a.GetTypes(); } catch { return Array.Empty<Type>(); } })
-                .FirstOrDefault(t => t.Name == typeName && typeof(UserControl).IsAssignableFrom(t));
-            if (viewType == null) return;
-            var view = _provider.GetService(viewType) as UserControl;
-            if (view != null && _mainContent != null)
-                _mainContent.Content = view;
+                .Where(t => t.Name == typeName && typeof(UserControl).IsAssignableFrom(t) && !t.IsAbstract)
+                .ToList();
+
+            // Try each candidate until one resolves from DI
+            foreach (var viewType in candidates)
+            {
+                var view = _provider.GetService(viewType) as UserControl;
+                if (view != null)
+                {
+                    if (_mainContent != null)
+                        _mainContent.Content = view;
+                    return;
+                }
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[NavigationService] WARNING: Could not resolve view '{typeName}' from DI. Candidates found: {candidates.Count}");
         }
 
         public void NavigateToManualOperation() => NavigateMainByTypeName("ManualOperationView");

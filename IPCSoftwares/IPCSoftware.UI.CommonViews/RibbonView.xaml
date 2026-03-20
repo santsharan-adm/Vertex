@@ -81,12 +81,12 @@
 
         <!-- Left: Logo & Title -->
         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="40,0">
-            <Button Command="{Binding NavigateLandingPageCommand}" Cursor="Hand" >
+            <Button Command="{Binding NavigateLandingPageCommand}" Cursor="Hand" Click="Button_Click" >
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="LogoBorder" Width="80" Height="80" CornerRadius="40" BorderBrush="White" BorderThickness="3">
                             <Border.Background>
-                                <ImageBrush ImageSource="pack://application:,,,/IPCSoftware.Visuals;component/Images/AOILogo.png" Stretch="UniformToFill"/>
+                                <ImageBrush ImageSource="pack://application:,,,/IPCSoftware.Visuals;component/Images/AOILogin.jpg" Stretch="UniformToFill"/>
                             </Border.Background>
                         </Border>
                         <ControlTemplate.Triggers>

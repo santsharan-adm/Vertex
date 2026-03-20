@@ -264,14 +264,14 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _overallOEE, value);
         }
 
-        private string _operatingTime;
+        private string _operatingTime = "00:00:00";
         public string OperatingTime
         {
             get => _operatingTime;
             set => SetProperty(ref _operatingTime, value);
         }
 
-        private string _downtime;
+        private string _downtime = "00:00:00";
         public string Downtime
         {
             get => _downtime;
@@ -1046,63 +1046,58 @@ namespace IPCSoftware.App.ViewModels
                         title = "Efficiency Breakdown Details";
                         // Availability
                         stats = await GetMetricStats("Availability", AggregationType.Average, "%");
-                        data.Add(new MetricDetailItem { MetricName = "Availability", CurrentVal = stats.T, WeeklyVal = stats.W, MonthlyVal = stats.M });
+                        data.Add(new MetricDetailItem { MetricName = "Availability", CurrentVal = $"{Availability:F1}%", WeeklyVal = stats.W, MonthlyVal = stats.M });
 
                         // Performance
                         stats = await GetMetricStats("Performance", AggregationType.Average, "%");
-                        data.Add(new MetricDetailItem { MetricName = "Performance", CurrentVal = stats.T, WeeklyVal = stats.W, MonthlyVal = stats.M });
+                        data.Add(new MetricDetailItem { MetricName = "Performance", CurrentVal = $"{Performance:F1}%", WeeklyVal = stats.W, MonthlyVal = stats.M });
 
                         // Quality
                         stats = await GetMetricStats("Quality", AggregationType.Average, "%");
-                        data.Add(new MetricDetailItem { MetricName = "Quality", CurrentVal = stats.T, WeeklyVal = stats.W, MonthlyVal = stats.M });
+                        data.Add(new MetricDetailItem { MetricName = "Quality", CurrentVal = $"{Quality:F1}%", WeeklyVal = stats.W, MonthlyVal = stats.M });
                         break;
 
                     case "OEE":
                         title = "OEE Score Statistics";
                         stats = await GetMetricStats("OEE", AggregationType.Average, "%");
-                        data.Add(new MetricDetailItem { MetricName = "OEE Score", CurrentVal = stats.T, WeeklyVal = stats.W, MonthlyVal = stats.M });
+                        data.Add(new MetricDetailItem { MetricName = "OEE Score", CurrentVal = $"{OverallOEE:F1}%", WeeklyVal = stats.W, MonthlyVal = stats.M });
                         break;
 
                     case "CycleTime":
                     case "AvgCycle":
                         title = "Cycle Time Trends";
-                        // Assuming CT column is in milliseconds or seconds. Sample said "345". 
-                        // If 345 is ms, result is small. If 345 is ms, dividing by 1000 inside aggregate might be needed or handled here.
-                        // For now assuming the raw value is what we want to average.
                         stats = await GetMetricStats("CT", AggregationType.Average, "s");
-                        data.Add(new MetricDetailItem { MetricName = "Avg Cycle", CurrentVal = stats.T, WeeklyVal = stats.W, MonthlyVal = stats.M });
+                        data.Add(new MetricDetailItem { MetricName = "Avg Cycle", CurrentVal = FormatDuration((double)CycleTime), WeeklyVal = stats.W, MonthlyVal = stats.M });
                         break;
 
                     case "OperatingTime":
                         title = "Operating Time";
-                        // Assuming Uptime column exists and is in Seconds
                         stats = await GetMetricStats("Uptime", AggregationType.TimeSum);
-                        data.Add(new MetricDetailItem { MetricName = "Operating Time", CurrentVal = stats.T, WeeklyVal = stats.W, MonthlyVal = stats.M });
+                        data.Add(new MetricDetailItem { MetricName = "Operating Time", CurrentVal = OperatingTime, WeeklyVal = stats.W, MonthlyVal = stats.M });
                         break;
 
                     case "Downtime":
                         title = "Downtime Statistics";
-                        // Assuming Downtime column exists and is in Seconds
                         stats = await GetMetricStats("Downtime", AggregationType.TimeSum);
-                        data.Add(new MetricDetailItem { MetricName = "Total Stop", CurrentVal = stats.T, WeeklyVal = stats.W, MonthlyVal = stats.M });
+                        data.Add(new MetricDetailItem { MetricName = "Total Stop", CurrentVal = Downtime, WeeklyVal = stats.W, MonthlyVal = stats.M });
                         break;
 
                     case "InFlow":
                         title = "Input Statistics";
                         stats = await GetMetricStats("Total_IN", AggregationType.Sum);
-                        data.Add(new MetricDetailItem { MetricName = "Total Input", CurrentVal = stats.T, WeeklyVal = stats.W, MonthlyVal = stats.M });
+                        data.Add(new MetricDetailItem { MetricName = "Total Input", CurrentVal = InFlow.ToString("N0"), WeeklyVal = stats.W, MonthlyVal = stats.M });
                         break;
 
                     case "OK":
                         title = "Production Quality (OK)";
                         stats = await GetMetricStats("OK", AggregationType.Sum);
-                        data.Add(new MetricDetailItem { MetricName = "Good Units", CurrentVal = stats.T, WeeklyVal = stats.W, MonthlyVal = stats.M });
+                        data.Add(new MetricDetailItem { MetricName = "Good Units", CurrentVal = GoodUnits.ToString("N0"), WeeklyVal = stats.W, MonthlyVal = stats.M });
                         break;
 
                     case "NG":
                         title = "Rejection Statistics (NG)";
                         stats = await GetMetricStats("NG", AggregationType.Sum);
-                        data.Add(new MetricDetailItem { MetricName = "Total Rejects", CurrentVal = stats.T, WeeklyVal = stats.W, MonthlyVal = stats.M });
+                        data.Add(new MetricDetailItem { MetricName = "Total Rejects", CurrentVal = RejectedUnits.ToString("N0"), WeeklyVal = stats.W, MonthlyVal = stats.M });
                         break;
                 }
 
@@ -1111,7 +1106,6 @@ namespace IPCSoftware.App.ViewModels
                     // Must execute UI updates on Dispatcher
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        // ✅ NOW WORKING - DashboardDetailWindow has been migrated to UI.CommonViews!
                         var win = new IPCSoftware.UI.CommonViews.Views.DashboardDetailWindow();
                         win.DataContext = new IPCSoftware.UI.CommonViews.ViewModels.DashboardDetailViewModel(win, title, data);
                         win.ShowDialog();

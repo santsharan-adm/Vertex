@@ -14,6 +14,9 @@ namespace IPCSoftware.Shared
         private string _connectedHost;
         private int _connectedPort;
 
+        private const int ConnectTimeoutMs = 2000; // 2 second connect timeout
+        private const int SocketPollMicroseconds = 100; // 0.1ms poll (instant check)
+
         // FIXED: Now checks real socket state, not just the cached 'Connected' flag
         public bool IsConnected
         {
@@ -40,8 +43,17 @@ namespace IPCSoftware.Shared
                 Disconnect(); // Ensure clean slate
 
                 _client = new TcpClient();
-                // Connect with a 3-second timeout logic could be added here if needed
-                await _client.ConnectAsync(host, port);
+
+                // Connect with a strict timeout to avoid 21s OS default
+                using var cts = new System.Threading.CancellationTokenSource(ConnectTimeoutMs);
+                try
+                {
+                    await _client.ConnectAsync(host, port, cts.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    throw new TimeoutException($"Connection to {host}:{port} timed out after {ConnectTimeoutMs}ms.");
+                }
 
                 _stream = _client.GetStream();
                 _stream.ReadTimeout = 5000; // 5s Read Timeout
@@ -52,7 +64,7 @@ namespace IPCSoftware.Shared
             catch
             {
                 Disconnect();
-                throw ;
+                throw;
             }
         }
 
@@ -97,18 +109,18 @@ namespace IPCSoftware.Shared
 
         /// <summary>
         /// Checks if the socket is actually connected by polling.
+        /// Uses a very short poll to avoid blocking.
         /// </summary>
         private bool IsSocketConnected(Socket s)
         {
             if (s == null) return false;
 
-            // Poll returns true if:
-            // A) connection is closed, reset, terminated (check Available==0)
-            // B) connection is active and there is data to read
-            bool part1 = s.Poll(1000, SelectMode.SelectRead);
+            // Poll with minimal timeout for instant check
+            // Returns true if: connection closed/reset OR data available to read
+            bool part1 = s.Poll(SocketPollMicroseconds, SelectMode.SelectRead);
             bool part2 = (s.Available == 0);
 
-            // If Poll is true AND no data is available, it means the socket was closed by the peer
+            // If Poll is true AND no data is available, the socket was closed by the peer
             if (part1 && part2) return false;
 
             return true;
