@@ -1,6 +1,4 @@
-﻿
-
-using IPCSoftware.Shared;
+﻿using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Configuration;

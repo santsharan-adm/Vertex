@@ -1,19 +1,19 @@
-﻿
-using IPCSoftware.Core.Interfaces;
+﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.Services;
+using IPCSoftware.Services;                             // ✅ BaseService
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
 using System;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.CoreService.Services.UI
+namespace IPCSoftware.Devices.UI
 {
-    // 🚨 FINAL STRUCTURAL FIX: UiListener must implement IMessagePublisher
+    
     public class UiListener : BaseService, IMessagePublisher
     {
         private readonly int _port;

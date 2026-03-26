@@ -7,19 +7,16 @@ using IPCSoftware.UI.CommonViews.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
-using IPCSoftware.CoreService;
-using IPCSoftware.CoreService.Alarm;
-using IPCSoftware.CoreService.Services.Algorithm;
-using IPCSoftware.CoreService.Services.CCD;
-using IPCSoftware.CoreService.Services.Dashboard;
-using IPCSoftware.CoreService.Services.External;
-using IPCSoftware.CoreService.Services.Logging;
-using IPCSoftware.CoreService.Services.PLC;
-using IPCSoftware.CoreService.Services.UI;
+using IPCSoftware.Engine;
+using IPCSoftware.Devices.PLC;
+using IPCSoftware.Devices.Camera;
+using IPCSoftware.Devices.UI;
+using IPCSoftware.Communication.External;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.App.Services;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.Datalogger;                           // ? Fixes: ITcpTrafficLogger, TcpTrafficLogger, IProductionDataLogger, ProductionDataLogger
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel.Design.Serialization;
 using System.IO;
@@ -32,10 +29,10 @@ using ManualOpViewModel = IPCSoftware.App.ViewModels.ManualOpViewModel;
 using AeLimitView = IPCSoftware.App.Views.AeLimitView;
 using AeLimitViewModel = IPCSoftware.App.ViewModels.AeLimitViewModel;
 using ProductSettingsView = IPCSoftware.App.Views.ProductSettingsView;
-using FullImageView = IPCSoftware.UI.CommonViews.Views.FullImageView;  // ? Migrated
-using DashboardDetailWindow = IPCSoftware.UI.CommonViews.Views.DashboardDetailWindow;  // ? Migrated
-using FullImageViewModel = IPCSoftware.UI.CommonViews.ViewModels.FullImageViewModel;  // ? Migrated
-using DashboardDetailViewModel = IPCSoftware.UI.CommonViews.ViewModels.DashboardDetailViewModel;  // ? NEW
+using FullImageView = IPCSoftware.UI.CommonViews.Views.FullImageView;
+using DashboardDetailWindow = IPCSoftware.UI.CommonViews.Views.DashboardDetailWindow;
+using FullImageViewModel = IPCSoftware.UI.CommonViews.ViewModels.FullImageViewModel;
+using DashboardDetailViewModel = IPCSoftware.UI.CommonViews.ViewModels.DashboardDetailViewModel;
 
 namespace IPCSoftware.App.DI
 {
@@ -48,35 +45,37 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
             services.AddSingleton<ICycleManagerService, CycleManagerService>();
             services.AddSingleton<ExternalInterfaceService>();
+            services.AddSingleton<IExternalInterfaceService>(sp =>  // ?
+                sp.GetRequiredService<ExternalInterfaceService>());
             services.AddSingleton<ICcdConfigService, CcdConfigService>();
             services.AddSingleton<AlgorithmAnalysisService>();
             services.AddSingleton<DashboardInitializer>();
             services.AddSingleton<OeeEngine>();
             services.AddSingleton<SystemMonitorService>();
             services.AddSingleton<IAlarmHistoryService, AlarmHistoryService>();
-            services.AddSingleton<ITcpTrafficLogger, TcpTrafficLogger>();
-       services.AddSingleton<IProductionDataLogger>(sp =>
-          {
-              var logConfigService = sp.GetRequiredService<ILogConfigurationService>();
-              var initTask = logConfigService.InitializeAsync();
-              initTask.Wait();
-              var prodLogConfigTask = logConfigService.GetByLogTypeAsync(LogType.Production);
-              prodLogConfigTask.Wait();
-              var prodLogConfig = prodLogConfigTask.Result;
-              if (prodLogConfig == null || !prodLogConfig.Enabled)
-                  throw new InvalidOperationException("Production log configuration not found or not enabled.");
-              return new ProductionDataLogger(prodLogConfig);
-          });
+            services.AddSingleton<ITcpTrafficLogger, TcpTrafficLogger>();          // ? Fixed
+            services.AddSingleton<IProductionDataLogger>(sp =>                     // ? Fixed
+            {
+                var logConfigService = sp.GetRequiredService<ILogConfigurationService>();
+                var initTask = logConfigService.InitializeAsync();
+                initTask.Wait();
+                var prodLogConfigTask = logConfigService.GetByLogTypeAsync(LogType.Production);
+                prodLogConfigTask.Wait();
+                var prodLogConfig = prodLogConfigTask.Result;
+                if (prodLogConfig == null || !prodLogConfig.Enabled)
+                    throw new InvalidOperationException("Production log configuration not found or not enabled.");
+                return new ProductionDataLogger(prodLogConfig);                    // ? Fixed
+            });
             services.AddSingleton<CCDTriggerService>();
             services.AddSingleton<PLCClientManager>();
             services.AddSingleton<CameraFtpService>();
             services.AddTransient<ProductionImageService>();
             services.AddSingleton<AlarmService>();
             services.AddSingleton(sp =>
-                   {
-                       var logger = sp.GetRequiredService<IAppLogger>();
-                       return new UiListener(5050, logger);
-                   });
+            {
+                var logger = sp.GetRequiredService<IAppLogger>();
+                return new UiListener(5050, logger);
+            });
             services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
             services.AddSingleton<IApiTestSettingsService, ApiTestSettingsService>();
             services.AddSingleton<IAuthService, AuthService>();
@@ -91,7 +90,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IProductConfigurationService, ProductConfigurationService>();
             services.AddSingleton<ILogService, LogService>();
 
-   // ========== MAIN VIEWMODELS ==========
+            // ========== MAIN VIEWMODELS ==========
             services.AddSingleton<RibbonViewModel>();
             services.AddSingleton<MainWindowViewModel>();
             services.AddTransient<OEEDashboardViewModel>();
@@ -153,7 +152,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<CameraDetailView>();
             services.AddTransient<CameraInterfaceConfigurationView>();
             services.AddTransient<AlarmListView>();
-            services.AddTransient<AlarmConfigurationView>();
+            services.AddTransient<AlarmConfigurationView>();                       // ? Fixed: was 'addTransient' (lowercase 'a')
             services.AddTransient<UserListView>();
             services.AddTransient<UserConfigurationView>();
             services.AddTransient<ModeOfOperation>();

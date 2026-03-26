@@ -1,7 +1,6 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.Core.Interfaces.CCD;
-using IPCSoftware.Communication.External;
+using IPCSoftware.Core.Interfaces.CCD;              // ✅ IExternalInterfaceService is here now
 using IPCSoftware.Devices.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
@@ -16,17 +15,17 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+// ✅ REMOVED: using IPCSoftware.Communication.External
 
 namespace IPCSoftware.Devices.Camera
 {
     public class CycleManagerService : BaseService, ICycleManagerService
     {
-        // ... (Fields) ...
         private readonly IPLCTagConfigurationService _tagService;
         private readonly PLCClientManager _plcManager;
         private readonly ProductionImageService _imageService;
         private readonly IServoCalibrationService _servoService;
-        private readonly ExternalInterfaceService _extService;
+        private readonly IExternalInterfaceService _extService;  // ✅ interface
         private readonly IAeLimitService _aeLimitService;
         private readonly IProductConfigurationService _productService;
 
@@ -48,9 +47,9 @@ namespace IPCSoftware.Devices.Camera
             IOptions<CcdSettings> appSettings,
             IServoCalibrationService servoService,
             ProductionImageService imageService,
-            ExternalInterfaceService extService,
+            IExternalInterfaceService extService,   // ✅ interface
             IAeLimitService aeLimitService,
-             IProductConfigurationService productService,
+            IProductConfigurationService productService,
             IAppLogger logger) : base(logger)
         {
             var ccd = appSettings.Value;

@@ -2,8 +2,8 @@
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Devices.PLC;
 using IPCSoftware.Devices.Camera;
-using IPCSoftware.Engine;
-using IPCSoftware.CoreService.Services.UI;
+using IPCSoftware.Engine;                    // ✅ SharedServiceHost resolves from here
+using IPCSoftware.Devices.UI;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Shared.Models;
@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
+using IPCSoftware.Devices.UI;
 
 namespace IPCSoftware.CoreService
 {
@@ -57,7 +58,6 @@ namespace IPCSoftware.CoreService
             _ccdTrigger = ccdTrigger;
             _cameraFtpService = cameraFtpService;
             _uiListener = uiListener;
-
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -70,7 +70,7 @@ namespace IPCSoftware.CoreService
                 _logger.LogInfo($"Loaded {cameras.Count} cameras devices.", LogType.Diagnostics);
                 var tags = await _tagService.GetAllTagsAsync();
                 _logger.LogInfo($"Loaded {tags.Count} Modbus tags.", LogType.Diagnostics);
-                SharedServiceHost.Initialize(_plcManager, _algo);
+                SharedServiceHost.Initialize(_plcManager, _algo);  // ✅ still works via using IPCSoftware.Engine
 
                 // --- START UI LISTENER (TCP SERVER) ---
                 _logger.LogInfo("Starting UI Listener in background...", LogType.Diagnostics);
@@ -83,9 +83,7 @@ namespace IPCSoftware.CoreService
                     }
                 });
 
-                await _logManager.InitializeAsync(); // Ensure configs loaded
-
-             
+                await _logManager.InitializeAsync();
 
                 _ = Task.Run(async () =>
                 {
@@ -93,7 +91,6 @@ namespace IPCSoftware.CoreService
                     {
                         try
                         {
-                            // Trigger Auto-Backup Check
                             _logManager.CheckAndPerformBackups();
                             _logManager.CheckAndPerformPurge();
                         }
@@ -101,36 +98,9 @@ namespace IPCSoftware.CoreService
                         {
                             _logger.LogError($"Backup Loop Error: {ex.Message}", LogType.Diagnostics);
                         }
-
-                        // Wait 60 seconds before next check
                         await Task.Delay(60000, stoppingToken);
                     }
                 }, stoppingToken);
-
-
-                /* CameraInterfaceModel myCamera = cameras.FirstOrDefault();
-
-                 if (myCamera?.Enabled == true)
-                 {
-                     Console.WriteLine("Starting Camera FTP Service...");
-
-                     _ = Task.Run(async () =>
-                     {
-                         try
-                         {
-                             await _cameraFtpService.StartAsync(myCamera);
-                         }
-                         catch (Exception ex)
-                         {
-                             _logger.LogError($"Camera FTP Service failed: {ex}", LogType.Diagnostics );
-                         }
-                     });
-                 }
-                 else
-                 {
-
-                     _logger.LogError("Camera FTP Service is disabled in configuration.", LogType.Diagnostics);
-                 }*/
 
                 await _dashboard.StartAsync();
                 await Task.Delay(Timeout.Infinite, stoppingToken);
@@ -140,10 +110,8 @@ namespace IPCSoftware.CoreService
                 _logger.LogError($"FATAL ERROR during Core Service initialization: {ex.Message}", LogType.Diagnostics);
                 throw;
             }
-
             finally
             {
-                // Cleanup: Stop camera service if running
                 if (_cameraFtpService.IsRunning)
                 {
                     await _cameraFtpService.StopAsync();
@@ -152,21 +120,4 @@ namespace IPCSoftware.CoreService
         }
     }
 }
-
-
-
-
-
-// NEW: A simple static class to hold the runtime-initialized services
-// This must be placed in a shared file or the same file for now.
-public static class SharedServiceHost
-{
-    public static PLCClientManager? PlcManager { get; private set; }
-    public static AlgorithmAnalysisService? AlgorithmService { get; private set; }
-
-    public static void Initialize(PLCClientManager manager, AlgorithmAnalysisService algo)
-    {
-        PlcManager = manager;
-        AlgorithmService = algo;
-    }
-}
+// ✅ SharedServiceHost block REMOVED from here — now lives in DashboardInitializer.cs

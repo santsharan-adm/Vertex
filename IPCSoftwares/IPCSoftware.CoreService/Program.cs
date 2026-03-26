@@ -1,6 +1,8 @@
-﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.CoreService;
+using IPCSoftware.Devices.UI;
 using IPCSoftware.Engine;
 using IPCSoftware.Devices.PLC;
 using IPCSoftware.Devices.Camera;
@@ -12,7 +14,9 @@ using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
-using System.Linq;
+using Microsoft.Extensions.Configuration;              
+using Microsoft.Extensions.DependencyInjection;        
+using Microsoft.Extensions.Hosting;                    
 
 namespace IPCSoftware.CoreService
 {

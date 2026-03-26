@@ -1,23 +1,25 @@
-﻿using IPCSoftware.Core.Interfaces;
+﻿using IPCSoftware.Communication.Common;
+using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Core.Interfaces.CCD;              // ✅ IExternalInterfaceService
+using IPCSoftware.Datalogger;
 using IPCSoftware.Devices.Camera;
 using IPCSoftware.Devices.PLC;
-using IPCSoftware.Datalogger;
+using IPCSoftware.Services;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
-
 namespace IPCSoftware.Communication.External
 {
-    public class ExternalInterfaceService : IDisposable
+    public class ExternalInterfaceService : IExternalInterfaceService, IDisposable  // ✅
     {
         private readonly PLCClientManager _plcManager;
         private readonly IPLCTagConfigurationService _tagService;

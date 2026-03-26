@@ -1,0 +1,2 @@
+﻿Id,FirstName,LastName,UserName,PasswordHash,PasswordSalt,Role,IsActive,IntegritySignature
+1,"System","Administrator","admin","HetDkyVM/+7CH0hGEDPxE873GcbYDzMCe80EzohYMs8=","txljh5MvLq1h4p1bmTpLOg==","Admin",True,"nrkVxL+9/rDhwE12p5RscfYGqoCkM5xzNZWZn/b4M7w="

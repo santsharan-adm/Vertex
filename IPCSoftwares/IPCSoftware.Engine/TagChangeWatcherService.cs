@@ -9,11 +9,12 @@ using System;
 using System.Collections.Generic;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.Engine;                              // ✅ Resolves SharedServiceHost
 
 // Note: Ensure SharedServiceHost is defined and accessible.
 // Note: Ensure IPCSoftware.CoreService.Services.PLC and .Algorithm namespaces are referenced.
 
-namespace IPCSoftware.CoreService.Services.Config
+namespace IPCSoftware.Engine
 {
     public class TagChangeWatcherService : BackgroundService
     {
@@ -64,13 +65,13 @@ namespace IPCSoftware.CoreService.Services.Config
         {
             try
             {
-            // Debounce: Prevents multiple rapid reloads often triggered by file saving.
-            _reloadTimer?.Dispose();
-            // Using Task.Run to ensure the heavy I/O operation doesn't block the timer thread
-            _reloadTimer = new Timer(async _ =>
-            {
-                await ReloadConfiguration();
-            }, null, 500, Timeout.Infinite); // Wait 500ms before reloading
+                // Debounce: Prevents multiple rapid reloads often triggered by file saving.
+                _reloadTimer?.Dispose();
+                // Using Task.Run to ensure the heavy I/O operation doesn't block the timer thread
+                _reloadTimer = new Timer(async _ =>
+                {
+                    await ReloadConfiguration();
+                }, null, 500, Timeout.Infinite); // Wait 500ms before reloading
             }
             catch (Exception ex)
             {
@@ -106,7 +107,7 @@ namespace IPCSoftware.CoreService.Services.Config
             catch (Exception ex)
             {
                 // Log and continue running the service.
-                _logger.LogError( $"Failed to reload PLC tag configuration from CSV: {ex.Message}.", LogType.Diagnostics);
+                _logger.LogError($"Failed to reload PLC tag configuration from CSV: {ex.Message}.", LogType.Diagnostics);
             }
         }
 

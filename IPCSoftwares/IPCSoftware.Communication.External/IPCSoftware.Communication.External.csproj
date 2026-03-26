@@ -15,10 +15,10 @@
     <ProjectReference Include="..\IPCSoftware.Communication.Common\IPCSoftware.Communication.Common.csproj" />
     <ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
     <ProjectReference Include="..\IPCSoftware.Datalogger\IPCSoftware.Datalogger.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Devices.Camera\IPCSoftware.Devices.Camera.csproj" />
     <ProjectReference Include="..\IPCSoftware.Devices.PLC\IPCSoftware.Devices.PLC.csproj" />
     <ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
     <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
-    <ProjectReference Include="..\IPCSoftware.UI.CommonViews\IPCSoftware.UI.CommonViews.csproj" />
   </ItemGroup>
 
 </Project>

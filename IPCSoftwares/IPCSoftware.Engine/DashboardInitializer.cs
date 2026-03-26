@@ -1,16 +1,18 @@
 ﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Devices.PLC;
 using IPCSoftware.Devices.Camera;
+using IPCSoftware.Devices.UI;
 using IPCSoftware.Communication.Common;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
-using Microsoft.Extensions.FileSystemGlobbing.Internal.PatternContexts;
+using IPCSoftware.CoreService.Services.Dashboard;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text.Json;
-
 
 namespace IPCSoftware.Engine
 {
@@ -339,5 +341,20 @@ namespace IPCSoftware.Engine
             new ResponsePackage { ResponseId = 6, Success = false, ErrorMessage = msg };
 
 
+    }
+
+    // ✅ Moved here FROM Worker.cs — lives in IPCSoftware.Engine assembly
+    // so TagChangeWatcherService (also in IPCSoftware.Engine) can access it directly.
+    // Worker.cs calls SharedServiceHost.Initialize() via "using IPCSoftware.Engine".
+    public static class SharedServiceHost
+    {
+        public static PLCClientManager? PlcManager { get; private set; }
+        public static AlgorithmAnalysisService? AlgorithmService { get; private set; }
+
+        public static void Initialize(PLCClientManager manager, AlgorithmAnalysisService algo)
+        {
+            PlcManager = manager;
+            AlgorithmService = algo;
+        }
     }
 }

@@ -20,6 +20,7 @@
     <ProjectReference Include="..\IPCSoftware.Datalogger\IPCSoftware.Datalogger.csproj" />
     <ProjectReference Include="..\IPCSoftware.Devices.Camera\IPCSoftware.Devices.Camera.csproj" />
     <ProjectReference Include="..\IPCSoftware.Devices.PLC\IPCSoftware.Devices.PLC.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Devices.UI\IPCSoftware.Devices.UI.csproj" />
     <ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
     <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
   </ItemGroup>
