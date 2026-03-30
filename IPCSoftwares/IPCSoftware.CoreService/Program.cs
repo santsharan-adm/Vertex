@@ -92,6 +92,8 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
                             services.AddSingleton<IAeLimitService, AeLimitService>();
                             services.AddSingleton<ExternalInterfaceService>();
+                            services.AddSingleton<IExternalInterfaceService>(sp =>  // ✅ ADD THIS LINE
+                                sp.GetRequiredService<ExternalInterfaceService>());
                             services.AddSingleton<ICycleManagerService, CycleManagerService>();
                             services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
                             services.AddSingleton<IServoCalibrationService, ServoCalibrationService>();

@@ -59,6 +59,9 @@ namespace IPCSoftware.Engine
         {
             try
             {
+                // Guard: definitions not yet loaded (async init still in progress)
+                if (_alarmDefinitions == null) return;
+
                 // Group the alarm definitions by the TagNo they monitor
                 var alarmsByTag = _alarmDefinitions.GroupBy(a => a.TagNo);
 
@@ -88,8 +91,6 @@ namespace IPCSoftware.Engine
                         else if (!isAlarmConditionMet && isActive)
                         {
                             // Condition NOT Met (False) and Alarm IS Active -> CLEAR ALARM
-                            // NOTE: If you need to enforce Acknowledgement before clearing, the logic changes here.
-                            // For now, simple clear on reset.
                             ClearAlarm(config.AlarmNo);
                         }
                     }

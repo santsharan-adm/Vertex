@@ -28,8 +28,8 @@ namespace IPCSoftware.Services
 
                 foreach (var r in rows)
                 {
-                    // Ensure the row has enough columns (at least 14 columns, including CanWrite at [13])
-                    if (r.Length < 14) continue;
+                    // Must be at least 15 columns: indices [0]..[14] (IOType is at [14])
+                    if (r.Length < 15) continue;
 
                     try
                     {

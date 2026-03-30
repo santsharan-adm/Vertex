@@ -59,7 +59,7 @@ namespace IPCSoftware.Services.ConfigServices
         {
             try
             {
-                if (_tags.Count == 0)
+                if (_tags == null || _tags.Count == 0)
                 {
                     await LoadTagsInternalAsync();
                 }

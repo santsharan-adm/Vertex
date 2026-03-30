@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- ✅ REMOVED: Communication.External — CycleManagerService now uses IExternalInterfaceService from Core, no direct reference needed -->
     <ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
     <ProjectReference Include="..\IPCSoftware.Devices.PLC\IPCSoftware.Devices.PLC.csproj" />
     <ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />

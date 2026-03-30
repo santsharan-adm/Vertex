@@ -1,18 +1,19 @@
 ﻿using IPCSoftware.Communication.Common;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.Core.Interfaces.CCD;              // ✅ IExternalInterfaceService
+using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.Datalogger;
 using IPCSoftware.Devices.Camera;
 using IPCSoftware.Devices.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Services.ConfigServices;
+using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
@@ -224,7 +225,7 @@ namespace IPCSoftware.Communication.External
 
                 _cachedSerials = statusData.Serials;
                 await MapAndWriteToPlc(statusData);
-               // await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, false);
+                await WriteToPlc(ConstantValues.MACMINI_NOTCONNECTED, false); // ← RESTORE: clear alarm on successful sync
             }
             catch (Exception ex)
             {
@@ -381,7 +382,6 @@ namespace IPCSoftware.Communication.External
 
         private async Task StartConnectionMonitor()
         {
-            // Track previous states to detect transitions (toggles)
             bool wasEnabled = Settings.IsMacMiniEnabled;
             bool firstRun = true;
             while (true)
@@ -396,11 +396,10 @@ namespace IPCSoftware.Communication.External
                     {
                         if (!_tcpClient.IsConnected)
                         {
-                            try 
-                            { 
-                                await _tcpClient.
-                                    ConnectAsync(Settings.MacMiniIpAddress, Settings.Port); 
-                                currentConnection = true; 
+                            try
+                            {
+                                await _tcpClient.ConnectAsync(Settings.MacMiniIpAddress, Settings.Port);
+                                currentConnection = true;
                             }
                             catch { currentConnection = false; }
                         }
@@ -412,34 +411,28 @@ namespace IPCSoftware.Communication.External
                     }
 
                     bool connectionChanged = (_isMacMiniConnected != currentConnection);
-                    _isMacMiniConnected = currentConnection; // Update UI property
+                    _isMacMiniConnected = currentConnection;
 
                     // 2. PLC ALARM LOGIC
                     if (isEnabled)
                     {
-                        // If connection drops/restores OR user just turned the toggle ON
                         if (connectionChanged || !wasEnabled || firstRun)
                         {
                             if (!currentConnection) _logger.LogError("[ExtIf] Connection Lost!", LogType.Error);
                             else _logger.LogInfo("[ExtIf] Connected.", LogType.Error);
 
-                            // Send actual connection state to PLC
                             await UpdateMacMiniConnectionStateAsync(currentConnection);
                         }
                     }
                     else
                     {
-                        // If user just toggled the button OFF on the dashboard
                         if (wasEnabled)
                         {
                             _logger.LogInfo("[ExtIf] Mac Mini Disabled on Dashboard. Clearing alarms.", LogType.Error);
-
-                            // Passing 'true' clears the alarm because UpdateMacMiniConnectionStateAsync writes !isConnected (Writes 0)
                             await UpdateMacMiniConnectionStateAsync(true);
                         }
                     }
 
-                    // Store current state for the next loop iteration
                     wasEnabled = isEnabled;
                     firstRun = false;
                 }
@@ -447,7 +440,7 @@ namespace IPCSoftware.Communication.External
                 {
                     // Suppress loop errors
                 }
-                await Task.Delay(1000);
+                await Task.Delay(500); // ← CHANGED from 1000ms to 500ms: ensures alarm fires within <2s even with 2s connect timeout
             }
         }
 

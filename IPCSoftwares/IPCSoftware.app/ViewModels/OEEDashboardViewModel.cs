@@ -930,8 +930,8 @@ namespace IPCSoftware.App.ViewModels
         {
             _isDarkTheme = !_isDarkTheme;
             CurrentThemePath = _isDarkTheme
-            ? "/IPCSoftware.App;component/Styles/DarkTheme.xaml"
-            : "/IPCSoftware.App;component/Styles/LightTheme.xaml";
+                ? "pack://application:,,,/IPCSoftware.UI.Themes;component/Themes/DarkTheme.xaml"
+                : "pack://application:,,,/IPCSoftware.UI.Themes;component/Themes/LightTheme.xaml";
         }
 
         private async Task ReverseAsync()
@@ -1257,7 +1257,11 @@ namespace IPCSoftware.App.ViewModels
             for (var date = from.Date; date <= to.Date; date = date.AddDays(1))
             {
                 var filePath = Path.Combine(_prodCsvFolder, $"Production_{date:yyyyMMdd}.csv");
-                if (!File.Exists(filePath)) continue;
+                if (!File.Exists(filePath))
+                {
+                    _logger.LogWarning($"Production CSV not found for date {date:yyyyMMdd} at path: {filePath}", LogType.Diagnostics);
+                    continue;
+                }
 
                 try
                 {
@@ -1266,34 +1270,55 @@ namespace IPCSoftware.App.ViewModels
                     using (var sr = new StreamReader(fs))
                     {
                         string headerLine = sr.ReadLine();
-                        if (string.IsNullOrEmpty(headerLine)) continue;
+                        if (string.IsNullOrEmpty(headerLine))
+                        {
+                            _logger.LogWarning($"Production CSV has no header for date {date:yyyyMMdd}", LogType.Diagnostics);
+                            continue;
+                        }
 
                         var headers = headerLine.Split(',').Select(h => h.Trim()).ToArray();
                         int colIndex = Array.IndexOf(headers, columnName);
 
-                        if (colIndex == -1) continue; // Column not found
+                        if (colIndex == -1)
+                        {
+                            _logger.LogWarning($"Column '{columnName}' not found in CSV for date {date:yyyyMMdd}. Available columns: {string.Join(", ", headers)}", LogType.Diagnostics);
+                            continue; // Column not found
+                        }
 
+                        int rowCount = 0;
+                        int validValueCount = 0;
                         while (!sr.EndOfStream)
                         {
                             var line = sr.ReadLine();
                             if (string.IsNullOrEmpty(line)) continue;
 
+                            rowCount++;
                             var parts = line.Split(',');
                             if (parts.Length > colIndex)
                             {
-                                if (double.TryParse(parts[colIndex], out double val))
+                                string cellValue = parts[colIndex].Trim();
+                                if (!string.IsNullOrEmpty(cellValue) && double.TryParse(cellValue, out double val))
                                 {
                                     results.Add(val);
+                                    validValueCount++;
                                 }
                             }
                         }
+
+                        _logger.LogInfo($"Read {validValueCount} valid values from column '{columnName}' out of {rowCount} rows for date {date:yyyyMMdd}", LogType.Diagnostics);
                     }
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error reading CSV: {ex.Message}");
+                    _logger.LogError($"Error reading CSV for date {date:yyyyMMdd}: {ex.Message}", LogType.Diagnostics);
                 }
             }
+
+            if (results.Count == 0)
+            {
+                _logger.LogWarning($"No data found for column '{columnName}' in date range {from:yyyy-MM-dd} to {to:yyyy-MM-dd}", LogType.Diagnostics);
+            }
+
             return results;
         }
 
