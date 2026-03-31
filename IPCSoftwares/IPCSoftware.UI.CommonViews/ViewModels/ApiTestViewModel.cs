@@ -19,8 +19,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using IPCSoftware.Devices.Camera;
-
+using IPCSoftware.Communication.External;   // 
 namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class ApiTestViewModel : BaseViewModel, IDisposable

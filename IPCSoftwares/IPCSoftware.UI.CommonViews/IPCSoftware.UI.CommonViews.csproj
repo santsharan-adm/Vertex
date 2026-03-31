@@ -27,10 +27,10 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\IPCSoftware.Communication.Common\IPCSoftware.Communication.Common.csproj" />
+		<ProjectReference Include="..\IPCSoftware.Communication.External\IPCSoftware.Communication.External.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Datalogger\IPCSoftware.Datalogger.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Devices.Camera\IPCSoftware.Devices.Camera.csproj" />
-		<!-- ✅ REMOVED: IPCSoftware.Devices.Camera — caused circular dependency. MacMiniTcpClient is in IPCSoftware.Shared -->
 		<ProjectReference Include="..\IPCSoftware.Devices.PLC\IPCSoftware.Devices.PLC.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
