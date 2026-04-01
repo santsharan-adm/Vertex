@@ -24,7 +24,7 @@ namespace IPCSoftware.Engine
         private readonly OeeEngine _oee ;
         private readonly SystemMonitorService _systemMonitor;
         private readonly ShiftResetService _shiftReset;
-        private readonly CCDTriggerService _ccdTrigger; // 1. Add field
+        private readonly CCDTriggerServiceBase _ccdTrigger; // 1. Add field
         private readonly AlarmService _alarmService;
 
         // latest packets per PLC (unitno)
@@ -39,7 +39,7 @@ namespace IPCSoftware.Engine
             SystemMonitorService systemMonitor,
           UiListener ui,
           AlarmService alarmService,
-            CCDTriggerService ccdTrigger,
+            CCDTriggerServiceBase ccdTrigger,
             IAppLogger logger) : base(logger)
         {
             _ui = ui;

@@ -26,7 +26,7 @@ namespace IPCSoftware.CoreService
         private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceService;
         private readonly ConfigSettings _configuration;
-        private readonly CCDTriggerService _ccdTrigger;
+        private readonly CCDTriggerServiceBase _ccdTrigger;
         private readonly CameraFtpService _cameraFtpService;
         private readonly DashboardInitializer _dashboard;
         private readonly AlgorithmAnalysisService _algo;
@@ -40,7 +40,7 @@ namespace IPCSoftware.CoreService
             IPLCTagConfigurationService tagService,
             AlgorithmAnalysisService algo,
             DashboardInitializer dashboard,
-            CCDTriggerService ccdTrigger,
+            CCDTriggerServiceBase ccdTrigger,
             IDeviceConfigurationService deviceService, 
             IOptions<ConfigSettings> configuration,
             CameraFtpService cameraFtpService,

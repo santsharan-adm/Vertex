@@ -66,7 +66,7 @@ namespace IPCSoftware.App.DI
                     throw new InvalidOperationException("Production log configuration not found or not enabled.");
                 return new ProductionDataLogger(prodLogConfig);                    // ? Fixed
             });
-            services.AddSingleton<CCDTriggerService>();
+            services.AddSingleton<CCDTriggerServiceBase>();
             services.AddSingleton<PLCClientManager>();
             services.AddSingleton<CameraFtpService>();
             services.AddTransient<ProductionImageService>();

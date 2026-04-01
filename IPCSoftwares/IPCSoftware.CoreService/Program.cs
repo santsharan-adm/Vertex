@@ -141,7 +141,7 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
 
                             services.AddSingleton<SystemMonitorService>();
-                            services.AddSingleton<CCDTriggerService>();
+                            services.AddSingleton<CCDTriggerServiceBase>();
                             services.AddSingleton<PLCClientManager>();
                             services.AddSingleton<CameraFtpService>();
                             services.AddTransient<ProductionImageService>();
