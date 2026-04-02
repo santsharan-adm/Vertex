@@ -65,7 +65,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\IPCSoftware.CoreService\IPCSoftware.CoreService.csproj" />
+		<ProjectReference Include="..\IPCSoftware.CoreService\IPCSoftware.CoreService.AOI.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
 		<ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
 		<ProjectReference Include="..\IPCSoftware.UI.CommonViews\IPCSoftware.UI.CommonViews.csproj" />

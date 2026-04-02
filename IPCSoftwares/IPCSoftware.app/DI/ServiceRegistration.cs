@@ -33,6 +33,7 @@ using FullImageView = IPCSoftware.UI.CommonViews.Views.FullImageView;
 using DashboardDetailWindow = IPCSoftware.UI.CommonViews.Views.DashboardDetailWindow;
 using FullImageViewModel = IPCSoftware.UI.CommonViews.ViewModels.FullImageViewModel;
 using DashboardDetailViewModel = IPCSoftware.UI.CommonViews.ViewModels.DashboardDetailViewModel;
+using IPCSoftware.CoreService.AOI.Service;
 
 namespace IPCSoftware.App.DI
 {
