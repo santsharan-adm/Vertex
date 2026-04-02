@@ -4,75 +4,523 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="900" d:DesignWidth="1600" Background="#F1F5F9">
+             d:DesignHeight="900" d:DesignWidth="1672" Background="#F1F5F9">
 
     <UserControl.Resources>
         <SolidColorBrush x:Key="PanelBorder" Color="#1E293B"/>
         <SolidColorBrush x:Key="AccentBlue" Color="#3B82F6"/>
         <SolidColorBrush x:Key="OkGreen" Color="#10B981"/>
         <SolidColorBrush x:Key="NgRed" Color="#EF4444"/>
+        <SolidColorBrush x:Key="TableBg" Color="#0F172A"/>
+        <SolidColorBrush x:Key="RowEvenBg" Color="#1E293B"/>
     </UserControl.Resources>
 
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
-            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="340"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="#1E293B" CornerRadius="8" Padding="15" Margin="0,0,0,15">
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="#1E293B" CornerRadius="8" Padding="15" Margin="0,0,0,10">
             <DockPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="FLEX BENDING MACHINE" FontSize="16" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
-                    <Border Background="#10B981" Margin="20,0,0,0" Padding="8,2" CornerRadius="4" VerticalAlignment="Center">
+                    <Border Background="{StaticResource OkGreen}" Margin="20,0,0,0" Padding="8,2" CornerRadius="4" VerticalAlignment="Center">
                         <TextBlock Text="RUNNING" FontSize="10" FontWeight="Bold" Foreground="White"/>
                     </Border>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock Text="CYCLE TIME: 12.4s" Foreground="White" FontWeight="Bold" Margin="0,0,20,0"/>
-                    <TextBlock Text="EFFICIENCY: 94%" Foreground="#10B981" FontWeight="Bold"/>
+                    <TextBlock Text="EFFICIENCY: 94%" Foreground="{StaticResource OkGreen}" FontWeight="Bold"/>
                 </StackPanel>
             </DockPanel>
         </Border>
 
-        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,0">
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Background="#1E293B" CornerRadius="8" Padding="5" Margin="0,0,0,15" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1">
+            <UniformGrid Columns="3">
+                <Border BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Margin="5" Padding="0" CornerRadius="5" Background="{StaticResource TableBg}" ClipToBounds="True">
+                    <StackPanel>
+                        <Border Background="{StaticResource AccentBlue}" Padding="8,4">
+                            <TextBlock Text="BENDING UAT 1" Foreground="White" FontWeight="Bold" FontSize="11"/>
+                        </Border>
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Part No." Foreground="White" FontSize="8.5" FontWeight="Bold"/>
+                            <TextBlock Text="Temp (C)" Foreground="White" FontSize="8.5" FontWeight="Bold" Grid.Column="1" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Load (Newton)" Foreground="White" FontSize="8.5" FontWeight="Bold" Grid.Column="2" HorizontalAlignment="Right"/>
+                            <StackPanel Grid.Row="1" Margin="0,10,0,0" Grid.ColumnSpan="3">
+                                <Border Background="{StaticResource RowEvenBg}" Padding="0,3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="ABC123001" Foreground="White" FontSize="10"/>
+                                        <TextBlock Grid.Column="1" Text="230.6 C" Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="42.2" Foreground="White" FontSize="10" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+                                <Border Padding="0,3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="ABC123002" Foreground="White" FontSize="10"/>
+                                        <TextBlock Grid.Column="1" Text="233.4 C" Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="42.4" Foreground="White" FontSize="10" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+                                <Border Background="{StaticResource RowEvenBg}" Padding="0,3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="ABC123003" Foreground="White" FontSize="10"/>
+                                        <TextBlock Grid.Column="1" Text="235.8 C" Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="42.5" Foreground="White" FontSize="10" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+                                <Border Padding="0,3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="ABC123004" Foreground="White" FontSize="10"/>
+                                        <TextBlock Grid.Column="1" Text="238.5 C" Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="42.7" Foreground="White" FontSize="10" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Margin="5" Padding="0" CornerRadius="5" Background="{StaticResource TableBg}" ClipToBounds="True">
+                    <StackPanel>
+                        <Border Background="{StaticResource AccentBlue}" Padding="8,4">
+                            <TextBlock Text="BENDING UAT 2" Foreground="White" FontWeight="Bold" FontSize="11"/>
+                        </Border>
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Part No." Foreground="White" FontSize="8.5" FontWeight="Bold"/>
+                            <TextBlock Text="Temp (C)" Foreground="White" FontSize="8.5" FontWeight="Bold" Grid.Column="1" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Load (Newton)" Foreground="White" FontSize="8.5" FontWeight="Bold" Grid.Column="2" HorizontalAlignment="Right"/>
+                            <StackPanel Grid.Row="1" Margin="0,10,0,0" Grid.ColumnSpan="3">
+                                <Border Background="{StaticResource RowEvenBg}" Padding="0,3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="ABC123001" Foreground="White" FontSize="10"/>
+                                        <TextBlock Grid.Column="1" Text="230.6 C" Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="42.2" Foreground="White" FontSize="10" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+                                <Border Padding="0,3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="ABC123002" Foreground="White" FontSize="10"/>
+                                        <TextBlock Grid.Column="1" Text="233.4 C" Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="42.4" Foreground="White" FontSize="10" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+                                <Border Background="{StaticResource RowEvenBg}" Padding="0,3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="ABC123003" Foreground="White" FontSize="10"/>
+                                        <TextBlock Grid.Column="1" Text="235.8 C" Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="42.5" Foreground="White" FontSize="10" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+                                <Border Padding="0,3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="ABC123004" Foreground="White" FontSize="10"/>
+                                        <TextBlock Grid.Column="1" Text="238.5 C" Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="42.7" Foreground="White" FontSize="10" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Margin="5" Padding="0" CornerRadius="5" Background="{StaticResource TableBg}" ClipToBounds="True">
+                    <StackPanel>
+                        <Border Background="{StaticResource AccentBlue}" Padding="8,4">
+                            <TextBlock Text="BENDING UAT 3" Foreground="White" FontWeight="Bold" FontSize="11"/>
+                        </Border>
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Part No." Foreground="White" FontSize="8.5" FontWeight="Bold"/>
+                            <TextBlock Text="Temp (C)" Foreground="White" FontSize="8.5" FontWeight="Bold" Grid.Column="1" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Load (Newton)" Foreground="White" FontSize="8.5" FontWeight="Bold" Grid.Column="2" HorizontalAlignment="Right"/>
+                            <StackPanel Grid.Row="1" Margin="0,10,0,0" Grid.ColumnSpan="3">
+                                <Border Background="{StaticResource RowEvenBg}" Padding="0,3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="ABC123001" Foreground="White" FontSize="10"/>
+                                        <TextBlock Grid.Column="1" Text="230.6 C" Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="42.2" Foreground="White" FontSize="10" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+                                <Border Padding="0,3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="ABC123002" Foreground="White" FontSize="10"/>
+                                        <TextBlock Grid.Column="1" Text="233.4 C" Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="42.4" Foreground="White" FontSize="10" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+                                <Border Background="{StaticResource RowEvenBg}" Padding="0,3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="ABC123003" Foreground="White" FontSize="10"/>
+                                        <TextBlock Grid.Column="1" Text="235.8 C" Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="42.5" Foreground="White" FontSize="10" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+                                <Border Padding="0,3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="ABC123004" Foreground="White" FontSize="10"/>
+                                        <TextBlock Grid.Column="1" Text="238.5 C" Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="42.7" Foreground="White" FontSize="10" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+        </Border>
+
+        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Top">
             <TextBlock Text="CONTROLS" FontWeight="Bold" FontSize="12" Margin="0,0,0,10" Foreground="#64748B"/>
             <Border Background="White" CornerRadius="8" Padding="10" Margin="0,0,0,10" BorderBrush="#CBD5E1" BorderThickness="1">
                 <StackPanel>
                     <UniformGrid Columns="2">
-                        <Button Content="START" Margin="2" Padding="5" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
+                        <Button Content="START" Margin="2" Padding="5" Background="{StaticResource OkGreen}" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
                         <Button Content="PAUSE" Margin="2" Padding="5" Background="#F59E0B" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
                     </UniformGrid>
-                    <Button Content="NEXT STAGE" Margin="2,5,2,2" Padding="5" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
+                    <Button Content="NEXT STAGE" Margin="2,5,2,2" Padding="5" Background="{StaticResource AccentBlue}" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
                 </StackPanel>
             </Border>
-            <TextBlock Text="EVENT LOG" FontWeight="Bold" FontSize="12" Margin="0,10,0,5" Foreground="#64748B"/>
-            <Border Background="White" Height="200" CornerRadius="5" BorderBrush="#CBD5E1" BorderThickness="1">
-                <TextBox BorderThickness="0" IsReadOnly="True" VerticalScrollBarVisibility="Auto" 
-                         Text="21:58:26 — Tray present &amp; aligned&#x0a;21:58:30 — Robot 1 picking..." FontSize="10" Padding="5"/>
+            <TextBlock Text="PROCESS FLOW" FontWeight="Bold" FontSize="12" Margin="0,5,0,5" Foreground="#64748B"/>
+            <Border Background="White" CornerRadius="8" Padding="5" BorderBrush="#CBD5E1" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Margin="5,0,5,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Module" FontWeight="Bold" FontSize="9"/>
+                        <TextBlock Grid.Column="1" Text="Batch Id" FontWeight="Bold" FontSize="9" HorizontalAlignment="Center"/>
+                    </Grid>
+                    <StackPanel Grid.Row="1">
+                        <Border BorderBrush="#F1F5F9" BorderThickness="0,0,0,1" Padding="5,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Tray Load" FontSize="8.5"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="{StaticResource OkGreen}" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderBrush="#F1F5F9" BorderThickness="0,0,0,1" Padding="5,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="QR Scan / Robo Pick" FontSize="8.5"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderBrush="#F1F5F9" BorderThickness="0,0,0,1" Padding="5,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Pre-Bending Inspection" FontSize="8.5"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderBrush="#F1F5F9" BorderThickness="0,0,0,1" Padding="5,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Load Jig(TT-1)" FontSize="8.5"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderBrush="#F1F5F9" BorderThickness="0,0,0,1" Padding="5,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Bending UAT-1" FontSize="8.5"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderBrush="#F1F5F9" BorderThickness="0,0,0,1" Padding="5,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Bending UAT-2" FontSize="8.5"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderBrush="#F1F5F9" BorderThickness="0,0,0,1" Padding="5,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Transfer TT1-TT2" FontSize="8.5"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderBrush="#F1F5F9" BorderThickness="0,0,0,1" Padding="5,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Bending UAT-3" FontSize="8.5"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderBrush="#F1F5F9" BorderThickness="0,0,0,1" Padding="5,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Turn Flex" FontSize="8.5"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderBrush="#F1F5F9" BorderThickness="0,0,0,1" Padding="5,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Remove Liner" FontSize="8.5"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderBrush="#F1F5F9" BorderThickness="0,0,0,1" Padding="5,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Final 3 Camera Insp." FontSize="8.5"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Padding="5,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Output Tray Placement" FontSize="8.5"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="Gray" Margin="1,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Grid>
             </Border>
         </StackPanel>
 
-        <Viewbox Grid.Row="1" Grid.Column="1" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Canvas Width="700" Height="450" Background="Transparent">
+        <Viewbox Grid.Row="2" Grid.Column="1" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10">
+            <Canvas Width="700" Height="480">
+                <Polyline Points="40,310 40,385 110,385" Stroke="{StaticResource PanelBorder}" StrokeThickness="2.5"/>
+                <Polyline Points="580,310 580,385 530,385" Stroke="{StaticResource PanelBorder}" StrokeThickness="2.5"/>
 
-                <Border Canvas.Left="10" Canvas.Top="20" Width="60" Height="60" BorderBrush="{StaticResource NgRed}" BorderThickness="1.5" CornerRadius="8" Background="#FFF1F2">
-                    <TextBlock Text="❌" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource NgRed}"/>
-                </Border>
-                <TextBlock Canvas.Left="30" Canvas.Top="85" Text="NG" FontWeight="Bold" FontSize="12" Foreground="{StaticResource NgRed}"/>
+                <StackPanel Orientation="Horizontal" Canvas.Left="10" Canvas.Top="10">
+                    <Border Width="180" CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="0,0,25,0">
+                        <StackPanel>
+                            <Border Background="{StaticResource AccentBlue}" Padding="6,3">
+                                <TextBlock Text="Bending UAT - 1" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
+                            </Border>
+                            <Grid Margin="12,8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="65"/>
+                                    <ColumnDefinition Width="22"/>
+                                    <ColumnDefinition Width="22"/>
+                                    <ColumnDefinition Width="22"/>
+                                    <ColumnDefinition Width="22"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Text="CLAMP" Foreground="White" FontSize="9" Margin="0,4"/>
+                                <TextBlock Grid.Row="1" Text="HEAT" Foreground="White" FontSize="9" Margin="0,4"/>
+                                <TextBlock Grid.Row="2" Text="PUNCH" Foreground="White" FontSize="9" Margin="0,4"/>
+                                <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}"/>
+                                <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}"/>
+                                <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}"/>
+                                <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}"/>
+                                <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="Gray"/>
+                                <Ellipse Grid.Row="0" Grid.Column="4" Width="9" Height="9" Fill="Gray"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                    <Border Width="180" CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="0,0,25,0">
+                        <StackPanel>
+                            <Border Background="{StaticResource AccentBlue}" Padding="6,3">
+                                <TextBlock Text="Bending UAT - 2" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
+                            </Border>
+                            <Grid Margin="12,8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="65"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Text="CLAMP" Foreground="White" FontSize="9" Margin="0,4"/>
+                                <TextBlock Grid.Row="1" Text="HEAT" Foreground="White" FontSize="9" Margin="0,4"/>
+                                <TextBlock Grid.Row="2" Text="PUNCH" Foreground="White" FontSize="9" Margin="0,4"/>
+                            </Grid>
+                        </StackPanel>
+                        
+                        
+                    </Border>
+                </StackPanel>
 
-                <Border Canvas.Left="10" Canvas.Top="140" Width="60" Height="60" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1.5" CornerRadius="8" Background="White">
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="🤖" FontSize="25" HorizontalAlignment="Center"/>
-                        <TextBlock Text="ROBOT 1" FontWeight="Bold" FontSize="9" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
-
-                <Canvas Canvas.Left="110" Canvas.Top="60">
+                <Canvas Canvas.Left="110" Canvas.Top="170">
                     <Border Width="140" Height="140" CornerRadius="70" Background="White" BorderBrush="{StaticResource PanelBorder}" BorderThickness="3.5">
                         <Canvas>
                             <Ellipse Width="15" Height="15" Fill="{StaticResource AccentBlue}" Canvas.Left="62.5" Canvas.Top="10"/>
@@ -93,14 +541,7 @@
                     </Border>
                 </Canvas>
 
-                <Polyline Points="40,200 40,275 130,275" Stroke="{StaticResource PanelBorder}" StrokeThickness="2"/>
-
-                <Polyline Points="250,130 290,130 290,125" Stroke="{StaticResource PanelBorder}" StrokeThickness="2.5"/>
-                <Border Canvas.Left="272" Canvas.Top="90" Width="35" Height="35" Background="White" BorderBrush="{StaticResource PanelBorder}" BorderThickness="2" CornerRadius="4">
-                    <TextBlock Text="🔄" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" Opacity="0.5"/>
-                </Border>
-
-                <Canvas Canvas.Left="330" Canvas.Top="60">
+                <Canvas Canvas.Left="330" Canvas.Top="170">
                     <Border Width="140" Height="140" CornerRadius="70" Background="White" BorderBrush="{StaticResource OkGreen}" BorderThickness="3.5">
                         <Canvas>
                             <Ellipse Width="15" Height="15" Fill="{StaticResource OkGreen}" Canvas.Left="62.5" Canvas.Top="10"/>
@@ -121,48 +562,117 @@
                     </Border>
                 </Canvas>
 
-                <Polyline Points="580,200 580,275 450,275" Stroke="{StaticResource PanelBorder}" StrokeThickness="2"/>
-
-                <Border Canvas.Left="550" Canvas.Top="140" Width="60" Height="60" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1.5" CornerRadius="8" Background="White">
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="🤖" FontSize="25" HorizontalAlignment="Center"/>
-                        <TextBlock Text="ROBOT 2" FontWeight="Bold" FontSize="9" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
-
-                <Border Canvas.Left="550" Canvas.Top="20" Width="60" Height="60" BorderBrush="{StaticResource NgRed}" BorderThickness="1.5" CornerRadius="8" Background="#FFF1F2">
+                <Border Canvas.Left="10" Canvas.Top="130" Width="60" Height="60" BorderBrush="{StaticResource NgRed}" BorderThickness="1.5" CornerRadius="8" Background="#FFF1F2">
                     <TextBlock Text="❌" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource NgRed}"/>
                 </Border>
-                <TextBlock Canvas.Left="570" Canvas.Top="85" Text="NG" FontWeight="Bold" FontSize="12" Foreground="{StaticResource NgRed}"/>
-
+                <Border Canvas.Left="10" Canvas.Top="250" Width="60" Height="60" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1.5" CornerRadius="8" Background="White">
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="🤖" FontSize="25" HorizontalAlignment="Center"/>
+                        <TextBlock Text="ROBOT 1" FontSize="9" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+                <Border Canvas.Left="550" Canvas.Top="250" Width="60" Height="60" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1.5" CornerRadius="8" Background="White">
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="🤖" FontSize="25" HorizontalAlignment="Center"/>
+                        <TextBlock Text="ROBOT 2" FontSize="9" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+                <Border Canvas.Left="550" Canvas.Top="130" Width="60" Height="60" BorderBrush="{StaticResource NgRed}" BorderThickness="1.5" CornerRadius="8" Background="#FFF1F2">
+                    <TextBlock Text="❌" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource NgRed}"/>
+                </Border>
             </Canvas>
         </Viewbox>
 
-        <StackPanel Grid.Row="1" Grid.Column="2" Margin="10,0,0,0">
-            <TextBlock Text="READINGS" FontWeight="Bold" FontSize="12" Margin="0,0,0,10" Foreground="#64748B"/>
-            <Border Background="White" CornerRadius="8" Padding="12" Margin="0,0,0,10" BorderBrush="#E2E8F0" BorderThickness="1">
-                <UniformGrid Columns="2">
-                    <StackPanel>
-                        <TextBlock Text="Temp" FontSize="9" Foreground="Gray"/>
-                        <TextBlock Text="220°C" FontSize="11" FontWeight="Bold"/>
-                    </StackPanel>
-                    <StackPanel>
-                        <TextBlock Text="Press" FontSize="9" Foreground="Gray"/>
-                        <TextBlock Text="45 bar" FontSize="11" FontWeight="Bold"/>
-                    </StackPanel>
-                </UniformGrid>
-            </Border>
-            <TextBlock Text="PRODUCTION" FontWeight="Bold" FontSize="12" Margin="0,5,0,10" Foreground="#64748B"/>
-            <Border Background="White" CornerRadius="8" Padding="12" BorderBrush="#E2E8F0" BorderThickness="1">
+        <StackPanel Grid.Row="2" Grid.Column="2" Margin="10,0,0,0" VerticalAlignment="Top">
+            <TextBlock Text="OUTPUT INSPECTION" FontWeight="Bold" FontSize="12" Margin="0,0,0,10" Foreground="#64748B"/>
+            <Border BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" CornerRadius="8" Background="{StaticResource TableBg}" ClipToBounds="True">
                 <StackPanel>
-                    <DockPanel>
-                        <TextBlock Text="Total OK" FontSize="10"/>
-                        <TextBlock Text="1,245" FontWeight="Bold" HorizontalAlignment="Right" Foreground="#3B82F6"/>
-                    </DockPanel>
-                    <DockPanel Margin="0,5,0,0">
-                        <TextBlock Text="Yield" FontSize="10"/>
-                        <TextBlock Text="98.5%" FontWeight="Bold" HorizontalAlignment="Right" Foreground="#10B981"/>
-                    </DockPanel>
+                    <Border Background="{StaticResource AccentBlue}" Padding="5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="65"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Part No." Foreground="White" FontSize="9" FontWeight="Bold"/>
+                            <TextBlock Grid.Column="1" Text="Measurement (X,Y,Z,Q)" Foreground="White" FontSize="8.5" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="Judge" Foreground="White" FontSize="9" FontWeight="Bold" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Border>
+                    <StackPanel Margin="2">
+                        <Border Background="{StaticResource RowEvenBg}" Padding="5,6" Margin="0,1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="ABC123001" Foreground="White" FontSize="9"/>
+                                <TextBlock Grid.Column="1" Text="22.1" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="22.8" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="23.4" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="4" Text="22.5" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="5" Text="OK" Foreground="{StaticResource OkGreen}" FontSize="9" FontWeight="Bold" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Border>
+                        <Border Padding="5,6" Margin="0,1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="ABC123002" Foreground="White" FontSize="9"/>
+                                <TextBlock Grid.Column="1" Text="22.2" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="22.9" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="23.1" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="4" Text="22.4" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="5" Text="NG" Foreground="{StaticResource NgRed}" FontSize="9" FontWeight="Bold" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Border>
+                        <Border Background="{StaticResource RowEvenBg}" Padding="5,6" Margin="0,1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="ABC123003" Foreground="White" FontSize="9"/>
+                                <TextBlock Grid.Column="1" Text="22.0" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="22.7" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="23.3" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="4" Text="22.6" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="5" Text="OK" Foreground="{StaticResource OkGreen}" FontSize="9" FontWeight="Bold" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Border>
+                        <Border Padding="5,6" Margin="0,1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="ABC123004" Foreground="White" FontSize="9"/>
+                                <TextBlock Grid.Column="1" Text="22.1" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="22.8" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="23.4" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="4" Text="22.5" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="5" Text="OK" Foreground="{StaticResource OkGreen}" FontSize="9" FontWeight="Bold" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
                 </StackPanel>
             </Border>
         </StackPanel>
