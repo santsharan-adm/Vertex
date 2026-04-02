@@ -9,105 +9,105 @@
 		<UseWPF>true</UseWPF>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Models\**" />
-    <Compile Remove="NavServices\**" />
-    <EmbeddedResource Remove="Models\**" />
-    <EmbeddedResource Remove="NavServices\**" />
-    <None Remove="Models\**" />
-    <None Remove="NavServices\**" />
-    <Page Remove="Models\**" />
-    <Page Remove="NavServices\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Models\**" />
+		<Compile Remove="NavServices\**" />
+		<EmbeddedResource Remove="Models\**" />
+		<EmbeddedResource Remove="NavServices\**" />
+		<None Remove="Models\**" />
+		<None Remove="NavServices\**" />
+		<Page Remove="Models\**" />
+		<Page Remove="NavServices\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Remove="appsettings.Development.json" />
-    <None Remove="appsettings.json" />
-    <None Remove="Data\AlarmConfigurations.csv" />
-    <None Remove="Data\CameraInterfaces.csv" />
-    <None Remove="Data\DeviceInterfaces.csv" />
-    <None Remove="Data\Devices.csv" />
-    <None Remove="Data\LogConfigurations.csv" />
-    <None Remove="Data\PLCTags.csv" />
-    <None Remove="Data\PLCTagsOld.csv" />
-    <None Remove="Data\Shifts.csv" />
-    <None Remove="Data\StartupConditions.json" />
-    <None Remove="Data\Users.csv" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="appsettings.Development.json" />
+		<None Remove="appsettings.json" />
+		<None Remove="Data\AlarmConfigurations.csv" />
+		<None Remove="Data\CameraInterfaces.csv" />
+		<None Remove="Data\DeviceInterfaces.csv" />
+		<None Remove="Data\Devices.csv" />
+		<None Remove="Data\LogConfigurations.csv" />
+		<None Remove="Data\PLCTags.csv" />
+		<None Remove="Data\PLCTagsOld.csv" />
+		<None Remove="Data\Shifts.csv" />
+		<None Remove="Data\StartupConditions.json" />
+		<None Remove="Data\Users.csv" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="appsettings.Development.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Data\Shifts.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\StartupConditions.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="appsettings.Development.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+		<Content Include="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+		<Content Include="Data\Shifts.csv">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Data\StartupConditions.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CustomSelectFileDlg" Version="1.0.0" />
-    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.3" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-	<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CustomSelectFileDlg" Version="1.0.0" />
+		<PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.3" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\IPCSoftware.CoreService\IPCSoftware.CoreService.csproj" />
-    <ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
-    <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
-    <ProjectReference Include="..\IPCSoftware.UI.CommonViews\IPCSoftware.UI.CommonViews.csproj" />
-    <ProjectReference Include="..\IPCSoftware.UI.Themes\IPCSoftware.UI.Themes.csproj" />
-    <ProjectReference Include="..\IPCSoftware.Visuals\IPCSoftware.Visuals.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\IPCSoftware.CoreService\IPCSoftware.CoreService.csproj" />
+		<ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
+		<ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
+		<ProjectReference Include="..\IPCSoftware.UI.CommonViews\IPCSoftware.UI.CommonViews.csproj" />
+		<ProjectReference Include="..\IPCSoftware.UI.Themes\IPCSoftware.UI.Themes.csproj" />
+		<ProjectReference Include="..\IPCSoftware.Visuals\IPCSoftware.Visuals.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Data\AlarmConfigurations.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\CameraInterfaces.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\DeviceInterfaces.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\Devices.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\LogConfigurations.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\PLCTags.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\Users.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="Data\AlarmConfigurations.csv">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Data\CameraInterfaces.csv">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Data\DeviceInterfaces.csv">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Data\Devices.csv">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Data\LogConfigurations.csv">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Data\PLCTags.csv">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Data\Users.csv">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Views\AeLimitView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Views\AeLimitView.xaml.cs">
+			<SubType>Code</SubType>
+		</Compile>
+	</ItemGroup>
 
 
-  <ItemGroup>
-    <ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
-    <ProjectReference Include="..\IPCSoftware.WPFExtensions\IPCSoftware.WPFExtensions.csproj" />
-    <ProjectReference Include="..\IPCSoftware.Communication.UIClientComm\IPCSoftware.Communication.UIClientComm.csproj" />
-    <ProjectReference Include="..\IPCSoftware.CommonExtensions\IPCSoftware.CommonExtensions.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
+		<ProjectReference Include="..\IPCSoftware.WPFExtensions\IPCSoftware.WPFExtensions.csproj" />
+		<ProjectReference Include="..\IPCSoftware.Communication.UIClientComm\IPCSoftware.Communication.UIClientComm.csproj" />
+		<ProjectReference Include="..\IPCSoftware.CommonExtensions\IPCSoftware.CommonExtensions.csproj" />
+	</ItemGroup>
 </Project>

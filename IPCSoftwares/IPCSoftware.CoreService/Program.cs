@@ -16,7 +16,8 @@ using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Configuration;              
 using Microsoft.Extensions.DependencyInjection;        
-using Microsoft.Extensions.Hosting;                    
+using Microsoft.Extensions.Hosting;
+using IPCSoftware.CoreService.AOI.Service;
 
 namespace IPCSoftware.CoreService
 {
