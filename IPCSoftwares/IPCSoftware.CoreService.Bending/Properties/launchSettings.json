@@ -1,11 +1,11 @@
-﻿{
-  "$schema": "http://json.schemastore.org/launchsettings.json",
+{
   "profiles": {
-    "IPCSoftware.CoreService.Bending": {
+    "IPCSoftware.App": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "DOTNET_ENVIRONMENT": "Development",
+        "CONFIG_DIR": "C:\\Users\\Krishna\\Documents\\Repos\\Vertex\\IPCSoftwares\\IPCSoftware.App.Bending"
+
       }
     }
   }

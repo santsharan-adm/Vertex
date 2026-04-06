@@ -2,6 +2,7 @@
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Datalogger;
 using IPCSoftware.Devices.PLC;
+using IPCSoftware.Engine;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Logging;
@@ -9,9 +10,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace IPCSoftware.CoreService.Bending.Service
 {
-    internal class OeeEngine : IPCSoftware.Engine.OeeEngine
+    public class OeeEngineBending : OeeEngineBase
     {
-        public OeeEngine(
+        public OeeEngineBending(
             IPLCTagConfigurationService tagService,
             PLCClientManager plcManager,
             IAppLogger logger,

@@ -16,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
 using IPCSoftware.Devices.UI;
+using IPCSoftware.CoreService.AOI.Service;
 
 namespace IPCSoftware.CoreService
 {
@@ -26,9 +27,9 @@ namespace IPCSoftware.CoreService
         private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceService;
         private readonly ConfigSettings _configuration;
-        private readonly CCDTriggerServiceBase _ccdTrigger;
+        private readonly CCDTriggerServiceAOI _ccdTrigger;
         private readonly CameraFtpService _cameraFtpService;
-        private readonly DashboardInitializer _dashboard;
+        private readonly DashboardInitializerAOI _dashboard;
         private readonly AlgorithmAnalysisService _algo;
         private readonly PLCClientManager _plcManager;
         private readonly UiListener _uiListener;
@@ -39,8 +40,8 @@ namespace IPCSoftware.CoreService
             ILogManagerService logManager, 
             IPLCTagConfigurationService tagService,
             AlgorithmAnalysisService algo,
-            DashboardInitializer dashboard,
-            CCDTriggerServiceBase ccdTrigger,
+            DashboardInitializerAOI dashboard,
+            CCDTriggerServiceAOI ccdTrigger,
             IDeviceConfigurationService deviceService, 
             IOptions<ConfigSettings> configuration,
             CameraFtpService cameraFtpService,

@@ -21,9 +21,9 @@ using System.Windows.Automation.Peers;
 
 namespace IPCSoftware.CoreService.AOI.Service
 {
-    public class CycleManagerService : CycleManagerServiceBase
+    public class CycleManagerServiceAOI : CycleManagerServiceBase
     {
-        public CycleManagerService(
+        public CycleManagerServiceAOI(
             IPLCTagConfigurationService tagService,
             ILogConfigurationService logConfig,
             PLCClientManager plcManager,

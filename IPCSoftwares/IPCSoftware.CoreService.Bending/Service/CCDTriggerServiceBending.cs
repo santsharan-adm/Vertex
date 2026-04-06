@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.CoreService.AOI.Service
+namespace IPCSoftware.CoreService.Bending.Service
 {
     public class CCDTriggerServiceBending : CCDTriggerServiceBase
     {

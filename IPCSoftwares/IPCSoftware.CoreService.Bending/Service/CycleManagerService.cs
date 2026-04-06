@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Bending.Service
 {
-    internal class CycleManagerService : CycleManagerServiceBase
+    internal class CycleManagerServiceBending : CycleManagerServiceBase
     {
-        public CycleManagerService(
+        public CycleManagerServiceBending(
             IPLCTagConfigurationService tagService,
             ILogConfigurationService logConfig,
             PLCClientManager plcManager,

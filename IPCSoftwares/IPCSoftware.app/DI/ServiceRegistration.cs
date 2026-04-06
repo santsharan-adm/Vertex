@@ -44,14 +44,14 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IAppLogger, AppLoggerService>();
             services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
-            services.AddSingleton<ICycleManagerService, CycleManagerService>();
+            services.AddSingleton<ICycleManagerService, CycleManagerServiceAOI>();
             services.AddSingleton<ExternalInterfaceService>();
             services.AddSingleton<IExternalInterfaceService>(sp =>  // ?
                 sp.GetRequiredService<ExternalInterfaceService>());
             services.AddSingleton<ICcdConfigService, CcdConfigService>();
             services.AddSingleton<AlgorithmAnalysisService>();
-            services.AddSingleton<DashboardInitializer>();
-            services.AddSingleton<IPCSoftware.Engine.OeeEngine>();
+            services.AddSingleton<DashboardInitializerAOI>();
+            services.AddSingleton<OeeEngineAOI>();
             services.AddSingleton<SystemMonitorService>();
             services.AddSingleton<IAlarmHistoryService, AlarmHistoryService>();
             services.AddSingleton<ITcpTrafficLogger, TcpTrafficLogger>();          // ? Fixed
@@ -68,7 +68,7 @@ namespace IPCSoftware.App.DI
                     throw new InvalidOperationException("Production log configuration not found or not enabled.");
                 return new ProductionDataLogger(prodLogConfig);                    // ? Fixed
             });
-            services.AddSingleton<CCDTriggerServiceBase>(sp => sp.GetRequiredService<CCDTriggerServiceAOI>());
+            services.AddSingleton<CCDTriggerServiceAOI>(sp => sp.GetRequiredService<CCDTriggerServiceAOI>());
             services.AddSingleton<PLCClientManager>();
             services.AddSingleton<CameraFtpService>();
             services.AddTransient<ProductionImageService>();

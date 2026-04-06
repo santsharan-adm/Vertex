@@ -16,12 +16,12 @@ using System.Text.Json;
 
 namespace IPCSoftware.Engine
 {
-    public class DashboardInitializer : BaseService
+    public class DashboardInitializerBase : BaseService
     {
         private readonly PLCClientManager _manager;
         private readonly UiListener _ui ;
         private readonly AlgorithmAnalysisService _algo;
-        private readonly OeeEngine _oee ;
+        private readonly OeeEngineBase _oee ;
         private readonly SystemMonitorService _systemMonitor;
         private readonly ShiftResetService _shiftReset;
         private readonly CCDTriggerServiceBase _ccdTrigger; // 1. Add field
@@ -32,9 +32,9 @@ namespace IPCSoftware.Engine
 
         private Dictionary<int, object>? _lastValues = null;
 
-        public DashboardInitializer(PLCClientManager manager,
+        public DashboardInitializerBase(PLCClientManager manager,
             AlgorithmAnalysisService algo,
-            OeeEngine oee,
+            OeeEngineBase oee,
             ShiftResetService shiftReset,
             SystemMonitorService systemMonitor,
           UiListener ui,

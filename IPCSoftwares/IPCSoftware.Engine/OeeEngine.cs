@@ -14,7 +14,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace IPCSoftware.Engine
 {
-    public class OeeEngine : BaseService
+    public class OeeEngineBase : BaseService
     {
         private readonly IPLCTagConfigurationService _tagService;
         private readonly PLCClientManager _plcManager;
@@ -39,7 +39,7 @@ namespace IPCSoftware.Engine
         protected Dictionary<int, int> _sequenceToPositionId = new();
         private int _currentSequenceStep = 0;
 
-        public OeeEngine(
+        public OeeEngineBase(
             IPLCTagConfigurationService tagService,
             PLCClientManager plcManager,
             IAppLogger logger,

@@ -95,13 +95,13 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<ExternalInterfaceService>();
                             services.AddSingleton<IExternalInterfaceService>(sp =>  // ✅ ADD THIS LINE
                                 sp.GetRequiredService<ExternalInterfaceService>());
-                            services.AddSingleton<ICycleManagerService, CycleManagerService>();
+                            services.AddSingleton<ICycleManagerService, CycleManagerServiceAOI>();
                             services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
                             services.AddSingleton<IServoCalibrationService, ServoCalibrationService>();
                             services.AddSingleton<IProductConfigurationService, ProductConfigurationService>();
                             services.AddSingleton<AlgorithmAnalysisService>();
-                            services.AddSingleton<DashboardInitializer>();
-                            services.AddSingleton<IPCSoftware.Engine.OeeEngine, IPCSoftware.CoreService.AOI.Service.OeeEngine>();
+                            services.AddSingleton<DashboardInitializerAOI>();
+                            services.AddSingleton<OeeEngineAOI>();
                             services.AddSingleton<AlarmService>();
                             services.AddTransient<TagConfigLoader>();
                             services.AddTransient<BackupService>();
@@ -142,7 +142,7 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
 
                             services.AddSingleton<SystemMonitorService>();
-                            services.AddSingleton<CCDTriggerServiceBase>();
+                            services.AddSingleton<CCDTriggerServiceAOI>();
                             services.AddSingleton<PLCClientManager>();
                             services.AddSingleton<CameraFtpService>();
                             services.AddTransient<ProductionImageService>();

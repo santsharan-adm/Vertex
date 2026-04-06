@@ -1,0 +1,432 @@
+﻿{
+  "FilePrefix": "AE",
+  "OutputFolderName": "AeLimitLogs",
+  "SubmitId": "BZ_UAT-AOI_V53_338_SV2.1.0.4_V2.1.0.4",
+  "MachineId": "BZ-2006-010627",
+  "VendorCode": "1",
+  "TossingDefault": "0",
+  "OperatorIdDefault": "0",
+  "ModeDefault": "0",
+  "TestSeriesIdDefault": "0",
+  "PriorityDefault": "0",
+  "OnlineFlagDefault": "1",
+  "StartLabelDefault": "NA",
+  "Stations": [
+    {
+      "StationId": 0,
+      "SequenceIndex": 0,
+      "Cavity": 0,
+      "StartLabel": "start",
+      "DutPositionLabel": "POS00",
+      "MachineModeOverride": null,
+      "InspectionX": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionY": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionAngle": {
+        "Lower": -0.8,
+        "Upper": 0.8,
+        "Unit": "degree",
+        "HasLimits": true
+      },
+      "CycleTime": {
+        "Lower": 0.0,
+        "Upper": 0.0,
+        "Unit": "s",
+        "HasLimits": false
+      }
+    },
+    {
+      "StationId": 1,
+      "SequenceIndex": 1,
+      "Cavity": 1,
+      "StartLabel": "audit",
+      "DutPositionLabel": "POS01",
+      "MachineModeOverride": null,
+      "InspectionX": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionY": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionAngle": {
+        "Lower": -0.8,
+        "Upper": 0.8,
+        "Unit": "degree",
+        "HasLimits": true
+      },
+      "CycleTime": {
+        "Lower": 0.0,
+        "Upper": 0.0,
+        "Unit": "s",
+        "HasLimits": false
+      }
+    },
+    {
+      "StationId": 2,
+      "SequenceIndex": 2,
+      "Cavity": 2,
+      "StartLabel": "audit",
+      "DutPositionLabel": "POS02",
+      "MachineModeOverride": null,
+      "InspectionX": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionY": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionAngle": {
+        "Lower": -0.8,
+        "Upper": 0.8,
+        "Unit": "degree",
+        "HasLimits": true
+      },
+      "CycleTime": {
+        "Lower": 0.0,
+        "Upper": 0.0,
+        "Unit": "s",
+        "HasLimits": false
+      }
+    },
+    {
+      "StationId": 3,
+      "SequenceIndex": 3,
+      "Cavity": 3,
+      "StartLabel": "audit",
+      "DutPositionLabel": "POS03",
+      "MachineModeOverride": null,
+      "InspectionX": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionY": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionAngle": {
+        "Lower": -0.8,
+        "Upper": 0.8,
+        "Unit": "degree",
+        "HasLimits": true
+      },
+      "CycleTime": {
+        "Lower": 0.0,
+        "Upper": 0.0,
+        "Unit": "s",
+        "HasLimits": false
+      }
+    },
+    {
+      "StationId": 4,
+      "SequenceIndex": 4,
+      "Cavity": 4,
+      "StartLabel": "audit",
+      "DutPositionLabel": "POS04",
+      "MachineModeOverride": null,
+      "InspectionX": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionY": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionAngle": {
+        "Lower": -0.8,
+        "Upper": 0.8,
+        "Unit": "degree",
+        "HasLimits": true
+      },
+      "CycleTime": {
+        "Lower": 0.0,
+        "Upper": 0.0,
+        "Unit": "s",
+        "HasLimits": false
+      }
+    },
+    {
+      "StationId": 5,
+      "SequenceIndex": 5,
+      "Cavity": 5,
+      "StartLabel": "audit",
+      "DutPositionLabel": "POS05",
+      "MachineModeOverride": null,
+      "InspectionX": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionY": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionAngle": {
+        "Lower": -0.8,
+        "Upper": 0.8,
+        "Unit": "degree",
+        "HasLimits": true
+      },
+      "CycleTime": {
+        "Lower": 0.0,
+        "Upper": 0.0,
+        "Unit": "s",
+        "HasLimits": false
+      }
+    },
+    {
+      "StationId": 6,
+      "SequenceIndex": 6,
+      "Cavity": 6,
+      "StartLabel": "audit",
+      "DutPositionLabel": "POS06",
+      "MachineModeOverride": null,
+      "InspectionX": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionY": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionAngle": {
+        "Lower": -0.8,
+        "Upper": 0.8,
+        "Unit": "degree",
+        "HasLimits": true
+      },
+      "CycleTime": {
+        "Lower": 0.0,
+        "Upper": 0.0,
+        "Unit": "s",
+        "HasLimits": false
+      }
+    },
+    {
+      "StationId": 7,
+      "SequenceIndex": 7,
+      "Cavity": 7,
+      "StartLabel": "audit",
+      "DutPositionLabel": "POS07",
+      "MachineModeOverride": null,
+      "InspectionX": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionY": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionAngle": {
+        "Lower": -0.8,
+        "Upper": 0.8,
+        "Unit": "degree",
+        "HasLimits": true
+      },
+      "CycleTime": {
+        "Lower": 0.0,
+        "Upper": 0.0,
+        "Unit": "s",
+        "HasLimits": false
+      }
+    },
+    {
+      "StationId": 8,
+      "SequenceIndex": 8,
+      "Cavity": 8,
+      "StartLabel": "audit",
+      "DutPositionLabel": "POS08",
+      "MachineModeOverride": null,
+      "InspectionX": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionY": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionAngle": {
+        "Lower": -0.8,
+        "Upper": 0.8,
+        "Unit": "degree",
+        "HasLimits": true
+      },
+      "CycleTime": {
+        "Lower": 0.0,
+        "Upper": 0.0,
+        "Unit": "s",
+        "HasLimits": false
+      }
+    },
+    {
+      "StationId": 9,
+      "SequenceIndex": 9,
+      "Cavity": 9,
+      "StartLabel": "audit",
+      "DutPositionLabel": "POS09",
+      "MachineModeOverride": null,
+      "InspectionX": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionY": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionAngle": {
+        "Lower": -0.8,
+        "Upper": 0.8,
+        "Unit": "degree",
+        "HasLimits": true
+      },
+      "CycleTime": {
+        "Lower": 0.0,
+        "Upper": 0.0,
+        "Unit": "s",
+        "HasLimits": false
+      }
+    },
+    {
+      "StationId": 10,
+      "SequenceIndex": 10,
+      "Cavity": 10,
+      "StartLabel": "audit",
+      "DutPositionLabel": "POS10",
+      "MachineModeOverride": null,
+      "InspectionX": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionY": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionAngle": {
+        "Lower": -0.8,
+        "Upper": 0.8,
+        "Unit": "degree",
+        "HasLimits": true
+      },
+      "CycleTime": {
+        "Lower": 0.0,
+        "Upper": 0.0,
+        "Unit": "s",
+        "HasLimits": false
+      }
+    },
+    {
+      "StationId": 11,
+      "SequenceIndex": 11,
+      "Cavity": 11,
+      "StartLabel": "audit",
+      "DutPositionLabel": "POS11",
+      "MachineModeOverride": null,
+      "InspectionX": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionY": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionAngle": {
+        "Lower": -0.8,
+        "Upper": 0.8,
+        "Unit": "degree",
+        "HasLimits": true
+      },
+      "CycleTime": {
+        "Lower": 0.0,
+        "Upper": 0.0,
+        "Unit": "s",
+        "HasLimits": false
+      }
+    },
+    {
+      "StationId": 12,
+      "SequenceIndex": 12,
+      "Cavity": 12,
+      "StartLabel": "audit",
+      "DutPositionLabel": "POS12",
+      "MachineModeOverride": null,
+      "InspectionX": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionY": {
+        "Lower": -0.13,
+        "Upper": 0.13,
+        "Unit": "mm",
+        "HasLimits": true
+      },
+      "InspectionAngle": {
+        "Lower": -0.8,
+        "Upper": 0.8,
+        "Unit": "degree",
+        "HasLimits": true
+      },
+      "CycleTime": {
+        "Lower": 0.0,
+        "Upper": 0.0,
+        "Unit": "s",
+        "HasLimits": false
+      }
+    }
+  ]
+}
