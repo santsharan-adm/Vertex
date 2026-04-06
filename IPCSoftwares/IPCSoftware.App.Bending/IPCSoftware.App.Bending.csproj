@@ -9,14 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="NewFolder\**" />
-    <EmbeddedResource Remove="NewFolder\**" />
-    <None Remove="NewFolder\**" />
-    <Page Remove="NewFolder\**" />
+    <None Remove="component\Assets\robot.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="component\Assets\robot.png" />
   </ItemGroup>
 
 </Project>
