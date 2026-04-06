@@ -20,13 +20,14 @@ namespace IPCSoftware.Engine
         private readonly PLCClientManager _plcManager;
         private readonly IProductionDataLogger _prodLogger;
 
-        // Triggers
+        // Triggers 
         private bool _lastCycleTimeTriggerState = false;  // For A1 (Cycle Complete)
         private bool _lastCycleStartTriggerState = false; // For Cycle Start/Reset
         private bool _lastCcdTriggerState = false;        // For CCD Trigger
 
+
         private int _lastCycleTime = 1;
-        private readonly string _servoCalibrationPath;
+        protected readonly string _servoCalibrationPath;
 
         // Holds all data for the current 2D code / part
         private ProductionDataRecord? _currentCycleRecord;
@@ -35,7 +36,7 @@ namespace IPCSoftware.Engine
         private int _currentStationIndex = -1;
 
         // SequenceIndex -> PositionId
-        private Dictionary<int, int> _sequenceToPositionId = new();
+        protected Dictionary<int, int> _sequenceToPositionId = new();
         private int _currentSequenceStep = 0;
 
         public OeeEngine(
@@ -63,35 +64,9 @@ namespace IPCSoftware.Engine
             LoadStationMap();
         }
 
-        private void LoadStationMap()
+        protected virtual void LoadStationMap()
         {
-            try
-            {
-                var jsonPath = _servoCalibrationPath;
-                if (!File.Exists(jsonPath))
-                {
-                    _logger.LogError($"[OEE] Station positions JSON not found at: {jsonPath}", LogType.Diagnostics);
-                    return;
-                }
-                string json = File.ReadAllText(jsonPath);
-                var positions = JsonSerializer.Deserialize<List<ServoPositionModel>>(json);
-                if (positions == null || positions.Count == 0)
-                {
-                    _logger.LogError("[OEE] Station positions JSON is empty or could not be deserialized.", LogType.Diagnostics);
-                    return;
-                }
-                _sequenceToPositionId.Clear();
-                foreach (var entry in positions.Where(p => p.SequenceIndex >= 0 && p.PositionId >= 0))
-                {
-                    _sequenceToPositionId[entry.SequenceIndex] = entry.PositionId;
-                }
-
-                _logger.LogInfo("[OEE] Loaded station map successfully.", LogType.Diagnostics);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"[OEE] Failed to load station positions JSON: {ex.Message}", LogType.Diagnostics);
-            }
+            
         }
 
         public void ProcessCycleTimeLogic(Dictionary<int, object> tagValues)

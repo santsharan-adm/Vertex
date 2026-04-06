@@ -9,9 +9,20 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Communication.Common\IPCSoftware.Communication.Common.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Communication.External\IPCSoftware.Communication.External.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Datalogger\IPCSoftware.Datalogger.csproj" />
     <ProjectReference Include="..\IPCSoftware.Devices.Camera\IPCSoftware.Devices.Camera.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Devices.PLC\IPCSoftware.Devices.PLC.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Devices.UI\IPCSoftware.Devices.UI.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Engine\IPCSoftware.Engine.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Services\IPCSoftware.Services.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
   </ItemGroup>
+
 </Project>

@@ -101,7 +101,7 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<IProductConfigurationService, ProductConfigurationService>();
                             services.AddSingleton<AlgorithmAnalysisService>();
                             services.AddSingleton<DashboardInitializer>();
-                            services.AddSingleton<OeeEngine>();
+                            services.AddSingleton<IPCSoftware.Engine.OeeEngine, IPCSoftware.CoreService.AOI.Service.OeeEngine>();
                             services.AddSingleton<AlarmService>();
                             services.AddTransient<TagConfigLoader>();
                             services.AddTransient<BackupService>();

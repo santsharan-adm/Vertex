@@ -51,23 +51,24 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<ICcdConfigService, CcdConfigService>();
             services.AddSingleton<AlgorithmAnalysisService>();
             services.AddSingleton<DashboardInitializer>();
-            services.AddSingleton<OeeEngine>();
+            services.AddSingleton<IPCSoftware.Engine.OeeEngine>();
             services.AddSingleton<SystemMonitorService>();
             services.AddSingleton<IAlarmHistoryService, AlarmHistoryService>();
             services.AddSingleton<ITcpTrafficLogger, TcpTrafficLogger>();          // ? Fixed
-            services.AddSingleton<IProductionDataLogger>(sp =>                     // ? Fixed
+            services.AddSingleton<IProductionDataLogger>(sp =>
             {
                 var logConfigService = sp.GetRequiredService<ILogConfigurationService>();
-                var initTask = logConfigService.InitializeAsync();
-                initTask.Wait();
-                var prodLogConfigTask = logConfigService.GetByLogTypeAsync(LogType.Production);
-                prodLogConfigTask.Wait();
-                var prodLogConfig = prodLogConfigTask.Result;
+                var prodLogConfig = logConfigService.GetByLogTypeAsync(LogType.Production)
+                                                    .GetAwaiter().GetResult();
+
+                // If config not yet loaded (null), fall back to a safe default
+                // instead of throwing — OnStartup will have initialized it by the
+                // time AppendRecord() is actually called at runtime.
                 if (prodLogConfig == null || !prodLogConfig.Enabled)
                     throw new InvalidOperationException("Production log configuration not found or not enabled.");
                 return new ProductionDataLogger(prodLogConfig);                    // ? Fixed
             });
-            services.AddSingleton<CCDTriggerServiceBase>();
+            services.AddSingleton<CCDTriggerServiceBase>(sp => sp.GetRequiredService<CCDTriggerServiceAOI>());
             services.AddSingleton<PLCClientManager>();
             services.AddSingleton<CameraFtpService>();
             services.AddTransient<ProductionImageService>();
