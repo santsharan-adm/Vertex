@@ -2,13 +2,18 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.Core.Interfaces;
+
 namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class CcdSettingsViewModel : INotifyPropertyChanged
     {
         private CameraInterfaceModel _currentInterface;
-        public CcdSettingsViewModel()
+        private readonly IDeviceConfigurationService _deviceService;
+
+        public CcdSettingsViewModel(IDeviceConfigurationService deviceService = null)
         {
+            _deviceService = deviceService;
             Title = "CCD Settings";
             // default values from your appsettings example
             QrCodeImagePath = @"D:\CCD\CAM\UI";
@@ -53,7 +58,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             Vendor_DUTColor = "Black";
             Vendor_ImageNickname = "NickName";
 
-            SaveCommand = new RelayCommand(_ => Save(), _ => true);
+            SaveCommand = new RelayCommand(_ => SaveAsync(), _ => true);
             CancelCommand = new RelayCommand(_ => Cancel(), _ => true);
         }
 
@@ -154,28 +159,136 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
-
-        public void LoadForEdit( CameraInterfaceModel cameraInterface)
+        /// <summary>
+        /// Load CCD settings from the camera interface model and populate UI
+        /// </summary>
+        public void LoadForEdit(CameraInterfaceModel cameraInterface)
         {
             if (cameraInterface == null) return;
             _currentInterface = cameraInterface;
-            // TODO: Load CCD settings from appsettings.json or configuration tied to this camera interface.
-            // For now, use default values already set in constructor.
-            // In a real scenario, you might deserialize from:
-            // - appsettings.Development.json [CCD] section
-            // - A database
-            // - A configuration service injected into this VM
-            // Example: If you had a service to load from config:
-            // var ccdSettings = _ccdConfigService.LoadCcdSettings(cameraInterface.Id);
-            // QrCodeImagePath = ccdSettings.QrCodeImagePath;
-            // etc.
+
+            // Load all CCD fields from the model
+            QrCodeImagePath = cameraInterface.QrCodeImagePath ?? "";
+            TempImgFolder = cameraInterface.TempImgFolder ?? "";
+            ImageRootFolder = cameraInterface.ImageRootFolder ?? "";
+            MetadataStyle = cameraInterface.MetadataStyle ?? "";
+            CurrentCycleStateFileName = cameraInterface.CurrentCycleStateFileName ?? "";
+
+            // Client metadata
+            Client_Version = cameraInterface.Client_Version ?? "1.0";
+            Client_Date = cameraInterface.Client_Date ?? "";
+            Client_Time = cameraInterface.Client_Time ?? "";
+            Client_VisionVendor = cameraInterface.Client_VisionVendor ?? "";
+            Client_StationID = cameraInterface.Client_StationID ?? "";
+            Client_StationNickname = cameraInterface.Client_StationNickname ?? "";
+            Client_DUTSerialNumber = cameraInterface.Client_DUTSerialNumber ?? "";
+            Client_ProcessCommand = cameraInterface.Client_ProcessCommand ?? "";
+            Client_CameraNumber = cameraInterface.Client_CameraNumber ?? "";
+            Client_XPixelSizeMM = cameraInterface.Client_XPixelSizeMM ?? "";
+            Client_YPixelSizeMM = cameraInterface.Client_YPixelSizeMM ?? "";
+            Client_CameraGain = cameraInterface.Client_CameraGain ?? "";
+            Client_CameraExposure = cameraInterface.Client_CameraExposure ?? "";
+            Client_NumberOfLightSettings = cameraInterface.Client_NumberOfLightSettings ?? "";
+            Client_LightSetting1 = cameraInterface.Client_LightSetting1 ?? "";
+            Client_LightSettingN = cameraInterface.Client_LightSettingN ?? "";
+            Client_DUTColor = cameraInterface.Client_DUTColor ?? "";
+            Client_ImageNickname = cameraInterface.Client_ImageNickname ?? "";
+
+            // Vendor metadata
+            Vendor_Version = cameraInterface.Vendor_Version ?? "1.0";
+            Vendor_Date = cameraInterface.Vendor_Date ?? "";
+            Vendor_Time = cameraInterface.Vendor_Time ?? "";
+            Vendor_VisionVendor = cameraInterface.Vendor_VisionVendor ?? "";
+            Vendor_StationID = cameraInterface.Vendor_StationID ?? "";
+            Vendor_StationNickname = cameraInterface.Vendor_StationNickname ?? "";
+            Vendor_DUTSerialNumber = cameraInterface.Vendor_DUTSerialNumber ?? "";
+            Vendor_ProcessCommand = cameraInterface.Vendor_ProcessCommand ?? "";
+            Vendor_CameraNumber = cameraInterface.Vendor_CameraNumber ?? "";
+            Vendor_XPixelSizeMM = cameraInterface.Vendor_XPixelSizeMM ?? "";
+            Vendor_YPixelSizeMM = cameraInterface.Vendor_YPixelSizeMM ?? "";
+            Vendor_CameraGain = cameraInterface.Vendor_CameraGain ?? "";
+            Vendor_CameraExposure = cameraInterface.Vendor_CameraExposure ?? "";
+            Vendor_NumberOfLightSettings = cameraInterface.Vendor_NumberOfLightSettings ?? "";
+            Vendor_LightSetting1 = cameraInterface.Vendor_LightSetting1 ?? "";
+            Vendor_LightSettingN = cameraInterface.Vendor_LightSettingN ?? "";
+            Vendor_DUTColor = cameraInterface.Vendor_DUTColor ?? "";
+            Vendor_ImageNickname = cameraInterface.Vendor_ImageNickname ?? "";
         }
 
-
-        private void Save()
+        /// <summary>
+        /// Save all CCD settings back to the camera interface model and persist to CSV
+        /// </summary>
+        private async void SaveAsync()
         {
-            // TODO: Persist changes to appsettings.json
-            SaveCompleted?.Invoke(this, EventArgs.Empty);
+            try
+            {
+                if (_currentInterface == null)
+                {
+                    // Error: no interface loaded
+                    Cancel();
+                    return;
+                }
+
+                // Copy all UI values back to the model
+                _currentInterface.QrCodeImagePath = QrCodeImagePath;
+                _currentInterface.TempImgFolder = TempImgFolder;
+                _currentInterface.ImageRootFolder = ImageRootFolder;
+                _currentInterface.MetadataStyle = MetadataStyle;
+                _currentInterface.CurrentCycleStateFileName = CurrentCycleStateFileName;
+
+                // Client metadata
+                _currentInterface.Client_Version = Client_Version;
+                _currentInterface.Client_Date = Client_Date;
+                _currentInterface.Client_Time = Client_Time;
+                _currentInterface.Client_VisionVendor = Client_VisionVendor;
+                _currentInterface.Client_StationID = Client_StationID;
+                _currentInterface.Client_StationNickname = Client_StationNickname;
+                _currentInterface.Client_DUTSerialNumber = Client_DUTSerialNumber;
+                _currentInterface.Client_ProcessCommand = Client_ProcessCommand;
+                _currentInterface.Client_CameraNumber = Client_CameraNumber;
+                _currentInterface.Client_XPixelSizeMM = Client_XPixelSizeMM;
+                _currentInterface.Client_YPixelSizeMM = Client_YPixelSizeMM;
+                _currentInterface.Client_CameraGain = Client_CameraGain;
+                _currentInterface.Client_CameraExposure = Client_CameraExposure;
+                _currentInterface.Client_NumberOfLightSettings = Client_NumberOfLightSettings;
+                _currentInterface.Client_LightSetting1 = Client_LightSetting1;
+                _currentInterface.Client_LightSettingN = Client_LightSettingN;
+                _currentInterface.Client_DUTColor = Client_DUTColor;
+                _currentInterface.Client_ImageNickname = Client_ImageNickname;
+
+                // Vendor metadata
+                _currentInterface.Vendor_Version = Vendor_Version;
+                _currentInterface.Vendor_Date = Vendor_Date;
+                _currentInterface.Vendor_Time = Vendor_Time;
+                _currentInterface.Vendor_VisionVendor = Vendor_VisionVendor;
+                _currentInterface.Vendor_StationID = Vendor_StationID;
+                _currentInterface.Vendor_StationNickname = Vendor_StationNickname;
+                _currentInterface.Vendor_DUTSerialNumber = Vendor_DUTSerialNumber;
+                _currentInterface.Vendor_ProcessCommand = Vendor_ProcessCommand;
+                _currentInterface.Vendor_CameraNumber = Vendor_CameraNumber;
+                _currentInterface.Vendor_XPixelSizeMM = Vendor_XPixelSizeMM;
+                _currentInterface.Vendor_YPixelSizeMM = Vendor_YPixelSizeMM;
+                _currentInterface.Vendor_CameraGain = Vendor_CameraGain;
+                _currentInterface.Vendor_CameraExposure = Vendor_CameraExposure;
+                _currentInterface.Vendor_NumberOfLightSettings = Vendor_NumberOfLightSettings;
+                _currentInterface.Vendor_LightSetting1 = Vendor_LightSetting1;
+                _currentInterface.Vendor_LightSettingN = Vendor_LightSettingN;
+                _currentInterface.Vendor_DUTColor = Vendor_DUTColor;
+                _currentInterface.Vendor_ImageNickname = Vendor_ImageNickname;
+
+                // Persist to CSV via DeviceConfigurationService
+                if (_deviceService != null)
+                {
+                    await _deviceService.UpdateCameraInterfaceAsync(_currentInterface);
+                }
+
+                SaveCompleted?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error saving CCD Settings: {ex.Message}");
+                Cancel();
+            }
         }
 
         private void Cancel()

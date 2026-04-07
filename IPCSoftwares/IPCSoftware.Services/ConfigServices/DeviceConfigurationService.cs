@@ -292,6 +292,7 @@ namespace IPCSoftware.Services.ConfigServices
                 var index = _cameraInterfaces.IndexOf(existing);
                 _cameraInterfaces[index] = cameraInterface;
                 await SaveCameraInterfacesToCsvAsync();
+                await SaveInterfacesToCsvAsync();
                 return true;
             }
             catch (Exception ex)
@@ -485,9 +486,10 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var values = SplitCsvLine(line);
+                // Header now has 54 columns (16 original + 5 primary + 19 client + 19 vendor - 5 overlap = 54)
                 if (values.Count < 16) return null;
 
-                return new CameraInterfaceModel
+                var cam = new CameraInterfaceModel
                 {
                     Id = int.Parse(values[0]),
                     DeviceNo = int.Parse(values[1]),
@@ -506,6 +508,58 @@ namespace IPCSoftware.Services.ConfigServices
                     Description = values[14],
                     Remark = values[15]
                 };
+
+                // Load CCD fields if they exist (backward compatible)
+                if (values.Count > 16)
+                {
+                    cam.QrCodeImagePath = values.Count > 16 ? values[16] : "";
+                    cam.TempImgFolder = values.Count > 17 ? values[17] : "";
+                    cam.ImageRootFolder = values.Count > 18 ? values[18] : "";
+                    cam.MetadataStyle = values.Count > 19 ? values[19] : "";
+                    cam.CurrentCycleStateFileName = values.Count > 20 ? values[20] : "";
+
+                    // Client metadata (indices 21-39)
+                    cam.Client_Version = values.Count > 21 ? values[21] : "";
+                    cam.Client_Date = values.Count > 22 ? values[22] : "";
+                    cam.Client_Time = values.Count > 23 ? values[23] : "";
+                    cam.Client_VisionVendor = values.Count > 24 ? values[24] : "";
+                    cam.Client_StationID = values.Count > 25 ? values[25] : "";
+                    cam.Client_StationNickname = values.Count > 26 ? values[26] : "";
+                    cam.Client_DUTSerialNumber = values.Count > 27 ? values[27] : "";
+                    cam.Client_ProcessCommand = values.Count > 28 ? values[28] : "";
+                    cam.Client_CameraNumber = values.Count > 29 ? values[29] : "";
+                    cam.Client_XPixelSizeMM = values.Count > 30 ? values[30] : "";
+                    cam.Client_YPixelSizeMM = values.Count > 31 ? values[31] : "";
+                    cam.Client_CameraGain = values.Count > 32 ? values[32] : "";
+                    cam.Client_CameraExposure = values.Count > 33 ? values[33] : "";
+                    cam.Client_NumberOfLightSettings = values.Count > 34 ? values[34] : "";
+                    cam.Client_LightSetting1 = values.Count > 35 ? values[35] : "";
+                    cam.Client_LightSettingN = values.Count > 36 ? values[36] : "";
+                    cam.Client_DUTColor = values.Count > 37 ? values[37] : "";
+                    cam.Client_ImageNickname = values.Count > 38 ? values[38] : "";
+
+                    // Vendor metadata (indices 39-57)
+                    cam.Vendor_Version = values.Count > 39 ? values[39] : "";
+                    cam.Vendor_Date = values.Count > 40 ? values[40] : "";
+                    cam.Vendor_Time = values.Count > 41 ? values[41] : "";
+                    cam.Vendor_VisionVendor = values.Count > 42 ? values[42] : "";
+                    cam.Vendor_StationID = values.Count > 43 ? values[43] : "";
+                    cam.Vendor_StationNickname = values.Count > 44 ? values[44] : "";
+                    cam.Vendor_DUTSerialNumber = values.Count > 45 ? values[45] : "";
+                    cam.Vendor_ProcessCommand = values.Count > 46 ? values[46] : "";
+                    cam.Vendor_CameraNumber = values.Count > 47 ? values[47] : "";
+                    cam.Vendor_XPixelSizeMM = values.Count > 48 ? values[48] : "";
+                    cam.Vendor_YPixelSizeMM = values.Count > 49 ? values[49] : "";
+                    cam.Vendor_CameraGain = values.Count > 50 ? values[50] : "";
+                    cam.Vendor_CameraExposure = values.Count > 51 ? values[51] : "";
+                    cam.Vendor_NumberOfLightSettings = values.Count > 52 ? values[52] : "";
+                    cam.Vendor_LightSetting1 = values.Count > 53 ? values[53] : "";
+                    cam.Vendor_LightSettingN = values.Count > 54 ? values[54] : "";
+                    cam.Vendor_DUTColor = values.Count > 55 ? values[55] : "";
+                    cam.Vendor_ImageNickname = values.Count > 56 ? values[56] : "";
+                }
+
+                return cam;
             }
             catch
             {
@@ -553,24 +607,77 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var sb = new StringBuilder();
-                sb.AppendLine("Id,DeviceNo,DeviceName,UnitNo,Name,ComProtocol,IPAddress,PortNo,Gateway,Description,Remark,Enabled");
+                sb.AppendLine("Id,DeviceNo,DeviceName,Name,Protocol,IPAddress,Port,Gateway,Username,Password,AnonymousLogin,RemotePath,LocalDirectory,Enabled,Description,Remark," +
+                    "QrCodeImagePath,TempImgFolder,ImageRootFolder,MetadataStyle,CurrentCycleStateFileName," +
+                    "Client_Version,Client_Date,Client_Time,Client_VisionVendor,Client_StationID,Client_StationNickname,Client_DUTSerialNumber,Client_ProcessCommand,Client_CameraNumber," +
+                    "Client_XPixelSizeMM,Client_YPixelSizeMM,Client_CameraGain,Client_CameraExposure,Client_NumberOfLightSettings,Client_LightSetting1,Client_LightSettingN,Client_DUTColor,Client_ImageNickname," +
+                    "Vendor_Version,Vendor_Date,Vendor_Time,Vendor_VisionVendor,Vendor_StationID,Vendor_StationNickname,Vendor_DUTSerialNumber,Vendor_ProcessCommand,Vendor_CameraNumber," +
+                    "Vendor_XPixelSizeMM,Vendor_YPixelSizeMM,Vendor_CameraGain,Vendor_CameraExposure,Vendor_NumberOfLightSettings,Vendor_LightSetting1,Vendor_LightSettingN,Vendor_DUTColor,Vendor_ImageNickname");
 
-                foreach (var iface in _interfaces)
+                foreach (var cam in _cameraInterfaces)
                 {
-                    sb.AppendLine($"{iface.Id},{iface.DeviceNo}," +
-                        $"\"{EscapeCsv(iface.DeviceName)}\"," +
-                        $"{iface.UnitNo}," +
-                        $"\"{EscapeCsv(iface.Name)}\"," +
-                        $"\"{EscapeCsv(iface.ComProtocol)}\"," +
-                        $"\"{EscapeCsv(iface.IPAddress)}\"," +
-                        $"{iface.PortNo}," +
-                        $"\"{EscapeCsv(iface.Gateway)}\"," +
-                        $"\"{EscapeCsv(iface.Description)}\"," +
-                        $"\"{EscapeCsv(iface.Remark)}\"," +
-                        $"{iface.Enabled}");
+                    sb.AppendLine($"{cam.Id}," +
+                        $"{cam.DeviceNo}," +
+                        $"\"{EscapeCsv(cam.DeviceName)}\"," +
+                        $"\"{EscapeCsv(cam.Name)}\"," +
+                        $"\"{EscapeCsv(cam.Protocol)}\"," +
+                        $"\"{EscapeCsv(cam.IPAddress)}\"," +
+                        $"{cam.Port}," +
+                        $"\"{EscapeCsv(cam.Gateway)}\"," +
+                        $"\"{EscapeCsv(cam.Username)}\"," +
+                        $"\"{EscapeCsv(cam.Password)}\"," +
+                        $"{cam.AnonymousLogin}," +
+                        $"\"{EscapeCsv(cam.RemotePath)}\"," +
+                        $"\"{EscapeCsv(cam.LocalDirectory)}\"," +
+                        $"{cam.Enabled}," +
+                        $"\"{EscapeCsv(cam.Description)}\"," +
+                        $"\"{EscapeCsv(cam.Remark)}\"," +
+                        // CCD Primary fields
+                        $"\"{EscapeCsv(cam.QrCodeImagePath)}\"," +
+                        $"\"{EscapeCsv(cam.TempImgFolder)}\"," +
+                        $"\"{EscapeCsv(cam.ImageRootFolder)}\"," +
+                        $"\"{EscapeCsv(cam.MetadataStyle)}\"," +
+                        $"\"{EscapeCsv(cam.CurrentCycleStateFileName)}\"," +
+                        // Client metadata
+                        $"\"{EscapeCsv(cam.Client_Version)}\"," +
+                        $"\"{EscapeCsv(cam.Client_Date)}\"," +
+                        $"\"{EscapeCsv(cam.Client_Time)}\"," +
+                        $"\"{EscapeCsv(cam.Client_VisionVendor)}\"," +
+                        $"\"{EscapeCsv(cam.Client_StationID)}\"," +
+                        $"\"{EscapeCsv(cam.Client_StationNickname)}\"," +
+                        $"\"{EscapeCsv(cam.Client_DUTSerialNumber)}\"," +
+                        $"\"{EscapeCsv(cam.Client_ProcessCommand)}\"," +
+                        $"\"{EscapeCsv(cam.Client_CameraNumber)}\"," +
+                        $"\"{EscapeCsv(cam.Client_XPixelSizeMM)}\"," +
+                        $"\"{EscapeCsv(cam.Client_YPixelSizeMM)}\"," +
+                        $"\"{EscapeCsv(cam.Client_CameraGain)}\"," +
+                        $"\"{EscapeCsv(cam.Client_CameraExposure)}\"," +
+                        $"\"{EscapeCsv(cam.Client_NumberOfLightSettings)}\"," +
+                        $"\"{EscapeCsv(cam.Client_LightSetting1)}\"," +
+                        $"\"{EscapeCsv(cam.Client_LightSettingN)}\"," +
+                        $"\"{EscapeCsv(cam.Client_DUTColor)}\"," +
+                        $"\"{EscapeCsv(cam.Client_ImageNickname)}\"," +
+                        // Vendor metadata
+                        $"\"{EscapeCsv(cam.Vendor_Version)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_Date)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_Time)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_VisionVendor)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_StationID)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_StationNickname)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_DUTSerialNumber)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_ProcessCommand)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_CameraNumber)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_XPixelSizeMM)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_YPixelSizeMM)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_CameraGain)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_CameraExposure)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_NumberOfLightSettings)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_LightSetting1)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_LightSettingN)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_DUTColor)}\"," +
+                        $"\"{EscapeCsv(cam.Vendor_ImageNickname)}\"");
                 }
-
-                await File.WriteAllTextAsync(_interfacesCsvPath, sb.ToString(), Encoding.UTF8);
+                await File.WriteAllTextAsync(_cameraInterfacesCsvPath, sb.ToString(), Encoding.UTF8);
             }
             catch (Exception ex)
             {
