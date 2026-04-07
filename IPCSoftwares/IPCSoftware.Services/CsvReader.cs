@@ -7,6 +7,10 @@ namespace IPCSoftware.Services
 
 public static class CsvReader
     {
+        public static string Getversion(string filepath)
+        {
+            return "1.0";
+        }
         public static List<string[]> Read(string filePath)
         {
             var rows = new List<string[]>();
