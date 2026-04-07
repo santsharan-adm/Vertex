@@ -274,6 +274,48 @@ namespace IPCSoftware.Common.CommonFunctions
         }
 
 
+
+        // NEW: CCD Settings Navigation
+        public void NavigateToCcdSettings(DeviceModel parentDevice, CameraInterfaceModel cameraInterface, Func<Task> onSaveCallback)
+        {
+            var ccdView = _provider.GetService<CcdSettingsView>();
+            var ccdVM = _provider.GetService<CcdSettingsViewModel>();
+
+            ccdView.DataContext = ccdVM;
+
+            // Load CCD settings (implement in ViewModel as needed)
+            ccdVM.LoadForEdit(cameraInterface);
+
+            EventHandler saveHandler = null;
+            EventHandler cancelHandler = null;
+
+            saveHandler = async (s, e) =>
+            {
+                ccdVM.SaveCompleted -= saveHandler;
+                ccdVM.CancelRequested -= cancelHandler;
+
+                if (onSaveCallback != null)
+                    await onSaveCallback();
+
+                // Return to CameraInterfaceConfiguration
+                NavigateToCameraInterfaceConfiguration(parentDevice, cameraInterface, null);
+            };
+
+            cancelHandler = (s, e) =>
+            {
+                ccdVM.SaveCompleted -= saveHandler;
+                ccdVM.CancelRequested -= cancelHandler;
+
+                // Return to CameraInterfaceConfiguration
+                NavigateToCameraInterfaceConfiguration(parentDevice, cameraInterface, null);
+            };
+
+            ccdVM.SaveCompleted += saveHandler;
+            ccdVM.CancelRequested += cancelHandler;
+
+            _mainContent.Content = ccdView;
+        }
+
         public void NavigateToAlarmList()
         {
             NavigateMain<AlarmListView>();

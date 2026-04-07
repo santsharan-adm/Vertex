@@ -112,6 +112,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceInterfaceConfigurationViewModel>();
             services.AddTransient<CameraDetailViewModel>();
             services.AddTransient<CameraInterfaceConfigurationViewModel>();
+            services.AddTransient<CcdSettingsViewModel>();
             services.AddTransient<AeLimitView>();
             services.AddTransient<AeLimitViewModel>();
             services.AddTransient<AboutView>();
@@ -153,6 +154,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceInterfaceConfigurationView>();
             services.AddTransient<CameraDetailView>();
             services.AddTransient<CameraInterfaceConfigurationView>();
+            services.AddTransient<CcdSettingsView>();
             services.AddTransient<AlarmListView>();
             services.AddTransient<AlarmConfigurationView>();                       // ? Fixed: was 'addTransient' (lowercase 'a')
             services.AddTransient<UserListView>();
