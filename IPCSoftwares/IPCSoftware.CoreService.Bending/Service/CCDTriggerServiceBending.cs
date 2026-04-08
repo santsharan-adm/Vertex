@@ -3,6 +3,7 @@ using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.Devices.Camera;
 using IPCSoftware.Devices.PLC;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared.Models;
 using Microsoft.Extensions.Options;
 using System;
@@ -15,11 +16,12 @@ namespace IPCSoftware.CoreService.Bending.Service
 {
     public class CCDTriggerServiceBending : CCDTriggerServiceBase
     {
-        public CCDTriggerServiceBending
-           (ICycleManagerService cycleManager,
-           IPLCTagConfigurationService tagService,
-           IOptions<CcdSettings> ccdSettings,
-           IAppLogger logger) : base(cycleManager, tagService, ccdSettings, logger)
+        public CCDTriggerServiceBending(
+            ICycleManagerService cycleManager,
+            IPLCTagConfigurationService tagService,
+            IOptions<CcdSettings> ccdSettings,
+            IObservableCcdSettingsService observableCcdSettings,  // ✅ NEW: Added observable settings
+            IAppLogger logger) : base(cycleManager, tagService, ccdSettings, observableCcdSettings, logger)
         {
         }
 
@@ -27,10 +29,10 @@ namespace IPCSoftware.CoreService.Bending.Service
         {
             base.ProcessTriggers(tagValues, manager);
         }
+
         override protected async Task WriteAckToPlcAsync(bool writebool)
         {
             base.WriteAckToPlcAsync(writebool);
-            
         }
     }
 }

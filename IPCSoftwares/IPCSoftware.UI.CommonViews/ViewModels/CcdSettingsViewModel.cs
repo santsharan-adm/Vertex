@@ -1,6 +1,8 @@
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Core.Interfaces;
 
@@ -10,10 +12,15 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     {
         private CameraInterfaceModel _currentInterface;
         private readonly IDeviceConfigurationService _deviceService;
+        private readonly IObservableCcdSettingsService _observableCcdSettings; // 
 
-        public CcdSettingsViewModel(IDeviceConfigurationService deviceService = null)
+        public CcdSettingsViewModel(
+            IDeviceConfigurationService deviceService = null,
+            IObservableCcdSettingsService observableCcdSettings = null) // 
         {
             _deviceService = deviceService;
+            _observableCcdSettings = observableCcdSettings; // 
+
             Title = "CCD Settings";
             // default values from your appsettings example
             QrCodeImagePath = @"D:\CCD\CAM\UI";
@@ -71,12 +78,16 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         // Primary fields
         public string QrCodeImagePath { get => _qrCodeImagePath; set => Set(ref _qrCodeImagePath, value); }
         private string _qrCodeImagePath;
+
         public string TempImgFolder { get => _tempImgFolder; set => Set(ref _tempImgFolder, value); }
         private string _tempImgFolder;
+
         public string ImageRootFolder { get => _imageRootFolder; set => Set(ref _imageRootFolder, value); }
         private string _imageRootFolder;
+
         public string MetadataStyle { get => _metadataStyle; set => Set(ref _metadataStyle, value); }
         private string _metadataStyle;
+
         public string CurrentCycleStateFileName { get => _currentCycleStateFileName; set => Set(ref _currentCycleStateFileName, value); }
         private string _currentCycleStateFileName;
 
@@ -159,9 +170,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
-        /// <summary>
-        /// Load CCD settings from the camera interface model and populate UI
-        /// </summary>
+
         public void LoadForEdit(CameraInterfaceModel cameraInterface)
         {
             if (cameraInterface == null) return;
@@ -215,16 +224,13 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             Vendor_ImageNickname = cameraInterface.Vendor_ImageNickname ?? "";
         }
 
-        /// <summary>
-        /// Save all CCD settings back to the camera interface model and persist to CSV
-        /// </summary>
+
         private async void SaveAsync()
         {
             try
             {
                 if (_currentInterface == null)
                 {
-                    // Error: no interface loaded
                     Cancel();
                     return;
                 }
@@ -275,6 +281,12 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 _currentInterface.Vendor_LightSettingN = Vendor_LightSettingN;
                 _currentInterface.Vendor_DUTColor = Vendor_DUTColor;
                 _currentInterface.Vendor_ImageNickname = Vendor_ImageNickname;
+
+                // Update observable settings service
+                if (_observableCcdSettings != null)
+                {
+                    await _observableCcdSettings.UpdateFromCameraInterfaceAsync(_currentInterface);
+                }
 
                 // Persist to CSV via DeviceConfigurationService
                 if (_deviceService != null)

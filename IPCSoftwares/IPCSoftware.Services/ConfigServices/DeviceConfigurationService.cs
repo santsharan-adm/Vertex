@@ -214,7 +214,7 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 deviceInterface.Id = _nextInterfaceId++;
                 _interfaces.Add(deviceInterface);
-                await SaveInterfacesToCsvAsyncPLC();
+                await SaveInterfacesToCsvAsync();
                 return deviceInterface;
             }
             catch (Exception ex)
@@ -292,7 +292,7 @@ namespace IPCSoftware.Services.ConfigServices
                 var index = _cameraInterfaces.IndexOf(existing);
                 _cameraInterfaces[index] = cameraInterface;
                 await SaveCameraInterfacesToCsvAsync();
-                await SaveInterfacesToCsvAsync();
+                //await SaveInterfacesToCsvAsync();
                 return true;
             }
             catch (Exception ex)
@@ -416,41 +416,41 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-        private async Task SaveCameraInterfacesToCsvAsync()
-        {
-            try
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine("Id,DeviceNo,DeviceName,Name,Protocol,IPAddress,Port,Gateway,Username,Password,AnonymousLogin,RemotePath,LocalDirectory,Enabled,Description,Remark");
+        //private async Task SaveCameraInterfacesToCsvAsync()
+        //{
+        //    try
+        //    {
+        //        var sb = new StringBuilder();
+        //        sb.AppendLine("Id,DeviceNo,DeviceName,Name,Protocol,IPAddress,Port,Gateway,Username,Password,AnonymousLogin,RemotePath,LocalDirectory,Enabled,Description,Remark");
 
-                foreach (var cam in _cameraInterfaces)
-                {
-                    sb.AppendLine($"{cam.Id}," +
-                        $"{cam.DeviceNo}," +
-                        $"\"{EscapeCsv(cam.DeviceName)}\"," +
-                        $"\"{EscapeCsv(cam.Name)}\"," +
-                        $"\"{EscapeCsv(cam.Protocol)}\"," +
-                        $"\"{EscapeCsv(cam.IPAddress)}\"," +
-                        $"{cam.Port}," +
-                        $"\"{EscapeCsv(cam.Gateway)}\"," +
-                        $"\"{EscapeCsv(cam.Username)}\"," +
-                        $"\"{EscapeCsv(cam.Password)}\"," +
-                        $"{cam.AnonymousLogin}," +
-                        $"\"{EscapeCsv(cam.RemotePath)}\"," +
-                        $"\"{EscapeCsv(cam.LocalDirectory)}\"," +
-                        $"{cam.Enabled}," +
-                        $"\"{EscapeCsv(cam.Description)}\"," +
-                        $"\"{EscapeCsv(cam.Remark)}\"");
-                }
+        //        foreach (var cam in _cameraInterfaces)
+        //        {
+        //            sb.AppendLine($"{cam.Id}," +
+        //                $"{cam.DeviceNo}," +
+        //                $"\"{EscapeCsv(cam.DeviceName)}\"," +
+        //                $"\"{EscapeCsv(cam.Name)}\"," +
+        //                $"\"{EscapeCsv(cam.Protocol)}\"," +
+        //                $"\"{EscapeCsv(cam.IPAddress)}\"," +
+        //                $"{cam.Port}," +
+        //                $"\"{EscapeCsv(cam.Gateway)}\"," +
+        //                $"\"{EscapeCsv(cam.Username)}\"," +
+        //                $"\"{EscapeCsv(cam.Password)}\"," +
+        //                $"{cam.AnonymousLogin}," +
+        //                $"\"{EscapeCsv(cam.RemotePath)}\"," +
+        //                $"\"{EscapeCsv(cam.LocalDirectory)}\"," +
+        //                $"{cam.Enabled}," +
+        //                $"\"{EscapeCsv(cam.Description)}\"," +
+        //                $"\"{EscapeCsv(cam.Remark)}\"");
+        //        }
 
-                await File.WriteAllTextAsync(_cameraInterfacesCsvPath, sb.ToString(), Encoding.UTF8);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error saving camera interfaces CSV: {ex.Message}", LogType.Diagnostics);
-                throw;
-            }
-        }
+        //        await File.WriteAllTextAsync(_cameraInterfacesCsvPath, sb.ToString(), Encoding.UTF8);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Error saving camera interfaces CSV: {ex.Message}", LogType.Diagnostics);
+        //        throw;
+        //    }
+        //}
 
 
 
@@ -602,7 +602,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-        private async Task SaveInterfacesToCsvAsync()
+        private async Task SaveCameraInterfacesToCsvAsync()
         {
             try
             {
@@ -687,7 +687,7 @@ namespace IPCSoftware.Services.ConfigServices
         }
 
 
-        private async Task SaveInterfacesToCsvAsyncPLC()
+        private async Task SaveInterfacesToCsvAsync()
         {
             try
             {
