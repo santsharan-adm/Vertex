@@ -15,11 +15,11 @@
         <SolidColorBrush x:Key="RowEvenBg" Color="#1E293B"/>
     </UserControl.Resources>
 
-    <Grid Margin="15">
+    <Grid Margin="15" RenderTransformOrigin="0.466,0.489">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="280"/>
@@ -27,7 +27,7 @@
             <ColumnDefinition Width="340"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="#1E293B" CornerRadius="8" Padding="15" Margin="0,0,0,10">
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Background="#1E293B" CornerRadius="8" Padding="15" Margin="0">
             <DockPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="FLEX BENDING MACHINE" FontSize="16" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
@@ -42,7 +42,7 @@
             </DockPanel>
         </Border>
 
-        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Background="#1E293B" CornerRadius="8" Padding="5" Margin="0,0,0,15" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5">
+        <Border Grid.Row="0" Grid.Column="1" Background="#1E293B" CornerRadius="8" Padding="5" Margin="0" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5">
             <UniformGrid Columns="2">
 
                 <Border BorderBrush="White" BorderThickness="1" Margin="2" Background="#111">
@@ -52,7 +52,7 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="   BENDING UAT 1 - 2" Foreground="White" FontWeight="Bold" FontSize="11" VerticalAlignment="Center" Padding="0,4"/>
+                            <TextBlock Text="   BENDING UAT 1 - 2" Foreground="White" FontWeight="Bold" FontSize="11" VerticalAlignment="Center" Padding="0,4" Margin="-2,0,2,0"/>
                             <TextBlock Grid.Column="1" Text="Current Batch ID -: #BFBL02   " Foreground="White" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                         </Grid>
 
@@ -277,7 +277,7 @@
 
 
 
-        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Top">
+        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0" VerticalAlignment="Top">
             <TextBlock Text="CONTROLS" FontWeight="Bold" FontSize="12" Margin="0,0,0,10" Foreground="#64748B"/>
             <Border Background="White" CornerRadius="8" Padding="10" Margin="0,0,0,10" BorderBrush="#CBD5E1" BorderThickness="1">
                 <StackPanel>
@@ -305,133 +305,135 @@
                 </StackPanel>
             </Border>
 
-            <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Top">
-                <TextBlock Text="PROCESS FLOW" FontWeight="Bold" FontSize="12" Margin="0,0,0,10" Foreground="#64748B"/>
 
-                <Border BorderBrush="#1E293B" BorderThickness="1" CornerRadius="8" Background="#111827" ClipToBounds="True" Height="180">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-
-                        <Border Background="#1E293B" Padding="8,5">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="STATUS" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="BATCH ID" Foreground="White" FontWeight="Bold" FontSize="10" Margin="0,0,15,0"/>
-                            </Grid>
-                        </Border>
-
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                            <StackPanel Margin="8,5">
-                                <TextBlock Text="MODULES" Foreground="#FFB74D" FontWeight="Bold" FontSize="10" Margin="0,0,0,8"/>
-
-                                <StackPanel>
-                                    <Grid Margin="0,4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Tray/Load" Foreground="White" FontSize="10.5"/>
-                                        <TextBlock Grid.Column="1" Text="#BFBL010" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                                    </Grid>
-
-                                    <Grid Margin="0,4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="QR/Scan-Pickup" Foreground="White" FontSize="10.5"/>
-                                        <TextBlock Grid.Column="1" Text="#BFBL009" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                                    </Grid>
-
-                                    <Grid Margin="0,4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Pre-Bend Inspection" Foreground="White" FontSize="10.5"/>
-                                        <TextBlock Grid.Column="1" Text="#BFBL008" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                                    </Grid>
-
-                                    <Grid Margin="0,4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Load Jig-(TT-1)" Foreground="White" FontSize="10.5"/>
-                                        <TextBlock Grid.Column="1" Text="#BFBL007" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                                    </Grid>
-
-                                    <Grid Margin="0,4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Bending-UAT1 -2" Foreground="White" FontSize="10.5"/>
-                                        <TextBlock Grid.Column="1" Text="#BFBL006" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                                    </Grid>
-
-                                    <Grid Margin="0,4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Transfer TT1 to TT2" Foreground="White" FontSize="10.5"/>
-                                        <TextBlock Grid.Column="1" Text="#BFBL005" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                                    </Grid>
-
-                                    <Grid Margin="0,4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Bending-UAT3-4" Foreground="White" FontSize="10.5"/>
-                                        <TextBlock Grid.Column="1" Text="#BFBL004" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                                    </Grid>
-
-                                    <Grid Margin="0,4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Film Teiring" Foreground="White" FontSize="10.5"/>
-                                        <TextBlock Grid.Column="1" Text="#BFBL003" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                                    </Grid>
-
-                                    <Grid Margin="0,4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Final Inspection St-3" Foreground="White" FontSize="10.5"/>
-                                        <TextBlock Grid.Column="1" Text="#BFBL002" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                                    </Grid>
-
-                                    <Grid Margin="0,4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Output Tray Unload" Foreground="White" FontSize="10.5"/>
-                                        <TextBlock Grid.Column="1" Text="#BFBL001" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                                    </Grid>
-                                </StackPanel>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
-            </StackPanel>
 
 
 
         </StackPanel>
 
-        <Viewbox Grid.Row="2" Grid.Column="1" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10">
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0" VerticalAlignment="Top">
+            <TextBlock Text="PROCESS FLOW" FontWeight="Bold" FontSize="12" Margin="0,0,0,10" Foreground="#64748B"/>
+
+            <Border BorderBrush="#1E293B" BorderThickness="1" CornerRadius="8" Background="#111827" ClipToBounds="True" Height="180">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Background="#1E293B" Padding="8,5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="STATUS" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="BATCH ID" Foreground="White" FontWeight="Bold" FontSize="10" Margin="0,0,15,0"/>
+                        </Grid>
+                    </Border>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="8,5">
+                            <TextBlock Text="MODULES" Foreground="#FFB74D" FontWeight="Bold" FontSize="10" Margin="0,0,0,8"/>
+
+                            <StackPanel>
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Tray/Load" Foreground="White" FontSize="10.5"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL010" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
+                                </Grid>
+
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="QR/Scan-Pickup" Foreground="White" FontSize="10.5"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL009" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
+                                </Grid>
+
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Pre-Bend Inspection" Foreground="White" FontSize="10.5"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL008" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
+                                </Grid>
+
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Load Jig-(TT-1)" Foreground="White" FontSize="10.5"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL007" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
+                                </Grid>
+
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Bending-UAT1 -2" Foreground="White" FontSize="10.5"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL006" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
+                                </Grid>
+
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Transfer TT1 to TT2" Foreground="White" FontSize="10.5"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL005" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
+                                </Grid>
+
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Bending-UAT3-4" Foreground="White" FontSize="10.5"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL004" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
+                                </Grid>
+
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Film Teiring" Foreground="White" FontSize="10.5"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL003" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
+                                </Grid>
+
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Final Inspection St-3" Foreground="White" FontSize="10.5"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL002" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
+                                </Grid>
+
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Output Tray Unload" Foreground="White" FontSize="10.5"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL001" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </StackPanel>
+
+        <Viewbox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10">
             <Canvas Width="847" Height="480">
                 <Canvas>
                     <Canvas.Resources>
@@ -462,24 +464,66 @@
                         </GeometryGroup>
                     </Canvas.Resources>
 
-                    <Canvas Canvas.Left="79" Canvas.Top="10">
-                        <Path Data="{StaticResource Arm1Geometry}" Style="{StaticResource RoboArmMainStyle}"/>
-                        <Path Data="{StaticResource Arm1Geometry}" Style="{StaticResource RoboArmDetailStyle}"/>
+
+
+
+                    <Canvas Canvas.Left="79" Canvas.Top="1"
+        Width="200"
+        Height="200">
+
+
+                        <Path Data="{StaticResource Arm1Geometry}"
+          Style="{StaticResource RoboArmMainStyle}"/>
+
+                        <Path Data="{StaticResource Arm1Geometry}"
+          Style="{StaticResource RoboArmDetailStyle}"/>
+
                     </Canvas>
 
-                    <Canvas Canvas.Left="166" Canvas.Top="10">
+
+
+
+
+
+
+                    <Canvas Canvas.Left="177" Canvas.Top="10">
                         <Path Data="{StaticResource Arm2Geometry}" Style="{StaticResource RoboArmMainStyle}"/>
-                        <Path Data="{StaticResource Arm2Geometry}" Style="{StaticResource RoboArmDetailStyle}"/>
+                        <Path Data="{StaticResource Arm2Geometry}" Style="{StaticResource RoboArmDetailStyle}" Canvas.Top="5" Canvas.Left="-2"/>
                     </Canvas>
                 </Canvas>
 
 
-                <StackPanel Orientation="Horizontal" Canvas.Left="10" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Center" Width="850" RenderTransformOrigin="0.501,0.596">
+                <StackPanel Orientation="Horizontal" Canvas.Left="40" HorizontalAlignment="Left" VerticalAlignment="Center" Width="678" RenderTransformOrigin="0.501,0.596" Canvas.Top="-2">
 
-                    <Border Width="190" CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="0,0,15,0">
+                    <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="0,0,15,0">
                         <StackPanel>
                             <Border Background="{StaticResource AccentBlue}" Padding="6,3">
-                                <TextBlock Text="Bending UAT - 1" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Left"/>
+                                <TextBlock Text="B1" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Left"/>
+                            </Border>
+                            <Grid Margin="10,8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <!--   <TextBlock Grid.Row="0" Grid.Column="0" Text="CLAMP" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/> -->
+                                <Ellipse Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="Clamp"/>
+                                <!--   <TextBlock Grid.Row="1" Grid.Column="0" Text="PUNCH" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>  -->
+                                <Ellipse Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" VerticalAlignment="Center" Margin="3" ToolTip="Heat"/>
+                                <!--  <TextBlock Grid.Row="2" Grid.Column="0" Text="HEAT" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>   -->
+                                <Ellipse Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="Punch"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Width="180" CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="0,0,15,0">
+                        <StackPanel>
+                            <Border Background="{StaticResource AccentBlue}" Padding="6,3">
+                                <TextBlock Text="B2" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Left"/>
                             </Border>
                             <Grid Margin="10,8">
                                 <Grid.RowDefinitions>
@@ -492,20 +536,20 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="CLAMP" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>
-                                <Ellipse Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="86,0,28,0"/>
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="PUNCH" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>
-                                <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" VerticalAlignment="Center" Margin="88,0,28,0"/>
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="HEAT" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>
-                                <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="88,0,28,0"/>
+                               <!-- <TextBlock Grid.Row="0" Grid.Column="0" Text="CLAMP" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/> -->
+                                <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="Clamp"/>
+                                <!--  <TextBlock Grid.Row="1" Grid.Column="0" Text="PUNCH" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/> -->
+                                <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}" VerticalAlignment="Center" Margin="3" ToolTip="Heat"/>
+                                <!--  <TextBlock Grid.Row="2" Grid.Column="0" Text="HEAT" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/> -->
+                                <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="Punch"/>
                             </Grid>
                         </StackPanel>
                     </Border>
 
-                    <Border Width="190" CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="0,0,15,0">
+                    <Border Width="180" CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="0,0,15,0" ClipToBounds="True">
                         <StackPanel>
                             <Border Background="{StaticResource AccentBlue}" Padding="6,3">
-                                <TextBlock Text="Bending UAT - 2" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Left"/>
+                                <TextBlock Text="B3" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Left"/>
                             </Border>
                             <Grid Margin="10,8">
                                 <Grid.RowDefinitions>
@@ -528,36 +572,10 @@
                         </StackPanel>
                     </Border>
 
-                    <Border Width="190" CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="0,0,15,0" ClipToBounds="True">
+                    <Border Width="180" CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="0,0,0,0">
                         <StackPanel>
                             <Border Background="{StaticResource AccentBlue}" Padding="6,3">
-                                <TextBlock Text="Bending UAT - 3" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Left"/>
-                            </Border>
-                            <Grid Margin="10,8">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="CLAMP" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>
-                                <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="88,0,28,0"/>
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="PUNCH" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>
-                                <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}" VerticalAlignment="Center" Margin="88,0,28,0"/>
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="HEAT" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>
-                                <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="88,0,28,0"/>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
-
-                    <Border Width="190" CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="0,0,0,0">
-                        <StackPanel>
-                            <Border Background="{StaticResource AccentBlue}" Padding="6,3">
-                                <TextBlock Text="Bending UAT - 4" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Left"/>
+                                <TextBlock Text="B4" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Left"/>
                             </Border>
                             <Grid Margin="10,8">
                                 <Grid.RowDefinitions>
@@ -608,11 +626,13 @@
 
 
                     <Border Width="160" Height="160" 
+                            
+                            
         CornerRadius="80" 
         Background="White" 
         BorderBrush="{StaticResource PanelBorder}" 
         BorderThickness="3.5" 
-        Canvas.Left="117" Canvas.Top="-32" HorizontalAlignment="Center" VerticalAlignment="Top">
+        Canvas.Left="91" Canvas.Top="-66" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
 
                         <Grid Margin="0,-2,0,2">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0">
@@ -627,6 +647,7 @@
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+
                             </StackPanel>
 
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
@@ -646,12 +667,41 @@
                     </Border>
 
 
+                    <Canvas>
+                        <Polyline Points="60,390 120,390 120,375" 
+              Stroke="{StaticResource PanelBorder}" 
+              StrokeThickness="3" 
+              StrokeLineJoin="Round"/>
 
-                    <TextBlock Canvas.Left="159" Canvas.Top="138" Text="TURN TABLE 1" FontWeight="Bold" FontSize="10" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                        <Border Canvas.Left="287" Canvas.Top="-31" 
+            Width="85" Height="85" 
+            Background="White" 
+            BorderBrush="{StaticResource PanelBorder}" 
+            BorderThickness="3" 
+            CornerRadius="8" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Grid>
+                                <Border BorderBrush="#F59E0B" BorderThickness="1.5" CornerRadius="4" Width="40" Height="40" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock Text="🔄" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Foreground="#F59E0B"/>
+                                </Border>
+
+                            </Grid>
+                        </Border>
+
+                        <TextBlock Canvas.Left="280" Canvas.Top="-53" 
+               Text="TRANSFER MODULE" 
+               FontWeight="Black" 
+               FontSize="10" 
+               Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    </Canvas>
+
+
+                    <TextBlock Canvas.Left="139" Canvas.Top="98" Text="TURN TABLE 1" FontWeight="Bold" FontSize="10" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
 
 
-                    <Border Canvas.Left="143" Canvas.Top="150" Width="110" Height="52" 
+
+
+                    <!--<Border Canvas.Left="143" Canvas.Top="150" Width="110" Height="52" 
         Background="#F8FAFC" BorderBrush="#94A3B8" BorderThickness="1.5,1.5,1.5,4" 
         CornerRadius="4" HorizontalAlignment="Center" VerticalAlignment="Top">
 
@@ -683,31 +733,129 @@
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
+                    </Border>-->
+
+                    <Border Canvas.Left="79" Canvas.Top="114" Width="190" Height="100" 
+        Background="#F8FAFC" BorderBrush="#94A3B8" BorderThickness="1.5,1.5,1.5,4" 
+        CornerRadius="8" HorizontalAlignment="Center" VerticalAlignment="Top">
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0" Background="#3B82F6" Height="5" CornerRadius="4,4,0,0" Margin="-1,-1,-1,0"/>
+
+                            <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="10,5">
+                                <TextBlock Text="INSPECTION UNIT" 
+                       FontSize="11" 
+                       FontWeight="ExtraBold" 
+                       Foreground="#0F172A" 
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,10"/>
+
+                                <UniformGrid Columns="4" Margin="0,0,0,12">
+                                    <Border Background="#E2E8F0" CornerRadius="2" Padding="3" Margin="2">
+                                        <TextBlock Text="QR" FontSize="8" FontWeight="Bold" Foreground="#475569" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Border Background="#E2E8F0" CornerRadius="2" Padding="3" Margin="2">
+                                        <TextBlock Text="QR" FontSize="8" FontWeight="Bold" Foreground="#475569" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Border Background="#E2E8F0" CornerRadius="2" Padding="3" Margin="2">
+                                        <TextBlock Text="QR" FontSize="8" FontWeight="Bold" Foreground="#475569" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Border Background="#E2E8F0" CornerRadius="2" Padding="3" Margin="2">
+                                        <TextBlock Text="QR" FontSize="8" FontWeight="Bold" Foreground="#475569" HorizontalAlignment="Center"/>
+                                    </Border>
+                                </UniformGrid>
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="#94A3B8" Margin="6,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="#94A3B8" Margin="6,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="#94A3B8" Margin="6,0"/>
+                                    <Ellipse Width="6" Height="6" Fill="#94A3B8" Margin="6,0"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
                     </Border>
 
-                    <Border Canvas.Left="143" Canvas.Top="212" Width="110" Height="50" 
+
+
+
+                    <Border Canvas.Left="-71" Canvas.Top="-41" Width="110" Height="75" 
         Background="#F1F5F9" BorderBrush="#475569" BorderThickness="2,1,2,1" 
         CornerRadius="2" HorizontalAlignment="Center" VerticalAlignment="Top">
 
                         <Grid>
-                            <Border Width="4" HorizontalAlignment="Left" Background="#94A3B8" Margin="-4,10,0,10" CornerRadius="2,0,0,2"/>
-                            <Border Width="4" HorizontalAlignment="Right" Background="#94A3B8" Margin="0,10,-4,10" CornerRadius="0,2,2,0"/>
+                            <Border Width="4" HorizontalAlignment="Left" Background="#94A3B8" Margin="-4,15,0,15" CornerRadius="2,0,0,2"/>
+                            <Border Width="4" HorizontalAlignment="Right" Background="#94A3B8" Margin="0,15,-4,15" CornerRadius="0,2,2,0"/>
 
-                            <StackPanel VerticalAlignment="Center">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <Ellipse Width="6" Height="6" Fill="#3B82F6" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <StackPanel VerticalAlignment="Center" Margin="5">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,5">
+                                    <Ellipse Width="5" Height="5" Fill="#3B82F6" Margin="0,0,5,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="INPUT TRAY" 
                            FontSize="10" 
                            FontWeight="ExtraBold" 
                            Foreground="#1E293B"/>
                                 </StackPanel>
 
-                                <Border Height="1" Background="#CBD5E1" Width="60" Margin="0,2,0,2"/>
-                                <TextBlock Text="LOAD" 
-                       FontSize="7.5" 
-                       FontWeight="SemiBold" 
-                       Foreground="#64748B" 
-                       HorizontalAlignment="Center"/>
+                                <Border Height="1" Background="#CBD5E1" Width="80" Margin="0,0,0,8"/>
+                                <ItemsControl Height="36">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="8" Rows="6"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                    <Ellipse Width="3" Height="3" Fill="#94A3B8" Margin="1.5"/>
+                                </ItemsControl>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -720,7 +868,7 @@
 
 
                     <Border Width="160" Height="160" CornerRadius="80" Background="White" 
-        BorderBrush="#000000" BorderThickness="3.5" Canvas.Left="178" Canvas.Top="-32">
+        BorderBrush="#000000" BorderThickness="3.5" Canvas.Left="178" Canvas.Top="-66">
 
                         <Grid>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
@@ -764,11 +912,11 @@
                     </Border>
 
 
-                    <TextBlock Canvas.Left="214" Canvas.Top="135" Text="TURN TABLE 2" FontWeight="Bold" FontSize="10" Foreground="{StaticResource OkGreen}"/>
+                    <TextBlock Canvas.Left="224" Canvas.Top="105" Text="TURN TABLE 2" FontWeight="Bold" FontSize="10" Foreground="{StaticResource OkGreen}" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
-                    <Border Canvas.Left="198" Canvas.Top="150" Width="110" Height="52" 
+                    <Border Canvas.Left="202" Canvas.Top="120" Width="110" Height="52" 
         Background="#F8FAFC" BorderBrush="#94A3B8" BorderThickness="1.5,1.5,1.5,4" 
-        CornerRadius="4" HorizontalAlignment="Center" VerticalAlignment="Top">
+        CornerRadius="4" HorizontalAlignment="Left" VerticalAlignment="Center">
 
                         <Grid>
                             <Grid.RowDefinitions>
@@ -792,7 +940,7 @@
                         </Grid>
                     </Border>
 
-                    <Border Canvas.Left="198" Canvas.Top="212" Width="110" Height="50" 
+                    <Border Canvas.Left="202" Canvas.Top="178" Width="110" Height="50" 
         Background="#F0FDF4" BorderBrush="#475569" BorderThickness="2,1,2,1" 
         CornerRadius="2" HorizontalAlignment="Center" VerticalAlignment="Top">
 
@@ -822,9 +970,9 @@
 
                 </Canvas>
 
-                <Border Canvas.Left="75" Canvas.Top="136" Width="65" Height="76" 
+                <Border Canvas.Left="26" Canvas.Top="391" Width="65" Height="76" 
         BorderBrush="{StaticResource NgRed}" BorderThickness="1.5" 
-        CornerRadius="8" Background="#FFF1F2" HorizontalAlignment="Center" VerticalAlignment="Top">
+        CornerRadius="8" Background="#FFF1F2" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <StackPanel VerticalAlignment="Center" Margin="2">
                         <Viewbox Width="30" Height="30" HorizontalAlignment="Center" Margin="0,0,0,3">
                             <Path Fill="{StaticResource NgRed}" 
@@ -841,9 +989,9 @@
                 </Border>
 
 
-                <Border Canvas.Left="73" Canvas.Top="250" Width="65" Height="75" 
+                <Border Canvas.Left="30" Canvas.Top="283" Width="65" Height="75" 
         BorderBrush="{StaticResource PanelBorder}" BorderThickness="1.5" 
-        CornerRadius="8" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center">
+        CornerRadius="8" Background="White" HorizontalAlignment="Center" VerticalAlignment="Top">
                     <StackPanel VerticalAlignment="Center" Margin="2">
                         <Viewbox Width="35" Height="35" HorizontalAlignment="Center" Margin="0,0,0,3">
                             <Path Fill="#475569" Data="M18,17V12.5H16.5V17H18M12.5,17V12.5H11V17H12.5M7,17V12.5H5.5V17H7M18.5,10V7H17V10H18.5M13,10V7H11.5V10H13M7.5,10V7H6V10H7.5M21,19H3V21H21V19M21,11H19.5V12H21V11M21,6H19.5V10H21V6M4.5,11H3V12H4.5V11M4.5,6H3V10H4.5V6M10,3H14V5H10V3Z" />
@@ -897,8 +1045,7 @@
         </Viewbox>
 
 
-        <StackPanel Grid.Row="2" Grid.Column="2" Margin="10,0,0,0" VerticalAlignment="Top">
-            <TextBlock Text="OUTPUT INSPECTION" FontWeight="Bold" FontSize="12" Margin="0,0,0,10" Foreground="#64748B"/>
+        <StackPanel Grid.Row="0" Grid.Column="2" Margin="0" VerticalAlignment="Top">
 
             <Border BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" CornerRadius="8" Background="{StaticResource TableBg}" ClipToBounds="True">
                 <StackPanel>
@@ -1026,6 +1173,8 @@
                     </Grid>
                 </StackPanel>
             </Border>
+
+
         </StackPanel>
 
 

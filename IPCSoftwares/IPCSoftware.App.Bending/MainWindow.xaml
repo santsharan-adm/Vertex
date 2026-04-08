@@ -7,5 +7,6 @@
         WindowStartupLocation="CenterScreen">
     <Grid>
         <views:Dashboard Loaded="Dashboard_Loaded" />
+        <!--<views:DashBoard1 Loaded="DashBoard1_Loaded" />-->
     </Grid>
 </Window>
