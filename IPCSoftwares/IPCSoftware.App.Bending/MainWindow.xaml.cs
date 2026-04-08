@@ -21,7 +21,8 @@ namespace IPCSoftware.App.Bending
             InitializeComponent();
         }
 
-        private void Dashboard_Loaded(object sender, RoutedEventArgs e)
+        //private void Dashboard_Loaded(object sender, RoutedEventArgs e)
+        private void DashBoard1_Loaded(object sender, RoutedEventArgs e)
         {
 
         }

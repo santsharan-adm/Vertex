@@ -442,7 +442,6 @@
                             <Setter Property="StrokeStartLineCap" Value="Round"/>
                             <Setter Property="StrokeEndLineCap" Value="Flat"/>
                         </Style>
-
                         <Style x:Key="RoboArmDetailStyle" TargetType="Path">
                             <Setter Property="Stroke" Value="#55FFFFFF"/>
                             <Setter Property="StrokeThickness" Value="1.5"/>
@@ -451,26 +450,40 @@
                             <Setter Property="Margin" Value="0,1,0,-1"/>
                         </Style>
 
+                        <!--
+                            Arm1: Robot 1 (right edge) → Input Tray (left edge)
+                              Robot 1    : Left=69, Top=290, W=95, H=105
+                                           right X = 164, centerY = 342
+                              Input Tray : inside Canvas(L=110,T=170), Left=143, Top=212, W=160, H=60
+                                           abs leftX = 253, centerY = 412
+                              Elbow      : (164,342) go right to (210,342) then angle down-right to (253,412)
+                        -->
                         <GeometryGroup x:Key="Arm1Geometry">
-                            <PathGeometry Figures="M 25,310 L 40,385 L 170,385"/>
-                            <EllipseGeometry Center="40,385" RadiusX="6" RadiusY="6"/>
+                            <PathGeometry Figures="M 164,342 L 210,342 L 253,412"/>
+                            <EllipseGeometry Center="210,342" RadiusX="6" RadiusY="6"/>
                         </GeometryGroup>
 
+                        <!--
+                            Arm2: Robot 2 (left edge) → Output Tray (right edge)
+                              Robot 2     : Left=730, Top=290, W=95, H=105
+                                            left X = 730, centerY = 342
+                              Output Tray : inside Canvas(L=330,T=170), Left=158, Top=212, W=160, H=60
+                                            abs rightX = 648, centerY = 412
+                              Elbow       : (730,342) go left to (690,342) then angle down-left to (648,412)
+                        -->
                         <GeometryGroup x:Key="Arm2Geometry">
-                            <PathGeometry Figures="M 595,310 L 580,385 L 455,385"/>
-                            <EllipseGeometry Center="580,385" RadiusX="6" RadiusY="6"/>
+                            <PathGeometry Figures="M 730,342 L 690,342 L 648,412"/>
+                            <EllipseGeometry Center="690,342" RadiusX="6" RadiusY="6"/>
                         </GeometryGroup>
                     </Canvas.Resources>
 
-                    <Canvas Canvas.Left="7" Canvas.Top="35">
-                        <Path Data="{StaticResource Arm1Geometry}" Style="{StaticResource RoboArmMainStyle}"/>
-                        <Path Data="{StaticResource Arm1Geometry}" Style="{StaticResource RoboArmDetailStyle}" HorizontalAlignment="Center" Canvas.Top="36.503" VerticalAlignment="Top"/>
-                    </Canvas>
+                    <!-- Arm 1: Robot 1 → Input Tray -->
+                    <Path Data="{StaticResource Arm1Geometry}" Style="{StaticResource RoboArmMainStyle}"/>
+                    <Path Data="{StaticResource Arm1Geometry}" Style="{StaticResource RoboArmDetailStyle}"/>
 
-                    <Canvas Canvas.Left="188" Canvas.Top="35">
-                        <Path Data="{StaticResource Arm2Geometry}" Style="{StaticResource RoboArmMainStyle}"/>
-                        <Path Data="{StaticResource Arm2Geometry}" Style="{StaticResource RoboArmDetailStyle}"/>
-                    </Canvas>
+                    <!-- Arm 2: Robot 2 → Output Tray -->
+                    <Path Data="{StaticResource Arm2Geometry}" Style="{StaticResource RoboArmMainStyle}"/>
+                    <Path Data="{StaticResource Arm2Geometry}" Style="{StaticResource RoboArmDetailStyle}"/>
                 </Canvas>
 
 
@@ -588,32 +601,27 @@
 
                 <Canvas Canvas.Left="110" Canvas.Top="170">
 
+                    <!-- ══ Double-line connector: TT1 right edge → Transfer Module left edge ══ -->
+                    <Line X1="277" Y1="40" X2="307" Y2="40"
+                          Stroke="#1E293B" StrokeThickness="3.5"
+                          StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
+                    <Line X1="277" Y1="53" X2="307" Y2="53"
+                          Stroke="#1E293B" StrokeThickness="3.5"
+                          StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
+                    <Line X1="277" Y1="37" X2="277" Y2="57"
+                          Stroke="#1E293B" StrokeThickness="3.5"
+                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                    <Line X1="307" Y1="37" X2="307" Y2="57"
+                          Stroke="#1E293B" StrokeThickness="3.5"
+                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
 
-
-
-                    <!--<Border Width="150" Height="150" CornerRadius="70" Background="White" BorderBrush="{StaticResource PanelBorder}" BorderThickness="3.5" Canvas.Left="123" Canvas.Top="-7" HorizontalAlignment="Center" VerticalAlignment="Top">
-                        <Canvas Margin="0,0,-30,0">
-                            <Ellipse Width="15" Height="15" Fill="{StaticResource AccentBlue}" Canvas.Left="62.5" Canvas.Top="10"/>
-                            <Ellipse Width="16" Height="15" Fill="{StaticResource AccentBlue}" Canvas.Left="80" Canvas.Top="15" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-
-                            <Ellipse Width="15" Height="15" Fill="{StaticResource AccentBlue}" Canvas.Left="62.5" Canvas.Top="115"/>
-                            <Ellipse Width="16" Height="15" Fill="{StaticResource AccentBlue}" Canvas.Left="82" Canvas.Top="107" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-
-                            <Ellipse Width="16" Height="15" Fill="{StaticResource AccentBlue}" Canvas.Left="44" Canvas.Top="111" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-
-                            <Ellipse Width="15" Height="15" Fill="{StaticResource AccentBlue}" Canvas.Left="10" Canvas.Top="62.5"/>
-                            <Ellipse Width="15" Height="15" Fill="{StaticResource AccentBlue}" Canvas.Left="115" Canvas.Top="62.5"/>
-                        </Canvas>
-                    </Border>-->
-
-
-                    <Border Width="160" Height="160" 
-        CornerRadius="80" 
-        Background="White" 
-        BorderBrush="{StaticResource PanelBorder}" 
-        BorderThickness="3.5" 
-        Canvas.Left="117" Canvas.Top="-32" HorizontalAlignment="Center" VerticalAlignment="Top">
-
+                    <Border Width="160" Height="160"
+                            CornerRadius="80"
+                            Background="White"
+                            BorderBrush="{StaticResource PanelBorder}"
+                            BorderThickness="3.5"
+                            Canvas.Left="117" Canvas.Top="-32"
+                            HorizontalAlignment="Center" VerticalAlignment="Top">
                         <Grid Margin="0,-2,0,2">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0">
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
