@@ -214,7 +214,7 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 deviceInterface.Id = _nextInterfaceId++;
                 _interfaces.Add(deviceInterface);
-                await SaveInterfacesToCsvAsync();
+                await SaveInterfacesToCsvAsyncPLC();
                 return deviceInterface;
             }
             catch (Exception ex)
@@ -682,6 +682,38 @@ namespace IPCSoftware.Services.ConfigServices
             catch (Exception ex)
             {
                     _logger.LogError($"Error saving interfaces CSV: {ex.Message}", LogType.Diagnostics);
+                throw;
+            }
+        }
+
+
+        private async Task SaveInterfacesToCsvAsyncPLC()
+        {
+            try
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine("Id,DeviceNo,DeviceName,UnitNo,Name,ComProtocol,IPAddress,PortNo,Gateway,Description,Remark,Enabled");
+
+                foreach (var iface in _interfaces)
+                {
+                    sb.AppendLine($"{iface.Id},{iface.DeviceNo}," +
+                        $"\"{EscapeCsv(iface.DeviceName)}\"," +
+                        $"{iface.UnitNo}," +
+                        $"\"{EscapeCsv(iface.Name)}\"," +
+                        $"\"{EscapeCsv(iface.ComProtocol)}\"," +
+                        $"\"{EscapeCsv(iface.IPAddress)}\"," +
+                        $"{iface.PortNo}," +
+                        $"\"{EscapeCsv(iface.Gateway)}\"," +
+                        $"\"{EscapeCsv(iface.Description)}\"," +
+                        $"\"{EscapeCsv(iface.Remark)}\"," +
+                        $"{iface.Enabled}");
+                }
+
+                await File.WriteAllTextAsync(_interfacesCsvPath, sb.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error saving interfaces CSV: {ex.Message}", LogType.Diagnostics);
                 throw;
             }
         }
