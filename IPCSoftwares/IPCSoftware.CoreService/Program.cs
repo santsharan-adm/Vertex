@@ -180,6 +180,7 @@ namespace IPCSoftware.CoreService
 
                     // 3. Initialize Constants without needing AppConfigSettings wrapper
                     ConstantValues.Initialize(configSettings);
+                    LoadCcdSettingsAsync(host.Services).GetAwaiter().GetResult();   
 
                     host.Run();
 
@@ -211,6 +212,7 @@ namespace IPCSoftware.CoreService
                 var deviceService = services.GetRequiredService<IDeviceConfigurationService>();
                 var observableSettings = services.GetRequiredService<IObservableCcdSettingsService>();
                 var logger = services.GetRequiredService<IAppLogger>();
+                await deviceService.InitializeAsync();
                 // 1. Load all camera interfaces
                 var cameras = await deviceService.GetCameraDevicesAsync();
                 if (cameras == null || cameras.Count == 0)
