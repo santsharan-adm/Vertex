@@ -40,8 +40,7 @@ namespace IPCSoftware.Shared
                 Disconnect(); // Ensure clean slate
 
                 _client = new TcpClient();
-                // Connect with a 3-second timeout logic could be added here if needed
-                await _client.ConnectAsync(host, port);
+                await _client.ConnectAsync(host, port).WaitAsync(TimeSpan.FromSeconds(2));
 
                 _stream = _client.GetStream();
                 _stream.ReadTimeout = 5000; // 5s Read Timeout
