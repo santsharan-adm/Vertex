@@ -179,7 +179,7 @@ namespace IPCSoftware.CoreService.AOI.Service
             try
             {
                 var allTags = await _tagService.GetAllTagsAsync();
-                var ackTag = allTags.FirstOrDefault(t => t.TagNo == ConstantValues.Return_TAG_ID); // Look for TagNo 15
+                var ackTag = allTags.FirstOrDefault(t => t.Id == ConstantValues.Return_TAG_ID); // Look for TagNo 15
 
                 if (ackTag != null)
                 {

@@ -90,9 +90,9 @@ namespace IPCSoftware.Services
                         try
                         {
                             // 1. Parse Data Type and Bit No first, as they determine Length
-                            int dataType = ParseDataType(r[7]);
-                            int bitNo = ParseBitNo(r[7], r[8]);
-                            int configuredLength = int.Parse(r[5]);
+                            int dataType = ParseDataType(r[9]);
+                            int bitNo = ParseBitNo(r[9], r[10]);
+                            int configuredLength = int.Parse(r[8]);
 
                             // 2. Apply Length Enforcement (Fix for requirements C, D, F, G)
                             int enforcedLength = EnforceDataLength(dataType, configuredLength);
@@ -101,25 +101,25 @@ namespace IPCSoftware.Services
                             var tag = new PLCTagConfigurationModel
                             {
                                 Id = int.Parse(r[0]),
-                                TagNo = int.Parse(r[1]),
-                                Name = r[2],
-                                PLCNo = int.Parse(r[3]),
-                                ModbusAddress = int.Parse(r[4]),
+                                //TagNo = int.Parse(r[1]),
+                                Name = r[3],
+                                PLCNo = int.Parse(r[4]),
+                                ModbusAddress = int.Parse(r[6]),
 
                                 // Use the enforced length
                                 Length = enforcedLength,
 
-                                AlgNo = int.Parse(r[6]),
+                                AlgNo = int.Parse(r[7]),
                                 DataType = dataType,
                                 BitNo = bitNo,
-                                Offset = double.Parse(r[9]),
-                                Span = double.Parse(r[10]),
-                                Description = r[11],
-                                Remark = r[12],
+                                Offset = double.Parse(r[12]),
+                                Span = double.Parse(r[13]),
+                                Description = r[18],
+                                Remark = r[19],
 
                                 // NEW: Read CanWrite (assuming column [13])
-                                CanWrite = ParseBoolean(r[13]),
-                                IOType = r[14]
+                                //CanWrite = ParseBoolean(r[13]),
+                                IOType = r[17]
                                 //DMAddress = r[15]
 
                             };

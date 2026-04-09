@@ -186,7 +186,7 @@ namespace IPCSoftware.Services.ConfigServices
                     // CHANGE HERE: Removed the \" before and after the function calls.
                     // We trust EscapeCsv to add quotes ONLY if necessary.
                     sb.AppendLine($"{tag.Id}," +
-                        $"{tag.TagNo}," +
+                        $"{tag.Id}," +
                         $"{EscapeCsv(tag.Name)}," +         // <--- Was $"\"{EscapeCsv(tag.Name)}\","
                         $"{tag.PLCNo}," +
                         $"{tag.ModbusAddress}," +

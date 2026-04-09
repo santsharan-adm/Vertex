@@ -83,7 +83,7 @@ namespace IPCSoftware.CoreService.AOI.Service
 
                 int tagId = ConstantValues.NO_OF_Station;
                 var allTags = await _tagService.GetAllTagsAsync();
-                var tagConfig = allTags.FirstOrDefault(t => t.TagNo == tagId);
+                var tagConfig = allTags.FirstOrDefault(t => t.Id == tagId);
 
                 if (tagConfig != null)
                 {

@@ -1,3 +1,4 @@
+Version = 2.0
 Id,Category,DM Address,Name,PLCNo,40000,ModbusAddress,AlgoNo,Length,DataType,BitNo,UseEngUnit,Offset,Span,Monitor,Control,Direction,IOType,Description,Remark
 1,System,D10000,SYS_HEARTBEAT_001,1,0,40000,0,0,Int16,0,0,0,0,0,1,,None,PLC ?IPC Heart beat SIG,PLC ?IPC Heart beat SIG
 2,System,D10001,SYS_DATA_OUT_BITS_17_32,1,1,40001,0,0,Int16,0,0,0,0,0,1,,None,System Data _Out_bit(17-32),System Data _Out_bit(17-32)

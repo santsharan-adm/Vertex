@@ -5,10 +5,19 @@ using System.Text.RegularExpressions;
 namespace IPCSoftware.Services
 {
 
-public static class CsvReader
+    public static class CsvReader
     {
         public static string Getversion(string filepath)
         {
+            if (!File.Exists(filepath)) return "1.0";
+
+            using var reader = new StreamReader(filepath, detectEncodingFromByteOrderMarks: true);
+            var header = reader.ReadLine();
+            if (string.IsNullOrWhiteSpace(header)) return "1.0";
+
+            string[] temp = header.Split("=", StringSplitOptions.RemoveEmptyEntries);
+            if (temp.Length>1) {return temp[1].Trim();}
+
             return "1.0";
         }
         public static List<string[]> Read(string filePath)
@@ -29,7 +38,7 @@ public static class CsvReader
                         isHeader = false;
                         continue;
                     }
-
+                    if (line.ToLower().StartsWith("id")) continue;
                     if (string.IsNullOrWhiteSpace(line)) continue;
 
                     // FIX: Don't use line.Split(',')

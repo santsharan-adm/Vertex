@@ -9,6 +9,8 @@ namespace IPCSoftware.Shared.Models.ConfigModels
     public class PLCTagConfigurationModel
     {
         public int Id { get; set; }
+        
+        [Obsolete("TagNo is deprecated. Use Id,Name as the unique identifier for tags.")]
         public int TagNo { get; set; }
         public string Name { get; set; }
         public int PLCNo { get; set; }
