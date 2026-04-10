@@ -148,10 +148,37 @@
                                              Height="100" TextWrapping="Wrap" AcceptsReturn="True" 
                                              VerticalContentAlignment="Top" Padding="15"/>
                                 </StackPanel>
-                                <CheckBox Content="Interface Enabled" 
-            IsChecked="{Binding Enabled}"
-            Style="{StaticResource HmiCheckBoxStyle}"
-            Margin="0,10,0,0"/>
+
+                                <!-- Replaced single CheckBox with a Grid so the CCD Setting button sits next to it -->
+                                <Grid Margin="0,10,0,0" VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="270"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <CheckBox Grid.Column="0"
+                                              Content="Interface Enabled" 
+                                              IsChecked="{Binding Enabled}"
+                                              Style="{StaticResource HmiCheckBoxStyle}"
+                                              VerticalAlignment="Center"/>
+
+                                    <Button Grid.Column="2"
+                                            Content="CCD Setting"
+                                            Command="{Binding OpenCCDSettingsCommand}"
+                                            Width="220" Height="60"
+                                            FontSize="18" FontWeight="SemiBold"
+                                            Background="#007ACC" Foreground="White"
+                                            BorderThickness="0"
+                                            HorizontalAlignment="Left">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </Grid>
+
                             </StackPanel>
                         </Border>
                     </StackPanel>

@@ -32,6 +32,8 @@ namespace IPCSoftware.Core.Interfaces
         void NavigateToInterfaceConfiguration(DeviceModel parentDevice, DeviceInterfaceModel interfaceToEdit, Func<Task> onSaveCallback);
         void NavigateToCameraInterfaceConfiguration(DeviceModel parentDevice, CameraInterfaceModel cameraInterfaceToEdit, Func<Task> onSaveCallback);
 
+        // NEW: CCD Settings Navigation
+        void NavigateToCcdSettings(DeviceModel parentDevice, CameraInterfaceModel cameraInterface, Func<Task> onSaveCallback);
 
         // Alarm Configuration - NEW
         void NavigateToAlarmList();
