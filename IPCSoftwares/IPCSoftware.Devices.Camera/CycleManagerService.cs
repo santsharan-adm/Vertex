@@ -137,7 +137,7 @@ namespace IPCSoftware.Devices.Camera
             try
             {
                 var allTags = await _tagService.GetAllTagsAsync();
-                var tag = allTags.FirstOrDefault(t => t.TagNo == tagNo);
+                var tag = allTags.FirstOrDefault(t => t.Id == tagNo);
 
                 if (tag != null)
                 {
@@ -153,7 +153,7 @@ namespace IPCSoftware.Devices.Camera
             try
             {
                 var allTags = await _tagService.GetAllTagsAsync();
-                var tagConfig = allTags.FirstOrDefault(t => t.TagNo == tagId);
+                var tagConfig = allTags.FirstOrDefault(t => t.Id == tagId);
 
                 if (tagConfig == null || tagConfig.ModbusAddress <= 0) return;
 

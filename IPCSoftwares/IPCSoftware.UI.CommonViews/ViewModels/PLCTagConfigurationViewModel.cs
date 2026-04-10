@@ -37,6 +37,13 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         }
 
         // Properties
+        private int _id;
+        public int Id
+        {
+            get => _id;
+            set => SetProperty(ref _id, value);
+        }
+
         private int _tagNo;
         public int TagNo
         {
@@ -276,7 +283,8 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             try
             {
-                TagNo = tag.TagNo;
+                Id = tag.Id;
+                //TagNo = tag.TagNo;
                 Name = tag.Name;
                 PLCNo = tag.PLCNo;
                 ModbusAddress = tag.ModbusAddress;
@@ -309,7 +317,8 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             try
             {
-                _currentTag.TagNo = TagNo;
+                _currentTag.Id = Id;
+                //_currentTag.TagNo = TagNo;
                 _currentTag.Name = Name;
                 _currentTag.PLCNo = PLCNo;
                 _currentTag.ModbusAddress = ModbusAddress;

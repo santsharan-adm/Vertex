@@ -481,7 +481,7 @@ namespace IPCSoftware.Communication.External
             try
             {
                 var allTags = await _tagService.GetAllTagsAsync();
-                var tagConfig = allTags.FirstOrDefault(t => t.TagNo == tagId);
+                var tagConfig = allTags.FirstOrDefault(t => t.Id == tagId);
                 if (tagConfig != null && tagConfig.ModbusAddress > 0)
                 {
                     var client = _plcManager.GetClient(tagConfig.PLCNo);

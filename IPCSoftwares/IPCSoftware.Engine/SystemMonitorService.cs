@@ -164,7 +164,7 @@ namespace IPCSoftware.Engine
             {
                 // Retrieve Tag Info
                 var allTags = await _tagService.GetAllTagsAsync();
-                var tag = allTags.FirstOrDefault(t => t.TagNo == tagNo);
+                var tag = allTags.FirstOrDefault(t => t.Id == tagNo);
 
                 if (tag == null) return;
 

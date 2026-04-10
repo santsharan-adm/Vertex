@@ -22,58 +22,116 @@ namespace IPCSoftware.Services
         {
             try
             {
-
+                var version = CsvReader.Getversion(filePath);
                 var rows = CsvReader.Read(filePath);
                 var tags = new List<PLCTagConfigurationModel>();
-
-                foreach (var r in rows)
+                if (version == "1.0")
                 {
-                    // Must be at least 15 columns: indices [0]..[14] (IOType is at [14])
-                    if (r.Length < 15) continue;
-
-                    try
+                    foreach (var r in rows)
                     {
-                        // 1. Parse Data Type and Bit No first, as they determine Length
-                        int dataType = ParseDataType(r[7]);
-                        int bitNo = ParseBitNo(r[7], r[8]);
-                        int configuredLength = int.Parse(r[5]);
+                        // Must be at least 15 columns: indices [0]..[14] (IOType is at [14])
+                        if (r.Length < 15) continue;
 
-                        // 2. Apply Length Enforcement (Fix for requirements C, D, F, G)
-                        int enforcedLength = EnforceDataLength(dataType, configuredLength);
-
-                        // 3. Load the base model
-                        var tag = new PLCTagConfigurationModel
+                        try
                         {
-                            Id = int.Parse(r[0]),
-                            TagNo = int.Parse(r[1]),
-                            Name = r[2],
-                            PLCNo = int.Parse(r[3]),
-                            ModbusAddress = int.Parse(r[4]),
+                            // 1. Parse Data Type and Bit No first, as they determine Length
+                            int dataType = ParseDataType(r[7]);
+                            int bitNo = ParseBitNo(r[7], r[8]);
+                            int configuredLength = int.Parse(r[5]);
 
-                            // Use the enforced length
-                            Length = enforcedLength,
+                            // 2. Apply Length Enforcement (Fix for requirements C, D, F, G)
+                            int enforcedLength = EnforceDataLength(dataType, configuredLength);
 
-                            AlgNo = int.Parse(r[6]),
-                            DataType = dataType,
-                            BitNo = bitNo,
-                            Offset = double.Parse(r[9]),
-                            Span = double.Parse(r[10]),
-                            Description = r[11],
-                            Remark = r[12],
+                            // 3. Load the base model
+                            var tag = new PLCTagConfigurationModel
+                            {
+                                Id = int.Parse(r[0]),
+                                TagNo = int.Parse(r[1]),
+                                Name = r[2],
+                                PLCNo = int.Parse(r[3]),
+                                ModbusAddress = int.Parse(r[4]),
 
-                            // NEW: Read CanWrite (assuming column [13])
-                            CanWrite = ParseBoolean(r[13]),
-                            IOType = r[14]
-                            //DMAddress = r[15]
+                                // Use the enforced length
+                                Length = enforcedLength,
 
-                        };
+                                AlgNo = int.Parse(r[6]),
+                                DataType = dataType,
+                                BitNo = bitNo,
+                                Offset = double.Parse(r[9]),
+                                Span = double.Parse(r[10]),
+                                Description = r[11],
+                                Remark = r[12],
 
-                        tags.Add(tag);
+                                // NEW: Read CanWrite (assuming column [13])
+                                CanWrite = ParseBoolean(r[13]),
+                                IOType = r[14]
+                                //DMAddress = r[15]
+
+                            };
+
+                            tags.Add(tag);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex.Message, LogType.Diagnostics);
+                        }
                     }
-                    catch (Exception ex)
+                }
+                else if (version == "2.0")
+                {
+                    
+
+
+                    foreach (var r in rows)
                     {
-                        _logger.LogError(ex.Message, LogType.Diagnostics);
+                        // Must be at least 15 columns: indices [0]..[14] (IOType is at [14])
+                        if (r.Length < 15) continue;
+
+                        try
+                        {
+                            // 1. Parse Data Type and Bit No first, as they determine Length
+                            int dataType = ParseDataType(r[9]);
+                            int bitNo = ParseBitNo(r[9], r[10]);
+                            int configuredLength = int.Parse(r[8]);
+
+                            // 2. Apply Length Enforcement (Fix for requirements C, D, F, G)
+                            int enforcedLength = EnforceDataLength(dataType, configuredLength);
+
+                            // 3. Load the base model
+                            var tag = new PLCTagConfigurationModel
+                            {
+                                Id = int.Parse(r[0]),
+                                //TagNo = int.Parse(r[1]),
+                                Name = r[3],
+                                PLCNo = int.Parse(r[4]),
+                                ModbusAddress = int.Parse(r[6]),
+
+                                // Use the enforced length
+                                Length = enforcedLength,
+
+                                AlgNo = int.Parse(r[7]),
+                                DataType = dataType,
+                                BitNo = bitNo,
+                                Offset = double.Parse(r[12]),
+                                Span = double.Parse(r[13]),
+                                Description = r[18],
+                                Remark = r[19],
+
+                                // NEW: Read CanWrite (assuming column [13])
+                                //CanWrite = ParseBoolean(r[13]),
+                                IOType = r[17]
+                                //DMAddress = r[15]
+
+                            };
+
+                            tags.Add(tag);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex.Message, LogType.Diagnostics);
+                        }
                     }
+
                 }
 
                 return tags;
@@ -84,8 +142,7 @@ namespace IPCSoftware.Services
                 return null;
             }
         }
-
-        // --- Existing Helper Methods (Simplified for context) ---
+            // --- Existing Helper Methods (Simplified for context) ---
 
         // Inside TagConfigLoader.cs:ParseDataType(string s)
 

@@ -21,24 +21,9 @@
         {
             public class CCDTriggerServiceBase : BaseService
             {
-                protected readonly ICycleManagerService _cycleManager;
-                protected PLCClientManager _plcManager;
-                protected readonly IPLCTagConfigurationService _tagService;
-                protected readonly IObservableCcdSettingsService _observableCcdSettings;
-
-                // State tracking
-                protected bool _lastTriggerState = false;
-                protected bool _lastCycleStartState = false;
-
-                protected readonly SemaphoreSlim _triggerLock = new(1, 1);
-                protected volatile bool _isProcessing = false;
-
-                public CCDTriggerServiceBase(
-                    ICycleManagerService cycleManager,
-                    IPLCTagConfigurationService tagService,
-                    IOptions<CcdSettings> ccdSettings,
-                    IObservableCcdSettingsService observableCcdSettings,
-                    IAppLogger logger) : base(logger)
+                var allTags = await _tagService.GetAllTagsAsync();
+                var tagConfig = allTags.FirstOrDefault(t => t.Id == tagId);
+                if (tagConfig != null && tagConfig.ModbusAddress > 0)
                 {
                     _tagService = tagService;
                     _cycleManager = cycleManager;
