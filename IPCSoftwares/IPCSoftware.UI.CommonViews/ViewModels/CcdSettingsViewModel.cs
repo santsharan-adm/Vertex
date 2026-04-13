@@ -1,3 +1,27 @@
+
+/******************************************************************************
+ * Project      : IPCSoftware-AOI /Bending
+ * Module       : CcdSettingsViewModel
+ * File Name    : CcdSettingsViewModel.cs
+ * Author       : Rishabh
+ * Organization : Vertex Automtion System Pvt Ltd
+ * Created Date : 2026-04-08
+ *
+ * Description  :
+ * Manages CCD camera configuration settings UI interactions, binding client/vendor metadata,
+ * and persisting changes to both the observable settings service and device configuration store.
+ *
+ * Change History:
+ * ---------------------------------------------------------------------------
+ * Date        Author        Version     Description
+ * ---------------------------------------------------------------------------
+ * 2026-04-08  Rishabh       1.0         Initial creation
+ * 
+ * 
+ *
+ ******************************************************************************/
+
+
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;

@@ -45,8 +45,9 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
 
-            // ✅ NEW: Register Observable CCD Settings Service (Singleton - shared across all services)
-            services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>();
+            //  NEW: Register Observable CCD Settings Service (Singleton - shared across all services)
+            services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>(); //Added by Rishabh - date - 08/04/2026//
+
 
             services.AddSingleton<ICycleManagerService, CycleManagerServiceAOI>();
             services.AddSingleton<ExternalInterfaceService>();
@@ -70,13 +71,13 @@ namespace IPCSoftware.App.DI
                 return new ProductionDataLogger(prodLogConfig);
             });
 
-            // ✅ UPDATED: CCDTriggerServiceAOI now includes IObservableCcdSettingsService
+            //  UPDATED: CCDTriggerServiceAOI now includes IObservableCcdSettingsService
             services.AddSingleton<CCDTriggerServiceAOI>(sp =>
                 new CCDTriggerServiceAOI(
                     sp.GetRequiredService<ICycleManagerService>(),
                     sp.GetRequiredService<IPLCTagConfigurationService>(),
                     sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<CcdSettings>>(),
-                    sp.GetRequiredService<IObservableCcdSettingsService>(),  // ✅ NEW: Observable settings
+                    sp.GetRequiredService<IObservableCcdSettingsService>(),  //  //Added by Rishabh - date - 08/04/2026//
                     sp.GetRequiredService<IAppLogger>()
                 )
             );
@@ -124,12 +125,14 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceInterfaceConfigurationViewModel>();
             services.AddTransient<CameraDetailViewModel>();
             services.AddTransient<CameraInterfaceConfigurationViewModel>();
+            
 
-            // ✅ UPDATED: CcdSettingsViewModel now includes IObservableCcdSettingsService
+            //  UPDATED: CcdSettingsViewModel now includes IObservableCcdSettingsService
             services.AddTransient<CcdSettingsViewModel>(sp =>
                 new CcdSettingsViewModel(
                     sp.GetRequiredService<IDeviceConfigurationService>(),
-                    sp.GetRequiredService<IObservableCcdSettingsService>()  // ✅ NEW: Observable settings
+                    sp.GetRequiredService<IObservableCcdSettingsService>()  // //Added by Rishabh - date - 08/04/2026//
+
                 )
             );
 
@@ -192,6 +195,8 @@ namespace IPCSoftware.App.DI
             services.AddTransient<TagControlViewModel>();
             services.AddTransient<SystemSettingView>();
             services.AddTransient<SystemSettingViewModel>();
+            services.AddTransient<ServiceStartupView>();
+            //services.AddTransient<ServiceStartupViewModel>();
             services.AddTransient<IPLCService, PlcService>();
             services.AddSingleton<CoreClient>();
             services.AddSingleton<ReportConfigViewModel>();

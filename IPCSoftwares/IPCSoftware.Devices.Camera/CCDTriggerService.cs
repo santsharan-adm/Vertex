@@ -4,7 +4,7 @@ using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.Devices.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
-using IPCSoftware.Services.ConfigServices;
+using IPCSoftware.Services.ConfigServices; //Added Later
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
@@ -22,9 +22,10 @@ namespace IPCSoftware.Devices.Camera
     public class CCDTriggerServiceBase : BaseService
     {
         protected readonly ICycleManagerService _cycleManager;
-        protected PLCClientManager _plcManager; // 1. Inject PLC Manager
-        protected readonly IPLCTagConfigurationService _tagService; // 2. Store Tag Config
-        private readonly string _tempImageFolder;
+        protected PLCClientManager _plcManager;
+        protected readonly IPLCTagConfigurationService _tagService;
+        protected readonly IObservableCcdSettingsService _observableCcdSettings; //Added by Rishabh - date - 08/04/2026//
+
         // State tracking
         protected bool _lastTriggerState = false;
         protected bool _lastCycleStartState = false;
@@ -32,25 +33,30 @@ namespace IPCSoftware.Devices.Camera
         protected readonly SemaphoreSlim _triggerLock = new(1, 1);
         protected volatile bool _isProcessing = false;
 
-
-        public CCDTriggerServiceBase
-            (ICycleManagerService cycleManager,
+        public CCDTriggerServiceBase(
+            ICycleManagerService cycleManager,
             IPLCTagConfigurationService tagService,
-            IOptions<CcdSettings> ccdSettings
-            ,
-            IObservableCcdSettingsService observableCcdSettings,
+            IOptions<CcdSettings> ccdSettings,
+            IObservableCcdSettingsService observableCcdSettings,  //Added by Rishabh - date - 08/04/2026//
             IAppLogger logger) : base(logger)
         {
-            var ccd = ccdSettings.Value;
-            _tempImageFolder = ccd.TempImgFolder;
             _tagService = tagService;
             _cycleManager = cycleManager;
+            _observableCcdSettings = observableCcdSettings;   //Added by Rishabh - date - 08/04/2026//
+
+            if (_observableCcdSettings != null)
+            {
+                _observableCcdSettings.SettingsChanged += OnCcdSettingsChanged;
+                _logger.LogInfo("[CCD] Observable CCD Settings service initialized and subscribed to changes.", LogType.Diagnostics);
+            }
         }
 
-        /// <summary>
-        /// Call this method in your Worker loop immediately after AlgorithmService.Apply returns the data.
-        /// </summary>
-        /// <param name="tagValues">The dictionary of processed tag values</param>
+        //Added by Rishabh - date - 08/04/2026//
+        private void OnCcdSettingsChanged(object sender, CcdSettingsChangedEventArgs e)
+        {
+            _logger.LogInfo($"[CCD] Setting changed: {e.PropertyName} = {e.NewValue}", LogType.Diagnostics);
+        }
+
         virtual public async Task ProcessTriggers(Dictionary<int, object> tagValues, PLCClientManager manager)
         {
 
@@ -61,7 +67,7 @@ namespace IPCSoftware.Devices.Camera
             try
             {
                 var allTags = await _tagService.GetAllTagsAsync();
-                var tagConfig = allTags.FirstOrDefault(t => t.Id == tagId);
+                var tagConfig = allTags.FirstOrDefault(t => t.TagNo == tagId);
                 if (tagConfig != null && tagConfig.ModbusAddress > 0)
                 {
                     var client = _plcManager.GetClient(tagConfig.PLCNo);
@@ -70,7 +76,6 @@ namespace IPCSoftware.Devices.Camera
             }
             catch (Exception ex) { _logger.LogError($"Ext Write Error ({tagId}): {ex.Message}", LogType.Diagnostics); }
         }
-
 
         protected string MapStatus(object rawStatus)
         {
@@ -82,10 +87,9 @@ namespace IPCSoftware.Devices.Camera
                 case "0": return "Unchecked";
                 case "1": return "OK";
                 case "2": return "NG";
-                default: return "Unchecked"; // fallback
+                default: return "Unchecked";
             }
         }
-
 
         protected async Task ExecuteWorkflowAsync(string qrCode, Dictionary<string, object> data)
         {
@@ -97,13 +101,10 @@ namespace IPCSoftware.Devices.Camera
             }
             else
             {
-                _logger.LogWarning("[CCD] No image within timeout, Wating for Cycle Timeout trigger.", LogType.Error);
-                // _lastTriggerState = false;
-                //await WriteAckToPlcAsync(true); // or false, depending on PLC contract
+                _logger.LogWarning("[CCD] No image within timeout, Waiting for Cycle Timeout trigger.", LogType.Error);
             }
         }
 
-        // Stopwatch sp = new Stopwatch();  
         virtual protected async Task WriteAckToPlcAsync(bool writebool)
         {
 
@@ -117,16 +118,23 @@ namespace IPCSoftware.Devices.Camera
                 var quickWindow = TimeSpan.FromSeconds(3);
                 var maxWindow = TimeSpan.FromSeconds(5);
 
+                string tempImageFolder = _observableCcdSettings?.TempImgFolder;  //Modfied by Rishabh - date - 08/04/2026//
+                if (string.IsNullOrEmpty(tempImageFolder))
+                {
+                    _logger.LogWarning("[CCD] TempImgFolder is not configured.", LogType.Error);
+                    return null;
+                }
+
                 DateTime start = DateTime.Now;
                 while ((DateTime.Now - start) < maxWindow)
                 {
-                    if (!Directory.Exists(_tempImageFolder))
+                    if (!Directory.Exists(tempImageFolder))                                     //Modified by Rishabh - date - 08/04/2026//
                     {
-                        _logger.LogWarning($"[CCD] Temp image folder missing: {_tempImageFolder}", LogType.Diagnostics);
+                        _logger.LogWarning($"[CCD] Temp image folder missing: {tempImageFolder}", LogType.Diagnostics);
                         return null;
                     }
 
-                    var file = new DirectoryInfo(_tempImageFolder)
+                    var file = new DirectoryInfo(tempImageFolder)                  //Modified by Rishabh - date - 08/04/2026//
                         .GetFiles("*.bmp")
                         .OrderByDescending(f => f.LastWriteTime)
                         .FirstOrDefault();
@@ -155,7 +163,7 @@ namespace IPCSoftware.Devices.Camera
                     }
                 }
 
-                _logger.LogWarning($"[CCD] Image not found in {_tempImageFolder} within 5s after trigger.", LogType.Diagnostics);
+                _logger.LogWarning($"[CCD] Image not found in {tempImageFolder} within 5s after trigger.", LogType.Diagnostics);     //Modified by Rishabh - date - 08/04/2026//
                 return null;
             }
             catch (Exception ex)
@@ -164,7 +172,5 @@ namespace IPCSoftware.Devices.Camera
                 return null;
             }
         }
-
-
     }
 }

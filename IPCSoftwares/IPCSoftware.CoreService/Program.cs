@@ -92,8 +92,8 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
                             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
 
-                            // Register Observable CCD Settings Service
-                            services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>();
+                            services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>(); //Added by Rishabh - date - 08/04/2026//
+
 
                             services.AddSingleton<IAeLimitService, AeLimitService>();
                             services.AddSingleton<ExternalInterfaceService>();
@@ -153,7 +153,7 @@ namespace IPCSoftware.CoreService
                                     sp.GetRequiredService<ICycleManagerService>(),
                                     sp.GetRequiredService<IPLCTagConfigurationService>(),
                                     sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<CcdSettings>>(),
-                                    sp.GetRequiredService<IObservableCcdSettingsService>(),  
+                                    sp.GetRequiredService<IObservableCcdSettingsService>(),   //Added by Rishabh - date - 08/04/2026//
                                     sp.GetRequiredService<IAppLogger>()
                                 )
                             );
@@ -201,10 +201,10 @@ namespace IPCSoftware.CoreService
 
         }
 
-        /// <summary>
-        /// Loads the active camera interface settings into the observable service
-        /// This ensures CCDTriggerService has valid values from startup
-        /// </summary>
+        /// //Added by Rishabh - date - 08/04/2026//
+        /// Discription : - * Loads the active camera interface settings into the observable service
+        ///                 * This ensures CCDTriggerService has valid values from startup
+   
         private static async Task LoadCcdSettingsAsync(IServiceProvider services)
         {
             try

@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
@@ -17,13 +18,15 @@ namespace IPCSoftware.Devices.Camera
     {
         private readonly CcdSettings _ccd;
         private readonly ExternalSettings _extSetting;
-
+        private readonly IObservableCcdSettingsService _observableSettings;
         public ProductionImageService(IOptions<CcdSettings> ccdOptions,
             IOptions<ExternalSettings> extSetting,
+            IObservableCcdSettingsService observableCcdSettings,
             IAppLogger logger) : base(logger)
         {
             _ccd = ccdOptions.Value;
             _extSetting = extSetting.Value;
+            _observableSettings = observableCcdSettings;
         }
 
         /// <summary>
@@ -44,7 +47,7 @@ namespace IPCSoftware.Devices.Camera
                 }
 
                 // 1. Generate Time Data (Date of Today and Current Time)
-                DateTime now = DateTime.Now;
+                DateTime now = DateTime.Now; 
                 string dateStr = now.ToString("dd-MM-yyyy");       // e.g. 08-12-2025
                 string timeStr = now.ToString("HH-mm-ss-fff");     // e.g. 14-30-01-123 (Colons replaced with dashes for filename validity)
 
@@ -85,10 +88,10 @@ namespace IPCSoftware.Devices.Camera
                 // 4. Define Full Output Paths
                 string rawDestPath = Path.Combine(targetFolder, $"{fileNameBase}_raw.bmp");
                 //string rawUIDestPath = Path.Combine(Path.GetDirectoryName(tempFilePath), "UI", $"{fileNameBase}_raw.bmp");
-                string rawUIDestPath = Path.Combine(_ccd.QrCodeImagePath, $"{fileNameBase}_raw.bmp");
-                if (!Directory.Exists(_ccd.QrCodeImagePath))
+                string rawUIDestPath = Path.Combine(_observableSettings.QrCodeImagePath, $"{fileNameBase}_raw.bmp");
+                if (!Directory.Exists(_observableSettings.QrCodeImagePath))
                 {
-                    Directory.CreateDirectory(_ccd.QrCodeImagePath);
+                    Directory.CreateDirectory(_observableSettings.QrCodeImagePath);
                 }
                 string procDestPath = Path.Combine(targetFolder, $"{fileNameBase}_processed.bmp");
 

@@ -1,4 +1,26 @@
-﻿using System;
+﻿/******************************************************************************
+ * Project      : IPCSoftware-AOI /Bending
+ * Module       : ObservableCcdSettings
+ * File Name    : ObservableCcdSettings.cs
+ * Author       : Rishabh
+ * Organization : Vertex Automtion System Pvt Ltd
+ * Created Date : 2026-04-08
+ *
+ * Description  :
+ * Provides an observable CCD settings service that manages and broadcasts camera
+ * configuration changes (image paths, metadata styles, etc.) to all subscribers in real-time.
+ *
+ * Change History:
+ * ---------------------------------------------------------------------------
+ * Date        Author        Version     Description
+ * ---------------------------------------------------------------------------
+ * 2026-04-08  Rishabh       1.0         Initial creation
+ * 
+ * 
+ *
+ ******************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;

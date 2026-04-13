@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using IPCSoftware.Services;
 
 namespace IPCSoftware.Services.ConfigServices
 {
@@ -328,8 +329,8 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
             
-            if (!File.Exists(_devicesCsvPath))
-            {
+            if (!File.Exists(_devicesCsvPath)) 
+                {
                 await SaveDevicesToCsvAsync();
                 return;
             }
@@ -480,7 +481,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-
+        //Modfied by Rishabh - date - 08/04/2026//
         private CameraInterfaceModel ParseCameraInterfaceCsvLine(string line)
         {
             try
@@ -510,6 +511,7 @@ namespace IPCSoftware.Services.ConfigServices
                 };
 
                 // Load CCD fields if they exist (backward compatible)
+                //Added by Rishabh - date - 08/04/2026//
                 if (values.Count > 16)
                 {
                     cam.QrCodeImagePath = values.Count > 16 ? values[16] : "";
@@ -601,6 +603,7 @@ namespace IPCSoftware.Services.ConfigServices
                 _logger.LogError($"Error loading interfaces CSV: {ex.Message}", LogType.Diagnostics);
             }
         }
+        //Modfied by Rishabh - date - 08/04/2026//
 
         private async Task SaveCameraInterfacesToCsvAsync()
         {

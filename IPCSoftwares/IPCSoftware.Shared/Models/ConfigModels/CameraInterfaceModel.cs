@@ -27,6 +27,8 @@ namespace IPCSoftware.Shared.Models.ConfigModels
 
         // ===== CCD SETTINGS FIELDS (NEW) =====
         // Primary fields
+
+        //Added by Rishabh - date - 08/04/2026//
         public string QrCodeImagePath { get; set; }
         public string TempImgFolder { get; set; }
         public string ImageRootFolder { get; set; }
@@ -72,6 +74,8 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public string Vendor_LightSettingN { get; set; }
         public string Vendor_DUTColor { get; set; }
         public string Vendor_ImageNickname { get; set; }
+
+        //Added by Rishabh - date - 08/04/2026//
 
         public CameraInterfaceModel()
         {
