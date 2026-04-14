@@ -275,7 +275,7 @@ namespace IPCSoftware.Common.CommonFunctions
 
 
 
-        // NEW: CCD Settings Navigation
+        //  CCD Settings Navigation           //Added by Rishabh - date - 08/04/2026//
         public void NavigateToCcdSettings(DeviceModel parentDevice, CameraInterfaceModel cameraInterface, Func<Task> onSaveCallback)
         {
             var ccdView = _provider.GetService<CcdSettingsView>();
@@ -428,6 +428,12 @@ namespace IPCSoftware.Common.CommonFunctions
         public void NavigateToPLCTagList()
         {
             NavigateMain<PLCTagListView>();
+        }
+
+        //Added By Rishabh , Date -13/04/2026
+        public void NavigateToServiceStartup()
+        {
+            NavigateMain<ServiceStartupView>();
         }
 
         public void NavigateToPLCTagConfiguration(PLCTagConfigurationModel tagToEdit, Func<Task> onSaveCallback)
