@@ -18,8 +18,8 @@
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="181*"/>
+            <RowDefinition Height="628*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="280"/>
@@ -622,29 +622,66 @@
                             BorderThickness="3.5"
                             Canvas.Left="117" Canvas.Top="-32"
                             HorizontalAlignment="Center" VerticalAlignment="Top">
-                        <Grid Margin="0,-2,0,2">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0">
+
+                        <Border.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="TT1RotateTransform"
+                                            Storyboard.TargetProperty="Angle"
+                                            From="0" To="360"
+                                            Duration="0:0:5"
+                                            RepeatBehavior="Forever"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
+                        <!-- Single Grid rotated as one unit — all 16 ellipses orbit clockwise -->
+                        <Grid RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <RotateTransform x:Name="TT1RotateTransform" Angle="0"/>
+                            </Grid.RenderTransform>
+
+                            <!-- Top row -->
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Top"
+                                        Margin="0,10,0,0">
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                             </StackPanel>
 
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                            <!-- Bottom row -->
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Bottom"
+                                        Margin="0,0,0,10">
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                             </StackPanel>
 
-                            <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                            <!-- Left column -->
+                            <StackPanel Orientation="Vertical"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Margin="10,0,0,0">
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                             </StackPanel>
 
-                            <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
+                            <!-- Right column -->
+                            <StackPanel Orientation="Vertical"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,10,0">
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
@@ -804,6 +841,8 @@ Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Center" VerticalA
                             </Polyline.RenderTransform>
                         </Polyline>
 
+
+
                         <StackPanel Canvas.Left="89" Canvas.Top="30" Orientation="Vertical" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" VerticalAlignment="Top">
                             <StackPanel.RenderTransform>
                                 <TransformGroup>
@@ -851,7 +890,7 @@ Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Center" VerticalA
                     </Canvas>
 
 
-                    <TextBlock Canvas.Left="190" Canvas.Top="127" Text="TURN TABLE 2" FontWeight="Bold" FontSize="15" Foreground="{StaticResource OkGreen}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBlock Canvas.Left="190" Canvas.Top="127" Text="TURN TABLE 2" FontWeight="Bold" FontSize="15" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                     <Border Canvas.Left="158" Canvas.Top="150" Width="160" Height="60" 
         Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3" 
@@ -894,7 +933,7 @@ Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Center" VerticalA
                            Foreground="#14532D"/>
                                 </StackPanel>
 
-                                <Border Height="1" Background="#BBF7D0" Width="60" Margin="0,2,0,2"/>
+                                <Border Height="1" Background="#CBD5E1" Width="60" Margin="0,2,0,2"/>
                                 <TextBlock Text="UNLOAD" 
                        FontSize="10" 
                        FontWeight="Bold" 

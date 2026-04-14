@@ -19,10 +19,15 @@ namespace IPCSoftware.App.Bending
         public MainWindow()
         {
             InitializeComponent();
+            DashBoard1_Loaded(this, new RoutedEventArgs());
         }
 
         //private void Dashboard_Loaded(object sender, RoutedEventArgs e)
-        private void DashBoard1_Loaded(object sender, RoutedEventArgs e)
+        //private void DashBoard1_Loaded(object sender, RoutedEventArgs e)
+
+        //private void DashBoard1_Loaded(object sender, RoutedEventArgs e)
+        private void DashBoard1_Loaded(object sender, RoutedEventArgs e) 
+
         {
 
         }

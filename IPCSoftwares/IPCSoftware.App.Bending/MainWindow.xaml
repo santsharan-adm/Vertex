@@ -1,12 +1,26 @@
-﻿<Window x:Class="IPCSoftware.App.Bending.MainWindow"
+﻿<!--<Window x:Class="IPCSoftware.App.Bending.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="clr-namespace:IPCSoftware.App.Bending.Views"
-        Title="Bending Machine System" 
+        Title="Bending Machine System"
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen">
     <Grid>
-        <!--<views:Dashboard Loaded="Dashboard_Loaded" />-->
-        <views:DashBoard1 Loaded="DashBoard1_Loaded" />
+        --><!--<views:Dashboard  />-->
+        <!--<views:DashBoard1 Loaded="DashBoard1_Loaded" />--><!--
+        <views:DashBoard1 />
+    </Grid>
+</Window>-->
+
+
+<Window x:Class="IPCSoftware.App.Bending.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:IPCSoftware.App.Bending.Views"
+        Title="Bending Machine System"
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <views:UserControl1 />
     </Grid>
 </Window>
