@@ -12,6 +12,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using IPCSoftware.Services;
+using System.Windows.Controls;
 
 namespace IPCSoftware.Services.ConfigServices
 {
@@ -334,19 +335,31 @@ namespace IPCSoftware.Services.ConfigServices
                 await SaveDevicesToCsvAsync();
                 return;
             }
-
-           
-                var lines = await File.ReadAllLinesAsync(_devicesCsvPath);
-                if (lines.Length <= 1) return;
-
+                var rows = CsvReader.Read(_devicesCsvPath);  //Modified by Rishabh - date - 13/04/2026//
+                 if (rows.Count == 0) return;
                 _devices.Clear();
-                for (int i = 1; i < lines.Length; i++)
+                //var lines = await File.ReadAllLinesAsync(_devicesCsvPath);
+                //if (lines.Length <= 1) return;
+
+                // _devices.Clear();
+                //for (int i = 1; i < lines.Length; i++)
+                //{
+                //    var device = ParseDeviceCsvLine(lines[i]);
+                //    if (device != null)
+                //    {
+                //        _devices.Add(device);
+                //        if (device.Id >= _nextDeviceId)
+                //            _nextDeviceId = device.Id + 1;
+                //    }
+                //}
+                //Modified by Rishabh - date - 13/04/2026//
+                foreach (var values in rows)
                 {
-                    var device = ParseDeviceCsvLine(lines[i]);
+                    var device = ParseDeviceCsvLine(values);
                     if (device != null)
                     {
                         _devices.Add(device);
-                        if (device.Id >= _nextDeviceId)
+                        if (device.Id >= _nextDeviceId) 
                             _nextDeviceId = device.Id + 1;
                     }
                 }
@@ -398,13 +411,25 @@ namespace IPCSoftware.Services.ConfigServices
                 await SaveCameraInterfacesToCsvAsync();
                 return;
             }
-                var lines = await File.ReadAllLinesAsync(_cameraInterfacesCsvPath);
-                if (lines.Length <= 1) return;
-
+               // var lines = await File.ReadAllLinesAsync(_cameraInterfacesCsvPath);
+                var rows =  CsvReader.Read(_cameraInterfacesCsvPath); //Modified by Rishabh - date - 13/04/2026//
+                if (rows.Count == 0) return;
+                if (rows.Count == 0) return;
                 _cameraInterfaces.Clear();
-                for (int i = 1; i < lines.Length; i++)
+                //if (lines.Length <= 1) return;
+                // _cameraInterfaces.Clear();
+                //for (int i = 1; i < lines.Length; i++)
+                //{
+                //    var cameraInterface = ParseCameraInterfaceCsvLine(lines[i]);
+                //    if (cameraInterface != null)
+                //    {
+                //        _cameraInterfaces.Add(cameraInterface);
+                //    }
+                //}
+                //Modified by Rishabh - date - 13/04/2026//
+                foreach (var values in rows)
                 {
-                    var cameraInterface = ParseCameraInterfaceCsvLine(lines[i]);
+                    var cameraInterface = ParseCameraInterfaceCsvLine(values);
                     if (cameraInterface != null)
                     {
                         _cameraInterfaces.Add(cameraInterface);
@@ -455,12 +480,12 @@ namespace IPCSoftware.Services.ConfigServices
 
 
 
-        private DeviceModel ParseDeviceCsvLine(string line)
+        private DeviceModel ParseDeviceCsvLine(string[] values)        //Modified by Rishabh - date - 13/04/2026//
         {
             try
             {
-                var values = SplitCsvLine(line);
-                if (values.Count < 9) return null;
+                //var values = SplitCsvLine(line);
+                if (values.Length < 9) return null;
 
                 return new DeviceModel
                 {
@@ -481,14 +506,15 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-        //Modfied by Rishabh - date - 08/04/2026//
-        private CameraInterfaceModel ParseCameraInterfaceCsvLine(string line)
+        //Modfied by Rishabh - date - 13/04/2026//
+        private CameraInterfaceModel ParseCameraInterfaceCsvLine(string[] values)            
         {
             try
             {
-                var values = SplitCsvLine(line);
+                //var values = SplitCsvLine(line);
                 // Header now has 54 columns (16 original + 5 primary + 19 client + 19 vendor - 5 overlap = 54)
-                if (values.Count < 16) return null;
+                if (values.Length < 16) return null;
+                //if (CsvReader.Getversion == "2.0") return null;
 
                 var cam = new CameraInterfaceModel
                 {
@@ -512,53 +538,53 @@ namespace IPCSoftware.Services.ConfigServices
 
                 // Load CCD fields if they exist (backward compatible)
                 //Added by Rishabh - date - 08/04/2026//
-                if (values.Count > 16)
+                if (values.Length > 16)
                 {
-                    cam.QrCodeImagePath = values.Count > 16 ? values[16] : "";
-                    cam.TempImgFolder = values.Count > 17 ? values[17] : "";
-                    cam.ImageRootFolder = values.Count > 18 ? values[18] : "";
-                    cam.MetadataStyle = values.Count > 19 ? values[19] : "";
-                    cam.CurrentCycleStateFileName = values.Count > 20 ? values[20] : "";
+                    cam.QrCodeImagePath = values.Length > 16 ? values[16] : "";
+                    cam.TempImgFolder = values.Length > 17 ? values[17] : "";
+                    cam.ImageRootFolder = values.Length > 18 ? values[18] : "";
+                    cam.MetadataStyle = values.Length > 19 ? values[19] : "";
+                    cam.CurrentCycleStateFileName = values.Length > 20 ? values[20] : "";
 
                     // Client metadata (indices 21-39)
-                    cam.Client_Version = values.Count > 21 ? values[21] : "";
-                    cam.Client_Date = values.Count > 22 ? values[22] : "";
-                    cam.Client_Time = values.Count > 23 ? values[23] : "";
-                    cam.Client_VisionVendor = values.Count > 24 ? values[24] : "";
-                    cam.Client_StationID = values.Count > 25 ? values[25] : "";
-                    cam.Client_StationNickname = values.Count > 26 ? values[26] : "";
-                    cam.Client_DUTSerialNumber = values.Count > 27 ? values[27] : "";
-                    cam.Client_ProcessCommand = values.Count > 28 ? values[28] : "";
-                    cam.Client_CameraNumber = values.Count > 29 ? values[29] : "";
-                    cam.Client_XPixelSizeMM = values.Count > 30 ? values[30] : "";
-                    cam.Client_YPixelSizeMM = values.Count > 31 ? values[31] : "";
-                    cam.Client_CameraGain = values.Count > 32 ? values[32] : "";
-                    cam.Client_CameraExposure = values.Count > 33 ? values[33] : "";
-                    cam.Client_NumberOfLightSettings = values.Count > 34 ? values[34] : "";
-                    cam.Client_LightSetting1 = values.Count > 35 ? values[35] : "";
-                    cam.Client_LightSettingN = values.Count > 36 ? values[36] : "";
-                    cam.Client_DUTColor = values.Count > 37 ? values[37] : "";
-                    cam.Client_ImageNickname = values.Count > 38 ? values[38] : "";
+                    cam.Client_Version = values.Length > 21 ? values[21] : "";
+                    cam.Client_Date = values.Length > 22 ? values[22] : "";
+                    cam.Client_Time = values.Length > 23 ? values[23] : "";
+                    cam.Client_VisionVendor = values.Length > 24 ? values[24] : "";
+                    cam.Client_StationID = values.Length > 25 ? values[25] : "";
+                    cam.Client_StationNickname = values.Length > 26 ? values[26] : "";
+                    cam.Client_DUTSerialNumber = values.Length > 27 ? values[27] : "";
+                    cam.Client_ProcessCommand = values.Length > 28 ? values[28] : "";
+                    cam.Client_CameraNumber = values.Length > 29 ? values[29] : "";
+                    cam.Client_XPixelSizeMM = values.Length > 30 ? values[30] : "";
+                    cam.Client_YPixelSizeMM = values.Length > 31 ? values[31] : "";
+                    cam.Client_CameraGain = values.Length > 32 ? values[32] : "";
+                    cam.Client_CameraExposure = values.Length > 33 ? values[33] : "";
+                    cam.Client_NumberOfLightSettings = values.Length > 34 ? values[34] : "";
+                    cam.Client_LightSetting1 = values.Length > 35 ? values[35] : "";
+                    cam.Client_LightSettingN = values.Length > 36 ? values[36] : "";
+                    cam.Client_DUTColor = values.Length > 37 ? values[37] : "";
+                    cam.Client_ImageNickname = values.Length > 38 ? values[38] : "";
 
                     // Vendor metadata (indices 39-57)
-                    cam.Vendor_Version = values.Count > 39 ? values[39] : "";
-                    cam.Vendor_Date = values.Count > 40 ? values[40] : "";
-                    cam.Vendor_Time = values.Count > 41 ? values[41] : "";
-                    cam.Vendor_VisionVendor = values.Count > 42 ? values[42] : "";
-                    cam.Vendor_StationID = values.Count > 43 ? values[43] : "";
-                    cam.Vendor_StationNickname = values.Count > 44 ? values[44] : "";
-                    cam.Vendor_DUTSerialNumber = values.Count > 45 ? values[45] : "";
-                    cam.Vendor_ProcessCommand = values.Count > 46 ? values[46] : "";
-                    cam.Vendor_CameraNumber = values.Count > 47 ? values[47] : "";
-                    cam.Vendor_XPixelSizeMM = values.Count > 48 ? values[48] : "";
-                    cam.Vendor_YPixelSizeMM = values.Count > 49 ? values[49] : "";
-                    cam.Vendor_CameraGain = values.Count > 50 ? values[50] : "";
-                    cam.Vendor_CameraExposure = values.Count > 51 ? values[51] : "";
-                    cam.Vendor_NumberOfLightSettings = values.Count > 52 ? values[52] : "";
-                    cam.Vendor_LightSetting1 = values.Count > 53 ? values[53] : "";
-                    cam.Vendor_LightSettingN = values.Count > 54 ? values[54] : "";
-                    cam.Vendor_DUTColor = values.Count > 55 ? values[55] : "";
-                    cam.Vendor_ImageNickname = values.Count > 56 ? values[56] : "";
+                    cam.Vendor_Version = values.Length > 39 ? values[39] : "";
+                    cam.Vendor_Date = values.Length > 40 ? values[40] : "";
+                    cam.Vendor_Time = values.Length > 41 ? values[41] : "";
+                    cam.Vendor_VisionVendor = values.Length > 42 ? values[42] : "";
+                    cam.Vendor_StationID = values.Length > 43 ? values[43] : "";
+                    cam.Vendor_StationNickname = values.Length > 44 ? values[44] : "";
+                    cam.Vendor_DUTSerialNumber = values.Length > 45 ? values[45] : "";
+                    cam.Vendor_ProcessCommand = values.Length > 46 ? values[46] : "";
+                    cam.Vendor_CameraNumber = values.Length > 47 ? values[47] : "";
+                    cam.Vendor_XPixelSizeMM = values.Length > 48 ? values[48] : "";
+                    cam.Vendor_YPixelSizeMM = values.Length > 49 ? values[49] : "";
+                    cam.Vendor_CameraGain = values.Length > 50 ? values[50] : "";
+                    cam.Vendor_CameraExposure = values.Length > 51 ? values[51] : "";
+                    cam.Vendor_NumberOfLightSettings = values.Length > 52 ? values[52] : "";
+                    cam.Vendor_LightSetting1 = values.Length > 53 ? values[53] : "";
+                    cam.Vendor_LightSettingN = values.Length > 54 ? values[54] : "";
+                    cam.Vendor_DUTColor = values.Length > 55 ? values[55] : "";
+                    cam.Vendor_ImageNickname = values.Length > 56 ? values[56] : "";
                 }
 
                 return cam;
@@ -583,13 +609,25 @@ namespace IPCSoftware.Services.ConfigServices
                 await SaveInterfacesToCsvAsync();
                 return;
             }
-
+                var rows =CsvReader.Read(_interfacesCsvPath);     //Modified by Rishabh - date - 13/04/2026//
                 if (lines.Length <= 1) return;
+                if (rows.Count == 0) return;
 
                 _interfaces.Clear();
-                for (int i = 1; i < lines.Length; i++)
+                //for (int i = 1; i < lines.Length; i++)
+                //{
+                //    var iface = ParseInterfaceCsvLine(lines[i]);
+                //    if (iface != null)
+                //    {
+                //        _interfaces.Add(iface);
+                //        if (iface.Id >= _nextInterfaceId)
+                //            _nextInterfaceId = iface.Id + 1;
+                //    }
+                //}
+                //Modified by Rishabh - date - 13/04/2026//
+                foreach (var values in rows)
                 {
-                    var iface = ParseInterfaceCsvLine(lines[i]);
+                    var iface = ParseInterfaceCsvLine(values);
                     if (iface != null)
                     {
                         _interfaces.Add(iface);
@@ -597,6 +635,7 @@ namespace IPCSoftware.Services.ConfigServices
                             _nextInterfaceId = iface.Id + 1;
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -721,12 +760,12 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-        private DeviceInterfaceModel ParseInterfaceCsvLine(string line)
+        private DeviceInterfaceModel ParseInterfaceCsvLine(string[] values)        //Modified by Rishabh - date - 13/04/2026//
         {
             try
             {
-                var values = SplitCsvLine(line);
-                if (values.Count < 12) return null;
+               // var values = SplitCsvLine(line);
+                if (values.Length < 12) return null;
 
                 return new DeviceInterfaceModel
                 {
