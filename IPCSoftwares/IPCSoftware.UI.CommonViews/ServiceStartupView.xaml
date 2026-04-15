@@ -86,7 +86,7 @@
                 <Border Grid.Column="0"/>
 
                 <!-- Core Service Card -->
-                <Border Grid.Column="0" Style="{StaticResource SystemCardStyle}" Margin="9,10,559,10">
+                <Border Grid.Column="0" Style="{StaticResource SystemCardStyle}" Margin="9,10,360,10">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -98,21 +98,21 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Core Service" FontSize="28" FontWeight="Bold" Foreground="#555" Grid.Column="0" RenderTransformOrigin="0.639,0.547"/>
+                            <TextBlock Text="Core Service" FontSize="28" FontWeight="Bold" Foreground="#555" Grid.Column="0" RenderTransformOrigin="0.639,0.547" Grid.ColumnSpan="2" Margin="25,-11,-25,11"/>
                             <TextBlock Text="{Binding ServiceStatus}" FontSize="24" FontWeight="SemiBold" Foreground="{Binding ServiceStatusColor}" HorizontalAlignment="Right" Grid.Column="1"/>
                         </Grid>
 
                         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                            <Button Content="START" Command="{Binding StartServiceCommand}" Width="160" Height="70" Background="#28A745" Foreground="White" FontSize="24" FontWeight="Bold" Margin="0,0,20,0" BorderThickness="0" Cursor="Hand">
+                            <Button Content="START" Command="{Binding StartServiceCommand}" Width="172" Height="70" Background="#28A745" Foreground="White" FontSize="24" FontWeight="Bold" BorderThickness="0" Cursor="Hand">
                                 <Button.Resources>
-                                    <Style TargetType="Border">
+                                    <Style TargetType="{x:Type Border}">
                                         <Setter Property="CornerRadius" Value="10"/>
                                     </Style>
                                 </Button.Resources>
                             </Button>
                             <Button Content="STOP" Command="{Binding StopServiceCommand}" Width="160" Height="70" Background="#DC3545" Foreground="White" FontSize="24" FontWeight="Bold" BorderThickness="0" Cursor="Hand">
                                 <Button.Resources>
-                                    <Style TargetType="Border">
+                                    <Style TargetType="{x:Type Border}">
                                         <Setter Property="CornerRadius" Value="10"/>
                                     </Style>
                                 </Button.Resources>

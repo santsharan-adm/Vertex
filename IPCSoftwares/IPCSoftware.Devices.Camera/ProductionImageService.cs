@@ -99,7 +99,7 @@ namespace IPCSoftware.Devices.Camera
                 // We create copies so we don't modify the global settings
                 var clientMeta = CloneAndUpdate(_ccd.ClientMetaDataParams, uniqueDataString, stNo, metaDate, metaTime, fileNameBase, x, y , z);
                 var vendorMeta = CloneAndUpdate(_ccd.VendorMetaDataParams, uniqueDataString, stNo, metaDate, metaTime, fileNameBase, x, y, z);
-
+                
                 // --- 4. Format Metadata Strings ---
                 string clientMetaStr = MetadataFormatter.Format(clientMeta, true);
                 string vendorMetaStr = MetadataFormatter.Format(vendorMeta, false);

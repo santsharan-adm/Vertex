@@ -1,2 +1,3 @@
 ﻿Id,DeviceNo,DeviceName,DeviceType,Make,Model,Description,Remark,Enabled
 1,1,"PLC1","PLC","Keyence","KV098","","",True
+5,2,"ccd","CCD","keyence","cv-x450","","",True

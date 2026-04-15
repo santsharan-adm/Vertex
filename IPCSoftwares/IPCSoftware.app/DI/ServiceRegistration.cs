@@ -81,7 +81,7 @@ namespace IPCSoftware.App.DI
                     sp.GetRequiredService<IAppLogger>()
                 )
             );
-
+            services.AddSingleton<CameraConfigLoader>();                             //Added by Rishabh - date - 15/04/2026//
             services.AddSingleton<PLCClientManager>();
             services.AddSingleton<CameraFtpService>();
             services.AddTransient<ProductionImageService>();
@@ -125,7 +125,9 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceInterfaceConfigurationViewModel>();
             services.AddTransient<CameraDetailViewModel>();
             services.AddTransient<CameraInterfaceConfigurationViewModel>();
-            
+            services.AddTransient<ServiceStartupView>();                 //Added by Rishabh -date - 15-04-2026
+            services.AddTransient<ServiceStartupViewModel>();            //Added by Rishabh -date - 15-04-2026
+
 
             //  UPDATED: CcdSettingsViewModel now includes IObservableCcdSettingsService
             services.AddTransient<CcdSettingsViewModel>(sp =>
@@ -195,7 +197,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<TagControlViewModel>();
             services.AddTransient<SystemSettingView>();
             services.AddTransient<SystemSettingViewModel>();
-            services.AddTransient<ServiceStartupView>();
+           // services.AddTransient<ServiceStartupView>();
             //services.AddTransient<ServiceStartupViewModel>();
             services.AddTransient<IPLCService, PlcService>();
             services.AddSingleton<CoreClient>();

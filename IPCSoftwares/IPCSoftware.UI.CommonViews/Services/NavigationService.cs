@@ -433,7 +433,12 @@ namespace IPCSoftware.Common.CommonFunctions
         //Added By Rishabh , Date -13/04/2026
         public void NavigateToServiceStartup()
         {
-            NavigateMain<ServiceStartupView>();
+            var view = _provider.GetService<ServiceStartupView>();
+            var viewModel = _provider.GetService<ServiceStartupViewModel>();
+            if (!CanNavigateFromCurrent()) return;
+            view.DataContext = viewModel;
+            _mainContent.Content = view;
+           // NavigateMain<ServiceStartupView>();
         }
 
         public void NavigateToPLCTagConfiguration(PLCTagConfigurationModel tagToEdit, Func<Task> onSaveCallback)

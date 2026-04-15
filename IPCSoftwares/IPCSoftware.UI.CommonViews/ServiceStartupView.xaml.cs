@@ -1,4 +1,6 @@
+using IPCSoftware.UI.CommonViews.ViewModels;
 using System.Windows.Controls;
+using IPCSoftware.App;
 
 namespace IPCSoftware.UI.CommonViews
 {
@@ -7,6 +9,7 @@ namespace IPCSoftware.UI.CommonViews
         public ServiceStartupView()
         {
             InitializeComponent();
+          //  this.DataContext = App.ServiceProvider?.GetService<ServiceStartupViewModel>();
         }
     }
 }
