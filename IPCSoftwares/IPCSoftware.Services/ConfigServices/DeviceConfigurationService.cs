@@ -412,6 +412,7 @@ namespace IPCSoftware.Services.ConfigServices
                 return;
             }
                // var lines = await File.ReadAllLinesAsync(_cameraInterfacesCsvPath);
+               var version = CsvReader.Getversion(_cameraInterfacesCsvPath); //Added by Rishabh - date - 13/04/2026//
                 var rows =  CsvReader.Read(_cameraInterfacesCsvPath); //Modified by Rishabh - date - 13/04/2026//
                 if (rows.Count == 0) return;
                 if (rows.Count == 0) return;

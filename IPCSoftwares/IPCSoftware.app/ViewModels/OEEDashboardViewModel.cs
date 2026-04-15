@@ -8,7 +8,7 @@ using IPCSoftware.UI.CommonViews.Views;  // ✅ ADD for FullImageView
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.CoreService.Services.Dashboard;
-using IPCSoftware.Services;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -37,6 +37,7 @@ namespace IPCSoftware.App.ViewModels
         private readonly string _prodCsvFolder;
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
         private readonly IProductConfigurationService _productService; // NEW Injection
+        private readonly IObservableCcdSettingsService _observableCcdSettings;
 
 
         private ExternalSettings Settings => _settingsMonitor.CurrentValue;
@@ -374,9 +375,11 @@ namespace IPCSoftware.App.ViewModels
             IOptions<CcdSettings> ccdSettng,
             IOptions<ConfigSettings> configSettng,
            IOptionsMonitor<ExternalSettings> settingsMonitor,
+           IObservableCcdSettingsService observableCcdSettings,
             CoreClient coreClient,
             IDialogService dialog,
             ILogConfigurationService logConfigService,
+            IDeviceConfigurationService deviceService,
             IProductConfigurationService productService,
             IAppLogger logger) : base(logger)
         {
@@ -388,13 +391,21 @@ namespace IPCSoftware.App.ViewModels
             _productService = productService;
             SwitchDirection = configSettng.Value.SwitchConveyorDirection;
             IsMacMiniEnabled = _settingsMonitor.CurrentValue.IsMacMiniEnabled;
+            _observableCcdSettings =observableCcdSettings;
 
             var prodLogConfigTask = logConfigService.GetByLogTypeAsync(LogType.Production);
             prodLogConfigTask.Wait();
             var prodLogConfig = prodLogConfigTask.Result;
             _prodCsvFolder = prodLogConfig?.DataFolder ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+            //Added by Rishabh Date -14-04-2026//
+            
+            InitializeObservableCcdSettingsAsync (deviceService);
+
             // Path to shared state file
-            _jsonStatePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
+            //Modified by Rishabh - date - 14/04/2026 
+            _jsonStatePath = Path.Combine(!String.IsNullOrEmpty(_observableCcdSettings?.QrCodeImagePath) ? _observableCcdSettings.QrCodeImagePath : "", !String.IsNullOrEmpty(_observableCcdSettings?.CurrentCycleStateFileName) ? _observableCcdSettings.CurrentCycleStateFileName : "");
+
+            // _jsonStatePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
             // _jsonStatePath = Path.Combine(ConstantValues.QrCodeImagePath, "CurrentCycleState.json");
 
             // Initialize Lists
@@ -1345,6 +1356,42 @@ namespace IPCSoftware.App.ViewModels
 
         #endregion
 
+        //Added by Rishabh Date=14-04-2026:
+        //*Async initialization method
+        private async void InitializeObservableCcdSettingsAsync(IDeviceConfigurationService deviceService)
+        {
+            try
+            {
+                // Load camera devices from configuration
+                var cameras = await deviceService.GetCameraDevicesAsync();
 
+                if (cameras != null && cameras.Count > 0)
+                {
+                    // Use the first camera interface (or implement selection logic if needed)
+                    var firstCamera = cameras.FirstOrDefault();
+
+                    if (firstCamera != null && _observableCcdSettings != null)
+                    {
+                        // Update observable settings from camera interface
+                        await _observableCcdSettings.UpdateFromCameraInterfaceAsync(firstCamera);
+
+                        _logger.LogInfo(
+                            $"[OEEDashboard] Initialized Observable CCD Settings:" +
+                            $"\n  QrCodeImagePath: {_observableCcdSettings.QrCodeImagePath}" +
+                            $"\n  TempImgFolder: {_observableCcdSettings.TempImgFolder}" +
+                            $"\n  CurrentCycleStateFileName: {_observableCcdSettings.CurrentCycleStateFileName}",
+                            LogType.Diagnostics);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("[OEEDashboard] No camera devices found in configuration", LogType.Diagnostics);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[OEEDashboard] Failed to initialize Observable CCD Settings: {ex.Message}", LogType.Diagnostics);
+            }
+        }
     }
 }

@@ -68,7 +68,7 @@ namespace IPCSoftware.Devices.Camera
                 // Format: uniqueString_DateOfToday
                 //  string folderName = $"{uniqueDataString}_{dateStr}".Replace("\0", "_");
                 string machineCode = _extSetting.AOIMachineCode;
-                string productionFolder = _ccd.ImageRootFolder;// "Production Images";
+                string productionFolder = _observableSettings.ImageRootFolder;// "Production Images";  //Modified by Rishabh -Date -14/04/2026
 
                 string folderName = $"{metaDate}-{uniqueDataString}".Replace("\0", "_");
                 var finalfolderName = Path.Combine(machineCode, productionFolder, folderName);
@@ -200,7 +200,7 @@ namespace IPCSoftware.Devices.Camera
                 // Ensure style is padded/trimmed to exactly 16 bytes if required, 
                 // though diagram just says "Append Metadata Style". 
                 // We use the string directly as per the code logic usually matching "METADATASTYLE003".
-                string style = _ccd.MetadataStyle ?? "METADATASTYLE003";
+                string style = _observableSettings.MetadataStyle ?? "METADATASTYLE003";
                 dataBuilder.AddRange(Encoding.ASCII.GetBytes(style));
                 // --- 4. Append Client Metadata ---
                 // If Style is 002, skip Client. 
