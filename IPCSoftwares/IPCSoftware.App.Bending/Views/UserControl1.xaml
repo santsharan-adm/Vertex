@@ -48,33 +48,33 @@
 
 
         <!--Controls-->
-        <!--<StackPanel Grid.Row="0" Grid.Column="0" Margin="0" VerticalAlignment="Top">
+        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0" VerticalAlignment="Top">
 
 
 
 
-            <TextBlock Text="CONTROLS" FontWeight="Bold" FontSize="12" Margin="10" Foreground="White" Width="200"/>
+            <TextBlock Text="CONTROLS" FontWeight="Bold" FontSize="12" Margin="10" Foreground="White"/>
             <Border Background="White" CornerRadius="8" Padding="10" BorderBrush="#CBD5E1" BorderThickness="1" Height="164">
-                <StackPanel Width="200">
+                <StackPanel>
+                   
+                        <Button Margin="2" Padding="5" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0">
+                            <TextBlock Text="AUTO RUN" TextWrapping="Wrap" TextAlignment="Center"/>
+                        </Button>
+                        <Button Margin="2" Padding="5" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0">
+                            <TextBlock Text="DRY RUN" TextWrapping="Wrap" TextAlignment="Center"/>
+                        </Button>
+                   
 
-                    <Button Margin="2" Padding="5" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0">
-                        <TextBlock Text="AUTO RUN" TextWrapping="Wrap" TextAlignment="Center"/>
-                    </Button>
-                    <Button Margin="2" Padding="5" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0">
-                        <TextBlock Text="DRY RUN" TextWrapping="Wrap" TextAlignment="Center"/>
-                    </Button>
+                  
+                        <Button Margin="2" Padding="5" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0">
+                            <TextBlock Text="CYCLE START/STOP" TextWrapping="Wrap" TextAlignment="Center"/>
+                        </Button>
+                        <Button Margin="2" Padding="5" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0">
+                            <TextBlock Text="WORK PAYOUT START" TextWrapping="Wrap" TextAlignment="Center"/>
+                        </Button>
+                   
 
-
-
-                    <Button Margin="2" Padding="5" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0">
-                        <TextBlock Text="CYCLE START/STOP" TextWrapping="Wrap" TextAlignment="Center"/>
-                    </Button>
-                    <Button Margin="2" Padding="5" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0">
-                        <TextBlock Text="WORK PAYOUT START" TextWrapping="Wrap" TextAlignment="Center"/>
-                    </Button>
-
-
-
+                   
 
 
 
@@ -85,27 +85,9 @@
 
 
 
-        </StackPanel>-->
-
-        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0" VerticalAlignment="Top">
-            <TextBlock Text="CONTROLS" FontWeight="Bold" FontSize="12" Margin="10" Foreground="White"/>
-            <Border Background="White" CornerRadius="8" Padding="5" BorderBrush="#CBD5E1" BorderThickness="1" Height="145">
-                <UniformGrid Columns="1">
-                    <Button Margin="0,2,0,2" Padding="5" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0" Width="218">
-                        <TextBlock Text="AUTO RUN" TextWrapping="Wrap" TextAlignment="Center"/>
-                    </Button>
-                    <Button Margin="2" Padding="5" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0">
-                        <TextBlock Text="DRY RUN" TextWrapping="Wrap" TextAlignment="Center"/>
-                    </Button>
-                    <Button Margin="2" Padding="5" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0">
-                        <TextBlock Text="CYCLE START/STOP" TextWrapping="Wrap" TextAlignment="Center"/>
-                    </Button>
-                    <Button Margin="2" Padding="5" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0">
-                        <TextBlock Text="WORK PAYOUT START" TextWrapping="Wrap" TextAlignment="Center"/>
-                    </Button>
-                </UniformGrid>
-            </Border>
         </StackPanel>
+
+
 
 
 
@@ -247,7 +229,7 @@
         </StackPanel>
 
 
-        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="#1E293B" CornerRadius="8" Padding="5" Margin="250,0,0,622" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Grid.RowSpan="3">
+        <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Background="#1E293B" CornerRadius="8" Padding="5" Margin="0" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5">
             <UniformGrid Columns="4">
 
                 <!--Input Inspection-->
