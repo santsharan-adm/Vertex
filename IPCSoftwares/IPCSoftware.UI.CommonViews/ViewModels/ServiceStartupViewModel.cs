@@ -47,7 +47,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     public class ServiceStartupViewModel : BaseViewModel, IDisposable
     {
         private readonly SafePoller _servicePoller;
-        private const string TARGET_SERVICE_NAME = "IPCSoftware.CoreService";
+        private const string TARGET_SERVICE_NAME = "IPCSoftware.CoreService.AOI";
 
         //private RelayCommand _startServiceCommand;
         //private RelayCommand _stopServiceCommand;
