@@ -1,4 +1,5 @@
-﻿Id,AlarmNo,AlarmName,TagNo,Name,AlarmBit,AlarmText,Severity,AlarmTime,AlarmResetTime,AlarmAckTime,Description,Remark
+﻿Version = 2.0
+Id,AlarmNo,AlarmName,TagNo,Name,AlarmBit,AlarmText,Severity,AlarmTime,AlarmResetTime,AlarmAckTime,Description,Remark
 1,1,"Abnormal startup conditions",31,"PD_ALARMS1","0","Abnormal startup conditions","High","","","","Check whether the startup conditions are correctly established (can be checked with the startup condition monitor)",""
 2,2,"IPC communication abnormalities",31,"PD_ALARMS1","1","IPC communication abnormalities","High","","","","Check if PLC and IPC communication cables are not interrupted",""
 3,3,"Pressure drop alarm",31,"PD_ALARMS1","2","Pressure drop alarm","High","","","","Checking that the main air is supplied correctly",""

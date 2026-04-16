@@ -1,3 +1,4 @@
-﻿Id,ShiftName,StartTime,EndTime,IsActive
+﻿Version = 2.0
+Id,ShiftName,StartTime,EndTime,IsActive
 1,"dfd",13:51:00,00:00:00,False
 2,"fd",10:00:00,00:00:00,True
