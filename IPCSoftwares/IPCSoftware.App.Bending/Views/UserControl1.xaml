@@ -1020,6 +1020,67 @@
 
 
                 <Canvas Canvas.Left="110" Canvas.Top="170">
+                    <Canvas.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <!--
+                                        One full cycle = 4 steps, each step:
+                                          TT1 rotates +90° over 0.8s, holds 0.4s
+                                          TT2 rotates +120° over 0.8s, holds 0.4s
+                                        Step duration = 2.4s  ×  4 steps = 9.6s total
+                                    -->
+
+                                    <!-- TT1: 0→90 at t=0..0.8, hold; 90→180 at t=2.4..3.2; 180→270 at t=4.8..5.6; 270→360 at t=7.2..8.0 -->
+                                    <DoubleAnimationUsingKeyFrames
+                                        Storyboard.TargetName="TT1RotateTransform"
+                                        Storyboard.TargetProperty="Angle">
+                                        <!-- Step 1: TT1 moves -->
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:0"    Value="0"/>
+                                        <LinearDoubleKeyFrame   KeyTime="0:0:0.8" Value="90"/>
+                                        <!-- hold while TT2 moves (0.4s hold + 0.8s TT2 move + 0.4s TT2 hold = 1.6s) -->
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:2.4"  Value="90"/>
+                                        <!-- Step 2: TT1 moves -->
+                                        <LinearDoubleKeyFrame   KeyTime="0:0:3.2" Value="180"/>
+                                        <!-- hold -->
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:4.8"  Value="180"/>
+                                        <!-- Step 3: TT1 moves -->
+                                        <LinearDoubleKeyFrame   KeyTime="0:0:5.6" Value="270"/>
+                                        <!-- hold -->
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:7.2"  Value="270"/>
+                                        <!-- Step 4: TT1 moves -->
+                                        <LinearDoubleKeyFrame   KeyTime="0:0:8.0" Value="360"/>
+                                        <!-- hold until cycle end -->
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:9.6"  Value="360"/>
+                                    </DoubleAnimationUsingKeyFrames>
+
+                                    <!-- TT2: moves after each TT1 step (offset by 1.2s), +120° each time -->
+                                    <DoubleAnimationUsingKeyFrames
+                                        Storyboard.TargetName="TT2RotateTransform"
+                                        Storyboard.TargetProperty="Angle">
+                                        <!-- hold while TT1 does step 1 (0→0.8s move + 0.4s hold = 1.2s) -->
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:0"    Value="0"/>
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:1.2"  Value="0"/>
+                                        <!-- Step 1: TT2 moves -->
+                                        <LinearDoubleKeyFrame   KeyTime="0:0:2.0" Value="120"/>
+                                        <!-- hold while TT1 does step 2 -->
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:3.6"  Value="120"/>
+                                        <!-- Step 2: TT2 moves -->
+                                        <LinearDoubleKeyFrame   KeyTime="0:0:4.4" Value="240"/>
+                                        <!-- hold while TT1 does step 3 -->
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:6.0"  Value="240"/>
+                                        <!-- Step 3: TT2 moves -->
+                                        <LinearDoubleKeyFrame   KeyTime="0:0:6.8" Value="360"/>
+                                        <!-- hold while TT1 does step 4 -->
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:8.4"  Value="360"/>
+                                        <!-- Step 4: TT2 moves (wraps back for next cycle) -->
+                                        <LinearDoubleKeyFrame   KeyTime="0:0:9.2" Value="480"/>
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:9.6"  Value="480"/>
+                                    </DoubleAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Canvas.Triggers>
 
                     <!-- ══ Rail connector: TT1 right edge → Transfer Module left edge ══ -->
                     <!-- Top rail -->
@@ -1045,7 +1106,7 @@
                     <Rectangle Canvas.Left="264" Canvas.Top="-92" Width="12" Height="12"
                                Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                     <!-- Slot 3 -->
-                    <Rectangle Canvas.Left="281" Canvas.Top="-92" Width="12" Height="12"
+                    <Rectangle Canvas.Left="283" Canvas.Top="-92" Width="12" Height="12"
                                Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                     <Border Width="160" Height="160"
@@ -1055,21 +1116,6 @@
                             BorderThickness="3.5"
                             Canvas.Left="70" Canvas.Top="-167"
                             HorizontalAlignment="Left" VerticalAlignment="Center">
-
-                        <Border.Triggers>
-                            <EventTrigger RoutedEvent="Loaded">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="TT1RotateTransform"
-                                            Storyboard.TargetProperty="Angle"
-                                            From="0" To="360"
-                                            Duration="0:0:5"
-                                            RepeatBehavior="Forever"/>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Border.Triggers>
 
                         <!-- Single Grid rotated as one unit — all 16 ellipses orbit clockwise -->
                         <Grid RenderTransformOrigin="0.5,0.5" Margin="0,0,0,-2">
@@ -1284,46 +1330,48 @@ Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAli
                             <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
                         </StackPanel>
                     </Canvas>-->
-                    <Grid Width="160" Height="150" 
-      Canvas.Left="260" Canvas.Top="-150">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="13*"/>
-                            <RowDefinition Height="137*"/>
-                        </Grid.RowDefinitions>
+                    <!-- Turn Table 2 rotating disc: circle + triangle + ellipses, all rotate around center (80,75) -->
+                    <Border Width="160" Height="160"
+                            CornerRadius="80"
+                            Background="White"
+                            BorderBrush="White"
+                            BorderThickness="3.5"
+                            Canvas.Left="218" Canvas.Top="-162"
+                            ClipToBounds="True"
+                            RenderTransformOrigin="0.5,0.5"
+                            HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <Border.RenderTransform>
+                            <RotateTransform x:Name="TT2RotateTransform" Angle="0"/>
+                        </Border.RenderTransform>
 
-                        <Grid.RenderTransform>
-                            <RotateTransform x:Name="MainRotation" Angle="0" CenterX="80" CenterY="80"/>
-                        </Grid.RenderTransform>
+                        <Grid Width="160" Height="160">
 
-                        <Grid.Triggers>
-                            <EventTrigger RoutedEvent="Grid.Loaded">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="MainRotation"
-                                     Storyboard.TargetProperty="Angle"
-                                     From="0" To="360" 
-                                     Duration="0:0:4" 
-                                     RepeatBehavior="Forever" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Grid.Triggers>
+                            <!-- Triangle pointing right (rotated polyline) -->
+                            <Canvas Width="160" Height="160">
+                                <Polyline Points="80,10 150,135 10,135 80,10"
+                                          Stroke="#000000"
+                                          StrokeThickness="3.5"
+                                          Fill="Transparent"
+                                          StrokeLineJoin="Round"
+                                          Canvas.Left="4" Canvas.Top="-5" HorizontalAlignment="Center" VerticalAlignment="Top">
+                                    <Polyline.RenderTransform>
+                                        <RotateTransform Angle="91.693" CenterX="80" CenterY="80"/>
+                                    </Polyline.RenderTransform>
+                                </Polyline>
+                            </Canvas>
 
-                        <Canvas Width="160" Height="150" Margin="-44,0,44,0" Grid.RowSpan="2">
-                            <Polyline Points="80,10 150,135 10,135 80,10" 
-                  Stroke="#000000" 
-                  StrokeThickness="3.5" 
-                  Fill="White" 
-                  StrokeLineJoin="Round" 
-                  Canvas.Left="0" Canvas.Top="0">
-                                <Polyline.RenderTransform>
-                                    <RotateTransform Angle="91.693" CenterX="80" CenterY="80"/>
-                                </Polyline.RenderTransform>
-                            </Polyline>
-
-                            <StackPanel Canvas.Left="78" Canvas.Top="33" Orientation="Vertical" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <!-- Top row ellipses -->
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Top"
+                                        Margin="58,37,0,0" RenderTransformOrigin="0.5,0.5">
                                 <StackPanel.RenderTransform>
-                                    <RotateTransform Angle="124.583"/>
+                                    <TransformGroup>
+                                        <ScaleTransform/>
+                                        <SkewTransform/>
+                                        <RotateTransform Angle="29.417"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
                                 </StackPanel.RenderTransform>
                                 <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
                                 <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
@@ -1331,9 +1379,18 @@ Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAli
                                 <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
                             </StackPanel>
 
-                            <StackPanel Canvas.Left="29" Canvas.Top="55" Orientation="Vertical" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <!-- Bottom row ellipses -->
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Top"
+                                        Margin="63,99,0,0" RenderTransformOrigin="0.5,0.5">
                                 <StackPanel.RenderTransform>
-                                    <RotateTransform Angle="1.248"/>
+                                    <TransformGroup>
+                                        <ScaleTransform/>
+                                        <SkewTransform/>
+                                        <RotateTransform Angle="-26.628"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
                                 </StackPanel.RenderTransform>
                                 <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
                                 <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
@@ -1341,17 +1398,20 @@ Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAli
                                 <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
                             </StackPanel>
 
-                            <StackPanel Canvas.Left="74" Canvas.Top="90" Orientation="Vertical" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" VerticalAlignment="Top">
-                                <StackPanel.RenderTransform>
-                                    <RotateTransform Angle="62.343"/>
-                                </StackPanel.RenderTransform>
+                            <!-- Left column ellipses -->
+                            <StackPanel Orientation="Vertical"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Top"
+                                        Margin="33,60,0,0">
                                 <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
                                 <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
                                 <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
                                 <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
                             </StackPanel>
-                        </Canvas>
-                    </Grid>
+
+                            <!-- Right column ellipses -->
+                        </Grid>
+                    </Border>
 
 
                     <TextBlock Canvas.Left="229" Canvas.Top="14" Text="TURN TABLE 2" FontWeight="Bold" FontSize="15" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -1506,14 +1566,14 @@ Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAli
                         <!-- Center text -->
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock Text="94" Foreground="White" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center"/>
-                            <TextBlock Text="%" Foreground="White" FontSize="13" HorizontalAlignment="Center"/>
+                            <TextBlock Text="%" Foreground="White" FontSize="18" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
             </Border>
 
             <!-- Efficiency Breakdown -->
-            <Border Background="#1E293B" CornerRadius="8" Padding="12,10">
+            <Border Background="#1E293B" CornerRadius="8" Padding="12,10" Margin="0,10,0,0">
                 <StackPanel>
                     <TextBlock Text="Efficiency Breakdown" Foreground="White" FontWeight="Bold" FontSize="12" Margin="0,0,0,14"/>
 
@@ -1524,7 +1584,7 @@ Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAli
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="36"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Availability" Foreground="White" FontSize="11" VerticalAlignment="Center"/>
+                        <TextBlock Text="Availability" Foreground="White" FontSize="11" VerticalAlignment="Center" FontWeight="Bold"/>
                         <Grid Grid.Column="1" Height="8" Margin="0,0,8,0" VerticalAlignment="Center">
                             <Border CornerRadius="4" Background="#334155"/>
                             <Border CornerRadius="4" Background="#10B981" HorizontalAlignment="Left" Width="96"/>
@@ -1539,7 +1599,7 @@ Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAli
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="36"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Performance" Foreground="White" FontSize="11" VerticalAlignment="Center"/>
+                        <TextBlock Text="Performance" Foreground="White" FontSize="11" VerticalAlignment="Center" FontWeight="Bold"/>
                         <Grid Grid.Column="1" Height="8" Margin="0,0,8,0" VerticalAlignment="Center">
                             <Border CornerRadius="4" Background="#334155"/>
                             <Border CornerRadius="4" Background="#3B82F6" HorizontalAlignment="Left" Width="91"/>
@@ -1554,7 +1614,7 @@ Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAli
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="36"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Quality" Foreground="White" FontSize="11" VerticalAlignment="Center"/>
+                        <TextBlock Text="Quality" Foreground="White" FontSize="11" VerticalAlignment="Center" FontWeight="Bold"/>
                         <Grid Grid.Column="1" Height="8" Margin="0,0,8,0" VerticalAlignment="Center">
                             <Border CornerRadius="4" Background="#334155"/>
                             <Border CornerRadius="4" Background="#F59E0B" HorizontalAlignment="Left" Width="97"/>
