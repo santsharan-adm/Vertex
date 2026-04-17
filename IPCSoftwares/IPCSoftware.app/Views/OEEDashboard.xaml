@@ -492,7 +492,7 @@
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="⏳" FontSize="28" HorizontalAlignment="Center" Margin="0,0,0,5"/>
                                             <TextBlock Text="Waiting for" FontSize="11" FontWeight="Bold" Foreground="#E67E22" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="Mac Mini..." FontSize="11" FontWeight="Bold" Foreground="#E67E22" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Mac Mini response" FontSize="11" FontWeight="Bold" Foreground="#E67E22" HorizontalAlignment="Center"/>
                                         </StackPanel>
                                     </Border>
                                 </Grid>

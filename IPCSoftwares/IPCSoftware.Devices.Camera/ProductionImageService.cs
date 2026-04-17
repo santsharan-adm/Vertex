@@ -80,7 +80,12 @@ namespace IPCSoftware.Devices.Camera
 
                 // 3. Construct File Name Base
                 // Format: stNo_FolderName_time(hh-mm-ss-xxx)
-                string fileNameBase = $"{stNo}_{uniqueDataString}_{metaDate}_{timeStr}";
+                // Sanitize QR string to remove null bytes and invalid filename characters
+                string safeQrString = new string(uniqueDataString
+                    .Replace("\0", "_")
+                    .Select(c => Path.GetInvalidFileNameChars().Contains(c) ? '_' : c)
+                    .ToArray());
+                string fileNameBase = $"{stNo}_{safeQrString}_{metaDate}_{timeStr}";
 
                 // 4. Define Full Output Paths
                 string rawDestPath = Path.Combine(targetFolder, $"{fileNameBase}_raw.bmp");

@@ -62,6 +62,7 @@ namespace IPCSoftware.App.ViewModels
         // --- JSON State Sync Variables ---
         private readonly string _jsonStatePath;
         private DateTime _lastJsonWriteTime;
+        private int _cycleVersion = 0;
 
 
         // --- Commands ---
@@ -138,6 +139,21 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
+        // True while QR image is captured but Mac Mini sync is still in progress
+        private bool _isPendingMacMiniSync = false;
+        private bool IsPendingMacMiniSync
+        {
+            get => _isPendingMacMiniSync;
+            set
+            {
+                if (_isPendingMacMiniSync != value)
+                {
+                    _isPendingMacMiniSync = value;
+                    OnPropertyChanged(nameof(IsWaitingForMacMini));
+                }
+            }
+        }
+
 
         public bool IsWaitingForMacMini
         {
@@ -147,10 +163,10 @@ namespace IPCSoftware.App.ViewModels
 
                 bool isMacMiniEnabled = _settingsMonitor.CurrentValue.IsMacMiniEnabled;
                 bool hasQrCode = !string.IsNullOrEmpty(QRCodeText) && QRCodeText != "Waiting for Scan...";
-                bool noImageYet = QrCodeImage == null;
 
-                // Show only if Mac Mini is ON, a QR code was scanned, but the station 0 image hasn't arrived yet
-                return isMacMiniEnabled && hasQrCode && noImageYet;
+                // Show while Mac Mini is enabled, QR has been scanned and its image captured,
+                // but the Mac Mini sync response (station placeholders) has not arrived yet
+                return isMacMiniEnabled && hasQrCode && _isPendingMacMiniSync;
             }
         }
 
@@ -818,6 +834,12 @@ namespace IPCSoftware.App.ViewModels
                         Application.Current.Dispatcher.Invoke(() => QrCodeImage = LoadBitmapSafe(qrData.ImagePath));
                 }
 
+                // Determine if we are still waiting for Mac Mini sync response:
+                // QR image exists (station 0 present with a path) but no inspection station placeholders yet
+                bool hasQrImage = state.Stations.ContainsKey(0) && !string.IsNullOrEmpty(state.Stations[0].ImagePath);
+                bool hasStationData = state.Stations.Keys.Any(k => k > 0);
+                IsPendingMacMiniSync = hasQrImage && !hasStationData;
+
                 // 5. Update Grid & Find Latest
                 StationResult latestStation = null;
 
@@ -836,10 +858,11 @@ namespace IPCSoftware.App.ViewModels
                     var uiItem = CameraImages.FirstOrDefault(x => x.StationNumber == kvp.Key);
                     if (uiItem != null)
                     {
-                        if (uiItem.LastLoadedFilePath != data.ImagePath)
+                    if (uiItem.LastLoadedFilePath != data.ImagePath)
                         {
                             string pathCopy = data.ImagePath;
                             uiItem.LastLoadedFilePath = pathCopy;
+                            int capturedVersion = _cycleVersion;
 
                             // Load bitmap off UI thread to avoid blocking dispatcher
                             _ = Task.Run(() =>
@@ -864,8 +887,12 @@ namespace IPCSoftware.App.ViewModels
                                     _logger.LogWarning($"LoadBitmapSafe background load failed: {ex.Message}", LogType.Diagnostics);
                                 }
 
-                                // assign on UI thread
-                                Application.Current?.Dispatcher.Invoke(() => uiItem.ImagePath = bmp);
+                                // assign on UI thread only if the cycle hasn't been reset since load started
+                                Application.Current?.Dispatcher.Invoke(() =>
+                                {
+                                    if (_cycleVersion == capturedVersion)
+                                        uiItem.ImagePath = bmp;
+                                });
                             });
                         }
                         uiItem.Result = data.Status;
@@ -887,6 +914,8 @@ namespace IPCSoftware.App.ViewModels
         }
         private void ResetDashboard()
         {
+            _cycleVersion++;
+            IsPendingMacMiniSync = false;
             QRCodeText = "Waiting for Scan...";
             QrCodeImage = null; // Clear QR Image
 

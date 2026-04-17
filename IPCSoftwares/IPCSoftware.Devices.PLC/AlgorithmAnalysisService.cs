@@ -163,7 +163,8 @@ namespace IPCSoftware.Devices.PLC
                             bytesToDecode = SwapEveryTwoBytes(byteArray);
                         }
                         // ---------------------------------------
-                        return Encoding.ASCII.GetString(bytesToDecode, 0, bytesToDecode.Length).TrimEnd('\0');
+                        // Replace ALL null characters (not just trailing) to handle embedded \0 from 2-byte Modbus string encoding
+                        return Encoding.ASCII.GetString(bytesToDecode, 0, bytesToDecode.Length).Replace("\0", string.Empty).Trim();
                     case DataType_Int16:
                         return BitConverter.ToInt16(byteArray, 0);
                     case DataType_UInt16:
