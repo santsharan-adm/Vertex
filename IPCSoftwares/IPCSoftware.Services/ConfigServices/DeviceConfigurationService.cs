@@ -29,12 +29,14 @@ namespace IPCSoftware.Services.ConfigServices
         private readonly string _cameraInterfacesCsvPath;
         private List<CameraInterfaceModel> _cameraInterfaces;
         private readonly CameraConfigLoader _cameraLoader;  //Added by Rishabh -Date 15/04/2026//
+        private readonly DeviceConfigLoader _deviceInterfaceLoader;  //Added by Rishabh -Date 17/04/2026//
 
         private int _nextDeviceId = 1;
         private int _nextInterfaceId = 1;
 
         public DeviceConfigurationService(
             IOptions<ConfigSettings> configSettings,
+            DeviceConfigLoader deviceInterfaceLoader,      //Added by Rishabh -Date 17/04/2026//
             CameraConfigLoader cameraLoader,              //Added by Rishabh -Date 15/04/2026//
             IAppLogger logger) : base (logger)
         {
@@ -51,6 +53,7 @@ namespace IPCSoftware.Services.ConfigServices
             _devicesCsvPath = Path.Combine(_dataFolder, config.DeviceFileName /* "Devices.csv"*/);
             _interfacesCsvPath = Path.Combine(_dataFolder, config.DeviceInterfacesFileName /* "DeviceInterfaces.csv"*/);
             _cameraInterfacesCsvPath = Path.Combine(_dataFolder,config.CameraInterfacesFileName  /* "CameraInterfaces.csv"*/);
+            _deviceInterfaceLoader = deviceInterfaceLoader;    //Added by Rishabh -Date 17/04/2026//
             _cameraLoader = cameraLoader;                //Added by Rishabh -Date 15/04/2026//
             _devices = new List<DeviceModel>();
             _interfaces = new List<DeviceInterfaceModel>();
@@ -80,7 +83,7 @@ namespace IPCSoftware.Services.ConfigServices
             return await Task.FromResult(_devices.ToList());
         }
 
-        public async Task<List<DeviceInterfaceModel>> GetPlcDevicesAsync()
+        public async Task<List<DeviceInterfaceModel>> GetDeviceInterfaceAsync() //Modified func() name  by Rishabh - Date -17/04/2026
         {
             try
             {
@@ -95,7 +98,7 @@ namespace IPCSoftware.Services.ConfigServices
                 _logger.LogError(ex.Message, LogType.Diagnostics);
                 return _interfaces.ToList();
             }
-        }
+        } 
 
         public async Task<List<CameraInterfaceModel>> GetCameraDevicesAsync()
         {
@@ -333,11 +336,11 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
             
-            if (!File.Exists(_devicesCsvPath)) 
-                {
-                await SaveDevicesToCsvAsync();
-                return;
-            }
+            //if (!File.Exists(_devicesCsvPath)) 
+            //    {
+            //    await SaveDevicesToCsvAsync();
+            //    return;
+            //}
                 var rows = CsvReader.Read(_devicesCsvPath);  //Modified by Rishabh - date - 13/04/2026//
                  if (rows.Count == 0) return;
                 _devices.Clear();
@@ -409,37 +412,9 @@ namespace IPCSoftware.Services.ConfigServices
         {
 
             try
-            {
-            if (!File.Exists(_cameraInterfacesCsvPath))
-            {
-                await SaveCameraInterfacesToCsvAsync();
-                return;
-            }
-                // var lines = await File.ReadAllLinesAsync(_cameraInterfacesCsvPath);
-                 _cameraInterfaces =_cameraLoader.Load(_cameraInterfacesCsvPath);           //Modified by Rishabh - date - 15/04/2026//
-               // var version = CsvReader.Getversion(_cameraInterfacesCsvPath); //Added by Rishabh - date - 13/04/2026//
-               // var rows =  CsvReader.Read(_cameraInterfacesCsvPath); //Modified by Rishabh - date - 13/04/2026//
-               // if (rows.Count == 0) return;
-               // _cameraInterfaces.Clear();
-                //if (lines.Length <= 1) return;
-                // _cameraInterfaces.Clear();
-                //for (int i = 1; i < lines.Length; i++)
-                //{
-                //    var cameraInterface = ParseCameraInterfaceCsvLine(lines[i]);
-                //    if (cameraInterface != null)
-                //    {
-                //        _cameraInterfaces.Add(cameraInterface);
-                //    }
-                //}
-                //Modified by Rishabh - date - 13/04/2026//
-                //foreach (var values in rows)
-                //{
-                //    var cameraInterface = ParseCameraInterfaceCsvLine(values);
-                //    if (cameraInterface != null)
-                //    {
-                //        _cameraInterfaces.Add(cameraInterface);
-                //    }
-                //}
+            {         
+                  _cameraInterfaces =_cameraLoader.Load(_cameraInterfacesCsvPath);           //Modified by Rishabh - date - 15/04/2026//
+              
             }
             catch (Exception ex)
             {
@@ -447,41 +422,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-        //private async Task SaveCameraInterfacesToCsvAsync()
-        //{
-        //    try
-        //    {
-        //        var sb = new StringBuilder();
-        //        sb.AppendLine("Id,DeviceNo,DeviceName,Name,Protocol,IPAddress,Port,Gateway,Username,Password,AnonymousLogin,RemotePath,LocalDirectory,Enabled,Description,Remark");
 
-        //        foreach (var cam in _cameraInterfaces)
-        //        {
-        //            sb.AppendLine($"{cam.Id}," +
-        //                $"{cam.DeviceNo}," +
-        //                $"\"{EscapeCsv(cam.DeviceName)}\"," +
-        //                $"\"{EscapeCsv(cam.Name)}\"," +
-        //                $"\"{EscapeCsv(cam.Protocol)}\"," +
-        //                $"\"{EscapeCsv(cam.IPAddress)}\"," +
-        //                $"{cam.Port}," +
-        //                $"\"{EscapeCsv(cam.Gateway)}\"," +
-        //                $"\"{EscapeCsv(cam.Username)}\"," +
-        //                $"\"{EscapeCsv(cam.Password)}\"," +
-        //                $"{cam.AnonymousLogin}," +
-        //                $"\"{EscapeCsv(cam.RemotePath)}\"," +
-        //                $"\"{EscapeCsv(cam.LocalDirectory)}\"," +
-        //                $"{cam.Enabled}," +
-        //                $"\"{EscapeCsv(cam.Description)}\"," +
-        //                $"\"{EscapeCsv(cam.Remark)}\"");
-        //        }
-
-        //        await File.WriteAllTextAsync(_cameraInterfacesCsvPath, sb.ToString(), Encoding.UTF8);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Error saving camera interfaces CSV: {ex.Message}", LogType.Diagnostics);
-        //        throw;
-        //    }
-        //}
 
 
 
@@ -511,137 +452,16 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-        //Modfied by Rishabh - date - 13/04/2026//
-        //private CameraInterfaceModel ParseCameraInterfaceCsvLine(string[] values)            
-        //{
-        //    try
-        //    {
-        //        //var values = SplitCsvLine(line);
-        //        // Header now has 54 columns (16 original + 5 primary + 19 client + 19 vendor - 5 overlap = 54)
-        //        if (values.Length < 16) return null;
-        //        //if (CsvReader.Getversion == "2.0") return null;
-
-        //        var cam = new CameraInterfaceModel
-        //        {
-        //            Id = int.Parse(values[0]),
-        //            DeviceNo = int.Parse(values[1]),
-        //            DeviceName = values[2],
-        //            Name = values[3],
-        //            Protocol = values[4],
-        //            IPAddress = values[5],
-        //            Port = int.Parse(values[6]),
-        //            Gateway = values[7],
-        //            Username = values[8],
-        //            Password = values[9],
-        //            AnonymousLogin = bool.Parse(values[10]),
-        //            RemotePath = values[11],
-        //            LocalDirectory = values[12],
-        //            Enabled = bool.Parse(values[13]),
-        //            Description = values[14],
-        //            Remark = values[15]
-        //        };
-
-        //        // Load CCD fields if they exist (backward compatible)
-        //        //Added by Rishabh - date - 08/04/2026//
-        //        if (values.Length > 16)
-        //        {
-        //            cam.QrCodeImagePath = values.Length > 16 ? values[16] : "";
-        //            cam.TempImgFolder = values.Length > 17 ? values[17] : "";
-        //            cam.ImageRootFolder = values.Length > 18 ? values[18] : "";
-        //            cam.MetadataStyle = values.Length > 19 ? values[19] : "";
-        //            cam.CurrentCycleStateFileName = values.Length > 20 ? values[20] : "";
-
-        //            // Client metadata (indices 21-39)
-        //            cam.Client_Version = values.Length > 21 ? values[21] : "";
-        //            cam.Client_Date = values.Length > 22 ? values[22] : "";
-        //            cam.Client_Time = values.Length > 23 ? values[23] : "";
-        //            cam.Client_VisionVendor = values.Length > 24 ? values[24] : "";
-        //            cam.Client_StationID = values.Length > 25 ? values[25] : "";
-        //            cam.Client_StationNickname = values.Length > 26 ? values[26] : "";
-        //            cam.Client_DUTSerialNumber = values.Length > 27 ? values[27] : "";
-        //            cam.Client_ProcessCommand = values.Length > 28 ? values[28] : "";
-        //            cam.Client_CameraNumber = values.Length > 29 ? values[29] : "";
-        //            cam.Client_XPixelSizeMM = values.Length > 30 ? values[30] : "";
-        //            cam.Client_YPixelSizeMM = values.Length > 31 ? values[31] : "";
-        //            cam.Client_CameraGain = values.Length > 32 ? values[32] : "";
-        //            cam.Client_CameraExposure = values.Length > 33 ? values[33] : "";
-        //            cam.Client_NumberOfLightSettings = values.Length > 34 ? values[34] : "";
-        //            cam.Client_LightSetting1 = values.Length > 35 ? values[35] : "";
-        //            cam.Client_LightSettingN = values.Length > 36 ? values[36] : "";
-        //            cam.Client_DUTColor = values.Length > 37 ? values[37] : "";
-        //            cam.Client_ImageNickname = values.Length > 38 ? values[38] : "";
-
-        //            // Vendor metadata (indices 39-57)
-        //            cam.Vendor_Version = values.Length > 39 ? values[39] : "";
-        //            cam.Vendor_Date = values.Length > 40 ? values[40] : "";
-        //            cam.Vendor_Time = values.Length > 41 ? values[41] : "";
-        //            cam.Vendor_VisionVendor = values.Length > 42 ? values[42] : "";
-        //            cam.Vendor_StationID = values.Length > 43 ? values[43] : "";
-        //            cam.Vendor_StationNickname = values.Length > 44 ? values[44] : "";
-        //            cam.Vendor_DUTSerialNumber = values.Length > 45 ? values[45] : "";
-        //            cam.Vendor_ProcessCommand = values.Length > 46 ? values[46] : "";
-        //            cam.Vendor_CameraNumber = values.Length > 47 ? values[47] : "";
-        //            cam.Vendor_XPixelSizeMM = values.Length > 48 ? values[48] : "";
-        //            cam.Vendor_YPixelSizeMM = values.Length > 49 ? values[49] : "";
-        //            cam.Vendor_CameraGain = values.Length > 50 ? values[50] : "";
-        //            cam.Vendor_CameraExposure = values.Length > 51 ? values[51] : "";
-        //            cam.Vendor_NumberOfLightSettings = values.Length > 52 ? values[52] : "";
-        //            cam.Vendor_LightSetting1 = values.Length > 53 ? values[53] : "";
-        //            cam.Vendor_LightSettingN = values.Length > 54 ? values[54] : "";
-        //            cam.Vendor_DUTColor = values.Length > 55 ? values[55] : "";
-        //            cam.Vendor_ImageNickname = values.Length > 56 ? values[56] : "";
-        //        }
-
-        //        return cam;
-        //    }
-        //    catch
-        //    {
-        //        return null;
-        //    }
-        //}
-
 
 
         // ==================== CSV OPERATIONS - INTERFACES ====================
 
-        private async Task LoadInterfacesFromCsvAsync()
+        private async Task LoadInterfacesFromCsvAsync()                          //Modified by Rishabh - date - 17/04/2026//
         {
             try
-            {
-                var lines = await File.ReadAllLinesAsync(_interfacesCsvPath);
-            if (!File.Exists(_interfacesCsvPath))
-            {
-                await SaveInterfacesToCsvAsync();
-                return;
-            }
-                var rows =CsvReader.Read(_interfacesCsvPath);     //Modified by Rishabh - date - 13/04/2026//
-                if (lines.Length <= 1) return;
-                if (rows.Count == 0) return;
-
-                _interfaces.Clear();
-                //for (int i = 1; i < lines.Length; i++)
-                //{
-                //    var iface = ParseInterfaceCsvLine(lines[i]);
-                //    if (iface != null)
-                //    {
-                //        _interfaces.Add(iface);
-                //        if (iface.Id >= _nextInterfaceId)
-                //            _nextInterfaceId = iface.Id + 1;
-                //    }
-                //}
-                //Modified by Rishabh - date - 13/04/2026//
-                foreach (var values in rows)
-                {
-                    var iface = ParseInterfaceCsvLine(values);
-                    if (iface != null)
-                    {
-                        _interfaces.Add(iface);
-                        if (iface.Id >= _nextInterfaceId)
-                            _nextInterfaceId = iface.Id + 1;
-                    }
-                }
-
-            }
+            {   
+                _interfaces = _deviceInterfaceLoader.Load(_interfacesCsvPath);     //Added by Rishabh - date - 17/04/2026//
+             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error loading interfaces CSV: {ex.Message}", LogType.Diagnostics);
@@ -765,74 +585,11 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-        private DeviceInterfaceModel ParseInterfaceCsvLine(string[] values)        //Modified by Rishabh - date - 13/04/2026//
-        {
-            try
-            {
-               // var values = SplitCsvLine(line);
-                if (values.Length < 12) return null;
-
-                return new DeviceInterfaceModel
-                {
-                    Id = int.Parse(values[0]),
-                    DeviceNo = int.Parse(values[1]),
-                    DeviceName = values[2],
-                    UnitNo = int.Parse(values[3]),
-                    Name = values[4],
-                    ComProtocol = values[5],
-                    IPAddress = values[6],
-                    PortNo = int.Parse(values[7]),
-                    Gateway = values[8],
-                    Description = values[9],
-                    Remark = values[10],
-                    Enabled = bool.Parse(values[11])
-                };
-            }
-            catch
-            {
-                return null;
-            }
-        }
+       
 
         // ==================== HELPERS ====================
 
-        private List<string> SplitCsvLine(string line)
-        {
-            var values = new List<string>();
-            var currentValue = new StringBuilder();
-            bool inQuotes = false;
-
-            for (int i = 0; i < line.Length; i++)
-            {
-                char c = line[i];
-
-                if (c == '"')
-                {
-                    if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
-                    {
-                        currentValue.Append('"');
-                        i++;
-                    }
-                    else
-                    {
-                        inQuotes = !inQuotes;
-                    }
-                }
-                else if (c == ',' && !inQuotes)
-                {
-                    values.Add(currentValue.ToString());
-                    currentValue.Clear();
-                }
-                else
-                {
-                    currentValue.Append(c);
-                }
-            }
-
-            values.Add(currentValue.ToString());
-            return values;
-        }
-
+        
         private string EscapeCsv(string value)
         {
             if (string.IsNullOrEmpty(value))

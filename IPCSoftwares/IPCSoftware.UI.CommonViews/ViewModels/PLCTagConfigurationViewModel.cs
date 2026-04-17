@@ -253,7 +253,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             try
             {
-                var plcs = await _deviceConfigService.GetPlcDevicesAsync();
+                var plcs = await _deviceConfigService.GetDeviceInterfaceAsync();
 
                 // Marshal to UI Thread to update Collection
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>

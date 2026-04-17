@@ -7,6 +7,8 @@ namespace IPCSoftware.Services
 {
     public class DeviceConfigLoader : BaseService
     {
+
+        private List<DeviceInterfaceModel> _deviceInterfaces = new List<DeviceInterfaceModel>();
         public DeviceConfigLoader(
             IAppLogger logger) : base(logger)
         { }
@@ -31,8 +33,8 @@ namespace IPCSoftware.Services
             try
             {
                 var rows = CsvReader.Read(filePath);  // static call, returns string[]
-
-                var devices = new List<DeviceInterfaceModel>();
+                _deviceInterfaces.Clear();
+                // var devices = new List<DeviceInterfaceModel>();
 
                 foreach (var r in rows)
                 {
@@ -58,21 +60,21 @@ namespace IPCSoftware.Services
                             Enabled = bool.Parse(Clean(r[11]))
                         };
 
-                        devices.Add(device);
+                        _deviceInterfaces.Add(device);
                     }
-                    catch
+                    catch(Exception ex)
                     {
-                        // skip this row if any parsing fails
-                        continue;
+                        _logger.LogError(ex.Message, LogType.Diagnostics);
+                        return null;
                     }
                 }
 
-                return devices.Where(d => d.Enabled).ToList();
+                return _deviceInterfaces;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
-                return new  List<DeviceInterfaceModel>(); ;
+                return new List<DeviceInterfaceModel>();
             }
         }
     }

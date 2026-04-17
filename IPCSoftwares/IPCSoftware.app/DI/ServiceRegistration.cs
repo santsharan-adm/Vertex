@@ -81,6 +81,7 @@ namespace IPCSoftware.App.DI
                     sp.GetRequiredService<IAppLogger>()
                 )
             );
+            services.AddSingleton<DeviceConfigLoader>();
             services.AddSingleton<CameraConfigLoader>();                             //Added by Rishabh - date - 15/04/2026//
             services.AddSingleton<PLCClientManager>();
             services.AddSingleton<CameraFtpService>();
