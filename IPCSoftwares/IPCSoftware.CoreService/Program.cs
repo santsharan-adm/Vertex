@@ -90,8 +90,9 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<IAppLogger, AppLoggerService>();
                             services.AddSingleton<ILogManagerService, LogManagerService>();
                             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
-                            services.AddSingleton<DeviceConfigLoader>();   //Added by Rishabh - date - 17/04/2026//
+                            services.AddSingleton<DeviceInterfaceConfigLoader>();   //Added by Rishabh - date - 17/04/2026//
                             services.AddSingleton<CameraConfigLoader>();   //Added by Rishabh - date - 16/04/2026//
+                            services.AddSingleton<DeviceConfigLoader>();   //Added by Rishabh - date - 18/04/2026//
                             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
 
                             services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>(); //Added by Rishabh - date - 08/04/2026//

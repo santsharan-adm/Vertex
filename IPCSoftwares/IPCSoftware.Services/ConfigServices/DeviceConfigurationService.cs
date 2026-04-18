@@ -22,22 +22,24 @@ namespace IPCSoftware.Services.ConfigServices
         private readonly string _dataFolder;
         private readonly string _devicesCsvPath;
         private readonly string _interfacesCsvPath;
+        private readonly string _cameraInterfacesCsvPath;
 
         private List<DeviceModel> _devices;
         private List<DeviceInterfaceModel> _interfaces;
-
-        private readonly string _cameraInterfacesCsvPath;
-        private List<CameraInterfaceModel> _cameraInterfaces;
+        private List<CameraInterfaceModel> _cameraInterfaces;     
+        
         private readonly CameraConfigLoader _cameraLoader;  //Added by Rishabh -Date 15/04/2026//
-        private readonly DeviceConfigLoader _deviceInterfaceLoader;  //Added by Rishabh -Date 17/04/2026//
+        private readonly DeviceInterfaceConfigLoader _deviceInterfaceLoader;  //Added by Rishabh -Date 17/04/2026//
+        private readonly DeviceConfigLoader _deviceLoader; //Added by Rishabh -Date 18/04/2026//
 
         private int _nextDeviceId = 1;
         private int _nextInterfaceId = 1;
 
         public DeviceConfigurationService(
             IOptions<ConfigSettings> configSettings,
-            DeviceConfigLoader deviceInterfaceLoader,      //Added by Rishabh -Date 17/04/2026//
+            DeviceInterfaceConfigLoader deviceInterfaceLoader,      //Added by Rishabh -Date 17/04/2026//
             CameraConfigLoader cameraLoader,              //Added by Rishabh -Date 15/04/2026//
+            DeviceConfigLoader deviceLoader,              //Added by Rishabh -Date 18/04/2026//
             IAppLogger logger) : base (logger)
         {
             var config = configSettings.Value;
@@ -55,6 +57,7 @@ namespace IPCSoftware.Services.ConfigServices
             _cameraInterfacesCsvPath = Path.Combine(_dataFolder,config.CameraInterfacesFileName  /* "CameraInterfaces.csv"*/);
             _deviceInterfaceLoader = deviceInterfaceLoader;    //Added by Rishabh -Date 17/04/2026//
             _cameraLoader = cameraLoader;                //Added by Rishabh -Date 15/04/2026//
+            _deviceLoader = deviceLoader;                //Added by Rishabh -Date 18/04/2026//
             _devices = new List<DeviceModel>();
             _interfaces = new List<DeviceInterfaceModel>();
             _cameraInterfaces = new List<CameraInterfaceModel>();
@@ -336,39 +339,8 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
             
-            //if (!File.Exists(_devicesCsvPath)) 
-            //    {
-            //    await SaveDevicesToCsvAsync();
-            //    return;
-            //}
-                var rows = CsvReader.Read(_devicesCsvPath);  //Modified by Rishabh - date - 13/04/2026//
-                 if (rows.Count == 0) return;
-                _devices.Clear();
-                //var lines = await File.ReadAllLinesAsync(_devicesCsvPath);
-                //if (lines.Length <= 1) return;
+               _devices = _deviceLoader.Load(_devicesCsvPath);
 
-                // _devices.Clear();
-                //for (int i = 1; i < lines.Length; i++)
-                //{
-                //    var device = ParseDeviceCsvLine(lines[i]);
-                //    if (device != null)
-                //    {
-                //        _devices.Add(device);
-                //        if (device.Id >= _nextDeviceId)
-                //            _nextDeviceId = device.Id + 1;
-                //    }
-                //}
-                //Modified by Rishabh - date - 13/04/2026//
-                foreach (var values in rows)
-                {
-                    var device = ParseDeviceCsvLine(values);
-                    if (device != null)
-                    {
-                        _devices.Add(device);
-                        if (device.Id >= _nextDeviceId) 
-                            _nextDeviceId = device.Id + 1;
-                    }
-                }
             }
             catch (Exception ex)
             {

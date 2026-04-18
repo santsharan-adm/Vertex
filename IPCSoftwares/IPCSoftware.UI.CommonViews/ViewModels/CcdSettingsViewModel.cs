@@ -4,7 +4,7 @@
  * Module       : CcdSettingsViewModel
  * File Name    : CcdSettingsViewModel.cs
  * Author       : Rishabh
- * Organization : Vertex Automtion System Pvt Ltd
+ * Organization : Motherson Technology Service Limited
  * Created Date : 2026-04-08
  *
  * Description  :

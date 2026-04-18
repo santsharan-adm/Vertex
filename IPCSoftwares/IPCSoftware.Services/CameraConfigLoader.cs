@@ -3,7 +3,7 @@
  * Module       : CameraConfigLoader
  * File Name    : CameraConfigLoader.cs
  * Author       : Rishabh
- * Organization : Vertex Automtion System Pvt Ltd
+ * Organization : Motherson Technology Service Limited
  * Created Date : 2026-04-15
  *
  * Description  :
