@@ -381,8 +381,9 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var sb = new StringBuilder();
-                sb.AppendLine("Id,DeviceNo,DeviceName,DeviceType,Make,Model,Description,Remark,Enabled");
-
+                string header = CsvReader.GetHeader(_devicesCsvPath);
+                sb.AppendLine(header);
+                
                 foreach (var device in _devices)
                 {
                     sb.AppendLine($"{device.Id},{device.DeviceNo}," +
@@ -412,8 +413,9 @@ namespace IPCSoftware.Services.ConfigServices
         {
 
             try
-            {         
-                  _cameraInterfaces =_cameraLoader.Load(_cameraInterfacesCsvPath);           //Modified by Rishabh - date - 15/04/2026//
+            {
+                
+                _cameraInterfaces =_cameraLoader.Load(_cameraInterfacesCsvPath);           //Modified by Rishabh - date - 15/04/2026//
               
             }
             catch (Exception ex)
@@ -469,20 +471,15 @@ namespace IPCSoftware.Services.ConfigServices
         }
         //Modfied by Rishabh - date - 08/04/2026//
 
-        private async Task SaveCameraInterfacesToCsvAsync()
+        private async Task SaveCameraInterfacesToCsvAsync()                    //Modified by Rishabh - date - 17/04/2026//
         {
             try
             {
                 var sb = new StringBuilder();
-                sb.AppendLine("Id,DeviceNo,DeviceName,Name,Protocol,IPAddress,Port,Gateway,Username,Password,AnonymousLogin,RemotePath,LocalDirectory,Enabled,Description,Remark," +
-                    "QrCodeImagePath,TempImgFolder,ImageRootFolder,MetadataStyle,CurrentCycleStateFileName," +
-                    "Client_Version,Client_Date,Client_Time,Client_VisionVendor,Client_StationID,Client_StationNickname,Client_DUTSerialNumber,Client_ProcessCommand,Client_CameraNumber," +
-                    "Client_XPixelSizeMM,Client_YPixelSizeMM,Client_CameraGain,Client_CameraExposure,Client_NumberOfLightSettings,Client_LightSetting1,Client_LightSettingN,Client_DUTColor,Client_ImageNickname," +
-                    "Vendor_Version,Vendor_Date,Vendor_Time,Vendor_VisionVendor,Vendor_StationID,Vendor_StationNickname,Vendor_DUTSerialNumber,Vendor_ProcessCommand,Vendor_CameraNumber," +
-                    "Vendor_XPixelSizeMM,Vendor_YPixelSizeMM,Vendor_CameraGain,Vendor_CameraExposure,Vendor_NumberOfLightSettings,Vendor_LightSetting1,Vendor_LightSettingN,Vendor_DUTColor,Vendor_ImageNickname");
-
+                string header = CsvReader.GetHeader(_cameraInterfacesCsvPath);
+                sb.AppendLine(header);
                 foreach (var cam in _cameraInterfaces)
-                {
+                {   
                     sb.AppendLine($"{cam.Id}," +
                         $"{cam.DeviceNo}," +
                         $"\"{EscapeCsv(cam.DeviceName)}\"," +
@@ -551,7 +548,7 @@ namespace IPCSoftware.Services.ConfigServices
                     _logger.LogError($"Error saving interfaces CSV: {ex.Message}", LogType.Diagnostics);
                 throw;
             }
-        }
+        }               
 
 
         private async Task SaveInterfacesToCsvAsync()
@@ -559,7 +556,8 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var sb = new StringBuilder();
-                sb.AppendLine("Id,DeviceNo,DeviceName,UnitNo,Name,ComProtocol,IPAddress,PortNo,Gateway,Description,Remark,Enabled");
+                string header  = CsvReader.GetHeader(_interfacesCsvPath);
+                sb.AppendLine(header);
 
                 foreach (var iface in _interfaces)
                 {

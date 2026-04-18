@@ -16,7 +16,7 @@ namespace IPCSoftware.Services
             if (string.IsNullOrWhiteSpace(header)) return "1.0";
 
             string[] temp = header.Split("=", StringSplitOptions.RemoveEmptyEntries);
-            if (temp.Length>1) {return temp[1].Trim();}
+            if (temp.Length > 1) { return temp[1].Trim(); }
 
             return "1.0";
         }
@@ -74,6 +74,26 @@ namespace IPCSoftware.Services
 
             return rawParts;
         }
+
+        //Added by rishabh -Date 17/04/2026
+        public static string GetHeader(string filepath)    
+        {
+            if (!File.Exists(filepath)) { return string.Empty; }
+            string header = null;
+            using (var reader = new StreamReader(filepath))
+            {
+                while (!reader.EndOfStream)
+                {
+                    header = reader.ReadLine();
+                    if (header.ToLower().StartsWith("id")) break;
+
+                }
+
+            }
+            return header;
+        }
+
+
     }
 
 }
