@@ -24,6 +24,8 @@ using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.IO;
 
 namespace IPCSoftware.Services
 {
@@ -111,5 +113,36 @@ namespace IPCSoftware.Services
                 return null;
             }
         }
+
+        //Added by Rishabh - date - 19/04/2026//
+        public async Task Save(string filepath)
+        {
+            try
+            {
+                var sb = new StringBuilder();
+                string header = CsvReader.GetHeader(filepath);
+                sb.AppendLine(header);
+
+                foreach (var device in _devices)
+                {
+                    sb.AppendLine($"{device.Id},{device.DeviceNo}," +
+                        $"\"{CsvReader.EscapeCsv(device.DeviceName)}\"," +
+                        $"\"{CsvReader.EscapeCsv(device.DeviceType)}\"," +
+                        $"\"{CsvReader.EscapeCsv(device.Make)}\"," +
+                        $"\"{CsvReader.EscapeCsv(device.Model)}\"," +
+                        $"\"{CsvReader.EscapeCsv(device.Description)}\"," +
+                        $"\"{CsvReader.EscapeCsv(device.Remark)}\"," +
+                        $"{device.Enabled}");
+                }
+
+                await File.WriteAllTextAsync(filepath, sb.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error saving devices CSV: {ex.Message}", LogType.Diagnostics);
+                throw;
+            }
+
+        }               
     }
 }

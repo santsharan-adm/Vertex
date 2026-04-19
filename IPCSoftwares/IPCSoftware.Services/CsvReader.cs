@@ -93,6 +93,18 @@ namespace IPCSoftware.Services
             return header;
         }
 
+        //Added by Rishabh - date - 19/04/2026//
+        public static string EscapeCsv(string value)               
+        {
+            if (string.IsNullOrEmpty(value))
+                return string.Empty;
+
+            if (value.Contains("\""))
+                return value.Replace("\"", "\"\"");
+
+            return value;
+        }
+
 
     }
 

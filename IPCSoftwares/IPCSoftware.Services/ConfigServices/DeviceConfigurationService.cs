@@ -28,9 +28,9 @@ namespace IPCSoftware.Services.ConfigServices
         private List<DeviceInterfaceModel> _interfaces;
         private List<CameraInterfaceModel> _cameraInterfaces;     
         
-        private readonly CameraConfigLoader _cameraLoader;  //Added by Rishabh -Date 15/04/2026//
+        private readonly CameraConfigLoader _cameraLoader;                    //Added by Rishabh -Date 15/04/2026//
         private readonly DeviceInterfaceConfigLoader _deviceInterfaceLoader;  //Added by Rishabh -Date 17/04/2026//
-        private readonly DeviceConfigLoader _deviceLoader; //Added by Rishabh -Date 18/04/2026//
+        private readonly DeviceConfigLoader _deviceLoader;                    //Added by Rishabh -Date 18/04/2026//
 
         private int _nextDeviceId = 1;
         private int _nextInterfaceId = 1;
@@ -38,8 +38,8 @@ namespace IPCSoftware.Services.ConfigServices
         public DeviceConfigurationService(
             IOptions<ConfigSettings> configSettings,
             DeviceInterfaceConfigLoader deviceInterfaceLoader,      //Added by Rishabh -Date 17/04/2026//
-            CameraConfigLoader cameraLoader,              //Added by Rishabh -Date 15/04/2026//
-            DeviceConfigLoader deviceLoader,              //Added by Rishabh -Date 18/04/2026//
+            CameraConfigLoader cameraLoader,                       //Added by Rishabh -Date 15/04/2026//
+            DeviceConfigLoader deviceLoader,                      //Added by Rishabh -Date 18/04/2026//
             IAppLogger logger) : base (logger)
         {
             var config = configSettings.Value;
@@ -56,8 +56,8 @@ namespace IPCSoftware.Services.ConfigServices
             _interfacesCsvPath = Path.Combine(_dataFolder, config.DeviceInterfacesFileName /* "DeviceInterfaces.csv"*/);
             _cameraInterfacesCsvPath = Path.Combine(_dataFolder,config.CameraInterfacesFileName  /* "CameraInterfaces.csv"*/);
             _deviceInterfaceLoader = deviceInterfaceLoader;    //Added by Rishabh -Date 17/04/2026//
-            _cameraLoader = cameraLoader;                //Added by Rishabh -Date 15/04/2026//
-            _deviceLoader = deviceLoader;                //Added by Rishabh -Date 18/04/2026//
+            _cameraLoader = cameraLoader;                      //Added by Rishabh -Date 15/04/2026//
+            _deviceLoader = deviceLoader;                      //Added by Rishabh -Date 18/04/2026//
             _devices = new List<DeviceModel>();
             _interfaces = new List<DeviceInterfaceModel>();
             _cameraInterfaces = new List<CameraInterfaceModel>();
@@ -131,7 +131,8 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 device.Id = _nextDeviceId++;
                 _devices.Add(device);
-                await SaveDevicesToCsvAsync();
+                await _deviceLoader.Save(_devicesCsvPath);   //Added by Rishabh -Date 19/04/2026//
+              //  await SaveDevicesToCsvAsync();
                 return device;
             }
             catch (Exception ex)
@@ -150,7 +151,8 @@ namespace IPCSoftware.Services.ConfigServices
 
                 var index = _devices.IndexOf(existing);
                 _devices[index] = device;
-                await SaveDevicesToCsvAsync();
+                await _deviceLoader.Save(_devicesCsvPath);   //Added by Rishabh -Date 19/04/2026//
+                //await SaveDevicesToCsvAsync();
                 return true;
             }
             catch (Exception ex)
@@ -181,9 +183,12 @@ namespace IPCSoftware.Services.ConfigServices
                 }
 
                 _devices.Remove(device);
-                await SaveDevicesToCsvAsync();
-                await SaveInterfacesToCsvAsync();
-                await SaveCameraInterfacesToCsvAsync();
+                await _deviceLoader.Save(_devicesCsvPath);               //Added by Rishabh -Date 19/04/2026//
+                                                                         // await SaveDevicesToCsvAsync();
+                await _deviceInterfaceLoader.Save(_interfacesCsvPath);   //Added by Rishabh -Date 19/04/2026//
+                                                                         // await SaveInterfacesToCsvAsync();
+                await _cameraLoader.Save(_cameraInterfacesCsvPath);      //Added by Rishabh -Date 19/04/2026//
+                                                                         // await SaveCameraInterfacesToCsvAsync();
                 return true;
             }
             catch (Exception ex)
@@ -225,7 +230,8 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 deviceInterface.Id = _nextInterfaceId++;
                 _interfaces.Add(deviceInterface);
-                await SaveInterfacesToCsvAsync();
+                await _deviceInterfaceLoader.Save(_interfacesCsvPath);   //Added by Rishabh -Date 19/04/2026//
+                //await SaveInterfacesToCsvAsync();
                 return deviceInterface;
             }
             catch (Exception ex)
@@ -245,7 +251,8 @@ namespace IPCSoftware.Services.ConfigServices
 
                 var index = _interfaces.IndexOf(existing);
                 _interfaces[index] = deviceInterface;
-                await SaveInterfacesToCsvAsync();
+                await _deviceInterfaceLoader.Save(_interfacesCsvPath);   //Added by Rishabh -Date 19/04/2026//
+               // await SaveInterfacesToCsvAsync();
                 return true;
             }
             catch (Exception ex)
@@ -263,7 +270,7 @@ namespace IPCSoftware.Services.ConfigServices
                 if (iface == null) return false;
 
                 _interfaces.Remove(iface);
-                await SaveInterfacesToCsvAsync();
+                await _deviceInterfaceLoader.Save(_interfacesCsvPath);   //Added by Rishabh -Date 19/04/2026//
                 return true;
             }
             catch (Exception ex)
@@ -283,7 +290,8 @@ namespace IPCSoftware.Services.ConfigServices
                     : 1;
 
                 _cameraInterfaces.Add(cameraInterface);
-                await SaveCameraInterfacesToCsvAsync();
+                await _cameraLoader.Save(_cameraInterfacesCsvPath);   //Added by Rishabh -Date 19/04/2026//
+             //  await SaveCameraInterfacesToCsvAsync();
                 return cameraInterface;
             }
             catch (Exception ex)
@@ -302,7 +310,8 @@ namespace IPCSoftware.Services.ConfigServices
 
                 var index = _cameraInterfaces.IndexOf(existing);
                 _cameraInterfaces[index] = cameraInterface;
-                await SaveCameraInterfacesToCsvAsync();
+                await _cameraLoader.Save(_cameraInterfacesCsvPath);   //Added by Rishabh -Date 19/04/2026//
+               // await SaveCameraInterfacesToCsvAsync();
                 //await SaveInterfacesToCsvAsync();
                 return true;
             }
@@ -321,7 +330,8 @@ namespace IPCSoftware.Services.ConfigServices
                 if (cameraInterface == null) return false;
 
                 _cameraInterfaces.Remove(cameraInterface);
-                await SaveCameraInterfacesToCsvAsync();
+                await _cameraLoader.Save(_cameraInterfacesCsvPath);
+               // await SaveCameraInterfacesToCsvAsync();
                 return true;
             }
             catch (Exception ex)
@@ -347,36 +357,7 @@ namespace IPCSoftware.Services.ConfigServices
                 _logger.LogError($"Error loading devices CSV: {ex.Message}", LogType.Diagnostics);
             }
         }
-
-        private async Task SaveDevicesToCsvAsync()
-        {
-            try
-            {
-                var sb = new StringBuilder();
-                string header = CsvReader.GetHeader(_devicesCsvPath);
-                sb.AppendLine(header);
-                
-                foreach (var device in _devices)
-                {
-                    sb.AppendLine($"{device.Id},{device.DeviceNo}," +
-                        $"\"{EscapeCsv(device.DeviceName)}\"," +
-                        $"\"{EscapeCsv(device.DeviceType)}\"," +
-                        $"\"{EscapeCsv(device.Make)}\"," +
-                        $"\"{EscapeCsv(device.Model)}\"," +
-                        $"\"{EscapeCsv(device.Description)}\"," +
-                        $"\"{EscapeCsv(device.Remark)}\"," +
-                        $"{device.Enabled}");
-                }
-
-                await File.WriteAllTextAsync(_devicesCsvPath, sb.ToString(), Encoding.UTF8);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error saving devices CSV: {ex.Message}", LogType.Diagnostics);
-                throw;
-            }
-        }
-
+              
 
 
         // Camera Interface CSV Methods
@@ -397,37 +378,6 @@ namespace IPCSoftware.Services.ConfigServices
         }
 
 
-
-
-
-        private DeviceModel ParseDeviceCsvLine(string[] values)        //Modified by Rishabh - date - 13/04/2026//
-        {
-            try
-            {
-                //var values = SplitCsvLine(line);
-                if (values.Length < 9) return null;
-
-                return new DeviceModel
-                {
-                    Id = int.Parse(values[0]),
-                    DeviceNo = int.Parse(values[1]),
-                    DeviceName = values[2],
-                    DeviceType = values[3],
-                    Make = values[4],
-                    Model = values[5],
-                    Description = values[6],
-                    Remark = values[7],
-                    Enabled = bool.Parse(values[8])
-                };
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-
-
         // ==================== CSV OPERATIONS - INTERFACES ====================
 
         private async Task LoadInterfacesFromCsvAsync()                          //Modified by Rishabh - date - 17/04/2026//
@@ -441,136 +391,10 @@ namespace IPCSoftware.Services.ConfigServices
                 _logger.LogError($"Error loading interfaces CSV: {ex.Message}", LogType.Diagnostics);
             }
         }
-        //Modfied by Rishabh - date - 08/04/2026//
-
-        private async Task SaveCameraInterfacesToCsvAsync()                    //Modified by Rishabh - date - 17/04/2026//
-        {
-            try
-            {
-                var sb = new StringBuilder();
-                string header = CsvReader.GetHeader(_cameraInterfacesCsvPath);
-                sb.AppendLine(header);
-                foreach (var cam in _cameraInterfaces)
-                {   
-                    sb.AppendLine($"{cam.Id}," +
-                        $"{cam.DeviceNo}," +
-                        $"\"{EscapeCsv(cam.DeviceName)}\"," +
-                        $"\"{EscapeCsv(cam.Name)}\"," +
-                        $"\"{EscapeCsv(cam.Protocol)}\"," +
-                        $"\"{EscapeCsv(cam.IPAddress)}\"," +
-                        $"{cam.Port}," +
-                        $"\"{EscapeCsv(cam.Gateway)}\"," +
-                        $"\"{EscapeCsv(cam.Username)}\"," +
-                        $"\"{EscapeCsv(cam.Password)}\"," +
-                        $"{cam.AnonymousLogin}," +
-                        $"\"{EscapeCsv(cam.RemotePath)}\"," +
-                        $"\"{EscapeCsv(cam.LocalDirectory)}\"," +
-                        $"{cam.Enabled}," +
-                        $"\"{EscapeCsv(cam.Description)}\"," +
-                        $"\"{EscapeCsv(cam.Remark)}\"," +
-                        // CCD Primary fields
-                        $"\"{EscapeCsv(cam.QrCodeImagePath)}\"," +
-                        $"\"{EscapeCsv(cam.TempImgFolder)}\"," +
-                        $"\"{EscapeCsv(cam.ImageRootFolder)}\"," +
-                        $"\"{EscapeCsv(cam.MetadataStyle)}\"," +
-                        $"\"{EscapeCsv(cam.CurrentCycleStateFileName)}\"," +
-                        // Client metadata
-                        $"\"{EscapeCsv(cam.Client_Version)}\"," +
-                        $"\"{EscapeCsv(cam.Client_Date)}\"," +
-                        $"\"{EscapeCsv(cam.Client_Time)}\"," +
-                        $"\"{EscapeCsv(cam.Client_VisionVendor)}\"," +
-                        $"\"{EscapeCsv(cam.Client_StationID)}\"," +
-                        $"\"{EscapeCsv(cam.Client_StationNickname)}\"," +
-                        $"\"{EscapeCsv(cam.Client_DUTSerialNumber)}\"," +
-                        $"\"{EscapeCsv(cam.Client_ProcessCommand)}\"," +
-                        $"\"{EscapeCsv(cam.Client_CameraNumber)}\"," +
-                        $"\"{EscapeCsv(cam.Client_XPixelSizeMM)}\"," +
-                        $"\"{EscapeCsv(cam.Client_YPixelSizeMM)}\"," +
-                        $"\"{EscapeCsv(cam.Client_CameraGain)}\"," +
-                        $"\"{EscapeCsv(cam.Client_CameraExposure)}\"," +
-                        $"\"{EscapeCsv(cam.Client_NumberOfLightSettings)}\"," +
-                        $"\"{EscapeCsv(cam.Client_LightSetting1)}\"," +
-                        $"\"{EscapeCsv(cam.Client_LightSettingN)}\"," +
-                        $"\"{EscapeCsv(cam.Client_DUTColor)}\"," +
-                        $"\"{EscapeCsv(cam.Client_ImageNickname)}\"," +
-                        // Vendor metadata
-                        $"\"{EscapeCsv(cam.Vendor_Version)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_Date)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_Time)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_VisionVendor)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_StationID)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_StationNickname)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_DUTSerialNumber)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_ProcessCommand)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_CameraNumber)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_XPixelSizeMM)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_YPixelSizeMM)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_CameraGain)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_CameraExposure)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_NumberOfLightSettings)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_LightSetting1)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_LightSettingN)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_DUTColor)}\"," +
-                        $"\"{EscapeCsv(cam.Vendor_ImageNickname)}\"");
-                }
-                await File.WriteAllTextAsync(_cameraInterfacesCsvPath, sb.ToString(), Encoding.UTF8);
-            }
-            catch (Exception ex)
-            {
-                    _logger.LogError($"Error saving interfaces CSV: {ex.Message}", LogType.Diagnostics);
-                throw;
-            }
-        }               
-
-
-        private async Task SaveInterfacesToCsvAsync()
-        {
-            try
-            {
-                var sb = new StringBuilder();
-                string header  = CsvReader.GetHeader(_interfacesCsvPath);
-                sb.AppendLine(header);
-
-                foreach (var iface in _interfaces)
-                {
-                    sb.AppendLine($"{iface.Id},{iface.DeviceNo}," +
-                        $"\"{EscapeCsv(iface.DeviceName)}\"," +
-                        $"{iface.UnitNo}," +
-                        $"\"{EscapeCsv(iface.Name)}\"," +
-                        $"\"{EscapeCsv(iface.ComProtocol)}\"," +
-                        $"\"{EscapeCsv(iface.IPAddress)}\"," +
-                        $"{iface.PortNo}," +
-                        $"\"{EscapeCsv(iface.Gateway)}\"," +
-                        $"\"{EscapeCsv(iface.Description)}\"," +
-                        $"\"{EscapeCsv(iface.Remark)}\"," +
-                        $"{iface.Enabled}");
-                }
-
-                await File.WriteAllTextAsync(_interfacesCsvPath, sb.ToString(), Encoding.UTF8);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error saving interfaces CSV: {ex.Message}", LogType.Diagnostics);
-                throw;
-            }
-        }
-
-       
-
-        // ==================== HELPERS ====================
+        
 
         
-        private string EscapeCsv(string value)
-        {
-            if (string.IsNullOrEmpty(value))
-                return string.Empty;
-
-            if (value.Contains("\""))
-                return value.Replace("\"", "\"\"");
-
-            return value;
-        }
-
+       
 
 
 

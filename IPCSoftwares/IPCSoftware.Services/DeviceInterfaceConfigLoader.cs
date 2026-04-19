@@ -2,6 +2,8 @@
 using IPCSoftware.Shared.Models.ConfigModels;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.IO;
 
 namespace IPCSoftware.Services
 {
@@ -77,5 +79,39 @@ namespace IPCSoftware.Services
                 return new List<DeviceInterfaceModel>();
             }
         }
+
+        //Added by Rishabh - date - 19/04/2026//
+        public async Task Save(string filepath)
+        {
+            try
+            {
+                var sb = new StringBuilder();
+                string header = CsvReader.GetHeader(filepath);
+                sb.AppendLine(header);
+
+                foreach (var iface in _deviceInterfaces)
+                {
+                    sb.AppendLine($"{iface.Id},{iface.DeviceNo}," +
+                        $"\"{CsvReader.EscapeCsv(iface.DeviceName)}\"," +
+                        $"{iface.UnitNo}," +
+                        $"\"{CsvReader.EscapeCsv(iface.Name)}\"," +
+                        $"\"{CsvReader.EscapeCsv(iface.ComProtocol)}\"," +
+                        $"\"{CsvReader.EscapeCsv(iface.IPAddress)}\"," +
+                        $"{iface.PortNo}," +
+                        $"\"{CsvReader.EscapeCsv(iface.Gateway)}\"," +
+                        $"\"{CsvReader.EscapeCsv(iface.Description)}\"," +
+                        $"\"{CsvReader.EscapeCsv(iface.Remark)}\"," +
+                        $"{iface.Enabled}");
+                }
+
+                await File.WriteAllTextAsync(filepath, sb.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error saving interfaces CSV: {ex.Message}", LogType.Diagnostics);
+                throw;
+            }
+
+        }           
     }
 }

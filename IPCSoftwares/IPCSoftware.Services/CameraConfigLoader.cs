@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace IPCSoftware.Services
 {
@@ -168,6 +169,87 @@ namespace IPCSoftware.Services
             {
                 return null;
             }
+        }
+
+        //Added by Rishabh - date - 19/04/2026//
+        public async Task Save(string filepath)   
+        {
+            try
+            {
+                var sb = new StringBuilder();
+                string header = CsvReader.GetHeader(filepath);
+                sb.AppendLine(header);
+                foreach (var cam in _cameraInterfaces)
+                {
+                    sb.AppendLine($"{cam.Id}," +
+                        $"{cam.DeviceNo}," +
+                        $"\"{CsvReader.EscapeCsv(cam.DeviceName)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Name)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Protocol)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.IPAddress)}\"," +
+                        $"{cam.Port}," +
+                        $"\"{CsvReader.EscapeCsv(cam.Gateway)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Username)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Password)}\"," +
+                        $"{cam.AnonymousLogin}," +
+                        $"\"{CsvReader.EscapeCsv(cam.RemotePath)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.LocalDirectory)}\"," +
+                        $"{cam.Enabled}," +
+                        $"\"{CsvReader.EscapeCsv(cam.Description)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Remark)}\"," +
+                        // CCD Primary fields
+                        $"\"{CsvReader.EscapeCsv(cam.QrCodeImagePath)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.TempImgFolder)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.ImageRootFolder)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.MetadataStyle)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.CurrentCycleStateFileName)}\"," +
+                        // Client metadata
+                        $"\"{CsvReader.EscapeCsv(cam.Client_Version)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_Date)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_Time)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_VisionVendor)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_StationID)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_StationNickname)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_DUTSerialNumber)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_ProcessCommand)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_CameraNumber)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_XPixelSizeMM)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_YPixelSizeMM)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_CameraGain)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_CameraExposure)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_NumberOfLightSettings)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_LightSetting1)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_LightSettingN)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_DUTColor)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Client_ImageNickname)}\"," +
+                        // Vendor metadata
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_Version)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_Date)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_Time)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_VisionVendor)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_StationID)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_StationNickname)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_DUTSerialNumber)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_ProcessCommand)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_CameraNumber)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_XPixelSizeMM)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_YPixelSizeMM)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_CameraGain)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_CameraExposure)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_NumberOfLightSettings)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_LightSetting1)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_LightSettingN)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_DUTColor)}\"," +
+                        $"\"{CsvReader.EscapeCsv(cam.Vendor_ImageNickname)}\"");
+                }
+                await File.WriteAllTextAsync(filepath, sb.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error saving interfaces CSV: {ex.Message}", LogType.Diagnostics);
+                throw;
+            }
+
         }
 
 
