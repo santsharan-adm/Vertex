@@ -9,11 +9,13 @@ namespace IPCSoftware.Services
 {
     public class DeviceInterfaceConfigLoader : BaseService
     {
-
         private List<DeviceInterfaceModel> _deviceInterfaces = new List<DeviceInterfaceModel>();
+
         public DeviceInterfaceConfigLoader(
             IAppLogger logger) : base(logger)
-        { }
+        {
+        }
+
         private string Clean(string input)
         {
             try
@@ -64,7 +66,7 @@ namespace IPCSoftware.Services
 
                         _deviceInterfaces.Add(device);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         _logger.LogError(ex.Message, LogType.Diagnostics);
                         return null;
@@ -111,7 +113,6 @@ namespace IPCSoftware.Services
                 _logger.LogError($"Error saving interfaces CSV: {ex.Message}", LogType.Diagnostics);
                 throw;
             }
-
-        }           
+        }
     }
 }

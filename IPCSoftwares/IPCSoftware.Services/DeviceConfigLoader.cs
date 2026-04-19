@@ -44,15 +44,15 @@ namespace IPCSoftware.Services
                 var version = CsvReader.Getversion(filePath);
                 var rows = CsvReader.Read(filePath);
                 var devices = new List<DeviceModel>();
-                
-                if (rows.Count == 0) 
-                { 
-                    _logger.LogError("Device Configuration Settings Not found", LogType.Error); 
-                    return devices; 
+
+                if (rows.Count == 0)
+                {
+                    _logger.LogError("Device Configuration Settings Not found", LogType.Error);
+                    return devices;
                 }
-                
+
                 _devices.Clear();
-                
+
                 if (version == "1.0")
                 {
                     foreach (var row in rows)
@@ -75,7 +75,7 @@ namespace IPCSoftware.Services
                         }
                     }
                 }
-                
+
                 return _devices;
             }
             catch (Exception ex)
@@ -90,7 +90,7 @@ namespace IPCSoftware.Services
             try
             {
                 // DeviceModel requires minimum 9 fields
-                if (values.Length < 9) 
+                if (values.Length < 9)
                     return null;
 
                 var device = new DeviceModel
@@ -114,7 +114,7 @@ namespace IPCSoftware.Services
             }
         }
 
-        //Added by Rishabh - date - 19/04/2026//
+        // Added by Rishabh - date - 19/04/2026//
         public async Task Save(string filepath)
         {
             try
@@ -142,7 +142,6 @@ namespace IPCSoftware.Services
                 _logger.LogError($"Error saving devices CSV: {ex.Message}", LogType.Diagnostics);
                 throw;
             }
-
-        }               
+        }
     }
 }
