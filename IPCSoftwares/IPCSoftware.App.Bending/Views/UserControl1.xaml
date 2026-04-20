@@ -34,8 +34,8 @@
                 <Border Background="{StaticResource AccentBlue}" CornerRadius="6,6,0,0" Padding="6,5">
                     <TextBlock Text="CONTROLS" FontWeight="Bold" FontSize="11" Foreground="White" HorizontalAlignment="Center"/>
                 </Border>
-                <StackPanel Margin="6,6,6,8">
-                    <Button Margin="0,3" Padding="3,6" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                <StackPanel Margin="3">
+                    <Button Margin="3" Padding="3,6" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="4"/>
@@ -43,7 +43,7 @@
                         </Button.Resources>
                         <TextBlock Text="AUTO RUN" TextAlignment="Center"/>
                     </Button>
-                    <Button Margin="0,3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                    <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="4"/>
@@ -51,7 +51,7 @@
                         </Button.Resources>
                         <TextBlock Text="DRY RUN" TextAlignment="Center"/>
                     </Button>
-                    <Button Margin="0,3" Padding="3,6" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                    <Button Margin="3" Padding="3,6" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="4"/>
@@ -59,7 +59,7 @@
                         </Button.Resources>
                         <TextBlock Text="CYCLE START/STOP" TextAlignment="Center"/>
                     </Button>
-                    <Button Margin="0,3" Padding="3,6" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                    <Button Margin="3" Padding="3,6" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="4"/>
@@ -107,13 +107,13 @@
                         <TextBlock Text="PROCESS FLOW" FontWeight="Bold" FontSize="11" Foreground="White" HorizontalAlignment="Center"/>
                     </Border>
 
-                    <Grid Grid.Row="1" Margin="6,6,6,2">
+                    <Grid Grid.Row="1" Margin="3">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="STATUS" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="BATCH No." Foreground="White" FontWeight="Bold" FontSize="10"/>
+                        <TextBlock Text="Description" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="BATCH No." Foreground="White" FontWeight="Bold" FontSize="10" />
                     </Grid>
 
                     <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
@@ -291,13 +291,13 @@
         </Grid>
 
         <!--Bending 1,2,3,4-->
-        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="#0B1A2E" CornerRadius="4" Padding="2" Margin="153,0,0,0" BorderBrush="#2196F3" BorderThickness="1.5">
+        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="#0B1A2E" CornerRadius="4" Padding="2" Margin="153,0,0,0" BorderBrush="#2196F3" BorderThickness="1.5" Height="155">
             <UniformGrid Columns="4">
 
                 <!--Input Inspection-->
                 <Border BorderBrush="#2196F3" BorderThickness="0,0,1,0" Background="#0B1A2E" Margin="0,0,3,0">
                     <StackPanel>
-                        <Grid Background="#1565C0" Height="28">
+                        <Grid Background="#1565C0" Height="20">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
@@ -350,7 +350,7 @@
                             </Grid>
 
                             <StackPanel Grid.Row="2" Grid.ColumnSpan="2">
-                                <Grid Background="#0D2137" Height="30">
+                                <Grid Background="#0D2137" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*" MinWidth="28"/>
@@ -365,7 +365,7 @@
                                     <TextBlock Grid.Column="4" Text="45.60" Foreground="White" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                                 </Grid>
 
-                                <Grid Background="#0B1A2E" Height="30">
+                                <Grid Background="#0B1A2E" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*" MinWidth="28"/>
@@ -380,7 +380,7 @@
                                     <TextBlock Grid.Column="4" Text="45.60" Foreground="White" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                                 </Grid>
 
-                                <Grid Background="#0D2137" Height="30">
+                                <Grid Background="#0D2137" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*" MinWidth="28"/>
@@ -395,7 +395,7 @@
                                     <TextBlock Grid.Column="4" Text="45.60" Foreground="White" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                                 </Grid>
 
-                                <Grid Background="#0B1A2E" Height="30">
+                                <Grid Background="#0B1A2E" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*" MinWidth="28"/>
@@ -411,16 +411,16 @@
                                 </Grid>
                             </StackPanel>
                             <StackPanel Grid.Row="2" Grid.Column="2">
-                                <Border Height="30" Background="#0D2137">
+                                <Border Height="18" Background="#0D2137">
                                     <TextBlock Text="OK" Foreground="{StaticResource OkGreen}" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
-                                <Border Height="30" Background="#0B1A2E">
+                                <Border Height="18" Background="#0B1A2E">
                                     <TextBlock Text="OK" Foreground="{StaticResource OkGreen}" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
-                                <Border Height="30" Background="#0D2137">
+                                <Border Height="18" Background="#0D2137">
                                     <TextBlock Text="OK" Foreground="{StaticResource OkGreen}" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
-                                <Border Height="30" Background="#0B1A2E">
+                                <Border Height="18" Background="#0B1A2E">
                                     <TextBlock Text="NG" Foreground="{StaticResource NgRed}" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                             </StackPanel>
@@ -447,7 +447,7 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="118"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
@@ -458,11 +458,20 @@
                                 <TextBlock Text="Part No." Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <Border Grid.Column="1" Grid.ColumnSpan="2" BorderBrush="#2196F3" BorderThickness="0,0,1,1">
-                                <TextBlock Text="Temp (°C)" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="2"/>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="Temp (°C)" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="(50-60)" Foreground="White" FontSize="8" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,-1,0,0"/>
+                                </StackPanel>
                             </Border>
                             <Border Grid.Column="3" Grid.ColumnSpan="2" BorderBrush="#2196F3" BorderThickness="0,0,0,1">
-                                <TextBlock Text="Force (N)" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="2"/>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="Force (N)" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="(5-10)" Foreground="White" FontSize="8" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,-1,0,0"/>
+                                </StackPanel>
                             </Border>
+                            <!--<Border Grid.Column="3" Grid.ColumnSpan="2" BorderBrush="#2196F3" BorderThickness="0,0,0,1">
+                                <TextBlock Text="Force (N)" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="2"/>
+                            </Border>-->
 
                             <Border Grid.Row="1" Grid.Column="1" BorderBrush="#2196F3" BorderThickness="0,0,1,1">
                                 <TextBlock Text="B-1" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -478,7 +487,7 @@
                             </Border>
 
                             <StackPanel Grid.Row="2" Grid.ColumnSpan="5">
-                                <Grid Background="#0D2137" Height="30">
+                                <Grid Background="#0D2137" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*"/>
@@ -487,12 +496,12 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="FB100000000000000005" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="1"/>
-                                    <TextBlock Grid.Column="1" Text="62.15" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="2" Text="71.40" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="3" Text="41" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="4" Text="44" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="1" Text="52.15" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="2" Text="51.40" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="3" Text="4" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="4" Text="3" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
                                 </Grid>
-                                <Grid Background="#0B1A2E" Height="30">
+                                <Grid Background="#0B1A2E" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*"/>
@@ -502,11 +511,11 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="FB100000000000000006" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="1"/>
                                     <TextBlock Grid.Column="1" Text="59.45" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="2" Text="67.20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="3" Text="43" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="4" Text="46" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="2" Text="57.20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="3" Text="3" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="4" Text="6" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
                                 </Grid>
-                                <Grid Background="#0D2137" Height="30">
+                                <Grid Background="#0D2137" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*"/>
@@ -516,11 +525,11 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="FB100000000000000007" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="1"/>
                                     <TextBlock Grid.Column="1" Text="57.80" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="2" Text="72.10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="3" Text="40" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="4" Text="43" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="2" Text="53.10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="3" Text="9" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="4" Text="83" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
                                 </Grid>
-                                <Grid Background="#0B1A2E" Height="30">
+                                <Grid Background="#0B1A2E" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*"/>
@@ -529,10 +538,10 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="FB100000000000000008" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="1"/>
-                                    <TextBlock Grid.Column="1" Text="60.30" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="2" Text="69.50" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="3" Text="42" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="4" Text="39" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="1" Text="50.30" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="2" Text="59.50" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="3" Text="2" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="4" Text="9" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
                                 </Grid>
                             </StackPanel>
                         </Grid>
@@ -569,10 +578,16 @@
                                 <TextBlock Text="Part No." Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <Border Grid.Column="1" Grid.ColumnSpan="2" BorderBrush="#2196F3" BorderThickness="0,0,1,1">
-                                <TextBlock Text="Temp (°C)" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="2"/>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="Temp (°C)" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="(50-60)" Foreground="White" FontSize="8" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,-1,0,0"/>
+                                </StackPanel>
                             </Border>
                             <Border Grid.Column="3" Grid.ColumnSpan="2" BorderBrush="#2196F3" BorderThickness="0,0,0,1">
-                                <TextBlock Text="Force (N)" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="2"/>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="Force (N)" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="(5-10)" Foreground="White" FontSize="8" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,-1,0,0"/>
+                                </StackPanel>
                             </Border>
 
                             <Border Grid.Row="1" Grid.Column="1" BorderBrush="#2196F3" BorderThickness="0,0,1,1">
@@ -589,7 +604,7 @@
                             </Border>
 
                             <StackPanel Grid.Row="2" Grid.ColumnSpan="5">
-                                <Grid Background="#0D2137" Height="30">
+                                <Grid Background="#0D2137" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*"/>
@@ -600,10 +615,10 @@
                                     <TextBlock Text="FB100000000000000001" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="3"/>
                                     <TextBlock Grid.Column="1" Text="59.10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
                                     <TextBlock Grid.Column="2" Text="52.30" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="3" Text="55" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="4" Text="57" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="3" Text="5" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="4" Text="7" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
                                 </Grid>
-                                <Grid Background="#0B1A2E" Height="30">
+                                <Grid Background="#0B1A2E" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="22.5"/>
                                         <ColumnDefinition Width="97.5"/>
@@ -615,10 +630,10 @@
                                     <TextBlock Text="FB100000000000000002" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="1" Grid.ColumnSpan="2"/>
                                     <TextBlock Grid.Column="2" Text="57.60" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
                                     <TextBlock Grid.Column="3" Text="50.40" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="4" Text="47" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="5" Text="52" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="4" Text="4" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="5" Text="5" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
                                 </Grid>
-                                <Grid Background="#0D2137" Height="30">
+                                <Grid Background="#0D2137" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*"/>
@@ -629,10 +644,10 @@
                                     <TextBlock Text="FB100000000000000003" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="1"/>
                                     <TextBlock Grid.Column="1" Text="59.90" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
                                     <TextBlock Grid.Column="2" Text="58.10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="3" Text="42" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="4" Text="45" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="3" Text="8" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="4" Text="5" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
                                 </Grid>
-                                <Grid Background="#0B1A2E" Height="30">
+                                <Grid Background="#0B1A2E" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*"/>
@@ -643,8 +658,8 @@
                                     <TextBlock Text="FB100000000000000004" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="1"/>
                                     <TextBlock Grid.Column="1" Text="51.20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
                                     <TextBlock Grid.Column="2" Text="52.50" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="3" Text="38" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="4" Text="35" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="3" Text="3" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock Grid.Column="4" Text="2" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" FontWeight="Bold"/>
                                 </Grid>
                             </StackPanel>
                         </Grid>
@@ -707,7 +722,7 @@
                             </Grid>
 
                             <StackPanel Grid.Row="2" Grid.ColumnSpan="2">
-                                <Grid Background="#0D2137" Height="30">
+                                <Grid Background="#0D2137" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*" MinWidth="28"/>
@@ -722,7 +737,7 @@
                                     <TextBlock Grid.Column="4" Text="45.60" Foreground="White" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                                 </Grid>
 
-                                <Grid Background="#0B1A2E" Height="30">
+                                <Grid Background="#0B1A2E" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*" MinWidth="28"/>
@@ -737,7 +752,7 @@
                                     <TextBlock Grid.Column="4" Text="45.60" Foreground="White" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                                 </Grid>
 
-                                <Grid Background="#0D2137" Height="30">
+                                <Grid Background="#0D2137" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*" MinWidth="28"/>
@@ -752,7 +767,7 @@
                                     <TextBlock Grid.Column="4" Text="45.60" Foreground="White" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                                 </Grid>
 
-                                <Grid Background="#0B1A2E" Height="30">
+                                <Grid Background="#0B1A2E" Height="18">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*" MinWidth="28"/>
@@ -768,10 +783,10 @@
                                 </Grid>
                             </StackPanel>
                             <StackPanel Grid.Row="2" Grid.Column="2">
-                                <Border Height="30" Background="#0D2137">
+                                <Border Height="18" Background="#0D2137">
                                     <TextBlock Text="OK" Foreground="{StaticResource OkGreen}" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
-                                <Border Height="30" Background="#0B1A2E">
+                                <Border Height="18" Background="#0B1A2E">
                                     <TextBlock Text="OK" Foreground="{StaticResource OkGreen}" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                                 <Border Height="30" Background="#0D2137">
@@ -884,30 +899,49 @@
                                     Storyboard.TargetName="Arm1Lower"
                                     Storyboard.TargetProperty="X2">
                                     <!-- t=0: at Input Tray -->
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="155"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="197"/>
                                     <!-- t=2: arrive Inspection Unit -->
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="175"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="220"/>
                                     <!-- t=3: hold 1s at Inspection -->
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="175"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="220"/>
                                     <!-- t=5: arrive TT1 -->
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="195"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="240"/>
                                     <!-- t=7: hold 2s at TT1 -->
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="195"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="240"/>
                                     <!-- t=9: return to Input Tray -->
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="155"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="197"/>
                                     <!-- t=11: hold 2s at Input Tray before repeat -->
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="155"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="197"/>
                                 </DoubleAnimationUsingKeyFrames>
                                 <DoubleAnimationUsingKeyFrames
                                     Storyboard.TargetName="Arm1Lower"
                                     Storyboard.TargetProperty="Y2">
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="370"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="335"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="335"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="260"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="260"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="370"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="370"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="415"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="355"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="355"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="220"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="220"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="415"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="415"/>
+                                </DoubleAnimationUsingKeyFrames>
+                                <!-- Animate arm thickness for depth effect -->
+                                <DoubleAnimationUsingKeyFrames
+                                    Storyboard.TargetName="Arm1Lower"
+                                    Storyboard.TargetProperty="StrokeThickness">
+                                    <!-- t=0: at Input Tray - full thickness -->
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="9"/>
+                                    <!-- t=2: at Inspection - full thickness -->
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:2"  Value="9"/>
+                                    <!-- t=3-4: moving to TT1 - reduce thickness -->
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:4"  Value="5"/>
+                                    <!-- t=5-7: at TT1 - thin (behind) -->
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:5"  Value="5"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="5"/>
+                                    <!-- t=7-8: leaving TT1 - restore thickness -->
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:8"  Value="9"/>
+                                    <!-- t=9-11: at Input Tray - full thickness -->
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:9"  Value="9"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="9"/>
                                 </DoubleAnimationUsingKeyFrames>
                             </Storyboard>
                         </BeginStoryboard>
@@ -920,24 +954,24 @@
                                 <DoubleAnimationUsingKeyFrames
                                     Storyboard.TargetName="RobotHand"
                                     Storyboard.TargetProperty="(Canvas.Left)">
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="148"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="168"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="168"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="188"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="188"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="148"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="148"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="190"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="213"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="213"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="233"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="233"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="190"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="190"/>
                                 </DoubleAnimationUsingKeyFrames>
                                 <DoubleAnimationUsingKeyFrames
                                     Storyboard.TargetName="RobotHand"
                                     Storyboard.TargetProperty="(Canvas.Top)">
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="363"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="328"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="328"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="253"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="253"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="363"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="363"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="408"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="348"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="348"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="213"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="213"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="408"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="408"/>
                                 </DoubleAnimationUsingKeyFrames>
                             </Storyboard>
                         </BeginStoryboard>
@@ -951,30 +985,49 @@
                                     Storyboard.TargetName="Arm2Lower"
                                     Storyboard.TargetProperty="X2">
                                     <!-- t=0: at Output Tray -->
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="720"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="689"/>
                                     <!-- t=2: arrive Inspection Unit 2 -->
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="700"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="665"/>
                                     <!-- t=3: hold 1s at Inspection -->
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="700"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="665"/>
                                     <!-- t=5: arrive TT2 -->
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="695"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="645"/>
                                     <!-- t=7: hold 2s at TT2 -->
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="695"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="645"/>
                                     <!-- t=9: return to Output Tray -->
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="720"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="689"/>
                                     <!-- t=11: hold 2s at Output Tray before repeat -->
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="720"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="689"/>
                                 </DoubleAnimationUsingKeyFrames>
                                 <DoubleAnimationUsingKeyFrames
                                     Storyboard.TargetName="Arm2Lower"
                                     Storyboard.TargetProperty="Y2">
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="370"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="340"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="340"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="250"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="250"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="370"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="370"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="415"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="355"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="355"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="220"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="220"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="415"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="415"/>
+                                </DoubleAnimationUsingKeyFrames>
+                                <!-- Animate arm thickness for depth effect -->
+                                <DoubleAnimationUsingKeyFrames
+                                    Storyboard.TargetName="Arm2Lower"
+                                    Storyboard.TargetProperty="StrokeThickness">
+                                    <!-- t=0: at Output Tray - full thickness -->
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="9"/>
+                                    <!-- t=2: at Inspection - full thickness -->
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:2"  Value="9"/>
+                                    <!-- t=3-4: moving to TT2 - reduce thickness -->
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:4"  Value="5"/>
+                                    <!-- t=5-7: at TT2 - thin (behind) -->
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:5"  Value="5"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="5"/>
+                                    <!-- t=7-8: leaving TT2 - restore thickness -->
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:8"  Value="9"/>
+                                    <!-- t=9-11: at Output Tray - full thickness -->
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:9"  Value="9"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="9"/>
                                 </DoubleAnimationUsingKeyFrames>
                             </Storyboard>
                         </BeginStoryboard>
@@ -987,24 +1040,24 @@
                                 <DoubleAnimationUsingKeyFrames
                                     Storyboard.TargetName="RobotHand2"
                                     Storyboard.TargetProperty="(Canvas.Left)">
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="712"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="692"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="692"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="687"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="687"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="712"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="712"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="682"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="658"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="658"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="638"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="638"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="682"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="682"/>
                                 </DoubleAnimationUsingKeyFrames>
                                 <DoubleAnimationUsingKeyFrames
                                     Storyboard.TargetName="RobotHand2"
                                     Storyboard.TargetProperty="(Canvas.Top)">
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="362"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="332"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="332"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="242"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="242"/>
-                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="362"/>
-                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="362"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0"  Value="408"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:2"  Value="348"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3"  Value="348"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:5"  Value="213"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:7"  Value="213"/>
+                                    <LinearDoubleKeyFrame   KeyTime="0:0:9"  Value="408"/>
+                                    <DiscreteDoubleKeyFrame KeyTime="0:0:11" Value="408"/>
                                 </DoubleAnimationUsingKeyFrames>
                             </Storyboard>
                         </BeginStoryboard>
@@ -1019,7 +1072,7 @@
                       StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
                 <!-- Arm 1 lower segment: elbow → tip (animated) -->
                 <Line x:Name="Arm1Lower"
-                      X1="108" Y1="307" X2="155" Y2="370"
+                      X1="108" Y1="307" X2="197" Y2="415"
                       Stroke="{StaticResource PanelBorder}" StrokeThickness="9"
                       StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
                 <!-- Arm 1 elbow joint circle -->
@@ -1027,7 +1080,7 @@
                          Canvas.Left="99" Canvas.Top="298"/>
 
                 <!-- Robot Hand (end effector) at Arm1 tip -->
-                <Canvas x:Name="RobotHand" Canvas.Left="148" Canvas.Top="363" Width="16" Height="22" IsHitTestVisible="False">
+                <Canvas x:Name="RobotHand" Canvas.Left="190" Canvas.Top="408" Width="16" Height="22" IsHitTestVisible="False">
                     <!-- Yellow wrist joint -->
                     <Ellipse Width="16" Height="16" Fill="#F59E0B" Canvas.Left="0" Canvas.Top="0"
                              Stroke="#1E293B" StrokeThickness="1.5"/>
@@ -1045,7 +1098,7 @@
                       StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
                 <!-- Arm 2 lower segment: elbow → tip (animated) -->
                 <Line x:Name="Arm2Lower"
-                      X1="770" Y1="307" X2="720" Y2="370"
+                      X1="770" Y1="307" X2="689" Y2="415"
                       Stroke="{StaticResource PanelBorder}" StrokeThickness="9"
                       StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
                 <!-- Arm 2 elbow joint circle -->
@@ -1053,7 +1106,7 @@
                          Canvas.Left="761" Canvas.Top="298"/>
 
                 <!-- Robot Hand (end effector) at Arm2 tip -->
-                <Canvas x:Name="RobotHand2" Canvas.Left="712" Canvas.Top="362" Width="16" Height="22" IsHitTestVisible="False">
+                <Canvas x:Name="RobotHand2" Canvas.Left="682" Canvas.Top="408" Width="16" Height="22" IsHitTestVisible="False">
                     <!-- Yellow wrist joint -->
                     <Ellipse Width="16" Height="16" Fill="#F59E0B" Canvas.Left="0" Canvas.Top="0"
                              Stroke="#1E293B" StrokeThickness="1.5"/>
@@ -1214,14 +1267,10 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <!--   <TextBlock Grid.Row="0" Grid.Column="0" Text="CLAMP" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/> -->
                                     <Ellipse Grid.Row="0"  Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="W1B3Clamp"/>
-                                    <!--   <TextBlock Grid.Row="1" Grid.Column="0" Text="PUNCH" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>  -->
                                     <Ellipse Grid.Row="1"  Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}" VerticalAlignment="Center" Margin="3" ToolTip="W1B3Heat"/>
-                                    <!--  <TextBlock Grid.Row="2" Grid.Column="0" Text="HEAT" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>   -->
                                     <Ellipse Grid.Row="2"  Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="W1B3Punch"/>
 
-                                    <!--   <TextBlock Grid.Row="0" Grid.Column="0" Text="CLAMP" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/> -->
                                     <Ellipse Grid.Row="0"  Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="W2B3Clamp"/>
                                     <!--   <TextBlock Grid.Row="1" Grid.Column="0" Text="PUNCH" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>  -->
                                     <Ellipse Grid.Row="1"  Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" VerticalAlignment="Center" Margin="3" ToolTip="W2B3Heat"/>
@@ -1265,32 +1314,20 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <!--   <TextBlock Grid.Row="0" Grid.Column="0" Text="CLAMP" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/> -->
                                     <Ellipse Grid.Row="0"  Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="W1B4Clamp"/>
-                                    <!--   <TextBlock Grid.Row="1" Grid.Column="0" Text="PUNCH" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>  -->
                                     <Ellipse Grid.Row="1"  Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}" VerticalAlignment="Center" Margin="3" ToolTip="W1B4Heat"/>
-                                    <!--  <TextBlock Grid.Row="2" Grid.Column="0" Text="HEAT" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>   -->
                                     <Ellipse Grid.Row="2"  Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="W1B4Punch"/>
 
-                                    <!--   <TextBlock Grid.Row="0" Grid.Column="0" Text="CLAMP" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/> -->
                                     <Ellipse Grid.Row="0"  Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="W2B4Clamp"/>
-                                    <!--   <TextBlock Grid.Row="1" Grid.Column="0" Text="PUNCH" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>  -->
                                     <Ellipse Grid.Row="1"  Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" VerticalAlignment="Center" Margin="3" ToolTip="W2B4Heat"/>
-                                    <!--  <TextBlock Grid.Row="2" Grid.Column="0" Text="HEAT" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>   -->
                                     <Ellipse Grid.Row="2"  Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="W2B4Punch"/>
 
-                                    <!--   <TextBlock Grid.Row="0" Grid.Column="0" Text="CLAMP" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/> -->
                                     <Ellipse Grid.Row="0"  Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="W3B4Clamp"/>
-                                    <!--   <TextBlock Grid.Row="1" Grid.Column="0" Text="PUNCH" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>  -->
                                     <Ellipse Grid.Row="1"  Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}" VerticalAlignment="Center" Margin="3" ToolTip="W3B4Heat"/>
-                                    <!--  <TextBlock Grid.Row="2" Grid.Column="0" Text="HEAT" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>   -->
                                     <Ellipse Grid.Row="2"  Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="W3B4Punch"/>
 
-                                    <!--   <TextBlock Grid.Row="0" Grid.Column="0" Text="CLAMP" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/> -->
                                     <Ellipse Grid.Row="0"  Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="W4B4Clamp"/>
-                                    <!--   <TextBlock Grid.Row="1" Grid.Column="0" Text="PUNCH" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>  -->
                                     <Ellipse Grid.Row="1"  Grid.Column="3" Width="9" Height="9" Fill="{StaticResource NgRed}" VerticalAlignment="Center" Margin="3" ToolTip="W4B4Heat"/>
-                                    <!--  <TextBlock Grid.Row="2" Grid.Column="0" Text="HEAT" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="0,4"/>   -->
                                     <Ellipse Grid.Row="2"  Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="W4B4Punch"/>
 
                                 </Grid>
@@ -1302,7 +1339,7 @@
 
                 <!-- Tearing + Flipping Section -->
                 <Border CornerRadius="5" Canvas.Left="555" BorderBrush="Black" BorderThickness="1.5" Canvas.Top="3" Height="105" VerticalAlignment="Top">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3" >
 
                         <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
                             <StackPanel>
@@ -1311,9 +1348,9 @@
                                 </Border>
                                 <Grid Margin="10,8">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="15"/>
+                                        <RowDefinition Height="15"/>
+                                        <RowDefinition Height="15"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -1321,18 +1358,11 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="TearClamp1"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat1"/>
-                                    <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="TearPunch1"/>
-                                    <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="TearClamp2"/>
+
+                                    <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat1"/>
                                     <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat2"/>
-                                    <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="TearPunch2"/>
-                                    <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="TearClamp3"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat3"/>
-                                    <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="TearPunch3"/>
-                                    <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="TearClamp4"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource NgRed}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat4"/>
-                                    <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="TearPunch4"/>
+                                    <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat3"/>
+                                    <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat4"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -1344,9 +1374,9 @@
                                 </Border>
                                 <Grid Margin="10,8">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="15"/>
+                                        <RowDefinition Height="15"/>
+                                        <RowDefinition Height="15"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -1354,18 +1384,11 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="FlipClamp1"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}"  VerticalAlignment="Center" Margin="3" ToolTip="FlipHeat1"/>
-                                    <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="FlipPunch1"/>
-                                    <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="FlipClamp2"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}"  VerticalAlignment="Center" Margin="3" ToolTip="FlipHeat2"/>
-                                    <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="FlipPunch2"/>
-                                    <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="FlipClamp3"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}"  VerticalAlignment="Center" Margin="3" ToolTip="FlipHeat3"/>
-                                    <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="FlipPunch3"/>
-                                    <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="FlipClamp4"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource NgRed}"  VerticalAlignment="Center" Margin="3" ToolTip="FlipHeat4"/>
-                                    <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3" ToolTip="FlipPunch4"/>
+
+                                    <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat1"/>
+                                    <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat2"/>
+                                    <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat3"/>
+                                    <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat4"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -1591,9 +1614,9 @@
                                         StrokeThickness="3.5"
                                         Fill="Transparent"
                                         StrokeLineJoin="Round"
-                                        Canvas.Left="4" Canvas.Top="-5" HorizontalAlignment="Center" VerticalAlignment="Top">
+                                        Canvas.Left="2"  HorizontalAlignment="Left" VerticalAlignment="Center">
                                 <Polyline.RenderTransform>
-                                    <RotateTransform Angle="91.693" CenterX="80" CenterY="80"/>
+                                    <RotateTransform Angle="90" CenterX="80" CenterY="80"/>
                                 </Polyline.RenderTransform>
                             </Polyline>
                         </Canvas>
@@ -1602,7 +1625,7 @@
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
-                                    Margin="58,37,0,0" RenderTransformOrigin="0.5,0.5">
+                                    Margin="56,41,0,0" RenderTransformOrigin="0.5,0.5">
                             <StackPanel.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform/>
@@ -1621,7 +1644,7 @@
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
-                                    Margin="63,99,0,0" RenderTransformOrigin="0.5,0.5">
+                                    Margin="63,103,0,0" RenderTransformOrigin="0.5,0.5">
                             <StackPanel.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform/>
@@ -1639,8 +1662,8 @@
                         <!-- Left column ellipses -->
                         <StackPanel Orientation="Vertical"
                                     HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Margin="33,60,0,0">
+                                    VerticalAlignment="Center"
+                                    Margin="30,0,0,0">
                             <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
                             <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
                             <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
@@ -1711,14 +1734,14 @@
 
                 <!--</Canvas>-->
                 <!--NG BIN 1-->
-                <Border Canvas.Top="40" Canvas.Left="23" Width="85" Height="95" 
-                    BorderBrush="Gray" BorderThickness="3" 
-                    CornerRadius="8" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Border Canvas.Top="40" Canvas.Left="10" Width="85" Height="95" 
+                    BorderBrush="Black" BorderThickness="3" 
+                    CornerRadius="8" Background="Gray" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <StackPanel VerticalAlignment="Center" Margin="2">
                         <TextBlock Text="NG BIN 1" 
                            FontSize="15" 
                            FontWeight="Bold" 
-                           Foreground="Gray"
+                           Foreground="Black"
                            HorizontalAlignment="Center" 
                            Margin="0,2,0,0"/>
                     </StackPanel>
@@ -1755,16 +1778,16 @@
                     </StackPanel>
                 </Border>
                 <!--NG BIN 2-->
-                <Border Canvas.Left="758" Canvas.Top="40" Width="85" Height="95" 
-                    BorderBrush="Gray" BorderThickness="3" 
-                    CornerRadius="8" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Border Canvas.Left="771" Canvas.Top="40" Width="85" Height="95" 
+                    BorderBrush="Black" BorderThickness="3" 
+                    CornerRadius="8" Background="Gray" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <StackPanel VerticalAlignment="Center" Margin="2">
 
 
                         <TextBlock Text="NG BIN 2" 
                    FontSize="15" 
                    FontWeight="Bold" 
-                   Foreground="Gray"
+                   Foreground="Black"
                    HorizontalAlignment="Center" 
                    Margin="0,2,0,0"/>
                     </StackPanel>
