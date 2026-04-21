@@ -21,6 +21,6 @@
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen">
     <Grid>
-        <views:UserControl2 />
+        <views:UserControl1 />
     </Grid>
 </Window>
