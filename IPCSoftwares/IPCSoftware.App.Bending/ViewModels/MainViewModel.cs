@@ -34,6 +34,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         private System.Timers.Timer _simulationTimer;
         private int _timeCounter;
         private Dispatcher _dispatcher;
+        private ObservableCollection<string> _processEventsList;
 
         public SystemStateModel SystemState
         {
@@ -150,7 +151,76 @@ namespace IPCSoftware.App.Bending.ViewModels
         }
 
         public ObservableCollection<string> ScannedPartsList { get; set; }
-        public ObservableCollection<string> ProcessEventsList { get; set; }
+        public ObservableCollection<string> ProcessEventsList 
+        { 
+            get { return _processEventsList; }
+            set { SetProperty(ref _processEventsList, value); }
+        }
+
+        // New properties for MVVM binding
+        private ObservableCollection<InspectionDataModel> _inputInspectionData;
+        private ObservableCollection<InspectionDataModel> _outputInspectionData;
+        private ObservableCollection<BendingParameterRowModel> _bendingUAT1Data;
+        private ObservableCollection<BendingParameterRowModel> _bendingUAT3Data;
+        private ObservableCollection<BendingUnitModel> _bendingIndicators;
+        private string _inputBatchId;
+        private string _outputBatchId;
+        private string _bendingBatchId1;
+        private string _bendingBatchId2;
+
+        public ObservableCollection<InspectionDataModel> InputInspectionData
+        {
+            get { return _inputInspectionData; }
+            set { SetProperty(ref _inputInspectionData, value); }
+        }
+
+        public ObservableCollection<InspectionDataModel> OutputInspectionData
+        {
+            get { return _outputInspectionData; }
+            set { SetProperty(ref _outputInspectionData, value); }
+        }
+
+        public ObservableCollection<BendingParameterRowModel> BendingUAT1Data
+        {
+            get { return _bendingUAT1Data; }
+            set { SetProperty(ref _bendingUAT1Data, value); }
+        }
+
+        public ObservableCollection<BendingParameterRowModel> BendingUAT3Data
+        {
+            get { return _bendingUAT3Data; }
+            set { SetProperty(ref _bendingUAT3Data, value); }
+        }
+
+        public ObservableCollection<BendingUnitModel> BendingIndicators
+        {
+            get { return _bendingIndicators; }
+            set { SetProperty(ref _bendingIndicators, value); }
+        }
+
+        public string InputBatchId
+        {
+            get { return _inputBatchId; }
+            set { SetProperty(ref _inputBatchId, value); }
+        }
+
+        public string OutputBatchId
+        {
+            get { return _outputBatchId; }
+            set { SetProperty(ref _outputBatchId, value); }
+        }
+
+        public string BendingBatchId1
+        {
+            get { return _bendingBatchId1; }
+            set { SetProperty(ref _bendingBatchId1, value); }
+        }
+
+        public string BendingBatchId2
+        {
+            get { return _bendingBatchId2; }
+            set { SetProperty(ref _bendingBatchId2, value); }
+        }
 
         public MainViewModel()
         {
@@ -169,6 +239,18 @@ namespace IPCSoftware.App.Bending.ViewModels
             ScannedPartsList = new ObservableCollection<string>();
             ProcessEventsList = new ObservableCollection<string>();
 
+            // Initialize new collection properties
+            InputInspectionData = new ObservableCollection<InspectionDataModel>();
+            OutputInspectionData = new ObservableCollection<InspectionDataModel>();
+            BendingUAT1Data = new ObservableCollection<BendingParameterRowModel>();
+            BendingUAT3Data = new ObservableCollection<BendingParameterRowModel>();
+            BendingIndicators = new ObservableCollection<BendingUnitModel>();
+
+            // Initialize with sample data (replace with real data source)
+            InitializeInspectionData();
+            InitializeBendingData();
+            InitializeBendingIndicators();
+
             // Initialize scanned parts list with all 10 lots
             for (int i = 1; i <= 10; i++)
             {
@@ -182,7 +264,113 @@ namespace IPCSoftware.App.Bending.ViewModels
             TT2_CurrentLot = "---";
             _timeCounter = 0;
 
+            // Initialize batch IDs
+            InputBatchId = "Current Batch ID -: #BFBL02";
+            OutputBatchId = "Current Batch ID -: #BFBL02";
+            BendingBatchId1 = "Current Batch ID -: #BFBL02   ";
+            BendingBatchId2 = "Current Batch ID -: #BFBL01   ";
+
             UpdateDisplay();
+        }
+
+        /// <summary>
+        /// Initializes sample inspection data for tables
+        /// </summary>
+        private void InitializeInspectionData()
+        {
+            // Sample input inspection data
+            InputInspectionData.Add(new InspectionDataModel 
+            { 
+                PartNumber = "FB1005", 
+                Measurement1 = 34.6, 
+                Measurement2 = 56.7, 
+                Measurement3 = 10.3, 
+                Measurement4 = 45.6, 
+                IsOk = true, 
+                Result = "OK" 
+            });
+
+            InputInspectionData.Add(new InspectionDataModel 
+            { 
+                PartNumber = "FB1006", 
+                Measurement1 = 34.5, 
+                Measurement2 = 56.7, 
+                Measurement3 = 10.3, 
+                Measurement4 = 45.6, 
+                IsOk = true, 
+                Result = "OK" 
+            });
+
+            InputInspectionData.Add(new InspectionDataModel 
+            { 
+                PartNumber = "FB1007", 
+                Measurement1 = 34.5, 
+                Measurement2 = 56.7, 
+                Measurement3 = 10.3, 
+                Measurement4 = 45.6, 
+                IsOk = true, 
+                Result = "OK" 
+            });
+
+            InputInspectionData.Add(new InspectionDataModel 
+            { 
+                PartNumber = "FB1008", 
+                Measurement1 = 33.1, 
+                Measurement2 = 56.7, 
+                Measurement3 = 10.3, 
+                Measurement4 = 45.6, 
+                IsOk = false, 
+                Result = "NG" 
+            });
+
+            // Copy for output inspection
+            OutputInspectionData = new ObservableCollection<InspectionDataModel>(InputInspectionData);
+        }
+
+        /// <summary>
+        /// Initializes sample bending UAT data
+        /// </summary>
+        private void InitializeBendingData()
+        {
+            // Bending UAT 1-2 data
+            BendingUAT1Data.Add(new BendingParameterRowModel { PartNumber = "FB1005", Temperature1 = 62.15, Temperature2 = 71.40, Pressure1 = 41, Pressure2 = 44 });
+            BendingUAT1Data.Add(new BendingParameterRowModel { PartNumber = "FB1006", Temperature1 = 59.45, Temperature2 = 67.20, Pressure1 = 43, Pressure2 = 46 });
+            BendingUAT1Data.Add(new BendingParameterRowModel { PartNumber = "FB1007", Temperature1 = 57.80, Temperature2 = 72.10, Pressure1 = 40, Pressure2 = 43 });
+            BendingUAT1Data.Add(new BendingParameterRowModel { PartNumber = "FB1008", Temperature1 = 60.30, Temperature2 = 69.50, Pressure1 = 42, Pressure2 = 39 });
+
+            // Bending UAT 3-4 data
+            BendingUAT3Data.Add(new BendingParameterRowModel { PartNumber = "FB1001", Temperature1 = 59.10, Temperature2 = 72.30, Pressure1 = 45, Pressure2 = 47 });
+            BendingUAT3Data.Add(new BendingParameterRowModel { PartNumber = "FB1002", Temperature1 = 57.60, Temperature2 = 70.40, Pressure1 = 47, Pressure2 = 52 });
+            BendingUAT3Data.Add(new BendingParameterRowModel { PartNumber = "FB1003", Temperature1 = 59.90, Temperature2 = 68.10, Pressure1 = 42, Pressure2 = 45 });
+            BendingUAT3Data.Add(new BendingParameterRowModel { PartNumber = "FB1004", Temperature1 = 61.20, Temperature2 = 72.50, Pressure1 = 38, Pressure2 = 35 });
+        }
+
+        /// <summary>
+        /// Initializes bending machine unit indicators
+        /// </summary>
+        private void InitializeBendingIndicators()
+        {
+            // Create 4 bending units (B1, B2, B3, B4)
+            for (int unit = 1; unit <= 4; unit++)
+            {
+                var bendingUnit = new BendingUnitModel { Name = $"B{unit}" };
+
+                // Each unit has 3 rows (Clamp, Heat, Punch) × 4 columns = 12 indicators
+                for (int row = 0; row < 3; row++)
+                {
+                    for (int col = 0; col < 4; col++)
+                    {
+                        var indicator = new BendingIndicatorModel
+                        {
+                            IsActive = row != 1, // Simulate Heat as inactive (NG)
+                            ToolTip = $"W{col + 1}B{unit}{(row == 0 ? "Clamp" : row == 1 ? "Heat" : "Punch")}"
+                        };
+                        bendingUnit.Indicators.Add(indicator);
+                    }
+                }
+
+                BendingIndicators.Add(bendingUnit);
+            }
         }
 
         private void StartSimulation()
