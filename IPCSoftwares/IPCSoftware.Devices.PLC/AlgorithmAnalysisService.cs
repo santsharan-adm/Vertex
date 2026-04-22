@@ -6,7 +6,6 @@ using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,12 +20,6 @@ namespace IPCSoftware.Devices.PLC
         public List<PLCTagConfigurationModel> Tags => _tags;
         private readonly bool _swapBytes;
         private readonly bool _swapStringBytes;
-
-        // Trace logging fields krishna add this 
-        private static readonly object _traceLock = new object();
-        private static string _currentTraceFilePath;
-        private static int _currentTraceFileIndex = 0;
-        private const long MaxTraceFileSizeBytes = 2 * 1024 * 1024; // 2 MB
 
         // Constants matching definitions in TagConfigLoader (after necessary mapping)
         private const int AlgoNo_Raw = 0;
@@ -93,25 +86,13 @@ namespace IPCSoftware.Devices.PLC
                     // 2. Algorithm Application (Scaling or Raw Pass-through)
                     object finalValue = ApplyScaling(rawTypedValue, tag);
 
-                    // --- TRACE LOGGING FOR SELECTED TAGS krishna add this  ---
-                    try
+                    // --- TRACE LOGGING FOR SELECTED TAGS ---
+                    if (tag.EnableTraceLog)
                     {
-                        if (tag.EnableTraceLog)
-                        {
-                            WriteTagTrace(tag.Id, tag.Name, finalValue, DateTime.Now);
-                        }
-                    }
-                    catch
-                    {
-                        // Silently ignore trace log errors
+                        string algoName = tag.AlgNo == 1 ? "Scaled" : "Raw";
+                        _logger.LogTrace($"TagID:{tag.Id},TagName:{tag.Name},Value:{finalValue},DataType:{tag.DataType},Algorithm:{algoName}", LogType.TagTrace);
                     }
                     // --- END TRACE LOGGING ---
-
-                    // --- DEBUG OUTPUT ---
-                    string algoName = tag.AlgNo == 1 ? "Scaled" : "Raw";
-                    Console.WriteLine($"[ALGO_DEBUG] Tag: {tag.Name} (ID:{tag.Id}) | Value: {finalValue} | Type: {tag.DataType} | Algo: {algoName}");
-                    //_logger.LogInfo($"[ALGO_DEBUG] Tag: {tag.Name} (ID:{tag.Id}) | Value: {finalValue} | Type: {tag.DataType} | Algo: {algoName}", LogType.Diagnostics);
-                    // --- END DEBUG OUTPUT ---
 
                     // Add using Tag Id (for Dashboard cache)
                     result[tag.Id] = finalValue;
@@ -302,78 +283,6 @@ namespace IPCSoftware.Devices.PLC
             }
             return dst;
         }
-
-        // --- TRACE LOGGING METHODS krishna add this  ---
-        private void WriteTagTrace(int tagId, string tagName, object value, DateTime timestamp)
-        {
-            try
-            {
-                lock (_traceLock)
-                {
-                    EnsureTraceFileExists();
-
-                    string line = $"{timestamp:yyyy-MM-dd HH:mm:ss:fff},TagID:{tagId},TagName:{tagName},Value:{value}{Environment.NewLine}";
-
-                    File.AppendAllText(_currentTraceFilePath, line);
-
-                    CheckTraceFileSize();
-                }
-            }
-            catch
-            {
-                // Silently ignore errors to prevent disrupting main application
-            }
-        }
-
-        private static void EnsureTraceFileExists()
-        {
-            if (string.IsNullOrEmpty(_currentTraceFilePath) || !File.Exists(_currentTraceFilePath))
-            {
-                CreateNewTraceFile();
-            }
-        }
-        //krishna add this method to create new trace file with header
-        private static void CreateNewTraceFile()
-        {
-            try
-            {
-                string tempPath = Path.GetTempPath();
-                string fileName = $"PLCTagTrace_{DateTime.Now:yyyyMMdd}_{_currentTraceFileIndex:D4}.csv";
-                _currentTraceFilePath = Path.Combine(tempPath, fileName);
-
-                if (!File.Exists(_currentTraceFilePath))
-                {
-                    File.WriteAllText(_currentTraceFilePath, "Timestamp,TagID,TagName,Value" + Environment.NewLine);
-                }
-            }
-            catch
-            {
-                // Silently ignore errors
-            }
-        }
-
-        private static void CheckTraceFileSize()
-        {
-            try
-            {
-                if (File.Exists(_currentTraceFilePath))
-                {
-                    var fileInfo = new FileInfo(_currentTraceFilePath);
-                    if (fileInfo.Length >= MaxTraceFileSizeBytes)
-                    {
-                        _currentTraceFileIndex++;
-                        CreateNewTraceFile();
-                    }
-                }
-            }
-            catch
-            {
-                // Silently ignore errors
-            }
-        }
-        // --- END TRACE LOGGING METHODS ---
-
-
     }
 
 

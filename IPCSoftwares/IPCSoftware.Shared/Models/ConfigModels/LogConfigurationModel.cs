@@ -71,7 +71,8 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         Production = 0,
         Audit = 1,
         Error = 2,
-        Diagnostics = 3
+        Diagnostics = 3,
+        TagTrace = 4
     }
 
     public enum BackupScheduleType  

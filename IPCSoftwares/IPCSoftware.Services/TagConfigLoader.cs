@@ -29,7 +29,7 @@ namespace IPCSoftware.Services
                 {
                     foreach (var r in rows)
                     {
-                        // Must be at least 15 columns: indices [0]..[14] (IOType is at [14])
+                        // Must be at least 17 columns: indices [0]..[16] (EnableTraceLog is at [16])
                         if (r.Length < 15) continue;
 
                         try
@@ -64,7 +64,9 @@ namespace IPCSoftware.Services
 
                                 // NEW: Read CanWrite (assuming column [13])
                                 CanWrite = ParseBoolean(r[13]),
-                                IOType = r[14]
+                                IOType = r[14],
+                                UseEngMinMax = r.Length > 15 ? ParseBoolean(r[15]) : false,
+                                EnableTraceLog = r.Length > 16 ? ParseBoolean(r[16]) : false
                                 //DMAddress = r[15]
 
                             };
@@ -79,13 +81,13 @@ namespace IPCSoftware.Services
                 }
                 else if (version == "2.0")
                 {
-                    
+
 
 
                     foreach (var r in rows)
                     {
-                        // Must be at least 15 columns: indices [0]..[14] (IOType is at [14])
-                        if (r.Length < 15) continue;
+                        // Must be at least 18 columns: indices [0]..[17] (IOType is at [17])
+                        if (r.Length < 18) continue;
 
                         try
                         {
@@ -114,12 +116,15 @@ namespace IPCSoftware.Services
                                 BitNo = bitNo,
                                 Offset = double.Parse(r[12]),
                                 Span = double.Parse(r[13]),
-                                Description = r[18],
-                                Remark = r[19],
+                                IOType = r[17],
 
-                                // NEW: Read CanWrite (assuming column [13])
+                                // NEW: Read UseEngMinMax and EnableTraceLog (columns 18 and 19 in Bending CSV)
+                                UseEngMinMax = r.Length > 18 ? ParseBoolean(r[18]) : false,
+                                EnableTraceLog = r.Length > 19 ? ParseBoolean(r[19]) : false,
+
+                                Description = r.Length > 20 ? r[20] : "",
+                                Remark = r.Length > 21 ? r[21] : ""
                                 //CanWrite = ParseBoolean(r[13]),
-                                IOType = r[17]
                                 //DMAddress = r[15]
 
                             };

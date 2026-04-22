@@ -28,7 +28,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
 
         public bool CanWrite { get; set; }
         public string IOType { get; set; } // NEW: Input/Output
-        public bool EnableTraceLog { get; set; } // NEW: Enable trace log for this tag krishna add this 
+        public bool EnableTraceLog { get; set; } // NEW: Enable trace log for this tag krishna add this property
 
         public PLCTagConfigurationModel()
         {
@@ -57,7 +57,6 @@ namespace IPCSoftware.Shared.Models.ConfigModels
               //  DMAddress = this.DMAddress, // Clone new field
                 Length = this.Length,
                 AlgNo = this.AlgNo,
-
                 DataType = this.DataType,
                 BitNo = this.BitNo,
 

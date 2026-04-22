@@ -190,21 +190,57 @@ namespace IPCSoftware.Services.AppLoggerServices
             // Ensure folder exists
             if (!Directory.Exists(config.DataFolder))
                 Directory.CreateDirectory(config.DataFolder);
-           
 
             // Build filename using pattern
             string fileName = config.FileName
                 .Replace("yyyyMMdd", DateTime.Now.ToString("yyyyMMdd"));
 
-            string fullPath = Path.Combine(config.DataFolder, fileName + ".csv");
-
-            // Ensure CSV header exists
-            if (!File.Exists(fullPath))
+            // Check if incremental file rotation is needed based on size limit
+            if (config.LogRetentionFileSize > 0)
             {
-                File.WriteAllText(fullPath, "Timestamp,Level,Message,Source\n");
-            }
+                // Size-based rotation: find appropriate file with index
+                int fileIndex = 1;
+                long maxFileSizeBytes = config.LogRetentionFileSize * 1024 * 1024; // Convert MB to bytes
 
-            return fullPath;
+                while (fileIndex <= 999) // Safety limit
+                {
+                    string indexedFileName = $"{fileName}_{fileIndex:D3}.csv";
+                    string fullPath = Path.Combine(config.DataFolder, indexedFileName);
+
+                    // If file doesn't exist, create it with header
+                    if (!File.Exists(fullPath))
+                    {
+                        File.WriteAllText(fullPath, "Timestamp,Level,Message,Source\n");
+                        return fullPath;
+                    }
+
+                    // Check if current file has space
+                    var fileInfo = new FileInfo(fullPath);
+                    if (fileInfo.Length < maxFileSizeBytes)
+                    {
+                        return fullPath; // Use this file
+                    }
+
+                    // File is full, try next index
+                    fileIndex++;
+                }
+
+                // If we hit the limit, use the last file
+                return Path.Combine(config.DataFolder, $"{fileName}_999.csv");
+            }
+            else
+            {
+                // No size-based rotation: use simple date-based filename
+                string fullPath = Path.Combine(config.DataFolder, fileName + ".csv");
+
+                // Ensure CSV header exists
+                if (!File.Exists(fullPath))
+                {
+                    File.WriteAllText(fullPath, "Timestamp,Level,Message,Source\n");
+                }
+
+                return fullPath;
+            }
         }
 
         public void CheckAndPerformPurge()
