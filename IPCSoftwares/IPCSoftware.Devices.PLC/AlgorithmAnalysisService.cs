@@ -89,8 +89,7 @@ namespace IPCSoftware.Devices.PLC
                     // --- TRACE LOGGING FOR SELECTED TAGS ---
                     if (tag.EnableTraceLog)
                     {
-                        string algoName = tag.AlgNo == 1 ? "Scaled" : "Raw";
-                        _logger.LogTrace($"TagID:{tag.Id},TagName:{tag.Name},Value:{finalValue},DataType:{tag.DataType},Algorithm:{algoName}", LogType.TagTrace);
+                        _logger.LogTrace($"TagID:{tag.Id},TagName:{tag.Name},Value:{finalValue},DataType:{tag.DataType}", LogType.TagTrace);
                     }
                     // --- END TRACE LOGGING ---
 
@@ -339,8 +338,6 @@ namespace IPCSoftware.Devices.PLC
                     return short.MinValue;
             }
         }
-
-
 
         private const int DataType_Int16 = 1;
         private const int DataType_Word32 = 2; // DWord, Int32, Word
