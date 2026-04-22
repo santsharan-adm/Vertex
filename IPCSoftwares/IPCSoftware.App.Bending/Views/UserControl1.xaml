@@ -669,15 +669,15 @@
                 </Border>
 
                 <!--OUTPUT INSPECTION-->
-                <Border Background="#0B1A2E" Margin="3,0,0,0">
+                <Border Background="#0B1A2E" Margin="3">
                     <StackPanel>
                         <Grid Background="#1565C0" Height="28">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="OUTPUT INSPECTION" Foreground="White" FontWeight="Bold" FontSize="11" VerticalAlignment="Center" Margin="6,0"/>
-                            <TextBlock Grid.Column="1" Text="#BFBL02" Foreground="White" FontSize="10" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="OUTPUT INSPECTION" Foreground="White" FontWeight="Bold" FontSize="11" VerticalAlignment="Center" Margin="3"/>
+                            <TextBlock Grid.Column="1" Text="#BFBL02" Foreground="White" FontSize="10" VerticalAlignment="Center" Margin="3"/>
                         </Grid>
 
                         <Grid>
@@ -823,9 +823,6 @@
                         <Setter Property="StrokeLineJoin" Value="Round"/>
                         <Setter Property="Margin" Value="0,1,0,-1"/>
                     </Style>
-
-
-
 
                     <GeometryGroup x:Key="Arm2Geometry">
                         <PathGeometry Figures="M 730,342 L 690,342 L 648,412"/>
@@ -1405,22 +1402,20 @@
                 <!-- Top rail -->
                 <Line X1="385" Y1="196" X2="451" Y2="196"
                           Stroke="#1E293B" StrokeThickness="4"
-                          StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" HorizontalAlignment="Left" Canvas.Left="-26" VerticalAlignment="Center"/>
+                          StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <!-- Bottom rail -->
                 <Line X1="385" Y1="212" X2="451" Y2="212"
                           Stroke="#1E293B" StrokeThickness="4"
-                          StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" HorizontalAlignment="Left" Canvas.Left="-26" VerticalAlignment="Center"/>
+                          StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <!-- Left cap (circle side) -->
-                <Line X1="385" Y1="193" X2="385" Y2="213"
+                <Line X1="410" Y1="193" X2="410" Y2="213"
                           Stroke="#1E293B" StrokeThickness="4"
                           StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Left" Canvas.Left="-28" VerticalAlignment="Center"/>
                 <!-- Right cap (Transfer Module side) -->
                 <Line X1="451" Y1="193" X2="451" Y2="213"
                           Stroke="#1E293B" StrokeThickness="4"
                           StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Left" Canvas.Left="-24" VerticalAlignment="Center"/>
-                <!-- Slot 1 -->
-                <Rectangle Canvas.Left="370" Canvas.Top="198" Width="12" Height="12"
-                               Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
                 <!-- Slot 2 -->
                 <Rectangle Canvas.Left="387" Canvas.Top="198" Width="12" Height="12"
                                Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -1429,8 +1424,8 @@
                                Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                 <!-- Vertical Slot 1 -->
-                <Border Canvas.Left="339" Canvas.Top="183" 
-        BorderBrush="black" BorderThickness="2" Padding="1" CornerRadius="2">
+                <Border Canvas.Left="363" Canvas.Top="183" 
+        BorderBrush="black" BorderThickness="2" Padding="1" CornerRadius="2" RenderTransformOrigin="2.305,0.432" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <StackPanel Orientation="Vertical">
                         <Rectangle Width="12" Height="12" 
                    Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
@@ -1510,8 +1505,8 @@
                     FontWeight="Black" 
                     FontSize="10" 
                     Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Center" VerticalAlignment="Top" Height="18"/>
-                <Border Canvas.Left="429" Canvas.Top="159"
-                    Width="85" Height="85" 
+                <Border Canvas.Left="429" Canvas.Top="170"
+                    Width="65" Height="65" 
                     Background="White" 
                     BorderBrush="{StaticResource PanelBorder}" 
                     BorderThickness="3" 
@@ -1530,31 +1525,31 @@
                         Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3" 
                         CornerRadius="4" HorizontalAlignment="Left" VerticalAlignment="Center">
 
-                    <Grid Margin="-4,-2,4,2">
+                    <Grid >
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
 
-                        <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="0,0,4,0">
+                        <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="2">
                             <TextBlock Text="INSPECTION UNIT" 
-                       FontSize="15" 
-                       FontWeight="ExtraBold" 
-                       Foreground="#0F172A" 
-                       HorizontalAlignment="Center"/>
+                    FontSize="15" 
+                    FontWeight="ExtraBold" 
+                    Foreground="#0F172A" 
+                    HorizontalAlignment="Center"/>
 
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,3,0,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <Border Background="#E2E8F0" CornerRadius="2" Padding="4,1">
                                     <TextBlock Text="QR" FontSize="10" FontWeight="Bold" Foreground="#475569" Height="14"/>
                                 </Border>
 
                                 <TextBlock Text="+" Foreground="#94A3B8" Margin="4,0" VerticalAlignment="Center" FontSize="8"/>
 
-                                <Viewbox Width="25" Height="30" Margin="2,0">
+                                <Viewbox Width="25" Height="30" Margin="2">
                                     <Path Fill="#475569" Data="M12,20H4A2,2 0 0,1 2,18V8A2,2 0 0,1 4,6H5L7,4H11L13,6H14A2,2 0 0,1 16,8V10.5L20,8V18L16,15.5V18A2,2 0 0,1 14,20H12M4,8V18H14V8H10.83L9,6H9L8.83,6H7.17L5.34,8H4M9,17A4,4 0 0,1 5,13A4,4 0 0,1 9,9A4,4 0 0,1 13,13A4,4 0 0,1 9,17M9,11A2,2 0 0,0 7,13A2,2 0 0,0 9,15A2,2 0 0,0 11,13A2,2 0 0,0 9,11Z"/>
                                 </Viewbox>
-                                <Viewbox Width="25" Height="30" Margin="2,0">
+                                <Viewbox Width="25" Height="30" Margin="2">
                                     <Path Fill="#475569" Data="M12,20H4A2,2 0 0,1 2,18V8A2,2 0 0,1 4,6H5L7,4H11L13,6H14A2,2 0 0,1 16,8V10.5L20,8V18L16,15.5V18A2,2 0 0,1 14,20H12M4,8V18H14V8H10.83L9,6H9L8.83,6H7.17L5.34,8H4M9,17A4,4 0 0,1 5,13A4,4 0 0,1 9,9A4,4 0 0,1 13,13A4,4 0 0,1 9,17M9,11A2,2 0 0,0 7,13A2,2 0 0,0 9,15A2,2 0 0,0 11,13A2,2 0 0,0 9,11Z"/>
                                 </Viewbox>
                             </StackPanel>
@@ -1610,12 +1605,12 @@
 
                         <!-- Triangle pointing right (rotated polyline) -->
                         <Canvas Width="160" Height="160">
-                            <Polyline Points="80,10 150,135 10,135 80,10"
-                                        Stroke="#000000"
-                                        StrokeThickness="3.5"
-                                        Fill="Transparent"
-                                        StrokeLineJoin="Round"
-                                        Canvas.Left="2"  HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Polyline Points="69.9,28 90.1,28 139.9,117 130,135 30,135 20.1,117 69.9,28"
+                              Stroke="#000000"
+                              StrokeThickness="3.5"
+                              Fill="Transparent"
+                                       StrokeLineJoin="Round"
+                                  Canvas.Left="2"  HorizontalAlignment="Left" VerticalAlignment="Center">
                                 <Polyline.RenderTransform>
                                     <RotateTransform Angle="90" CenterX="80" CenterY="80"/>
                                 </Polyline.RenderTransform>
@@ -1694,7 +1689,7 @@
                     Foreground="#0F172A" 
                     HorizontalAlignment="Center"/>
 
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,3,0,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="3">
                                 <Viewbox Width="25" Height="30" Margin="2,0">
                                     <Path Fill="#475569" Data="M12,20H4A2,2 0 0,1 2,18V8A2,2 0 0,1 4,6H5L7,4H11L13,6H14A2,2 0 0,1 16,8V10.5L20,8V18L16,15.5V18A2,2 0 0,1 14,20H12M4,8V18H14V8H10.83L9,6H9L8.83,6H7.17L5.34,8H4M9,17A4,4 0 0,1 5,13A4,4 0 0,1 9,9A4,4 0 0,1 13,13A4,4 0 0,1 9,17M9,11A2,2 0 0,0 7,13A2,2 0 0,0 9,15A2,2 0 0,0 11,13A2,2 0 0,0 9,11Z"/>
                                 </Viewbox>
@@ -1710,12 +1705,12 @@
                     Background="White" BorderBrush="#475569" BorderThickness="3" 
                     CornerRadius="2" HorizontalAlignment="Left" VerticalAlignment="Center">
 
-                    <Grid Margin="15,0,-15,0">
+                    <Grid >
 
 
                         <StackPanel VerticalAlignment="Center">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Ellipse Width="6" Height="6" Fill="#F1F5F9" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <Ellipse Width="6" Height="6" Fill="#F1F5F9" Margin="3" VerticalAlignment="Center"/>
                                 <TextBlock Text="OUTPUT TRAY" 
                         FontSize="15" 
                         FontWeight="Bold" 
@@ -1758,7 +1753,7 @@
                    FontWeight="Bold" 
                    Foreground="#1E293B"
                    HorizontalAlignment="Center" 
-                   Margin="0,2,0,0" RenderTransformOrigin="0.51,-0.444" Height="28"/>
+                   Margin="2" RenderTransformOrigin="0.51,-0.444" Height="28"/>
                     </StackPanel>
                 </Border>
 
@@ -1794,12 +1789,9 @@
                 </Border>
             </Canvas>
         </Viewbox>
-        
-        <!--Alarm Bar-->
-      
 
+        <!--Alarm Bar-->
         <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
-       
         Panel.ZIndex="999"
         Background="Red"
         BorderThickness="0,2,0,0"
@@ -1827,44 +1819,81 @@
                     </Style.Triggers>
                 </Style>
             </Border.Style>
-
             <Grid>
+
                 <Grid.ColumnDefinitions>
+
                     <ColumnDefinition Width="Auto"/>
+
                     <ColumnDefinition Width="*"/>
+
                     <ColumnDefinition Width="Auto"/>
+
                 </Grid.ColumnDefinitions>
 
+
+
                 <TextBlock Grid.Column="0" Text="⚠️" FontSize="32" Foreground="White" VerticalAlignment="Center" Margin="30,0">
+
                     <TextBlock.Triggers>
+
                         <EventTrigger RoutedEvent="Loaded">
+
                             <BeginStoryboard>
+
                                 <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+
                                     <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.3" Duration="0:0:0.5"/>
+
                                 </Storyboard>
+
                             </BeginStoryboard>
+
                         </EventTrigger>
+
                     </TextBlock.Triggers>
+
                 </TextBlock>
 
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="CRITICAL SYSTEM ALARM" Foreground="White" Opacity="0.8" FontSize="12" FontWeight="Bold" />
-                    <TextBlock Text="{Binding AlarmBannerTotalMessage}" Foreground="White" FontSize="24" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+
+                    <TextBlock Text="CRITICAL SYSTEM ALARM" Foreground="White" Opacity="1" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+
+                    <TextBlock Text="{Binding AlarmBannerTotalMessage}" Foreground="White" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+
                 </StackPanel>
+
+
 
                 <StackPanel Grid.Column="2" 
-                        Orientation="Horizontal" 
-                        VerticalAlignment="Center" 
-                        Margin="0,0,20,0">
+
+                   Orientation="Horizontal" 
+
+                   VerticalAlignment="Center" 
+
+                   Margin="0,0,20,0">
+
+
 
                     <Button Command="{Binding CloseAlarmBannerCommand}"
-                        Content="✕"
-                        Width="40" 
-                        Background="Transparent" BorderThickness="0"
-                        Foreground="White" FontSize="24" FontWeight="Bold"
-                        Cursor="Hand"/>
+
+                   Content="✕"
+
+                   Width="40" 
+
+                   Background="Transparent" BorderThickness="0"
+
+                   Foreground="White" FontSize="24" FontWeight="Bold"
+
+                   Cursor="Hand"/>
+
                 </StackPanel>
+
             </Grid>
+
+
         </Border>
 
 
@@ -1888,7 +1917,7 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="PLC DISCONNECTED" Foreground="#FF0000" FontWeight="Bold" FontSize="14" Margin="0,0,20,0" VerticalAlignment="Center"/>
                     <TextBlock Text="SERVICE CONNECTED" Foreground="#00FF00" FontWeight="Bold" FontSize="14" Margin="0,0,20,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="MACHINE STATUS: IDEAL" Foreground="#00FF00" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
+                    <TextBlock Text="MACHINE STATUS: IDLE" Foreground="#00FF00" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <!--<StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">-->
