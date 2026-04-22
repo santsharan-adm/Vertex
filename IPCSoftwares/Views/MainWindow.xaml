@@ -1,0 +1,372 @@
+<Window x:Class="IPCSoftware.App.Bending.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Bending Machine HMI" Height="1000" Width="1600"
+        WindowState="Maximized" Background="#0F172A" Foreground="White"
+        FontFamily="Segoe UI">
+
+    <DockPanel LastChildFill="True">
+        <!-- HEADER -->
+        <Border DockPanel.Dock="Top" Background="#1E293B" BorderBrush="#3B82F6" BorderThickness="0,0,0,2" Padding="16,8">
+            <DockPanel>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
+                    <TextBlock Text="⚙️ FLEX BENDING MACHINE" FontWeight="Bold" FontSize="13" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <Border Background="#10B981" Padding="4,4,12,4" CornerRadius="3">
+                        <TextBlock Text="● RUNNING" FontSize="10"/>
+                    </Border>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                    <TextBlock FontSize="10" Margin="0,0,16,0">
+                        <Run Text="Cycle: "/>
+                        <Run Text="{Binding CycleNumber}" FontWeight="Bold"/>
+                    </TextBlock>
+                    <TextBlock FontSize="10">
+                        <Run Text="Time: "/>
+                        <Run Text="{Binding CycleTime}" FontWeight="Bold"/>
+                        <Run Text="s"/>
+                    </TextBlock>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- TOP SECTION: 3 PARAMETER TILES -->
+        <Border DockPanel.Dock="Top" Background="#0F172A" Padding="8" Height="220">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- BENDING 1 -->
+                <Border Grid.Column="0" Background="#1E293B" BorderBrush="#3B82F6" BorderThickness="2" CornerRadius="6" Padding="12">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <Border BorderBrush="#10B981" BorderThickness="0,0,0,1" Padding="0,0,0,6" Margin="0,0,0,8">
+                                <TextBlock Text="🔴 BENDING 1 PARAMETERS" FontSize="11" FontWeight="Bold" Foreground="#10B981"/>
+                            </Border>
+                            <TextBlock Text="At TT-1 Position 1" FontSize="10" Foreground="#94A3B8" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding Bending1Parameters.LotId}" FontSize="14" FontWeight="Bold" Foreground="#3B82F6" Margin="0,0,0,8"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- Temperature -->
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Temperature" FontSize="9" Foreground="#94A3B8" FontWeight="Bold" Margin="0,0,0,4"/>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending1Parameters.Temp1, StringFormat='Temp-1: {0}°C'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending1Parameters.Temp2, StringFormat='Temp-2: {0}°C'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending1Parameters.Temp3, StringFormat='Temp-3: {0}°C'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2">
+                                        <TextBlock Text="{Binding Bending1Parameters.Temp4, StringFormat='Temp-4: {0}°C'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                </StackPanel>
+                                <!-- Pressure -->
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Pressure" FontSize="9" Foreground="#94A3B8" FontWeight="Bold" Margin="0,0,0,4"/>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending1Parameters.Pressure1, StringFormat='P1: {0}N'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending1Parameters.Pressure2, StringFormat='P2: {0}N'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending1Parameters.Pressure3, StringFormat='P3: {0}N'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2">
+                                        <TextBlock Text="{Binding Bending1Parameters.Pressure4, StringFormat='P4: {0}N'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+
+                            <Border Background="#0F172A" BorderBrush="#10B981" BorderThickness="1" CornerRadius="3" Padding="6" Margin="0,8,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Bending1Parameters.QRCode1}" FontSize="8" Foreground="#10B981" FontWeight="Bold" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{Binding Bending1Parameters.QRCode2}" FontSize="8" Foreground="#10B981" FontWeight="Bold" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{Binding Bending1Parameters.QRCode3}" FontSize="8" Foreground="#10B981" FontWeight="Bold" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{Binding Bending1Parameters.QRCode4}" FontSize="8" Foreground="#10B981" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- BENDING 2 -->
+                <Border Grid.Column="2" Background="#1E293B" BorderBrush="#3B82F6" BorderThickness="2" CornerRadius="6" Padding="12">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <Border BorderBrush="#10B981" BorderThickness="0,0,0,1" Padding="0,0,0,6" Margin="0,0,0,8">
+                                <TextBlock Text="🟡 BENDING 2 PARAMETERS" FontSize="11" FontWeight="Bold" Foreground="#10B981"/>
+                            </Border>
+                            <TextBlock Text="At TT-1 Position 2" FontSize="10" Foreground="#94A3B8" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding Bending2Parameters.LotId}" FontSize="14" FontWeight="Bold" Foreground="#3B82F6" Margin="0,0,0,8"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- Temperature -->
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Temperature" FontSize="9" Foreground="#94A3B8" FontWeight="Bold" Margin="0,0,0,4"/>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending2Parameters.Temp1, StringFormat='T1: {0}°C'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending2Parameters.Temp2, StringFormat='T2: {0}°C'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending2Parameters.Temp3, StringFormat='T3: {0}°C'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2">
+                                        <TextBlock Text="{Binding Bending2Parameters.Temp4, StringFormat='T4: {0}°C'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                </StackPanel>
+                                <!-- Pressure -->
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Pressure" FontSize="9" Foreground="#94A3B8" FontWeight="Bold" Margin="0,0,0,4"/>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending2Parameters.Pressure1, StringFormat='P1: {0}N'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending2Parameters.Pressure2, StringFormat='P2: {0}N'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending2Parameters.Pressure3, StringFormat='P3: {0}N'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2">
+                                        <TextBlock Text="{Binding Bending2Parameters.Pressure4, StringFormat='P4: {0}N'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+
+                            <Border Background="#0F172A" BorderBrush="#10B981" BorderThickness="1" CornerRadius="3" Padding="6" Margin="0,8,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Bending2Parameters.QRCode1}" FontSize="8" Foreground="#10B981" FontWeight="Bold" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{Binding Bending2Parameters.QRCode2}" FontSize="8" Foreground="#10B981" FontWeight="Bold" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{Binding Bending2Parameters.QRCode3}" FontSize="8" Foreground="#10B981" FontWeight="Bold" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{Binding Bending2Parameters.QRCode4}" FontSize="8" Foreground="#10B981" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- BENDING 3 -->
+                <Border Grid.Column="4" Background="#1E293B" BorderBrush="#3B82F6" BorderThickness="2" CornerRadius="6" Padding="12">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <Border BorderBrush="#10B981" BorderThickness="0,0,0,1" Padding="0,0,0,6" Margin="0,0,0,8">
+                                <TextBlock Text="⚪ BENDING 3 PARAMETERS" FontSize="11" FontWeight="Bold" Foreground="#10B981"/>
+                            </Border>
+                            <TextBlock Text="At TT-2 Position 1" FontSize="10" Foreground="#94A3B8" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding Bending3Parameters.LotId}" FontSize="14" FontWeight="Bold" Foreground="#3B82F6" Margin="0,0,0,8"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- Temperature -->
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Temperature" FontSize="9" Foreground="#94A3B8" FontWeight="Bold" Margin="0,0,0,4"/>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending3Parameters.Temp1, StringFormat='T1: {0}°C'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending3Parameters.Temp2, StringFormat='T2: {0}°C'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending3Parameters.Temp3, StringFormat='T3: {0}°C'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2">
+                                        <TextBlock Text="{Binding Bending3Parameters.Temp4, StringFormat='T4: {0}°C'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                </StackPanel>
+                                <!-- Pressure -->
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Pressure" FontSize="9" Foreground="#94A3B8" FontWeight="Bold" Margin="0,0,0,4"/>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending3Parameters.Pressure1, StringFormat='P1: {0}N'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending3Parameters.Pressure2, StringFormat='P2: {0}N'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Bending3Parameters.Pressure3, StringFormat='P3: {0}N'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="1" Padding="4" CornerRadius="2">
+                                        <TextBlock Text="{Binding Bending3Parameters.Pressure4, StringFormat='P4: {0}N'}" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+
+                            <Border Background="#0F172A" BorderBrush="#10B981" BorderThickness="1" CornerRadius="3" Padding="6" Margin="0,8,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Bending3Parameters.QRCode1}" FontSize="8" Foreground="#10B981" FontWeight="Bold" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{Binding Bending3Parameters.QRCode2}" FontSize="8" Foreground="#10B981" FontWeight="Bold" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{Binding Bending3Parameters.QRCode3}" FontSize="8" Foreground="#10B981" FontWeight="Bold" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{Binding Bending3Parameters.QRCode4}" FontSize="8" Foreground="#10B981" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- MIDDLE SECTION: TURNTABLES -->
+        <Border DockPanel.Dock="Top" Background="#1E293B" BorderBrush="#CBD5E1" BorderThickness="2" CornerRadius="6" Padding="20" Margin="8" Height="320">
+            <DockPanel>
+                <!-- Input Robot -->
+                <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center" Width="80" Margin="0,0,20,0">
+                    <TextBlock Text="Input Robot" FontSize="10" FontWeight="Bold" Foreground="#94A3B8" TextAlignment="Center" Margin="0,0,0,8"/>
+                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="2" CornerRadius="4" Width="50" Height="50" HorizontalAlignment="Center" Margin="0,0,0,8">
+                        <TextBlock Text="🤖" FontSize="24" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="{Binding InputRobotLot}" FontSize="9" Foreground="#94A3B8" TextAlignment="Center"/>
+                </StackPanel>
+
+                <!-- TT-1 -->
+                <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center" Width="160" Margin="0,0,20,0">
+                    <TextBlock Text="Status - DK (TT-1) - 4 Pos" FontSize="11" FontWeight="Bold" Foreground="#94A3B8" TextAlignment="Center" Margin="0,0,0,8"/>
+                    <Canvas Width="120" Height="120" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,8">
+                        <Ellipse Canvas.Left="0" Canvas.Top="0" Width="120" Height="120" Stroke="#3B82F6" StrokeThickness="3" Fill="Transparent"/>
+                        <Ellipse Canvas.Left="54" Canvas.Top="4" Width="12" Height="12" Stroke="#0F172A" StrokeThickness="2" Fill="{Binding TT1_Pos0_Active, Converter={StaticResource BoolToColorConverter}}"/>
+                        <Ellipse Canvas.Left="104" Canvas.Top="54" Width="12" Height="12" Stroke="#0F172A" StrokeThickness="2" Fill="{Binding TT1_Pos1_Active, Converter={StaticResource BoolToColorConverter}}"/>
+                        <Ellipse Canvas.Left="54" Canvas.Top="104" Width="12" Height="12" Stroke="#0F172A" StrokeThickness="2" Fill="{Binding TT1_Pos2_Active, Converter={StaticResource BoolToColorConverter}}"/>
+                        <Ellipse Canvas.Left="4" Canvas.Top="54" Width="12" Height="12" Stroke="#0F172A" StrokeThickness="2" Fill="{Binding TT1_Pos3_Active, Converter={StaticResource BoolToColorConverter}}"/>
+                    </Canvas>
+                    <TextBlock TextAlignment="Center" FontSize="9">
+                        <Run Text="Pos: "/>
+                        <Run Text="{Binding TT1_CurrentPosition}" FontWeight="Bold"/>
+                        <Run Text=" | "/>
+                        <Run Text="{Binding TT1_CurrentLot}" FontWeight="Bold" Foreground="#10B981"/>
+                    </TextBlock>
+                </StackPanel>
+
+                <!-- Transfer Arrow -->
+                <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center" Width="60" Margin="0,0,20,0">
+                    <TextBlock Text="⇨" FontSize="36" Foreground="#3B82F6" TextAlignment="Center" FontWeight="Bold" Margin="0,0,0,8">
+                        <TextBlock.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard RepeatBehavior="Forever">
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.3" Duration="0:0:1"/>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.3" To="1" Duration="0:0:1" BeginTime="0:0:1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </TextBlock.Triggers>
+                    </TextBlock>
+                    <TextBlock Text="Transfer" FontSize="8" Foreground="#94A3B8" TextAlignment="Center"/>
+                </StackPanel>
+
+                <!-- TT-2 -->
+                <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center" Width="160" Margin="0,0,20,0">
+                    <TextBlock Text="End Try (TT-2) - 3 Pos" FontSize="11" FontWeight="Bold" Foreground="#94A3B8" TextAlignment="Center" Margin="0,0,0,8"/>
+                    <Canvas Width="120" Height="120" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,8">
+                        <Ellipse Canvas.Left="0" Canvas.Top="0" Width="120" Height="120" Stroke="#3B82F6" StrokeThickness="3" Fill="Transparent"/>
+                        <Ellipse Canvas.Left="54" Canvas.Top="4" Width="12" Height="12" Stroke="#0F172A" StrokeThickness="2" Fill="{Binding TT2_Pos0_Active, Converter={StaticResource BoolToColorConverter}}"/>
+                        <Ellipse Canvas.Left="54" Canvas.Top="104" Width="12" Height="12" Stroke="#0F172A" StrokeThickness="2" Fill="{Binding TT2_Pos1_Active, Converter={StaticResource BoolToColorConverter}}"/>
+                        <Ellipse Canvas.Left="104" Canvas.Top="54" Width="12" Height="12" Stroke="#0F172A" StrokeThickness="2" Fill="{Binding TT2_Pos2_Active, Converter={StaticResource BoolToColorConverter}}"/>
+                    </Canvas>
+                    <TextBlock TextAlignment="Center" FontSize="9">
+                        <Run Text="Pos: "/>
+                        <Run Text="{Binding TT2_CurrentPosition}" FontWeight="Bold"/>
+                        <Run Text=" | "/>
+                        <Run Text="{Binding TT2_CurrentLot}" FontWeight="Bold" Foreground="#10B981"/>
+                    </TextBlock>
+                </StackPanel>
+
+                <!-- Output Robot -->
+                <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center" Width="80">
+                    <TextBlock Text="Output Robot" FontSize="10" FontWeight="Bold" Foreground="#94A3B8" TextAlignment="Center" Margin="0,0,0,8"/>
+                    <Border Background="#0F172A" BorderBrush="#3B82F6" BorderThickness="2" CornerRadius="4" Width="50" Height="50" HorizontalAlignment="Center" Margin="0,0,0,8">
+                        <TextBlock Text="🤖" FontSize="24" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="{Binding OutputRobotLot}" FontSize="9" Foreground="#94A3B8" TextAlignment="Center"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- BOTTOM SECTION: TABLES -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Scanned Parts Table -->
+            <Border Grid.Column="0" Background="#1E293B" BorderBrush="#CBD5E1" BorderThickness="2" CornerRadius="6" Padding="12" Margin="8">
+                <StackPanel>
+                    <Border BorderBrush="#3B82F6" BorderThickness="0,0,0,1" Padding="0,0,0,6" Margin="0,0,0,8">
+                        <TextBlock Text="📱 SCANNED PARTS" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                    </Border>
+                    <ListBox Background="Transparent" ItemsSource="{Binding ScannedPartsList}" BorderThickness="0">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Background" Value="#0F172A"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="#3B82F6"/>
+                                <Setter Property="BorderThickness" Value="2,0,0,0"/>
+                                <Setter Property="Padding" Value="6"/>
+                                <Setter Property="Margin" Value="0,0,0,4"/>
+                                <Setter Property="Height" Value="Auto"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontSize="9"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </Border>
+
+            <!-- Process Events Table -->
+            <Border Grid.Column="2" Background="#1E293B" BorderBrush="#CBD5E1" BorderThickness="2" CornerRadius="6" Padding="12" Margin="8">
+                <StackPanel>
+                    <Border BorderBrush="#3B82F6" BorderThickness="0,0,0,1" Padding="0,0,0,6" Margin="0,0,0,8">
+                        <TextBlock Text="📋 PROCESS EVENTS" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                    </Border>
+                    <ListBox Background="Transparent" ItemsSource="{Binding ProcessEventsList}" BorderThickness="0">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Background" Value="#0F172A"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="#3B82F6"/>
+                                <Setter Property="BorderThickness" Value="2,0,0,0"/>
+                                <Setter Property="Padding" Value="6"/>
+                                <Setter Property="Margin" Value="0,0,0,4"/>
+                                <Setter Property="Height" Value="Auto"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontSize="9" TextWrapping="Wrap"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </DockPanel>
+</Window>

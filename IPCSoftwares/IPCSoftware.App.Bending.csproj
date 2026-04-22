@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <RootNamespace>IPCSoftware.App.Bending</RootNamespace>
+    <AssemblyName>IPCSoftware.App.Bending</AssemblyName>
+    <Version>1.0.0</Version>
+    <Authors>IPC Softwares</Authors>
+    <Company>IPC Softwares</Company>
+    <Description>WPF Application for 3-Stage Bending Machine Control following MVVM Pattern</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="ViewModels\" />
+    <Folder Include="Views\" />
+    <Folder Include="Converters\" />
+  </ItemGroup>
+
+</Project>

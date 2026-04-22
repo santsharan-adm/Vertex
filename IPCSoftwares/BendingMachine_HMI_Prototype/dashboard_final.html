@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bending Machine HMI - TurnTable Positions</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0F172A; color: white; overflow: hidden; height: 100vh; }
+        .container { display: flex; flex-direction: column; height: 100vh; }
+
+        /* HEADER */
+        .header { background: #1E293B; border-bottom: 2px solid #3B82F6; padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; height: 40px; }
+        .header-left { display: flex; gap: 12px; font-size: 13px; font-weight: bold; align-items: center; }
+        .status { background: #10B981; padding: 4px 12px; border-radius: 3px; font-size: 10px; }
+        .header-right { font-size: 10px; color: #94A3B8; }
+
+        /* TOP SECTION: 3 PARAMETER TILES */
+        .top-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; height: 200px; }
+        .param-tile { background: #1E293B; border: 2px solid #3B82F6; border-radius: 6px; padding: 12px; display: flex; flex-direction: column; overflow-y: auto; }
+        .tile-title { font-size: 11px; font-weight: bold; color: #10B981; margin-bottom: 8px; border-bottom: 1px solid #10B981; padding-bottom: 6px; }
+        .param-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .param-label { font-size: 9px; color: #94A3B8; margin-bottom: 4px; font-weight: bold; }
+        .param-input { background: #0F172A; border: 1px solid #3B82F6; padding: 4px; margin-bottom: 3px; font-size: 9px; color: white; border-radius: 2px; }
+        .tile-uid { background: #0F172A; padding: 6px; border-radius: 3px; margin-top: 8px; font-size: 9px; color: #10B981; font-weight: bold; border: 1px solid #10B981; }
+
+        /* MIDDLE SECTION: TURNTABLES WITH POSITIONS */
+        .middle-section { background: #1E293B; border: 2px solid #CBD5E1; border-radius: 6px; padding: 20px; display: flex; align-items: center; justify-content: space-between; height: 280px; margin: 8px; gap: 20px; }
+
+        /* ROBOT BOXES */
+        .robot-box { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .robot-label { font-size: 10px; font-weight: bold; color: #94A3B8; text-align: center; }
+        .robot-icon { width: 50px; height: 50px; border: 2px solid #3B82F6; border-radius: 4px; background: #0F172A; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+
+        /* TURNTABLE WITH POSITIONS */
+        .tt-container { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .tt-label { font-size: 11px; font-weight: bold; color: #94A3B8; }
+
+        /* Turntable visual with position markers */
+        .tt-visual { width: 120px; height: 120px; border: 3px solid #3B82F6; border-radius: 50%; position: relative; background: radial-gradient(circle, #0F172A, #1E293B); }
+
+        .tt-visual.rotating { animation: rotate 12s linear; }
+        .tt-visual.stopped { animation: none; }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Position indicators */
+        .tt-position { width: 12px; height: 12px; background: #3B82F6; border-radius: 50%; position: absolute; border: 2px solid #0F172A; }
+        .tt-position.active { background: #10B981; box-shadow: 0 0 8px #10B981; }
+
+        /* For TT-1: 4 positions (0, 90, 180, 270 degrees) */
+        .pos-0 { top: 8px; left: 50%; transform: translateX(-50%); }
+        .pos-1 { right: 8px; top: 50%; transform: translateY(-50%); }
+        .pos-2 { bottom: 8px; left: 50%; transform: translateX(-50%); }
+        .pos-3 { left: 8px; top: 50%; transform: translateY(-50%); }
+
+        /* Label for positions */
+        .tt-pos-label { position: absolute; font-size: 8px; color: #94A3B8; font-weight: bold; }
+        .pos-0-label { top: -2px; left: 50%; transform: translateX(-50%); }
+        .pos-1-label { right: -2px; top: 50%; transform: translateY(-50%); }
+        .pos-2-label { bottom: -2px; left: 50%; transform: translateX(-50%); }
+        .pos-3-label { left: -2px; top: 50%; transform: translateY(-50%); }
+
+        .tt-info { font-size: 9px; color: #94A3B8; text-align: center; }
+        .tt-info strong { color: #10B981; }
+
+        .tt-activity { padding: 6px 12px; background: #0F172A; border-radius: 3px; font-size: 10px; font-weight: bold; border: 1px solid #3B82F6; text-align: center; }
+        .activity-active { color: #F59E0B; border-color: #F59E0B; }
+        .activity-idle { color: #64748B; border-color: #64748B; }
+
+        /* TRANSFER ARROW */
+        .transfer-section { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .transfer-arrow { font-size: 36px; color: #3B82F6; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* BOTTOM SECTION */
+        .bottom-section { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; flex: 1; min-height: 0; }
+
+        .scanned-parts { background: #1E293B; border: 2px solid #CBD5E1; border-radius: 6px; padding: 12px; overflow-y: auto; }
+        .table-title { font-size: 10px; font-weight: bold; color: #94A3B8; margin-bottom: 8px; border-bottom: 1px solid #3B82F6; padding-bottom: 6px; }
+        .table-header { display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-bottom: 6px; font-size: 9px; font-weight: bold; color: #10B981; padding-bottom: 4px; border-bottom: 1px solid #3B82F6; }
+        .table-row { display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-bottom: 4px; font-size: 9px; background: #0F172A; padding: 6px; border-radius: 2px; border-left: 2px solid #3B82F6; }
+
+        .process-events { background: #1E293B; border: 2px solid #CBD5E1; border-radius: 6px; padding: 12px; overflow-y: auto; }
+        .event-row { display: grid; grid-template-columns: auto 1fr; gap: 8px; margin-bottom: 4px; font-size: 9px; background: #0F172A; padding: 6px; border-radius: 2px; border-left: 2px solid #3B82F6; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #3B82F6; border-radius: 2px; }
+        ::-webkit-scrollbar-track { background: #0F172A; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                ⚙️ FLEX BENDING MACHINE
+                <div class="status">● RUNNING</div>
+            </div>
+            <div class="header-right">
+                Cycle Time: <strong>12.4s</strong> | Parts: <strong>2,847 OK</strong> | NG: <strong>12</strong>
+            </div>
+        </div>
+
+        <!-- TOP: 3 PARAMETER TILES -->
+        <div class="top-section">
+            <div class="param-tile">
+                <div class="tile-title">🔴 BENDING 1 PARAMETERS</div>
+                <div class="param-group">
+                    <div>
+                        <div class="param-label">Temperature</div>
+                        <div class="param-input">Temp-1: 80.2°C</div>
+                        <div class="param-input">Temp-2: 80.1°C</div>
+                        <div class="param-input">Temp-3: 80.3°C</div>
+                        <div class="param-input">Temp-4: 80.0°C</div>
+                    </div>
+                    <div>
+                        <div class="param-label">Pressure</div>
+                        <div class="param-input">P1: 7.0 N</div>
+                        <div class="param-input">P2: 7.1 N</div>
+                        <div class="param-input">P3: 6.8 N</div>
+                        <div class="param-input">P4: 6.9 N</div>
+                    </div>
+                </div>
+                <div class="tile-uid">LOT(UID) = 003</div>
+            </div>
+
+            <div class="param-tile">
+                <div class="tile-title">🟡 BENDING 2 PARAMETERS</div>
+                <div class="param-group">
+                    <div>
+                        <div class="param-label">Temperature</div>
+                        <div class="param-input">T1: ---</div>
+                        <div class="param-input">T2: ---</div>
+                        <div class="param-input">T3: ---</div>
+                        <div class="param-input">T4: ---</div>
+                    </div>
+                    <div>
+                        <div class="param-label">Pressure</div>
+                        <div class="param-input">P1: ---</div>
+                        <div class="param-input">P2: ---</div>
+                        <div class="param-input">P3: ---</div>
+                        <div class="param-input">P4: ---</div>
+                    </div>
+                </div>
+                <div class="tile-uid">Current Lot (UID) = 002</div>
+            </div>
+
+            <div class="param-tile">
+                <div class="tile-title">⚪ BENDING 3 PARAMETERS</div>
+                <div class="param-group">
+                    <div>
+                        <div class="param-label">Temperature</div>
+                        <div class="param-input">T1: ---</div>
+                        <div class="param-input">T2: ---</div>
+                        <div class="param-input">T3: ---</div>
+                        <div class="param-input">T4: ---</div>
+                    </div>
+                    <div>
+                        <div class="param-label">Pressure</div>
+                        <div class="param-input">P1: ---</div>
+                        <div class="param-input">P2: ---</div>
+                        <div class="param-input">P3: ---</div>
+                        <div class="param-input">P4: ---</div>
+                    </div>
+                </div>
+                <div class="tile-uid">Current Lot (UID) = 001</div>
+            </div>
+        </div>
+
+        <!-- MIDDLE: 2 TURNTABLES WITH POSITIONS -->
+        <div class="middle-section">
+            <!-- INPUT ROBOT -->
+            <div class="robot-box">
+                <div class="robot-label">Input Robot</div>
+                <div class="robot-icon">🤖</div>
+            </div>
+
+            <!-- TURNTABLE 1 (4 POSITIONS) -->
+            <div class="tt-container">
+                <div class="tt-label">Status - DK (TT-1) - 4 Pos</div>
+                <div class="tt-visual" id="tt1">
+                    <!-- 4 Position Markers -->
+                    <div class="tt-position active pos-0" id="tt1-pos-0"></div>
+                    <div class="tt-position pos-1" id="tt1-pos-1"></div>
+                    <div class="tt-position pos-2" id="tt1-pos-2"></div>
+                    <div class="tt-position pos-3" id="tt1-pos-3"></div>
+
+                    <!-- Position Labels -->
+                    <div class="tt-pos-label pos-0-label">0 Entry</div>
+                    <div class="tt-pos-label pos-1-label">1 Bend1</div>
+                    <div class="tt-pos-label pos-2-label">2 Bend2</div>
+                    <div class="tt-pos-label pos-3-label">3 Xfr</div>
+                </div>
+                <div class="tt-info">Current: <strong id="tt1-current">Pos 0 - Entry</strong></div>
+                <div class="tt-activity" id="tt1-activity">IDLE</div>
+            </div>
+
+            <!-- TRANSFER ARROW -->
+            <div class="transfer-section">
+                <div class="transfer-arrow">⇨</div>
+                <div style="font-size: 8px; color: #94A3B8; text-align: center;">Transfer<br/>TT1 → TT2</div>
+            </div>
+
+            <!-- TURNTABLE 2 (3 POSITIONS) -->
+            <div class="tt-container">
+                <div class="tt-label">End Try (TT-2) - 3 Pos</div>
+                <div class="tt-visual" id="tt2">
+                    <!-- 3 Position Markers (120 degrees apart) -->
+                    <div class="tt-position pos-0" id="tt2-pos-0"></div>
+                    <div class="tt-position pos-1" id="tt2-pos-1"></div>
+                    <div class="tt-position pos-2" id="tt2-pos-2"></div>
+
+                    <!-- Position Labels -->
+                    <div class="tt-pos-label pos-0-label">0 Rcv</div>
+                    <div class="tt-pos-label pos-2-label">1 Bend3</div>
+                    <div class="tt-pos-label" style="top: 50%; left: 105%; transform: translateY(-50%);">2 Exit</div>
+                </div>
+                <div class="tt-info">Current: <strong id="tt2-current">Pos 0 - Receive</strong></div>
+                <div class="tt-activity" id="tt2-activity">IDLE</div>
+            </div>
+
+            <!-- OUTPUT ROBOT -->
+            <div class="robot-box">
+                <div class="robot-label">Output Robot</div>
+                <div class="robot-icon">🤖</div>
+            </div>
+        </div>
+
+        <!-- BOTTOM: TABLES -->
+        <div class="bottom-section">
+            <div class="scanned-parts">
+                <div class="table-title">📱 SCANNED PARTS</div>
+                <div class="table-header">
+                    <div>S.No</div>
+                    <div>QR Code / UID</div>
+                </div>
+                <div class="table-row"><div>1</div><div>ABCD12345A001</div></div>
+                <div class="table-row"><div>2</div><div>ABCD12345A002</div></div>
+                <div class="table-row"><div>3</div><div>ABCD12345A003</div></div>
+                <div class="table-row"><div>4</div><div>ABCD12345A004</div></div>
+            </div>
+
+            <div class="process-events">
+                <div class="table-title">📋 PROCESS EVENTS</div>
+                <div class="event-row"><div>1</div><div>Batch Scanned & QR captured</div></div>
+                <div class="event-row"><div>2</div><div>Bending 1 Completed - OK</div></div>
+                <div class="event-row"><div>3</div><div>Transfer Done for UID-003</div></div>
+                <div class="event-row"><div>4</div><div>Bending 2 Completed - OK</div></div>
+                <div class="event-row"><div>5</div><div>Output Completed for UID-003</div></div>
+                <div class="event-row"><div>6</div><div>Waiting for Bending 3 Start</div></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulate complete bending cycle
+        const states = [
+            { name: 'Entry', tt1Pos: 0, tt1State: 'IDLE', tt2Pos: 0, tt2State: 'IDLE', bend1: 'IDLE', bend23: 'IDLE' },
+            { name: 'Bending 1', tt1Pos: 1, tt1State: 'BENDING 1', tt2Pos: 0, tt2State: 'IDLE', bend1: 'BENDING', bend23: 'IDLE' },
+            { name: 'Transfer', tt1Pos: 3, tt1State: 'TRANSFER', tt2Pos: 0, tt2State: 'IDLE', bend1: 'DONE', bend23: 'IDLE' },
+            { name: 'Bending 2 & 3', tt1Pos: 3, tt1State: 'IDLE', tt2Pos: 1, tt2State: 'BENDING 3', bend1: 'DONE', bend23: 'BENDING' },
+            { name: 'Exit', tt1Pos: 0, tt1State: 'IDLE', tt2Pos: 2, tt2State: 'EXIT', bend1: 'DONE', bend23: 'DONE' }
+        ];
+
+        let currentState = 0;
+
+        function updateState() {
+            const state = states[currentState];
+            const tt1 = document.getElementById('tt1');
+            const tt2 = document.getElementById('tt2');
+            const tt1Current = document.getElementById('tt1-current');
+            const tt2Current = document.getElementById('tt2-current');
+            const tt1Activity = document.getElementById('tt1-activity');
+            const tt2Activity = document.getElementById('tt2-activity');
+
+            // Update TT-1 position highlight
+            document.querySelectorAll('.tt-visual:nth-of-type(1) .tt-position').forEach((el, idx) => {
+                el.classList.remove('active');
+                if (idx === state.tt1Pos) el.classList.add('active');
+            });
+
+            // Update TT-2 position highlight
+            document.querySelectorAll('#tt2 .tt-position').forEach((el, idx) => {
+                el.classList.remove('active');
+                if (idx === state.tt2Pos) el.classList.add('active');
+            });
+
+            // Update rotation
+            if (state.tt1State === 'IDLE' || state.tt1State === 'BENDING 1') {
+                tt1.classList.remove('rotating');
+                tt1.classList.add('stopped');
+            } else {
+                tt1.classList.add('rotating');
+                tt1.classList.remove('stopped');
+            }
+
+            if (state.tt2State === 'IDLE' || state.tt2State === 'BENDING 3') {
+                tt2.classList.remove('rotating');
+                tt2.classList.add('stopped');
+            } else {
+                tt2.classList.add('rotating');
+                tt2.classList.remove('stopped');
+            }
+
+            // Update text
+            tt1Current.textContent = `Pos ${state.tt1Pos} - ${state.name}`;
+            tt2Current.textContent = `Pos ${state.tt2Pos} - ${state.name}`;
+
+            tt1Activity.textContent = state.bend1;
+            tt1Activity.classList.remove('activity-active', 'activity-idle');
+            tt1Activity.classList.add(state.bend1 === 'IDLE' ? 'activity-idle' : 'activity-active');
+
+            tt2Activity.textContent = state.bend23;
+            tt2Activity.classList.remove('activity-active', 'activity-idle');
+            tt2Activity.classList.add(state.bend23 === 'IDLE' ? 'activity-idle' : 'activity-active');
+
+            currentState = (currentState + 1) % states.length;
+        }
+
+        // Update every 4 seconds
+        setInterval(updateState, 4000);
+        updateState(); // Initial state
+    </script>
+</body>
+</html>

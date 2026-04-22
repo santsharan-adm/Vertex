@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bending Machine HMI - Correct Layout</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0F172A; color: white; overflow: hidden; height: 100vh; }
+        .container { display: flex; flex-direction: column; height: 100vh; }
+
+        /* HEADER */
+        .header { background: #1E293B; border-bottom: 2px solid #3B82F6; padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; height: 40px; }
+        .header-left { display: flex; gap: 12px; font-size: 13px; font-weight: bold; align-items: center; }
+        .status { background: #10B981; padding: 4px 12px; border-radius: 3px; font-size: 10px; }
+        .header-right { font-size: 10px; color: #94A3B8; }
+
+        /* TOP SECTION: 3 PARAMETER TILES */
+        .top-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; height: 200px; }
+        .param-tile { background: #1E293B; border: 2px solid #3B82F6; border-radius: 6px; padding: 12px; display: flex; flex-direction: column; overflow-y: auto; }
+        .tile-title { font-size: 11px; font-weight: bold; color: #10B981; margin-bottom: 8px; border-bottom: 1px solid #10B981; padding-bottom: 6px; }
+        .param-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .temp-col { }
+        .pressure-col { }
+        .param-label { font-size: 9px; color: #94A3B8; margin-bottom: 4px; font-weight: bold; }
+        .param-input { background: #0F172A; border: 1px solid #3B82F6; padding: 4px; margin-bottom: 3px; font-size: 9px; color: white; border-radius: 2px; }
+        .tile-uid { background: #0F172A; padding: 6px; border-radius: 3px; margin-top: 8px; font-size: 9px; color: #10B981; font-weight: bold; border: 1px solid #10B981; }
+
+        /* MIDDLE SECTION: TURNTABLES + RESULTS */
+        .middle-section { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 8px; height: 280px; }
+        .bending-result { background: #1E293B; border: 2px solid #CBD5E1; border-radius: 6px; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+
+        .status-header { width: 100%; text-align: center; font-size: 10px; font-weight: bold; padding: 6px; background: #0F172A; border-radius: 3px; color: #94A3B8; }
+        .status-badge { padding: 4px 12px; background: #0F172A; border-radius: 3px; font-size: 10px; font-weight: bold; color: #10B981; border: 1px solid #10B981; }
+
+        .turntable { width: 100px; height: 100px; border: 2px solid #3B82F6; border-radius: 50%; position: relative; background: radial-gradient(circle, #0F172A, #1E293B); animation: rotate 10s linear infinite; display: flex; align-items: center; justify-content: center; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .tt-dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; position: absolute; top: 6px; }
+
+        .equipment-box { width: 60px; height: 20px; border: 1px solid #3B82F6; background: #0F172A; font-size: 7px; display: flex; align-items: center; justify-content: center; color: #94A3B8; }
+
+        .result-label { font-size: 9px; color: #94A3B8; }
+
+        /* BOTTOM SECTION: 2 COLUMNS */
+        .bottom-section { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; flex: 1; min-height: 0; }
+
+        /* SCANNED PARTS TABLE */
+        .scanned-parts { background: #1E293B; border: 2px solid #CBD5E1; border-radius: 6px; padding: 12px; overflow-y: auto; }
+        .table-title { font-size: 10px; font-weight: bold; color: #94A3B8; margin-bottom: 8px; border-bottom: 1px solid #3B82F6; padding-bottom: 6px; }
+        .table-header { display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-bottom: 6px; font-size: 9px; font-weight: bold; color: #10B981; padding-bottom: 4px; border-bottom: 1px solid #3B82F6; }
+        .table-row { display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-bottom: 4px; font-size: 9px; background: #0F172A; padding: 6px; border-radius: 2px; border-left: 2px solid #3B82F6; }
+        .row-num { color: #94A3B8; font-weight: bold; min-width: 25px; }
+        .row-uid { color: white; font-weight: bold; }
+
+        /* PROCESS EVENT TABLE */
+        .process-events { background: #1E293B; border: 2px solid #CBD5E1; border-radius: 6px; padding: 12px; overflow-y: auto; }
+        .event-row { display: grid; grid-template-columns: auto 1fr; gap: 8px; margin-bottom: 4px; font-size: 9px; background: #0F172A; padding: 6px; border-radius: 2px; border-left: 2px solid #3B82F6; align-items: flex-start; }
+        .event-num { color: #94A3B8; font-weight: bold; min-width: 20px; flex-shrink: 0; }
+        .event-text { color: #FFFFFF; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #3B82F6; border-radius: 2px; }
+        ::-webkit-scrollbar-track { background: #0F172A; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                ⚙️ FLEX BENDING MACHINE
+                <div class="status">● RUNNING</div>
+            </div>
+            <div class="header-right">
+                Cycle Time: <strong>12.4s</strong> | Parts: <strong>2,847 OK</strong> | NG: <strong>12</strong>
+            </div>
+        </div>
+
+        <!-- TOP: BENDING PARAMETERS TILES -->
+        <div class="top-section">
+            <!-- BENDING 1 PARAMETERS -->
+            <div class="param-tile">
+                <div class="tile-title">🔴 BENDING 1 PARAMETERS</div>
+                <div class="param-group">
+                    <div class="temp-col">
+                        <div class="param-label">Temperature</div>
+                        <div class="param-input">Temp-1: 80.2°C</div>
+                        <div class="param-input">Temp-2: 80.1°C</div>
+                        <div class="param-input">Temp-3: 80.3°C</div>
+                        <div class="param-input">Temp-4: 80.0°C</div>
+                    </div>
+                    <div class="pressure-col">
+                        <div class="param-label">Pressure</div>
+                        <div class="param-input">P1: 7.0 N</div>
+                        <div class="param-input">P2: 7.1 N</div>
+                        <div class="param-input">P3: 6.8 N</div>
+                        <div class="param-input">P4: 6.9 N</div>
+                    </div>
+                </div>
+                <div class="tile-uid">LOT(UID) = 003</div>
+            </div>
+
+            <!-- BENDING 2 PARAMETERS -->
+            <div class="param-tile">
+                <div class="tile-title">🟡 BENDING 2 PARAMETERS</div>
+                <div class="param-group">
+                    <div class="temp-col">
+                        <div class="param-label">Temperature</div>
+                        <div class="param-input">T1: ---</div>
+                        <div class="param-input">T2: ---</div>
+                        <div class="param-input">T3: ---</div>
+                        <div class="param-input">T4: ---</div>
+                    </div>
+                    <div class="pressure-col">
+                        <div class="param-label">Pressure</div>
+                        <div class="param-input">P1: ---</div>
+                        <div class="param-input">P2: ---</div>
+                        <div class="param-input">P3: ---</div>
+                        <div class="param-input">P4: ---</div>
+                    </div>
+                </div>
+                <div class="tile-uid">Current Lot (UID) = 002</div>
+            </div>
+
+            <!-- BENDING 3 PARAMETERS -->
+            <div class="param-tile">
+                <div class="tile-title">⚪ BENDING 3 PARAMETERS</div>
+                <div class="param-group">
+                    <div class="temp-col">
+                        <div class="param-label">Temperature</div>
+                        <div class="param-input">T1: ---</div>
+                        <div class="param-input">T2: ---</div>
+                        <div class="param-input">T3: ---</div>
+                        <div class="param-input">T4: ---</div>
+                    </div>
+                    <div class="pressure-col">
+                        <div class="param-label">Pressure</div>
+                        <div class="param-input">P1: ---</div>
+                        <div class="param-input">P2: ---</div>
+                        <div class="param-input">P3: ---</div>
+                        <div class="param-input">P4: ---</div>
+                    </div>
+                </div>
+                <div class="tile-uid">Current Lot (UID) = 001</div>
+            </div>
+        </div>
+
+        <!-- MIDDLE: BENDING RESULTS WITH TURNTABLES -->
+        <div class="middle-section">
+            <!-- BENDING 1 RESULT -->
+            <div class="bending-result">
+                <div class="status-header">STATUS - DK (TT-1)</div>
+                <div class="turntable">
+                    <div class="tt-dot"></div>
+                </div>
+                <div class="equipment-box">Input Robot</div>
+                <div class="status-badge">OK</div>
+            </div>
+
+            <!-- BENDING 2 RESULT WITH TRANSFER -->
+            <div class="bending-result">
+                <div class="status-header">BENDING 2 (TT-2)</div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="turntable">
+                        <div class="tt-dot"></div>
+                    </div>
+                    <div style="font-size: 20px; color: #3B82F6; animation: blink 1s infinite;">⇨</div>
+                    <div class="turntable" style="animation-delay: 3s;">
+                        <div class="tt-dot"></div>
+                    </div>
+                </div>
+                <div style="font-size: 9px; color: #94A3B8; text-align: center;">Transfer TT1 → TT2</div>
+                <div class="status-badge">OK</div>
+            </div>
+
+            <!-- BENDING 3 RESULT -->
+            <div class="bending-result">
+                <div class="status-header">BENDING 3</div>
+                <div class="turntable">
+                    <div class="tt-dot"></div>
+                </div>
+                <div class="equipment-box">Output Robot</div>
+                <div class="status-badge">OK</div>
+            </div>
+        </div>
+
+        <!-- BOTTOM: SCANNED PARTS & PROCESS EVENTS -->
+        <div class="bottom-section">
+            <!-- SCANNED PARTS TABLE -->
+            <div class="scanned-parts">
+                <div class="table-title">📱 SCANNED PARTS</div>
+                <div class="table-header">
+                    <div class="row-num">S.No</div>
+                    <div>QR Code / UID</div>
+                </div>
+                <div class="table-row">
+                    <div class="row-num">1</div>
+                    <div class="row-uid">ABCD12345A001</div>
+                </div>
+                <div class="table-row">
+                    <div class="row-num">2</div>
+                    <div class="row-uid">ABCD12345A002</div>
+                </div>
+                <div class="table-row">
+                    <div class="row-num">3</div>
+                    <div class="row-uid">ABCD12345A003</div>
+                </div>
+                <div class="table-row">
+                    <div class="row-num">4</div>
+                    <div class="row-uid">ABCD12345A004</div>
+                </div>
+            </div>
+
+            <!-- PROCESS EVENT TABLE -->
+            <div class="process-events">
+                <div class="table-title">📋 PROCESS EVENTS</div>
+                <div class="event-row">
+                    <div class="event-num">1</div>
+                    <div class="event-text">Batch Scanned & QR captured</div>
+                </div>
+                <div class="event-row">
+                    <div class="event-num">2</div>
+                    <div class="event-text">Bending 1 Completed - OK</div>
+                </div>
+                <div class="event-row">
+                    <div class="event-num">3</div>
+                    <div class="event-text">Transfer Done for UID-003</div>
+                </div>
+                <div class="event-row">
+                    <div class="event-num">4</div>
+                    <div class="event-text">Bending 2 Completed - OK</div>
+                </div>
+                <div class="event-row">
+                    <div class="event-num">5</div>
+                    <div class="event-text">Output Completed for UID-003</div>
+                </div>
+                <div class="event-row">
+                    <div class="event-num">6</div>
+                    <div class="event-text">Waiting for Bending 3 Start</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+    </style>
+</body>
+</html>

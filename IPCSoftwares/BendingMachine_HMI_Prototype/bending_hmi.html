@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bending Machine HMI - Exact Layout</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0F172A; color: white; overflow: hidden; height: 100vh; }
+        .container { display: flex; flex-direction: column; height: 100vh; }
+
+        /* HEADER */
+        .header { background: #1E293B; border-bottom: 2px solid #3B82F6; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; height: 40px; }
+        .header-left { display: flex; gap: 10px; font-size: 13px; font-weight: bold; align-items: center; }
+        .status { background: #10B981; padding: 3px 10px; border-radius: 3px; font-size: 10px; }
+        .header-right { font-size: 10px; color: #94A3B8; }
+        .metric { display: inline-block; margin-left: 20px; }
+
+        /* TOP SECTION */
+        .top-section { display: grid; grid-template-columns: 180px 1fr 200px; gap: 8px; padding: 8px; height: 240px; }
+
+        /* LEFT PANEL */
+        .left-panel { display: flex; flex-direction: column; gap: 6px; }
+        .panel { background: #1E293B; border: 2px solid #3B82F6; border-radius: 4px; padding: 8px; flex: 1; overflow-y: auto; }
+        .panel-title { font-size: 9px; font-weight: bold; color: #94A3B8; margin-bottom: 6px; border-bottom: 1px solid #3B82F6; padding-bottom: 4px; }
+        .item { background: #0F172A; padding: 4px; margin-bottom: 2px; font-size: 9px; border-left: 2px solid #3B82F6; }
+        .item.active { border-left-color: #10B981; background: rgba(16, 185, 129, 0.1); }
+
+        /* CENTER PANEL - TURNTABLES */
+        .center-panel { background: #1E293B; border: 2px solid #CBD5E1; border-radius: 4px; padding: 12px; display: flex; align-items: center; justify-content: space-around; }
+        .tt-unit { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .tt-name { font-size: 9px; font-weight: bold; color: #94A3B8; }
+        .tt-circle { width: 90px; height: 90px; border: 2px solid #3B82F6; border-radius: 50%; position: relative; background: radial-gradient(circle, #0F172A, #1E293B); animation: rotate 10s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .tt-dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); }
+        .tt-pos { font-size: 8px; color: #94A3B8; text-align: center; }
+        .arrow { font-size: 24px; color: #3B82F6; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        /* RIGHT PANEL - LOT */
+        .right-panel { background: #1E293B; border: 2px solid #10B981; border-radius: 4px; padding: 8px; overflow-y: auto; }
+        .lot-uid { font-size: 12px; font-weight: bold; color: #10B981; margin-bottom: 6px; }
+        .qr-label { font-size: 8px; color: #94A3B8; margin-bottom: 3px; font-weight: bold; }
+        .qr-item { background: #0F172A; padding: 3px; margin-bottom: 2px; font-size: 8px; border-left: 2px solid #3B82F6; word-break: break-all; }
+        .lot-status { font-size: 8px; margin-top: 6px; padding: 4px; background: #0F172A; border-left: 2px solid #10B981; }
+        .status-ok { color: #10B981; }
+        .status-pend { color: #F59E0B; }
+
+        /* BENDING CARDS SECTION */
+        .bending-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; flex: 1; overflow-y: auto; }
+        .bending-card { background: #1E293B; border: 2px solid #CBD5E1; border-radius: 4px; padding: 8px; display: flex; flex-direction: column; }
+        .bending-header { background: #3B82F6; padding: 6px; border-radius: 3px; font-size: 10px; font-weight: bold; text-align: center; margin-bottom: 6px; color: white; }
+        .bending-header.active { background: #10B981; }
+        .step { background: #0F172A; padding: 4px; border-radius: 2px; font-size: 8px; color: #94A3B8; margin-bottom: 4px; border-left: 2px solid #3B82F6; }
+
+        /* PARAMETER ROW */
+        .param-row { display: grid; grid-template-columns: 20px 40px 30px; gap: 4px; margin-bottom: 3px; align-items: center; background: #0F172A; padding: 3px; border-radius: 2px; font-size: 9px; }
+        .param-label { color: #94A3B8; font-weight: bold; font-size: 8px; }
+        .param-value { color: white; font-weight: bold; }
+        .param-status { background: rgba(16, 185, 129, 0.3); color: #10B981; padding: 1px 3px; border-radius: 2px; font-size: 7px; text-align: center; }
+        .param-status.ng { background: rgba(239, 68, 68, 0.3); color: #EF4444; }
+
+        .divider { border-top: 1px solid #3B82F6; padding-top: 3px; margin: 4px 0; font-size: 8px; font-weight: bold; color: #94A3B8; }
+
+        /* GAUGES */
+        .gauge-section { background: #1E293B; border: 2px solid #CBD5E1; border-radius: 4px; padding: 8px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; height: 80px; flex-shrink: 0; }
+        .gauge { display: flex; flex-direction: column; gap: 3px; }
+        .gauge-title { font-size: 9px; font-weight: bold; color: #94A3B8; border-bottom: 1px solid #3B82F6; padding-bottom: 2px; }
+        .gauge-row { display: grid; grid-template-columns: auto 1fr auto; gap: 3px; align-items: center; font-size: 8px; }
+        .gauge-label { color: #94A3B8; font-weight: bold; }
+        .gauge-val { color: white; font-weight: bold; text-align: right; }
+        .gauge-status { background: rgba(16, 185, 129, 0.3); color: #10B981; padding: 1px 2px; font-size: 7px; border-radius: 1px; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #3B82F6; border-radius: 2px; }
+        ::-webkit-scrollbar-track { background: #0F172A; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                ⚙️ FLEX BENDING MACHINE
+                <div class="status">● RUNNING</div>
+            </div>
+            <div class="header-right">
+                <span class="metric">Cycle Time: <strong>12.4s</strong></span>
+                <span class="metric">Parts: <strong>2,847 OK</strong></span>
+                <span class="metric">NG: <strong>12</strong></span>
+            </div>
+        </div>
+
+        <!-- TOP SECTION: Input + TurnTables + Lot -->
+        <div class="top-section">
+            <!-- LEFT: Input Tray -->
+            <div class="left-panel">
+                <div class="panel">
+                    <div class="panel-title">📥 Input Tray</div>
+                    <div class="item active">1 - LOT-001</div>
+                    <div class="item">2 - LOT-002</div>
+                    <div class="item">3 - LOT-003</div>
+                    <div class="item">4 - LOT-004</div>
+                </div>
+                <div class="panel">
+                    <div class="panel-title">📱 Scanner Queue</div>
+                    <div class="item">ABCD12345A001</div>
+                    <div class="item">ABCD12345A002</div>
+                    <div class="item">ABCD12345A003</div>
+                    <div class="item">ABCD12345A004</div>
+                </div>
+            </div>
+
+            <!-- CENTER: TurnTables -->
+            <div class="center-panel">
+                <div class="tt-unit">
+                    <div class="tt-name">Status - DK<br/>(TT-1)</div>
+                    <div class="tt-circle"><div class="tt-dot"></div></div>
+                    <div class="tt-pos">Position: <strong>Pos 1</strong></div>
+                </div>
+                <div style="text-align: center;">
+                    <div class="arrow">⇨</div>
+                    <div style="font-size: 8px; color: #94A3B8;">Transfer</div>
+                </div>
+                <div class="tt-unit">
+                    <div class="tt-name">End Try<br/>(TT-2)</div>
+                    <div class="tt-circle" style="animation-delay: 3s;"><div class="tt-dot"></div></div>
+                    <div class="tt-pos">Position: <strong>Pos 0</strong></div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Current Lot -->
+            <div class="right-panel">
+                <div class="panel-title">📦 Current Lot Info</div>
+                <div class="lot-uid">UID: LOT-001-2025</div>
+                <div class="qr-label">Scanned QR Codes:</div>
+                <div class="qr-item">ABCD12345A001</div>
+                <div class="qr-item">ABCD12345A002</div>
+                <div class="qr-item">ABCD12345A003</div>
+                <div class="qr-item">ABCD12345A004</div>
+                <div class="lot-status"><span class="status-ok">✓ Stage 1: Complete</span></div>
+                <div class="lot-status"><span class="status-pend">⏳ Stage 2: In Progress</span></div>
+            </div>
+        </div>
+
+        <!-- BENDING CARDS -->
+        <div class="bending-section">
+            <!-- BENDING 1 -->
+            <div class="bending-card">
+                <div class="bending-header active">🔴 BENDING 1 (UAT #1)</div>
+                <div class="step">Step 13 / 16 - Punch Forward</div>
+
+                <div class="param-row"><div class="param-label">T</div><div class="param-value">80.2°C</div><div class="param-status">OK</div></div>
+                <div class="param-row"><div class="param-label">P1</div><div class="param-value">7.0N</div><div class="param-status">OK</div></div>
+                <div class="param-row"><div class="param-label">P2</div><div class="param-value">7.1N</div><div class="param-status">OK</div></div>
+                <div class="param-row"><div class="param-label">P3</div><div class="param-value">6.8N</div><div class="param-status">OK</div></div>
+                <div class="param-row"><div class="param-label">P4</div><div class="param-value">6.9N</div><div class="param-status">OK</div></div>
+
+                <div class="divider">Measurements:</div>
+
+                <div class="param-row"><div class="param-label">X</div><div class="param-value">1.6</div><div class="param-status">OK</div></div>
+                <div class="param-row"><div class="param-label">Y</div><div class="param-value">3.4</div><div class="param-status">OK</div></div>
+                <div class="param-row"><div class="param-label">Z</div><div class="param-value">5.4</div><div class="param-status">OK</div></div>
+                <div class="param-row"><div class="param-label">Ø</div><div class="param-value">7.5</div><div class="param-status">OK</div></div>
+            </div>
+
+            <!-- BENDING 2 -->
+            <div class="bending-card">
+                <div class="bending-header">🟡 BENDING 2 (UAT #2)</div>
+                <div class="step">Step 17 / 23 - Waiting...</div>
+
+                <div class="param-row"><div class="param-label">T</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">P1</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">P2</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">P3</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">P4</div><div class="param-value">---</div><div class="param-status">--</div></div>
+
+                <div class="divider">Measurements:</div>
+
+                <div class="param-row"><div class="param-label">X</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">Y</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">Z</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">Ø</div><div class="param-value">---</div><div class="param-status">--</div></div>
+            </div>
+
+            <!-- BENDING 3 -->
+            <div class="bending-card">
+                <div class="bending-header">⚪ BENDING 3 (UAT #3)</div>
+                <div class="step">Step 26 / 32 - Not Started</div>
+
+                <div class="param-row"><div class="param-label">T</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">P1</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">P2</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">P3</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">P4</div><div class="param-value">---</div><div class="param-status">--</div></div>
+
+                <div class="divider">Measurements:</div>
+
+                <div class="param-row"><div class="param-label">X</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">Y</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">Z</div><div class="param-value">---</div><div class="param-status">--</div></div>
+                <div class="param-row"><div class="param-label">Ø</div><div class="param-value">---</div><div class="param-status">--</div></div>
+            </div>
+        </div>
+
+        <!-- GAUGE SECTION -->
+        <div class="gauge-section">
+            <div class="gauge">
+                <div class="gauge-title">🔧 Gauge 1</div>
+                <div class="gauge-row"><span class="gauge-label">T:</span><span class="gauge-val">80.2°C</span><span class="gauge-status">OK</span></div>
+                <div class="gauge-row"><span class="gauge-label">P1:</span><span class="gauge-val">7.0N</span><span class="gauge-status">OK</span></div>
+            </div>
+            <div class="gauge">
+                <div class="gauge-title">🔧 Gauge 2</div>
+                <div class="gauge-row"><span class="gauge-label">T:</span><span class="gauge-val">80.1°C</span><span class="gauge-status">OK</span></div>
+                <div class="gauge-row"><span class="gauge-label">P2:</span><span class="gauge-val">7.1N</span><span class="gauge-status">OK</span></div>
+            </div>
+            <div class="gauge">
+                <div class="gauge-title">🔧 Gauge 3</div>
+                <div class="gauge-row"><span class="gauge-label">T:</span><span class="gauge-val">80.3°C</span><span class="gauge-status">OK</span></div>
+                <div class="gauge-row"><span class="gauge-label">P3:</span><span class="gauge-val">6.8N</span><span class="gauge-status">OK</span></div>
+            </div>
+            <div class="gauge">
+                <div class="gauge-title">🔧 Gauge 4</div>
+                <div class="gauge-row"><span class="gauge-label">T:</span><span class="gauge-val">80.0°C</span><span class="gauge-status">OK</span></div>
+                <div class="gauge-row"><span class="gauge-label">P4:</span><span class="gauge-val">6.9N</span><span class="gauge-status">OK</span></div>
+            </div>
+            <div class="gauge">
+                <div class="gauge-title">✓ Result</div>
+                <div class="gauge-row"><span class="gauge-label">S1:</span><span class="gauge-val" style="color:#10B981;">OK</span></div>
+                <div class="gauge-row"><span class="gauge-label">S2:</span><span class="gauge-val" style="color:#F59E0B;">PEND</span></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
