@@ -179,8 +179,19 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             set => SetProperty(ref _canWrite, value);
         }
 
+        private bool _useEngMinMax;
+        public bool UseEngMinMax
+        {
+            get => _useEngMinMax;
+            set => SetProperty(ref _useEngMinMax, value);
+        }
 
-
+        private bool _enableTraceLog;
+        public bool EnableTraceLog
+        {
+            get => _enableTraceLog;
+            set => SetProperty(ref _enableTraceLog, value);
+        }
 
         // UPDATED: Collection of AlgorithmType objects
         public ObservableCollection<AlgorithmType> AlgorithmTypes { get; }
@@ -303,6 +314,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 Description = tag.Description;
                 Remark = tag.Remark;
                 CanWrite = tag.CanWrite;
+                UseEngMinMax = tag.UseEngMinMax;
                 // Bind IOType
                 SelectedIOType = tag.IOType;
                 UpdateAlgorithmState();
@@ -335,6 +347,8 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 _currentTag.Description = Description;
                 _currentTag.Remark = Remark;
                 _currentTag.CanWrite = CanWrite;
+                _currentTag.UseEngMinMax = UseEngMinMax;
+                
 
                 _currentTag.IOType = SelectedIOType;
             }
