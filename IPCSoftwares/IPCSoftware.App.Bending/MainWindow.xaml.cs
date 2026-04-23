@@ -33,3 +33,35 @@ namespace IPCSoftware.App.Bending
         }
     }
 }
+
+
+
+
+
+//using System.Windows;
+
+//namespace IPCSoftware.App.Bending
+//{
+//    public partial class MainWindow : Window
+//    {
+//        public MainWindow()
+//        {
+//            InitializeComponent();
+
+//            // App open hote hi default UserControl1 load hoga
+//            MainContentArea.Content = new Views.UserControl1();
+//        }
+
+//        private void BtnDashboard1_Click(object sender, RoutedEventArgs e)
+//        {
+//            // Button 1 click par UserControl1
+//            MainContentArea.Content = new Views.UserControl1();
+//        }
+
+//        private void BtnDashboard2_Click(object sender, RoutedEventArgs e)
+//        {
+//            // Button 2 click par UserControl2
+//            MainContentArea.Content = new Views.UserControl2();
+//        }
+//    }
+//}
