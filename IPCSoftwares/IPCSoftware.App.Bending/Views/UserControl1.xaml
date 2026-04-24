@@ -5,18 +5,114 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
-             d:DesignHeight="900" d:DesignWidth="1672" Background="#F1F5F9">
+             d:DesignHeight="900" d:DesignWidth="1672">
 
     <UserControl.Resources>
         <SolidColorBrush x:Key="PanelBorder" Color="#1E293B"/>
-        <SolidColorBrush x:Key="AccentBlue" Color="#3B82F6"/>
-        <SolidColorBrush x:Key="OkGreen" Color="#10B981"/>
-        <SolidColorBrush x:Key="NgRed" Color="#EF4444"/>
+        <SolidColorBrush x:Key="AccentBlue" Color="#00D4FF"/>
+        <SolidColorBrush x:Key="OkGreen" Color="#00FF88"/>
+        <SolidColorBrush x:Key="NgRed" Color="#FF0055"/>
         <SolidColorBrush x:Key="TableBg" Color="#0F172A"/>
         <SolidColorBrush x:Key="RowEvenBg" Color="#1E293B"/>
+
+        <!-- Holographic Gradient Brushes -->
+        <LinearGradientBrush x:Key="HolographicBlue" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#0A1929" Offset="0"/>
+            <GradientStop Color="#1A2F4A" Offset="0.5"/>
+            <GradientStop Color="#0D1B2A" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="GlassBg" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#1A2F4A80" Offset="0"/>
+            <GradientStop Color="#0D1B2A60" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="NeonGlow" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#00D4FF" Offset="0"/>
+            <GradientStop Color="#0099FF" Offset="0.5"/>
+            <GradientStop Color="#0066FF" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Glass Panel Style with Blur Effect -->
+        <Style x:Key="GlassPanel" TargetType="Border">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.15">
+                        <GradientStop Color="#FFFFFF" Offset="0"/>
+                        <GradientStop Color="#00D4FF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#00D4FF" Offset="0"/>
+                        <GradientStop Color="#0099FF" Offset="0.5"/>
+                        <GradientStop Color="#00D4FF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#00D4FF" BlurRadius="20" ShadowDepth="0" Opacity="0.6"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Holographic Button Style -->
+        <Style x:Key="HoloButton" TargetType="Button">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.2">
+                        <GradientStop Color="#00D4FF" Offset="0"/>
+                        <GradientStop Color="#0066FF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="#00D4FF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#00D4FF"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <Border.Effect>
+                                <DropShadowEffect Color="#00D4FF" BlurRadius="10" ShadowDepth="0" Opacity="0.5"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#00D4FF" BlurRadius="20" ShadowDepth="0" Opacity="0.9"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
-    <Grid Margin="15">
+    <Grid>
+        <!-- Animated Holographic Background -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#030712" Offset="0"/>
+                <GradientStop Color="#0A1929" Offset="0.3"/>
+                <GradientStop Color="#1A2F4A" Offset="0.6"/>
+                <GradientStop Color="#0D1B2A" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -30,73 +126,178 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <!--Controls-->
-        <Border Grid.Row="0" Grid.Column="0" CornerRadius="8" Margin="3"  HorizontalAlignment="Stretch" 
-                BorderBrush="{StaticResource AccentBlue}" BorderThickness="2" >
+        <!--Controls - Holographic Style-->
+        <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource GlassPanel}" 
+                HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.12">
+                    <GradientStop Color="#FFFFFF" Offset="0"/>
+                    <GradientStop Color="#00D4FF" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
             <StackPanel>
-                <Border Background="{StaticResource AccentBlue}" CornerRadius="6,6,0,0" Padding="6,5">
-                    <TextBlock Text="CONTROLS" FontWeight="Bold" FontSize="11" Foreground="White" HorizontalAlignment="Center"/>
+                <Border CornerRadius="12,12,0,0" Padding="4,6">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#00D4FF" Offset="0"/>
+                            <GradientStop Color="#0099FF" Offset="0.5"/>
+                            <GradientStop Color="#00D4FF" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.Effect>
+                        <DropShadowEffect Color="#00D4FF" BlurRadius="15" ShadowDepth="0" Opacity="0.8"/>
+                    </Border.Effect>
+                    <TextBlock Text="CONTROLS" FontWeight="Bold" FontSize="11" Foreground="#FFFFFF" 
+                               HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="#00D4FF" BlurRadius="8" ShadowDepth="0" Opacity="1"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
                 </Border>
-                <StackPanel Margin="3">
-                    <Button Margin="3" Padding="3,6" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                <StackPanel Margin="6,8,6,6">
+                    <Button Padding="4,6" Margin="0,3" FontWeight="Bold" FontSize="10" 
+                            Cursor="Hand" BorderThickness="1">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.25">
+                                <GradientStop Color="#00D4FF" Offset="0"/>
+                                <GradientStop Color="#0066FF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <Button.BorderBrush>
+                            <SolidColorBrush Color="#00D4FF" Opacity="0.6"/>
+                        </Button.BorderBrush>
+                        <Button.Foreground>
+                            <SolidColorBrush Color="#00D4FF"/>
+                        </Button.Foreground>
+                        <Button.Effect>
+                            <DropShadowEffect Color="#00D4FF" BlurRadius="10" ShadowDepth="0" Opacity="0.5"/>
+                        </Button.Effect>
                         <Button.Resources>
                             <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="4"/>
+                                <Setter Property="CornerRadius" Value="8"/>
                             </Style>
                         </Button.Resources>
-                        <TextBlock Text="AUTO RUN" TextAlignment="Center"/>
+                        <TextBlock Text="AUTO RUN" TextAlignment="Center" FontWeight="Bold"/>
                     </Button>
-                    <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                    <Button Padding="4,6" Margin="0,3" FontWeight="Bold" FontSize="10" 
+                            Cursor="Hand" BorderThickness="1">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.2">
+                                <GradientStop Color="#8B5CF6" Offset="0"/>
+                                <GradientStop Color="#6366F1" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <Button.BorderBrush>
+                            <SolidColorBrush Color="#8B5CF6" Opacity="0.6"/>
+                        </Button.BorderBrush>
+                        <Button.Foreground>
+                            <SolidColorBrush Color="#A78BFA"/>
+                        </Button.Foreground>
+                        <Button.Effect>
+                            <DropShadowEffect Color="#8B5CF6" BlurRadius="10" ShadowDepth="0" Opacity="0.5"/>
+                        </Button.Effect>
                         <Button.Resources>
                             <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="4"/>
+                                <Setter Property="CornerRadius" Value="8"/>
                             </Style>
                         </Button.Resources>
-                        <TextBlock Text="DRY RUN" TextAlignment="Center"/>
+                        <TextBlock Text="DRY RUN" TextAlignment="Center" FontWeight="Bold"/>
                     </Button>
-                    <Button Margin="3" Padding="3,6" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                    <Button Padding="4,6" Margin="0,3" FontWeight="Bold" FontSize="10" 
+                            Cursor="Hand" BorderThickness="1">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.25">
+                                <GradientStop Color="#00FF88" Offset="0"/>
+                                <GradientStop Color="#00CC66" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <Button.BorderBrush>
+                            <SolidColorBrush Color="#00FF88" Opacity="0.6"/>
+                        </Button.BorderBrush>
+                        <Button.Foreground>
+                            <SolidColorBrush Color="#00FF88"/>
+                        </Button.Foreground>
+                        <Button.Effect>
+                            <DropShadowEffect Color="#00FF88" BlurRadius="10" ShadowDepth="0" Opacity="0.5"/>
+                        </Button.Effect>
                         <Button.Resources>
                             <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="4"/>
+                                <Setter Property="CornerRadius" Value="8"/>
                             </Style>
                         </Button.Resources>
-                        <TextBlock Text="CYCLE START/STOP" TextAlignment="Center"/>
+                        <TextBlock Text="CYCLE START/STOP" TextAlignment="Center" FontWeight="Bold"/>
                     </Button>
-                    <Button Margin="3" Padding="3,6" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                    <Button Padding="4,6" Margin="0,3" FontWeight="Bold" FontSize="10" 
+                            Cursor="Hand" BorderThickness="1">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.25">
+                                <GradientStop Color="#FF00FF" Offset="0"/>
+                                <GradientStop Color="#CC00CC" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <Button.BorderBrush>
+                            <SolidColorBrush Color="#FF00FF" Opacity="0.6"/>
+                        </Button.BorderBrush>
+                        <Button.Foreground>
+                            <SolidColorBrush Color="#FF00FF"/>
+                        </Button.Foreground>
+                        <Button.Effect>
+                            <DropShadowEffect Color="#FF00FF" BlurRadius="10" ShadowDepth="0" Opacity="0.5"/>
+                        </Button.Effect>
                         <Button.Resources>
                             <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="4"/>
+                                <Setter Property="CornerRadius" Value="8"/>
                             </Style>
                         </Button.Resources>
-                        <TextBlock Text="WORK PAYOUT START" TextAlignment="Center"/>
+                        <TextBlock Text="WORK PAYOUT START" TextAlignment="Center" FontWeight="Bold"/>
                     </Button>
                 </StackPanel>
             </StackPanel>
         </Border>
 
-        <!--PROCESS FLOW-->
-        <Grid Grid.Row="1" Grid.Column="0" Margin="3" >
+        <!--PROCESS FLOW - Holographic-->
+        <Grid Grid.Row="1" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
 
             </Grid.RowDefinitions>
             <Button Grid.Row="0" Content="Go To Menu"
-                    Margin="3"
-                    Padding="3"
-                    Background="#6366F1"
-                    Foreground="White"
+                    Padding="6,4"
+                    Margin="5,3,5,4"
                     FontWeight="Bold"
-                    Cursor="Hand">
+                    FontSize="10"
+                    Cursor="Hand"
+                    BorderThickness="1">
+                <Button.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.25">
+                        <GradientStop Color="#FF00FF" Offset="0"/>
+                        <GradientStop Color="#CC00CC" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+                <Button.BorderBrush>
+                    <SolidColorBrush Color="#FF00FF" Opacity="0.6"/>
+                </Button.BorderBrush>
+                <Button.Foreground>
+                    <SolidColorBrush Color="#FF00FF"/>
+                </Button.Foreground>
+                <Button.Effect>
+                    <DropShadowEffect Color="#FF00FF" BlurRadius="10" ShadowDepth="0" Opacity="0.5"/>
+                </Button.Effect>
                 <Button.Resources>
                     <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="5"/>
+                        <Setter Property="CornerRadius" Value="8"/>
                     </Style>
                 </Button.Resources>
             </Button>
 
-            <Border Grid.Row="1" CornerRadius="8" Margin="3"
-                    BorderBrush="{StaticResource AccentBlue}" BorderThickness="2" Background="#1A2540">
+            <Border Grid.Row="1" Style="{StaticResource GlassPanel}" Margin="5">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.12">
+                        <GradientStop Color="#FFFFFF" Offset="0"/>
+                        <GradientStop Color="#00D4FF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -104,21 +305,44 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <Border Background="{StaticResource AccentBlue}" CornerRadius="6,6,0,0" Padding="3">
-                        <TextBlock Text="PROCESS FLOW" FontWeight="Bold" FontSize="11" Foreground="White" HorizontalAlignment="Center"/>
+                    <Border CornerRadius="12,12,0,0" Padding="4,6">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#00D4FF" Offset="0"/>
+                                <GradientStop Color="#0099FF" Offset="0.5"/>
+                                <GradientStop Color="#00D4FF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect Color="#00D4FF" BlurRadius="15" ShadowDepth="0" Opacity="0.8"/>
+                        </Border.Effect>
+                        <TextBlock Text="PROCESS FLOW" FontWeight="Bold" FontSize="11" Foreground="#FFFFFF" 
+                                   HorizontalAlignment="Center">
+                            <TextBlock.Effect>
+                                <DropShadowEffect Color="#00D4FF" BlurRadius="8" ShadowDepth="0" Opacity="1"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
                     </Border>
 
-                    <Grid Grid.Row="1" Margin="3">
+                    <Grid Grid.Row="1" Margin="6,4,6,2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Description" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="BATCH No." Foreground="White" FontWeight="Bold" FontSize="10" />
+                        <TextBlock Text="Description" Foreground="#00D4FF" FontWeight="Bold" FontSize="9.5" VerticalAlignment="Center">
+                            <TextBlock.Effect>
+                                <DropShadowEffect Color="#00D4FF" BlurRadius="5" ShadowDepth="0" Opacity="0.8"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+                        <TextBlock Grid.Column="1" Text="BATCH No." Foreground="#00D4FF" FontWeight="Bold" FontSize="9.5">
+                            <TextBlock.Effect>
+                                <DropShadowEffect Color="#00D4FF" BlurRadius="5" ShadowDepth="0" Opacity="0.8"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
                     </Grid>
 
-                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Height="130">
-                        <Grid >
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Height="110">
+                        <Grid Margin="6,2,6,4">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -134,86 +358,196 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Grid Margin="3" Grid.Row="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Tray/Load" Foreground="White" FontSize="10.5"/>
-                                <TextBlock Grid.Column="1" Text="#BFBL010" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                            </Grid>
-                            <Grid Margin="3" Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="QR/Scan-Pickup" Foreground="White" FontSize="10.5"/>
-                                <TextBlock Grid.Column="1" Text="#BFBL009" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                            </Grid>
-                            <Grid Margin="3" Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Pre-Bend Inspection" Foreground="White" FontSize="10.5"/>
-                                <TextBlock Grid.Column="1" Text="#BFBL008" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                            </Grid>
-                            <Grid Margin="3" Grid.Row="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Load Jig-(TT-1)" Foreground="White" FontSize="10.5"/>
-                                <TextBlock Grid.Column="1" Text="#BFBL007" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                            </Grid>
-                            <Grid Margin="3" Grid.Row="4">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Bending-UAT1 -2" Foreground="White" FontSize="10.5"/>
-                                <TextBlock Grid.Column="1" Text="#BFBL006" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                            </Grid>
-                            <Grid Margin="3" Grid.Row="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Transfer TT1 to TT2" Foreground="White" FontSize="10.5"/>
-                                <TextBlock Grid.Column="1" Text="#BFBL005" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                            </Grid>
-                            <Grid Margin="3" Grid.Row="6">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Bending-UAT3-4" Foreground="White" FontSize="10.5"/>
-                                <TextBlock Grid.Column="1" Text="#BFBL004" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                            </Grid>
-                            <Grid Margin="3" Grid.Row="7">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Film Teiring" Foreground="White" FontSize="10.5"/>
-                                <TextBlock Grid.Column="1" Text="#BFBL003" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                            </Grid>
-                            <Grid Margin="3" Grid.Row="8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Final Inspection St-3" Foreground="White" FontSize="10.5"/>
-                                <TextBlock Grid.Column="1" Text="#BFBL002" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                            </Grid>
-                            <Grid Margin="3" Grid.Row="9">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Output Tray Unload" Foreground="White" FontSize="10.5"/>
-                                <TextBlock Grid.Column="1" Text="#BFBL001" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
-                            </Grid>
+                            <Border Grid.Row="0" Margin="0,2" Padding="4,2" CornerRadius="6" BorderThickness="1" Opacity="0.8">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" Opacity="0.1">
+                                        <GradientStop Color="#00D4FF" Offset="0"/>
+                                        <GradientStop Color="#0066FF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="#00D4FF" Opacity="0.3"/>
+                                </Border.BorderBrush>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Tray/Load" Foreground="#AADDFF" FontSize="9"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL010" Foreground="#00D4FF" FontSize="9" FontWeight="Bold"/>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Row="1" Margin="0,2" Padding="4,2" CornerRadius="6" BorderThickness="1" Opacity="0.8">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" Opacity="0.1">
+                                        <GradientStop Color="#00D4FF" Offset="0"/>
+                                        <GradientStop Color="#0066FF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="#00D4FF" Opacity="0.3"/>
+                                </Border.BorderBrush>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="QR/Scan-Pickup" Foreground="#AADDFF" FontSize="9"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL009" Foreground="#00D4FF" FontSize="9" FontWeight="Bold"/>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Row="2" Margin="0,2" Padding="4,2" CornerRadius="6" BorderThickness="1" Opacity="0.8">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" Opacity="0.1">
+                                        <GradientStop Color="#00D4FF" Offset="0"/>
+                                        <GradientStop Color="#0066FF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="#00D4FF" Opacity="0.3"/>
+                                </Border.BorderBrush>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Pre-Bend Inspection" Foreground="#AADDFF" FontSize="9"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL008" Foreground="#00D4FF" FontSize="9" FontWeight="Bold"/>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Row="3" Margin="0,2" Padding="4,2" CornerRadius="6" BorderThickness="1" Opacity="0.8">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" Opacity="0.1">
+                                        <GradientStop Color="#00D4FF" Offset="0"/>
+                                        <GradientStop Color="#0066FF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="#00D4FF" Opacity="0.3"/>
+                                </Border.BorderBrush>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Load Jig-(TT-1)" Foreground="#AADDFF" FontSize="9"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL007" Foreground="#00D4FF" FontSize="9" FontWeight="Bold"/>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Row="4" Margin="0,2" Padding="4,2" CornerRadius="6" BorderThickness="1" Opacity="0.8">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" Opacity="0.1">
+                                        <GradientStop Color="#00D4FF" Offset="0"/>
+                                        <GradientStop Color="#0066FF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="#00D4FF" Opacity="0.3"/>
+                                </Border.BorderBrush>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Bending-UAT1 -2" Foreground="#AADDFF" FontSize="9"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL006" Foreground="#00D4FF" FontSize="9" FontWeight="Bold"/>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Row="5" Margin="0,2" Padding="4,2" CornerRadius="6" BorderThickness="1" Opacity="0.8">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" Opacity="0.1">
+                                        <GradientStop Color="#00D4FF" Offset="0"/>
+                                        <GradientStop Color="#0066FF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="#00D4FF" Opacity="0.3"/>
+                                </Border.BorderBrush>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Transfer TT1 to TT2" Foreground="#AADDFF" FontSize="9"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL005" Foreground="#00D4FF" FontSize="9" FontWeight="Bold"/>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Row="6" Margin="0,2" Padding="4,2" CornerRadius="6" BorderThickness="1" Opacity="0.8">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" Opacity="0.1">
+                                        <GradientStop Color="#00D4FF" Offset="0"/>
+                                        <GradientStop Color="#0066FF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="#00D4FF" Opacity="0.3"/>
+                                </Border.BorderBrush>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Bending-UAT3-4" Foreground="#AADDFF" FontSize="9"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL004" Foreground="#00D4FF" FontSize="9" FontWeight="Bold"/>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Row="7" Margin="0,2" Padding="4,2" CornerRadius="6" BorderThickness="1" Opacity="0.8">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" Opacity="0.1">
+                                        <GradientStop Color="#00D4FF" Offset="0"/>
+                                        <GradientStop Color="#0066FF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="#00D4FF" Opacity="0.3"/>
+                                </Border.BorderBrush>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Film Teiring" Foreground="#AADDFF" FontSize="9"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL003" Foreground="#00D4FF" FontSize="9" FontWeight="Bold"/>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Row="8" Margin="0,2" Padding="4,2" CornerRadius="6" BorderThickness="1" Opacity="0.8">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" Opacity="0.1">
+                                        <GradientStop Color="#00D4FF" Offset="0"/>
+                                        <GradientStop Color="#0066FF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="#00D4FF" Opacity="0.3"/>
+                                </Border.BorderBrush>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Final Inspection St-3" Foreground="#AADDFF" FontSize="9"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL002" Foreground="#00D4FF" FontSize="9" FontWeight="Bold"/>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Row="9" Margin="0,2" Padding="4,2" CornerRadius="6" BorderThickness="1" Opacity="0.8">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" Opacity="0.1">
+                                        <GradientStop Color="#00D4FF" Offset="0"/>
+                                        <GradientStop Color="#0066FF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="#00D4FF" Opacity="0.3"/>
+                                </Border.BorderBrush>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Output Tray Unload" Foreground="#AADDFF" FontSize="9"/>
+                                    <TextBlock Grid.Column="1" Text="#BFBL001" Foreground="#00D4FF" FontSize="9" FontWeight="Bold"/>
+                                </Grid>
+                            </Border>
 
 
 
@@ -225,84 +559,224 @@
 
         </Grid>
 
-        <!-- EFFICIENCY BREAKDOWN -->
-        <Border Grid.Row="2" Background="#1E293B" CornerRadius="8" Padding="8">
+        <!-- EFFICIENCY BREAKDOWN - Holographic -->
+        <Border Grid.Row="2" Style="{StaticResource GlassPanel}" Padding="8,6" Margin="5">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.12">
+                    <GradientStop Color="#FFFFFF" Offset="0"/>
+                    <GradientStop Color="#00D4FF" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
             <StackPanel>
-                <TextBlock Text="EFFICIENCY BREAKDOWN" Foreground="White" FontWeight="Bold" FontSize="11" Padding="0,0,0,8"/>
+                <TextBlock Text="EFFICIENCY BREAKDOWN" Foreground="#00D4FF" FontWeight="Bold" FontSize="11" Padding="0,0,0,4">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="#00D4FF" BlurRadius="8" ShadowDepth="0" Opacity="0.9"/>
+                    </TextBlock.Effect>
+                </TextBlock>
 
-                <Grid Height="22">
+                <Grid Height="18" Margin="0,2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="85"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Availability" Foreground="White" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
-                    <Grid Grid.Column="1" Height="8" VerticalAlignment="Center">
-                        <Border CornerRadius="4" Background="#334155"/>
-                        <Border CornerRadius="4" Background="#10B981" HorizontalAlignment="Left" Width="96"/>
+                    <TextBlock Text="Availability" Foreground="#AADDFF" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <Grid Grid.Column="1" Height="8" VerticalAlignment="Center" Margin="4,0">
+                        <Border CornerRadius="4" Opacity="0.3">
+                            <Border.Background>
+                                <SolidColorBrush Color="#00D4FF" Opacity="0.2"/>
+                            </Border.Background>
+                        </Border>
+                        <Border CornerRadius="4" HorizontalAlignment="Left" Width="96">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#00FF88" Offset="0"/>
+                                    <GradientStop Color="#00CC66" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#00FF88" BlurRadius="8" ShadowDepth="0" Opacity="0.6"/>
+                            </Border.Effect>
+                        </Border>
                     </Grid>
-                    <TextBlock Grid.Column="2" Text="96%" Foreground="White" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="2" Text="96%" Foreground="#00FF88" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" Margin="4,0,0,0">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="#00FF88" BlurRadius="5" ShadowDepth="0" Opacity="0.8"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
                 </Grid>
 
-                <Grid Height="22">
+                <Grid Height="18" Margin="0,2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="85"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Performance" Foreground="White" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
-                    <Grid Grid.Column="1" Height="8" VerticalAlignment="Center">
-                        <Border CornerRadius="4" Background="#334155"/>
-                        <Border CornerRadius="4" Background="#3B82F6" HorizontalAlignment="Left" Width="91"/>
+                    <TextBlock Text="Performance" Foreground="#AADDFF" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <Grid Grid.Column="1" Height="8" VerticalAlignment="Center" Margin="4,0">
+                        <Border CornerRadius="4" Opacity="0.3">
+                            <Border.Background>
+                                <SolidColorBrush Color="#00D4FF" Opacity="0.2"/>
+                            </Border.Background>
+                        </Border>
+                        <Border CornerRadius="4" HorizontalAlignment="Left" Width="91">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#00D4FF" Offset="0"/>
+                                    <GradientStop Color="#0099FF" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#00D4FF" BlurRadius="8" ShadowDepth="0" Opacity="0.6"/>
+                            </Border.Effect>
+                        </Border>
                     </Grid>
-                    <TextBlock Grid.Column="2" Text="91%" Foreground="White" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="2" Text="91%" Foreground="#00D4FF" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" Margin="4,0,0,0">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="#00D4FF" BlurRadius="5" ShadowDepth="0" Opacity="0.8"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
                 </Grid>
 
-                <Grid Height="22">
+                <Grid Height="18" Margin="0,2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="85"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Quality" Foreground="White" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
-                    <Grid Grid.Column="1" Height="8" VerticalAlignment="Center">
-                        <Border CornerRadius="4" Background="#334155"/>
-                        <Border CornerRadius="4" Background="#F59E0B" HorizontalAlignment="Left" Width="97"/>
+                    <TextBlock Text="Quality" Foreground="#AADDFF" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <Grid Grid.Column="1" Height="8" VerticalAlignment="Center" Margin="4,0">
+                        <Border CornerRadius="4" Opacity="0.3">
+                            <Border.Background>
+                                <SolidColorBrush Color="#00D4FF" Opacity="0.2"/>
+                            </Border.Background>
+                        </Border>
+                        <Border CornerRadius="4" HorizontalAlignment="Left" Width="97">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#FFC107" Offset="0"/>
+                                    <GradientStop Color="#FF9800" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#FFC107" BlurRadius="8" ShadowDepth="0" Opacity="0.6"/>
+                            </Border.Effect>
+                        </Border>
                     </Grid>
-                    <TextBlock Grid.Column="2" Text="97%" Foreground="White" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="2" Text="97%" Foreground="#FFC107" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" Margin="4,0,0,0">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="#FFC107" BlurRadius="5" ShadowDepth="0" Opacity="0.8"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
                 </Grid>
-                <Grid Height="22">
+                <Grid Height="18" Margin="0,2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="85"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="OEE Details" Foreground="White" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
-                    <Grid Grid.Column="1" Height="8" VerticalAlignment="Center">
-                        <Border CornerRadius="4" Background="#334155"/>
-                        <Border CornerRadius="4" Background="#3B82F6" HorizontalAlignment="Left" Width="91"/>
+                    <TextBlock Text="OEE Details" Foreground="#AADDFF" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <Grid Grid.Column="1" Height="8" VerticalAlignment="Center" Margin="4,0">
+                        <Border CornerRadius="4" Opacity="0.3">
+                            <Border.Background>
+                                <SolidColorBrush Color="#00D4FF" Opacity="0.2"/>
+                            </Border.Background>
+                        </Border>
+                        <Border CornerRadius="4" HorizontalAlignment="Left" Width="91">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#00D4FF" Offset="0"/>
+                                    <GradientStop Color="#0099FF" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#00D4FF" BlurRadius="8" ShadowDepth="0" Opacity="0.6"/>
+                            </Border.Effect>
+                        </Border>
                     </Grid>
-                    <TextBlock Grid.Column="2" Text="91%" Foreground="White" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="2" Text="91%" Foreground="#00D4FF" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" Margin="4,0,0,0">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="#00D4FF" BlurRadius="5" ShadowDepth="0" Opacity="0.8"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
                 </Grid>
 
 
-                <Border Height="1" Background="#334155" Padding="0"/>
+                <Border Height="1" Margin="0,4,0,4" Opacity="0.3">
+                    <Border.Background>
+                        <SolidColorBrush Color="#00D4FF"/>
+                    </Border.Background>
+                </Border>
 
-                <Grid Height="22">
+                <Grid Height="22" Margin="0,2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Border CornerRadius="4" Background="#064E3B" Padding="6,2">
+                    <Border CornerRadius="6" Padding="6,3" BorderThickness="1" Margin="0,0,2,0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.15">
+                                <GradientStop Color="#00FF88" Offset="0"/>
+                                <GradientStop Color="#00CC66" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.BorderBrush>
+                            <SolidColorBrush Color="#00FF88" Opacity="0.4"/>
+                        </Border.BorderBrush>
+                        <Border.Effect>
+                            <DropShadowEffect Color="#00FF88" BlurRadius="8" ShadowDepth="0" Opacity="0.4"/>
+                        </Border.Effect>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <Ellipse Width="8" Height="8" Fill="#10B981" VerticalAlignment="Center"/>
-                            <TextBlock Text="  OK : 156" Foreground="#10B981" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <Ellipse Width="7" Height="7" VerticalAlignment="Center">
+                                <Ellipse.Fill>
+                                    <RadialGradientBrush>
+                                        <GradientStop Color="#00FF88" Offset="0"/>
+                                        <GradientStop Color="#00FF88" Offset="0.7"/>
+                                        <GradientStop Color="Transparent" Offset="1"/>
+                                    </RadialGradientBrush>
+                                </Ellipse.Fill>
+                                <Ellipse.Effect>
+                                    <DropShadowEffect Color="#00FF88" BlurRadius="6" ShadowDepth="0" Opacity="1"/>
+                                </Ellipse.Effect>
+                            </Ellipse>
+                            <TextBlock Text="  OK : 156" Foreground="#00FF88" FontSize="10" FontWeight="Bold" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect Color="#00FF88" BlurRadius="5" ShadowDepth="0" Opacity="0.6"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
                         </StackPanel>
                     </Border>
-                    <Border Grid.Column="1" CornerRadius="4" Background="#450A0A" Padding="6,2">
+                    <Border Grid.Column="1" CornerRadius="6" Padding="6,3" BorderThickness="1" Margin="2,0,0,0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.15">
+                                <GradientStop Color="#FF0055" Offset="0"/>
+                                <GradientStop Color="#CC0044" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.BorderBrush>
+                            <SolidColorBrush Color="#FF0055" Opacity="0.4"/>
+                        </Border.BorderBrush>
+                        <Border.Effect>
+                            <DropShadowEffect Color="#FF0055" BlurRadius="8" ShadowDepth="0" Opacity="0.4"/>
+                        </Border.Effect>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <Ellipse Width="8" Height="8" Fill="#EF4444" VerticalAlignment="Center"/>
-                            <TextBlock Text="  NG : 4" Foreground="#EF4444" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <Ellipse Width="7" Height="7" VerticalAlignment="Center">
+                                <Ellipse.Fill>
+                                    <RadialGradientBrush>
+                                        <GradientStop Color="#FF0055" Offset="0"/>
+                                        <GradientStop Color="#FF0055" Offset="0.7"/>
+                                        <GradientStop Color="Transparent" Offset="1"/>
+                                    </RadialGradientBrush>
+                                </Ellipse.Fill>
+                                <Ellipse.Effect>
+                                    <DropShadowEffect Color="#FF0055" BlurRadius="6" ShadowDepth="0" Opacity="1"/>
+                                </Ellipse.Effect>
+                            </Ellipse>
+                            <TextBlock Text="  NG : 4" Foreground="#FF0055" FontSize="10" FontWeight="Bold" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect Color="#FF0055" BlurRadius="5" ShadowDepth="0" Opacity="0.6"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -311,25 +785,25 @@
 
         <!--Bending 1,2,3,4-->
         <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Background="#0B1A2E" 
-        CornerRadius="4" Padding="2" BorderBrush="#2196F3" BorderThickness="1.5" Height="175">
+        CornerRadius="4" BorderBrush="#2196F3" BorderThickness="1.5" VerticalAlignment="Top">
 
             <UniformGrid Columns="4">
 
                 <!--INPUT INSPECTION-->
                 <Border BorderBrush="#2196F3" Background="#0B1A2E">
                     <StackPanel>
-                        <Grid Background="#1565C0" Height="28">
+                        <Grid Background="#1565C0" Height="20">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text=" INPUT INSPECTION" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="3"/>
-                            <TextBlock Grid.Column="1" Text="#BFBL02 " Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="3"/>
+                            <TextBlock Text=" INPUT INSPECTION" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="2"/>
+                            <TextBlock Grid.Column="1" Text="#BFBL02 " Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="2"/>
                         </Grid>
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="26"/>
-                                <RowDefinition Height="22"/>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="16"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
@@ -367,7 +841,7 @@
                                 </Border>
                             </Grid>
                             <StackPanel Grid.Row="2" Grid.ColumnSpan="3">
-                                <Grid Background="#0D2137" Height="18">
+                                <Grid Background="#0D2137" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -384,7 +858,7 @@
                                     <TextBlock Grid.Column="4" Text="45" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Column="6" Text="OK" Foreground="#4CAF50" FontSize="9" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 </Grid>
-                                <Grid Background="#0B1A2E" Height="18">
+                                <Grid Background="#0B1A2E" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -400,7 +874,7 @@
                                     <TextBlock Grid.Column="4" Text="45" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Column="5" Text="OK" Foreground="#4CAF50" FontSize="9" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 </Grid>
-                                <Grid Background="#0D2137" Height="18">
+                                <Grid Background="#0D2137" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -416,7 +890,7 @@
                                     <TextBlock Grid.Column="4" Text="45" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Column="5" Text="OK" Foreground="#4CAF50" FontSize="9" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 </Grid>
-                                <Grid Background="#0B1A2E" Height="18">
+                                <Grid Background="#0B1A2E" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -438,21 +912,21 @@
                 </Border>
 
                 <!--BENDING UAT 1 - 2-->
-                
+
                 <Border BorderBrush="#2196F3" BorderThickness="0,0,1,0" Background="#0B1A2E">
                     <StackPanel>
-                        <Grid Background="#1565C0" Height="28">
+                        <Grid Background="#1565C0" Height="20">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text=" BENDING UAT 1 - 2" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="3"/>
-                            <TextBlock Grid.Column="1" Text="#BFBL02 " Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="3"/>
+                            <TextBlock Text=" BENDING UAT 1 - 2" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="2"/>
+                            <TextBlock Grid.Column="1" Text="#BFBL02 " Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="2"/>
                         </Grid>
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="26"/>
-                                <RowDefinition Height="22"/>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="16"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
@@ -490,7 +964,7 @@
                                 <TextBlock Text="B-2" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                             </Border>
                             <StackPanel Grid.Row="2" Grid.ColumnSpan="5">
-                                <Grid Background="#0D2137" Height="18">
+                                <Grid Background="#0D2137" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -504,7 +978,7 @@
                                     <TextBlock Grid.Column="3" Text="4" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Column="4" Text="3" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                 </Grid>
-                                <Grid Background="#0B1A2E" Height="18">
+                                <Grid Background="#0B1A2E" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -518,7 +992,7 @@
                                     <TextBlock Grid.Column="3" Text="3" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Column="4" Text="6" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                 </Grid>
-                                <Grid Background="#0D2137" Height="18">
+                                <Grid Background="#0D2137" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -532,7 +1006,7 @@
                                     <TextBlock Grid.Column="3" Text="9" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Column="4" Text="83" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                 </Grid>
-                                <Grid Background="#0B1A2E" Height="18">
+                                <Grid Background="#0B1A2E" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -553,18 +1027,18 @@
 
                 <Border BorderBrush="#2196F3" BorderThickness="0,0,1,0" Background="#0B1A2E">
                     <StackPanel>
-                        <Grid Background="#1565C0" Height="28">
+                        <Grid Background="#1565C0" Height="20">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text=" BENDING UAT 3 - 4" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="3"/>
-                            <TextBlock Grid.Column="1" Text="#BFBL01 " Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="3"/>
+                            <TextBlock Text=" BENDING UAT 3 - 4" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="2"/>
+                            <TextBlock Grid.Column="1" Text="#BFBL01 " Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="2"/>
                         </Grid>
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="26"/>
-                                <RowDefinition Height="22"/>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="16"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
@@ -602,7 +1076,7 @@
                                 <TextBlock Text="B-4" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                             </Border>
                             <StackPanel Grid.Row="2" Grid.ColumnSpan="5">
-                                <Grid Background="#0D2137" Height="18">
+                                <Grid Background="#0D2137" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -616,7 +1090,7 @@
                                     <TextBlock Grid.Column="3" Text="5" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Column="4" Text="7" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                 </Grid>
-                                <Grid Background="#0B1A2E" Height="18">
+                                <Grid Background="#0B1A2E" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -630,7 +1104,7 @@
                                     <TextBlock Grid.Column="3" Text="4" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Column="4" Text="5" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                 </Grid>
-                                <Grid Background="#0D2137" Height="18">
+                                <Grid Background="#0D2137" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -644,7 +1118,7 @@
                                     <TextBlock Grid.Column="3" Text="8" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Column="4" Text="5" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                 </Grid>
-                                <Grid Background="#0B1A2E" Height="18">
+                                <Grid Background="#0B1A2E" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -667,18 +1141,18 @@
 
                 <Border BorderBrush="#2196F3" BorderThickness="0,0,0,0" Background="#0B1A2E">
                     <StackPanel>
-                        <Grid Background="#1565C0" Height="28">
+                        <Grid Background="#1565C0" Height="20">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text=" OUTPUT INSPECTION" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="5"/>
-                            <TextBlock Grid.Column="1" Text="#BFBL02 " Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="5"/>
+                            <TextBlock Text=" OUTPUT INSPECTION" Foreground="White" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="2"/>
+                            <TextBlock Grid.Column="1" Text="#BFBL02 " Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="2"/>
                         </Grid>
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="26"/>
-                                <RowDefinition Height="22"/>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="16"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
@@ -716,7 +1190,7 @@
                                 </Border>
                             </Grid>
                             <StackPanel Grid.Row="2" Grid.ColumnSpan="3">
-                                <Grid Background="#0D2137" Height="18">
+                                <Grid Background="#0D2137" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -732,7 +1206,7 @@
                                     <TextBlock Grid.Column="4" Text="45" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Column="5" Text="OK" Foreground="#4CAF50" FontSize="9" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 </Grid>
-                                <Grid Background="#0B1A2E" Height="18">
+                                <Grid Background="#0B1A2E" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -748,7 +1222,7 @@
                                     <TextBlock Grid.Column="4" Text="45" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Column="5" Text="OK" Foreground="#4CAF50" FontSize="9" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 </Grid>
-                                <Grid Background="#0D2137" Height="18">
+                                <Grid Background="#0D2137" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -764,7 +1238,7 @@
                                     <TextBlock Grid.Column="4" Text="45" Foreground="White" FontSize="8" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Column="5" Text="OK" Foreground="#4CAF50" FontSize="9" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 </Grid>
-                                <Grid Background="#0B1A2E" Height="18">
+                                <Grid Background="#0B1A2E" Height="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="115"/>
                                         <ColumnDefinition Width="*"/>
@@ -1791,7 +2265,7 @@
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Height" From="0" To="70" Duration="0:0:0.4">
+                                        <DoubleAnimation Storyboard.TargetProperty="Height" From="0" To="40" Duration="0:0:0.4">
                                             <DoubleAnimation.EasingFunction>
                                                 <CubicEase EasingMode="EaseOut"/>
                                             </DoubleAnimation.EasingFunction>
@@ -1817,7 +2291,7 @@
 
 
 
-                <TextBlock Grid.Column="0" Text="⚠️" FontSize="32" Foreground="White" VerticalAlignment="Center" Margin="30,0">
+                <TextBlock Grid.Column="0" Text="⚠️" FontSize="32" Foreground="White" VerticalAlignment="Center" Margin="10,0">
 
                     <TextBlock.Triggers>
 
@@ -1882,7 +2356,7 @@
 
 
         <!--Statusbar-->
-        <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Height="40" Margin="3">
+        <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Height="40">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
                     <GradientStop Color="#444444" Offset="0.0"/>
@@ -1891,7 +2365,7 @@
                 </LinearGradientBrush>
             </Border.Background>
 
-            <Grid Margin="3">
+            <Grid Margin="5,3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>

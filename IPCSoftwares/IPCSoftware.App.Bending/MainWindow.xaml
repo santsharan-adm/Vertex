@@ -13,7 +13,7 @@
 </Window>-->
 
 
-<Window x:Class="IPCSoftware.App.Bending.MainWindow"
+<!--<Window x:Class="IPCSoftware.App.Bending.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="clr-namespace:IPCSoftware.App.Bending.Views"
@@ -23,7 +23,7 @@
     <Grid>
         <views:UserControl2 />
     </Grid>
-</Window>
+</Window>-->
 
 
 
@@ -33,7 +33,7 @@
 
 
 
-<!--<Window x:Class="IPCSoftware.App.Bending.MainWindow"
+<Window x:Class="IPCSoftware.App.Bending.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="clr-namespace:IPCSoftware.App.Bending.Views"
@@ -47,19 +47,19 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="#0D2137" BorderBrush="#2196F3" BorderThickness="0,0,1,0">
+        <Border Grid.Column="0" Background="#0D2137" BorderBrush="#2196F3" BorderThickness="1">
             <StackPanel Margin="3">
                 <TextBlock Text="NAVIGATION" Foreground="#8CA3C6" FontWeight="Bold" FontSize="12" Margin="3"/>
 
-                <Button x:Name="BtnDashboard1" Content="BENDING DASHBOARD 1" Click="BtnDashboard1_Click" 
+                <Button x:Name="BtnDashboard1" Content="DASHBOARD 1" Click="BtnDashboard1_Click" 
                         Height="40" Margin="3" Background="#1565C0" Foreground="White" FontWeight="SemiBold" BorderBrush="#2196F3"/>
 
-                <Button x:Name="BtnDashboard2" Content="BENDING DASHBOARD 2" Click="BtnDashboard2_Click" 
+                <Button x:Name="BtnDashboard2" Content="BDASHBOARD 2" Click="BtnDashboard2_Click" 
                         Height="40" Margin="3" Background="#1565C0" Foreground="White" FontWeight="SemiBold" BorderBrush="#2196F3"/>
             </StackPanel>
         </Border>
 
-        <ContentControl x:Name="MainContentArea" Grid.Column="1" Margin="10"/>
+        <ContentControl x:Name="MainContentArea" Grid.Column="1" Margin="1"/>
 
     </Grid>
-</Window>-->
+</Window>
