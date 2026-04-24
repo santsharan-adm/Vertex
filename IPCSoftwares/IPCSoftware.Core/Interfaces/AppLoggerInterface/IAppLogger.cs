@@ -19,5 +19,6 @@ namespace IPCSoftware.Core.Interfaces.AppLoggerInterface
         [CallerMemberName] string memberName = "",
         [CallerFilePath] string filePath = "",
         [CallerLineNumber] int lineNumber = 0);
+        void LogTrace(string message, LogType type);
     }
 }
