@@ -65,18 +65,13 @@ namespace IPCSoftware.Engine
                 // Start PLC read loops
                 var plcTasks = _manager.Clients.Select(client =>
                 {
-                    client.OnPlcDataReceived += (plcNo, values) =>
+                    client.OnPlcDataReceived += async (plcNo, values) =>
                     {
                         // A. Process Raw Data -> Typed Values (Int/Bool/String)
                         // processedData is Dictionary<int, object> where int is Tag ID
                         var processedData = _algo.Apply(plcNo, values);
 
-                        string qrCodeNullCgeck = processedData.ContainsKey(ConstantValues.TAG_QR_DATA) ? processedData[ConstantValues.TAG_QR_DATA]?.ToString() : null;
-                        if (qrCodeNullCgeck != null && !(qrCodeNullCgeck.Contains('\0')))
-                        {
-                            _ccdTrigger.ProcessTriggers(processedData, _manager);
-                         
-                        }
+                        await _ccdTrigger.ProcessTriggers(processedData, _manager);
                         _oee.ProcessCycleTimeLogic(processedData);
                         _oee.Calculate(processedData);
                         _systemMonitor.Process(processedData);
