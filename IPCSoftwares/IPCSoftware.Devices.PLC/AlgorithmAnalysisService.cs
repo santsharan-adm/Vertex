@@ -89,7 +89,8 @@ namespace IPCSoftware.Devices.PLC
                     // --- TRACE LOGGING FOR SELECTED TAGS ---
                     if (tag.EnableTraceLog)
                     {
-                        _logger.LogTrace($"TagID:{tag.Id},TagName:{tag.Name},Value:{finalValue},DataType:{tag.DataType}", LogType.TagTrace);
+                        // Format: TagId,TagName,Value,PLCNo,ModbusAddress (Timestamp added by AppLoggerService)
+                        _logger.LogTrace($"{tag.Id},{tag.Name},{finalValue},{tag.PLCNo},{tag.ModbusAddress}", LogType.TagTrace);
                     }
                     // --- END TRACE LOGGING ---
 

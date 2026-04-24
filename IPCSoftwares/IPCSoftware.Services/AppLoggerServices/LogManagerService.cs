@@ -180,6 +180,9 @@ namespace IPCSoftware.Services.AppLoggerServices
         // Main method called by AppLogger
         public string ResolveLogFile(LogType type)
         {
+            if (type == LogType.TagTrace) 
+            { return ResolveTagTraceLogFile(); }
+
             // Select config
             var config = _logConfigs
                 .FirstOrDefault(c => c.Enabled && c.LogType == type);
@@ -207,21 +210,34 @@ namespace IPCSoftware.Services.AppLoggerServices
                     string indexedFileName = $"{fileName}_{fileIndex:D3}.csv";
                     string fullPath = Path.Combine(config.DataFolder, indexedFileName);
 
-                    // If file doesn't exist, create it with header
-                    if (!File.Exists(fullPath))
+                    // Atomic file creation to prevent TOCTOU race condition
+                    try
                     {
-                        File.WriteAllText(fullPath, "Timestamp,Level,Message,Source\n");
+                        using (var fs = new FileStream(fullPath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                        using (var writer = new StreamWriter(fs))
+                        {
+                            writer.WriteLine("Timestamp,Level,Message,Source");
+                        }
                         return fullPath;
                     }
-
-                    // Check if current file has space
-                    var fileInfo = new FileInfo(fullPath);
-                    if (fileInfo.Length < maxFileSizeBytes)
+                    catch (IOException)
                     {
-                        return fullPath; // Use this file
+                        // File already exists, check if it has space
+                        try
+                        {
+                            var fileInfo = new FileInfo(fullPath);
+                            if (fileInfo.Length < maxFileSizeBytes)
+                            {
+                                return fullPath; // Use this file
+                            }
+                        }
+                        catch
+                        {
+                            // File might be locked or deleted, continue to next index
+                        }
                     }
 
-                    // File is full, try next index
+                    // File is full or error occurred, try next index
                     fileIndex++;
                 }
 
@@ -233,14 +249,45 @@ namespace IPCSoftware.Services.AppLoggerServices
                 // No size-based rotation: use simple date-based filename
                 string fullPath = Path.Combine(config.DataFolder, fileName + ".csv");
 
-                // Ensure CSV header exists
-                if (!File.Exists(fullPath))
+                // Atomic file creation to prevent TOCTOU race condition
+                try
                 {
-                    File.WriteAllText(fullPath, "Timestamp,Level,Message,Source\n");
+                    using (var fs = new FileStream(fullPath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                    using (var writer = new StreamWriter(fs))
+                    {
+                        writer.WriteLine("Timestamp,Level,Message,Source");
+                    }
+                }
+                catch (IOException)
+                {
+                    // File already exists, which is fine - just use it
                 }
 
                 return fullPath;
             }
+        }
+
+        // TagTrace-specific log file resolution - returns path in system temp folder
+        private string ResolveTagTraceLogFile()
+        {
+            // Select TagTrace config
+            var config = _logConfigs
+                .FirstOrDefault(c => c.Enabled && c.LogType == LogType.TagTrace);
+
+            if (config == null)
+                return null;
+
+            // Use system temp folder instead of data folder
+            string tempFolder = Path.GetTempPath();
+
+            // Build filename using pattern from config
+            string fileName = config.FileName
+                .Replace("yyyyMMdd", DateTime.Now.ToString("yyyyMMdd"));
+
+            // Return full CSV path - NO file or directory creation here
+            string fullPath = Path.Combine(tempFolder, fileName + ".csv");
+
+            return fullPath;
         }
 
         public void CheckAndPerformPurge()
@@ -289,6 +336,7 @@ namespace IPCSoftware.Services.AppLoggerServices
                                 var dirInfo = new DirectoryInfo(dir);
                                 if (dirInfo.CreationTime < cutoffDate)
                                 {
+
                                     try { dirInfo.Delete(true); } catch { } // true = recursive delete
                                 }
                             }

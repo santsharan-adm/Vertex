@@ -60,7 +60,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 Description = this.Description,
                 Remark = this.Remark,
                 Enabled = this.Enabled,
-                 ProductionImagePath = this.ProductionImagePath,
+                ProductionImagePath = this.ProductionImagePath,
                 ProductionImageBackupPath = this.ProductionImageBackupPath
             };
         }
