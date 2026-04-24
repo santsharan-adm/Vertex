@@ -5,6 +5,7 @@ using IPCSoftware.Devices.Camera;
 using IPCSoftware.Devices.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.AeLimit;
@@ -30,11 +31,12 @@ namespace IPCSoftware.CoreService.AOI.Service
             IOptions<CcdSettings> appSettings,
             IServoCalibrationService servoService,
             ProductionImageService imageService,
-            IExternalInterfaceService extService,   // ✅ interface
-            IAeLimitService aeLimitService,
+            IExternalInterfaceService extService,
+            IObservableCcdSettingsService observableCcdSettings,
+            IAeLimitService aeLimitService,            
             IProductConfigurationService productService,
             IAppLogger logger) : base (tagService,logConfig,plcManager, appSettings, 
-                servoService, imageService, extService, aeLimitService, productService, logger)
+                servoService, imageService, extService, observableCcdSettings, aeLimitService, productService, logger)
         {
 
         }

@@ -3,6 +3,7 @@ using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.Devices.Camera;
 using IPCSoftware.Devices.PLC;
+using IPCSoftware.Services.ConfigServices; //Added Later
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
@@ -16,14 +17,15 @@ namespace IPCSoftware.CoreService.AOI.Service
 {
     public class CCDTriggerServiceAOI : CCDTriggerServiceBase
     {
-        public CCDTriggerServiceAOI
-            (ICycleManagerService cycleManager,
+        public CCDTriggerServiceAOI(
+            ICycleManagerService cycleManager,
             IPLCTagConfigurationService tagService,
-            IOptions<CcdSettings> ccdSettings
-            ,
-            IAppLogger logger) : base(cycleManager, tagService, ccdSettings, logger)
+            IOptions<CcdSettings> ccdSettings,
+            IObservableCcdSettingsService observableCcdSettings,  // //Added by Rishabh - date - 08/04/2026//
+            IAppLogger logger) : base(cycleManager, tagService, ccdSettings, observableCcdSettings, logger)
         {
         }
+
         override public async Task ProcessTriggers(Dictionary<int, object> tagValues, PLCClientManager manager)
         {
             await base.ProcessTriggers(tagValues, manager);

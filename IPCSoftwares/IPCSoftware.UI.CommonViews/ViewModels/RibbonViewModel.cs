@@ -176,6 +176,7 @@ public class RibbonViewModel : BaseViewModel
                 "Report Config",
                 "Servo Parameters",
                 "Time Sync",
+                "Service Startup",
                 "Diagnostic",
                 "Product Settings",
                 "External Interface",

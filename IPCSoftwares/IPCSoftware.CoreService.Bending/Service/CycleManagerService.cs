@@ -3,6 +3,7 @@ using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.Devices.Camera;
 using IPCSoftware.Devices.PLC;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
@@ -24,10 +25,11 @@ namespace IPCSoftware.CoreService.Bending.Service
             IServoCalibrationService servoService,
             ProductionImageService imageService,
             IExternalInterfaceService extService,
+            IObservableCcdSettingsService observableCcdSettings,
             IAeLimitService aeLimitService,
             IProductConfigurationService productService,
             IAppLogger logger)
-            : base(tagService, logConfig, plcManager, appSettings, servoService, imageService, extService, aeLimitService, productService, logger)
+            : base(tagService, logConfig, plcManager, appSettings, servoService, imageService, extService, observableCcdSettings , aeLimitService, productService, logger)
         {
             
         }

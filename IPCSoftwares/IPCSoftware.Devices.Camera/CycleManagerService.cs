@@ -7,6 +7,7 @@ using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.AeLimit;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.Services.ConfigServices;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
@@ -28,6 +29,7 @@ namespace IPCSoftware.Devices.Camera
         protected readonly IExternalInterfaceService _extService;  // ✅ interface
         protected readonly IAeLimitService _aeLimitService;
         protected readonly IProductConfigurationService _productService;
+        protected readonly IObservableCcdSettingsService _observableCcdSettings ;  
 
         protected string _activeBatchId = string.Empty;
         protected int _currentSequenceStep = 0;
@@ -48,12 +50,14 @@ namespace IPCSoftware.Devices.Camera
             IServoCalibrationService servoService,
             ProductionImageService imageService,
             IExternalInterfaceService extService,   // ✅ interface
+            IObservableCcdSettingsService observableCcdSettings,
             IAeLimitService aeLimitService,
             IProductConfigurationService productService,
             IAppLogger logger) : base(logger)
         {
             var ccd = appSettings.Value;
-            _tempImageFolderPath = ccd.TempImgFolder;
+            //_tempImageFolderPath = ccd.TempImgFolder;
+            _observableCcdSettings = observableCcdSettings;
             _tagService = tagService;
             _plcManager = plcManager;
             _imageService = imageService;
@@ -61,7 +65,7 @@ namespace IPCSoftware.Devices.Camera
             _extService = extService;
             _aeLimitService = aeLimitService;
             _productService = productService;
-            _stateFilePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
+            _stateFilePath = Path.Combine(_observableCcdSettings.QrCodeImagePath, _observableCcdSettings.CurrentCycleStateFileName);
             var logs =  logConfig.GetAllAsync();
             var allLogs = logConfig.GetAllAsync().GetAwaiter().GetResult();
             var config = allLogs.FirstOrDefault(c => c.LogType == LogType.Production);
@@ -233,9 +237,9 @@ namespace IPCSoftware.Devices.Camera
 
                 // 4. File Cleanup (Can be slow, do last)
                 string folder = Path.GetDirectoryName(_stateFilePath);
-                if (Directory.Exists(_tempImageFolderPath))
+                if (Directory.Exists(_observableCcdSettings?.TempImgFolder))
                 {
-                    foreach (var file in Directory.GetFiles(_tempImageFolderPath))
+                    foreach (var file in Directory.GetFiles(_observableCcdSettings?.TempImgFolder))
                     {
                         try { File.Delete(file); } catch { }
                     }

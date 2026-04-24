@@ -4,27 +4,31 @@ using System.Text.RegularExpressions;
 
 namespace IPCSoftware.Services
 {
-
     public static class CsvReader
     {
         public static string Getversion(string filepath)
         {
-            if (!File.Exists(filepath)) return "1.0";
+            if (!File.Exists(filepath)) 
+                return "1.0";
 
             using var reader = new StreamReader(filepath, detectEncodingFromByteOrderMarks: true);
             var header = reader.ReadLine();
-            if (string.IsNullOrWhiteSpace(header)) return "1.0";
+            if (string.IsNullOrWhiteSpace(header)) 
+                return "1.0";
 
             string[] temp = header.Split("=", StringSplitOptions.RemoveEmptyEntries);
-            if (temp.Length>1) {return temp[1].Trim();}
+            if (temp.Length > 1) 
+                return temp[1].Trim();
 
             return "1.0";
         }
+
         public static List<string[]> Read(string filePath)
         {
             var rows = new List<string[]>();
 
-            if (!File.Exists(filePath)) return rows;
+            if (!File.Exists(filePath)) 
+                return rows;
 
             using (var reader = new StreamReader(filePath))
             {
@@ -38,8 +42,10 @@ namespace IPCSoftware.Services
                         isHeader = false;
                         continue;
                     }
-                    if (line.ToLower().StartsWith("id")) continue;
-                    if (string.IsNullOrWhiteSpace(line)) continue;
+                    if (line.ToLower().StartsWith("id")) 
+                        continue;
+                    if (string.IsNullOrWhiteSpace(line)) 
+                        continue;
 
                     // FIX: Don't use line.Split(',')
                     // Use Regex to split only on commas that are NOT inside quotes
@@ -74,6 +80,36 @@ namespace IPCSoftware.Services
 
             return rawParts;
         }
-    }
 
+        // Added by Rishabh - Date 17/04/2026
+        public static string GetHeader(string filepath)
+        {
+            if (!File.Exists(filepath)) 
+                return string.Empty;
+
+            string header = null;
+            using (var reader = new StreamReader(filepath))
+            {
+                while (!reader.EndOfStream)
+                {
+                    header = reader.ReadLine();
+                    if (header.ToLower().StartsWith("id")) 
+                        break;
+                }
+            }
+            return header;
+        }
+
+        // Added by Rishabh - date - 19/04/2026//
+        public static string EscapeCsv(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return string.Empty;
+
+            if (value.Contains("\""))
+                return value.Replace("\"", "\"\"");
+
+            return value;
+        }
+    }
 }

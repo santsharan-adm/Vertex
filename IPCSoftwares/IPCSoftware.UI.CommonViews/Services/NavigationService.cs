@@ -274,6 +274,48 @@ namespace IPCSoftware.Common.CommonFunctions
         }
 
 
+
+        //  CCD Settings Navigation           //Added by Rishabh - date - 08/04/2026//
+        public void NavigateToCcdSettings(DeviceModel parentDevice, CameraInterfaceModel cameraInterface, Func<Task> onSaveCallback)
+        {
+            var ccdView = _provider.GetService<CcdSettingsView>();
+            var ccdVM = _provider.GetService<CcdSettingsViewModel>();
+
+            ccdView.DataContext = ccdVM;
+
+            // Load CCD settings (implement in ViewModel as needed)
+            ccdVM.LoadForEdit(cameraInterface);
+
+            EventHandler saveHandler = null;
+            EventHandler cancelHandler = null;
+
+            saveHandler = async (s, e) =>
+            {
+                ccdVM.SaveCompleted -= saveHandler;
+                ccdVM.CancelRequested -= cancelHandler;
+
+                if (onSaveCallback != null)
+                    await onSaveCallback();
+
+                // Return to CameraInterfaceConfiguration
+                NavigateToCameraInterfaceConfiguration(parentDevice, cameraInterface, null);
+            };
+
+            cancelHandler = (s, e) =>
+            {
+                ccdVM.SaveCompleted -= saveHandler;
+                ccdVM.CancelRequested -= cancelHandler;
+
+                // Return to CameraInterfaceConfiguration
+                NavigateToCameraInterfaceConfiguration(parentDevice, cameraInterface, null);
+            };
+
+            ccdVM.SaveCompleted += saveHandler;
+            ccdVM.CancelRequested += cancelHandler;
+
+            _mainContent.Content = ccdView;
+        }
+
         public void NavigateToAlarmList()
         {
             NavigateMain<AlarmListView>();
@@ -386,6 +428,17 @@ namespace IPCSoftware.Common.CommonFunctions
         public void NavigateToPLCTagList()
         {
             NavigateMain<PLCTagListView>();
+        }
+
+        //Added By Rishabh , Date -13/04/2026
+        public void NavigateToServiceStartup()
+        {
+            var view = _provider.GetService<ServiceStartupView>();
+            var viewModel = _provider.GetService<ServiceStartupViewModel>();
+            if (!CanNavigateFromCurrent()) return;
+            view.DataContext = viewModel;
+            _mainContent.Content = view;
+           // NavigateMain<ServiceStartupView>();
         }
 
         public void NavigateToPLCTagConfiguration(PLCTagConfigurationModel tagToEdit, Func<Task> onSaveCallback)

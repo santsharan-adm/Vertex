@@ -14,8 +14,8 @@ using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
-using Microsoft.Extensions.Configuration;              
-using Microsoft.Extensions.DependencyInjection;        
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using IPCSoftware.CoreService.AOI.Service;
 
@@ -90,10 +90,17 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<IAppLogger, AppLoggerService>();
                             services.AddSingleton<ILogManagerService, LogManagerService>();
                             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
+                            services.AddSingleton<DeviceInterfaceConfigLoader>();   //Added by Rishabh - date - 17/04/2026//
+                            services.AddSingleton<CameraConfigLoader>();   //Added by Rishabh - date - 16/04/2026//
+                            services.AddSingleton<DeviceConfigLoader>();   //Added by Rishabh - date - 18/04/2026//
                             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
+
+                            services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>(); //Added by Rishabh - date - 08/04/2026//
+
+
                             services.AddSingleton<IAeLimitService, AeLimitService>();
                             services.AddSingleton<ExternalInterfaceService>();
-                            services.AddSingleton<IExternalInterfaceService>(sp =>  // ✅ ADD THIS LINE
+                            services.AddSingleton<IExternalInterfaceService>(sp =>   
                                 sp.GetRequiredService<ExternalInterfaceService>());
                             services.AddSingleton<ICycleManagerService, CycleManagerServiceAOI>();
                             services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
@@ -142,7 +149,18 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
 
                             services.AddSingleton<SystemMonitorService>();
-                            services.AddSingleton<CCDTriggerServiceAOI>();
+
+                            //  CCDTriggerServiceAOI includes IObservableCcdSettingsService
+                            services.AddSingleton<CCDTriggerServiceAOI>(sp =>
+                                new CCDTriggerServiceAOI(
+                                    sp.GetRequiredService<ICycleManagerService>(),
+                                    sp.GetRequiredService<IPLCTagConfigurationService>(),
+                                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<CcdSettings>>(),
+                                    sp.GetRequiredService<IObservableCcdSettingsService>(),   //Added by Rishabh - date - 08/04/2026//
+                                    sp.GetRequiredService<IAppLogger>()
+                                )
+                            );
+
                             services.AddSingleton<PLCClientManager>();
                             services.AddSingleton<CameraFtpService>();
                             services.AddTransient<ProductionImageService>();
@@ -165,6 +183,7 @@ namespace IPCSoftware.CoreService
 
                     // 3. Initialize Constants without needing AppConfigSettings wrapper
                     ConstantValues.Initialize(configSettings);
+                    LoadCcdSettingsAsync(host.Services).GetAwaiter().GetResult();   
 
                     host.Run();
 
@@ -182,9 +201,48 @@ namespace IPCSoftware.CoreService
                 }
             }
 
-         
+
         }
 
+        /// //Added by Rishabh - date - 08/04/2026//
+        /// Discription : - * Loads the active camera interface settings into the observable service
+        ///                 * This ensures CCDTriggerService has valid values from startup
+   
+        private static async Task LoadCcdSettingsAsync(IServiceProvider services)
+        {
+            try
+            {
+                var deviceService = services.GetRequiredService<IDeviceConfigurationService>();
+                var observableSettings = services.GetRequiredService<IObservableCcdSettingsService>();
+                var logger = services.GetRequiredService<IAppLogger>();
+                await deviceService.InitializeAsync();
+                // 1. Load all camera interfaces
+                var cameras = await deviceService.GetCameraDevicesAsync();
+                if (cameras == null || cameras.Count == 0)
+                {
+                    logger.LogWarning("[CoreService] No camera interfaces found in configuration.", LogType.Diagnostics);
+                    return;
+                }
+                // 2. Get the first enabled camera (or first one if none enabled)
+                var activeCamera = cameras.FirstOrDefault(c => c.Enabled) ?? cameras.FirstOrDefault();
+                if (activeCamera == null)
+                {
+                    logger.LogWarning("[CoreService] No valid camera interface found.", LogType.Diagnostics);
+                    return;
+                }
+                // 3. Load CCD settings into observable service
+                await observableSettings.UpdateFromCameraInterfaceAsync(activeCamera);
+                logger.LogInfo(
+                    $"[CoreService] Loaded CCD settings from camera: {activeCamera.Name} | " +
+                    $"TempImgFolder: {observableSettings.TempImgFolder}",
+                    LogType.Diagnostics);
+            }
+            catch (Exception ex)
+            {
+                var logger = services.GetRequiredService<IAppLogger>();
+                logger.LogError($"[CoreService] Error loading CCD settings: {ex.Message}", LogType.Diagnostics);
+            }
+        }
 
 
 

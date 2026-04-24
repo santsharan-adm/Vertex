@@ -40,7 +40,7 @@ namespace IPCSoftware.Devices.PLC
             try
             {
                 var allTags = await _tagService.GetAllTagsAsync();
-                var devices = await _deviceService.GetPlcDevicesAsync();
+                var devices = await _deviceService.GetDeviceInterfaceAsync();
                 foreach (var dev in devices)
                 {
                     // Assign tags belonging to this PLCNo

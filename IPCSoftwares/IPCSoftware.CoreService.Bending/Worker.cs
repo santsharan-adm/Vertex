@@ -56,7 +56,7 @@ namespace IPCSoftware.CoreService.Bending
         {
             try
             {
-                var devices = await _deviceService.GetPlcDevicesAsync();
+                var devices = await _deviceService.GetDeviceInterfaceAsync();
                 var cameras = _deviceService.GetCameraDevicesAsync().GetAwaiter().GetResult();
                 _logger.LogInfo($"Loaded {devices.Count} PLC devices.", LogType.Diagnostics);
                 _logger.LogInfo($"Loaded {cameras.Count} cameras devices.", LogType.Diagnostics);
