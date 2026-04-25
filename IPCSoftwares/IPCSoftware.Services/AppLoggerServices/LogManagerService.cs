@@ -180,9 +180,6 @@ namespace IPCSoftware.Services.AppLoggerServices
         // Main method called by AppLogger
         public string ResolveLogFile(LogType type)
         {
-            if (type == LogType.TagTrace) 
-            { return ResolveTagTraceLogFile(); }
-
             // Select config
             var config = _logConfigs
                 .FirstOrDefault(c => c.Enabled && c.LogType == type);
@@ -194,9 +191,15 @@ namespace IPCSoftware.Services.AppLoggerServices
             if (!Directory.Exists(config.DataFolder))
                 Directory.CreateDirectory(config.DataFolder);
 
-            // Build filename using pattern
+            // Build filename using pattern (handle both {yyyyMMdd} and yyyyMMdd patterns)
             string fileName = config.FileName
+                .Replace("{yyyyMMdd}", DateTime.Now.ToString("yyyyMMdd"))
                 .Replace("yyyyMMdd", DateTime.Now.ToString("yyyyMMdd"));
+
+            // Determine CSV header based on log type
+            string csvHeader = type == LogType.TagTrace
+                ? "Timestamp,TagId,TagName,Value,PLCNo,ModbusAddress"
+                : "Timestamp,Level,Message,Source";
 
             // Check if incremental file rotation is needed based on size limit
             if (config.LogRetentionFileSize > 0)
@@ -216,7 +219,7 @@ namespace IPCSoftware.Services.AppLoggerServices
                         using (var fs = new FileStream(fullPath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
                         using (var writer = new StreamWriter(fs))
                         {
-                            writer.WriteLine("Timestamp,Level,Message,Source");
+                            writer.WriteLine(csvHeader);
                         }
                         return fullPath;
                     }
@@ -255,7 +258,7 @@ namespace IPCSoftware.Services.AppLoggerServices
                     using (var fs = new FileStream(fullPath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
                     using (var writer = new StreamWriter(fs))
                     {
-                        writer.WriteLine("Timestamp,Level,Message,Source");
+                        writer.WriteLine(csvHeader);
                     }
                 }
                 catch (IOException)
@@ -265,29 +268,6 @@ namespace IPCSoftware.Services.AppLoggerServices
 
                 return fullPath;
             }
-        }
-
-        // TagTrace-specific log file resolution - returns path in system temp folder
-        private string ResolveTagTraceLogFile()
-        {
-            // Select TagTrace config
-            var config = _logConfigs
-                .FirstOrDefault(c => c.Enabled && c.LogType == LogType.TagTrace);
-
-            if (config == null)
-                return null;
-
-            // Use system temp folder instead of data folder
-            string tempFolder = Path.GetTempPath();
-
-            // Build filename using pattern from config
-            string fileName = config.FileName
-                .Replace("yyyyMMdd", DateTime.Now.ToString("yyyyMMdd"));
-
-            // Return full CSV path - NO file or directory creation here
-            string fullPath = Path.Combine(tempFolder, fileName + ".csv");
-
-            return fullPath;
         }
 
         public void CheckAndPerformPurge()

@@ -141,7 +141,7 @@ namespace IPCSoftware.Services.ConfigServices
 
                     new LogConfigurationModel
                     {
-                        Id = 3,
+                        Id = 4,
                         LogName = "Diagnostics",
                         LogType = LogType.Diagnostics,
                         DataFolder = Path.Combine(baseDir, "Logs", "Diagnostics"),
@@ -156,6 +156,26 @@ namespace IPCSoftware.Services.ConfigServices
                         BackupDayOfWeek = null,
                         Description = "Diagnostics log configuration",
                         Remark = "Diagnostics error logs",
+                        Enabled = true
+                    },
+
+                    new LogConfigurationModel
+                    {
+                        Id = 5,
+                        LogName = "IPCTraceLog",
+                        LogType = LogType.TagTrace,
+                        DataFolder = Path.Combine(baseDir, "Logs", "IPCTraceLog"),
+                        BackupFolder = Path.Combine(baseDir, "LogsBackup", "IPCTraceLog"),
+                        FileName = "TagTrace_{yyyyMMdd}",
+                        LogRetentionTime = 30,
+                        LogRetentionFileSize = 5,
+                        AutoPurge = false,
+                        BackupSchedule = BackupScheduleType.Daily,
+                        BackupTime = new TimeSpan(05, 00, 00),
+                        BackupDay = 0,
+                        BackupDayOfWeek = null,
+                        Description = "Tag trace log configuration",
+                        Remark = "IPC tag trace logs",
                         Enabled = true
                     }
                 };
