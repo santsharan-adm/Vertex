@@ -3,7 +3,7 @@
  * Module       : DeviceConfigLoader
  * File Name    : DeviceConfigLoader.cs
  * Author       : Rishabh
- * Organization : Vertex Automtion System Pvt Ltd
+ * Organization : Motherson Technology Service Limited
  * Created Date : 2026-04-18
  *
  * Description  :
@@ -15,7 +15,8 @@
  * Date        Author        Version     Description
  * ---------------------------------------------------------------------------
  * 2026-04-18  Rishabh       1.0         Initial creation
- * 
+ * 2026-04-25  Rishabh       2.0         Refactored to use IFileHandler interface
+ *                                       for dependency injection and loose coupling
  *
  ******************************************************************************/
 
@@ -26,23 +27,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using IPCSoftware.Core.Interfaces;
 
 namespace IPCSoftware.Services
 {
     public class DeviceConfigLoader : BaseService
     {
+        private readonly IFileHandler _fileHandler;
         private List<DeviceModel> _devices = new List<DeviceModel>();
 
-        public DeviceConfigLoader(IAppLogger logger) : base(logger)
+        public DeviceConfigLoader(IAppLogger logger, IFileHandler fileHandler) : base(logger)
         {
+            _fileHandler = fileHandler;
         }
 
         public List<DeviceModel> Load(string filePath)
         {
             try
             {
-                var version = CsvReader.Getversion(filePath);
-                var rows = CsvReader.Read(filePath);
+                var version = _fileHandler.Getversion(filePath);
+                var rows = _fileHandler.Read(filePath);
                 var devices = new List<DeviceModel>();
 
                 if (rows.Count == 0)
@@ -115,23 +119,23 @@ namespace IPCSoftware.Services
         }
 
         // Added by Rishabh - date - 19/04/2026//
-        public async Task Save(string filepath)
+        public async Task Save(string filepath ,List<DeviceModel> devices)
         {
             try
             {
                 var sb = new StringBuilder();
-                string header = CsvReader.GetHeader(filepath);
+                string header = _fileHandler.GetHeader(filepath);
                 sb.AppendLine(header);
 
-                foreach (var device in _devices)
+                foreach (var device in devices ?? new List<DeviceModel>())
                 {
                     sb.AppendLine($"{device.Id},{device.DeviceNo}," +
-                        $"\"{CsvReader.EscapeCsv(device.DeviceName)}\"," +
-                        $"\"{CsvReader.EscapeCsv(device.DeviceType)}\"," +
-                        $"\"{CsvReader.EscapeCsv(device.Make)}\"," +
-                        $"\"{CsvReader.EscapeCsv(device.Model)}\"," +
-                        $"\"{CsvReader.EscapeCsv(device.Description)}\"," +
-                        $"\"{CsvReader.EscapeCsv(device.Remark)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(device.DeviceName)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(device.DeviceType)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(device.Make)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(device.Model)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(device.Description)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(device.Remark)}\"," +
                         $"{device.Enabled}");
                 }
 

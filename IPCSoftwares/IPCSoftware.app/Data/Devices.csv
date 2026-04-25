@@ -1,0 +1,2 @@
+﻿Id,DeviceNo,DeviceName,DeviceType,Make,Model,Description,Remark,Enabled
+3,1,"PLC1","PLC","Keynce","Keyence","","",True

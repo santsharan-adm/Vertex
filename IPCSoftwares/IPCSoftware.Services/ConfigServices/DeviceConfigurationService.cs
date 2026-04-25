@@ -129,7 +129,7 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 device.Id = _nextDeviceId++;
                 _devices.Add(device);
-                await _deviceLoader.Save(_devicesCsvPath);   // Added by Rishabh - Date 19/04/2026
+                await _deviceLoader.Save(_devicesCsvPath , _devices);   // Added by Rishabh - Date 19/04/2026
                 return device;
             }
             catch (Exception ex)
@@ -149,7 +149,7 @@ namespace IPCSoftware.Services.ConfigServices
 
                 var index = _devices.IndexOf(existing);
                 _devices[index] = device;
-                await _deviceLoader.Save(_devicesCsvPath);   // Added by Rishabh - Date 19/04/2026
+                await _deviceLoader.Save(_devicesCsvPath , _devices);   // Added by Rishabh - Date 19/04/2026
                 return true;
             }
             catch (Exception ex)
@@ -181,9 +181,9 @@ namespace IPCSoftware.Services.ConfigServices
                 }
 
                 _devices.Remove(device);
-                await _deviceLoader.Save(_devicesCsvPath);               // Added by Rishabh - Date 19/04/2026
-                await _deviceInterfaceLoader.Save(_interfacesCsvPath);   // Added by Rishabh - Date 19/04/2026
-                await _cameraLoader.Save(_cameraInterfacesCsvPath);      // Added by Rishabh - Date 19/04/2026
+                await _deviceLoader.Save(_devicesCsvPath , _devices);               // Added by Rishabh - Date 19/04/2026
+                await _deviceInterfaceLoader.Save(_interfacesCsvPath , _interfaces);   // Added by Rishabh - Date 19/04/2026
+                await _cameraLoader.Save(_cameraInterfacesCsvPath , _cameraInterfaces);      // Added by Rishabh - Date 19/04/2026
                 return true;
             }
             catch (Exception ex)
@@ -224,7 +224,7 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 deviceInterface.Id = _nextInterfaceId++;
                 _interfaces.Add(deviceInterface);
-                await _deviceInterfaceLoader.Save(_interfacesCsvPath);   // Added by Rishabh - Date 19/04/2026
+                await _deviceInterfaceLoader.Save(_interfacesCsvPath , _interfaces);   // Added by Rishabh - Date 19/04/2026
                 return deviceInterface;
             }
             catch (Exception ex)
@@ -244,7 +244,7 @@ namespace IPCSoftware.Services.ConfigServices
 
                 var index = _interfaces.IndexOf(existing);
                 _interfaces[index] = deviceInterface;
-                await _deviceInterfaceLoader.Save(_interfacesCsvPath);   // Added by Rishabh - Date 19/04/2026
+                await _deviceInterfaceLoader.Save(_interfacesCsvPath,_interfaces);   // Added by Rishabh - Date 19/04/2026
                 return true;
             }
             catch (Exception ex)
@@ -263,7 +263,7 @@ namespace IPCSoftware.Services.ConfigServices
                     return false;
 
                 _interfaces.Remove(iface);
-                await _deviceInterfaceLoader.Save(_interfacesCsvPath);   // Added by Rishabh - Date 19/04/2026
+                await _deviceInterfaceLoader.Save(_interfacesCsvPath , _interfaces);   // Added by Rishabh - Date 19/04/2026
                 return true;
             }
             catch (Exception ex)
@@ -282,7 +282,7 @@ namespace IPCSoftware.Services.ConfigServices
                     : 1;
 
                 _cameraInterfaces.Add(cameraInterface);
-                await _cameraLoader.Save(_cameraInterfacesCsvPath);   // Added by Rishabh - Date 19/04/2026
+                await _cameraLoader.Save(_cameraInterfacesCsvPath, _cameraInterfaces);   // Added by Rishabh - Date 19/04/2026
                 return cameraInterface;
             }
             catch (Exception ex)
@@ -302,7 +302,7 @@ namespace IPCSoftware.Services.ConfigServices
 
                 var index = _cameraInterfaces.IndexOf(existing);
                 _cameraInterfaces[index] = cameraInterface;
-                await _cameraLoader.Save(_cameraInterfacesCsvPath);   // Added by Rishabh - Date 19/04/2026
+                await _cameraLoader.Save(_cameraInterfacesCsvPath, _cameraInterfaces);   // Added by Rishabh - Date 19/04/2026
                 return true;
             }
             catch (Exception ex)
@@ -321,7 +321,7 @@ namespace IPCSoftware.Services.ConfigServices
                     return false;
 
                 _cameraInterfaces.Remove(cameraInterface);
-                await _cameraLoader.Save(_cameraInterfacesCsvPath);
+                await _cameraLoader.Save(_cameraInterfacesCsvPath, _cameraInterfaces);
                 return true;
             }
             catch (Exception ex)

@@ -81,6 +81,7 @@ namespace IPCSoftware.App.DI
                     sp.GetRequiredService<IAppLogger>()
                 )
             );
+            services.AddSingleton<IFileHandler, CsvReader>();                       //Added by Rishabh - date - 25/04/2026//
             services.AddSingleton<DeviceConfigLoader>();                             //Added by Rishabh - date - 18/04/2026//
             services.AddSingleton<DeviceInterfaceConfigLoader>();                    //Modified by Rishabh - date - 15/04/2026//
             services.AddSingleton<CameraConfigLoader>();                             //Added by Rishabh - date - 15/04/2026//

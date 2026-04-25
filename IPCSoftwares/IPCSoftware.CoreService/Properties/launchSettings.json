@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "IPCSoftware.App": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "CONFIG_DIR": "D:\\IPCSOFTWARE_Refactoring\\Vertex\\IPCSoftwares\\IPCSoftware.app"
+
+      }
+    }
+  }
+}
