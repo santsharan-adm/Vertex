@@ -4,16 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using IPCSoftware.Core.Interfaces;
 
 namespace IPCSoftware.Services
 {
     public class DeviceInterfaceConfigLoader : BaseService
     {
+        private readonly IFileHandler _fileHandler;
         private List<DeviceInterfaceModel> _deviceInterfaces = new List<DeviceInterfaceModel>();
 
-        public DeviceInterfaceConfigLoader(
-            IAppLogger logger) : base(logger)
+        public DeviceInterfaceConfigLoader(IAppLogger logger, IFileHandler fileHandler) : base(logger)
         {
+            _fileHandler = fileHandler;
         }
 
         private string Clean(string input)
@@ -36,7 +38,7 @@ namespace IPCSoftware.Services
         {
             try
             {
-                var rows = CsvReader.Read(filePath);  // static call, returns string[]
+                var rows = _fileHandler.Read(filePath);  // static call, returns string[]
                 _deviceInterfaces.Clear();
                 // var devices = new List<DeviceInterfaceModel>();
 
@@ -83,26 +85,26 @@ namespace IPCSoftware.Services
         }
 
         //Added by Rishabh - date - 19/04/2026//
-        public async Task Save(string filepath)
+        public async Task Save(string filepath , List<DeviceInterfaceModel> DeviceInterfaces)
         {
             try
             {
                 var sb = new StringBuilder();
-                string header = CsvReader.GetHeader(filepath);
+                string header = _fileHandler.GetHeader(filepath);
                 sb.AppendLine(header);
 
-                foreach (var iface in _deviceInterfaces)
+                foreach (var iface in DeviceInterfaces ?? new List<DeviceInterfaceModel>())
                 {
                     sb.AppendLine($"{iface.Id},{iface.DeviceNo}," +
-                        $"\"{CsvReader.EscapeCsv(iface.DeviceName)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(iface.DeviceName)}\"," +
                         $"{iface.UnitNo}," +
-                        $"\"{CsvReader.EscapeCsv(iface.Name)}\"," +
-                        $"\"{CsvReader.EscapeCsv(iface.ComProtocol)}\"," +
-                        $"\"{CsvReader.EscapeCsv(iface.IPAddress)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(iface.Name)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(iface.ComProtocol)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(iface.IPAddress)}\"," +
                         $"{iface.PortNo}," +
-                        $"\"{CsvReader.EscapeCsv(iface.Gateway)}\"," +
-                        $"\"{CsvReader.EscapeCsv(iface.Description)}\"," +
-                        $"\"{CsvReader.EscapeCsv(iface.Remark)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(iface.Gateway)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(iface.Description)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(iface.Remark)}\"," +
                         $"{iface.Enabled}");
                 }
 

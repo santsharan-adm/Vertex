@@ -1,12 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 
 namespace IPCSoftware.Services
 {
-    public static class CsvReader
+    public class CsvReader : IFileHandler
     {
-        public static string Getversion(string filepath)
+        private readonly IAppLogger _logger;
+
+        public CsvReader(IAppLogger logger)
+        {
+            _logger = logger;
+        }
+        public  string Getversion(string filepath)
         {
             if (!File.Exists(filepath)) 
                 return "1.0";
@@ -23,7 +31,7 @@ namespace IPCSoftware.Services
             return "1.0";
         }
 
-        public static List<string[]> Read(string filePath)
+        public List<string[]> Read(string filePath)
         {
             var rows = new List<string[]>();
 
@@ -58,7 +66,7 @@ namespace IPCSoftware.Services
             return rows;
         }
 
-        private static string[] SplitCsvLine(string line)
+        private string[] SplitCsvLine(string line)
         {
             // This Regex finds commas that are followed by an even number of quotes (meaning outside of a string)
             string pattern = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
@@ -82,7 +90,7 @@ namespace IPCSoftware.Services
         }
 
         // Added by Rishabh - Date 17/04/2026
-        public static string GetHeader(string filepath)
+        public string GetHeader(string filepath)
         {
             if (!File.Exists(filepath)) 
                 return string.Empty;
@@ -101,7 +109,7 @@ namespace IPCSoftware.Services
         }
 
         // Added by Rishabh - date - 19/04/2026//
-        public static string EscapeCsv(string value)
+        public string EscapeCsv(string value)
         {
             if (string.IsNullOrEmpty(value))
                 return string.Empty;

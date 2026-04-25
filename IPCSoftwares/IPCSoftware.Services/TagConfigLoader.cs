@@ -1,4 +1,5 @@
-﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +8,9 @@ namespace IPCSoftware.Services
 {
     public class TagConfigLoader : BaseService
     {
-        public TagConfigLoader(IAppLogger logger) : base(logger)
-        { }
+        private readonly IFileHandler _fileHandler;
+        public TagConfigLoader(IAppLogger logger , IFileHandler fileHandler) : base(logger)
+        { _fileHandler = fileHandler; }
         // Constants matching definitions in AlgorithmAnalysisService/Requirements
         private const int DataType_Int16 = 1;
         private const int DataType_Word32 = 2;
@@ -22,8 +24,8 @@ namespace IPCSoftware.Services
         {
             try
             {
-                var version = CsvReader.Getversion(filePath);
-                var rows = CsvReader.Read(filePath);
+                var version = _fileHandler.Getversion(filePath);
+                var rows = _fileHandler.Read(filePath);
                 var tags = new List<PLCTagConfigurationModel>();
                 if (version == "1.0")
                 {
