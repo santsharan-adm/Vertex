@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Configuration;
@@ -14,18 +15,24 @@ namespace IPCSoftware.Services.ConfigServices
     public class PLCTagConfigurationService : BaseService, IPLCTagConfigurationService
     {
         //private readonly IConfiguration _configuration;
+        private readonly IFileHandler _fileHandler;
         private readonly string _dataFolder;
         private readonly string _csvFilePath;
         private List<PLCTagConfigurationModel> _tags;
         private int _nextId = 1;
         private readonly TagConfigLoader _tagLoader ; // Use the dedicated loader
+        private readonly ILogManagerService _logManager;
             
         public PLCTagConfigurationService(
             IOptions<ConfigSettings> configSettings,
             TagConfigLoader tagConfigLoader,
-            IAppLogger logger) : base(logger) 
+            IAppLogger logger,
+            IFileHandler fileHandler,
+            ILogManagerService logManager) : base(logger)
         {
+            _fileHandler = fileHandler;
             _tagLoader = tagConfigLoader;
+            
             //    _configuration = configuration;
             //  string dataFolderPath = _configuration.GetValue<string>("Config:DataFolder");
             var config = configSettings.Value;
@@ -40,6 +47,7 @@ namespace IPCSoftware.Services.ConfigServices
             _csvFilePath = Path.Combine(_dataFolder, config.PlcTagsFileName /*"PLCTags.csv"*/);
 
             _tags = new List<PLCTagConfigurationModel>();
+            _logManager = logManager;
         }
 
 
@@ -48,6 +56,8 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
              await LoadTagsInternalAsync();
+
+               
             }
             catch (Exception ex)
             {
@@ -161,6 +171,8 @@ namespace IPCSoftware.Services.ConfigServices
                 // Thread-safe update of the internal cache list
                 _tags = reloadedTags;
 
+                
+
                 // Update the next ID counter
                 if (_tags.Any())
                 {
@@ -205,7 +217,8 @@ namespace IPCSoftware.Services.ConfigServices
                        // $"{EscapeCsv(tag.DMAddress)},") ;
                 }
 
-                await File.WriteAllTextAsync(_csvFilePath, sb.ToString(), Encoding.UTF8);
+                await _fileHandler.WriteCsv(_csvFilePath, sb.ToString());                  //Added by Rishabh Date 26-04-2026
+               // await File.WriteAllTextAsync(_csvFilePath, sb.ToString(), Encoding.UTF8);
             }
             catch (Exception ex)
             {
@@ -245,5 +258,42 @@ namespace IPCSoftware.Services.ConfigServices
         }
 
 
+        //Added by Rishabh Date 26-04-2026
+        public async Task LogTagValue(int tagId, object value)
+        {
+            try
+            {
+                var tag = _tags.FirstOrDefault(t => t.Id == tagId);
+                if (tag == null || !tag.EnableTraceLog)
+                    return;
+                // Get TraceLog file path from LogManagerService
+                string traceLogPath = _logManager.ResolveLogFile(LogType.TagTrace); 
+                if (string.IsNullOrEmpty(traceLogPath))
+                {
+                    _logger.LogWarning("TraceLog.csv path not configured", LogType.Diagnostics);
+                    return;
+                }
+                // Build CSV line: Timestamp,TagId,TagName,Value,PLCNo,ModbusAddress
+                var sb = new StringBuilder();
+                string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff");
+                string csvLine = $"{timestamp},{tag.Id},{_fileHandler.EscapeCsv(tag.Name)},{value},{tag.PLCNo},{tag.ModbusAddress}";
+                sb.AppendLine(csvLine);
+                // Append to TraceLog.csv
+                await File.AppendAllTextAsync(traceLogPath, sb.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error logging tag value: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+        /// <summary>
+        /// Gets all tags that have trace logging enabled
+        /// </summary>
+        /// <returns>List of tags with EnableTraceLog = true</returns>
+        public List<PLCTagConfigurationModel> GetTraceEnabledTags()
+        {
+            return _tags.Where(t => t.EnableTraceLog).ToList();
+        }
     }
 }
+

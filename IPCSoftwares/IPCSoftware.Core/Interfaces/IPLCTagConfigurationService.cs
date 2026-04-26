@@ -20,5 +20,10 @@ namespace IPCSoftware.Core.Interfaces
 
       // Add the method required by TagChangeWatcherService
         Task<List<PLCTagConfigurationModel>> ReloadTagsAsync();
+
+
+        // added by Rishabh - date - 26/04/2026//
+        Task LogTagValue(int tagId, object value);
+        List<PLCTagConfigurationModel> GetTraceEnabledTags();
     }
 }
