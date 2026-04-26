@@ -1,67 +1,43 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using IPCSoftware.App.Bending.Views;
 
 namespace IPCSoftware.App.Bending
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
-            DashBoard1_Loaded(this, new RoutedEventArgs());
+            MainContentArea.Content = new UserControl1();
         }
 
-        //private void Dashboard_Loaded(object sender, RoutedEventArgs e)
-        //private void DashBoard1_Loaded(object sender, RoutedEventArgs e)
-
-        //private void DashBoard1_Loaded(object sender, RoutedEventArgs e)
-        private void DashBoard1_Loaded(object sender, RoutedEventArgs e)
-
+        private void OpenMenu_Click(object sender, RoutedEventArgs e)
         {
+            MenuColumn.Width = new GridLength(250);
+        }
 
+        private void CloseMenu_Click(object sender, RoutedEventArgs e)
+        {
+            MenuColumn.Width = new GridLength(0);
+        }
+
+        private void Menu_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is Button btn) || btn.Tag == null) return;
+
+            string target = btn.Tag.ToString();
+
+            switch (target)
+            {
+                case "B1": MainContentArea.Content = new Bending1MonitorView(); break;
+                case "B2": MainContentArea.Content = new Bending2MonitorView(); break;
+                case "B3": MainContentArea.Content = new Bending3MonitorView(); break;
+                case "UC1": MainContentArea.Content = new UserControl1(); break;
+                case "UC2": MainContentArea.Content = new UserControl2(); break;
+            }
+
+            CloseMenu_Click(null, null);
         }
     }
 }
-
-
-
-
-
-//using System.Windows;
-
-//namespace IPCSoftware.App.Bending
-//{
-//    public partial class MainWindow : Window
-//    {
-//        public MainWindow()
-//        {
-//            InitializeComponent();
-
-//            // App open hote hi default UserControl1 load hoga
-//            MainContentArea.Content = new Views.UserControl1();
-//        }
-
-//        private void BtnDashboard1_Click(object sender, RoutedEventArgs e)
-//        {
-//            // Button 1 click par UserControl1
-//            MainContentArea.Content = new Views.UserControl1();
-//        }
-
-//        private void BtnDashboard2_Click(object sender, RoutedEventArgs e)
-//        {
-//            // Button 2 click par UserControl2
-//            MainContentArea.Content = new Views.UserControl2();
-//        }
-//    }
-//   }

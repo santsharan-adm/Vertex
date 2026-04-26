@@ -1,14 +1,14 @@
-﻿using IPCSoftware.App.Bending.ViewModels;
-using System.Windows;
+﻿using System.Windows.Controls;
+using IPCSoftware.App.Bending.ViewModels;
 
 namespace IPCSoftware.App.Bending.Views
 {
-    public partial class Bending1MonitorView : Window
+    public partial class Bending1MonitorView : UserControl
     {
         public Bending1MonitorView()
         {
             InitializeComponent();
-            // ViewModel ko assign kar rahe hain
+
             this.DataContext = new Bending1MonitorViewModel();
         }
     }

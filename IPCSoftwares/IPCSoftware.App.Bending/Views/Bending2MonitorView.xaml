@@ -1,7 +1,9 @@
-﻿<Window x:Class="IPCSoftware.App.Bending.Views.Bending2MonitorView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Bending2Monitor" Background="#0F0F0F" Height="750" Width="1050">
+﻿<UserControl x:Class="IPCSoftware.App.Bending.Views.Bending2MonitorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#0F0F0F"
+             HorizontalAlignment="Stretch" 
+             VerticalAlignment="Stretch">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -411,4 +413,4 @@
             </Grid>
         </Border>
     </Grid>
-</Window>
+</UserControl>
