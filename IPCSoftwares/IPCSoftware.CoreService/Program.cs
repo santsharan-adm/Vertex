@@ -86,6 +86,7 @@ namespace IPCSoftware.CoreService
                             // 1. Configuration/Logging
                             //   services.AddSingleton<IConfiguration>(hostContext.Configuration);
                             // 2. Configuration Service (Resolvable by DI)
+                            services.AddSingleton<IFileHandler, CsvManager>();           //Added by Rishabh - date - 25/04/2026//
                             services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
                             services.AddSingleton<IAppLogger, AppLoggerService>();
                             services.AddSingleton<ILogManagerService, LogManagerService>();

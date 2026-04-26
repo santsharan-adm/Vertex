@@ -47,8 +47,8 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         private int _tagNo;
         public int TagNo
         {
-            get => _tagNo;
-            set => SetProperty(ref _tagNo, value);
+            get => _id;
+            set => SetProperty(ref _id, value);
         }
 
         private string _name;
