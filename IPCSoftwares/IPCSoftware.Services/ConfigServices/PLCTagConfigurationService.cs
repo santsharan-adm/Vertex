@@ -266,20 +266,17 @@ namespace IPCSoftware.Services.ConfigServices
                 var tag = _tags.FirstOrDefault(t => t.Id == tagId);
                 if (tag == null || !tag.EnableTraceLog)
                     return;
-                // Get TraceLog file path from LogManagerService
+               
                 string traceLogPath = _logManager.ResolveLogFile(LogType.TagTrace); 
-                if (string.IsNullOrEmpty(traceLogPath))
-                {
-                    _logger.LogWarning("TraceLog.csv path not configured", LogType.Diagnostics);
-                    return;
-                }
-                // Build CSV line: Timestamp,TagId,TagName,Value,PLCNo,ModbusAddress
+ 
+                
                 var sb = new StringBuilder();
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff");
                 string csvLine = $"{timestamp},{tag.Id},{_fileHandler.EscapeCsv(tag.Name)},{value},{tag.PLCNo},{tag.ModbusAddress}";
                 sb.AppendLine(csvLine);
-                // Append to TraceLog.csv
-                await File.AppendAllTextAsync(traceLogPath, sb.ToString(), Encoding.UTF8);
+                           
+                await _fileHandler.WriteCsv(traceLogPath, sb.ToString());
+               
             }
             catch (Exception ex)
             {

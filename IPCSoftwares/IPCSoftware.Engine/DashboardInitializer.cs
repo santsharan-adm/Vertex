@@ -341,18 +341,20 @@ namespace IPCSoftware.Engine
         private ResponsePackage Error(string msg) =>
             new ResponsePackage { ResponseId = 6, Success = false, ErrorMessage = msg };
 
+
+        //ADDED BY RISHABH - DATE - 26/04/2026
         private async Task LogTraceEnabledTags(Dictionary<int, object> processedData)
         {
             try
             {
-                // Get all trace-enabled tags
+               
                 var traceEnabledTags = _tagService.GetTraceEnabledTags();
 
                 foreach (var tag in traceEnabledTags)
                 {
                     if (processedData.TryGetValue(tag.Id, out object value))
                     {
-                        // ✅ Call LogTagValue for each enabled tag
+                        
                         await _tagService.LogTagValue(tag.Id, value);
                     }
                 }
