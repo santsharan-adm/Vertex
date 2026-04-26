@@ -940,7 +940,7 @@
                       StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Left" Canvas.Left="175" VerticalAlignment="Top" Canvas.Top="56"/>
                 <!-- Arm 1 lower segment: elbow → tip (animated) -->
                 <Line x:Name="Arm1Lower"
-                      X1="108" Y1="307" X2="197" Y2="370"
+                      X1="108" Y1="307" X2="197" Y2="350"
                       Stroke="{StaticResource PanelBorder}" StrokeThickness="8"
                       StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Left" Canvas.Left="188" VerticalAlignment="Center" Canvas.Top="60"/>
                 <!-- Arm 1 elbow joint circle -->
@@ -950,14 +950,14 @@
                 <!-- Robot Hand (end effector) at Arm1 tip -->
                 <Canvas x:Name="RobotHand" Canvas.Left="190" Canvas.Top="408" Width="16" Height="22" IsHitTestVisible="False">
                     <!-- Yellow wrist joint -->
-                    <Ellipse Width="16" Height="16" Fill="#F59E0B" Canvas.Left="186" Canvas.Top="14"
+                    <Ellipse Width="16" Height="16" Fill="#F59E0B" Canvas.Left="186"
                              Stroke="#1E293B" StrokeThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     <!-- Left claw finger -->
                     <Path Data="M 3,13 L 0,22 L 7,17 Z" Fill="#EF4444"
-                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="182.488" Canvas.Top="11.322" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="182.821" Canvas.Top="-2.372" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     <!-- Right claw finger -->
                     <Path Data="M 13,13 L 16,22 L 9,17 Z" Fill="#EF4444"
-                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="189.988" Canvas.Top="10.656" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="189.32" Canvas.Top="-1.702" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Canvas>
 
                 <!-- Arm 2 upper segment: Robot 2 left edge → elbow (fixed) -->
@@ -966,7 +966,7 @@
                       StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" Canvas.Left="172" VerticalAlignment="Top" Canvas.Top="58"/>
                 <!-- Arm 2 lower segment: elbow → tip (animated) -->
                 <Line x:Name="Arm2Lower"
-                      X1="770" Y1="307" X2="689" Y2="370"
+                      X1="770" Y1="307" X2="689" Y2="350"
                       Stroke="{StaticResource PanelBorder}" StrokeThickness="8"
                       StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Left" Canvas.Left="158" VerticalAlignment="Center" Canvas.Top="60"/>
                 <!-- Arm 2 elbow joint circle -->
@@ -976,14 +976,14 @@
                 <!-- Robot Hand (end effector) at Arm2 tip -->
                 <Canvas x:Name="RobotHand2" Canvas.Left="686" Canvas.Top="408" Width="16" Height="22" IsHitTestVisible="False" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <!-- Yellow wrist joint -->
-                    <Ellipse Width="16" Height="16" Fill="#F59E0B" Canvas.Left="150" Canvas.Top="17"
-                             Stroke="#1E293B" StrokeThickness="1.5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <Ellipse Width="16" Height="16" Fill="#F59E0B" Canvas.Left="150"
+                             Stroke="#1E293B" StrokeThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     <!-- Left claw finger -->
                     <Path Data="M 3,13 L 0,22 L 7,17 Z" Fill="#EF4444"
-                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="148" Canvas.Top="13.5" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="148" Canvas.Top="-0.528" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     <!-- Right claw finger -->
                     <Path Data="M 13,13 L 16,22 L 9,17 Z" Fill="#EF4444"
-                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="155" Canvas.Top="15" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="152.829" Canvas.Top="-1.367" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Canvas>
                 <!--</Canvas>-->
 
@@ -1173,7 +1173,7 @@
                 </Border>
 
                 <!-- Tearing + Flipping Section -->
-                <Border CornerRadius="5" Canvas.Left="803" BorderBrush="Black" BorderThickness="1.5" Height="Auto" VerticalAlignment="Top" HorizontalAlignment="Center" Canvas.Top="38">
+                <Border CornerRadius="5" Canvas.Left="807" BorderBrush="Black" BorderThickness="1.5" Height="Auto" VerticalAlignment="Top" HorizontalAlignment="Center" Canvas.Top="2">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Height="45" >
 
                         <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
@@ -1238,34 +1238,37 @@
                 <!-- Top rail -->
                 <Line X1="385" Y1="196" X2="425" Y2="196"
                           Stroke="#1E293B" StrokeThickness="3"
-                          StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" HorizontalAlignment="Left" Canvas.Left="152" VerticalAlignment="Center"/>
+                          StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" HorizontalAlignment="Center" Canvas.Left="152" VerticalAlignment="Top" Canvas.Top="-55"/>
                 <!-- Bottom rail -->
                 <Line X1="385" Y1="212" X2="425" Y2="212"
                           Stroke="#1E293B" StrokeThickness="3"
-                          StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" HorizontalAlignment="Left" Canvas.Left="152" VerticalAlignment="Center"/>
+                          StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" HorizontalAlignment="Center" Canvas.Left="152" VerticalAlignment="Top" Canvas.Top="-53"/>
                 <!-- Left cap (circle side) -->
                 <Line X1="385" Y1="193" X2="385" Y2="213"
                           Stroke="#1E293B" StrokeThickness="2"
-                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" Canvas.Left="151" VerticalAlignment="Top" Canvas.Top="1"/>
+                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" Canvas.Left="151" VerticalAlignment="Top" Canvas.Top="-55"/>
                 <!-- Right cap (Transfer Module side) -->
                 <Line X1="451" Y1="193" X2="451" Y2="213"
                           Stroke="#1E293B" StrokeThickness="2"
-                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" Canvas.Left="127" VerticalAlignment="Top" Canvas.Top="1"/>
+                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" Canvas.Left="127" VerticalAlignment="Top" Canvas.Top="-55"/>
 
 
                 <!-- Slot 1 -->
-                <Rectangle Canvas.Left="543" Canvas.Top="198" Width="12" Height="12"
-                               Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Rectangle Canvas.Left="543" Canvas.Top="145" Width="12" Height="12"
+                               Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <!-- Slot 2 -->
-                <Rectangle Canvas.Left="559" Canvas.Top="198" Width="12" Height="12"
-                               Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Rectangle Canvas.Left="559" Canvas.Top="145" Width="12" Height="12"
+                               Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
                 <!-- Vertical Slot 1 -->
-                <Border Canvas.Left="517" Canvas.Top="181" 
-        BorderBrush="black" BorderThickness="2" Padding="1" CornerRadius="2" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Border Canvas.Left="517" Canvas.Top="117" 
+        BorderBrush="black" BorderThickness="2" Padding="1" CornerRadius="2" HorizontalAlignment="Center" VerticalAlignment="Top">
                     <StackPanel Orientation="Vertical">
                         <Rectangle Width="12" Height="12" 
                    Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
+                        <Rectangle Height="1"/>
+                        <Rectangle Width="12" Height="12" 
+                                     Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
                         <Rectangle Height="1"/>
                         <Rectangle Width="12" Height="12" 
                    Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
@@ -1275,8 +1278,8 @@
                     </StackPanel>
                 </Border>
                 <!--TT-1-->
-                <TextBlock Canvas.Left="370" Canvas.Top="270" Text="TURN TABLE 1" FontWeight="Bold" FontSize="15" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Border Canvas.Left="334" Canvas.Top="100" Width="160" Height="160"
+                <TextBlock Canvas.Left="364" Canvas.Top="230" Text="TURN TABLE 1" FontWeight="Bold" FontSize="15" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Border Canvas.Left="334" Canvas.Top="58" Width="160" Height="160"
                             CornerRadius="80"
                             Background="White"
                             BorderBrush="{StaticResource PanelBorder}"
@@ -1337,17 +1340,17 @@
                 </Border>
 
                 <!--Transfer Module-->
-                <TextBlock Canvas.Left="575" Canvas.Top="143" 
+                <TextBlock Canvas.Left="573" Canvas.Top="62" 
                     Text="TRANSFER MODULE" 
                     FontWeight="Black" 
                     FontSize="10" 
                     Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Center" VerticalAlignment="Top" Height="18"/>
-                <Border Canvas.Left="578" Canvas.Top="159"
+                <Border Canvas.Left="578" Canvas.Top="109"
                     Width="85" Height="85" 
                     Background="White" 
                     BorderBrush="{StaticResource PanelBorder}" 
                     BorderThickness="3" 
-                    CornerRadius="42.5" HorizontalAlignment="Left" VerticalAlignment="Center" >
+                    CornerRadius="42.5" HorizontalAlignment="Center" VerticalAlignment="Top" >
                     <Grid>
                         <Border BorderBrush="#F59E0B" BorderThickness="1.5" CornerRadius="4" Width="40" Height="40" VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock Text="🔄" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Foreground="#F59E0B"/>
@@ -1425,15 +1428,15 @@
                 <!--<Canvas Canvas.Left="330" Canvas.Top="170">-->
 
                 <!-- Turn Table 2 rotating disc: circle + triangle + ellipses, all rotate around center (80,75) -->
-                <TextBlock Canvas.Left="721" Canvas.Top="280" Text="TURN TABLE 2" FontWeight="Bold" FontSize="15" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="-0.193,0.469"/>
-                <Border Canvas.Left="690" Canvas.Top="98" Width="160" Height="160"
+                <TextBlock Canvas.Left="721" Canvas.Top="230" Text="TURN TABLE 2" FontWeight="Bold" FontSize="15" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="-0.193,0.469"/>
+                <Border Canvas.Left="722" Canvas.Top="68" Width="160" Height="160"
                         CornerRadius="80"
                       
                      
                         BorderThickness="3.5"
                         ClipToBounds="True"
                         RenderTransformOrigin="0.5,0.5"
-                        HorizontalAlignment="Center" VerticalAlignment="Top">
+                        HorizontalAlignment="Left" VerticalAlignment="Center">
                     <Border.RenderTransform>
                         <RotateTransform x:Name="TT2RotateTransform" Angle="0"/>
                     </Border.RenderTransform>
