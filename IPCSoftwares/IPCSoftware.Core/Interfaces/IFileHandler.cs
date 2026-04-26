@@ -39,5 +39,7 @@ namespace IPCSoftware.Core.Interfaces
        public string GetHeader(string filepath);
        public string EscapeCsv(string value);
 
+       public Task WriteCsv(string filepath, string content);        //Added by Rishabh - date - 25/04/2026//
+
     }
 }

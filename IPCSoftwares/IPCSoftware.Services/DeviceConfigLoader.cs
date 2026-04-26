@@ -138,8 +138,8 @@ namespace IPCSoftware.Services
                         $"\"{_fileHandler.EscapeCsv(device.Remark)}\"," +
                         $"{device.Enabled}");
                 }
-
-                await File.WriteAllTextAsync(filepath, sb.ToString(), Encoding.UTF8);
+                await _fileHandler.WriteCsv(filepath , sb.ToString());             //Added by Rishabh - date - 25/04/2026// 
+                                                                                   // await File.WriteAllTextAsync(filepath, sb.ToString(), Encoding.UTF8);
             }
             catch (Exception ex)
             {
