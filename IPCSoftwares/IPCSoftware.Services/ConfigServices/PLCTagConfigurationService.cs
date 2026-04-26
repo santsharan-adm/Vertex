@@ -159,11 +159,6 @@ namespace IPCSoftware.Services.ConfigServices
         {
             try
             {
-            if (!File.Exists(_csvFilePath))
-            {
-                await SaveToCsvAsync();
-                return;
-            }
 
                 // FIX: Use the dedicated TagConfigLoader (now accessible via using directive)
                 var reloadedTags = _tagLoader.Load(_csvFilePath);
