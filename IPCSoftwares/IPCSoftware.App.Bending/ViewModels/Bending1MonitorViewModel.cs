@@ -72,10 +72,10 @@ namespace IPCSoftware.App.Bending.ViewModels
         public Bending1MonitorViewModel()
         {
            
-            P1_Upper = 50.5; P1_Value = 48.2; P1_Lower = 45.0; P1_LM = "OK"; P1_BT = "2.5s";
-            P2_Upper = 55.0; P2_Value = 52.1; P2_Lower = 50.0; P2_LM = "OK"; P2_BT = "2.8s";
-            P3_Upper = 60.0; P3_Value = 58.9; P3_Lower = 55.0; P3_LM = "OK"; P3_BT = "3.1s";
-            P4_Upper = 45.0; P4_Value = 44.5; P4_Lower = 40.0; P4_LM = "OK"; P4_BT = "2.2s";
+            P1_Upper = 50.5; P1_Value = 48.2; P1_Lower = 45.0; P1_LM = "2.22"; P1_BT = "2.5s";
+            P2_Upper = 55.0; P2_Value = 52.1; P2_Lower = 50.0; P2_LM = "3.35"; P2_BT = "2.8s";
+            P3_Upper = 60.0; P3_Value = 58.9; P3_Lower = 55.0; P3_LM = "5.32"; P3_BT = "3.1s";
+            P4_Upper = 45.0; P4_Value = 44.5; P4_Lower = 40.0; P4_LM = "4.22"; P4_BT = "2.2s";
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

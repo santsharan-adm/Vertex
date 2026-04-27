@@ -15,7 +15,7 @@
         <SolidColorBrush x:Key="RowEvenBg" Color="#1E293B"/>
     </UserControl.Resources>
 
-    <Grid Margin="15">
+    <Grid Margin="3">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto" MinHeight="0"/>
@@ -68,6 +68,14 @@
                         </Button.Resources>
                         <TextBlock Text="WORK PAYOUT START" TextAlignment="Center"/>
                     </Button>
+                    <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="4"/>
+                            </Style>
+                        </Button.Resources>
+                        <TextBlock Text="Go To Menu" TextAlignment="Center"/>
+                    </Button>
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -79,176 +87,150 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Button Grid.Row="0" Content="Go To Menu"
-                    Padding="3"
-                    Width="150"
-                    Background="#6366F1"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    Cursor="Hand"
-                    HorizontalAlignment="Left">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="2"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
 
-            <Border Grid.Row="1" CornerRadius="8" Padding="2"
-                    BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C0">
-                <Grid Background="White">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" MinWidth="38"/>
-                        <ColumnDefinition Width="Auto" MinWidth="58"/>
-                        <ColumnDefinition Width="Auto" MinWidth="58"/>
-                        <ColumnDefinition Width="Auto" MinWidth="58"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                        <TextBlock Text="PID" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                        <TextBlock Text="Heater" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-
-                    <Border Grid.Row="1" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                        <TextBlock Text="S.No." FontWeight="Bold" FontSize="9" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                        <TextBlock Text="Bend 1" FontWeight="Bold" FontSize="9" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="2" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                        <TextBlock Text="Bend 2" FontWeight="Bold" FontSize="9" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                        <TextBlock Text="Bend 3" FontWeight="Bold" FontSize="9" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-
-                    <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="1" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-                    <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="2" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-                    <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="3" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-                    <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="4" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-
-                    <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-                    <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-                    <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-                    <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-
-                    <Border Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-                    <Border Grid.Row="3" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-                    <Border Grid.Row="4" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-                    <Border Grid.Row="5" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-
-                    <Border Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-                    <Border Grid.Row="3" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-                    <Border Grid.Row="4" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-                    <Border Grid.Row="5" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                        <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="9"/>
-                    </Border>
-                </Grid>
-            </Border>
-
+            <!--Batch No. & QR Code-->
             <StackPanel Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                <Border BorderBrush="#1565C0" BorderThickness="1" Background="White" CornerRadius="8,8,0,0">
+                <Border BorderBrush="#1565C0" BorderThickness="1" Background="White" CornerRadius="8,8,0,0" Margin="0,3,0,0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="60"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                            <TextBlock Text="Lot" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                        <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2" CornerRadius="5,0,0,0">
+                            <TextBlock Text="Batch No." FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
                         </Border>
                         <Border Grid.Row="0" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                            <TextBlock Text="Part at Bend-1/2" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9" TextWrapping="Wrap"/>
+                            <TextBlock Text="QR Code" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9" TextWrapping="Wrap"/>
                         </Border>
 
-                        <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="3" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
-                        </Border>
-                        <Border Grid.Row="1" Grid.Column="1" Background="#0B1A2E" Padding="3,1">
-                            <StackPanel HorizontalAlignment="Center">
-                                <TextBlock Text="ABCD12345A009" Foreground="White" FontSize="8.5"/>
-                                <TextBlock Text="ABCD12345A010" Foreground="White" FontSize="8.5"/>
-                                <TextBlock Text="ABCD12345A011" Foreground="White" FontSize="8.5"/>
-                                <TextBlock Text="ABCD12345A012" Foreground="White" FontSize="8.5"/>
+                        <UniformGrid Grid.Row="1" Grid.Column="0" Columns="1" Background="#0B1A2E">
+                            <Border BorderBrush="#1565C0" BorderThickness="0,0,1,1" Padding="3">
+                                <TextBlock Text="BFBL03" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                            </Border>
+                            <Border BorderBrush="#1565C0" BorderThickness="0,0,1,0" Padding="3">
+                                <TextBlock Text="BFBL04" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                            </Border>
+                        </UniformGrid>
+
+                        <StackPanel Grid.Row="1" Grid.Column="1" Background="#0B1A2E" >
+                            <StackPanel Margin="0,2,0,5">
+                                <TextBlock Text="ABCD12345A009" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="ABCD12345A010" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="ABCD12345A011" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="ABCD12345A012" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
                             </StackPanel>
-                        </Border>
+
+                            <Border Height="1" Background="#1565C0" Opacity="0.4" Margin="10,0"/>
+
+                            <StackPanel Margin="0,5,0,2">
+                                <TextBlock Text="ABCD12345A013" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="ABCD12345A014" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="ABCD12345A015" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="ABCD12345A016" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                            </StackPanel>
+                        </StackPanel>
                     </Grid>
                 </Border>
 
                 <Border BorderBrush="#1565C0" BorderThickness="1" Background="White" CornerRadius="0,0,8,8">
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="60"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-
-                        <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                            <TextBlock Text="Lot" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
-                        </Border>
-                        <Border Grid.Row="0" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                            <TextBlock Text="New QR Code Scanned" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9" TextWrapping="Wrap"/>
-                        </Border>
-
-                        <Border Grid.Row="1" Grid.Column="0" Background="#0B1A2E" BorderBrush="Black" Padding="3,2">
-                            <TextBlock Text="4" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
-                        </Border>
-                        <Border Grid.Row="1" Grid.Column="1" Background="#0B1A2E" Padding="3,1">
-                            <StackPanel HorizontalAlignment="Center">
-                                <TextBlock Text="ABCD12345A013" Foreground="White" FontSize="8.5"/>
-                                <TextBlock Text="ABCD12345A014" Foreground="White" FontSize="8.5"/>
-                                <TextBlock Text="ABCD12345A015" Foreground="White" FontSize="8.5"/>
-                                <TextBlock Text="ABCD12345A016" Foreground="White" FontSize="8.5"/>
-                            </StackPanel>
-                        </Border>
                     </Grid>
+                </Border>
+
+
+                <!--EFFICIENCY BREAKDOWN-->
+
+                <Border Grid.Row="2" Grid.Column="0" Background="#1E293B" CornerRadius="8" Padding="4,3" VerticalAlignment="Top" Margin="0,10,0,0">
+                    <StackPanel>
+                        <TextBlock Text="EFFICIENCY BREAKDOWN" Foreground="White" FontWeight="Bold" FontSize="10" Padding="0,0,0,3"/>
+
+                        <Grid Height="15" Margin="0,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="30"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Availability" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
+                                <Border CornerRadius="3" Background="#334155"/>
+                                <Border CornerRadius="3" Background="#10B981" HorizontalAlignment="Left" Width="96"/>
+                            </Grid>
+                            <TextBlock Grid.Column="2" Text="96%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        </Grid>
+
+                        <Grid Height="15" Margin="0,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="30"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Performance" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
+                                <Border CornerRadius="3" Background="#334155"/>
+                                <Border CornerRadius="3" Background="#3B82F6" HorizontalAlignment="Left" Width="91"/>
+                            </Grid>
+                            <TextBlock Grid.Column="2" Text="91%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        </Grid>
+
+                        <Grid Height="15" Margin="0,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="30"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Quality" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
+                                <Border CornerRadius="3" Background="#334155"/>
+                                <Border CornerRadius="3" Background="#F59E0B" HorizontalAlignment="Left" Width="97"/>
+                            </Grid>
+                            <TextBlock Grid.Column="2" Text="97%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        </Grid>
+
+                        <Grid Height="15" Margin="0,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="30"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="OEE Details" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
+                                <Border CornerRadius="3" Background="#334155"/>
+                                <Border CornerRadius="3" Background="#3B82F6" HorizontalAlignment="Left" Width="91"/>
+                            </Grid>
+                            <TextBlock Grid.Column="2" Text="91%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        </Grid>
+
+                        <Border Height="1" Background="#475569" Margin="3"/>
+
+                        <Grid Height="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="2"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border CornerRadius="3" Background="#064E3B" Padding="5,3">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="#10B981" VerticalAlignment="Center"/>
+                                    <TextBlock Text=" OK : 156" Foreground="#10B981" FontSize="9" FontWeight="Bold" VerticalAlignment="Center" Margin="2"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" CornerRadius="3" Background="#450A0A" Padding="5,3">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="#EF4444" VerticalAlignment="Center"/>
+                                    <TextBlock Text=" NG : 4" Foreground="#EF4444" FontSize="9" FontWeight="Bold" VerticalAlignment="Center" Margin="2"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
                 </Border>
             </StackPanel>
         </Grid>
@@ -324,7 +306,7 @@
                     </Grid.RowDefinitions>
 
                     <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"   Background="#1565C0">
-                        <TextBlock Text="LOT" Style="{StaticResource HeaderText}" Foreground="White" />
+                        <TextBlock Text="Batch No." Style="{StaticResource HeaderText}" Foreground="White" />
                     </Border>
                     <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"   Background="#1565C0">
                         <TextBlock Text="QR code" Style="{StaticResource HeaderText}" Foreground="White"/>
@@ -400,7 +382,7 @@
 
 
                     <Border Grid.Row="3" Grid.RowSpan="4" Grid.Column="0" Background="#0B1A2E">
-                        <TextBlock Text="2" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="BFBL02" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
 
                     <Border Grid.Row="3" Grid.Column="1" Background="#0B1A2E">
@@ -513,7 +495,7 @@
 
 
                     <Border Grid.Row="7" Grid.RowSpan="4" Grid.Column="0" Background="#0B1A2E">
-                        <TextBlock Text="1" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="BFBL01" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
 
                     <Border Grid.Row="7" Grid.Column="1" Background="#0B1A2E">
@@ -687,7 +669,7 @@
                         <Setter Property="StrokeThickness" Value="1.5"/>
                         <Setter Property="StrokeDashArray" Value="3 1.5"/>
                         <Setter Property="StrokeLineJoin" Value="Round"/>
-                        <Setter Property="Margin" Value="0,1,0,-1"/>
+                        <Setter Property="Margin" Value="1"/>
                     </Style>
 
 
@@ -937,53 +919,53 @@
                 <!-- Arm 1 upper segment: Robot 1 right edge → elbow (fixed) -->
                 <Line X1="68" Y1="307" X2="108" Y2="307"
                       Stroke="{StaticResource PanelBorder}" StrokeThickness="8"
-                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Left" Canvas.Left="175" VerticalAlignment="Top" Canvas.Top="56"/>
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Left" Canvas.Left="152" VerticalAlignment="Top" Canvas.Top="54"/>
                 <!-- Arm 1 lower segment: elbow → tip (animated) -->
                 <Line x:Name="Arm1Lower"
                       X1="108" Y1="307" X2="197" Y2="350"
                       Stroke="{StaticResource PanelBorder}" StrokeThickness="8"
-                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Left" Canvas.Left="188" VerticalAlignment="Center" Canvas.Top="60"/>
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Left" Canvas.Left="165" VerticalAlignment="Top" Canvas.Top="58"/>
                 <!-- Arm 1 elbow joint circle -->
                 <Ellipse Width="18" Height="18" Fill="{StaticResource PanelBorder}"
-                         Canvas.Left="281" Canvas.Top="353" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                         Canvas.Left="257" Canvas.Top="354" HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
                 <!-- Robot Hand (end effector) at Arm1 tip -->
                 <Canvas x:Name="RobotHand" Canvas.Left="190" Canvas.Top="408" Width="16" Height="22" IsHitTestVisible="False">
                     <!-- Yellow wrist joint -->
-                    <Ellipse Width="16" Height="16" Fill="#F59E0B" Canvas.Left="186"
-                             Stroke="#1E293B" StrokeThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <Ellipse Width="16" Height="16" Fill="#F59E0B" Canvas.Left="171"
+                             Stroke="#1E293B" StrokeThickness="1.5" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="-2"/>
                     <!-- Left claw finger -->
                     <Path Data="M 3,13 L 0,22 L 7,17 Z" Fill="#EF4444"
-                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="182.821" Canvas.Top="-2.372" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="168.5" Canvas.Top="-3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     <!-- Right claw finger -->
                     <Path Data="M 13,13 L 16,22 L 9,17 Z" Fill="#EF4444"
-                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="189.32" Canvas.Top="-1.702" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="172.308" Canvas.Top="-3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Canvas>
 
                 <!-- Arm 2 upper segment: Robot 2 left edge → elbow (fixed) -->
                 <Line X1="810" Y1="307" X2="770" Y2="307"
                       Stroke="{StaticResource PanelBorder}" StrokeThickness="8"
-                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" Canvas.Left="172" VerticalAlignment="Top" Canvas.Top="58"/>
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Left" Canvas.Left="94" VerticalAlignment="Center" Canvas.Top="58"/>
                 <!-- Arm 2 lower segment: elbow → tip (animated) -->
                 <Line x:Name="Arm2Lower"
                       X1="770" Y1="307" X2="689" Y2="350"
                       Stroke="{StaticResource PanelBorder}" StrokeThickness="8"
-                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Left" Canvas.Left="158" VerticalAlignment="Center" Canvas.Top="60"/>
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" Canvas.Left="83" VerticalAlignment="Top" Canvas.Top="61"/>
                 <!-- Arm 2 elbow joint circle -->
                 <Ellipse Width="18" Height="18" Fill="{StaticResource PanelBorder}"
-                         Canvas.Left="925" Canvas.Top="354" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                         Canvas.Left="847" Canvas.Top="354" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="-2.307,0.532"/>
 
                 <!-- Robot Hand (end effector) at Arm2 tip -->
                 <Canvas x:Name="RobotHand2" Canvas.Left="686" Canvas.Top="408" Width="16" Height="22" IsHitTestVisible="False" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <!-- Yellow wrist joint -->
-                    <Ellipse Width="16" Height="16" Fill="#F59E0B" Canvas.Left="150"
-                             Stroke="#1E293B" StrokeThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <Ellipse Width="16" Height="16" Fill="#F59E0B" Canvas.Left="76"
+                             Stroke="#1E293B" StrokeThickness="1.5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                     <!-- Left claw finger -->
                     <Path Data="M 3,13 L 0,22 L 7,17 Z" Fill="#EF4444"
-                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="148" Canvas.Top="-0.528" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="74.626" Canvas.Top="-0.528" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                     <!-- Right claw finger -->
                     <Path Data="M 13,13 L 16,22 L 9,17 Z" Fill="#EF4444"
-                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="152.829" Canvas.Top="-1.367" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                          Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="78.125" Canvas.Top="-1.367" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 </Canvas>
                 <!--</Canvas>-->
 
@@ -1340,7 +1322,7 @@
                 </Border>
 
                 <!--Transfer Module-->
-                <TextBlock Canvas.Left="573" Canvas.Top="62" 
+                <TextBlock Canvas.Left="573" Canvas.Top="66" 
                     Text="TRANSFER MODULE" 
                     FontWeight="Black" 
                     FontSize="10" 
@@ -1361,7 +1343,7 @@
 
 
                 <!--INSPECTION UNIT - 1-->
-                <Border Canvas.Left="355" Canvas.Top="305" Width="160" Height="55" 
+                <Border Canvas.Left="343" Canvas.Top="305" Width="160" Height="55" 
                         Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3" 
                         CornerRadius="4" HorizontalAlignment="Left" VerticalAlignment="Center">
 
@@ -1397,7 +1379,7 @@
                     </Grid>
                 </Border>
                 <!--INPUT TRAY-->
-                <Border Canvas.Left="355" Canvas.Top="370" Width="160" Height="40" 
+                <Border Canvas.Left="343" Canvas.Top="370" Width="160" Height="40" 
                         Background="#F1F5F9" BorderBrush="#475569" BorderThickness="3" 
                         CornerRadius="2" HorizontalAlignment="Left" VerticalAlignment="Center">
 
@@ -1428,89 +1410,69 @@
                 <!--<Canvas Canvas.Left="330" Canvas.Top="170">-->
 
                 <!-- Turn Table 2 rotating disc: circle + triangle + ellipses, all rotate around center (80,75) -->
-                <TextBlock Canvas.Left="721" Canvas.Top="230" Text="TURN TABLE 2" FontWeight="Bold" FontSize="15" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="-0.193,0.469"/>
-                <Border Canvas.Left="722" Canvas.Top="68" Width="160" Height="160"
-                        CornerRadius="80"
-                      
-                     
-                        BorderThickness="3.5"
-                        ClipToBounds="True"
-                        RenderTransformOrigin="0.5,0.5"
-                        HorizontalAlignment="Left" VerticalAlignment="Center">
+                <TextBlock Canvas.Left="681" Canvas.Top="230" Text="TURN TABLE 2" FontWeight="Bold" FontSize="15" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="-0.193,0.469"/>
+                <Border Canvas.Left="674" Canvas.Top="60" Width="180" Height="180"
+        CornerRadius="90" BorderThickness="4"
+        ClipToBounds="True" RenderTransformOrigin="0.5,0.5" 
+        HorizontalAlignment="Center" VerticalAlignment="Top">
+
                     <Border.RenderTransform>
                         <RotateTransform x:Name="TT2RotateTransform" Angle="0"/>
                     </Border.RenderTransform>
 
-                    <Grid Width="160" Height="160" VerticalAlignment="Bottom">
+                    <Viewbox Stretch="Uniform" Margin="10">
+                        <Canvas Width="200" Height="200" Background="Transparent">
 
-                        <!-- Triangle pointing right (rotated polyline) -->
-                        <Canvas Width="160" Height="160" >
-                            <Polyline Points="69.9,28 90.1,28 139.9,117 130,135 30,135 20.1,117 69.9,28"
-                                Stroke="#000000"
-                                StrokeThickness="3.5"
-                                Fill="Transparent"
-                                StrokeLineJoin="Round"  HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.Left="-22" Canvas.Top="14">
-                                <Polyline.RenderTransform>
-                                    <RotateTransform Angle="90" CenterX="80" CenterY="80"/>
-                                </Polyline.RenderTransform>
-                            </Polyline>
+                            <Path Stroke="Black" StrokeThickness="7" Fill="Transparent" StrokeLineJoin="Round">
+                                <Path.Data>
+                                    <PathGeometry>
+                                        <PathFigure StartPoint="40,25" IsClosed="True">
+                                            <LineSegment Point="160,95"/>
+                                            <ArcSegment Point="160,105" Size="15,15" SweepDirection="Clockwise"/>
+
+                                            <LineSegment Point="40,175"/>
+                                            <ArcSegment Point="30,165" Size="15,15" SweepDirection="Clockwise"/>
+
+                                            <LineSegment Point="30,35"/>
+                                            <ArcSegment Point="40,25" Size="15,15" SweepDirection="Clockwise"/>
+                                        </PathFigure>
+                                    </PathGeometry>
+                                </Path.Data>
+                            </Path>
+
+                            <StackPanel Orientation="Vertical" Canvas.Left="34" Canvas.Top="72" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Canvas.Left="75" Canvas.Top="49" RenderTransformOrigin="0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <StackPanel.RenderTransform>
+                                    <RotateTransform Angle="30"/>
+                                </StackPanel.RenderTransform>
+                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Canvas.Left="68" Canvas.Top="138" RenderTransformOrigin="0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <StackPanel.RenderTransform>
+                                    <RotateTransform Angle="-30"/>
+                                </StackPanel.RenderTransform>
+                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                            </StackPanel>
+
                         </Canvas>
-
-                        <!-- Top row ellipses -->
-                        <StackPanel Orientation="Horizontal"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Margin="42,62,0,0" RenderTransformOrigin="0.5,0.5">
-                            <StackPanel.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform/>
-                                    <SkewTransform/>
-                                    <RotateTransform Angle="29.417"/>
-                                    <TranslateTransform/>
-                                </TransformGroup>
-                            </StackPanel.RenderTransform>
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
-                        </StackPanel>
-
-                        <!-- Bottom row ellipses -->
-                        <StackPanel Orientation="Horizontal"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Margin="44,115,0,0" RenderTransformOrigin="0.5,0.5">
-                            <StackPanel.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform/>
-                                    <SkewTransform/>
-                                    <RotateTransform Angle="-26.628"/>
-                                    <TranslateTransform/>
-                                </TransformGroup>
-                            </StackPanel.RenderTransform>
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
-                        </StackPanel>
-
-                        <!-- Left column ellipses -->
-                        <StackPanel Orientation="Vertical"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Margin="8,75,0,0">
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBlue}" Margin="1"/>
-                        </StackPanel>
-
-                        <!-- Right column ellipses -->
-                    </Grid>
+                    </Viewbox>
                 </Border>
 
                 <!--INSPECTION UNIT-->
-                <Border Canvas.Left="691" Canvas.Top="305" Width="160" Height="55" 
+                <Border Canvas.Left="651" Canvas.Top="305" Width="160" Height="55" 
                     Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3" 
                     CornerRadius="4" HorizontalAlignment="Left" VerticalAlignment="Center">
 
@@ -1528,7 +1490,7 @@
                     Foreground="#0F172A" 
                     HorizontalAlignment="Center"/>
 
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,3,0,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="3">
                                 <Viewbox Width="25" Height="30" Margin="2,0">
                                     <Path Fill="#475569" Data="M12,20H4A2,2 0 0,1 2,18V8A2,2 0 0,1 4,6H5L7,4H11L13,6H14A2,2 0 0,1 16,8V10.5L20,8V18L16,15.5V18A2,2 0 0,1 14,20H12M4,8V18H14V8H10.83L9,6H9L8.83,6H7.17L5.34,8H4M9,17A4,4 0 0,1 5,13A4,4 0 0,1 9,9A4,4 0 0,1 13,13A4,4 0 0,1 9,17M9,11A2,2 0 0,0 7,13A2,2 0 0,0 9,15A2,2 0 0,0 11,13A2,2 0 0,0 9,11Z"/>
                                 </Viewbox>
@@ -1540,11 +1502,11 @@
                     </Grid>
                 </Border>
                 <!--OUTPUT TRAY-->
-                <Border Canvas.Left="691" Canvas.Top="370" Width="160" Height="40" 
+                <Border Canvas.Left="651" Canvas.Top="370" Width="160" Height="40" 
                     Background="White" BorderBrush="#475569" BorderThickness="3" 
                     CornerRadius="2" HorizontalAlignment="Left" VerticalAlignment="Center">
 
-                    <Grid Margin="15,0,-15,0">
+                    <Grid Margin="3">
 
 
                         <StackPanel VerticalAlignment="Center">
@@ -1570,7 +1532,7 @@
                 <!--NG BIN 1-->
                 <Border Canvas.Top="200"  Width="85" Height="95" 
                     BorderBrush="Black" BorderThickness="3" 
-                    CornerRadius="8" Background="Gray" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="158" >
+                    CornerRadius="8" Background="Gray" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="138" >
                     <StackPanel VerticalAlignment="Center" Margin="2">
                         <TextBlock Text="NG BIN 1" 
                            FontSize="15" 
@@ -1584,7 +1546,7 @@
                 <!--ROBOT 1-->
                 <Border Canvas.Top="337" Width="95" Height="55" 
                     BorderBrush="{StaticResource PanelBorder}" BorderThickness="3" 
-                    CornerRadius="8" Background="White" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Left="150">
+                    CornerRadius="8" Background="White" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Left="130">
                     <StackPanel VerticalAlignment="Center">
 
                         <TextBlock Text="ROBOT 1" 
@@ -1598,9 +1560,9 @@
 
 
                 <!--ROBOT 2-->
-                <Border Canvas.Left="983" Canvas.Top="337" Width="95" Height="55" 
+                <Border Canvas.Left="890" Canvas.Top="337" Width="95" Height="55" 
                     BorderBrush="{StaticResource PanelBorder}" BorderThickness="3" 
-                    CornerRadius="8" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    CornerRadius="8" Background="White" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <StackPanel VerticalAlignment="Center" >
 
                         <TextBlock Text="ROBOT 2" 
@@ -1611,8 +1573,200 @@
                                Margin="2" Height="28"/>
                     </StackPanel>
                 </Border>
+
+
+                <!--PID  HETER-->
+
+                <Border Grid.Row="1" CornerRadius="8" Padding="2" Canvas.Left="986" Canvas.Top="52" Width="auto" Height="auto"
+        BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Grid Background="White">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" MinWidth="38"/>
+                            <ColumnDefinition Width="Auto" MinWidth="58"/>
+                            <ColumnDefinition Width="Auto" MinWidth="58"/>
+                            <ColumnDefinition Width="Auto" MinWidth="58"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <TextBlock Text="PID" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <TextBlock Text="Heater" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <Border Grid.Row="1" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <TextBlock Text="S.No." FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <TextBlock Text="Bend 1" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="2" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <TextBlock Text="Bend 2" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <TextBlock Text="Bend 3" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="1" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="2" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="3" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="4" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+
+                        <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+
+                        <Border Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="3" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="4" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="5" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+
+                        <Border Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="3" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="4" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="5" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!--PID FORCE-->
+
+                <Border Grid.Row="1" CornerRadius="8" Padding="2" Canvas.Left="987" Canvas.Top="175" Width="auto" Height="auto"
+BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Grid Background="White">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" MinWidth="38"/>
+                            <ColumnDefinition Width="Auto" MinWidth="58"/>
+                            <ColumnDefinition Width="Auto" MinWidth="58"/>
+                            <ColumnDefinition Width="Auto" MinWidth="58"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <TextBlock Text="PID" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <TextBlock Text="Force" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <Border Grid.Row="1" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <TextBlock Text="S.No." FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <TextBlock Text="Bend 1" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="2" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <TextBlock Text="Bend 2" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <TextBlock Text="Bend 3" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="1" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="2" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="3" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="4" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+
+                        <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+
+                        <Border Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="3" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="4" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="5" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+
+                        <Border Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="3" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="4" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                        <Border Grid.Row="5" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
+
+
                 <!--NG BIN 2-->
-                <Border Canvas.Left="983" Canvas.Top="200" Width="85" Height="95" 
+                <Border Canvas.Left="890" Canvas.Top="200" Width="85" Height="95" 
                     BorderBrush="Black" BorderThickness="3" 
                     CornerRadius="8" Background="Gray" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <StackPanel VerticalAlignment="Center" Margin="2">
@@ -1623,7 +1777,7 @@
                    FontWeight="Bold" 
                    Foreground="Black"
                    HorizontalAlignment="Center" 
-                   Margin="0,2,0,0"/>
+                   Margin="2"/>
                     </StackPanel>
                 </Border>
             </Canvas>
@@ -1697,9 +1851,9 @@
 
 
 
-                <StackPanel Grid.Column="1" Margin="10">
+                <StackPanel Grid.Column="1" Margin="3">
 
-                    <TextBlock Text="CRITICAL SYSTEM ALARM" Foreground="White" Opacity="1" FontSize="12" FontWeight="Bold" />
+                    <TextBlock Text="CRITICAL SYSTEM ALARM" Foreground="White" Opacity="1" FontSize="12" FontWeight="Bold"/>
 
                     <TextBlock Text="{Binding AlarmBannerTotalMessage}" Foreground="White" FontSize="24" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
 
@@ -1713,7 +1867,7 @@
 
                   VerticalAlignment="Center" 
 
-                  Margin="0,0,20,0">
+                  Margin="3">
 
 
 
@@ -1755,8 +1909,8 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="PLC DISCONNECTED" Foreground="#FF0000" FontWeight="Bold" FontSize="14" Margin="0,0,20,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="SERVICE CONNECTED" Foreground="#00FF00" FontWeight="Bold" FontSize="14" Margin="0,0,20,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="PLC DISCONNECTED" Foreground="#FF0000" FontWeight="Bold" FontSize="14" Margin="3" VerticalAlignment="Center"/>
+                    <TextBlock Text="SERVICE CONNECTED" Foreground="#00FF00" FontWeight="Bold" FontSize="14" Margin="3" VerticalAlignment="Center"/>
                     <TextBlock Text="MACHINE STATUS: IDLE" Foreground="#00FF00" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
                 </StackPanel>
 

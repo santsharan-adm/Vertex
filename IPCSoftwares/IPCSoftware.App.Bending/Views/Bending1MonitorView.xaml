@@ -34,11 +34,9 @@
 						<ColumnDefinition Width="100"/>
 						<ColumnDefinition Width="*"/>
 					</Grid.ColumnDefinitions>
-
 					<Border BorderBrush="White" BorderThickness="0,0,1,1">
 						<TextBlock Text="Product 1&#x0a;1ST" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
 					</Border>
-
 					<Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,1,1">
 						<Grid>
 							<Grid.RowDefinitions>
@@ -64,7 +62,6 @@
 							</Grid>
 						</Grid>
 					</Border>
-
 					<Border Grid.Column="2" BorderBrush="White" BorderThickness="0,0,1,1">
 						<Grid>
 							<Grid.RowDefinitions>
@@ -77,7 +74,6 @@
 							<Rectangle Grid.Row="1" Fill="#C0C0C0" Width="60" Height="60"/>
 						</Grid>
 					</Border>
-
 					<Border Grid.Column="3" BorderBrush="White" BorderThickness="0,0,0,1">
 						<Grid>
 							<Grid.RowDefinitions>
@@ -87,7 +83,7 @@
 								<RowDefinition Height="*"/>
 							</Grid.RowDefinitions>
 							<Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-								<TextBlock Text="Measured Value / Set Value" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+								<TextBlock Text="Measured Value " Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 							</Border>
 							<Grid Grid.Row="1">
 								<Grid.ColumnDefinitions>
@@ -97,9 +93,7 @@
 								<Border BorderBrush="White" BorderThickness="0,0,1,1">
 									<TextBlock Text="Load Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								</Border>
-								<Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1">
-									<TextBlock Text="{Binding P1_LM}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-								</Border>
+								<TextBlock Grid.Column="1" Text="{Binding P1_LM}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
 							<Grid Grid.Row="2">
 								<Grid.ColumnDefinitions>
@@ -109,7 +103,6 @@
 								<Border BorderBrush="White" BorderThickness="0,0,1,1">
 									<TextBlock Text="Temperature Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								</Border>
-								<Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1"/>
 							</Grid>
 							<Grid Grid.Row="3">
 								<Grid.ColumnDefinitions>
@@ -119,9 +112,7 @@
 								<Border BorderBrush="White" BorderThickness="0,0,1,0">
 									<TextBlock Text="Bending Time" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								</Border>
-								<Border Grid.Column="1">
-									<TextBlock Text="{Binding P1_BT}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-								</Border>
+								<TextBlock Grid.Column="1" Text="{Binding P1_BT}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
 						</Grid>
 					</Border>
@@ -135,55 +126,40 @@
 						<ColumnDefinition Width="*"/>
 					</Grid.ColumnDefinitions>
 					<Border BorderBrush="White" BorderThickness="0,0,1,1">
-						<TextBlock Text="Product 2&#x0a;2ST" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+						<TextBlock Text="Product 2&#x0a;2nd" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
 					</Border>
 					<Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,1,1">
 						<Grid>
 							<Grid.RowDefinitions>
-								<RowDefinition Height="35"/>
 								<RowDefinition Height="*"/>
 								<RowDefinition Height="*"/>
 								<RowDefinition Height="*"/>
 							</Grid.RowDefinitions>
-							<Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-								<TextBlock Text="Load" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-							</Border>
-							<Grid Grid.Row="1">
+							<Grid Grid.Row="0">
 								<TextBlock Text="Upper" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								<TextBlock Text="{Binding P2_Upper}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
-							<Grid Grid.Row="2" Background="#0A0A0A">
+							<Grid Grid.Row="1" Background="#0A0A0A">
 								<TextBlock Text="Value" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								<TextBlock Text="{Binding P2_Value}" Foreground="#00FF00" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
-							<Grid Grid.Row="3">
+							<Grid Grid.Row="2">
 								<TextBlock Text="Lower" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								<TextBlock Text="{Binding P2_Lower}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
 						</Grid>
 					</Border>
 					<Border Grid.Column="2" BorderBrush="White" BorderThickness="0,0,1,1">
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="35"/>
-								<RowDefinition Height="*"/>
-							</Grid.RowDefinitions>
-							<Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1"/>
-							<Rectangle Grid.Row="1" Fill="#C0C0C0" Width="60" Height="60"/>
-						</Grid>
+						<Rectangle Fill="#C0C0C0" Width="60" Height="60"/>
 					</Border>
 					<Border Grid.Column="3" BorderBrush="White" BorderThickness="0,0,0,1">
 						<Grid>
 							<Grid.RowDefinitions>
-								<RowDefinition Height="35"/>
 								<RowDefinition Height="*"/>
 								<RowDefinition Height="*"/>
 								<RowDefinition Height="*"/>
 							</Grid.RowDefinitions>
-							<Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-								<TextBlock Text="Measured Value / Set Value" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-							</Border>
-							<Grid Grid.Row="1">
+							<Grid Grid.Row="0">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="180"/>
 									<ColumnDefinition Width="*"/>
@@ -191,11 +167,9 @@
 								<Border BorderBrush="White" BorderThickness="0,0,1,1">
 									<TextBlock Text="Load Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								</Border>
-								<Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1">
-									<TextBlock Text="{Binding P2_LM}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-								</Border>
+								<TextBlock Grid.Column="1" Text="{Binding P2_LM}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
-							<Grid Grid.Row="2">
+							<Grid Grid.Row="1">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="180"/>
 									<ColumnDefinition Width="*"/>
@@ -203,9 +177,8 @@
 								<Border BorderBrush="White" BorderThickness="0,0,1,1">
 									<TextBlock Text="Temperature Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								</Border>
-								<Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1"/>
 							</Grid>
-							<Grid Grid.Row="3">
+							<Grid Grid.Row="2">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="180"/>
 									<ColumnDefinition Width="*"/>
@@ -213,9 +186,7 @@
 								<Border BorderBrush="White" BorderThickness="0,0,1,0">
 									<TextBlock Text="Bending Time" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								</Border>
-								<Border Grid.Column="1">
-									<TextBlock Text="{Binding P2_BT}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-								</Border>
+								<TextBlock Grid.Column="1" Text="{Binding P2_BT}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
 						</Grid>
 					</Border>
@@ -229,55 +200,40 @@
 						<ColumnDefinition Width="*"/>
 					</Grid.ColumnDefinitions>
 					<Border BorderBrush="White" BorderThickness="0,0,1,1">
-						<TextBlock Text="Product 3&#x0a;3ST" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+						<TextBlock Text="Product 3&#x0a;3rd" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
 					</Border>
 					<Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,1,1">
 						<Grid>
 							<Grid.RowDefinitions>
-								<RowDefinition Height="35"/>
 								<RowDefinition Height="*"/>
 								<RowDefinition Height="*"/>
 								<RowDefinition Height="*"/>
 							</Grid.RowDefinitions>
-							<Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-								<TextBlock Text="Load" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-							</Border>
-							<Grid Grid.Row="1">
+							<Grid Grid.Row="0">
 								<TextBlock Text="Upper" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								<TextBlock Text="{Binding P3_Upper}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
-							<Grid Grid.Row="2">
+							<Grid Grid.Row="1">
 								<TextBlock Text="Value" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								<TextBlock Text="{Binding P3_Value}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
-							<Grid Grid.Row="3">
+							<Grid Grid.Row="2">
 								<TextBlock Text="Lower" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								<TextBlock Text="{Binding P3_Lower}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
 						</Grid>
 					</Border>
 					<Border Grid.Column="2" BorderBrush="White" BorderThickness="0,0,1,1">
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="35"/>
-								<RowDefinition Height="*"/>
-							</Grid.RowDefinitions>
-							<Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1"/>
-							<Rectangle Grid.Row="1" Fill="#C0C0C0" Width="60" Height="60"/>
-						</Grid>
+						<Rectangle Fill="#C0C0C0" Width="60" Height="60"/>
 					</Border>
 					<Border Grid.Column="3" BorderBrush="White" BorderThickness="0,0,0,1">
 						<Grid>
 							<Grid.RowDefinitions>
-								<RowDefinition Height="35"/>
 								<RowDefinition Height="*"/>
 								<RowDefinition Height="*"/>
 								<RowDefinition Height="*"/>
 							</Grid.RowDefinitions>
-							<Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-								<TextBlock Text="Measured Value / Set Value" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-							</Border>
-							<Grid Grid.Row="1">
+							<Grid Grid.Row="0">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="180"/>
 									<ColumnDefinition Width="*"/>
@@ -285,11 +241,9 @@
 								<Border BorderBrush="White" BorderThickness="0,0,1,1">
 									<TextBlock Text="Load Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								</Border>
-								<Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1">
-									<TextBlock Text="{Binding P3_LM}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-								</Border>
+								<TextBlock Grid.Column="1" Text="{Binding P3_LM}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
-							<Grid Grid.Row="2">
+							<Grid Grid.Row="1">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="180"/>
 									<ColumnDefinition Width="*"/>
@@ -297,9 +251,8 @@
 								<Border BorderBrush="White" BorderThickness="0,0,1,1">
 									<TextBlock Text="Temperature Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								</Border>
-								<Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1"/>
 							</Grid>
-							<Grid Grid.Row="3">
+							<Grid Grid.Row="2">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="180"/>
 									<ColumnDefinition Width="*"/>
@@ -307,9 +260,7 @@
 								<Border BorderBrush="White" BorderThickness="0,0,1,0">
 									<TextBlock Text="Bending Time" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								</Border>
-								<Border Grid.Column="1">
-									<TextBlock Text="{Binding P3_BT}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-								</Border>
+								<TextBlock Grid.Column="1" Text="{Binding P3_BT}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
 						</Grid>
 					</Border>
@@ -323,55 +274,40 @@
 						<ColumnDefinition Width="*"/>
 					</Grid.ColumnDefinitions>
 					<Border BorderBrush="White" BorderThickness="0,0,1,0">
-						<TextBlock Text="Product 4&#x0a;4ST" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+						<TextBlock Text="Product 4&#x0a;4th" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
 					</Border>
 					<Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,1,0">
 						<Grid>
 							<Grid.RowDefinitions>
-								<RowDefinition Height="35"/>
 								<RowDefinition Height="*"/>
 								<RowDefinition Height="*"/>
 								<RowDefinition Height="*"/>
 							</Grid.RowDefinitions>
-							<Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-								<TextBlock Text="Load" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-							</Border>
-							<Grid Grid.Row="1">
+							<Grid Grid.Row="0">
 								<TextBlock Text="Upper" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								<TextBlock Text="{Binding P4_Upper}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
-							<Grid Grid.Row="2">
+							<Grid Grid.Row="1">
 								<TextBlock Text="Value" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								<TextBlock Text="{Binding P4_Value}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
-							<Grid Grid.Row="3">
+							<Grid Grid.Row="2">
 								<TextBlock Text="Lower" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								<TextBlock Text="{Binding P4_Lower}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
 						</Grid>
 					</Border>
 					<Border Grid.Column="2" BorderBrush="White" BorderThickness="0,0,1,0">
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="35"/>
-								<RowDefinition Height="*"/>
-							</Grid.RowDefinitions>
-							<Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1"/>
-							<Rectangle Grid.Row="1" Fill="#C0C0C0" Width="60" Height="60"/>
-						</Grid>
+						<Rectangle Fill="#C0C0C0" Width="60" Height="60"/>
 					</Border>
 					<Border Grid.Column="3">
 						<Grid>
 							<Grid.RowDefinitions>
-								<RowDefinition Height="35"/>
 								<RowDefinition Height="*"/>
 								<RowDefinition Height="*"/>
 								<RowDefinition Height="*"/>
 							</Grid.RowDefinitions>
-							<Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-								<TextBlock Text="Measured Value / Set Value" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-							</Border>
-							<Grid Grid.Row="1">
+							<Grid Grid.Row="0">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="180"/>
 									<ColumnDefinition Width="*"/>
@@ -379,11 +315,9 @@
 								<Border BorderBrush="White" BorderThickness="0,0,1,1">
 									<TextBlock Text="Load Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								</Border>
-								<Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1">
-									<TextBlock Text="{Binding P4_LM}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-								</Border>
+								<TextBlock Grid.Column="1" Text="{Binding P4_LM}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
-							<Grid Grid.Row="2">
+							<Grid Grid.Row="1">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="180"/>
 									<ColumnDefinition Width="*"/>
@@ -391,9 +325,8 @@
 								<Border BorderBrush="White" BorderThickness="0,0,1,1">
 									<TextBlock Text="Temperature Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								</Border>
-								<Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1"/>
 							</Grid>
-							<Grid Grid.Row="3">
+							<Grid Grid.Row="2">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="180"/>
 									<ColumnDefinition Width="*"/>
@@ -401,9 +334,7 @@
 								<Border BorderBrush="White" BorderThickness="0,0,1,0">
 									<TextBlock Text="Bending Time" Foreground="White" VerticalAlignment="Center" Margin="2"/>
 								</Border>
-								<Border Grid.Column="1">
-									<TextBlock Text="{Binding P4_BT}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-								</Border>
+								<TextBlock Grid.Column="1" Text="{Binding P4_BT}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
 							</Grid>
 						</Grid>
 					</Border>
