@@ -17,6 +17,7 @@
  * 2026-04-18  Rishabh       1.0         Initial creation
  * 2026-04-25  Rishabh       2.0         Refactored to use IFileHandler interface
  *                                       for dependency injection and loose coupling
+ * 2026-04-26  Krishna       2.2         Added error handling and logging for CSV parsing                           
  *
  ******************************************************************************/
 
