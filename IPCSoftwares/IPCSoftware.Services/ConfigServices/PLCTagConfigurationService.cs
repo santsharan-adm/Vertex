@@ -12,12 +12,12 @@ using System.Text;
 
 namespace IPCSoftware.Services.ConfigServices
 {
-    public class PLCTagConfigurationService : BaseService, IPLCTagConfigurationService
+    public class PLCTagConfigurationService : BaseService/*, IPLCTagConfigurationService*/
     {
         //private readonly IConfiguration _configuration;
-        private readonly IFileHandler _fileHandler;
+      
         private readonly string _dataFolder;
-        private readonly string _csvFilePath;
+        private readonly string _tagConfigFilePath;
         private List<PLCTagConfigurationModel> _tags;
         private int _nextId = 1;
         private readonly TagConfigLoader _tagLoader ; // Use the dedicated loader
@@ -27,10 +27,10 @@ namespace IPCSoftware.Services.ConfigServices
             IOptions<ConfigSettings> configSettings,
             TagConfigLoader tagConfigLoader,
             IAppLogger logger,
-            IFileHandler fileHandler,
+           
             ILogManagerService logManager) : base(logger)
         {
-            _fileHandler = fileHandler;
+           
             _tagLoader = tagConfigLoader;
             
             //    _configuration = configuration;
@@ -44,7 +44,7 @@ namespace IPCSoftware.Services.ConfigServices
                 Directory.CreateDirectory(_dataFolder);
             }
 
-            _csvFilePath = Path.Combine(_dataFolder, config.PlcTagsFileName /*"PLCTags.csv"*/);
+            _tagConfigFilePath = Path.Combine(_dataFolder, config.PlcTagsFileName /*"PLCTags.csv"*/);
 
             _tags = new List<PLCTagConfigurationModel>();
             _logManager = logManager;
@@ -108,7 +108,8 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 tag.Id = _nextId++;
                 _tags.Add(tag);
-                await SaveToCsvAsync();
+                await _tagLoader.Save(_tagConfigFilePath, _tags);
+                //await SaveToCsvAsync();
                 return tag;
             }
             catch (Exception ex)
@@ -127,7 +128,8 @@ namespace IPCSoftware.Services.ConfigServices
 
                 var index = _tags.IndexOf(existing);
                 _tags[index] = tag;
-                await SaveToCsvAsync();
+               await _tagLoader.Save(_tagConfigFilePath, _tags);
+               // await SaveToCsvAsync();
                 return true;
             }
             catch (Exception ex)
@@ -145,7 +147,7 @@ namespace IPCSoftware.Services.ConfigServices
                 if (tag == null) return false;
 
                 _tags.Remove(tag);
-                await SaveToCsvAsync();
+                await _tagLoader.Save(_tagConfigFilePath, _tags);
                 return true;
             }
             catch (Exception ex)
@@ -161,7 +163,7 @@ namespace IPCSoftware.Services.ConfigServices
             {
 
                 // FIX: Use the dedicated TagConfigLoader (now accessible via using directive)
-                var reloadedTags = _tagLoader.Load(_csvFilePath);
+                var reloadedTags = _tagLoader.Load(_tagConfigFilePath);
 
                 // Thread-safe update of the internal cache list
                 _tags = reloadedTags;
@@ -180,112 +182,81 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-        private async Task SaveToCsvAsync()
-        {
-            try
-            {
-                var sb = new StringBuilder();
-                // Header
-                sb.AppendLine("Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark,CanWrite,IOType,UseEngMinMax,EnableTraceLog");
+        //private async Task SaveToCsvAsync()
+        //{
+        //    try
+        //    {
+        //        var sb = new StringBuilder();
+        //        // Header
+        //        sb.AppendLine("Id,TagNo,Name,PLCNo,ModbusAddress,Length,AlgoNo,DataType,BitNo,Offset,Span,Description,Remark,CanWrite,IOType,UseEngMinMax,EnableTraceLog");
 
-                foreach (var tag in _tags)
-                {
-                    // CHANGE HERE: Removed the \" before and after the function calls.
-                    // We trust EscapeCsv to add quotes ONLY if necessary.
-                    sb.AppendLine($"{tag.Id}," +
-                        $"{tag.Id}," +
-                        $"{EscapeCsv(tag.Name)}," +         // <--- Was $"\"{EscapeCsv(tag.Name)}\","
-                        $"{tag.PLCNo}," +
-                        $"{tag.ModbusAddress}," +
-                        $"{tag.Length}," +
-                        $"{tag.AlgNo}," +
-                        $"{GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
-                        $"{tag.BitNo}," +
-                        $"{tag.Offset}," +
-                        $"{tag.Span}," +
-                        $"{EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
-                        $"{EscapeCsv(tag.Remark)}," +       // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
-                        $"{tag.CanWrite}," +
-                        $"{EscapeCsv(tag.IOType)}," +
-                        $"{tag.UseEngMinMax}," +
-                        $"{tag.EnableTraceLog}");  
-                       // $"{EscapeCsv(tag.DMAddress)},") ;
-                }
+        //        foreach (var tag in _tags)
+        //        {
+        //            // CHANGE HERE: Removed the \" before and after the function calls.
+        //            // We trust EscapeCsv to add quotes ONLY if necessary.
+        //            sb.AppendLine($"{tag.Id}," +
+        //                $"{tag.Id}," +
+        //                $"{EscapeCsv(tag.Name)}," +         // <--- Was $"\"{EscapeCsv(tag.Name)}\","
+        //                $"{tag.PLCNo}," +
+        //                $"{tag.ModbusAddress}," +
+        //                $"{tag.Length}," +
+        //                $"{tag.AlgNo}," +
+        //                $"{GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
+        //                $"{tag.BitNo}," +
+        //                $"{tag.Offset}," +
+        //                $"{tag.Span}," +
+        //                $"{EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
+        //                $"{EscapeCsv(tag.Remark)}," +       // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
+        //                $"{tag.CanWrite}," +
+        //                $"{EscapeCsv(tag.IOType)}," +
+        //                $"{tag.UseEngMinMax}," +
+        //                $"{tag.EnableTraceLog}");  
+        //               // $"{EscapeCsv(tag.DMAddress)},") ;
+        //        }
 
-                await _fileHandler.WriteCsv(_csvFilePath, sb.ToString());                  //Added by Rishabh Date 26-04-2026
-               // await File.WriteAllTextAsync(_csvFilePath, sb.ToString(), Encoding.UTF8);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error saving PLC tags CSV: {ex.Message}", LogType.Diagnostics);
-            }
-        }
+        //        await _tagLoader.  .WriteCsv(_csvFilePath, sb.ToString());                  //Added by Rishabh Date 26-04-2026
+        //       // await File.WriteAllTextAsync(_csvFilePath, sb.ToString(), Encoding.UTF8);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Error saving PLC tags CSV: {ex.Message}", LogType.Diagnostics);
+        //    }
+        //}
 
-        private string EscapeCsv(string value)
-        {
-            if (string.IsNullOrEmpty(value)) return "";
+        //private string EscapeCsv(string value)
+        //{
+        //    if (string.IsNullOrEmpty(value)) return "";
 
-            // ONLY add quotes if the value contains a comma or a quote
-            if (value.Contains("\"") || value.Contains(","))
-            {
-                // Double up any existing quotes and wrap the whole thing in quotes
-                return "\"" + value.Replace("\"", "\"\"") + "\"";
-            }
+        //    // ONLY add quotes if the value contains a comma or a quote
+        //    if (value.Contains("\"") || value.Contains(","))
+        //    {
+        //        // Double up any existing quotes and wrap the whole thing in quotes
+        //        return "\"" + value.Replace("\"", "\"\"") + "\"";
+        //    }
 
-            // Otherwise, return the clean string without quotes
-            return value;
-        }
+        //    // Otherwise, return the clean string without quotes
+        //    return value;
+        //}
 
-        // You likely need this helper to save "Int16" instead of "1" back to the CSV
-        private string GetDataTypeString(int typeId)
-        {
-            return typeId switch
-            {
-                1 => "Int16",
-                2 => "Word",
-                3 => "Bit",
-                4 => "Float",
-                5 => "String",
-                6 => "UInt16",
-                7 => "UInt32",
-                _ => "Int16"
-            };
-        }
+        //// You likely need this helper to save "Int16" instead of "1" back to the CSV
+        //private string GetDataTypeString(int typeId)
+        //{
+        //    return typeId switch
+        //    {
+        //        1 => "Int16",
+        //        2 => "Word",
+        //        3 => "Bit",
+        //        4 => "Float",
+        //        5 => "String",
+        //        6 => "UInt16",
+        //        7 => "UInt32",
+        //        _ => "Int16"
+        //    };
+        //}
 
 
-        //Added by Rishabh Date 26-04-2026
-        public async Task LogTagValue(int tagId, object value)
-        {
-            try
-            {
-                var tag = _tags.FirstOrDefault(t => t.Id == tagId);
-                if (tag == null || !tag.EnableTraceLog)
-                    return;
-               
-                string traceLogPath = _logManager.ResolveLogFile(LogType.TagTrace); 
- 
-                
-                var sb = new StringBuilder();
-                string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff");
-                string csvLine = $"{timestamp},{tag.Id},{_fileHandler.EscapeCsv(tag.Name)},{value},{tag.PLCNo},{tag.ModbusAddress}";
-                sb.AppendLine(csvLine);
-                           
-                await _fileHandler.WriteCsv(traceLogPath, sb.ToString());
-               
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error logging tag value: {ex.Message}", LogType.Diagnostics);
-            }
-        }
-        /// <summary>
-        /// Gets all tags that have trace logging enabled
-        /// </summary>
-        /// <returns>List of tags with EnableTraceLog = true</returns>
-        public List<PLCTagConfigurationModel> GetTraceEnabledTags()
-        {
-            return _tags.Where(t => t.EnableTraceLog).ToList();
-        }
+       
+       
     }
 }
 

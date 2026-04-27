@@ -42,7 +42,7 @@ namespace IPCSoftware.App.DI
         public static void RegisterServices(IServiceCollection services)
         {
             services.AddSingleton<IAppLogger, AppLoggerService>();
-            services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+           // services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
 
             //  NEW: Register Observable CCD Settings Service (Singleton - shared across all services)
@@ -75,16 +75,17 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<CCDTriggerServiceAOI>(sp =>
                 new CCDTriggerServiceAOI(
                     sp.GetRequiredService<ICycleManagerService>(),
-                    sp.GetRequiredService<IPLCTagConfigurationService>(),
+                    sp.GetRequiredService<IDeviceConfigurationService>(),
                     sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<CcdSettings>>(),
                     sp.GetRequiredService<IObservableCcdSettingsService>(),  //  //Added by Rishabh - date - 08/04/2026//
                     sp.GetRequiredService<IAppLogger>()
                 )
             );
-            services.AddSingleton<IFileHandler, CsvManager>();                       //Added by Rishabh - date - 25/04/2026//
-            services.AddSingleton<DeviceConfigLoader>();                             //Added by Rishabh - date - 18/04/2026//
-            services.AddSingleton<DeviceInterfaceConfigLoader>();                    //Modified by Rishabh - date - 15/04/2026//
-            services.AddSingleton<CameraConfigLoader>();                             //Added by Rishabh - date - 15/04/2026//
+            services.AddSingleton<IFileHandler, CsvManager>();
+            services.AddSingleton<ConfigLoaderService>();                       //Added by Rishabh - date - 25/04/2026//
+            //services.AddSingleton<DeviceConfigLoader>();                             //Added by Rishabh - date - 18/04/2026//
+            //services.AddSingleton<DeviceInterfaceConfigLoader>();                    //Modified by Rishabh - date - 15/04/2026//
+            //services.AddSingleton<CameraConfigLoader>();                             //Added by Rishabh - date - 15/04/2026//
             services.AddSingleton<PLCClientManager>();
             services.AddSingleton<CameraFtpService>();
             services.AddTransient<ProductionImageService>();

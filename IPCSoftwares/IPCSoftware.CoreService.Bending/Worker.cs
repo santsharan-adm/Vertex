@@ -15,7 +15,7 @@ namespace IPCSoftware.CoreService.Bending
     {
         private readonly IAppLogger _logger;
         private readonly ILogManagerService _logManager;
-        private readonly IPLCTagConfigurationService _tagService;
+       // private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceService;
         private readonly ConfigSettings _configuration;
         private readonly CCDTriggerServiceBending _ccdTrigger;
@@ -29,7 +29,7 @@ namespace IPCSoftware.CoreService.Bending
 
         public Worker(IAppLogger logger,
             ILogManagerService logManager,
-            IPLCTagConfigurationService tagService,
+           // IPLCTagConfigurationService tagService,
             AlgorithmAnalysisService algo,
             DashboardInitializerBending dashboard,
             CCDTriggerServiceBending ccdTrigger,
@@ -41,7 +41,7 @@ namespace IPCSoftware.CoreService.Bending
         {
             _logManager = logManager;
             _deviceService = deviceService;
-            _tagService = tagService;
+           // _tagService = tagService;
             _logger = logger;
             _algo = algo;
             _plcManager = plcManger;
@@ -60,7 +60,7 @@ namespace IPCSoftware.CoreService.Bending
                 var cameras = _deviceService.GetCameraDevicesAsync().GetAwaiter().GetResult();
                 _logger.LogInfo($"Loaded {devices.Count} PLC devices.", LogType.Diagnostics);
                 _logger.LogInfo($"Loaded {cameras.Count} cameras devices.", LogType.Diagnostics);
-                var tags = await _tagService.GetAllTagsAsync();
+                var tags = await _deviceService.GetAllTagsAsync();
                 _logger.LogInfo($"Loaded {tags.Count} Modbus tags.", LogType.Diagnostics);
                 SharedServiceHost.Initialize(_plcManager, _algo);  // ? still works via using IPCSoftware.Engine
 

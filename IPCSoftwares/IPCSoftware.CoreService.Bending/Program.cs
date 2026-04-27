@@ -71,7 +71,7 @@ namespace IPCSoftware.CoreService.Bending
                             services.Configure<ExternalSettings>(hostContext.Configuration.GetSection("External"));
 
                             // Core services
-                            services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+                           // services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
                             services.AddSingleton<IAppLogger, AppLoggerService>();
                             services.AddSingleton<ILogManagerService, LogManagerService>();
                             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
@@ -88,7 +88,7 @@ namespace IPCSoftware.CoreService.Bending
                             services.AddSingleton<DashboardInitializerBending>();
                             services.AddSingleton<OeeEngineBending>();
                             services.AddSingleton<AlarmService>();
-                            services.AddTransient<TagConfigLoader>();
+                            //services.AddTransient<TagConfigLoader>();
                             services.AddTransient<BackupService>();
                             services.AddSingleton<ShiftResetService>();
                             services.AddSingleton<ITcpTrafficLogger, TcpTrafficLogger>();

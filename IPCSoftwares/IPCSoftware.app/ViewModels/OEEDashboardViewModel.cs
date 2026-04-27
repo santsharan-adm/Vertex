@@ -31,7 +31,7 @@ namespace IPCSoftware.App.ViewModels
     public class OEEDashboardViewModel : BaseViewModel, IDisposable
     {
         // --- DI Services ---
-        private readonly IPLCTagConfigurationService _tagService;
+       // private readonly IPLCTagConfigurationService _tagService;
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
         private readonly string _prodCsvFolder;
@@ -387,7 +387,7 @@ namespace IPCSoftware.App.ViewModels
 
 
         public OEEDashboardViewModel(
-            IPLCTagConfigurationService tagService,
+           // IPLCTagConfigurationService tagService,
             IOptions<CcdSettings> ccdSettng,
             IOptions<ConfigSettings> configSettng,
            IOptionsMonitor<ExternalSettings> settingsMonitor,
@@ -401,7 +401,7 @@ namespace IPCSoftware.App.ViewModels
         {
             var ccd = ccdSettng.Value;
             _settingsMonitor = settingsMonitor;
-            _tagService = tagService;
+          //  _tagService = tagService;
             _coreClient = coreClient;
             _dialog = dialog;
             _productService = productService;

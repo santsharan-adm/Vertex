@@ -15,7 +15,7 @@ namespace IPCSoftware.CoreService.AOI.Service
     public class OeeEngineAOI : OeeEngineBase
     {
         public OeeEngineAOI(
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService tagService,
             PLCClientManager plcManager,
             IAppLogger logger,
             IProductionDataLogger prodLogger,

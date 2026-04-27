@@ -25,7 +25,7 @@ namespace IPCSoftware.CoreService.AOI.Service
     public class CycleManagerServiceAOI : CycleManagerServiceBase
     {
         public CycleManagerServiceAOI(
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService tagService,
             ILogConfigurationService logConfig,
             PLCClientManager plcManager,
             IOptions<CcdSettings> appSettings,

@@ -35,5 +35,29 @@ namespace IPCSoftware.Core.Interfaces
         Task<bool> UpdateCameraInterfaceAsync(CameraInterfaceModel cameraInterface);
         Task<bool> DeleteCameraInterfaceAsync(int id);
 
+
+
+        // ================ PLC TAG CONFIGURATION OPERATIONS ====================//
+
+
+        Task<List<PLCTagConfigurationModel>> GetAllTagsAsync();
+
+
+        // FIX CS0535: IMPLEMENT THE REQUIRED METHOD FOR DYNAMIC RELOAD
+        Task<List<PLCTagConfigurationModel>> ReloadTagsAsync();
+
+
+        Task<PLCTagConfigurationModel> GetTagByIdAsync(int id);
+
+
+        Task<PLCTagConfigurationModel> AddTagAsync(PLCTagConfigurationModel tag);
+
+
+        Task<bool> UpdateTagAsync(PLCTagConfigurationModel tag);
+
+
+        Task<bool> DeleteTagAsync(int id);
+
+
     }
 }
