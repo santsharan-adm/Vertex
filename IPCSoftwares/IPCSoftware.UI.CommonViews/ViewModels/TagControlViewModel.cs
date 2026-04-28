@@ -21,7 +21,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class TagControlViewModel : BaseViewModel, IDisposable
     {
-        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _tagService;
        // private readonly DispatcherTimer _timer;
         private readonly SafePoller _timer;
         private readonly CoreClient _coreClient;
@@ -47,7 +47,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public ICommand WriteCommand { get; }
 
         public TagControlViewModel(
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService tagService,
             CoreClient coreClient,
             IDialogService dialog,
             IAppLogger logger) : base(logger)

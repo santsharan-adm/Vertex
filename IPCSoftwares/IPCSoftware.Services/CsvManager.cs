@@ -137,5 +137,14 @@ namespace IPCSoftware.Services
 
             }
         }
+
+        //Added by Rishabh - date - 25/04/2026//
+        public bool IsFileExists(string file)
+        {
+            if (File.Exists(file))
+                return true;
+            else
+                return false;
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace IPCSoftware.Engine
     public class SystemMonitorService : BaseService
     {
         private readonly PLCClientManager _plcManager;
-        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _tagService;
         private readonly ExternalInterfaceService _extService;
 
         // --- HEARTBEAT STATE ---
@@ -33,7 +33,7 @@ namespace IPCSoftware.Engine
 
         public SystemMonitorService(
             PLCClientManager plcManager,
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService tagService,
             ExternalInterfaceService extService,
             IAppLogger logger) : base(logger)
         {

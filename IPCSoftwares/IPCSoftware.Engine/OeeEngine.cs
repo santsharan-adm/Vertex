@@ -16,7 +16,7 @@ namespace IPCSoftware.Engine
 {
     public class OeeEngineBase : BaseService
     {
-        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _tagService;
         private readonly PLCClientManager _plcManager;
         private readonly IProductionDataLogger _prodLogger;
 
@@ -40,7 +40,7 @@ namespace IPCSoftware.Engine
         private int _currentSequenceStep = 0;
 
         public OeeEngineBase(
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService tagService,
             PLCClientManager plcManager,
             IAppLogger logger,
             IProductionDataLogger prodLogger,

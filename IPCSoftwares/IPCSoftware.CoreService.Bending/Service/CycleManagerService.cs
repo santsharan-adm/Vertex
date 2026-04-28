@@ -18,7 +18,7 @@ namespace IPCSoftware.CoreService.Bending.Service
     internal class CycleManagerServiceBending : CycleManagerServiceBase
     {
         public CycleManagerServiceBending(
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService tagService,
             ILogConfigurationService logConfig,
             PLCClientManager plcManager,
             IOptions<CcdSettings> appSettings,

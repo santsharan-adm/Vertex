@@ -23,7 +23,7 @@ namespace IPCSoftware.Communication.External
     public class ExternalInterfaceService : IExternalInterfaceService, IDisposable  // ✅
     {
         private readonly PLCClientManager _plcManager;
-        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _tagService;
         private readonly IAppLogger _logger;
         private readonly IProductConfigurationService _productService; // NEW Injection
         private readonly IServoCalibrationService _servoService;
@@ -47,7 +47,7 @@ namespace IPCSoftware.Communication.External
 
         public ExternalInterfaceService(
             PLCClientManager plcManager,
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService tagService,
             IServoCalibrationService servoService,
             IProductConfigurationService productService, // Inject Product Service
             IAppLogger logger,ITcpTrafficLogger trafficLogger,

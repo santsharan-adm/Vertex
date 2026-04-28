@@ -16,7 +16,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class PLCTagListViewModel : BaseViewModel
     {
-        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _tagService;
         private readonly INavigationService _nav;
         private ObservableCollection<PLCTagConfigurationModel> _tags;
         private ObservableCollection<PLCTagConfigurationModel> _filteredTags;
@@ -59,7 +59,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public ICommand DeleteTagCommand { get; }
 
         public PLCTagListViewModel(
-            IPLCTagConfigurationService tagService, 
+            IDeviceConfigurationService tagService, 
             INavigationService nav,
             IAppLogger logger) : base(logger)
         {

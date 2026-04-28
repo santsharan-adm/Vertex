@@ -1,19 +1,21 @@
-﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.Devices.PLC;
+﻿using IPCSoftware.Communication.Common;
+using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.CoreService.Services.Dashboard;
 using IPCSoftware.Devices.Camera;
+using IPCSoftware.Devices.PLC;
 using IPCSoftware.Devices.UI;
-using IPCSoftware.Communication.Common;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
-using IPCSoftware.CoreService.Services.Dashboard;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.Json;
-using IPCSoftware.Core.Interfaces;
 
 namespace IPCSoftware.Engine
 {
@@ -27,7 +29,7 @@ namespace IPCSoftware.Engine
         private readonly ShiftResetService _shiftReset;
         private readonly CCDTriggerServiceBase _ccdTrigger; // 1. Add field
         private readonly AlarmService _alarmService;
-        private readonly IPLCTagConfigurationService _tagService;         //Added by Rishabh - date - 26/04/2026//
+       // private readonly IPLCTagConfigurationService _tagService;         //Added by Rishabh - date - 26/04/2026//
 
         // latest packets per PLC (unitno)
         private readonly Dictionary<int, PlcPacket> _latestPackets = new();
@@ -42,7 +44,7 @@ namespace IPCSoftware.Engine
           UiListener ui,
           AlarmService alarmService,
             CCDTriggerServiceBase ccdTrigger,
-            IPLCTagConfigurationService tagService,
+          //  IPLCTagConfigurationService tagService,
             IAppLogger logger) : base(logger)
         {
             _ui = ui;
@@ -53,7 +55,7 @@ namespace IPCSoftware.Engine
             _manager = manager;
             _algo =algo;
             _ccdTrigger = ccdTrigger;
-            _tagService = tagService;
+           // _tagService = tagService;
         }
 
       
@@ -71,12 +73,14 @@ namespace IPCSoftware.Engine
                 {
                     client.OnPlcDataReceived += async (plcNo, values) =>
                     {
+                        
+                      
+                        
                         // A. Process Raw Data -> Typed Values (Int/Bool/String)
                         // processedData is Dictionary<int, object> where int is Tag ID
                         var processedData = _algo.Apply(plcNo, values);
 
-                        await LogTraceEnabledTags(processedData); // Added by Rishabh - 2026-04-01
-
+                     
                         await _ccdTrigger.ProcessTriggers(processedData, _manager);
                         _oee.ProcessCycleTimeLogic(processedData);
                         _oee.Calculate(processedData);
@@ -341,28 +345,8 @@ namespace IPCSoftware.Engine
         private ResponsePackage Error(string msg) =>
             new ResponsePackage { ResponseId = 6, Success = false, ErrorMessage = msg };
 
-        private async Task LogTraceEnabledTags(Dictionary<int, object> processedData)
-        {
-            try
-            {
-                // Get all trace-enabled tags
-                var traceEnabledTags = _tagService.GetTraceEnabledTags();
 
-                foreach (var tag in traceEnabledTags)
-                {
-                    if (processedData.TryGetValue(tag.Id, out object value))
-                    {
-                        // ✅ Call LogTagValue for each enabled tag
-                        await _tagService.LogTagValue(tag.Id, value);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error logging trace tags: {ex.Message}", LogType.Diagnostics);
-            }
-        }
-
+       
 
 
     }

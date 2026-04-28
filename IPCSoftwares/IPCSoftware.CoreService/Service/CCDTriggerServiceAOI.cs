@@ -19,7 +19,7 @@ namespace IPCSoftware.CoreService.AOI.Service
     {
         public CCDTriggerServiceAOI(
             ICycleManagerService cycleManager,
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService tagService,
             IOptions<CcdSettings> ccdSettings,
             IObservableCcdSettingsService observableCcdSettings,  // //Added by Rishabh - date - 08/04/2026//
             IAppLogger logger) : base(cycleManager, tagService, ccdSettings, observableCcdSettings, logger)

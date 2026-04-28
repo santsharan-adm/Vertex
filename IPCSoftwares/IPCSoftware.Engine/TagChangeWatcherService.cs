@@ -19,7 +19,7 @@ namespace IPCSoftware.Engine
     public class TagChangeWatcherService : BackgroundService
     {
         private readonly IAppLogger _logger;
-        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _tagService;
         private readonly FileSystemWatcher _watcher;
         private readonly string _tagFilePath;
         private Timer? _reloadTimer;
@@ -29,7 +29,7 @@ namespace IPCSoftware.Engine
         public TagChangeWatcherService(
             IAppLogger logger,
             IConfiguration configuration,
-            IPLCTagConfigurationService tagService)
+            IDeviceConfigurationService tagService)
         {
             _logger = logger;
             _tagService = tagService;

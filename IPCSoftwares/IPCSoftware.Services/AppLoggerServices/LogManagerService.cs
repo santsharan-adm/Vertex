@@ -198,7 +198,7 @@ namespace IPCSoftware.Services.AppLoggerServices
 
             // Determine CSV header based on log type
             string csvHeader = type == LogType.TagTrace
-                ? "Timestamp,TagId,TagName,Value,PLCNo,ModbusAddress"
+                ? "Timestamp,TagId,Value"              //"Timestamp,TagId,TagName,Value,PLCNo,ModbusAddress"
                 : "Timestamp,Level,Message,Source";
 
             // Check if incremental file rotation is needed based on size limit

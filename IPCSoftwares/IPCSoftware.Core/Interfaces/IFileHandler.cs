@@ -41,5 +41,7 @@ namespace IPCSoftware.Core.Interfaces
 
        public Task WriteCsv(string filepath, string content);        //Added by Rishabh - date - 25/04/2026//
 
+        public bool IsFileExists(string file);                        //Added by Rishabh - date - 25/04/2026//
+
     }
 }
