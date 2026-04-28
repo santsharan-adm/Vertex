@@ -23,7 +23,7 @@ namespace IPCSoftware.Communication.External
     public class ExternalInterfaceService : IExternalInterfaceService, IDisposable  // ✅
     {
         private readonly PLCClientManager _plcManager;
-        private readonly IDeviceConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _deviceService;
         private readonly IAppLogger _logger;
         private readonly IProductConfigurationService _productService; // NEW Injection
         private readonly IServoCalibrationService _servoService;
@@ -47,14 +47,14 @@ namespace IPCSoftware.Communication.External
 
         public ExternalInterfaceService(
             PLCClientManager plcManager,
-            IDeviceConfigurationService tagService,
+            IDeviceConfigurationService deviceService,
             IServoCalibrationService servoService,
             IProductConfigurationService productService, // Inject Product Service
             IAppLogger logger,ITcpTrafficLogger trafficLogger,
             IOptionsMonitor<ExternalSettings> settingsMonitor)
         {
             _plcManager = plcManager;
-            _tagService = tagService;
+            _deviceService = deviceService;
             _servoService = servoService;
             _productService = productService;
             _logger = logger;
@@ -480,7 +480,7 @@ namespace IPCSoftware.Communication.External
         {
             try
             {
-                var allTags = await _tagService.GetAllTagsAsync();
+                var allTags = await _deviceService.GetAllTagsAsync();
                 var tagConfig = allTags.FirstOrDefault(t => t.Id == tagId);
                 if (tagConfig != null && tagConfig.ModbusAddress > 0)
                 {

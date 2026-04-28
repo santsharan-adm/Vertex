@@ -20,7 +20,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class PLCIOViewModel : BaseViewModel, IDisposable
     {
-        private readonly IDeviceConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _deviceService;
         private readonly SafePoller _timer;
         private readonly CoreClient _coreClient;
         private readonly UiTcpClient _tcpClient;
@@ -56,10 +56,10 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
         public PLCIOViewModel(
             CoreClient coreClient,
-            IDeviceConfigurationService tagService,
+            IDeviceConfigurationService deviceService,
             IAppLogger logger) : base(logger)
         {
-            _tagService = tagService;
+            _deviceService = deviceService;
             _coreClient = coreClient;
 
             InitializeAsync();
@@ -76,7 +76,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             try
             {
-                var configTags = await _tagService.GetAllTagsAsync();
+                var configTags = await _deviceService.GetAllTagsAsync();
 
                 AllInputTags.Clear();
                 AllOutputTags.Clear();

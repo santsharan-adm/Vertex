@@ -23,7 +23,7 @@ namespace IPCSoftware.Devices.Camera
     {
         protected readonly ICycleManagerService _cycleManager;
         protected PLCClientManager _plcManager;
-        protected readonly IDeviceConfigurationService _tagService;
+        protected readonly IDeviceConfigurationService _deviceService;
         protected readonly IObservableCcdSettingsService _observableCcdSettings; //Added by Rishabh - date - 08/04/2026//
 
         // State tracking
@@ -35,12 +35,12 @@ namespace IPCSoftware.Devices.Camera
 
         public CCDTriggerServiceBase(
             ICycleManagerService cycleManager,
-            IDeviceConfigurationService tagService,
+            IDeviceConfigurationService deviceService,
             IOptions<CcdSettings> ccdSettings,
             IObservableCcdSettingsService observableCcdSettings,  //Added by Rishabh - date - 08/04/2026//
             IAppLogger logger) : base(logger)
         {
-            _tagService = tagService;
+            _deviceService = deviceService;
             _cycleManager = cycleManager;
             _observableCcdSettings = observableCcdSettings;   //Added by Rishabh - date - 08/04/2026//
 
@@ -66,7 +66,7 @@ namespace IPCSoftware.Devices.Camera
         {
             try
             {
-                var allTags = await _tagService.GetAllTagsAsync();
+                var allTags = await _deviceService.GetAllTagsAsync();
                 var tagConfig = allTags.FirstOrDefault(t => t.TagNo == tagId);
                 if (tagConfig != null && tagConfig.ModbusAddress > 0)
                 {

@@ -18,7 +18,7 @@ namespace IPCSoftware.CoreService.Bending.Service
     internal class CycleManagerServiceBending : CycleManagerServiceBase
     {
         public CycleManagerServiceBending(
-            IDeviceConfigurationService tagService,
+            IDeviceConfigurationService deviceService,
             ILogConfigurationService logConfig,
             PLCClientManager plcManager,
             IOptions<CcdSettings> appSettings,
@@ -29,7 +29,7 @@ namespace IPCSoftware.CoreService.Bending.Service
             IAeLimitService aeLimitService,
             IProductConfigurationService productService,
             IAppLogger logger)
-            : base(tagService, logConfig, plcManager, appSettings, servoService, imageService, extService, observableCcdSettings , aeLimitService, productService, logger)
+            : base(deviceService, logConfig, plcManager, appSettings, servoService, imageService, extService, observableCcdSettings , aeLimitService, productService, logger)
         {
             
         }
