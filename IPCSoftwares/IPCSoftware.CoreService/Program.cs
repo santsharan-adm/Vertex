@@ -86,14 +86,15 @@ namespace IPCSoftware.CoreService
                             // 1. Configuration/Logging
                             //   services.AddSingleton<IConfiguration>(hostContext.Configuration);
                             // 2. Configuration Service (Resolvable by DI)
-                            services.AddSingleton<IFileHandler, CsvManager>();           //Added by Rishabh - date - 25/04/2026//
-                            services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+                            services.AddSingleton<IFileHandler, CsvManager>();
+                            services.AddSingleton<ConfigLoaderService>();           //Added by Rishabh - date - 27/04/2026//
+                          //  services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
                             services.AddSingleton<IAppLogger, AppLoggerService>();
                             services.AddSingleton<ILogManagerService, LogManagerService>();
                             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
-                            services.AddSingleton<DeviceInterfaceConfigLoader>();   //Added by Rishabh - date - 17/04/2026//
-                            services.AddSingleton<CameraConfigLoader>();   //Added by Rishabh - date - 16/04/2026//
-                            services.AddSingleton<DeviceConfigLoader>();   //Added by Rishabh - date - 18/04/2026//
+                            //services.AddSingleton<DeviceInterfaceConfigLoader>();   //Added by Rishabh - date - 17/04/2026//
+                            //services.AddSingleton<CameraConfigLoader>();   //Added by Rishabh - date - 16/04/2026//
+                            //services.AddSingleton<DeviceConfigLoader>();   //Added by Rishabh - date - 18/04/2026//
                             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
 
                             services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>(); //Added by Rishabh - date - 08/04/2026//
@@ -155,7 +156,7 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<CCDTriggerServiceAOI>(sp =>
                                 new CCDTriggerServiceAOI(
                                     sp.GetRequiredService<ICycleManagerService>(),
-                                    sp.GetRequiredService<IPLCTagConfigurationService>(),
+                                    sp.GetRequiredService<IDeviceConfigurationService>(),
                                     sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<CcdSettings>>(),
                                     sp.GetRequiredService<IObservableCcdSettingsService>(),   //Added by Rishabh - date - 08/04/2026//
                                     sp.GetRequiredService<IAppLogger>()

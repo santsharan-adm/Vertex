@@ -2,7 +2,9 @@
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace IPCSoftware.Services
 {
@@ -261,6 +263,87 @@ namespace IPCSoftware.Services
                 _logger.LogError(ex.Message, LogType.Diagnostics);
                 return false;
             }
+        }
+
+        public async Task Save(string filepath, List<PLCTagConfigurationModel> tags)
+        {
+            try
+            {
+                var sb = new StringBuilder();
+                string ver = _fileHandler.Getversion(filepath);
+                string version = string.Format($"Version - {ver}");
+                sb.AppendLine(version);
+                string header = _fileHandler.GetHeader(filepath);
+                sb.AppendLine(header);
+
+                foreach (var tag in tags ?? new List<PLCTagConfigurationModel>())
+                {
+                    if (ver == "2.0")
+                    {
+                        sb.AppendLine($"{tag.Id}," +
+                            $"{tag.Id}," +
+                            $"{_fileHandler.EscapeCsv(tag.Name)}," +         // <--- Was $"\"{EscapeCsv(tag.Name)}\","
+                            $"{tag.PLCNo}," +
+                            $"{tag.ModbusAddress}," +
+                            $"{tag.Length}," +
+                            $"{tag.AlgNo}," +
+                            $"{GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
+                            $"{tag.BitNo}," +
+                            $"{tag.Offset}," +
+                            $"{tag.Span}," +
+                            $"{_fileHandler.EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
+                            $"{_fileHandler.EscapeCsv(tag.Remark)}," +       // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
+                            $"{tag.CanWrite}," +
+                            $"{_fileHandler.EscapeCsv(tag.IOType)}," +
+                            $"{tag.UseEngMinMax}," +
+                            $"{tag.EnableTraceLog}");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"{tag.Id}," +
+                       $"{tag.Id}," +
+                       $"{_fileHandler.EscapeCsv(tag.Name)}," +         // <--- Was $"\"{EscapeCsv(tag.Name)}\","
+                       $"{tag.PLCNo}," +
+                       $"{tag.ModbusAddress}," +
+                       $"{tag.Length}," +
+                       $"{tag.AlgNo}," +
+                       $"{GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
+                       $"{tag.BitNo}," +
+                       $"{tag.Offset}," +
+                       $"{tag.Span}," +
+                       $"{_fileHandler.EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
+                       $"{_fileHandler.EscapeCsv(tag.Remark)}," +       // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
+                       $"{tag.CanWrite}," +
+                       $"{_fileHandler.EscapeCsv(tag.IOType)}");  // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
+                                                     // $"{EscapeCsv(tag.DMAddress)},") ;
+                    }
+                }
+                await _fileHandler.WriteCsv(filepath, sb.ToString());             //Added by Rishabh - date - 25/04/2026// 
+                                                                                  // await File.WriteAllTextAsync(filepath, sb.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error saving devices CSV: {ex.Message}", LogType.Diagnostics);
+                throw;
+            }
+        }
+
+
+
+        // You likely need this helper to save "Int16" instead of "1" back to the CSV
+        private string GetDataTypeString(int typeId)
+        {
+            return typeId switch
+            {
+                1 => "Int16",
+                2 => "Word",
+                3 => "Bit",
+                4 => "Float",
+                5 => "String",
+                6 => "UInt16",
+                7 => "UInt32",
+                _ => "Int16"
+            };
         }
     }
 }

@@ -44,11 +44,11 @@ namespace IPCSoftware.Common.CommonFunctions
                 await alarmConfigService.InitializeAsync();
             }
 
-            var plcTagConfigService = ServiceLocator.GetService<IPLCTagConfigurationService>();
-            if (plcTagConfigService != null)
-            {
-                plcTagConfigService.InitializeAsync();
-            }
+            //var plcTagConfigService = ServiceLocator.GetService<IPLCTagConfigurationService>();
+            //if (plcTagConfigService != null)
+            //{
+            //    plcTagConfigService.InitializeAsync();
+            //}
         }
     }
 }

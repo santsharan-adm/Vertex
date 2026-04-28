@@ -22,7 +22,7 @@ namespace IPCSoftware.Devices.Camera
 {
     public class CycleManagerServiceBase : BaseService, ICycleManagerService
     {
-        protected readonly IPLCTagConfigurationService _tagService;
+        protected readonly IDeviceConfigurationService _tagService;
         protected readonly PLCClientManager _plcManager;
         protected readonly ProductionImageService _imageService;
         protected readonly IServoCalibrationService _servoService;
@@ -43,7 +43,7 @@ namespace IPCSoftware.Devices.Camera
 
 
         public CycleManagerServiceBase(
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService tagService,
             ILogConfigurationService logConfig,
             PLCClientManager plcManager,
             IOptions<CcdSettings> appSettings,

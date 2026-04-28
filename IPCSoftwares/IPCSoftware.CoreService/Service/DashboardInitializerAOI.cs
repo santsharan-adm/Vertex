@@ -21,8 +21,8 @@ namespace IPCSoftware.CoreService.AOI.Service
             UiListener ui,
             AlarmService alarmService,
             CCDTriggerServiceAOI ccdTrigger,
-            IPLCTagConfigurationService tagService,             //Added by Rishabh - date - 26/04/2026//
-            IAppLogger logger) : base(manager, algo, oee, shiftReset, systemMonitor, ui, alarmService, ccdTrigger,tagService, logger)
+           // IPLCTagConfigurationService tagService,             //Added by Rishabh - date - 26/04/2026//
+            IAppLogger logger) : base(manager, algo, oee, shiftReset, systemMonitor, ui, alarmService, ccdTrigger,/*tagService,*/ logger)
         {
         }   
     }

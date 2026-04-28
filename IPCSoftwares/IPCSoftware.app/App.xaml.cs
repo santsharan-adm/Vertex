@@ -157,7 +157,7 @@ namespace IPCSoftware.App
                 }
             };
 
-            var tagService = ServiceProvider.GetService<IPLCTagConfigurationService>();
+            var tagService = ServiceProvider.GetService<IDeviceConfigurationService>();
             if (tagService != null)
             {
                 await tagService.InitializeAsync();

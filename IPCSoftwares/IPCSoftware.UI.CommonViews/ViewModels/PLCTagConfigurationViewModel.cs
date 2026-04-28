@@ -17,7 +17,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class PLCTagConfigurationViewModel : BaseViewModel
     {
-        private readonly IPLCTagConfigurationService _tagService;
+       // private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceConfigService;
         private PLCTagConfigurationModel _currentTag;
         private bool _isEditMode;
@@ -205,12 +205,12 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public event EventHandler CancelRequested;
 
         public PLCTagConfigurationViewModel(
-            IPLCTagConfigurationService tagService,
+           // IPLCTagConfigurationService tagService,
             IDeviceConfigurationService deviceConfigService,
             IDialogService dialog,
             IAppLogger logger) : base(logger)
         {
-            _tagService = tagService;
+           // _tagService = tagService;
             _deviceConfigService = deviceConfigService;
             _dialog = dialog;
 
@@ -375,11 +375,11 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
                 if (IsEditMode)
                 {
-                    await _tagService.UpdateTagAsync(_currentTag);
+                    await _deviceConfigService.UpdateTagAsync(_currentTag);
                 }
                 else
                 {
-                    await _tagService.AddTagAsync(_currentTag);
+                    await _deviceConfigService.AddTagAsync(_currentTag);
                 }
 
                 SaveCompleted?.Invoke(this, EventArgs.Empty);

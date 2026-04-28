@@ -20,7 +20,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     {
         private readonly CoreClient _coreClient;
         private readonly SafePoller _timer;
-        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _tagService;
         private readonly string _configPath;
         private readonly string _dataFolder;
 
@@ -36,7 +36,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         }
 
         public StartupConditionViewModel(IOptions<ConfigSettings> configSettings,
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService tagService,
             CoreClient coreClient, IAppLogger logger) : base(logger)
         {
             var config = configSettings.Value;

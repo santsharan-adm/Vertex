@@ -45,7 +45,7 @@ namespace IPCSoftware.Services.AppLoggerServices
         // Public APIs
         public void LogInfo(string message, LogType type) => EnqueueLog("INFO", message, type);
         public void LogWarning(string message, LogType type) => EnqueueLog("WARN", message, type);
-        public void LogTrace(string message, LogType type) => EnqueueLog("TRACE", message, type);
+        public void LogTrace(string message) => EnqueueLog("TRACE", message, LogType.TagTrace);
         //public void LogError(string message, LogType type) => EnqueueLog("ERROR", message, type);
 
         public void LogError(
