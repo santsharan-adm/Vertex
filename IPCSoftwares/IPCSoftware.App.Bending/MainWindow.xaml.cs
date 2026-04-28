@@ -1,24 +1,65 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using IPCSoftware.App.Bending.Views;
 
 namespace IPCSoftware.App.Bending
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
+            MainContentArea.Content = new UserControl1();
+        }
+
+        private void OpenMenu_Click(object sender, RoutedEventArgs e)
+        {
+            MenuColumn.Width = new GridLength(250);
+        }
+
+        private void CloseMenu_Click(object sender, RoutedEventArgs e)
+        {
+            MenuColumn.Width = new GridLength(0);
+        }
+
+        private void Menu_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is Button btn) || btn.Tag == null) return;
+
+            string target = btn.Tag.ToString();
+
+            switch (target)
+            {
+                case "B1": MainContentArea.Content = new Bending1MonitorView(); break;
+                case "B2": MainContentArea.Content = new Bending2MonitorView(); break;
+                case "B3": MainContentArea.Content = new Bending3MonitorView(); break;
+                case "UC1": MainContentArea.Content = new UserControl1(); break;
+                case "UC2": MainContentArea.Content = new UserControl2(); break;
+            }
+
+            CloseMenu_Click(null, null);
         }
     }
 }
+
+
+
+
+
+
+
+//Show only single screen
+
+
+//using System.Windows;
+
+//namespace IPCSoftware.App.Bending
+//{
+//    public partial class MainWindow : Window
+//    {
+//        public MainWindow()
+//        {
+//            InitializeComponent();
+//        }
+//    }
+//}
