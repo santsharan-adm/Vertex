@@ -103,18 +103,18 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             _coreClient = coreClient;
             _logService = logService;
 
-            //SyncCommand = new RelayCommand(async () => await SyncTime());
+            SyncCommand = new RelayCommand(async () => await SyncTime());
             StartServiceCommand = new RelayCommand(async () => await StartServiceAsync(), () => !IsServiceRunning);
             StopServiceCommand = new RelayCommand(async () => await StopServiceAsync(), () => IsServiceRunning);
 
-            //_clockPoller = new SafePoller(TimeSpan.FromSeconds(1), UpdateIpcTimeAsync);
-            //_clockPoller.Start();
+            _clockPoller = new SafePoller(TimeSpan.FromSeconds(1), UpdateIpcTimeAsync);
+            _clockPoller.Start();
 
-            //_plcPoller = new SafePoller(
-            //    TimeSpan.FromMilliseconds(500),
-            //    PlcPollTickAsync,
-            //    ex => _logger.LogError($"PLC Poll Error: {ex.Message}", LogType.Diagnostics));
-            //_plcPoller.Start();
+            _plcPoller = new SafePoller(
+                TimeSpan.FromMilliseconds(500),
+                PlcPollTickAsync,
+                ex => _logger.LogError($"PLC Poll Error: {ex.Message}", LogType.Diagnostics));
+            _plcPoller.Start();
 
             _servicePoller = new SafePoller(
                 TimeSpan.FromSeconds(2),
@@ -122,7 +122,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 ex => _logger.LogError($"Service Poll Error: {ex.Message}", LogType.Diagnostics));
             _servicePoller.Start();
 
-            //_ = UpdateIpcTimeAsync();
+            _ = UpdateIpcTimeAsync();
             _ = CheckServiceStatusAsync();
         }
 
@@ -372,96 +372,96 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        //private Task UpdateIpcTimeAsync()
-        //{
-        //    var now = DateTime.Now;
-        //    IpcDate = now.ToString("dd-MMM-yyyy");
-        //    IpcTime = now.ToString("HH:mm:ss");
-        //    OnPropertyChanged(nameof(IpcTime));
-        //    return Task.CompletedTask;
-        //}
+        private Task UpdateIpcTimeAsync()
+        {
+            var now = DateTime.Now;
+            IpcDate = now.ToString("dd-MMM-yyyy");
+            IpcTime = now.ToString("HH:mm:ss");
+            OnPropertyChanged(nameof(IpcTime));
+            return Task.CompletedTask;
+        }
 
-        //private async Task PlcPollTickAsync()
-        //{
-        //    var data = await _coreClient.GetIoValuesAsync(5);
+        private async Task PlcPollTickAsync()
+        {
+            var data = await _coreClient.GetIoValuesAsync(5);
 
-        //    if (data.Count > 0)
-        //    {
-        //        int y = GetInt(data, ConstantValues.TAG_Time_Year.Read);
-        //        int M = GetInt(data, ConstantValues.TAG_Time_Month.Read);
-        //        int d = GetInt(data, ConstantValues.TAG_Time_Day.Read);
-        //        int h = GetInt(data, ConstantValues.TAG_Time_Hour.Read);
-        //        int m = GetInt(data, ConstantValues.TAG_Time_Minute.Read);
-        //        int s = GetInt(data, ConstantValues.TAG_Time_Second.Read);
+            if (data.Count > 0)
+            {
+                int y = GetInt(data, ConstantValues.TAG_Time_Year.Read);
+                int M = GetInt(data, ConstantValues.TAG_Time_Month.Read);
+                int d = GetInt(data, ConstantValues.TAG_Time_Day.Read);
+                int h = GetInt(data, ConstantValues.TAG_Time_Hour.Read);
+                int m = GetInt(data, ConstantValues.TAG_Time_Minute.Read);
+                int s = GetInt(data, ConstantValues.TAG_Time_Second.Read);
 
-        //        if (y > 0 && M > 0 && d > 0)
-        //        {
-        //            if (y < 100) y += 2000;
+                if (y > 0 && M > 0 && d > 0)
+                {
+                    if (y < 100) y += 2000;
 
-        //            try
-        //            {
-        //                var dt = new DateTime(y, M, d, h, m, s);
-        //                PlcDate = dt.ToString("dd-MMM-yyyy");
-        //                PlcTime = dt.ToString("HH:mm:ss");
-        //            }
-        //            catch
-        //            {
-        //                PlcDate = "--/--/----";
-        //                PlcTime = "--:--:--";
-        //            }
-        //        }
-        //    }
-        //}
+                    try
+                    {
+                        var dt = new DateTime(y, M, d, h, m, s);
+                        PlcDate = dt.ToString("dd-MMM-yyyy");
+                        PlcTime = dt.ToString("HH:mm:ss");
+                    }
+                    catch
+                    {
+                        PlcDate = "--/--/----";
+                        PlcTime = "--:--:--";
+                    }
+                }
+            }
+        }
 
-        //private async Task SyncTime()
-        //{
-        //    try
-        //    {
-        //        SyncState = "Syncing";
-        //        AddAudit("Sync triggered");
+        private async Task SyncTime()
+        {
+            try
+            {
+                SyncState = "Syncing";
+                AddAudit("Sync triggered");
 
-        //        DateTime targetTime = DateTime.Now;
-        //        _logger.LogInfo($"Syncing PLC Time to: {targetTime:yyyy-MM-dd HH:mm:ss}", LogType.Audit);
+                DateTime targetTime = DateTime.Now;
+                _logger.LogInfo($"Syncing PLC Time to: {targetTime:yyyy-MM-dd HH:mm:ss}", LogType.Audit);
 
-        //        await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Year.Write, targetTime.Year);
-        //        await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Month.Write, targetTime.Month);
-        //        await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Day.Write, targetTime.Day);
-        //        await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Hour.Write, targetTime.Hour);
-        //        await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Minute.Write, targetTime.Minute);
-        //        await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Second.Write, targetTime.Second);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Year.Write, targetTime.Year);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Month.Write, targetTime.Month);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Day.Write, targetTime.Day);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Hour.Write, targetTime.Hour);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Minute.Write, targetTime.Minute);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_Time_Second.Write, targetTime.Second);
 
-        //        await _coreClient.WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, 1);
-        //        await Task.Delay(200);
-        //        await _coreClient.WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, 0);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, 1);
+                await Task.Delay(200);
+                await _coreClient.WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, 0);
 
-        //        SyncState = "Synced";
-        //        AddAudit("PLC time sync command sent.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        SyncState = "Error";
-        //        AddAudit($"Sync failed: {ex.Message}");
-        //        _logger.LogError(ex.Message, LogType.Diagnostics);
-        //    }
+                SyncState = "Synced";
+                AddAudit("PLC time sync command sent.");
+            }
+            catch (Exception ex)
+            {
+                SyncState = "Error";
+                AddAudit($"Sync failed: {ex.Message}");
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
 
-        //    await Task.Delay(2000);
-        //    SyncState = "Idle";
-        //}
+            await Task.Delay(2000);
+            SyncState = "Idle";
+        }
 
-        //private int GetInt(Dictionary<int, object> data, int tagId)
-        //{
-        //    if (data.TryGetValue(tagId, out object val))
-        //    {
-        //        try
-        //        {
-        //            return Convert.ToInt32(val);
-        //        }
-        //        catch
-        //        {
-        //        }
-        //    }
-        //    return 0;
-        //}
+        private int GetInt(Dictionary<int, object> data, int tagId)
+        {
+            if (data.TryGetValue(tagId, out object val))
+            {
+                try
+                {
+                    return Convert.ToInt32(val);
+                }
+                catch
+                {
+                }
+            }
+            return 0;
+        }
 
         private void AddAudit(string message)
         {
