@@ -14,7 +14,7 @@ namespace IPCSoftware.Devices.PLC
     {
      
 
-        private readonly IPLCTagConfigurationService _tagService;
+        //private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceService;
         private readonly ConfigSettings _config;
 
@@ -23,11 +23,12 @@ namespace IPCSoftware.Devices.PLC
 
         public PLCClientManager(
             IDeviceConfigurationService deviceService,
-            IPLCTagConfigurationService tagService, IOptions<ConfigSettings> config,
+            //IPLCTagConfigurationService tagService,
+            IOptions<ConfigSettings> config,
             IAppLogger logger) : base(logger)
         {
         _config = config.Value;
-            _tagService = tagService;
+           // _tagService = tagService;
             _deviceService = deviceService;
            _ =  InitializeClients();
         }
@@ -39,8 +40,8 @@ namespace IPCSoftware.Devices.PLC
         {
             try
             {
-                var allTags = await _tagService.GetAllTagsAsync();
-                var devices = await _deviceService.GetPlcDevicesAsync();
+                var allTags = await _deviceService.GetAllTagsAsync();
+                var devices = await _deviceService.GetDeviceInterfaceAsync();
                 foreach (var dev in devices)
                 {
                     // Assign tags belonging to this PLCNo

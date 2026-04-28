@@ -1,38 +1,39 @@
+﻿using IPCSoftware.App.Services;
 using IPCSoftware.Common.CommonFunctions;
 using IPCSoftware.Common.UIClientComm;
-using IPCSoftware.Services;
-using IPCSoftware.UI.CommonViews.ViewModels;
-using IPCSoftware.UI.CommonViews;
-using IPCSoftware.UI.CommonViews.Views;
+using IPCSoftware.Communication.External;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
-using IPCSoftware.Engine;
-using IPCSoftware.Devices.PLC;
+using IPCSoftware.CoreService.AOI.Service;
+using IPCSoftware.Datalogger;
 using IPCSoftware.Devices.Camera;
+using IPCSoftware.Devices.PLC;
 using IPCSoftware.Devices.UI;
-using IPCSoftware.Communication.External;
+using IPCSoftware.Engine;
+using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
 using IPCSoftware.Services.ConfigServices;
-using IPCSoftware.App.Services;
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
-using IPCSoftware.Datalogger;                           // ? Fixes: ITcpTrafficLogger, TcpTrafficLogger, IProductionDataLogger, ProductionDataLogger
+using IPCSoftware.UI.CommonViews;
+using IPCSoftware.UI.CommonViews.ViewModels;
+using IPCSoftware.UI.CommonViews.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel.Design.Serialization;
 using System.IO;
-
+using AeLimitView = IPCSoftware.App.Views.AeLimitView;
+using AeLimitViewModel = IPCSoftware.App.ViewModels.AeLimitViewModel;
+using DashboardDetailViewModel = IPCSoftware.UI.CommonViews.ViewModels.DashboardDetailViewModel;
+using DashboardDetailWindow = IPCSoftware.UI.CommonViews.Views.DashboardDetailWindow;
+using FullImageView = IPCSoftware.UI.CommonViews.Views.FullImageView;
+using FullImageViewModel = IPCSoftware.UI.CommonViews.ViewModels.FullImageViewModel;
+using ManualOperationView = IPCSoftware.App.Views.ManualOperationView;
+using ManualOpViewModel = IPCSoftware.App.ViewModels.ManualOpViewModel;
 // Aliases for app-specific types (will be migrated in later phases)
 using OEEDashboard = IPCSoftware.App.Views.OEEDashboard;
 using OEEDashboardViewModel = IPCSoftware.App.ViewModels.OEEDashboardViewModel;
-using ManualOperationView = IPCSoftware.App.Views.ManualOperationView;
-using ManualOpViewModel = IPCSoftware.App.ViewModels.ManualOpViewModel;
-using AeLimitView = IPCSoftware.App.Views.AeLimitView;
-using AeLimitViewModel = IPCSoftware.App.ViewModels.AeLimitViewModel;
 using ProductSettingsView = IPCSoftware.App.Views.ProductSettingsView;
-using FullImageView = IPCSoftware.UI.CommonViews.Views.FullImageView;
-using DashboardDetailWindow = IPCSoftware.UI.CommonViews.Views.DashboardDetailWindow;
-using FullImageViewModel = IPCSoftware.UI.CommonViews.ViewModels.FullImageViewModel;
-using DashboardDetailViewModel = IPCSoftware.UI.CommonViews.ViewModels.DashboardDetailViewModel;
 
 namespace IPCSoftware.App.DI
 {
@@ -41,32 +42,50 @@ namespace IPCSoftware.App.DI
         public static void RegisterServices(IServiceCollection services)
         {
             services.AddSingleton<IAppLogger, AppLoggerService>();
-            services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+           // services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
-            services.AddSingleton<ICycleManagerService, CycleManagerService>();
+
+            //  NEW: Register Observable CCD Settings Service (Singleton - shared across all services)
+            services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>(); //Added by Rishabh - date - 08/04/2026//
+
+
+            services.AddSingleton<ICycleManagerService, CycleManagerServiceAOI>();
             services.AddSingleton<ExternalInterfaceService>();
-            services.AddSingleton<IExternalInterfaceService>(sp =>  // ?
+            services.AddSingleton<IExternalInterfaceService>(sp =>
                 sp.GetRequiredService<ExternalInterfaceService>());
             services.AddSingleton<ICcdConfigService, CcdConfigService>();
             services.AddSingleton<AlgorithmAnalysisService>();
-            services.AddSingleton<DashboardInitializer>();
-            services.AddSingleton<OeeEngine>();
+            services.AddSingleton<DashboardInitializerAOI>();
+            services.AddSingleton<OeeEngineAOI>();
             services.AddSingleton<SystemMonitorService>();
             services.AddSingleton<IAlarmHistoryService, AlarmHistoryService>();
-            services.AddSingleton<ITcpTrafficLogger, TcpTrafficLogger>();          // ? Fixed
-            services.AddSingleton<IProductionDataLogger>(sp =>                     // ? Fixed
+            services.AddSingleton<ITcpTrafficLogger, TcpTrafficLogger>();
+            services.AddSingleton<IProductionDataLogger>(sp =>
             {
                 var logConfigService = sp.GetRequiredService<ILogConfigurationService>();
-                var initTask = logConfigService.InitializeAsync();
-                initTask.Wait();
-                var prodLogConfigTask = logConfigService.GetByLogTypeAsync(LogType.Production);
-                prodLogConfigTask.Wait();
-                var prodLogConfig = prodLogConfigTask.Result;
+                var prodLogConfig = logConfigService.GetByLogTypeAsync(LogType.Production)
+                                                    .GetAwaiter().GetResult();
+
                 if (prodLogConfig == null || !prodLogConfig.Enabled)
                     throw new InvalidOperationException("Production log configuration not found or not enabled.");
-                return new ProductionDataLogger(prodLogConfig);                    // ? Fixed
+                return new ProductionDataLogger(prodLogConfig);
             });
-            services.AddSingleton<CCDTriggerService>();
+
+            //  UPDATED: CCDTriggerServiceAOI now includes IObservableCcdSettingsService
+            services.AddSingleton<CCDTriggerServiceAOI>(sp =>
+                new CCDTriggerServiceAOI(
+                    sp.GetRequiredService<ICycleManagerService>(),
+                    sp.GetRequiredService<IDeviceConfigurationService>(),
+                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<CcdSettings>>(),
+                    sp.GetRequiredService<IObservableCcdSettingsService>(),  //  //Added by Rishabh - date - 08/04/2026//
+                    sp.GetRequiredService<IAppLogger>()
+                )
+            );
+            services.AddSingleton<IFileHandler, CsvManager>();
+            services.AddSingleton<ConfigLoaderService>();                       //Added by Rishabh - date - 25/04/2026//
+            //services.AddSingleton<DeviceConfigLoader>();                             //Added by Rishabh - date - 18/04/2026//
+            //services.AddSingleton<DeviceInterfaceConfigLoader>();                    //Modified by Rishabh - date - 15/04/2026//
+            //services.AddSingleton<CameraConfigLoader>();                             //Added by Rishabh - date - 15/04/2026//
             services.AddSingleton<PLCClientManager>();
             services.AddSingleton<CameraFtpService>();
             services.AddTransient<ProductionImageService>();
@@ -110,6 +129,19 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceInterfaceConfigurationViewModel>();
             services.AddTransient<CameraDetailViewModel>();
             services.AddTransient<CameraInterfaceConfigurationViewModel>();
+            services.AddTransient<ServiceStartupView>();                 //Added by Rishabh -date - 15-04-2026
+            services.AddTransient<ServiceStartupViewModel>();            //Added by Rishabh -date - 15-04-2026
+
+
+            //  UPDATED: CcdSettingsViewModel now includes IObservableCcdSettingsService
+            services.AddTransient<CcdSettingsViewModel>(sp =>
+                new CcdSettingsViewModel(
+                    sp.GetRequiredService<IDeviceConfigurationService>(),
+                    sp.GetRequiredService<IObservableCcdSettingsService>()  // //Added by Rishabh - date - 08/04/2026//
+
+                )
+            );
+
             services.AddTransient<AeLimitView>();
             services.AddTransient<AeLimitViewModel>();
             services.AddTransient<AboutView>();
@@ -151,8 +183,9 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceInterfaceConfigurationView>();
             services.AddTransient<CameraDetailView>();
             services.AddTransient<CameraInterfaceConfigurationView>();
+            services.AddTransient<CcdSettingsView>();
             services.AddTransient<AlarmListView>();
-            services.AddTransient<AlarmConfigurationView>();                       // ? Fixed: was 'addTransient' (lowercase 'a')
+            services.AddTransient<AlarmConfigurationView>();
             services.AddTransient<UserListView>();
             services.AddTransient<UserConfigurationView>();
             services.AddTransient<ModeOfOperation>();
@@ -168,6 +201,8 @@ namespace IPCSoftware.App.DI
             services.AddTransient<TagControlViewModel>();
             services.AddTransient<SystemSettingView>();
             services.AddTransient<SystemSettingViewModel>();
+           // services.AddTransient<ServiceStartupView>();
+            //services.AddTransient<ServiceStartupViewModel>();
             services.AddTransient<IPLCService, PlcService>();
             services.AddSingleton<CoreClient>();
             services.AddSingleton<ReportConfigViewModel>();

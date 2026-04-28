@@ -18,7 +18,10 @@ namespace IPCSoftware.Core.Interfaces
         Task<bool> UpdateTagAsync(PLCTagConfigurationModel tag);
         Task<bool> DeleteTagAsync(int id);
 
-      // Add the method required by TagChangeWatcherService
+        // Add the method required by TagChangeWatcherService
         Task<List<PLCTagConfigurationModel>> ReloadTagsAsync();
+
+
     }
+
 }

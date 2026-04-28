@@ -166,7 +166,7 @@
                 </Border>
 
                 <!-- NEW: Service Control Card -->
-                <Border Grid.Column="3" Style="{StaticResource SystemCardStyle}">
+                <!--<Border Grid.Column="3" Style="{StaticResource SystemCardStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -193,7 +193,7 @@
                             </Button>
                         </StackPanel>
                     </Grid>
-                </Border>
+                </Border>-->
             </Grid>
 
             <!-- BOTTOM ROW: Audit Logs -->

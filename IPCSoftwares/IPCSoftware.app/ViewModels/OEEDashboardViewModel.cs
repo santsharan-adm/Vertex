@@ -8,7 +8,7 @@ using IPCSoftware.UI.CommonViews.Views;  // ✅ ADD for FullImageView
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.CoreService.Services.Dashboard;
-using IPCSoftware.Services;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -31,12 +31,13 @@ namespace IPCSoftware.App.ViewModels
     public class OEEDashboardViewModel : BaseViewModel, IDisposable
     {
         // --- DI Services ---
-        private readonly IPLCTagConfigurationService _tagService;
+       // private readonly IPLCTagConfigurationService _tagService;
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
         private readonly string _prodCsvFolder;
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
         private readonly IProductConfigurationService _productService; // NEW Injection
+        private readonly IObservableCcdSettingsService _observableCcdSettings;
 
 
         private ExternalSettings Settings => _settingsMonitor.CurrentValue;
@@ -62,6 +63,7 @@ namespace IPCSoftware.App.ViewModels
         // --- JSON State Sync Variables ---
         private readonly string _jsonStatePath;
         private DateTime _lastJsonWriteTime;
+        private int _cycleVersion = 0;
 
 
         // --- Commands ---
@@ -138,6 +140,21 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
+        // True while QR image is captured but Mac Mini sync is still in progress
+        private bool _isPendingMacMiniSync = false;
+        private bool IsPendingMacMiniSync
+        {
+            get => _isPendingMacMiniSync;
+            set
+            {
+                if (_isPendingMacMiniSync != value)
+                {
+                    _isPendingMacMiniSync = value;
+                    OnPropertyChanged(nameof(IsWaitingForMacMini));
+                }
+            }
+        }
+
 
         public bool IsWaitingForMacMini
         {
@@ -147,10 +164,10 @@ namespace IPCSoftware.App.ViewModels
 
                 bool isMacMiniEnabled = _settingsMonitor.CurrentValue.IsMacMiniEnabled;
                 bool hasQrCode = !string.IsNullOrEmpty(QRCodeText) && QRCodeText != "Waiting for Scan...";
-                bool noImageYet = QrCodeImage == null;
 
-                // Show only if Mac Mini is ON, a QR code was scanned, but the station 0 image hasn't arrived yet
-                return isMacMiniEnabled && hasQrCode && noImageYet;
+                // Show while Mac Mini is enabled, QR has been scanned and its image captured,
+                // but the Mac Mini sync response (station placeholders) has not arrived yet
+                return isMacMiniEnabled && hasQrCode && _isPendingMacMiniSync;
             }
         }
 
@@ -370,31 +387,41 @@ namespace IPCSoftware.App.ViewModels
 
 
         public OEEDashboardViewModel(
-            IPLCTagConfigurationService tagService,
+           // IPLCTagConfigurationService tagService,
             IOptions<CcdSettings> ccdSettng,
             IOptions<ConfigSettings> configSettng,
            IOptionsMonitor<ExternalSettings> settingsMonitor,
+           IObservableCcdSettingsService observableCcdSettings,
             CoreClient coreClient,
             IDialogService dialog,
             ILogConfigurationService logConfigService,
+            IDeviceConfigurationService deviceService,
             IProductConfigurationService productService,
             IAppLogger logger) : base(logger)
         {
             var ccd = ccdSettng.Value;
             _settingsMonitor = settingsMonitor;
-            _tagService = tagService;
+          //  _tagService = tagService;
             _coreClient = coreClient;
             _dialog = dialog;
             _productService = productService;
             SwitchDirection = configSettng.Value.SwitchConveyorDirection;
             IsMacMiniEnabled = _settingsMonitor.CurrentValue.IsMacMiniEnabled;
+            _observableCcdSettings =observableCcdSettings;
 
             var prodLogConfigTask = logConfigService.GetByLogTypeAsync(LogType.Production);
             prodLogConfigTask.Wait();
             var prodLogConfig = prodLogConfigTask.Result;
             _prodCsvFolder = prodLogConfig?.DataFolder ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+            //Added by Rishabh Date -14-04-2026//
+            
+            InitializeObservableCcdSettingsAsync (deviceService);
+
             // Path to shared state file
-            _jsonStatePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
+            //Modified by Rishabh - date - 14/04/2026 
+            _jsonStatePath = Path.Combine(!String.IsNullOrEmpty(_observableCcdSettings?.QrCodeImagePath) ? _observableCcdSettings.QrCodeImagePath : "", !String.IsNullOrEmpty(_observableCcdSettings?.CurrentCycleStateFileName) ? _observableCcdSettings.CurrentCycleStateFileName : "");
+
+            // _jsonStatePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
             // _jsonStatePath = Path.Combine(ConstantValues.QrCodeImagePath, "CurrentCycleState.json");
 
             // Initialize Lists
@@ -818,6 +845,12 @@ namespace IPCSoftware.App.ViewModels
                         Application.Current.Dispatcher.Invoke(() => QrCodeImage = LoadBitmapSafe(qrData.ImagePath));
                 }
 
+                // Determine if we are still waiting for Mac Mini sync response:
+                // QR image exists (station 0 present with a path) but no inspection station placeholders yet
+                bool hasQrImage = state.Stations.ContainsKey(0) && !string.IsNullOrEmpty(state.Stations[0].ImagePath);
+                bool hasStationData = state.Stations.Keys.Any(k => k > 0);
+                IsPendingMacMiniSync = hasQrImage && !hasStationData;
+
                 // 5. Update Grid & Find Latest
                 StationResult latestStation = null;
 
@@ -836,10 +869,11 @@ namespace IPCSoftware.App.ViewModels
                     var uiItem = CameraImages.FirstOrDefault(x => x.StationNumber == kvp.Key);
                     if (uiItem != null)
                     {
-                        if (uiItem.LastLoadedFilePath != data.ImagePath)
+                    if (uiItem.LastLoadedFilePath != data.ImagePath)
                         {
                             string pathCopy = data.ImagePath;
                             uiItem.LastLoadedFilePath = pathCopy;
+                            int capturedVersion = _cycleVersion;
 
                             // Load bitmap off UI thread to avoid blocking dispatcher
                             _ = Task.Run(() =>
@@ -864,8 +898,12 @@ namespace IPCSoftware.App.ViewModels
                                     _logger.LogWarning($"LoadBitmapSafe background load failed: {ex.Message}", LogType.Diagnostics);
                                 }
 
-                                // assign on UI thread
-                                Application.Current?.Dispatcher.Invoke(() => uiItem.ImagePath = bmp);
+                                // assign on UI thread only if the cycle hasn't been reset since load started
+                                Application.Current?.Dispatcher.Invoke(() =>
+                                {
+                                    if (_cycleVersion == capturedVersion)
+                                        uiItem.ImagePath = bmp;
+                                });
                             });
                         }
                         uiItem.Result = data.Status;
@@ -887,6 +925,8 @@ namespace IPCSoftware.App.ViewModels
         }
         private void ResetDashboard()
         {
+            _cycleVersion++;
+            IsPendingMacMiniSync = false;
             QRCodeText = "Waiting for Scan...";
             QrCodeImage = null; // Clear QR Image
 
@@ -1345,6 +1385,42 @@ namespace IPCSoftware.App.ViewModels
 
         #endregion
 
+        //Added by Rishabh Date=14-04-2026:
+        //*Async initialization method
+        private async void InitializeObservableCcdSettingsAsync(IDeviceConfigurationService deviceService)
+        {
+            try
+            {
+                // Load camera devices from configuration
+                var cameras = await deviceService.GetCameraDevicesAsync();
 
+                if (cameras != null && cameras.Count > 0)
+                {
+                    // Use the first camera interface (or implement selection logic if needed)
+                    var firstCamera = cameras.FirstOrDefault();
+
+                    if (firstCamera != null && _observableCcdSettings != null)
+                    {
+                        // Update observable settings from camera interface
+                        await _observableCcdSettings.UpdateFromCameraInterfaceAsync(firstCamera);
+
+                        _logger.LogInfo(
+                            $"[OEEDashboard] Initialized Observable CCD Settings:" +
+                            $"\n  QrCodeImagePath: {_observableCcdSettings.QrCodeImagePath}" +
+                            $"\n  TempImgFolder: {_observableCcdSettings.TempImgFolder}" +
+                            $"\n  CurrentCycleStateFileName: {_observableCcdSettings.CurrentCycleStateFileName}",
+                            LogType.Diagnostics);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("[OEEDashboard] No camera devices found in configuration", LogType.Diagnostics);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[OEEDashboard] Failed to initialize Observable CCD Settings: {ex.Message}", LogType.Diagnostics);
+            }
+        }
     }
 }

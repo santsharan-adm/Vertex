@@ -60,7 +60,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 Description = this.Description,
                 Remark = this.Remark,
                 Enabled = this.Enabled,
-                 ProductionImagePath = this.ProductionImagePath,
+                ProductionImagePath = this.ProductionImagePath,
                 ProductionImageBackupPath = this.ProductionImageBackupPath
             };
         }
@@ -71,7 +71,8 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         Production = 0,
         Audit = 1,
         Error = 2,
-        Diagnostics = 3
+        Diagnostics = 3,
+        TagTrace = 4
     }
 
     public enum BackupScheduleType  

@@ -16,7 +16,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class PLCTagListViewModel : BaseViewModel
     {
-        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _tagService;
         private readonly INavigationService _nav;
         private ObservableCollection<PLCTagConfigurationModel> _tags;
         private ObservableCollection<PLCTagConfigurationModel> _filteredTags;
@@ -59,7 +59,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public ICommand DeleteTagCommand { get; }
 
         public PLCTagListViewModel(
-            IPLCTagConfigurationService tagService, 
+            IDeviceConfigurationService tagService, 
             INavigationService nav,
             IAppLogger logger) : base(logger)
         {
@@ -112,7 +112,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                     (u.Description?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
                     (u.ModbusAddress.ToString()?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
                     (u.PLCNo.ToString()?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                    (u.TagNo.ToString()?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false)
+                    (u.Id.ToString()?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false)
                 );
 
                 foreach (var user in filtered)

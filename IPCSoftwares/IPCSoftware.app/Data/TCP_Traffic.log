@@ -1,0 +1,196 @@
+[2026-04-08 15:47:28.702] [PDCA_DATA] ERROR: The I/O operation has been aborted because of either a thread exit or an application request.
+[2026-04-10 10:40:06.443] [PDCA_DATA] ERROR: The I/O operation has been aborted because of either a thread exit or an application request.
+[2026-04-15 10:26:10.748] [SFC_QUERY] SEND: sfc_post@c=QUERY_4_SFC&subcmd=carrier_query&carrier_sn=A&station_code=MACH_PREV_01&station_id=MACH_AOI_01
+[2026-04-15 10:26:10.790] [SFC_QUERY] RECV: 0 SFC_OK 1.J85HNT00000000IS01,OK;2.J85HNT00000000IS02,OK;3.J85HNT00000000IS03,OK;4.NA,1;5.NA,1;6.NA,1;7.NA,1;8.NA,1;9.NA,1;10.NA,1;11.NA,1;12.NA,1
+[2026-04-15 10:27:41.061] [PDCA_DATA] SEND: _{
+A@start----> start
+A@dut_pos@A@0
+A@attr@MLB_AP_SN@A
+A@attr@Carrier_SN@A
+A@pdata@Cavity@0
+A@pdata@ae_vendor@1
+A@pdata@Tossing@0
+A@pdata@Inspection_X@0.000@-0.130@0.130@mm
+A@pdata@Inspection_Y@0.000@-0.130@0.130@mm
+A@pdata@Inspection_A@0.000@-0.800@0.800@degree
+A@pdata@Cycle_Time@0.000@NA@NA@s
+A@attr@machine_ID@MACH_AOI_01
+A@pdata@Operator_ID@0
+A@pdata@Mode@0
+A@pdata@TestSeriesID@0
+A@pdata@Priority@0
+A@pdata@online@1
+A@submit@BZ_UAT-AOI_V53_338_SV2.1.0.4_V2.1.0.4
+A@start----> audit
+A@dut_pos@A@1
+A@attr@MLB_AP_SN@A
+A@attr@Carrier_SN@A
+A@pdata@Cavity@1
+A@pdata@ae_vendor@1
+A@pdata@Tossing@0
+A@pdata@Inspection_X@0.000@-0.130@0.130@mm
+A@pdata@Inspection_Y@0.000@-0.130@0.130@mm
+A@pdata@Inspection_A@0.000@-0.800@0.800@degree
+A@pdata@Cycle_Time@345.000@NA@NA@s
+A@attr@machine_ID@MACH_AOI_01
+A@pdata@Operator_ID@0
+A@pdata@Mode@0
+A@pdata@TestSeriesID@0
+A@pdata@Priority@0
+A@pdata@online@1
+A@submit@BZ_UAT-AOI_V53_338_SV2.1.0.4_V2.1.0.4
+A@start----> audit
+A@dut_pos@A@2
+A@attr@MLB_AP_SN@A
+A@attr@Carrier_SN@A
+A@pdata@Cavity@2
+A@pdata@ae_vendor@1
+A@pdata@Tossing@0
+A@pdata@Inspection_X@0.000@-0.130@0.130@mm
+A@pdata@Inspection_Y@0.000@-0.130@0.130@mm
+A@pdata@Inspection_A@0.000@-0.800@0.800@degree
+A@pdata@Cycle_Time@345.000@NA@NA@s
+A@attr@machine_ID@MACH_AOI_01
+A@pdata@Operator_ID@0
+A@pdata@Mode@0
+A@pdata@TestSeriesID@0
+A@pdata@Priority@0
+A@pdata@online@1
+A@submit@BZ_UAT-AOI_V53_338_SV2.1.0.4_V2.1.0.4
+A@start----> audit
+A@dut_pos@A@3
+A@attr@MLB_AP_SN@A
+A@attr@Carrier_SN@A
+A@pdata@Cavity@3
+A@pdata@ae_vendor@1
+A@pdata@Tossing@0
+A@pdata@Inspection_X@0.000@-0.130@0.130@mm
+A@pdata@Inspection_Y@0.000@-0.130@0.130@mm
+A@pdata@Inspection_A@0.000@-0.800@0.800@degree
+A@pdata@Cycle_Time@345.000@NA@NA@s
+A@attr@machine_ID@MACH_AOI_01
+A@pdata@Operator_ID@0
+A@pdata@Mode@0
+A@pdata@TestSeriesID@0
+A@pdata@Priority@0
+A@pdata@online@1
+A@submit@BZ_UAT-AOI_V53_338_SV2.1.0.4_V2.1.0.4
+A@start----> audit
+A@dut_pos@A@4
+A@attr@MLB_AP_SN@A
+A@attr@Carrier_SN@A
+A@pdata@Cavity@4
+A@pdata@ae_vendor@1
+A@pdata@Tossing@0
+A@pdata@Inspection_X@0.000@-0.130@0.130@mm
+A@pdata@Inspection_Y@0.000@-0.130@0.130@mm
+A@pdata@Inspection_A@0.000@-0.800@0.800@degree
+A@pdata@Cycle_Time@345.000@NA@NA@s
+A@attr@machine_ID@MACH_AOI_01
+A@pdata@Operator_ID@0
+A@pdata@Mode@0
+A@pdata@TestSeriesID@0
+A@pdata@Priority@0
+A@pdata@online@1
+A@submit@BZ_UAT-AOI_V53_338_SV2.1.0.4_V2.1.0.4
+A@start----> audit
+A@dut_pos@A@5
+A@attr@MLB_AP_SN@A
+A@attr@Carrier_SN@A
+A@pdata@Cavity@5
+A@pdata@ae_vendor@1
+A@pdata@Tossing@0
+A@pdata@Inspection_X@0.000@-0.130@0.130@mm
+A@pdata@Inspection_Y@0.000@-0.130@0.130@mm
+A@pdata@Inspection_A@0.000@-0.800@0.800@degree
+A@pdata@Cycle_Time@345.000@NA@NA@s
+A@attr@machine_ID@MACH_AOI_01
+A@pdata@Operator_ID@0
+A@pdata@Mode@0
+A@pdata@TestSeriesID@0
+A@pdata@Priority@0
+A@pdata@online@1
+A@submit@BZ_UAT-AOI_V53_338_SV2.1.0.4_V2.1.0.4
+A@start----> audit
+A@dut_pos@A@6
+A@attr@MLB_AP_SN@A
+A@attr@Carrier_SN@A
+A@pdata@Cavity@6
+A@pdata@ae_vendor@1
+A@pdata@Tossing@0
+A@pdata@Inspection_X@0.000@-0.130@0.130@mm
+A@pdata@Inspection_Y@0.000@-0.130@0.130@mm
+A@pdata@Inspection_A@0.000@-0.800@0.800@degree
+A@pdata@Cycle_Time@345.000@NA@NA@s
+A@attr@machine_ID@MACH_AOI_01
+A@pdata@Operator_ID@0
+A@pdata@Mode@0
+A@pdata@TestSeriesID@0
+A@pdata@Priority@0
+A@pdata@online@1
+A@submit@BZ_UAT-AOI_V53_338_SV2.1.0.4_V2.1.0.4
+A@start----> audit
+A@dut_pos@A@7
+A@attr@MLB_AP_SN@A
+A@attr@Carrier_SN@A
+A@pdata@Cavity@7
+A@pdata@ae_vendor@1
+A@pdata@Tossing@0
+A@pdata@Inspection_X@0.000@-0.130@0.130@mm
+A@pdata@Inspection_Y@0.000@-0.130@0.130@mm
+A@pdata@Inspection_A@0.000@-0.800@0.800@degree
+A@pdata@Cycle_Time@345.000@NA@NA@s
+A@attr@machine_ID@MACH_AOI_01
+A@pdata@Operator_ID@0
+A@pdata@Mode@0
+A@pdata@TestSeriesID@0
+A@pdata@Priority@0
+A@pdata@online@1
+A@submit@BZ_UAT-AOI_V53_338_SV2.1.0.4_V2.1.0.4
+A@start----> audit
+A@dut_pos@A@8
+A@attr@MLB_AP_SN@A
+A@attr@Carrier_SN@A
+A@pdata@Cavity@8
+A@pdata@ae_vendor@1
+A@pdata@Tossing@0
+A@pdata@Inspection_X@0.000@-0.130@0.130@mm
+A@pdata@Inspection_Y@0.000@-0.130@0.130@mm
+A@pdata@Inspection_A@0.000@-0.800@0.800@degree
+A@pdata@Cycle_Time@345.000@NA@NA@s
+A@attr@machine_ID@MACH_AOI_01
+A@pdata@Operator_ID@0
+A@pdata@Mode@0
+A@pdata@TestSeriesID@0
+A@pdata@Priority@0
+A@pdata@online@1
+A@submit@BZ_UAT-AOI_V53_338_SV2.1.0.4_V2.1.0.4
+A@start----> audit
+A@dut_pos@A@9
+A@attr@MLB_AP_SN@A
+A@attr@Carrier_SN@A
+A@pdata@Cavity@9
+A@pdata@ae_vendor@1
+A@pdata@Tossing@0
+A@pdata@Inspection_X@0.000@-0.130@0.130@mm
+A@pdata@Inspection_Y@0.000@-0.130@0.130@mm
+A@pdata@Inspection_A@0.000@-0.800@0.800@degree
+A@pdata@Cycle_Time@345.000@NA@NA@s
+A@attr@machine_ID@MACH_AOI_01
+A@pdata@Operator_ID@0
+A@pdata@Mode@0
+A@pdata@TestSeriesID@0
+A@pdata@Priority@0
+A@pdata@online@1
+A@submit@BZ_UAT-AOI_V53_338_SV2.1.0.4_V2.1.0.4
+}
+[2026-04-15 10:27:41.090] [PDCA_DATA] RECV: ERROR: Unknown Command
+[2026-04-17 08:33:23.645] [SFC_QUERY] SEND: sfc_post@c=QUERY_4_SFC&subcmd=carrier_query&carrier_sn=A&station_code=MACH_PREV_01&station_id=MACH_AOI_01
+[2026-04-17 08:33:23.699] [SFC_QUERY] RECV: 0 SFC_OK 1.J85HNT00000000IS01,OK;2.J85HNT00000000IS02,OK;3.J85HNT00000000IS03,OK;4.NA,1;5.NA,1;6.NA,1;7.NA,1;8.NA,1;9.NA,1;10.NA,1;11.NA,1;12.NA,1
+[2026-04-17 10:22:10.976] [SFC_QUERY] SEND: sfc_post@c=QUERY_4_SFC&subcmd=carrier_query&carrier_sn=A&station_code=MACH_PREV_01&station_id=MACH_AOI_01
+[2026-04-17 10:22:11.043] [SFC_QUERY] RECV: 0 SFC_OK 1.J85HNT00000000IS01,OK;2.J85HNT00000000IS02,OK;3.J85HNT00000000IS03,OK;4.NA,1;5.NA,1;6.NA,1;7.NA,1;8.NA,1;9.NA,1;10.NA,1;11.NA,1;12.NA,1
+[2026-04-17 10:45:17.195] [SFC_QUERY] SEND: sfc_post@c=QUERY_4_SFC&subcmd=carrier_query&carrier_sn=A&station_code=MACH_PREV_01&station_id=MACH_AOI_01
+[2026-04-17 10:45:17.223] [SFC_QUERY] RECV: 0 SFC_OK 1.J85HNT00000000IS01,OK;2.J85HNT00000000IS02,OK;3.J85HNT00000000IS03,OK;4.NA,1;5.NA,1;6.NA,1;7.NA,1;8.NA,1;9.NA,1;10.NA,1;11.NA,1;12.NA,1
+[2026-04-17 10:53:36.020] [SFC_QUERY] SEND: sfc_post@c=QUERY_4_SFC&subcmd=carrier_query&carrier_sn=A&station_code=MACH_PREV_01&station_id=MACH_AOI_01
+[2026-04-17 10:53:36.064] [SFC_QUERY] RECV: 0 SFC_OK 1.J85HNT00000000IS01,OK;2.J85HNT00000000IS02,OK;3.J85HNT00000000IS03,OK;4.NA,1;5.NA,1;6.NA,1;7.NA,1;8.NA,1;9.NA,1;10.NA,1;11.NA,1;12.NA,1
+[2026-04-17 11:32:36.177] [PDCA_DATA] ERROR: The I/O operation has been aborted because of either a thread exit or an application request.

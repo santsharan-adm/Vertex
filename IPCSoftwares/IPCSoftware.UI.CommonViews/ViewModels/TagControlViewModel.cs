@@ -21,7 +21,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class TagControlViewModel : BaseViewModel, IDisposable
     {
-        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _tagService;
        // private readonly DispatcherTimer _timer;
         private readonly SafePoller _timer;
         private readonly CoreClient _coreClient;
@@ -47,7 +47,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public ICommand WriteCommand { get; }
 
         public TagControlViewModel(
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService tagService,
             CoreClient coreClient,
             IDialogService dialog,
             IAppLogger logger) : base(logger)
@@ -105,7 +105,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
                 var matches = AllInputs.Where(t =>
                     (t.Model.Name != null && t.Model.Name.ToLower().Contains(s)) ||
-                    t.Model.TagNo.ToString().Contains(s) // Searching by TagNo (what is shown in Grid)
+                    t.Model.Id.ToString().Contains(s) // Searching by TagNo (what is shown in Grid)
                 );
 
                 foreach (var item in matches)
@@ -166,7 +166,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
                 try
                 {
-                    bool success = await _coreClient.WriteTagAsync(item.Model.TagNo, parsedValue);
+                    bool success = await _coreClient.WriteTagAsync(item.Model.Id, parsedValue);
 
                     if (success)
                     {

@@ -45,6 +45,7 @@ namespace IPCSoftware.Services.AppLoggerServices
         // Public APIs
         public void LogInfo(string message, LogType type) => EnqueueLog("INFO", message, type);
         public void LogWarning(string message, LogType type) => EnqueueLog("WARN", message, type);
+        public void LogTrace(string message) => EnqueueLog("TRACE", message, LogType.TagTrace);
         //public void LogError(string message, LogType type) => EnqueueLog("ERROR", message, type);
 
         public void LogError(
@@ -111,7 +112,19 @@ namespace IPCSoftware.Services.AppLoggerServices
             // Doing this here ensures it happens on the background thread, not UI thread
           //  _logManager.ApplyMaintenance(config, filePath);
 
-            string line = $"{entry.Timestamp:yyyy-MM-dd HH:mm:ss:fff},{entry.Level},\"{entry.Message}\",{config.LogName}{Environment.NewLine}";
+            // Format the log line based on log type
+            string line;
+            if (entry.Type == LogType.TagTrace)
+            {
+                // TagTrace format: Timestamp,TagId,TagName,Value,PLCNo,ModbusAddress
+                // The message already contains: TagId,TagName,Value,PLCNo,ModbusAddress
+                line = $"{entry.Timestamp:yyyy-MM-dd HH:mm:ss:fff},{entry.Message}{Environment.NewLine}";
+            }
+            else
+            {
+                // Standard format: Timestamp,Level,Message,Source
+                line = $"{entry.Timestamp:yyyy-MM-dd HH:mm:ss:fff},{entry.Level},\"{entry.Message}\",{config.LogName}{Environment.NewLine}";
+            }
 
             // RETRY POLICY: Handles the case where 'CoreService' and 'App' try to write simultaneously.
             // We try 3 times with a small delay.

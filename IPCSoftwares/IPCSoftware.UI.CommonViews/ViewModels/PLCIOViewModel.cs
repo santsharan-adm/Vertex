@@ -20,7 +20,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class PLCIOViewModel : BaseViewModel, IDisposable
     {
-        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _tagService;
         private readonly SafePoller _timer;
         private readonly CoreClient _coreClient;
         private readonly UiTcpClient _tcpClient;
@@ -55,8 +55,8 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public ICommand ToggleOutputCommand { get; }
 
         public PLCIOViewModel(
-            CoreClient coreClient, 
-            IPLCTagConfigurationService tagService,
+            CoreClient coreClient,
+            IDeviceConfigurationService tagService,
             IAppLogger logger) : base(logger)
         {
             _tagService = tagService;

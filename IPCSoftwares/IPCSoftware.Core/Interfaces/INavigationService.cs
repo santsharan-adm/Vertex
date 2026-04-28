@@ -32,6 +32,8 @@ namespace IPCSoftware.Core.Interfaces
         void NavigateToInterfaceConfiguration(DeviceModel parentDevice, DeviceInterfaceModel interfaceToEdit, Func<Task> onSaveCallback);
         void NavigateToCameraInterfaceConfiguration(DeviceModel parentDevice, CameraInterfaceModel cameraInterfaceToEdit, Func<Task> onSaveCallback);
 
+        // NEW: CCD Settings Navigation
+        void NavigateToCcdSettings(DeviceModel parentDevice, CameraInterfaceModel cameraInterface, Func<Task> onSaveCallback);
 
         // Alarm Configuration - NEW
         void NavigateToAlarmList();
@@ -45,6 +47,9 @@ namespace IPCSoftware.Core.Interfaces
         void NavigateToSystemSettings();
         // PLC Tag Configuration - NEW
         void NavigateToPLCTagList();
+
+        // Service Startup
+        void NavigateToServiceStartup();                                                                  //Added By Rishabh , Date -13/04/2026
 
         // App-specific view navigation (types defined in IPCSoftware.app assembly)
         void NavigateToManualOperation();

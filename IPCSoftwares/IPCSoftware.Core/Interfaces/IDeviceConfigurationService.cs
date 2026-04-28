@@ -13,7 +13,7 @@ namespace IPCSoftware.Core.Interfaces
 
         // Device operations
         Task<List<DeviceModel>> GetAllDevicesAsync();
-        Task<List<DeviceInterfaceModel>> GetPlcDevicesAsync();
+        Task<List<DeviceInterfaceModel>> GetDeviceInterfaceAsync(); //Modified by Rishabh -Date -17/04/2026
         Task<List<CameraInterfaceModel>> GetCameraDevicesAsync();
         Task<DeviceModel> GetDeviceByIdAsync(int id);
         Task<DeviceModel> AddDeviceAsync(DeviceModel device);
@@ -34,6 +34,30 @@ namespace IPCSoftware.Core.Interfaces
         Task<CameraInterfaceModel> AddCameraInterfaceAsync(CameraInterfaceModel cameraInterface);
         Task<bool> UpdateCameraInterfaceAsync(CameraInterfaceModel cameraInterface);
         Task<bool> DeleteCameraInterfaceAsync(int id);
+
+
+
+        // ================ PLC TAG CONFIGURATION OPERATIONS ====================//
+
+
+        Task<List<PLCTagConfigurationModel>> GetAllTagsAsync();
+
+
+        // FIX CS0535: IMPLEMENT THE REQUIRED METHOD FOR DYNAMIC RELOAD
+        Task<List<PLCTagConfigurationModel>> ReloadTagsAsync();
+
+
+        Task<PLCTagConfigurationModel> GetTagByIdAsync(int id);
+
+
+        Task<PLCTagConfigurationModel> AddTagAsync(PLCTagConfigurationModel tag);
+
+
+        Task<bool> UpdateTagAsync(PLCTagConfigurationModel tag);
+
+
+        Task<bool> DeleteTagAsync(int id);
+
 
     }
 }

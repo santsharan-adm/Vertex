@@ -486,6 +486,10 @@ public class MainWindowViewModel : BaseViewModel
                 case "Time Sync":
                     _nav.NavigateToSystemSettings();
                     break;
+                //Added By Rishabh , Date -13/04/2026
+                case "Service Startup":
+                    _nav.NavigateToServiceStartup();       
+                    break;
 
                 // Config Menu
                 case "Log Config":
