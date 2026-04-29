@@ -1,10 +1,11 @@
-﻿using System.Collections.ObjectModel;
+﻿using IPCSoftware.App.Bending.Views;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using IPCSoftware.App.Bending.Views;
+
 
 namespace IPCSoftware.App.Bending
 {
@@ -25,7 +26,9 @@ namespace IPCSoftware.App.Bending
             // Set default content
             var uc1 = new UserControl1();
             uc1.DataContext = this; // Pass MainWindow as DataContext
-            MainContentArea.Content = uc1;
+
+            MainPage.SetContent(uc1);//            MainContent.Content = uc1;
+            MainPage.SetTopBarVisibility(Visibility.Collapsed);//  TopBar.Visibility = Visibility.Collapsed;
         }
 
         // ==============================
@@ -89,27 +92,29 @@ namespace IPCSoftware.App.Bending
                 case "Bending Monitor 1":
                     var bending1 = new Bending1MonitorView();
                     bending1.DataContext = this; // Pass MainWindow as DataContext
-                    MainContentArea.Content = bending1;
+                    MainPage.SetContent(bending1); //MainContent.Content = bending1;
                     break;
                 case "Bending Monitor 2":
                     var bending2 = new Bending2MonitorView();
                     bending2.DataContext = this; // Pass MainWindow as DataContext
-                    MainContentArea.Content = bending2;
+                    MainPage.SetContent(bending2); //MainContent.Content = bending2;
                     break;
                 case "Bending Monitor 3":
                     var bending3 = new Bending3MonitorView();
                     bending3.DataContext = this; // Pass MainWindow as DataContext
-                    MainContentArea.Content = bending3;
+                    MainPage.SetContent(bending3); //MainContent.Content = bending3;
                     break;
                 case "User Control 1":
                     var uc1 = new UserControl1();
                     uc1.DataContext = this; // Pass MainWindow as DataContext
-                    MainContentArea.Content = uc1;
+                    MainPage.SetTopBarVisibility(Visibility.Collapsed); //TopBar.Visibility = Visibility.Collapsed;
+                    MainPage.SetContent(uc1); //MainContent.Content = uc1;
                     break;
                 case "User Control 2":
                     var uc2 = new UserControl2();
                     uc2.DataContext = this; // Pass MainWindow as DataContext
-                    MainContentArea.Content = uc2;
+                    MainPage.SetTopBarVisibility(Visibility.Collapsed); //TopBar.Visibility = Visibility.Collapsed;
+                    MainPage.SetContent(uc2); //MainContent.Content = uc2;
                     break;
             }
         }
