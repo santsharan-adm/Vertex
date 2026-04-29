@@ -87,7 +87,7 @@ namespace IPCSoftware.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error ensuring default user: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"Error ensuring default user: {ex.Message}", LogType.Diagnostics);
         
             }
         }

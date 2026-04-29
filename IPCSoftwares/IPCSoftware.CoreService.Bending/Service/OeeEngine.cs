@@ -13,12 +13,12 @@ namespace IPCSoftware.CoreService.Bending.Service
     public class OeeEngineBending : OeeEngineBase
     {
         public OeeEngineBending(
-            IDeviceConfigurationService tagService,
+            IDeviceConfigurationService deviceService,
             PLCClientManager plcManager,
             IAppLogger logger,
             IProductionDataLogger prodLogger,
             IConfiguration configuration)
-            : base(tagService, plcManager, logger, prodLogger, configuration)
+            : base(deviceService, plcManager, logger, prodLogger, configuration)
         {
 
         }

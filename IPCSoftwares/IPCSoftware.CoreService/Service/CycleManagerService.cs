@@ -25,7 +25,7 @@ namespace IPCSoftware.CoreService.AOI.Service
     public class CycleManagerServiceAOI : CycleManagerServiceBase
     {
         public CycleManagerServiceAOI(
-            IDeviceConfigurationService tagService,
+            IDeviceConfigurationService deviceService,
             ILogConfigurationService logConfig,
             PLCClientManager plcManager,
             IOptions<CcdSettings> appSettings,
@@ -35,7 +35,7 @@ namespace IPCSoftware.CoreService.AOI.Service
             IObservableCcdSettingsService observableCcdSettings,
             IAeLimitService aeLimitService,            
             IProductConfigurationService productService,
-            IAppLogger logger) : base (tagService,logConfig,plcManager, appSettings, 
+            IAppLogger logger) : base (deviceService,logConfig,plcManager, appSettings, 
                 servoService, imageService, extService, observableCcdSettings, aeLimitService, productService, logger)
         {
 
@@ -84,7 +84,7 @@ namespace IPCSoftware.CoreService.AOI.Service
                 // Reading first to compare is possible but writing ensures Source of Truth (JSON) is applied.
 
                 int tagId = ConstantValues.NO_OF_Station;
-                var allTags = await _tagService.GetAllTagsAsync();
+                var allTags = await _deviceService.GetAllTagsAsync();
                 var tagConfig = allTags.FirstOrDefault(t => t.Id == tagId);
 
                 if (tagConfig != null)

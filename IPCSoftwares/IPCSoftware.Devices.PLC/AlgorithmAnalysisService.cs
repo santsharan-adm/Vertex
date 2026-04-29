@@ -17,7 +17,7 @@ namespace IPCSoftware.Devices.PLC
     {
         // Removed 'readonly' keyword for dynamic update support
         private List<PLCTagConfigurationModel> _tags;
-        private readonly IDeviceConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _deviceService;
         public List<PLCTagConfigurationModel> Tags => _tags;
         private readonly bool _swapBytes;
         private readonly bool _swapStringBytes;
@@ -37,11 +37,11 @@ namespace IPCSoftware.Devices.PLC
 
 
         public AlgorithmAnalysisService(
-            IDeviceConfigurationService tagService,
+            IDeviceConfigurationService deviceService,
             IOptions<ConfigSettings> config,
             IAppLogger logger) : base(logger)
         {
-            _tagService = tagService;
+            _deviceService = deviceService;
             _swapBytes = config.Value.SwapBytes;
             _swapStringBytes = config.Value.SwapStringBytes;
             _ = GetTags();
@@ -50,7 +50,7 @@ namespace IPCSoftware.Devices.PLC
 
         public async Task GetTags()
         {
-            _tags = await _tagService.GetAllTagsAsync();
+            _tags = await _deviceService.GetAllTagsAsync();
         }
 
         // Method used by the Watcher Service for runtime update
@@ -83,7 +83,7 @@ namespace IPCSoftware.Devices.PLC
                     object rawTypedValue = ConvertData(rawObj, tag);
 
                     if (rawTypedValue == null) continue;
-
+                    //Added new for TraceLog - 27-04-2026-
                     if (tag.EnableTraceLog)
                     {
                         string csvLine = $"{tag.Id},{rawTypedValue}";
