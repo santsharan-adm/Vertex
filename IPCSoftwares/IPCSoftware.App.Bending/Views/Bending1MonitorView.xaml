@@ -50,13 +50,14 @@
 		</Grid.RowDefinitions>
 
 		<Grid Grid.Row="0" Background="Black">
-			<Button Content="GO TO MENU" HorizontalAlignment="Left" Width="130" Height="40" Margin="10,0,0,0"
-                    Background="#007ACC" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
+			<!--<Button Content="GO TO MENU" HorizontalAlignment="Left" Width="130" Height="40" Margin="10,0,0,0"
+                    Background="#007ACC" Foreground="White" FontWeight="Bold" BorderThickness="0"/>-->
 
 			<TextBlock Text="BENDING 1 MONITOR" Foreground="White" FontSize="32"
-                       HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+						   HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
 
-			<Button HorizontalAlignment="Right" Width="55" Background="Red" BorderThickness="0">
+			<Button HorizontalAlignment="Right" Width="55" Background="Red" BorderThickness="0"
+					Command="{Binding ToggleSidebarCommand}">
 				<TextBlock Text="↩" Foreground="White" FontSize="28" FontWeight="Bold"/>
 			</Button>
 		</Grid>

@@ -88,7 +88,8 @@
                     Foreground="White"
                     FontWeight="Bold"
                     FontSize="9.5"
-                    Cursor="Hand">
+                    Cursor="Hand"
+                    Command="{Binding ToggleSidebarCommand}">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="5"/>

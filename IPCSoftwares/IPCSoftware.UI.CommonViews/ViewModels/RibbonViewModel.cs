@@ -180,6 +180,7 @@ public class RibbonViewModel : BaseViewModel
                 "Product Settings",
                 "External Interface",
                 "AE Limit"
+                
             };
 
             // 3. Logic: Only Admin can see "User Config"

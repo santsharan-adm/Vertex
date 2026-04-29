@@ -14,7 +14,8 @@
         <Border Grid.Row="0" Background="Black" BorderBrush="White" BorderThickness="0,0,0,1">
             <Grid>
                 <TextBlock Text="BENDING 2 MONITOR" Foreground="White" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
-                <Button Content="↩" HorizontalAlignment="Right" Width="55" Background="Red" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Center" />
+                <Button Content="↩" HorizontalAlignment="Right" Width="55" Background="Red" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Center"
+                        Command="{Binding ToggleSidebarCommand}"/>
             </Grid>
         </Border>
 
