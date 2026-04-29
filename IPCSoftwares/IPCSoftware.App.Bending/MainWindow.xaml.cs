@@ -17,18 +17,17 @@ namespace IPCSoftware.App.Bending
             DataContext = this;
 
             // Initialize menu items
+            SidebarItems.Add("Welcome Page");
             SidebarItems.Add("Bending Monitor 1");
             SidebarItems.Add("Bending Monitor 2");
             SidebarItems.Add("Bending Monitor 3");
-            SidebarItems.Add("User Control 1");
-            SidebarItems.Add("User Control 2");
 
-            // Set default content
+            // Set default content to UserControl1 (original behavior)
             var uc1 = new UserControl1();
             uc1.DataContext = this; // Pass MainWindow as DataContext
 
-            MainPage.SetContent(uc1);//            MainContent.Content = uc1;
-            MainPage.SetTopBarVisibility(Visibility.Collapsed);//  TopBar.Visibility = Visibility.Collapsed;
+            MainPage.SetContent(uc1);
+            MainPage.SetTopBarVisibility(Visibility.Collapsed);
         }
 
         // ==============================
@@ -67,13 +66,30 @@ namespace IPCSoftware.App.Bending
         // COMMANDS
         // ==============================
         private ICommand _toggleSidebarCommand;
-        public ICommand ToggleSidebarCommand => _toggleSidebarCommand ??= new RelayCommand(() => IsSidebarOpen = !IsSidebarOpen);
+        public ICommand ToggleSidebarCommand => _toggleSidebarCommand ??= new RelayCommand(NavigateToWelcomePage);
 
         private ICommand _closeSidebarCommand;
         public ICommand CloseSidebarCommand => _closeSidebarCommand ??= new RelayCommand(() => IsSidebarOpen = false);
 
         private ICommand _sidebarItemClickCommand;
         public ICommand SidebarItemClickCommand => _sidebarItemClickCommand ??= new RelayCommand<string>(OnSidebarItemClick);
+
+        // ==============================
+        // NAVIGATION METHODS
+        // ==============================
+        private void NavigateToWelcomePage()
+        {
+            var welcomePage = new WelcomePageView();
+            var welcomeViewModel = new ViewModels.WelcomePageViewModel();
+            welcomePage.DataContext = welcomeViewModel;
+            
+            MainPage.SetTopBarVisibility(Visibility.Visible);
+            MainPage.SetContent(welcomePage);
+            
+            
+            // Close sidebar if open
+            IsSidebarOpen = false;
+        }
 
         // ==============================
         // MENU NAVIGATION
@@ -89,20 +105,23 @@ namespace IPCSoftware.App.Bending
             // Navigate based on item name
             switch (itemName)
             {
+                case "Welcome Page":
+                    NavigateToWelcomePage();
+                    break;
                 case "Bending Monitor 1":
                     var bending1 = new Bending1MonitorView();
                     bending1.DataContext = this; // Pass MainWindow as DataContext
-                    MainPage.SetContent(bending1); //MainContent.Content = bending1;
+                    MainPage.SetContent(bending1);
                     break;
                 case "Bending Monitor 2":
                     var bending2 = new Bending2MonitorView();
                     bending2.DataContext = this; // Pass MainWindow as DataContext
-                    MainPage.SetContent(bending2); //MainContent.Content = bending2;
+                    MainPage.SetContent(bending2);
                     break;
                 case "Bending Monitor 3":
                     var bending3 = new Bending3MonitorView();
                     bending3.DataContext = this; // Pass MainWindow as DataContext
-                    MainPage.SetContent(bending3); //MainContent.Content = bending3;
+                    MainPage.SetContent(bending3);
                     break;
                 case "User Control 1":
                     var uc1 = new UserControl1();
