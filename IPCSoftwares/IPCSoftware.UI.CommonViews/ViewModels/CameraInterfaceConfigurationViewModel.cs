@@ -8,18 +8,26 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Navigation;
 
 namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class CameraInterfaceConfigurationViewModel : BaseViewModel
     {
         private readonly IDeviceConfigurationService _deviceService;
+        private readonly INavigationService _navigationService;
         private CameraInterfaceModel _currentInterface;
         private DeviceModel _parentDevice;
         private bool _isEditMode;
         private string _title;
+       
+        //
 
+        public ICommand OpenCCDSettingsCommand { get; }
+
+        ///
         public string Title
         {
             get => _title;
@@ -183,10 +191,11 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public event EventHandler CancelRequested;
 
         public CameraInterfaceConfigurationViewModel
-            (IDeviceConfigurationService deviceService,
+            (IDeviceConfigurationService deviceService,INavigationService navigationService,
             IAppLogger logger) : base(logger)
         {
             _deviceService = deviceService;
+            _navigationService = navigationService;
 
             Protocols = new ObservableCollection<string>
             {
@@ -197,10 +206,18 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 "Custom Protocol"
             };
 
+            OpenCCDSettingsCommand = new RelayCommand(OpenCcdSettings ,() => true);
+            
             SaveCommand = new RelayCommand(async () => await OnSaveAsync(), CanSave);
             CancelCommand = new RelayCommand(OnCancel);
         }
 
+
+        private void OpenCcdSettings()
+        {
+            if ( _currentInterface == null || _parentDevice == null) return;
+            _navigationService.NavigateToCcdSettings(_parentDevice, _currentInterface, async () => { await Task.CompletedTask; });
+        }
         public void InitializeNewInterface(DeviceModel parentDevice)
         {
 

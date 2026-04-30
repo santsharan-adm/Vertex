@@ -62,8 +62,6 @@ namespace IPCSoftware.App
                 return;
             }
 
-            base.OnStartup(e);
-
             // Build configuration FIRST, before host creation, so ConstantValues
             // is initialized before the DI container resolves any services.
             IConfiguration earlyConfig = new ConfigurationBuilder()
@@ -159,7 +157,7 @@ namespace IPCSoftware.App
                 }
             };
 
-            var tagService = ServiceProvider.GetService<IPLCTagConfigurationService>();
+            var tagService = ServiceProvider.GetService<IDeviceConfigurationService>();
             if (tagService != null)
             {
                 await tagService.InitializeAsync();
@@ -207,9 +205,10 @@ namespace IPCSoftware.App
             TcpClient.UiConnected += OnTcpConnectionChanged;
 
             // Initial connection
-            //await ConnectUiTcpAsync();
             _ = Task.Run(async () => await ConnectUiTcpAsync());
 
+            // Show the main window only after ServiceProvider is fully initialized
+            new MainWindow().Show();
         }
 
         /// <summary>

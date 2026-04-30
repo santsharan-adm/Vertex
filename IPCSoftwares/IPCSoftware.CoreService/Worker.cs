@@ -16,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
 using IPCSoftware.Devices.UI;
+using IPCSoftware.CoreService.AOI.Service;
 
 namespace IPCSoftware.CoreService
 {
@@ -23,12 +24,12 @@ namespace IPCSoftware.CoreService
     {
         private readonly IAppLogger _logger;
         private readonly ILogManagerService _logManager;
-        private readonly IPLCTagConfigurationService _tagService;
+        //private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceService;
         private readonly ConfigSettings _configuration;
-        private readonly CCDTriggerService _ccdTrigger;
+        private readonly CCDTriggerServiceAOI _ccdTrigger;
         private readonly CameraFtpService _cameraFtpService;
-        private readonly DashboardInitializer _dashboard;
+        private readonly DashboardInitializerAOI _dashboard;
         private readonly AlgorithmAnalysisService _algo;
         private readonly PLCClientManager _plcManager;
         private readonly UiListener _uiListener;
@@ -37,10 +38,10 @@ namespace IPCSoftware.CoreService
 
         public Worker(IAppLogger logger, 
             ILogManagerService logManager, 
-            IPLCTagConfigurationService tagService,
+           // IDeviceConfigurationService tagService,
             AlgorithmAnalysisService algo,
-            DashboardInitializer dashboard,
-            CCDTriggerService ccdTrigger,
+            DashboardInitializerAOI dashboard,
+            CCDTriggerServiceAOI ccdTrigger,
             IDeviceConfigurationService deviceService, 
             IOptions<ConfigSettings> configuration,
             CameraFtpService cameraFtpService,
@@ -49,7 +50,7 @@ namespace IPCSoftware.CoreService
         {
             _logManager = logManager;
             _deviceService = deviceService;
-            _tagService = tagService;
+           // _tagService = tagService;
             _logger = logger;
             _algo = algo;
             _plcManager = plcManger;   
@@ -64,11 +65,11 @@ namespace IPCSoftware.CoreService
         {
             try
             {
-                var devices = await _deviceService.GetPlcDevicesAsync();
+                var devices = await _deviceService.GetDeviceInterfaceAsync();
                 var cameras = _deviceService.GetCameraDevicesAsync().GetAwaiter().GetResult();
                 _logger.LogInfo($"Loaded {devices.Count} PLC devices.", LogType.Diagnostics);
                 _logger.LogInfo($"Loaded {cameras.Count} cameras devices.", LogType.Diagnostics);
-                var tags = await _tagService.GetAllTagsAsync();
+                var tags = await _deviceService.GetAllTagsAsync();
                 _logger.LogInfo($"Loaded {tags.Count} Modbus tags.", LogType.Diagnostics);
                 SharedServiceHost.Initialize(_plcManager, _algo);  // ✅ still works via using IPCSoftware.Engine
 

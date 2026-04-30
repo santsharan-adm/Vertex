@@ -17,7 +17,7 @@ namespace IPCSoftware.Engine
     public class ShiftResetService : BaseService
     {
         private readonly PLCClientManager _plcManager;
-        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _tagService;
         private readonly string _shiftCsvPath;
 
         // --- SHIFT STATE ---
@@ -38,7 +38,7 @@ namespace IPCSoftware.Engine
 
         public ShiftResetService(
             PLCClientManager plcManager,
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService tagService,
             IOptions<ConfigSettings> configSettings,
             IAppLogger logger) : base(logger)
         {
@@ -208,7 +208,7 @@ namespace IPCSoftware.Engine
             try
             {
                 var allTags = await _tagService.GetAllTagsAsync();
-                var tag = allTags.FirstOrDefault(t => t.TagNo == tagNo);
+                var tag = allTags.FirstOrDefault(t => t.Id == tagNo);
 
                 if (tag == null) return;
 

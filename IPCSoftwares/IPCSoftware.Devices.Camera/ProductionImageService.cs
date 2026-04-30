@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
@@ -17,13 +18,15 @@ namespace IPCSoftware.Devices.Camera
     {
         private readonly CcdSettings _ccd;
         private readonly ExternalSettings _extSetting;
-
+        private readonly IObservableCcdSettingsService _observableSettings;
         public ProductionImageService(IOptions<CcdSettings> ccdOptions,
             IOptions<ExternalSettings> extSetting,
+            IObservableCcdSettingsService observableCcdSettings,
             IAppLogger logger) : base(logger)
         {
             _ccd = ccdOptions.Value;
             _extSetting = extSetting.Value;
+            _observableSettings = observableCcdSettings;
         }
 
         /// <summary>
@@ -44,7 +47,7 @@ namespace IPCSoftware.Devices.Camera
                 }
 
                 // 1. Generate Time Data (Date of Today and Current Time)
-                DateTime now = DateTime.Now;
+                DateTime now = DateTime.Now; 
                 string dateStr = now.ToString("dd-MM-yyyy");       // e.g. 08-12-2025
                 string timeStr = now.ToString("HH-mm-ss-fff");     // e.g. 14-30-01-123 (Colons replaced with dashes for filename validity)
 
@@ -65,7 +68,7 @@ namespace IPCSoftware.Devices.Camera
                 // Format: uniqueString_DateOfToday
                 //  string folderName = $"{uniqueDataString}_{dateStr}".Replace("\0", "_");
                 string machineCode = _extSetting.AOIMachineCode;
-                string productionFolder = _ccd.ImageRootFolder;// "Production Images";
+                string productionFolder = _observableSettings.ImageRootFolder;// "Production Images";  //Modified by Rishabh -Date -14/04/2026
 
                 string folderName = $"{metaDate}-{uniqueDataString}".Replace("\0", "_");
                 var finalfolderName = Path.Combine(machineCode, productionFolder, folderName);
@@ -80,23 +83,28 @@ namespace IPCSoftware.Devices.Camera
 
                 // 3. Construct File Name Base
                 // Format: stNo_FolderName_time(hh-mm-ss-xxx)
-                string fileNameBase = $"{stNo}_{uniqueDataString}_{metaDate}_{timeStr}";
+                // Sanitize QR string to remove null bytes and invalid filename characters
+                string safeQrString = new string(uniqueDataString
+                    .Replace("\0", "_")
+                    .Select(c => Path.GetInvalidFileNameChars().Contains(c) ? '_' : c)
+                    .ToArray());
+                string fileNameBase = $"{stNo}_{safeQrString}_{metaDate}_{timeStr}";
 
                 // 4. Define Full Output Paths
                 string rawDestPath = Path.Combine(targetFolder, $"{fileNameBase}_raw.bmp");
                 //string rawUIDestPath = Path.Combine(Path.GetDirectoryName(tempFilePath), "UI", $"{fileNameBase}_raw.bmp");
-                string rawUIDestPath = Path.Combine(_ccd.QrCodeImagePath, $"{fileNameBase}_raw.bmp");
-                if (!Directory.Exists(_ccd.QrCodeImagePath))
+                string rawUIDestPath = Path.Combine(_observableSettings.QrCodeImagePath, $"{fileNameBase}_raw.bmp");
+                if (!Directory.Exists(_observableSettings.QrCodeImagePath))
                 {
-                    Directory.CreateDirectory(_ccd.QrCodeImagePath);
+                    Directory.CreateDirectory(_observableSettings.QrCodeImagePath);
                 }
                 string procDestPath = Path.Combine(targetFolder, $"{fileNameBase}_processed.bmp");
 
                 // --- 3. Prepare Metadata Objects (Runtime overrides) ---
                 // We create copies so we don't modify the global settings
-                var clientMeta = CloneAndUpdate(_ccd.ClientMetaDataParams, uniqueDataString, stNo, metaDate, metaTime, fileNameBase, x, y , z);
-                var vendorMeta = CloneAndUpdate(_ccd.VendorMetaDataParams, uniqueDataString, stNo, metaDate, metaTime, fileNameBase, x, y, z);
-
+                var clientMeta = CloneAndUpdate( _observableSettings.ClientMetaDataParams, uniqueDataString, stNo, metaDate, metaTime, fileNameBase, x, y , z);
+                var vendorMeta = CloneAndUpdate(_observableSettings.VendorMetaDataParams, uniqueDataString, stNo, metaDate, metaTime, fileNameBase, x, y, z);
+                
                 // --- 4. Format Metadata Strings ---
                 string clientMetaStr = MetadataFormatter.Format(clientMeta, true);
                 string vendorMetaStr = MetadataFormatter.Format(vendorMeta, false);
@@ -197,7 +205,7 @@ namespace IPCSoftware.Devices.Camera
                 // Ensure style is padded/trimmed to exactly 16 bytes if required, 
                 // though diagram just says "Append Metadata Style". 
                 // We use the string directly as per the code logic usually matching "METADATASTYLE003".
-                string style = _ccd.MetadataStyle ?? "METADATASTYLE003";
+                string style = _observableSettings.MetadataStyle ?? "METADATASTYLE003";
                 dataBuilder.AddRange(Encoding.ASCII.GetBytes(style));
                 // --- 4. Append Client Metadata ---
                 // If Style is 002, skip Client. 

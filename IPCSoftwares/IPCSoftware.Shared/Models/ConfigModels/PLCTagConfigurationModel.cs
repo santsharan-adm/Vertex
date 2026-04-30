@@ -9,6 +9,8 @@ namespace IPCSoftware.Shared.Models.ConfigModels
     public class PLCTagConfigurationModel
     {
         public int Id { get; set; }
+        
+        [Obsolete("TagNo is deprecated. Use Id,Name as the unique identifier for tags.")]
         public int TagNo { get; set; }
         public string Name { get; set; }
         public int PLCNo { get; set; }
@@ -26,6 +28,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
 
         public bool CanWrite { get; set; }
         public string IOType { get; set; } // NEW: Input/Output
+        public bool EnableTraceLog { get; set; } // NEW: Enable trace log for this tag krishna add this property
 
         public PLCTagConfigurationModel()
         {
@@ -38,6 +41,7 @@ namespace IPCSoftware.Shared.Models.ConfigModels
             Span = 0;
             CanWrite = false;
             IOType = "None"; // Default
+            EnableTraceLog = false; // Default to false krishna add this 
            // DMAddress = string.Empty;
         }
 
@@ -53,7 +57,6 @@ namespace IPCSoftware.Shared.Models.ConfigModels
               //  DMAddress = this.DMAddress, // Clone new field
                 Length = this.Length,
                 AlgNo = this.AlgNo,
-
                 DataType = this.DataType,
                 BitNo = this.BitNo,
 
@@ -62,7 +65,9 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 Description = this.Description,
                 Remark = this.Remark,
                 CanWrite = this.CanWrite,
-                IOType = this.IOType // Clone new field
+                UseEngMinMax = this.UseEngMinMax,
+                IOType = this.IOType, // Clone new field
+                EnableTraceLog = this.EnableTraceLog
             };
         }
     }

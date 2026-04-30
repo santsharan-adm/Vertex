@@ -1,45 +1,50 @@
-﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.Devices.PLC;
+﻿using IPCSoftware.Communication.Common;
+using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.CoreService.Services.Dashboard;
 using IPCSoftware.Devices.Camera;
+using IPCSoftware.Devices.PLC;
 using IPCSoftware.Devices.UI;
-using IPCSoftware.Communication.Common;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
-using IPCSoftware.CoreService.Services.Dashboard;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.Json;
 
 namespace IPCSoftware.Engine
 {
-    public class DashboardInitializer : BaseService
+    public class DashboardInitializerBase : BaseService
     {
         private readonly PLCClientManager _manager;
         private readonly UiListener _ui ;
         private readonly AlgorithmAnalysisService _algo;
-        private readonly OeeEngine _oee ;
+        private readonly OeeEngineBase _oee ;
         private readonly SystemMonitorService _systemMonitor;
         private readonly ShiftResetService _shiftReset;
-        private readonly CCDTriggerService _ccdTrigger; // 1. Add field
+        private readonly CCDTriggerServiceBase _ccdTrigger; // 1. Add field
         private readonly AlarmService _alarmService;
+       // private readonly IPLCTagConfigurationService _tagService;         //Added by Rishabh - date - 26/04/2026//
 
         // latest packets per PLC (unitno)
         private readonly Dictionary<int, PlcPacket> _latestPackets = new();
 
         private Dictionary<int, object>? _lastValues = null;
 
-        public DashboardInitializer(PLCClientManager manager,
+        public DashboardInitializerBase(PLCClientManager manager,
             AlgorithmAnalysisService algo,
-            OeeEngine oee,
+            OeeEngineBase oee,
             ShiftResetService shiftReset,
             SystemMonitorService systemMonitor,
           UiListener ui,
           AlarmService alarmService,
-            CCDTriggerService ccdTrigger,
+            CCDTriggerServiceBase ccdTrigger,
+          //  IPLCTagConfigurationService tagService,
             IAppLogger logger) : base(logger)
         {
             _ui = ui;
@@ -50,6 +55,7 @@ namespace IPCSoftware.Engine
             _manager = manager;
             _algo =algo;
             _ccdTrigger = ccdTrigger;
+           // _tagService = tagService;
         }
 
       
@@ -65,18 +71,17 @@ namespace IPCSoftware.Engine
                 // Start PLC read loops
                 var plcTasks = _manager.Clients.Select(client =>
                 {
-                    client.OnPlcDataReceived += (plcNo, values) =>
+                    client.OnPlcDataReceived += async (plcNo, values) =>
                     {
+                        
+                      
+                        
                         // A. Process Raw Data -> Typed Values (Int/Bool/String)
                         // processedData is Dictionary<int, object> where int is Tag ID
                         var processedData = _algo.Apply(plcNo, values);
 
-                        string qrCodeNullCgeck = processedData.ContainsKey(ConstantValues.TAG_QR_DATA) ? processedData[ConstantValues.TAG_QR_DATA]?.ToString() : null;
-                        if (qrCodeNullCgeck != null && !(qrCodeNullCgeck.Contains('\0')))
-                        {
-                            _ccdTrigger.ProcessTriggers(processedData, _manager);
-                         
-                        }
+                     
+                        await _ccdTrigger.ProcessTriggers(processedData, _manager);
                         _oee.ProcessCycleTimeLogic(processedData);
                         _oee.Calculate(processedData);
                         _systemMonitor.Process(processedData);
@@ -341,6 +346,9 @@ namespace IPCSoftware.Engine
             new ResponsePackage { ResponseId = 6, Success = false, ErrorMessage = msg };
 
 
+       
+
+
     }
 
     // ✅ Moved here FROM Worker.cs — lives in IPCSoftware.Engine assembly
@@ -356,5 +364,7 @@ namespace IPCSoftware.Engine
             PlcManager = manager;
             AlgorithmService = algo;
         }
+
+
     }
 }

@@ -17,7 +17,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class PLCTagConfigurationViewModel : BaseViewModel
     {
-        private readonly IPLCTagConfigurationService _tagService;
+       // private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceConfigService;
         private PLCTagConfigurationModel _currentTag;
         private bool _isEditMode;
@@ -37,11 +37,18 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         }
 
         // Properties
+        private int _id;
+        public int Id
+        {
+            get => _id;
+            set => SetProperty(ref _id, value);
+        }
+
         private int _tagNo;
         public int TagNo
         {
-            get => _tagNo;
-            set => SetProperty(ref _tagNo, value);
+            get => _id;
+            set => SetProperty(ref _id, value);
         }
 
         private string _name;
@@ -171,9 +178,20 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             get => _canWrite;
             set => SetProperty(ref _canWrite, value);
         }
-
-
-
+        //krishna add this //
+        private bool _useEngMinMax;
+        public bool UseEngMinMax
+        {
+            get => _useEngMinMax;
+            set => SetProperty(ref _useEngMinMax, value);
+        }
+        //krishna add this //
+        private bool _enableTraceLog;
+        public bool EnableTraceLog
+        {
+            get => _enableTraceLog;
+            set => SetProperty(ref _enableTraceLog, value);
+        }
 
         // UPDATED: Collection of AlgorithmType objects
         public ObservableCollection<AlgorithmType> AlgorithmTypes { get; }
@@ -187,12 +205,12 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public event EventHandler CancelRequested;
 
         public PLCTagConfigurationViewModel(
-            IPLCTagConfigurationService tagService,
+           // IPLCTagConfigurationService tagService,
             IDeviceConfigurationService deviceConfigService,
             IDialogService dialog,
             IAppLogger logger) : base(logger)
         {
-            _tagService = tagService;
+           // _tagService = tagService;
             _deviceConfigService = deviceConfigService;
             _dialog = dialog;
 
@@ -246,7 +264,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             try
             {
-                var plcs = await _deviceConfigService.GetPlcDevicesAsync();
+                var plcs = await _deviceConfigService.GetDeviceInterfaceAsync();
 
                 // Marshal to UI Thread to update Collection
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
@@ -276,7 +294,8 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             try
             {
-                TagNo = tag.TagNo;
+                Id = tag.Id;
+                //TagNo = tag.TagNo;
                 Name = tag.Name;
                 PLCNo = tag.PLCNo;
                 ModbusAddress = tag.ModbusAddress;
@@ -295,6 +314,8 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 Description = tag.Description;
                 Remark = tag.Remark;
                 CanWrite = tag.CanWrite;
+                UseEngMinMax = tag.UseEngMinMax;
+                EnableTraceLog = tag.EnableTraceLog;
                 // Bind IOType
                 SelectedIOType = tag.IOType;
                 UpdateAlgorithmState();
@@ -309,7 +330,8 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             try
             {
-                _currentTag.TagNo = TagNo;
+                _currentTag.Id = Id;
+                //_currentTag.TagNo = TagNo;
                 _currentTag.Name = Name;
                 _currentTag.PLCNo = PLCNo;
                 _currentTag.ModbusAddress = ModbusAddress;
@@ -326,6 +348,9 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 _currentTag.Description = Description;
                 _currentTag.Remark = Remark;
                 _currentTag.CanWrite = CanWrite;
+                _currentTag.UseEngMinMax = UseEngMinMax;
+                _currentTag.EnableTraceLog = EnableTraceLog;
+
 
                 _currentTag.IOType = SelectedIOType;
             }
@@ -350,11 +375,11 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
                 if (IsEditMode)
                 {
-                    await _tagService.UpdateTagAsync(_currentTag);
+                    await _deviceConfigService.UpdateTagAsync(_currentTag);
                 }
                 else
                 {
-                    await _tagService.AddTagAsync(_currentTag);
+                    await _deviceConfigService.AddTagAsync(_currentTag);
                 }
 
                 SaveCompleted?.Invoke(this, EventArgs.Empty);

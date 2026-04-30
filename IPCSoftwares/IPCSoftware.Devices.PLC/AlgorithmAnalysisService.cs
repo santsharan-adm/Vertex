@@ -4,6 +4,7 @@ using IPCSoftware.Services;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace IPCSoftware.Devices.PLC
     {
         // Removed 'readonly' keyword for dynamic update support
         private List<PLCTagConfigurationModel> _tags;
-        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _tagService;
         public List<PLCTagConfigurationModel> Tags => _tags;
         private readonly bool _swapBytes;
         private readonly bool _swapStringBytes;
@@ -36,7 +37,7 @@ namespace IPCSoftware.Devices.PLC
 
 
         public AlgorithmAnalysisService(
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService tagService,
             IOptions<ConfigSettings> config,
             IAppLogger logger) : base(logger)
         {
@@ -83,14 +84,24 @@ namespace IPCSoftware.Devices.PLC
 
                     if (rawTypedValue == null) continue;
 
+                    if (tag.EnableTraceLog)
+                    {
+                        string csvLine = $"{tag.Id},{rawTypedValue}";
+                        _logger.LogTrace(csvLine);
+                    }
+
+                   
+
                     // 2. Algorithm Application (Scaling or Raw Pass-through)
                     object finalValue = ApplyScaling(rawTypedValue, tag);
 
-                    // --- DEBUG OUTPUT ---
-                    string algoName = tag.AlgNo == 1 ? "Scaled" : "Raw";
-                    Console.WriteLine($"[ALGO_DEBUG] Tag: {tag.Name} (ID:{tag.Id}) | Value: {finalValue} | Type: {tag.DataType} | Algo: {algoName}");
-                    //_logger.LogInfo($"[ALGO_DEBUG] Tag: {tag.Name} (ID:{tag.Id}) | Value: {finalValue} | Type: {tag.DataType} | Algo: {algoName}", LogType.Diagnostics);
-                    // --- END DEBUG OUTPUT ---
+                    // --- TRACE LOGGING FOR SELECTED TAGS ---
+                    //if (tag.EnableTraceLog)
+                    //{
+                    //    // Format: TagId,TagName,Value,PLCNo,ModbusAddress (Timestamp added by AppLoggerService)
+                    //    _logger.LogTrace($"{tag.Id},{tag.Name},{finalValue},{tag.PLCNo},{tag.ModbusAddress}", LogType.TagTrace);
+                    //}
+                    // --- END TRACE LOGGING ---
 
                     // Add using Tag Id (for Dashboard cache)
                     result[tag.Id] = finalValue;
@@ -163,7 +174,8 @@ namespace IPCSoftware.Devices.PLC
                             bytesToDecode = SwapEveryTwoBytes(byteArray);
                         }
                         // ---------------------------------------
-                        return Encoding.ASCII.GetString(bytesToDecode, 0, bytesToDecode.Length).TrimEnd('\0');
+                        // Replace ALL null characters (not just trailing) to handle embedded \0 from 2-byte Modbus string encoding
+                        return Encoding.ASCII.GetString(bytesToDecode, 0, bytesToDecode.Length).Replace("\0", string.Empty).Trim();
                     case DataType_Int16:
                         return BitConverter.ToInt16(byteArray, 0);
                     case DataType_UInt16:
@@ -280,9 +292,6 @@ namespace IPCSoftware.Devices.PLC
             }
             return dst;
         }
-
-
-
     }
 
 
@@ -339,8 +348,6 @@ namespace IPCSoftware.Devices.PLC
                     return short.MinValue;
             }
         }
-
-
 
         private const int DataType_Int16 = 1;
         private const int DataType_Word32 = 2; // DWord, Int32, Word
