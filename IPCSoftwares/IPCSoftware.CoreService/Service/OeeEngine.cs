@@ -15,12 +15,12 @@ namespace IPCSoftware.CoreService.AOI.Service
     public class OeeEngineAOI : OeeEngineBase
     {
         public OeeEngineAOI(
-            IDeviceConfigurationService tagService,
+            IDeviceConfigurationService deviceService,
             PLCClientManager plcManager,
             IAppLogger logger,
             IProductionDataLogger prodLogger,
             IConfiguration configuration)
-            : base(tagService, plcManager, logger, prodLogger, configuration)
+            : base(deviceService, plcManager, logger, prodLogger, configuration)
         {
         }
 

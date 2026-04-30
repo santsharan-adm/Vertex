@@ -157,11 +157,11 @@ namespace IPCSoftware.App
                 }
             };
 
-            var tagService = ServiceProvider.GetService<IDeviceConfigurationService>();
-            if (tagService != null)
-            {
-                await tagService.InitializeAsync();
-            }
+            //var tagService = ServiceProvider.GetService<IDeviceConfigurationService>();
+            //if (tagService != null)
+            //{
+            //    await tagService.InitializeAsync();
+            //}
 
             // TagConfigProvider.Load("Data/PLCTags.csv");
 
@@ -169,18 +169,18 @@ namespace IPCSoftware.App
 
 
 
-            var logConfigService = ServiceProvider.GetService<ILogConfigurationService>();
-            if (logConfigService != null)
-            {
-                await logConfigService.InitializeAsync();
-            }
+            //var logConfigService = ServiceProvider.GetService<ILogConfigurationService>();
+            //if (logConfigService != null)
+            //{
+            //    await logConfigService.InitializeAsync();
+            //}
 
 
-            var logManagerService = ServiceProvider.GetService<ILogManagerService>();
-            if (logManagerService != null)
-            {
-                await logManagerService.InitializeAsync();
-            }
+            //var logManagerService = ServiceProvider.GetService<ILogManagerService>();
+            //if (logManagerService != null)
+            //{
+            //    await logManagerService.InitializeAsync();
+            //}
 
 
             // Initialize UserManagementService and create default admin BEFORE showing login
@@ -195,11 +195,11 @@ namespace IPCSoftware.App
             {
                 await authService.EnsureDefaultUserExistsAsync();
             }
-            var shiftService = ServiceProvider.GetService<IShiftManagementService>();
-            if (shiftService != null)
-            {
-                await shiftService.InitializeAsync();
-            }
+            //var shiftService = ServiceProvider.GetService<IShiftManagementService>();
+            //if (shiftService != null)
+            //{
+            //    await shiftService.InitializeAsync();
+            //}
 
             // CRITICAL FIX: Subscribe to connection events BEFORE first connection
             TcpClient.UiConnected += OnTcpConnectionChanged;

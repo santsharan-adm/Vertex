@@ -19,7 +19,7 @@ namespace IPCSoftware.Engine
     public class TagChangeWatcherService : BackgroundService
     {
         private readonly IAppLogger _logger;
-        private readonly IDeviceConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _deviceService;
         private readonly FileSystemWatcher _watcher;
         private readonly string _tagFilePath;
         private Timer? _reloadTimer;
@@ -29,10 +29,10 @@ namespace IPCSoftware.Engine
         public TagChangeWatcherService(
             IAppLogger logger,
             IConfiguration configuration,
-            IDeviceConfigurationService tagService)
+            IDeviceConfigurationService deviceService)
         {
             _logger = logger;
-            _tagService = tagService;
+            _deviceService = deviceService;
 
             // Use the configuration path logic established in Worker.cs
             string dataFolderName = configuration.GetValue<string>("Config:DataFolder") ?? "Data";
@@ -96,7 +96,7 @@ namespace IPCSoftware.Engine
             try
             {
                 // 2. Reload the configuration from CSV
-                var newTags = await _tagService.ReloadTagsAsync();
+                var newTags = await _deviceService.ReloadTagsAsync();
 
                 // 3. Update all dependent services with the new tags
                 manager.UpdateTags(newTags);

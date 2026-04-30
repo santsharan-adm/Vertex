@@ -1,45 +1,198 @@
-﻿using System.Windows;
+﻿using IPCSoftware.App.Bending.Views;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
-using IPCSoftware.App.Bending.Views;
+using System.Windows.Input;
+
 
 namespace IPCSoftware.App.Bending
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public MainWindow()
         {
             InitializeComponent();
-            MainContentArea.Content = new UserControl1();
+            DataContext = this;
+
+            // Initialize menu items
+            SidebarItems.Add("Welcome Page");
+            SidebarItems.Add("Bending Monitor 1");
+            SidebarItems.Add("Bending Monitor 2");
+            SidebarItems.Add("Bending Monitor 3");
+
+            // Set default content to UserControl1 (original behavior)
+            var uc1 = new UserControl1();
+            uc1.DataContext = this; // Pass MainWindow as DataContext
+
+            MainPage.SetContent(uc1);
+            MainPage.SetTopBarVisibility(Visibility.Collapsed);
         }
 
-        private void OpenMenu_Click(object sender, RoutedEventArgs e)
+        // ==============================
+        // SIDEBAR PROPERTIES
+        // ==============================
+        private bool _isSidebarOpen;
+        public bool IsSidebarOpen
         {
-            MenuColumn.Width = new GridLength(250);
-        }
-
-        private void CloseMenu_Click(object sender, RoutedEventArgs e)
-        {
-            MenuColumn.Width = new GridLength(0);
-        }
-
-        private void Menu_Click(object sender, RoutedEventArgs e)
-        {
-            if (!(sender is Button btn) || btn.Tag == null) return;
-
-            string target = btn.Tag.ToString();
-
-            switch (target)
+            get => _isSidebarOpen;
+            set
             {
-                case "B1": MainContentArea.Content = new Bending1MonitorView(); break;
-                case "B2": MainContentArea.Content = new Bending2MonitorView(); break;
-                case "B3": MainContentArea.Content = new Bending3MonitorView(); break;
-                case "B4": MainContentArea.Content = new PostBendingMonitor(); break;
-                case "UC1": MainContentArea.Content = new UserControl1(); break;
-                case "UC2": MainContentArea.Content = new UserControl2(); break;
+                _isSidebarOpen = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isSidebarDocked;
+        public bool IsSidebarDocked
+        {
+            get => _isSidebarDocked;
+            set
+            {
+                _isSidebarDocked = value;
+                OnPropertyChanged();
+                // If we dock, we must ensure it's open
+                if (value)
+                    IsSidebarOpen = true;
+                else
+                    IsSidebarOpen = false;
+            }
+        }
+
+        public ObservableCollection<string> SidebarItems { get; } = new ObservableCollection<string>();
+
+        // ==============================
+        // COMMANDS
+        // ==============================
+        private ICommand _toggleSidebarCommand;
+        public ICommand ToggleSidebarCommand => _toggleSidebarCommand ??= new RelayCommand(NavigateToWelcomePage);
+
+        private ICommand _closeSidebarCommand;
+        public ICommand CloseSidebarCommand => _closeSidebarCommand ??= new RelayCommand(() => IsSidebarOpen = false);
+
+        private ICommand _sidebarItemClickCommand;
+        public ICommand SidebarItemClickCommand => _sidebarItemClickCommand ??= new RelayCommand<string>(OnSidebarItemClick);
+
+        // ==============================
+        // NAVIGATION METHODS
+        // ==============================
+        private void NavigateToWelcomePage()
+        {
+            var welcomePage = new WelcomePageView();
+            var welcomeViewModel = new ViewModels.WelcomePageViewModel();
+            welcomePage.DataContext = welcomeViewModel;
+            
+            MainPage.SetTopBarVisibility(Visibility.Visible);
+            MainPage.SetContent(welcomePage);
+            
+            
+            // Close sidebar if open
+            IsSidebarOpen = false;
+        }
+
+        // ==============================
+        // MENU NAVIGATION
+        // ==============================
+        private void OnSidebarItemClick(string itemName)
+        {
+            // Close sidebar if not docked
+            if (!IsSidebarDocked)
+            {
+                IsSidebarOpen = false;
             }
 
-            CloseMenu_Click(null, null);
+            // Navigate based on item name
+            switch (itemName)
+            {
+                case "Welcome Page":
+                    NavigateToWelcomePage();
+                    break;
+                case "Bending Monitor 1":
+                    var bending1 = new Bending1MonitorView();
+                    bending1.DataContext = this; // Pass MainWindow as DataContext
+                    MainPage.SetContent(bending1);
+                    break;
+                case "Bending Monitor 2":
+                    var bending2 = new Bending2MonitorView();
+                    bending2.DataContext = this; // Pass MainWindow as DataContext
+                    MainPage.SetContent(bending2);
+                    break;
+                case "Bending Monitor 3":
+                    var bending3 = new Bending3MonitorView();
+                    bending3.DataContext = this; // Pass MainWindow as DataContext
+                    MainPage.SetContent(bending3);
+                    break;
+                case "User Control 1":
+                    var uc1 = new UserControl1();
+                    uc1.DataContext = this; // Pass MainWindow as DataContext
+                    MainPage.SetTopBarVisibility(Visibility.Collapsed); //TopBar.Visibility = Visibility.Collapsed;
+                    MainPage.SetContent(uc1); //MainContent.Content = uc1;
+                    break;
+                case "User Control 2":
+                    var uc2 = new UserControl2();
+                    uc2.DataContext = this; // Pass MainWindow as DataContext
+                    MainPage.SetTopBarVisibility(Visibility.Collapsed); //TopBar.Visibility = Visibility.Collapsed;
+                    MainPage.SetContent(uc2); //MainContent.Content = uc2;
+                    break;
+            }
         }
+
+        // ==============================
+        // INotifyPropertyChanged Implementation
+        // ==============================
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    // ==============================
+    // RELAY COMMAND IMPLEMENTATION
+    // ==============================
+    public class RelayCommand : ICommand
+    {
+        private readonly Action _execute;
+        private readonly Func<bool> _canExecute;
+
+        public RelayCommand(Action execute, Func<bool> canExecute = null)
+        {
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
+        }
+
+        public bool CanExecute(object parameter) => _canExecute == null || _canExecute();
+
+        public void Execute(object parameter) => _execute();
+    }
+
+    public class RelayCommand<T> : ICommand
+    {
+        private readonly Action<T> _execute;
+        private readonly Func<T, bool> _canExecute;
+
+        public RelayCommand(Action<T> execute, Func<T, bool> canExecute = null)
+        {
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
+        }
+
+        public bool CanExecute(object parameter) => _canExecute == null || _canExecute((T)parameter);
+
+        public void Execute(object parameter) => _execute((T)parameter);
     }
 }
 
