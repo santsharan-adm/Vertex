@@ -1578,7 +1578,7 @@
 
                 <!--PID  HETER-->
 
-                <Border Grid.Row="1" CornerRadius="8" Padding="2" Canvas.Left="986" Canvas.Top="52" Width="auto" Height="auto"
+                <Border Grid.Row="1" CornerRadius="8" Padding="2" Canvas.Left="968" Canvas.Top="52" Width="auto" Height="auto"
         BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C0" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <Grid Background="White">
                         <Grid.RowDefinitions>

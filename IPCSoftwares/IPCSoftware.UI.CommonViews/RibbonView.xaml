@@ -7,6 +7,7 @@
              d:DesignWidth="1920" d:DesignHeight="140">
 
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <!-- Existing Icons -->
         <!--<Geometry x:Key="Icon_Home">M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z</Geometry>
         <Geometry x:Key="Icon_HomeOutline">M12 5.69L17 10.19V18H15V12H9V18H7V10.19L12 5.69M12 3L2 12H5V20H11V14H13V20H19V12H22L12 3Z</Geometry>

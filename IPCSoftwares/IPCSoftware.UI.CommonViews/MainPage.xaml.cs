@@ -25,6 +25,10 @@ namespace IPCSoftware.UI.CommonViews
             InitializeComponent();
         }
 
+        // Expose internal controls for NavigationService configuration
+        public ContentControl GetMainContent() => MainContent;
+        public ContentControl GetRibbonHost() => RibbonHost;
+
         public void SetContent(UserControl content)
         {
             MainContent.Content = content;
@@ -34,5 +38,6 @@ namespace IPCSoftware.UI.CommonViews
         {
             TopBar.Visibility = visibility;
         }
+
     }
 }

@@ -15,7 +15,7 @@ using System.Windows.Input;
 
 
 namespace IPCSoftware.UI.CommonViews.ViewModels;
-public class RibbonViewModel : BaseViewModel
+public class RibbonViewModelBase : BaseViewModel
 {
     private readonly INavigationService _nav;
     private readonly IDialogService _dialog;
@@ -43,7 +43,7 @@ public class RibbonViewModel : BaseViewModel
 
     // --- ALARM BANNER COMMANDS & PROPERTIES ---
 
-    public RibbonViewModel(
+    public RibbonViewModelBase(
         IOptions<ExternalSettings> extSetting,
         INavigationService nav,
         IDialogService dialog,
@@ -77,27 +77,9 @@ public class RibbonViewModel : BaseViewModel
 
     public string MachineName
     { get; }
-    private void OpenDashboardMenu()
+    public virtual void OpenDashboardMenu()
     {
-        try
-        {
-            LoadMenu(new List<string>
-            {
-                "Dashboard",
-                "Control",
-               
-                "PLC IO",
-                "Alarm View",
-                "Startup Condition",
-                "About"
-              
-
-            }, nameof(OpenDashboardMenu));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message, LogType.Diagnostics);
-        }
+        
     }
 
     //private void OpenSettingsMenu()
@@ -229,7 +211,7 @@ public class RibbonViewModel : BaseViewModel
         _nav.NavigateMain<ModeOfOperation>();
     }
 
-    private void LoadMenu(List<string> items, string functionName)
+    public virtual void LoadMenu(List<string> items, string functionName)
     {
         string key = functionName.Replace("Open", "");  // "OpenDashboardMenu" → "DashboardMenu"
         ShowSidebar?.Invoke((key, items));
