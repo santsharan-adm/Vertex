@@ -1,416 +1,279 @@
 ﻿<UserControl x:Class="IPCSoftware.App.Bending.Views.Bending2MonitorView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="#0F0F0F"
-             HorizontalAlignment="Stretch" 
-             VerticalAlignment="Stretch">
+             Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+    <UserControl.Resources>
+        <Style x:Key="NavButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#AFAFAF"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Width" Value="110"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="#888" BorderThickness="1" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TableBorderStyle" TargetType="Border">
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="0.5"/>
+        </Style>
+
+        <Style x:Key="CommonTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#222"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
 
-        <Border Grid.Row="0" Background="Black" BorderBrush="White" BorderThickness="0,0,0,1">
-            <Grid>
-                <TextBlock Text="BENDING 2 MONITOR" Foreground="White" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
-                <Button Content="↩" HorizontalAlignment="Right" Width="55" Background="Red" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Center" />
+            <Grid Width="980" Margin="3">
+                <Button Content="Previous" Style="{StaticResource NavButtonStyle}" HorizontalAlignment="Left"/>
+                <Button Content="NEXT" Style="{StaticResource NavButtonStyle}" HorizontalAlignment="Right"/>
             </Grid>
-        </Border>
 
-        <Border Grid.Row="1" BorderBrush="White" BorderThickness="1,0,1,1">
-            <Grid x:Name="MasterGrid">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+            <Border BorderBrush="Black" BorderThickness="1.2" Width="980" Height="520">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="55"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition Width="95"/>
+                        <ColumnDefinition Width="170"/>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="3*"/>
                         <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="80"/>
                     </Grid.ColumnDefinitions>
 
-                    <Border BorderBrush="White" BorderThickness="0,0,1,1">
-                        <TextBlock Text="Product 1&#x0a;1ST" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                    <Border Grid.Row="0" Grid.ColumnSpan="6" BorderBrush="Black" BorderThickness="0,0,0,1">
+
+                        <Border Grid.Row="0" Grid.ColumnSpan="6" BorderBrush="Black" BorderThickness="0,0,0,1">
+                            <Grid>
+
+                                <TextBlock Text="Bending Monitor 2" 
+                   Style="{StaticResource CommonTextStyle}" 
+                   FontSize="18" 
+                   FontWeight="Bold" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"/>
+
+
+                                <TextBlock Text="Batch No - 123456789" 
+                   Style="{StaticResource CommonTextStyle}" 
+                   FontSize="11" 
+                   FontWeight="Bold" 
+                   HorizontalAlignment="Left" 
+                   VerticalAlignment="Center"
+                   Margin="3"/>
+                            </Grid>
+                        </Border>
                     </Border>
 
-                    <Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,1,1">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-                                <TextBlock Text="Load" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <Grid Grid.Row="1">
-                                <TextBlock Text="Upper" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                <TextBlock Text="{Binding P1_Upper}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                            </Grid>
-                            <Grid Grid.Row="2" Background="#0A0A0A">
-                                <TextBlock Text="Value" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                <TextBlock Text="{Binding P1_Value}" Foreground="#00FF00" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                            </Grid>
-                            <Grid Grid.Row="3">
-                                <TextBlock Text="Lower" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                <TextBlock Text="{Binding P1_Lower}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                            </Grid>
-                        </Grid>
+                    <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Style="{StaticResource TableBorderStyle}" Background="#F2F2F2">
+                        <TextBlock Text="Product" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Style="{StaticResource TableBorderStyle}" Background="#F2F2F2">
+                        <TextBlock Text="QR Code" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource TableBorderStyle}" Background="#F2F2F2">
+                        <TextBlock Text="Load (N)" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="3" Style="{StaticResource TableBorderStyle}" Background="#F2F2F2">
+                        <TextBlock Text="Temp (*C)" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="4" Style="{StaticResource TableBorderStyle}" Background="#F2F2F2">
+                        <TextBlock Text="Bending&#x0a;Time (s)" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="5" Style="{StaticResource TableBorderStyle}" Background="#F2F2F2">
+                        <TextBlock Text="Result" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
 
-                    <Border Grid.Column="2" BorderBrush="White" BorderThickness="0,0,1,1">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-                                <TextBlock Text="Result" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <Rectangle Grid.Row="1" Fill="#C0C0C0" Width="60" Height="60"/>
-                        </Grid>
+                    <UniformGrid Grid.Row="2" Grid.Column="2" Columns="3">
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="Upper Limit" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="Present Value" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="Lower Limit" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
+                        </Border>
+                    </UniformGrid>
+                    <UniformGrid Grid.Row="2" Grid.Column="3" Columns="3">
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="Upper" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="Present" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="Lower" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
+                        </Border>
+                    </UniformGrid>
+
+                    <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Product 1" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="ABCDQWER1234TYUI9087" Style="{StaticResource CommonTextStyle}" FontSize="10" FontWeight="Bold" TextWrapping="Wrap" Margin="2"/>
+                    </Border>
+                    <UniformGrid Grid.Row="3" Grid.Column="2" Columns="3">
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="50.50" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="48.20" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="45.00" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                    </UniformGrid>
+                    <UniformGrid Grid.Row="3" Grid.Column="3" Columns="3">
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="50.50" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="48.20" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="45.00" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                    </UniformGrid>
+                    <Border Grid.Row="3" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="2.50" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
-                    <Border Grid.Column="3" BorderBrush="White" BorderThickness="0,0,0,1">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-                                <TextBlock Text="Measured Value / Set Value" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <Grid Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border BorderBrush="White" BorderThickness="0,0,1,1">
-                                    <TextBlock Text="Load Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                                <Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1">
-                                    <TextBlock Text="{Binding P1_LM}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                            </Grid>
-                            <Grid Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border BorderBrush="White" BorderThickness="0,0,1,1">
-                                    <TextBlock Text="Temperature Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                   
-                                </Border>
-                                <Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1"/>
-                            </Grid>
-                            <Grid Grid.Row="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border BorderBrush="White" BorderThickness="0,0,1,0">
-                                    <TextBlock Text="Bending Time" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                                <Border Grid.Column="1">
-                                    <TextBlock Text="{Binding P1_BT}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                            </Grid>
-                        </Grid>
+                    <Border Grid.Row="4" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Product 2" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
+                    <Border Grid.Row="4" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="XYZ1234567890ABCDEFG" Style="{StaticResource CommonTextStyle}" FontSize="10" FontWeight="Bold" TextWrapping="Wrap" Margin="2"/>
+                    </Border>
+                    <UniformGrid Grid.Row="4" Grid.Column="2" Columns="3">
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="55.90" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="47.50" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="50.00" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                    </UniformGrid>
+                    <UniformGrid Grid.Row="4" Grid.Column="3" Columns="3">
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="55.00" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="47.50" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="50.00" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                    </UniformGrid>
+                    <Border Grid.Row="4" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="2.80" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="4" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                    </Border>
+
+                    <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Product 3" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="BEND9876543210QWERTY" Style="{StaticResource CommonTextStyle}" FontSize="10" FontWeight="Bold" TextWrapping="Wrap" Margin="2"/>
+                    </Border>
+                    <UniformGrid Grid.Row="5" Grid.Column="2" Columns="3">
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="62.00" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="44.50" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="55.00" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                    </UniformGrid>
+                    <UniformGrid Grid.Row="5" Grid.Column="3" Columns="3">
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="62.00" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="44.50" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="55.00" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                    </UniformGrid>
+                    <Border Grid.Row="5" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="3.19" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                    </Border>
+
+                    <Border Grid.Row="6" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Product 4" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="6" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="TEST2026APRIL30INDIA1" Style="{StaticResource CommonTextStyle}" FontSize="10" FontWeight="Bold" TextWrapping="Wrap" Margin="2"/>
+                    </Border>
+                    <UniformGrid Grid.Row="6" Grid.Column="2" Columns="3">
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="88.00" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="43.20" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="40.00" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                    </UniformGrid>
+                    <UniformGrid Grid.Row="6" Grid.Column="3" Columns="3">
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="88.00" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="43.20" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                        <Border Style="{StaticResource TableBorderStyle}">
+                            <TextBlock Text="40.00" Style="{StaticResource CommonTextStyle}"/>
+                        </Border>
+                    </UniformGrid>
+                    <Border Grid.Row="6" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="4.17" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="6" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                    </Border>
+
                 </Grid>
-
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="300"/>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Border BorderBrush="White" BorderThickness="0,0,1,1">
-                        <TextBlock Text="Product 2&#x0a;2ST" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,1,1">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-                                <TextBlock Text="Load" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <Grid Grid.Row="1">
-                                <TextBlock Text="Upper" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                <TextBlock Text="{Binding P2_Upper}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                            </Grid>
-                            <Grid Grid.Row="2" Background="#0A0A0A">
-                                <TextBlock Text="Value" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                <TextBlock Text="{Binding P2_Value}" Foreground="#00FF00" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                            </Grid>
-                            <Grid Grid.Row="3">
-                                <TextBlock Text="Lower" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                <TextBlock Text="{Binding P2_Lower}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                            </Grid>
-                        </Grid>
-                    </Border>
-                    <Border Grid.Column="2" BorderBrush="White" BorderThickness="0,0,1,1">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1"/>
-                            <Rectangle Grid.Row="1" Fill="#C0C0C0" Width="60" Height="60"/>
-                        </Grid>
-                    </Border>
-                    <Border Grid.Column="3" BorderBrush="White" BorderThickness="0,0,0,1">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-                                <TextBlock Text="Measured Value / Set Value" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <Grid Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border BorderBrush="White" BorderThickness="0,0,1,1">
-                                    <TextBlock Text="Load Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                                <Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1">
-                                    <TextBlock Text="{Binding P2_LM}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                            </Grid>
-                            <Grid Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border BorderBrush="White" BorderThickness="0,0,1,1">
-                                    <TextBlock Text="Temperature Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                                <Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1"/>
-                            </Grid>
-                            <Grid Grid.Row="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border BorderBrush="White" BorderThickness="0,0,1,0">
-                                    <TextBlock Text="Bending Time" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                                <Border Grid.Column="1">
-                                    <TextBlock Text="{Binding P2_BT}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                            </Grid>
-                        </Grid>
-                    </Border>
-                </Grid>
-
-                <Grid Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="300"/>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Border BorderBrush="White" BorderThickness="0,0,1,1">
-                        <TextBlock Text="Product 3&#x0a;3ST" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,1,1">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-                                <TextBlock Text="Load" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <Grid Grid.Row="1">
-                                <TextBlock Text="Upper" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                <TextBlock Text="{Binding P3_Upper}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                            </Grid>
-                            <Grid Grid.Row="2">
-                                <TextBlock Text="Value" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                <TextBlock Text="{Binding P3_Value}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                            </Grid>
-                            <Grid Grid.Row="3">
-                                <TextBlock Text="Lower" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                <TextBlock Text="{Binding P3_Lower}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                            </Grid>
-                        </Grid>
-                    </Border>
-                    <Border Grid.Column="2" BorderBrush="White" BorderThickness="0,0,1,1">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1"/>
-                            <Rectangle Grid.Row="1" Fill="#C0C0C0" Width="60" Height="60"/>
-                        </Grid>
-                    </Border>
-                    <Border Grid.Column="3" BorderBrush="White" BorderThickness="0,0,0,1">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-                                <TextBlock Text="Measured Value / Set Value" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <Grid Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border BorderBrush="White" BorderThickness="0,0,1,1">
-                                    <TextBlock Text="Load Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                                <Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1">
-                                    <TextBlock Text="{Binding P3_LM}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                            </Grid>
-                            <Grid Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border BorderBrush="White" BorderThickness="0,0,1,1">
-                                    <TextBlock Text="Temperature Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                                <Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1"/>
-                            </Grid>
-                            <Grid Grid.Row="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border BorderBrush="White" BorderThickness="0,0,1,0">
-                                    <TextBlock Text="Bending Time" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                                <Border Grid.Column="1">
-                                    <TextBlock Text="{Binding P3_BT}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                            </Grid>
-                        </Grid>
-                    </Border>
-                </Grid>
-
-                <Grid Grid.Row="3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="300"/>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Border BorderBrush="White" BorderThickness="0,0,1,0">
-                        <TextBlock Text="Product 4&#x0a;4ST" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,1,0">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-                                <TextBlock Text="Load" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <Grid Grid.Row="1">
-                                <TextBlock Text="Upper" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                <TextBlock Text="{Binding P4_Upper}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                            </Grid>
-                            <Grid Grid.Row="2">
-                                <TextBlock Text="Value" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                <TextBlock Text="{Binding P4_Value}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                            </Grid>
-                            <Grid Grid.Row="3">
-                                <TextBlock Text="Lower" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                <TextBlock Text="{Binding P4_Lower}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                            </Grid>
-                        </Grid>
-                    </Border>
-                    <Border Grid.Column="2" BorderBrush="White" BorderThickness="0,0,1,0">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1"/>
-                            <Rectangle Grid.Row="1" Fill="#C0C0C0" Width="60" Height="60"/>
-                        </Grid>
-                    </Border>
-                    <Border Grid.Column="3">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Background="#252525" BorderBrush="White" BorderThickness="0,0,0,1">
-                                <TextBlock Text="Measured Value / Set Value" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <Grid Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border BorderBrush="White" BorderThickness="0,0,1,1">
-                                    <TextBlock Text="Load Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                                <Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1">
-                                    <TextBlock Text="{Binding P4_LM}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                            </Grid>
-                            <Grid Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border BorderBrush="White" BorderThickness="0,0,1,1">
-                                    <TextBlock Text="Temperature Monitor" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                                <Border Grid.Column="1" BorderBrush="White" BorderThickness="0,0,0,1"/>
-                            </Grid>
-                            <Grid Grid.Row="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border BorderBrush="White" BorderThickness="0,0,1,0">
-                                    <TextBlock Text="Bending Time" Foreground="White" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                                <Border Grid.Column="1">
-                                    <TextBlock Text="{Binding P4_BT}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-                                </Border>
-                            </Grid>
-                        </Grid>
-                    </Border>
-                </Grid>
-
-            </Grid>
-        </Border>
+            </Border>
+        </StackPanel>
     </Grid>
 </UserControl>

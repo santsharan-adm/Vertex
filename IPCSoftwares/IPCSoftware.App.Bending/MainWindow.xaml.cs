@@ -33,6 +33,7 @@ namespace IPCSoftware.App.Bending
                 case "B1": MainContentArea.Content = new Bending1MonitorView(); break;
                 case "B2": MainContentArea.Content = new Bending2MonitorView(); break;
                 case "B3": MainContentArea.Content = new Bending3MonitorView(); break;
+                case "B4": MainContentArea.Content = new PostBendingMonitor(); break;
                 case "UC1": MainContentArea.Content = new UserControl1(); break;
                 case "UC2": MainContentArea.Content = new UserControl2(); break;
             }

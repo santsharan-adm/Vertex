@@ -19,7 +19,7 @@
                 <Button Content="Bending Monitor 3" Click="Menu_Click" Tag="B3" Height="45" Margin="0,5" Background="#252525" Foreground="White" BorderThickness="0"/>
                 <Button Content="User Control 1" Click="Menu_Click" Tag="UC1" Height="45" Margin="0,5" Background="#252525" Foreground="White" BorderThickness="0"/>
                 <Button Content="User Control 2" Click="Menu_Click" Tag="UC2" Height="45" Margin="0,5" Background="#252525" Foreground="White" BorderThickness="0"/>
-
+                <Button Content="Post Bending Monitor" Click="Menu_Click" Tag="B4" Height="45" Margin="0,5" Background="#252525" Foreground="White" BorderThickness="0"/>
 
                 <Button Content="CLOSE MENU" Click="CloseMenu_Click" Margin="0,50,0,0" Background="#CC0000" Foreground="White" Height="40" BorderThickness="0"/>
             </StackPanel>
