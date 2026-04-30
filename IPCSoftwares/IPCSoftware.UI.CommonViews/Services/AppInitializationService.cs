@@ -1,5 +1,4 @@
 using IPCSoftware.Core.Interfaces;
-using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
@@ -43,19 +42,6 @@ namespace IPCSoftware.Common.CommonFunctions
             if (alarmConfigService != null)
             {
                 await alarmConfigService.InitializeAsync();
-            }
-            //
-            //===  Added by Rishabh -Date-28-04-2026===//
-            var logManagerService = ServiceLocator.GetService<ILogManagerService>();
-            if (logManagerService != null)
-            {
-                await logManagerService.InitializeAsync();
-            }
-
-            var shiftService = ServiceLocator.GetService<IShiftManagementService>();
-            if (shiftService != null)
-            {
-                await shiftService.InitializeAsync();
             }
 
             //var plcTagConfigService = ServiceLocator.GetService<IPLCTagConfigurationService>();

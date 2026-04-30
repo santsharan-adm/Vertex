@@ -68,8 +68,7 @@
                         </Button.Resources>
                         <TextBlock Text="WORK PAYOUT START" TextAlignment="Center"/>
                     </Button>
-                    <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10"
-                            Command="{Binding ToggleSidebarCommand}">
+                    <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="4"/>

@@ -20,7 +20,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     {
         private readonly CoreClient _coreClient;
         private readonly SafePoller _timer;
-        private readonly IDeviceConfigurationService _deviceService;
+        private readonly IDeviceConfigurationService _tagService;
         private readonly string _configPath;
         private readonly string _dataFolder;
 
@@ -36,11 +36,11 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         }
 
         public StartupConditionViewModel(IOptions<ConfigSettings> configSettings,
-            IDeviceConfigurationService deviceService,
+            IDeviceConfigurationService tagService,
             CoreClient coreClient, IAppLogger logger) : base(logger)
         {
             var config = configSettings.Value;
-            _deviceService = deviceService;
+            _tagService = tagService;
             string dataFolderPath = config.DataFolder;
 
             _coreClient = coreClient;
@@ -70,7 +70,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 if (configList == null || configList.Count == 0) return;
 
                 // 2. Fetch ALL Tag Details (Descriptions) from Service
-                var allTags = await _deviceService.GetAllTagsAsync();
+                var allTags = await _tagService.GetAllTagsAsync();
 
                 // 3. Match and Populate
                 // We do this on the UI thread to populate the ObservableCollection safely

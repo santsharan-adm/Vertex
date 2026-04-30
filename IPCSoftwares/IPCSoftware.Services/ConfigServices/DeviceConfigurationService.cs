@@ -20,10 +20,10 @@ namespace IPCSoftware.Services.ConfigServices
     public class DeviceConfigurationService : BaseService, IDeviceConfigurationService
     {
         private readonly string _dataFolder;
-        private readonly string _devicesConfigPath;
-        private readonly string _interfacesConfigPath;
-        private readonly string _cameraInterfacesConfigPath;
-        private readonly string _tagConfigPath;                          //Added by Rishabh - Date 27/04/2026
+        private readonly string _devicesCsvPath;
+        private readonly string _interfacesCsvPath;
+        private readonly string _cameraInterfacesCsvPath;
+        private readonly string _tagConfigFilePath;                          //Added by Rishabh - Date 27/04/2026
 
         private List<DeviceModel> _devices;
         private List<DeviceInterfaceModel> _interfaces;
@@ -43,7 +43,7 @@ namespace IPCSoftware.Services.ConfigServices
         public DeviceConfigurationService(
             IOptions<ConfigSettings> configSettings,
             ConfigLoaderService configLoaderService ,                           // Added by Rishabh - Date 18/04/2026
-           // TagConfigLoader tagConfigLoader,                                    //Added by Rishabh - Date 27/04/2026
+            TagConfigLoader tagConfigLoader,                                    //Added by Rishabh - Date 27/04/2026
             IAppLogger logger) : base(logger)
         {
             var config = configSettings.Value;
@@ -56,23 +56,25 @@ namespace IPCSoftware.Services.ConfigServices
                 Directory.CreateDirectory(_dataFolder);
             }
 
-            _devicesConfigPath = Path.Combine(_dataFolder, config.DeviceFileName /* "Devices.csv"*/);
-            _interfacesConfigPath = Path.Combine(_dataFolder, config.DeviceInterfacesFileName /* "DeviceInterfaces.csv"*/);
-            _cameraInterfacesConfigPath = Path.Combine(_dataFolder, config.CameraInterfacesFileName  /* "CameraInterfaces.csv"*/);
-            _tagConfigPath = Path.Combine(_dataFolder, config.PlcTagsFileName  /* Added new * "PlcTags.csv*/);
-           
-            // Added by Rishabh - Date 27/04/2026
-            _devices = new List<DeviceModel>();                             
+            _devicesCsvPath = Path.Combine(_dataFolder, config.DeviceFileName /* "Devices.csv"*/);
+            _interfacesCsvPath = Path.Combine(_dataFolder, config.DeviceInterfacesFileName /* "DeviceInterfaces.csv"*/);
+            _cameraInterfacesCsvPath = Path.Combine(_dataFolder, config.CameraInterfacesFileName  /* "CameraInterfaces.csv"*/);
+            _tagConfigFilePath = Path.Combine(_dataFolder, config.PlcTagsFileName  /* Added new * "PlcTags.csv*/);
+            //_deviceInterfaceLoader = deviceInterfaceLoader;                 // Added by Rishabh - Date 17/04/2026
+            //_cameraLoader = cameraLoader;                                   // Added by Rishabh - Date 15/04/2026
+            //_deviceLoader = deviceLoader;                                   // Added by Rishabh - Date 18/04/2026
+            _devices = new List<DeviceModel>();
             _interfaces = new List<DeviceInterfaceModel>();
             _cameraInterfaces = new List<CameraInterfaceModel>();
-            _tags = new List<PLCTagConfigurationModel>();
+            
 
-            //Added by Rishabh - Date 27/04/2026
-            _deviceLoader = configLoaderService.GetDeviceConfigLoader(_devicesConfigPath, logger);                       
-            _deviceInterfaceLoader =configLoaderService.GetDeviceInterfaceConfigLoader(_interfacesConfigPath, logger);   
-            _cameraLoader = configLoaderService.GetCameraConfigLoader(_cameraInterfacesConfigPath, logger);              
-            _tagLoader = configLoaderService.GetTagConfigLoader(_tagConfigPath, logger);                                                                                                         
-                                                                      
+            //ConfigLoaderService configLoaderService = new ConfigLoaderService();
+            _deviceLoader = configLoaderService.GetDeviceConfigLoader(_devicesCsvPath, logger);
+            _deviceInterfaceLoader =configLoaderService.GetDeviceInterfaceConfigLoader(_interfacesCsvPath, logger);
+            _cameraLoader = configLoaderService.GetCameraConfigLoader(_cameraInterfacesCsvPath, logger);
+            _tagLoader = configLoaderService.GetTagConfigLoader(_tagConfigFilePath, logger);                         //Added by Rishabh - Date 27/04/2026
+          //  _tagLoader = tagConfigLoader;                                                                            //Added by Rishabh - Date 27/04/2026
+            _tags = new List<PLCTagConfigurationModel>();                                                            //Added by Rishabh - Date 27/04/2026
 
 
         }
@@ -81,10 +83,10 @@ namespace IPCSoftware.Services.ConfigServices
         {
             try
             {
-                await LoadDevicesFromConfigFileAsync();
-                await LoadInterfacesFromConfigFileAsync();
-                await LoadCameraInterfacesFromConfigFileAsync();
-                await LoadTagsInternalAsync();                            //Added by Rishabh Date-27-04-2026
+                await LoadDevicesFromCsvAsync();
+                await LoadInterfacesFromCsvAsync();
+                await LoadCameraInterfacesFromCsvAsync();
+                await LoadTagsInternalAsync();                            //Added new Today
             }
             catch (Exception ex)
             {
@@ -105,7 +107,7 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 if (_interfaces.Count == 0)
                 {
-                    await LoadInterfacesFromConfigFileAsync();
+                    await LoadInterfacesFromCsvAsync();
                 }
                 return _interfaces.ToList();
             }
@@ -122,7 +124,7 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 if (_cameraInterfaces.Count == 0)
                 {
-                    await LoadCameraInterfacesFromConfigFileAsync();
+                    await LoadCameraInterfacesFromCsvAsync();
                 }
                 return _cameraInterfaces.ToList();
             }
@@ -144,7 +146,7 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 device.Id = _nextDeviceId++;
                 _devices.Add(device);
-                await _deviceLoader.Save(_devicesConfigPath, _devices);   // Added by Rishabh - Date 19/04/2026
+                await _deviceLoader.Save(_devicesCsvPath , _devices);   // Added by Rishabh - Date 19/04/2026
                 return device;
             }
             catch (Exception ex)
@@ -164,7 +166,7 @@ namespace IPCSoftware.Services.ConfigServices
 
                 var index = _devices.IndexOf(existing);
                 _devices[index] = device;
-                await _deviceLoader.Save(_devicesConfigPath, _devices);   // Added by Rishabh - Date 19/04/2026
+                await _deviceLoader.Save(_devicesCsvPath , _devices);   // Added by Rishabh - Date 19/04/2026
                 return true;
             }
             catch (Exception ex)
@@ -196,9 +198,9 @@ namespace IPCSoftware.Services.ConfigServices
                 }
 
                 _devices.Remove(device);
-                await _deviceLoader.Save(_devicesConfigPath, _devices);               // Added by Rishabh - Date 19/04/2026
-                await _deviceInterfaceLoader.Save(_interfacesConfigPath, _interfaces);   // Added by Rishabh - Date 19/04/2026
-                await _cameraLoader.Save(_cameraInterfacesConfigPath, _cameraInterfaces);      // Added by Rishabh - Date 19/04/2026
+                await _deviceLoader.Save(_devicesCsvPath , _devices);               // Added by Rishabh - Date 19/04/2026
+                await _deviceInterfaceLoader.Save(_interfacesCsvPath , _interfaces);   // Added by Rishabh - Date 19/04/2026
+                await _cameraLoader.Save(_cameraInterfacesCsvPath , _cameraInterfaces);      // Added by Rishabh - Date 19/04/2026
                 return true;
             }
             catch (Exception ex)
@@ -239,7 +241,7 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 deviceInterface.Id = _nextInterfaceId++;
                 _interfaces.Add(deviceInterface);
-                await _deviceInterfaceLoader.Save(_interfacesConfigPath, _interfaces);   // Added by Rishabh - Date 19/04/2026
+                await _deviceInterfaceLoader.Save(_interfacesCsvPath , _interfaces);   // Added by Rishabh - Date 19/04/2026
                 return deviceInterface;
             }
             catch (Exception ex)
@@ -259,7 +261,7 @@ namespace IPCSoftware.Services.ConfigServices
 
                 var index = _interfaces.IndexOf(existing);
                 _interfaces[index] = deviceInterface;
-                await _deviceInterfaceLoader.Save(_interfacesConfigPath, _interfaces);   // Added by Rishabh - Date 19/04/2026
+                await _deviceInterfaceLoader.Save(_interfacesCsvPath,_interfaces);   // Added by Rishabh - Date 19/04/2026
                 return true;
             }
             catch (Exception ex)
@@ -278,7 +280,7 @@ namespace IPCSoftware.Services.ConfigServices
                     return false;
 
                 _interfaces.Remove(iface);
-                await _deviceInterfaceLoader.Save(_interfacesConfigPath, _interfaces);   // Added by Rishabh - Date 19/04/2026
+                await _deviceInterfaceLoader.Save(_interfacesCsvPath , _interfaces);   // Added by Rishabh - Date 19/04/2026
                 return true;
             }
             catch (Exception ex)
@@ -295,7 +297,7 @@ namespace IPCSoftware.Services.ConfigServices
                 // cameraInterface.Id = _cameraInterfaces.Any() ? _cameraInterfaces.Max(i => i.Id) + 1 : 1;
                 cameraInterface.Id = +_nextCameraId++;                                                          //Added by Rishabh -Date 27-04-2026
                 _cameraInterfaces.Add(cameraInterface);
-                await _cameraLoader.Save(_cameraInterfacesConfigPath, _cameraInterfaces);   // Added by Rishabh - Date 19/04/2026
+                await _cameraLoader.Save(_cameraInterfacesCsvPath, _cameraInterfaces);   // Added by Rishabh - Date 19/04/2026
                 return cameraInterface;
             }
             catch (Exception ex)
@@ -315,7 +317,7 @@ namespace IPCSoftware.Services.ConfigServices
 
                 var index = _cameraInterfaces.IndexOf(existing);
                 _cameraInterfaces[index] = cameraInterface;
-                await _cameraLoader.Save(_cameraInterfacesConfigPath, _cameraInterfaces);   // Added by Rishabh - Date 19/04/2026
+                await _cameraLoader.Save(_cameraInterfacesCsvPath, _cameraInterfaces);   // Added by Rishabh - Date 19/04/2026
                 return true;
             }
             catch (Exception ex)
@@ -334,7 +336,7 @@ namespace IPCSoftware.Services.ConfigServices
                     return false;
 
                 _cameraInterfaces.Remove(cameraInterface);
-                await _cameraLoader.Save(_cameraInterfacesConfigPath, _cameraInterfaces);
+                await _cameraLoader.Save(_cameraInterfacesCsvPath, _cameraInterfaces);
                 return true;
             }
             catch (Exception ex)
@@ -344,45 +346,45 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-        // ==================== ConfigFile OPERATIONS - DEVICES ====================
+        // ==================== CSV OPERATIONS - DEVICES ====================
 
-        private async Task LoadDevicesFromConfigFileAsync()
+        private async Task LoadDevicesFromCsvAsync()
         {
             try
             {
-                _devices = _deviceLoader.Load(_devicesConfigPath);
+                _devices = _deviceLoader.Load(_devicesCsvPath);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error loading devices ConfigFile: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"Error loading devices CSV: {ex.Message}", LogType.Diagnostics);
             }
         }
 
-        // ==================== ConfigFile OPERATIONS - INTERFACES ====================
+        // ==================== CSV OPERATIONS - INTERFACES ====================
 
-        private async Task LoadInterfacesFromConfigFileAsync()
+        private async Task LoadInterfacesFromCsvAsync()
         {
             try
             {
-                _interfaces = _deviceInterfaceLoader.Load(_interfacesConfigPath);
+                _interfaces = _deviceInterfaceLoader.Load(_interfacesCsvPath);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error loading interfaces ConfigFile: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"Error loading interfaces CSV: {ex.Message}", LogType.Diagnostics);
             }
         }
 
-        // ==================== ConfigFile OPERATIONS - CAMERA INTERFACES ====================
+        // ==================== CSV OPERATIONS - CAMERA INTERFACES ====================
 
-        private async Task LoadCameraInterfacesFromConfigFileAsync()
+        private async Task LoadCameraInterfacesFromCsvAsync()
         {
             try
             {
-                _cameraInterfaces = _cameraLoader.Load(_cameraInterfacesConfigPath);
+                _cameraInterfaces = _cameraLoader.Load(_cameraInterfacesCsvPath);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error loading camera interfaces ConfigFile: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"Error loading camera interfaces CSV: {ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -396,7 +398,7 @@ namespace IPCSoftware.Services.ConfigServices
             {
 
                 // FIX: Use the dedicated TagConfigLoader (now accessible via using directive)
-                var reloadedTags = _tagLoader.Load(_tagConfigPath);
+                var reloadedTags = _tagLoader.Load(_tagConfigFilePath);
 
                 // Thread-safe update of the internal cache list
                 _tags = reloadedTags;
@@ -411,7 +413,7 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error loading PLC tags ConfigFile: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"Error loading PLC tags CSV: {ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -458,7 +460,7 @@ namespace IPCSoftware.Services.ConfigServices
             {
                 tag.Id = _nextTagId++;
                 _tags.Add(tag);
-                await _tagLoader.Save(_tagConfigPath, _tags);
+                await _tagLoader.Save(_tagConfigFilePath, _tags);
                 //await SaveToCsvAsync();
                 return tag;
             }
@@ -478,7 +480,7 @@ namespace IPCSoftware.Services.ConfigServices
 
                 var index = _tags.IndexOf(existing);
                 _tags[index] = tag;
-                await _tagLoader.Save(_tagConfigPath, _tags);
+                await _tagLoader.Save(_tagConfigFilePath, _tags);
                 // await SaveToCsvAsync();
                 return true;
             }
@@ -497,7 +499,7 @@ namespace IPCSoftware.Services.ConfigServices
                 if (tag == null) return false;
 
                 _tags.Remove(tag);
-                await _tagLoader.Save(_tagConfigPath, _tags);
+                await _tagLoader.Save(_tagConfigFilePath, _tags);
                 return true;
             }
             catch (Exception ex)

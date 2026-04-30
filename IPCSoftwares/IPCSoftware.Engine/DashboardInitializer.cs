@@ -43,7 +43,8 @@ namespace IPCSoftware.Engine
             SystemMonitorService systemMonitor,
           UiListener ui,
           AlarmService alarmService,
-            CCDTriggerServiceBase ccdTrigger,          
+            CCDTriggerServiceBase ccdTrigger,
+          //  IPLCTagConfigurationService tagService,
             IAppLogger logger) : base(logger)
         {
             _ui = ui;
@@ -54,7 +55,7 @@ namespace IPCSoftware.Engine
             _manager = manager;
             _algo =algo;
             _ccdTrigger = ccdTrigger;
-           
+           // _tagService = tagService;
         }
 
       

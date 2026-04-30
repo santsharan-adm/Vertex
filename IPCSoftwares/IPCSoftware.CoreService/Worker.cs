@@ -23,7 +23,8 @@ namespace IPCSoftware.CoreService
     public class Worker : BackgroundService
     {
         private readonly IAppLogger _logger;
-        private readonly ILogManagerService _logManager;        
+        private readonly ILogManagerService _logManager;
+        //private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceService;
         private readonly ConfigSettings _configuration;
         private readonly CCDTriggerServiceAOI _ccdTrigger;
@@ -36,7 +37,8 @@ namespace IPCSoftware.CoreService
         // Removed _plcManager and _dashboard fields; they will be local or managed by DashboardInitializer
 
         public Worker(IAppLogger logger, 
-            ILogManagerService logManager,            
+            ILogManagerService logManager, 
+           // IDeviceConfigurationService tagService,
             AlgorithmAnalysisService algo,
             DashboardInitializerAOI dashboard,
             CCDTriggerServiceAOI ccdTrigger,
@@ -47,7 +49,8 @@ namespace IPCSoftware.CoreService
             UiListener uiListener)
         {
             _logManager = logManager;
-            _deviceService = deviceService;           
+            _deviceService = deviceService;
+           // _tagService = tagService;
             _logger = logger;
             _algo = algo;
             _plcManager = plcManger;   

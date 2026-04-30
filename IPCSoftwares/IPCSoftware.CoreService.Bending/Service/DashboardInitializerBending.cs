@@ -22,8 +22,8 @@ namespace IPCSoftware.CoreService.Bending.Service
             UiListener ui,
             AlarmService alarmService,
             CCDTriggerServiceBending ccdTrigger,
-           
-            IAppLogger logger) : base(manager, algo, oee, shiftReset, systemMonitor, ui, alarmService, ccdTrigger,logger)
+           // IPLCTagConfigurationService tagService,          //Added by Rishabh - date - 26/04/2026//
+            IAppLogger logger) : base(manager, algo, oee, shiftReset, systemMonitor, ui, alarmService, ccdTrigger,/* tagService,*/ logger)
         {
         }
     }

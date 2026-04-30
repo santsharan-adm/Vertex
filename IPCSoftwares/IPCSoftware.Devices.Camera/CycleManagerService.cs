@@ -22,7 +22,7 @@ namespace IPCSoftware.Devices.Camera
 {
     public class CycleManagerServiceBase : BaseService, ICycleManagerService
     {
-        protected readonly IDeviceConfigurationService _deviceService;
+        protected readonly IDeviceConfigurationService _tagService;
         protected readonly PLCClientManager _plcManager;
         protected readonly ProductionImageService _imageService;
         protected readonly IServoCalibrationService _servoService;
@@ -43,7 +43,7 @@ namespace IPCSoftware.Devices.Camera
 
 
         public CycleManagerServiceBase(
-            IDeviceConfigurationService deviceService,
+            IDeviceConfigurationService tagService,
             ILogConfigurationService logConfig,
             PLCClientManager plcManager,
             IOptions<CcdSettings> appSettings,
@@ -58,7 +58,7 @@ namespace IPCSoftware.Devices.Camera
             var ccd = appSettings.Value;
             //_tempImageFolderPath = ccd.TempImgFolder;
             _observableCcdSettings = observableCcdSettings;
-            _deviceService = deviceService;
+            _tagService = tagService;
             _plcManager = plcManager;
             _imageService = imageService;
             _servoService = servoService;
@@ -140,7 +140,7 @@ namespace IPCSoftware.Devices.Camera
             int tagNo = ConstantValues.Return_TAG_ID;
             try
             {
-                var allTags = await _deviceService.GetAllTagsAsync();
+                var allTags = await _tagService.GetAllTagsAsync();
                 var tag = allTags.FirstOrDefault(t => t.Id == tagNo);
 
                 if (tag != null)
@@ -156,7 +156,7 @@ namespace IPCSoftware.Devices.Camera
         {
             try
             {
-                var allTags = await _deviceService.GetAllTagsAsync();
+                var allTags = await _tagService.GetAllTagsAsync();
                 var tagConfig = allTags.FirstOrDefault(t => t.Id == tagId);
 
                 if (tagConfig == null || tagConfig.ModbusAddress <= 0) return;

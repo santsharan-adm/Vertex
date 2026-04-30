@@ -21,7 +21,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class TagControlViewModel : BaseViewModel, IDisposable
     {
-        private readonly IDeviceConfigurationService _deviceService;
+        private readonly IDeviceConfigurationService _tagService;
        // private readonly DispatcherTimer _timer;
         private readonly SafePoller _timer;
         private readonly CoreClient _coreClient;
@@ -47,12 +47,12 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public ICommand WriteCommand { get; }
 
         public TagControlViewModel(
-            IDeviceConfigurationService deviceService,
+            IDeviceConfigurationService tagService,
             CoreClient coreClient,
             IDialogService dialog,
             IAppLogger logger) : base(logger)
         {
-            _deviceService = deviceService;
+            _tagService = tagService;
             _coreClient = coreClient;
             _dialog = dialog;
 
@@ -119,7 +119,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             try
             {
-                var allTags = await _deviceService.GetAllTagsAsync();
+                var allTags = await _tagService.GetAllTagsAsync();
 
                 // 1. Clear both lists
                 WritableTags.Clear();

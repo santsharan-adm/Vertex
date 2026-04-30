@@ -16,7 +16,7 @@ namespace IPCSoftware.Engine
 {
     public class OeeEngineBase : BaseService
     {
-        private readonly IDeviceConfigurationService _deviceService;
+        private readonly IDeviceConfigurationService _tagService;
         private readonly PLCClientManager _plcManager;
         private readonly IProductionDataLogger _prodLogger;
 
@@ -40,13 +40,13 @@ namespace IPCSoftware.Engine
         private int _currentSequenceStep = 0;
 
         public OeeEngineBase(
-            IDeviceConfigurationService deviceService,
+            IDeviceConfigurationService tagService,
             PLCClientManager plcManager,
             IAppLogger logger,
             IProductionDataLogger prodLogger,
             IConfiguration configuration) : base(logger)
         {
-            _deviceService = deviceService;
+            _tagService = tagService;
             _plcManager = plcManager;
             _prodLogger = prodLogger;
 
@@ -470,7 +470,7 @@ namespace IPCSoftware.Engine
         {
             try
             {
-                var allTags = await _deviceService.GetAllTagsAsync();
+                var allTags = await _tagService.GetAllTagsAsync();
                 var tag = allTags.FirstOrDefault(t => t.Id == tagNo);
                 if (tag != null)
                 {

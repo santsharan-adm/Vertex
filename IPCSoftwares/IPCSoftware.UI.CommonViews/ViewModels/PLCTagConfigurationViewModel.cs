@@ -17,7 +17,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class PLCTagConfigurationViewModel : BaseViewModel
     {
-       
+       // private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceConfigService;
         private PLCTagConfigurationModel _currentTag;
         private bool _isEditMode;
@@ -204,12 +204,13 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public event EventHandler SaveCompleted;
         public event EventHandler CancelRequested;
 
-        public PLCTagConfigurationViewModel(          
+        public PLCTagConfigurationViewModel(
+           // IPLCTagConfigurationService tagService,
             IDeviceConfigurationService deviceConfigService,
             IDialogService dialog,
             IAppLogger logger) : base(logger)
         {
-           
+           // _tagService = tagService;
             _deviceConfigService = deviceConfigService;
             _dialog = dialog;
 

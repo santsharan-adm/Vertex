@@ -14,7 +14,7 @@ namespace IPCSoftware.Devices.PLC
     {
      
 
-        
+        //private readonly IPLCTagConfigurationService _tagService;
         private readonly IDeviceConfigurationService _deviceService;
         private readonly ConfigSettings _config;
 
@@ -22,7 +22,8 @@ namespace IPCSoftware.Devices.PLC
         public List<PlcClient> Clients { get; private set; } = new();
 
         public PLCClientManager(
-            IDeviceConfigurationService deviceService,            
+            IDeviceConfigurationService deviceService,
+            //IPLCTagConfigurationService tagService,
             IOptions<ConfigSettings> config,
             IAppLogger logger) : base(logger)
         {

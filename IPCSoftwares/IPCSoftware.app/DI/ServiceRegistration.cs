@@ -81,7 +81,7 @@ namespace IPCSoftware.App.DI
                     sp.GetRequiredService<IAppLogger>()
                 )
             );
-            //services.AddSingleton<IFileHandler, CsvManager>();
+            services.AddSingleton<IFileHandler, CsvManager>();
             services.AddSingleton<ConfigLoaderService>();                       //Added by Rishabh - date - 25/04/2026//
             //services.AddSingleton<DeviceConfigLoader>();                             //Added by Rishabh - date - 18/04/2026//
             //services.AddSingleton<DeviceInterfaceConfigLoader>();                    //Modified by Rishabh - date - 15/04/2026//
@@ -156,7 +156,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<AlarmListViewModel>();
             services.AddTransient<AlarmConfigurationViewModel>();
             services.AddTransient<BackupService>();
-            //services.AddTransient<TagConfigLoader>();
+            services.AddTransient<TagConfigLoader>();
             services.AddTransient<UserListViewModel>();
             services.AddTransient<UserConfigurationViewModel>();
             services.AddTransient<AlarmView>();

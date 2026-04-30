@@ -18,10 +18,10 @@ namespace IPCSoftware.CoreService.Bending.Service
     {
         public CCDTriggerServiceBending(
             ICycleManagerService cycleManager,
-            IDeviceConfigurationService deviceService,
+            IDeviceConfigurationService tagService,
             IOptions<CcdSettings> ccdSettings,
             IObservableCcdSettingsService observableCcdSettings,  // //Added by Rishabh - date - 08/04/2026//
-            IAppLogger logger) : base(cycleManager, deviceService, ccdSettings, observableCcdSettings, logger)
+            IAppLogger logger) : base(cycleManager, tagService, ccdSettings, observableCcdSettings, logger)
         {
         }
 

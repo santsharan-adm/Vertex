@@ -54,13 +54,4 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Docs\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\IPCSoftware.UI.CommonViews\IPCSoftware.UI.CommonViews.csproj" />
-    <ProjectReference Include="..\IPCSoftware.WPFExtensions\IPCSoftware.WPFExtensions.csproj" />
-  </ItemGroup>
-
 </Project>

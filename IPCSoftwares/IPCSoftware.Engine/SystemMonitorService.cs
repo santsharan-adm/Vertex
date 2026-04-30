@@ -15,7 +15,7 @@ namespace IPCSoftware.Engine
     public class SystemMonitorService : BaseService
     {
         private readonly PLCClientManager _plcManager;
-        private readonly IDeviceConfigurationService _deviceService;
+        private readonly IDeviceConfigurationService _tagService;
         private readonly ExternalInterfaceService _extService;
 
         // --- HEARTBEAT STATE ---
@@ -33,12 +33,12 @@ namespace IPCSoftware.Engine
 
         public SystemMonitorService(
             PLCClientManager plcManager,
-            IDeviceConfigurationService deviceService,
+            IDeviceConfigurationService tagService,
             ExternalInterfaceService extService,
             IAppLogger logger) : base(logger)
         {
             _plcManager = plcManager;
-            _deviceService = deviceService;
+            _tagService = tagService;
             _extService = extService;
 
             // Initialize timestamps
@@ -163,7 +163,7 @@ namespace IPCSoftware.Engine
             try
             {
                 // Retrieve Tag Info
-                var allTags = await _deviceService.GetAllTagsAsync();
+                var allTags = await _tagService.GetAllTagsAsync();
                 var tag = allTags.FirstOrDefault(t => t.Id == tagNo);
 
                 if (tag == null) return;
