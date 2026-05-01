@@ -10,16 +10,7 @@ namespace IPCSoftware.UI.CommonViews
         public RibbonView()
         {
             InitializeComponent();
-            //DataContext = App.ServiceProvider.GetService<RibbonViewModel>();
-
             Debug.WriteLine("RibbonView Loaded");
-            
-
-        }
-
-        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-
         }
     }
 }

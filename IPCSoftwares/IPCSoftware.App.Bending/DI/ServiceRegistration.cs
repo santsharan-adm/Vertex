@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.App.Bending.ViewModels;
+using IPCSoftware.App.Bending.Views;
 using IPCSoftware.App.Services;
 using IPCSoftware.Common.CommonFunctions;
 using IPCSoftware.Common.UIClientComm;
@@ -112,7 +113,10 @@ namespace IPCSoftware.App.Bending.DI
             services.AddSingleton<ILogService, LogService>();
 
             // ========== MAIN VIEWMODELS ==========
-            services.AddSingleton<RibbonViewModelBending, RibbonViewModelBending>();
+            // Register base types for dependency injection
+            services.AddSingleton<RibbonViewModelBase>(sp => sp.GetRequiredService<RibbonViewModelBending>());
+            services.AddSingleton<RibbonViewModelBending>();
+            services.AddSingleton<MainWindowViewModelBase>(sp => sp.GetRequiredService<MainWindowViewModelBending>());
             services.AddSingleton<MainWindowViewModelBending>();
             //services.AddTransient<OEEDashboardViewModel>();
             services.AddSingleton<UiTcpClient>();
@@ -197,7 +201,9 @@ namespace IPCSoftware.App.Bending.DI
             services.AddTransient<PLCTagListView>();
             services.AddTransient<PLCTagConfigurationView>();
             services.AddTransient<LogViewerViewModel>();
-            //services.AddTransient<LoginViewModelAOI>();
+            // Register LoginViewModelBase to resolve LoginViewModelBending
+            services.AddTransient<LoginViewModelBase>(sp => sp.GetRequiredService<LoginViewModelBending>());
+            services.AddTransient<LoginViewModelBending>();
             services.AddTransient<LoginView>();
             services.AddTransient<TagControlView>();
             services.AddTransient<TagControlViewModel>();
@@ -216,6 +222,20 @@ namespace IPCSoftware.App.Bending.DI
             services.AddTransient<ProcessSequenceViewModel>();
             services.AddTransient<ProcessSequenceWindow>();
             services.AddTransient<Func<ProcessSequenceWindow>>(sp => () => sp.GetRequiredService<ProcessSequenceWindow>());
+
+
+            ///Registring Bending Dashaboard specific views and viewmodels
+            services.AddTransient<Bending1MonitorViewModel>();
+            services.AddTransient<Bending1MonitorView>();
+            services.AddTransient<Bending2MonitorViewModel>();
+            services.AddTransient<Bending2MonitorView>();
+            services.AddTransient<Bending3MonitorViewModel>();
+            services.AddTransient<Bending3MonitorView>();
+            services.AddTransient<UserControl1>();
+            services.AddTransient<UserControl2>();
+            services.AddTransient<PostBendingViewModel>();
+            services.AddTransient<PostBendingMonitor>();
+
         }
     }
 }

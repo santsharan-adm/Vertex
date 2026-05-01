@@ -18,51 +18,33 @@ namespace IPCSoftware.App.Bending
         public MainWindow()
         {
             InitializeComponent();
+        //}
 
-            //var vm = App.ServiceProvider.GetService<MainWindowViewModelBending>();
-            //DataContext = App.ServiceProvider.GetRequiredService<MainWindowViewModelBending>(); ;
+        //protected override void OnInitialized(EventArgs e)
+        //{
+        //    base.OnInitialized(e);
+        //    this.Loaded += MainWindow_Loaded;
+        //}
 
-            //var nav = App.ServiceProvider.GetService<INavigationService>();
-            //nav.Configure(MainContent, RibbonHost);
+        //private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        //{
+            var vm = App.ServiceProvider.GetRequiredService<MainWindowViewModelBending>();
+            DataContext = vm;
 
-            var uc1 = new UserControl1();
-            uc1.DataContext = this;
-
-            MainPage.SetContent(uc1);
-            MainPage.SetTopBarVisibility(Visibility.Visible);
-
-
-
-            // START WITH LOGIN ONLY
-
-
-
-            
-        }
-
-        protected override void OnInitialized(EventArgs e)
-        {
-            base.OnInitialized(e);
-            this.Loaded += MainWindow_Loaded;
-        }
-
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-           
-            var vm = App.ServiceProvider.GetService<MainWindowViewModelBending>();
-            DataContext = App.ServiceProvider.GetRequiredService<MainWindowViewModelBending>();
-            var nav = (INavigationService)App.ServiceProvider.GetService(typeof(INavigationService));
+            var nav = App.ServiceProvider.GetRequiredService<INavigationService>();
 
             ContentControl control = MainPage.GetMainContent() as ContentControl;
             ContentControl ribbonHost = MainPage.GetRibbonHost() as ContentControl;
             nav.Configure(control, ribbonHost);
 
+            // Set the MainPage DataContext to the ViewModel so sidebar works
+            MainPage.DataContext = vm;
 
-            var ribbonView = new RibbonView { DataContext = this };
+            var ribbonView = new RibbonView { DataContext = vm.RibbonVM };
 
             // Load Ribbon
-            nav.NavigateTop(ribbonView);
-            //nav.NavigateMain<LoginView>();
+           // nav.NavigateTop(ribbonView);
+            nav.NavigateMain<LoginView>();
         }
     }
 }

@@ -30,10 +30,12 @@ namespace IPCSoftware.App.Bending.ViewModels
             {
                 base.LoadMenu(new List<string>
             {
-                "Dashboard 1",
-                "Dashboard 2",
-
-                "Dashboard 3",
+                "Bending1Monitor",
+                "Bending2Monitor",
+                "Bending3Monitor",              
+                "UserControl1",
+                "UserControl2",
+                "PostBendingMonitor",
                 "Alarm View",
                 "Startup Condition",
                 "About"

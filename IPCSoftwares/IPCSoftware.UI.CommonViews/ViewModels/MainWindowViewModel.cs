@@ -475,6 +475,30 @@ public class MainWindowViewModelBase : BaseViewModel
                     //_nav.NavigateMain<LiveOeeView>();
                     _nav.NavigateToOEEDashboard();
                     break;
+                case "Bending1Monitor":
+                    _nav.NavigateToDashboard1();
+                    break;
+
+                case "Bending2Monitor":
+                    _nav.NavigateToDashboard2();
+                    break;
+                case "Bending3Monitor":
+                    _nav.NavigateToDashboard3();
+                    break;
+
+                case "UserControl1":
+                    _nav.NavigateToUserControl1();
+                    break;
+                
+                case "UserControl2":
+                    _nav.NavigateToUserControl2();
+                    break;
+
+                case "PostBendingMonitor":
+                    _nav.NavigateToPostBendingMonitor();
+                    break;            
+
+
 
                 case "Machine Summary":
                    // _nav.NavigateMain<ServoCalibrationView>();

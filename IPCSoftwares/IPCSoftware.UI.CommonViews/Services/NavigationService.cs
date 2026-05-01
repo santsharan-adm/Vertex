@@ -1,9 +1,10 @@
-using IPCSoftware.UI.CommonViews.ViewModels;
-using IPCSoftware.UI.CommonViews;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.UI.CommonViews;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Xaml.Behaviors.Layout;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -531,11 +532,24 @@ namespace IPCSoftware.Common.CommonFunctions
 
         public void NavigateToManualOperation() => NavigateMainByTypeName("ManualOperationView");
         public void NavigateToOEEDashboard() => NavigateMainByTypeName("OEEDashboard");
+
+        public void NavigateToDashboard1() => NavigateMainByTypeName("Bending1MonitorView");
+        public void NavigateToDashboard2() => NavigateMainByTypeName("Bending2MonitorView");
+        public void NavigateToDashboard3() => NavigateMainByTypeName("Bending3MonitorView");
+
+        public void NavigateToUserControl1() => NavigateMainByTypeName("UserControl1");
+
+        public void NavigateToUserControl2() => NavigateMainByTypeName("UserControl2");
+
+        public void NavigateToPostBendingMonitor() => NavigateMainByTypeName("PostBendingMonitor");
+
+        public void NavigateToAlarm() => NavigateMainByTypeName("AlarmView");
+
         public void NavigateToAeLimit() => NavigateMainByTypeName("AeLimitView");
 
         public bool CanNavigateFromCurrent()
         {
-            // 1. Get the current View
+            // 1. Get the current View  
             if (_mainContent?.Content is FrameworkElement currentView)
             {
                 // 2. Get the ViewModel from DataContext

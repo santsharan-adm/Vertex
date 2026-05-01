@@ -82,7 +82,7 @@
 
         <!-- Left: Logo & Title -->
         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="40,0">
-            <Button Command="{Binding NavigateLandingPageCommand}" Cursor="Hand" Click="Button_Click" >
+            <Button Command="{Binding NavigateLandingPageCommand}" Cursor="Hand">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="LogoBorder" Width="80" Height="80" CornerRadius="40" BorderBrush="White" BorderThickness="3">
