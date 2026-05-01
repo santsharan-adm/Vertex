@@ -86,7 +86,8 @@ namespace IPCSoftware.Services.AppLoggerServices
         private void ProcessLogQueue()
         {
             // This loop runs until the app shuts down
-            foreach (var entry in _logQueue.GetConsumingEnumerable(_cts.Token))
+            // No cancellation token needed - CompleteAdding() will end enumeration gracefully
+            foreach (var entry in _logQueue.GetConsumingEnumerable())
             {
                 try
                 {
