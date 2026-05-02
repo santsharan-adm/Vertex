@@ -8,13 +8,14 @@
             <Setter Property="Background" Value="#AFAFAF"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Width" Value="110"/>
-            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Width" Value="160"/>
+            <Setter Property="Height" Value="60"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" 
-                                BorderBrush="#888" BorderThickness="1" CornerRadius="4">
+                                BorderBrush="#888" BorderThickness="2" CornerRadius="8">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
@@ -38,12 +39,20 @@
     </UserControl.Resources>
 
     <Grid>
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- 0: Button Row -->
+            <RowDefinition Height="*"/>
+            <!-- 1: Main Content -->
+            <RowDefinition Height="60"/>
+            <!-- 2: BLANK SPACE FOR ALARM -->
+        </Grid.RowDefinitions>
 
-            <Grid Width="980" Margin="3">
-                <Button Content="NEXT" Style="{StaticResource NavButtonStyle}" HorizontalAlignment="Right"/>
-            </Grid>
+        <!-- NEXT Button Section -->
+        <Button Grid.Row="0" Content="NEXT" Style="{StaticResource NavButtonStyle}" 
+                HorizontalAlignment="Right"/>
 
+        <Viewbox Grid.Row="1" Stretch="Uniform">
             <Border BorderBrush="Black" BorderThickness="1.2" Width="980" Height="520">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -65,30 +74,15 @@
                         <ColumnDefinition Width="80"/>
                     </Grid.ColumnDefinitions>
 
+                    <!-- Header -->
                     <Border Grid.Row="0" Grid.ColumnSpan="6" BorderBrush="Black" BorderThickness="0,0,0,1">
-
-                        <Border Grid.Row="0" Grid.ColumnSpan="6" BorderBrush="Black" BorderThickness="0,0,0,1">
-                            <Grid>
-
-                                <TextBlock Text="Bending Monitor 1" 
-                   Style="{StaticResource CommonTextStyle}" 
-                   FontSize="18" 
-                   FontWeight="Bold" 
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Center"/>
-
-
-                                <TextBlock Text="Batch No - 123456789" 
-                   Style="{StaticResource CommonTextStyle}" 
-                   FontSize="11" 
-                   FontWeight="Bold" 
-                   HorizontalAlignment="Left" 
-                   VerticalAlignment="Center"
-                   Margin="3"/>
-                            </Grid>
-                        </Border>
+                        <Grid>
+                            <TextBlock Text="Bending Monitor 1" Style="{StaticResource CommonTextStyle}" FontSize="18" FontWeight="Bold"/>
+                            <TextBlock Text="Batch No - 123456789" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" HorizontalAlignment="Left"/>
+                        </Grid>
                     </Border>
 
+                    <!-- Table Headers -->
                     <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Style="{StaticResource TableBorderStyle}" Background="#F2F2F2">
                         <TextBlock Text="Product" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
@@ -108,6 +102,7 @@
                         <TextBlock Text="Result" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
 
+                    <!-- Sub Headers -->
                     <UniformGrid Grid.Row="2" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
                             <TextBlock Text="Upper Limit" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
@@ -121,21 +116,22 @@
                     </UniformGrid>
                     <UniformGrid Grid.Row="2" Grid.Column="3" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="Upper" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
+                            <TextBlock Text="Upper Limit" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="Present" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
+                            <TextBlock Text="Present Value" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="Lower" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
+                            <TextBlock Text="Lower Limit" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
                         </Border>
                     </UniformGrid>
 
+                    <!-- Row 3: Product 1 -->
                     <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
                         <TextBlock Text="Product 1" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="ABCDQWER1234TYUI9087" Style="{StaticResource CommonTextStyle}" FontSize="10" FontWeight="Bold" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Text="ABCDQWER1234TYUI9087" Style="{StaticResource CommonTextStyle}" FontSize="10" TextWrapping="Wrap"/>
                     </Border>
                     <UniformGrid Grid.Row="3" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
@@ -166,11 +162,12 @@
                         <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
+                    <!-- Row 4: Product 2 -->
                     <Border Grid.Row="4" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
                         <TextBlock Text="Product 2" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="XYZ1234567890ABCDEFG" Style="{StaticResource CommonTextStyle}" FontSize="10" FontWeight="Bold" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Text="XYZ1234567890ABCDEFG" Style="{StaticResource CommonTextStyle}" FontSize="10" TextWrapping="Wrap"/>
                     </Border>
                     <UniformGrid Grid.Row="4" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
@@ -201,11 +198,12 @@
                         <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
+                    <!-- Row 5: Product 3 -->
                     <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
                         <TextBlock Text="Product 3" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="BEND9876543210QWERTY" Style="{StaticResource CommonTextStyle}" FontSize="10" FontWeight="Bold" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Text="BEND9876543210QWERTY" Style="{StaticResource CommonTextStyle}" FontSize="10" TextWrapping="Wrap"/>
                     </Border>
                     <UniformGrid Grid.Row="5" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
@@ -236,11 +234,12 @@
                         <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
+                    <!-- Row 6: Product 4 -->
                     <Border Grid.Row="6" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
                         <TextBlock Text="Product 4" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="TEST2026APRIL30INDIA1" Style="{StaticResource CommonTextStyle}" FontSize="10" FontWeight="Bold" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Text="TEST2026APRIL30INDIA1" Style="{StaticResource CommonTextStyle}" FontSize="10" TextWrapping="Wrap"/>
                     </Border>
                     <UniformGrid Grid.Row="6" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
@@ -270,9 +269,11 @@
                     <Border Grid.Row="6" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
                         <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
-
                 </Grid>
             </Border>
-        </StackPanel>
+        </Viewbox>
+
+        <!-- Blank Space for Alarm at the bottom -->
+        <Border Grid.Row="2" Background="Transparent" />
     </Grid>
 </UserControl>

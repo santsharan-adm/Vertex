@@ -28,6 +28,11 @@ namespace IPCSoftware.App.AOI.ViewModels
             
         }
 
+        public override async Task ExecuteLoginAsync() 
+        {
+            base.ExecuteLoginAsync();
+        }
+
         
     }
 }

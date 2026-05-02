@@ -44,7 +44,7 @@ namespace IPCSoftware.App.Bending
 
             // Load Ribbon
            // nav.NavigateTop(ribbonView);
-            nav.NavigateMain<LoginView>();
+            nav.NavigateMain<LoginViewBending>();
         }
     }
 }

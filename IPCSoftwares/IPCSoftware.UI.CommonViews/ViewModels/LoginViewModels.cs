@@ -59,7 +59,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             LoginCommand = new RelayCommand(async () => await ExecuteLoginAsync());
         }
 
-        private async Task ExecuteLoginAsync()
+        public virtual async Task ExecuteLoginAsync()
         {
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
             {

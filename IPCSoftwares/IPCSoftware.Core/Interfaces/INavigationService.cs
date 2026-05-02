@@ -65,6 +65,7 @@ namespace IPCSoftware.Core.Interfaces
         void NavigateToUserControl2();
 
         void NavigateToPostBendingMonitor();
+        public void NavigateToBendingLandingPage();
 
         void NavigateToAeLimit();
 

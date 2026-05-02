@@ -1578,7 +1578,7 @@
 
                 <!--PID  HETER-->
 
-                <Border Grid.Row="1" CornerRadius="8" Padding="2" Canvas.Left="968" Canvas.Top="52" Width="auto" Height="auto"
+                <Border Grid.Row="1" CornerRadius="8" Padding="2" Canvas.Left="960" Canvas.Top="52" Width="auto" Height="auto"
         BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C0" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <Grid Background="White">
                         <Grid.RowDefinitions>
@@ -1672,7 +1672,7 @@
 
                 <!--PID FORCE-->
 
-                <Border Grid.Row="1" CornerRadius="8" Padding="2" Canvas.Left="987" Canvas.Top="175" Width="auto" Height="auto"
+                <Border Grid.Row="1" CornerRadius="8" Padding="2" Canvas.Left="960" Canvas.Top="175" Width="auto" Height="auto"
 BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C0" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <Grid Background="White">
                         <Grid.RowDefinitions>
@@ -1693,7 +1693,7 @@ BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C
                         <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
                             <TextBlock Text="PID" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="#1565C0" BorderBrush="Black" Padding="3,2" Grid.Column="1">
                             <TextBlock Text="Force" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
 
@@ -1767,7 +1767,7 @@ BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C
 
 
                 <!--NG BIN 2-->
-                <Border Canvas.Left="890" Canvas.Top="200" Width="85" Height="95" 
+                <Border Canvas.Left="866" Canvas.Top="200" Width="85" Height="95" 
                     BorderBrush="Black" BorderThickness="3" 
                     CornerRadius="8" Background="Gray" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <StackPanel VerticalAlignment="Center" Margin="2">
@@ -1786,141 +1786,9 @@ BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C
 
 
         <!--Alarm Bar-->
-        <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
-       Panel.ZIndex="999"
-       Background="Red"
-       BorderThickness="0,2,0,0"
-       BorderBrush="#B71C1C">
-            <Border.Style>
-                <Style TargetType="Border">
-                    <Setter Property="Height" Value="40"/>
-                    <!--<Setter Property="Visibility" Value="Collapsed"/>-->
-
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsAlarmBannerVisible}" Value="True">
-                            <Setter Property="Visibility" Value="Visible"/>
-                            <DataTrigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Height" From="0" To="70" Duration="0:0:0.4">
-                                            <DoubleAnimation.EasingFunction>
-                                                <CubicEase EasingMode="EaseOut"/>
-                                            </DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </DataTrigger.EnterActions>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-            <Grid>
-
-                <Grid.ColumnDefinitions>
-
-                    <ColumnDefinition Width="Auto"/>
-
-                    <ColumnDefinition Width="*"/>
-
-                    <ColumnDefinition Width="Auto"/>
-
-                </Grid.ColumnDefinitions>
-
-
-
-                <TextBlock Grid.Column="0" Text="⚠️" FontSize="32" Foreground="White" VerticalAlignment="Center">
-
-                    <TextBlock.Triggers>
-
-                        <EventTrigger RoutedEvent="Loaded">
-
-                            <BeginStoryboard>
-
-                                <Storyboard RepeatBehavior="Forever" AutoReverse="True">
-
-                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.3" Duration="0:0:0.5"/>
-
-                                </Storyboard>
-
-                            </BeginStoryboard>
-
-                        </EventTrigger>
-
-                    </TextBlock.Triggers>
-
-                </TextBlock>
-
-
-
-                <StackPanel Grid.Column="1" Margin="3">
-
-                    <TextBlock Text="CRITICAL SYSTEM ALARM" Foreground="White" Opacity="1" FontSize="12" FontWeight="Bold"/>
-
-                    <TextBlock Text="{Binding AlarmBannerTotalMessage}" Foreground="White" FontSize="24" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-
-                </StackPanel>
-
-
-
-                <StackPanel Grid.Column="2" 
-
-                  Orientation="Horizontal" 
-
-                  VerticalAlignment="Center" 
-
-                  Margin="3">
-
-
-
-                    <Button Command="{Binding CloseAlarmBannerCommand}"
-
-                  Content="✕"
-
-                  Width="40" 
-
-                  Background="Transparent" BorderThickness="0"
-
-                  Foreground="White" FontSize="24" FontWeight="Bold"
-
-                  Cursor="Hand"/>
-
-                </StackPanel>
-
-            </Grid>
-
-
-        </Border>
 
 
         <!--Statusbar-->
-        <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Height="40" Margin="3">
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                    <GradientStop Color="#444444" Offset="0.0"/>
-                    <GradientStop Color="#000000" Offset="0.5"/>
-                    <GradientStop Color="#222222" Offset="1.0"/>
-                </LinearGradientBrush>
-            </Border.Background>
-
-            <Grid Margin="3">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="PLC DISCONNECTED" Foreground="#FF0000" FontWeight="Bold" FontSize="14" Margin="3" VerticalAlignment="Center"/>
-                    <TextBlock Text="SERVICE CONNECTED" Foreground="#00FF00" FontWeight="Bold" FontSize="14" Margin="3" VerticalAlignment="Center"/>
-                    <TextBlock Text="MACHINE STATUS: IDLE" Foreground="#00FF00" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
-                </StackPanel>
-
-                <!--<StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">-->
-                <TextBlock x:Name="txtDate" Grid.Column="2" Text="4/15/2026 6:34 PM" Foreground="White" FontSize="12" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                <!--<TextBlock x:Name="txtTime" Text="6:34 PM" Foreground="White" FontSize="12" FontWeight="Bold" HorizontalAlignment="Right"/>-->
-                <!--</StackPanel>-->
-            </Grid>
-        </Border>
 
     </Grid>
 

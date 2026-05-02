@@ -543,6 +543,8 @@ namespace IPCSoftware.Common.CommonFunctions
 
         public void NavigateToPostBendingMonitor() => NavigateMainByTypeName("PostBendingMonitor");
 
+        public void NavigateToBendingLandingPage() => NavigateMainByTypeName("WelcomePageView");
+
         public void NavigateToAlarm() => NavigateMainByTypeName("AlarmView");
 
         public void NavigateToAeLimit() => NavigateMainByTypeName("AeLimitView");

@@ -114,6 +114,7 @@ namespace IPCSoftware.App.DI
             // Register base types for dependency injection
             services.AddSingleton<RibbonViewModelBase>(sp => sp.GetRequiredService<RibbonViewModelAOI>());
             services.AddSingleton<RibbonViewModelAOI, RibbonViewModelAOI>();
+            services.AddSingleton<MainWindowViewModelBase>(sp => sp.GetRequiredService<MainWindowViewModelAOI>());
             services.AddSingleton<MainWindowViewModelAOI>();
             services.AddTransient<OEEDashboardViewModel>();
             services.AddSingleton<UiTcpClient>();
@@ -199,6 +200,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<PLCTagConfigurationView>();
             services.AddTransient<LogViewerViewModel>();
             // Register LoginViewModelBase to resolve LoginViewModelAOI
+            services.AddTransient<LoginViewModelBase>(sp => sp.GetRequiredService<LoginViewModelAOI>());           
             services.AddTransient<LoginViewModelAOI>();
             services.AddTransient<LoginView>();
             services.AddTransient<TagControlView>();

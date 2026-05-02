@@ -181,7 +181,7 @@ public class RibbonViewModelBase : BaseViewModel
         }
     }
 
-    private void Logout()
+    public virtual  void Logout()
     {
         try
         {
@@ -205,7 +205,7 @@ public class RibbonViewModelBase : BaseViewModel
     }
 
 
-    private void OpenLandingPage()
+    public virtual void OpenLandingPage()
     {
         OnLandingPageRequested?.Invoke();  // notify MainWindowViewModel
         _nav.NavigateMain<ModeOfOperation>();

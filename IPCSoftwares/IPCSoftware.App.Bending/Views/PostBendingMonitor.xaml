@@ -5,17 +5,21 @@
              Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
     <UserControl.Resources>
-        <!-- Nav Button Style -->
+        <!-- Updated Navigation Button Style with larger dimensions -->
         <Style x:Key="NavButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#AFAFAF"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Width" Value="110"/>
-            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Width" Value="160"/>
+            <Setter Property="Height" Value="60"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" BorderBrush="#888" BorderThickness="1" CornerRadius="4">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="#888" 
+                                BorderThickness="2" 
+                                CornerRadius="8">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
@@ -23,11 +27,13 @@
             </Setter>
         </Style>
 
+        <!-- Table Border Style -->
         <Style x:Key="TableBorderStyle" TargetType="Border">
             <Setter Property="BorderBrush" Value="#333"/>
             <Setter Property="BorderThickness" Value="0.5"/>
         </Style>
 
+        <!-- TextBlock Style -->
         <Style x:Key="CommonTextStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="#222"/>
             <Setter Property="FontSize" Value="13"/>
@@ -37,34 +43,47 @@
         </Style>
     </UserControl.Resources>
 
-    <!-- Main Outer Grid -->
+    <!-- Main Layout Grid -->
     <Grid>
-        <!-- Is StackPanel se sab kuch center ho jayega -->
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- 0: Navigation Row -->
+            <RowDefinition Height="*"/>
+            <!-- 1: Main Content Row -->
+            <RowDefinition Height="60"/>
+            <!-- 2: BLANK SPACE FOR ALARM -->
+        </Grid.RowDefinitions>
 
-            <!-- Top Navigation Area (Fixed Width to match table) -->
-            <Grid Width="980" Margin="2">
-                <Button Content="Previous" Style="{StaticResource NavButtonStyle}" HorizontalAlignment="Left" Background="#E0E0E0"/>
-            </Grid>
+        <!-- Navigation Button (Previous) -->
+        <Button Grid.Row="0" Content="Previous" Style="{StaticResource NavButtonStyle}" 
+                HorizontalAlignment="Left" Background="#E0E0E0"/>
 
-            <!-- Main Monitor Frame (Fixed Width and Height for perfect centering) -->
+        <!-- Viewbox for automatic scaling of the table -->
+        <Viewbox Grid.Row="1" Stretch="Uniform">
+            <!-- Fixed resolution container for internal scaling -->
             <Border BorderBrush="Black" BorderThickness="1.5" Width="980" Height="520">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="70"/>
+                        <!-- Title Section -->
                         <RowDefinition Height="40"/>
+                        <!-- Header Row -->
                         <RowDefinition Height="*"/>
+                        <!-- Data Rows -->
                     </Grid.RowDefinitions>
 
                     <!-- 1. HEADER SECTION -->
                     <Border Grid.Row="0" BorderBrush="Black" BorderThickness="0,0,0,1" Background="#F9F9F9">
                         <Grid>
-                            <TextBlock Text="POST BENDING INSPECTION MONITOR" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <TextBlock Text="Batch No. - 1234321" FontSize="14" FontWeight="Medium" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="#555" Margin="3"/>
+                            <TextBlock Text="POST BENDING INSPECTION MONITOR" FontSize="22" FontWeight="Bold" 
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Batch No. - 1234321" FontSize="14" FontWeight="Medium" 
+                                       HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                       Foreground="#555"/>
                         </Grid>
                     </Border>
 
-                    <!-- 2. TABLE HEADERS -->
+                    <!-- 2. TABLE COLUMN HEADERS -->
                     <Grid Grid.Row="1" Background="#EEEEEE">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="80"/>
@@ -134,7 +153,7 @@
                                         <TextBlock Text="{Binding}" Style="{StaticResource CommonTextStyle}"/>
                                     </Border>
                                     <Border Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                                        <TextBlock Text="ABCDQWER1234TYUI9087" Style="{StaticResource CommonTextStyle}" FontSize="10" TextWrapping="Wrap" Margin="2"/>
+                                        <TextBlock Text="ABCDQWER1234TYUI9087" Style="{StaticResource CommonTextStyle}" FontSize="10" TextWrapping="Wrap"/>
                                     </Border>
 
                                     <UniformGrid Grid.Column="2" Rows="3">
@@ -149,7 +168,6 @@
                                         </Border>
                                     </UniformGrid>
 
-                                    <!-- Data Rows -->
                                     <UniformGrid Grid.Column="3" Rows="3">
                                         <Border Style="{StaticResource TableBorderStyle}">
                                             <TextBlock Text="432.223" Style="{StaticResource CommonTextStyle}"/>
@@ -196,7 +214,8 @@
                                     </UniformGrid>
 
                                     <Border Grid.Column="7" Style="{StaticResource TableBorderStyle}">
-                                        <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                        <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" 
+                                                   Stroke="#999" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                     </Border>
                                 </Grid>
                             </DataTemplate>
@@ -204,6 +223,9 @@
                     </ItemsControl>
                 </Grid>
             </Border>
-        </StackPanel>
+        </Viewbox>
+
+        <!-- Blank Alarm Bar Placeholder -->
+        <Border Grid.Row="2" Background="Transparent" />
     </Grid>
 </UserControl>

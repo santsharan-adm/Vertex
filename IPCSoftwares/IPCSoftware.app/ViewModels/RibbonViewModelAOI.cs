@@ -15,11 +15,13 @@ namespace IPCSoftware.App.AOI.ViewModels
 {
     public class RibbonViewModelAOI : RibbonViewModelBase
     {
+        private readonly INavigationService _nav;
         public RibbonViewModelAOI(IOptions<ExternalSettings> extSetting,
                                   INavigationService nav, IDialogService dialog,
                                   Func<ProcessSequenceWindow> sequenceWindowFactory,
                                   IAppLogger logger) : base(extSetting, nav, dialog, sequenceWindowFactory, logger)
         {
+            _nav = nav;
         }
 
         public override void OpenDashboardMenu()
@@ -44,6 +46,14 @@ namespace IPCSoftware.App.AOI.ViewModels
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
             }
+        }
+
+
+        public override void OpenLandingPage()
+        {
+            base.OpenLandingPage();
+            OnLandingPageRequested?.Invoke();  // notify MainWindowViewModel
+            _nav.NavigateMain<ModeOfOperation>();
         }
     }
 }
