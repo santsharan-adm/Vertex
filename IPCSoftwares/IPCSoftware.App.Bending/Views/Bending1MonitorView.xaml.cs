@@ -10,10 +10,5 @@ namespace IPCSoftware.App.Bending.Views
             InitializeComponent();
             DataContext = viewModel;
         }
-
-        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-
-        }
     }
 }

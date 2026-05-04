@@ -74,7 +74,7 @@
         <!-- Navigation Buttons -->
         <Grid Grid.Row="0">
             <Button Content="Previous" Style="{StaticResource NavButtonStyle}" 
-                    HorizontalAlignment="Left" Background="#007ACC" Command="{Binding PreviousCommand}"/>
+                    HorizontalAlignment="Left" Command="{Binding PreviousCommand}"/>
         </Grid>
 
         <!-- Viewbox for responsive scaling -->
