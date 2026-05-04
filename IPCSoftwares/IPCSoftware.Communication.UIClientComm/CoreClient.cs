@@ -12,9 +12,10 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.Common.UIClientComm
 {
-    public class CoreClient : BaseService
+    public class CoreClient 
     {
         private readonly UiTcpClient _tcpClient;
+        private IAppLogger _logger;
 
         // Use a lock to prevent multiple pages from scrambling the socket
         private readonly SemaphoreSlim _requestLock = new SemaphoreSlim(1, 1);
@@ -25,10 +26,16 @@ namespace IPCSoftware.Common.UIClientComm
         public event Action<AlarmMessage> OnAlarmMessageReceived;
         public bool isConnected => _tcpClient?.IsConnected ?? false;
 
-        public CoreClient(UiTcpClient client, IAppLogger logger) : base(logger)
+        public CoreClient(UiTcpClient client) 
         {
             _tcpClient = client;
             _tcpClient.DataReceived += OnDataReceived;
+
+        }
+
+        public void SetLogger(IAppLogger logger)
+        {
+            _logger = logger;
         }
 
         private void OnDataReceived(string json)
@@ -41,7 +48,7 @@ namespace IPCSoftware.Common.UIClientComm
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[CoreClient] JSON Parse Error: {ex.Message}", LogType.Diagnostics);
+                _logger?.LogError($"[CoreClient] JSON Parse Error: {ex.Message}", LogType.Diagnostics);
                 return;
             }
 
@@ -62,7 +69,7 @@ namespace IPCSoftware.Common.UIClientComm
             }
             else
             {
-                _logger.LogWarning($"[CoreClient] Unhandled message: {json}", LogType.Diagnostics);
+                _logger?.LogWarning($"[CoreClient] Unhandled message: {json}", LogType.Diagnostics);
             }
         }
 
@@ -75,7 +82,7 @@ namespace IPCSoftware.Common.UIClientComm
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[CoreClient] Alarm conversion error: {ex.Message}", LogType.Diagnostics);
+                _logger?.LogError($"[CoreClient] Alarm conversion error: {ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -87,7 +94,7 @@ namespace IPCSoftware.Common.UIClientComm
             // 1. Connection Check
             if (!isConnected)
             {
-                _logger.LogWarning("Cannot send request: Client disconnected.", LogType.Diagnostics);
+                _logger?.LogWarning("Cannot send request: Client disconnected.", LogType.Diagnostics);
                 return null;
             }
 
@@ -116,14 +123,14 @@ namespace IPCSoftware.Common.UIClientComm
                 else
                 {
                     // Fail: Timeout
-                    _logger.LogError($"[CoreClient] Request {request.RequestId} Timed Out.", LogType.Diagnostics);
+                    _logger?.LogError($"[CoreClient] Request {request.RequestId} Timed Out.", LogType.Diagnostics);
                     try { _currentResponseTcs.TrySetCanceled(); } catch { }
                     return null;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[CoreClient] Send Exception: {ex.Message}", LogType.Diagnostics);
+                _logger?.LogError($"[CoreClient] Send Exception: {ex.Message}", LogType.Diagnostics);
                 return null;
             }
             finally
@@ -156,7 +163,7 @@ namespace IPCSoftware.Common.UIClientComm
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"GetIoValues Error (Attempt {retryCount + 1}): {ex.Message}", LogType.Diagnostics);
+                    _logger?.LogError($"GetIoValues Error (Attempt {retryCount + 1}): {ex.Message}", LogType.Diagnostics);
                 }
 
                 retryCount++;
@@ -178,7 +185,7 @@ namespace IPCSoftware.Common.UIClientComm
             var res = JsonConvert.DeserializeObject<ResponsePackage>(jsonResponse);
             if (!res.Success)
             {
-                _logger.LogError($"{res.ErrorMessage} for tagId: {tagId} and value was {value}", LogType.Diagnostics);
+                _logger?.LogError($"{res.ErrorMessage} for tagId: {tagId} and value was {value}", LogType.Diagnostics);
             }
             return res.Success;
         }
@@ -199,7 +206,7 @@ namespace IPCSoftware.Common.UIClientComm
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Ack Error: {ex.Message}", LogType.Diagnostics);
+                _logger?.LogError($"Ack Error: {ex.Message}", LogType.Diagnostics);
                 return false;
             }
         }
@@ -221,8 +228,42 @@ namespace IPCSoftware.Common.UIClientComm
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, LogType.Diagnostics);
+                _logger?.LogError(ex.Message, LogType.Diagnostics);
                 throw;
+            }
+        }
+
+
+        /// Added by Rishabh -Date 30-04-2026
+        /// Sends log message to Core Service for centralized logging
+        /// Returns true if successfully sent, false if TCP unavailable
+       
+        public async Task<bool> SendLogAsync(string message, string level, LogType logType,
+            string memberName = "", string filePath = "", int lineNumber = 0)
+        {
+            try
+            {
+                var logRequest = new LogRequest
+                {
+                    Message = message,
+                    Level = level,
+                    LogType = logType,
+                    MemberName = memberName,
+                    FilePath = filePath,
+                    LineNumber = lineNumber
+                };
+
+                var request = new RequestPackage { RequestId = 8, Parameters = logRequest };
+                string jsonResponse = await SendRequestAsync(request);
+
+                if (string.IsNullOrEmpty(jsonResponse)) return false;
+
+                var response = JsonConvert.DeserializeObject<ResponsePackage>(jsonResponse);
+                return response.Success;
+            }
+            catch
+            {
+                return false; // TCP error - caller will handle fallback
             }
         }
     }

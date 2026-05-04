@@ -145,10 +145,25 @@ namespace IPCSoftware.Engine
                 {
                     return await HandleUiWrite(request);
                 }
+                //-----------------------------------------------------------
+                //7) ALARM REQUEST (RequestId = 7)
+                //-----------------------------------------------------------
+
                 if (request.RequestId == 7)
                 {
                     return await HandleAlarmRequest(request);
                 }
+
+                //----------------------------------------------------------
+                //8) LOG REQUEST (RequestId = 8)       //Added on 30-04-2026
+                //----------------------------------------------------------
+
+                if (request.RequestId == 8) 
+                {
+                    return await HandleUiLogRequest (request);
+                }
+
+
 
                 //---------------------------------------------------------
                 // 1) IO REQUEST (RequestId = 5)
@@ -314,6 +329,58 @@ namespace IPCSoftware.Engine
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
                 return ErrorAlarm($"Error processing alarm request: {ex.Message}.");
+            }
+        }
+
+        //Added by Rishabh - 30/04/2026 -
+        //This method will handle the log request coming from UI and log it using AppLogger
+        private async Task<ResponsePackage> HandleUiLogRequest(RequestPackage request)
+        {
+            try
+            {
+                if (request.Parameters is JsonElement json)
+                {
+                    var logRequest = JsonSerializer.Deserialize<LogRequest>(json.GetRawText());
+
+                    if (logRequest != null)
+                    {
+                        switch (logRequest.Level)
+                        {
+                            case "INFO":
+                                _logger.LogInfo(logRequest.Message, logRequest.LogType);
+                                break;
+                            case "WARN":
+                                _logger.LogWarning(logRequest.Message, logRequest.LogType);
+                                break;
+                            case "ERROR":
+                                _logger.LogError(logRequest.Message, logRequest.LogType,
+                                    logRequest.MemberName, logRequest.FilePath, logRequest.LineNumber);
+                                break;
+                            case "TRACE":
+                                _logger.LogTrace(logRequest.Message);
+                                break;
+                        }
+
+                        return new ResponsePackage { ResponseId = 8, Success = true };
+                    }
+                }
+
+                return new ResponsePackage
+                {
+                    ResponseId = 8,
+                    Success = false,
+                    ErrorMessage = "Invalid log request"
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"HandleUiLogRequest error: {ex.Message}", LogType.Diagnostics);
+                return new ResponsePackage
+                {
+                    ResponseId = 8,
+                    Success = false,
+                    ErrorMessage = ex.Message
+                };
             }
         }
 

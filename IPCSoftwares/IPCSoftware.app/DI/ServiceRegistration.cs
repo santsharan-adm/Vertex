@@ -18,6 +18,7 @@ using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.UI.CommonViews;
+using IPCSoftware.UI.CommonViews.Services;
 using IPCSoftware.UI.CommonViews.ViewModels;
 using IPCSoftware.UI.CommonViews.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,8 +43,9 @@ namespace IPCSoftware.App.DI
     {
         public static void RegisterServices(IServiceCollection services)
         {
-            services.AddSingleton<IAppLogger, AppLoggerService>();
-           // services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+           // services.AddSingleton<IAppLogger, AppLoggerService>();
+            services.AddSingleton<IAppLogger, UiErrorLogger>();                //Added by Rishabh - date - 08/04/2026// Purpose: Use UiErrorLogger for better error visibility in the UI.
+                                                                               // services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
 
             //  NEW: Register Observable CCD Settings Service (Singleton - shared across all services)
@@ -91,11 +93,11 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<CameraFtpService>();
             services.AddTransient<ProductionImageService>();
             services.AddSingleton<AlarmService>();
-            services.AddSingleton(sp =>
-            {
-                var logger = sp.GetRequiredService<IAppLogger>();
-                return new UiListener(5050, logger);
-            });
+            //services.AddSingleton(sp =>
+            //{
+            //    var logger = sp.GetRequiredService<IAppLogger>();
+            //    return new UiListener(5050, logger);
+            //});
             services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
             services.AddSingleton<IApiTestSettingsService, ApiTestSettingsService>();
             services.AddSingleton<IAuthService, AuthService>();
@@ -145,6 +147,21 @@ namespace IPCSoftware.App.DI
 
                 )
             );
+
+
+
+            // 4. Post-registration: Set loggers
+            services.AddSingleton(sp =>
+            {
+                var logger = sp.GetRequiredService<IAppLogger>();
+                var tcpClient = sp.GetRequiredService<UiTcpClient>();
+                var coreClient = sp.GetRequiredService<CoreClient>();
+
+                tcpClient.SetLogger(logger);
+                coreClient.SetLogger(logger);
+
+                return sp; // Dummy return
+            });
 
             services.AddTransient<AeLimitView>();
             services.AddTransient<AeLimitViewModel>();
