@@ -336,6 +336,7 @@ namespace IPCSoftware.Engine
         //This method will handle the log request coming from UI and log it using AppLogger
         private async Task<ResponsePackage> HandleUiLogRequest(RequestPackage request)
         {
+            //throw new Exception("Testing via CoreService");
             try
             {
                 if (request.Parameters is JsonElement json)

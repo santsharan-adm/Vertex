@@ -71,8 +71,16 @@ namespace IPCSoftware.CoreService.Bending
                             services.Configure<ExternalSettings>(hostContext.Configuration.GetSection("External"));
 
                             // Core services
-                           // services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
-                            services.AddSingleton<IAppLogger, AppLoggerService>();
+                            // services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+                            // services.AddSingleton<IAppLogger, AppLoggerService>();
+                            services.AddSingleton<IAppLogger>(sp =>
+                            {
+                                var logger = sp.GetRequiredService<ILogManagerService>();
+                                const string source = "Bending-CoreService";
+                                const string log = "Application";
+                                return new AppLoggerService(logger, source, log);
+                            }
+                            );
                             services.AddSingleton<ILogManagerService, LogManagerService>();
                             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
                             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();

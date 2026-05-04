@@ -149,9 +149,9 @@ namespace IPCSoftware.Devices.Camera
                                     return file.FullName;
                             }
                         }
-                        catch
+                        catch (Exception ex)
                         {
-                            // file still being written, keep polling
+                            _logger.LogWarning($"[CCD] File {file.FullName} is not ready, retrying...", LogType.Diagnostics);
                         }
                     }
 

@@ -2,6 +2,7 @@
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -136,8 +137,9 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                     ResetAt = values.Count > 7 && DateTime.TryParse(values[7], out DateTime rst) ? rst : null
                 };
             }
-            catch
+            catch(Exception ex)
             {
+                _logger.LogError($"Error parsing ALarm Csv : " + ex, LogType.Error);
                 return null;
             }
         }

@@ -43,8 +43,29 @@ namespace IPCSoftware.App.DI
         public static void RegisterServices(IServiceCollection services)
         {
            // services.AddSingleton<IAppLogger, AppLoggerService>();
-            services.AddSingleton<IAppLogger, UiErrorLogger>();                //Added by Rishabh - date - 08/04/2026// Purpose: Use UiErrorLogger for better error visibility in the UI.
-                                                                               // services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+          //  services.AddSingleton<IAppLogger, UiErrorLogger>();                //Modify by Rishabh - date - 04/05/2026// Purpose: Use UiErrorLogger for better error visibility in the UI.
+
+            services.AddSingleton<IAppLogger>(sp =>
+            {
+                var coreClient = sp.GetRequiredService<CoreClient>();
+                var dialog = sp.GetRequiredService<IDialogService>();
+                const string eventSource = "AOI- UI Specific"; 
+                const string eventLog = "Application";
+
+                return new UiErrorLogger(coreClient, dialog, eventSource, eventLog);
+            });
+
+
+
+            //Added later -04-05-2026
+            services.AddSingleton<UiTcpClient>(sp =>
+            {
+                return new UiTcpClient(sp.GetRequiredService<IDialogService>());
+            });
+            services.AddSingleton<CoreClient>(sp =>
+            {
+                return new CoreClient(sp.GetRequiredService<UiTcpClient>());
+            });
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
 
             //  NEW: Register Observable CCD Settings Service (Singleton - shared across all services)
@@ -115,7 +136,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<RibbonViewModel>();
             services.AddSingleton<MainWindowViewModel>();
             services.AddTransient<OEEDashboardViewModel>();
-            services.AddSingleton<UiTcpClient>();
+          //  services.AddSingleton<UiTcpClient>();
             services.AddSingleton<ShiftResetService>();
 
             // ========== COMMON VIEWS & VIEWMODELS ==========

@@ -89,7 +89,16 @@ namespace IPCSoftware.CoreService
                             //services.AddSingleton<IFileHandler, CsvManager>();
                             services.AddSingleton<ConfigLoaderService>();           //Added by Rishabh - date - 27/04/2026//
                           //  services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
-                            services.AddSingleton<IAppLogger, AppLoggerService>();
+                           // services.AddSingleton<IAppLogger, AppLoggerService>();
+                            services.AddSingleton<IAppLogger>(sp =>
+                            {
+                                var logmanager = sp.GetRequiredService<ILogManagerService>();
+                                const string source = "AOI-CoreService";
+                                const string log = "Application";
+                                return new AppLoggerService(logmanager, source, log);
+                            }
+                            );
+
                             services.AddSingleton<ILogManagerService, LogManagerService>();
                             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
                             //services.AddSingleton<DeviceInterfaceConfigLoader>();   //Added by Rishabh - date - 17/04/2026//
@@ -185,7 +194,7 @@ namespace IPCSoftware.CoreService
 
                     // 3. Initialize Constants without needing AppConfigSettings wrapper
                     ConstantValues.Initialize(configSettings);
-                    LoadCcdSettingsAsync(host.Services).GetAwaiter().GetResult();   
+                    LoadCcdSettingsAsync(host.Services).GetAwaiter().GetResult();
 
                     host.Run();
 
@@ -209,7 +218,7 @@ namespace IPCSoftware.CoreService
         /// //Added by Rishabh - date - 08/04/2026//
         /// Discription : - * Loads the active camera interface settings into the observable service
         ///                 * This ensures CCDTriggerService has valid values from startup
-   
+
         private static async Task LoadCcdSettingsAsync(IServiceProvider services)
         {
             try

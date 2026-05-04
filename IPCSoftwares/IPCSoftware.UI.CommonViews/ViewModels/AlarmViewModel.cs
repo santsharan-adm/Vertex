@@ -344,8 +344,9 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 if (model.SerialNo == 0) model.SerialNo = ++_serialCounter;
                 return model;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError($"Failed to parse alarm record: {ex.Message}", LogType.Diagnostics);
                 return null;
             }
         }
