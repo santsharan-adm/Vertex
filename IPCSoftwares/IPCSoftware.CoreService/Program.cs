@@ -226,6 +226,7 @@ namespace IPCSoftware.CoreService
                 var deviceService = services.GetRequiredService<IDeviceConfigurationService>();
                 var observableSettings = services.GetRequiredService<IObservableCcdSettingsService>();
                 var logger = services.GetRequiredService<IAppLogger>();
+               // logger.LogInfo("[TEST] AppLogger initialized successfully", LogType.Diagnostics);  //Only for testing if AppLogger is working at this point
                 await deviceService.InitializeAsync();
                 // 1. Load all camera interfaces
                 var cameras = await deviceService.GetCameraDevicesAsync();
