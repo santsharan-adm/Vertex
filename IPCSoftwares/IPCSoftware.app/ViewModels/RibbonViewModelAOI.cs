@@ -17,9 +17,9 @@ namespace IPCSoftware.App.AOI.ViewModels
     {
         private readonly INavigationService _nav;
         public RibbonViewModelAOI(IOptions<ExternalSettings> extSetting,
-                                  INavigationService nav, IDialogService dialog,
+                                  INavigationService nav, IDialogService dialog,                                  
                                   Func<ProcessSequenceWindow> sequenceWindowFactory,
-                                  IAppLogger logger) : base(extSetting, nav, dialog, sequenceWindowFactory, logger)
+                                  IAppLogger logger) : base(extSetting, nav, dialog,"AOI", sequenceWindowFactory, logger)
         {
             _nav = nav;
         }

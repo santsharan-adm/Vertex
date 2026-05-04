@@ -25,7 +25,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         public RibbonViewModelBending(IOptions<ExternalSettings> extSetting, 
                                       INavigationService nav, IDialogService dialog, 
                                       Func<ProcessSequenceWindow> sequenceWindowFactory, 
-                                      IAppLogger logger) : base(extSetting, nav, dialog, sequenceWindowFactory, logger)
+                                      IAppLogger logger) : base(extSetting, nav, dialog,"Bending", sequenceWindowFactory, logger)
 
         {
             _nav = nav;
