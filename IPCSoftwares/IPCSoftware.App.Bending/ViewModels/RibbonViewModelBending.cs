@@ -41,10 +41,10 @@ namespace IPCSoftware.App.Bending.ViewModels
             {
                 "Bending1Monitor",
                 "Bending2Monitor",
-                "Bending3Monitor",              
+                "Bending3Monitor",
+                "PostBendingMonitor",
                 "UserControl1",
                 "UserControl2",
-                "PostBendingMonitor",
                 "PLC IO",
                 "Alarm View",
                 "Startup Condition",
