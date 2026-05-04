@@ -233,10 +233,10 @@ namespace IPCSoftware.App.Bending.DI
             services.AddTransient<Bending2MonitorView>();
             services.AddTransient<Bending3MonitorViewModel>();
             services.AddTransient<Bending3MonitorView>();
-            services.AddTransient<UserControl1ViewModel>();
-            services.AddTransient<UserControl1>();
-            services.AddTransient<UserControl2ViewModel>();
-            services.AddTransient<UserControl2>();
+            services.AddTransient<Dashboard1ViewModel>();
+            services.AddTransient<Dashboard1>();
+            services.AddTransient<Dashboard2ViewModel>();
+            services.AddTransient<Dashboard2>();
             services.AddTransient<PostBendingViewModel>();
             services.AddTransient<PostBendingMonitor>();
             services.AddTransient<WelcomePageViewModel>();

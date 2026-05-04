@@ -12,6 +12,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         private readonly INavigationService _navigationService;
 
         public ICommand PreviousCommand { get; }
+        public ICommand NextCommand { get; }
 
         private double EnsureNonNegative(double value) => Math.Max(0, value);
 
@@ -95,6 +96,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         {
             _navigationService = navigationService;
             PreviousCommand = new RelayCommand(ExecutePrevious);
+            NextCommand = new RelayCommand(ExecuteNext);
 
             P1_Upper = 50.5; P1_Value = 48.2; P1_Lower = 45.0;
             P1_LM = "2.22"; P1_TM = "68.4 °C"; P1_BT = "2.5s";
@@ -112,6 +114,11 @@ namespace IPCSoftware.App.Bending.ViewModels
         private void ExecutePrevious()
         {
             _navigationService.NavigateToDashboard2();
+        }
+
+        private void ExecuteNext()
+        {
+            _navigationService.NavigateToPostBendingMonitor();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

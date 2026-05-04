@@ -6,13 +6,13 @@ using IPCSoftware.Shared;
 
 namespace IPCSoftware.App.Bending.ViewModels
 {
-    public class UserControl2ViewModel : INotifyPropertyChanged
+    public class Dashboard1ViewModel : INotifyPropertyChanged
     {
         private readonly INavigationService _navigationService;
 
         public ICommand ToggleSidebarCommand { get; }
 
-        public UserControl2ViewModel(INavigationService navigationService)
+        public Dashboard1ViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
             ToggleSidebarCommand = new RelayCommand(ExecuteGoToMenu);

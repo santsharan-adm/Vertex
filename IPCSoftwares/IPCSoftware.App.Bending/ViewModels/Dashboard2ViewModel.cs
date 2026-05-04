@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using IPCSoftware.Core.Interfaces;
@@ -6,13 +6,14 @@ using IPCSoftware.Shared;
 
 namespace IPCSoftware.App.Bending.ViewModels
 {
-    public class UserControl1ViewModel : INotifyPropertyChanged
+
+    public class Dashboard2ViewModel : INotifyPropertyChanged
     {
         private readonly INavigationService _navigationService;
 
         public ICommand ToggleSidebarCommand { get; }
 
-        public UserControl1ViewModel(INavigationService navigationService)
+        public Dashboard2ViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
             ToggleSidebarCommand = new RelayCommand(ExecuteGoToMenu);

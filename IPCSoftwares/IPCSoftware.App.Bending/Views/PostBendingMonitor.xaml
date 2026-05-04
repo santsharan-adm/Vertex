@@ -76,7 +76,7 @@
 
         <!-- Navigation Button (Previous) -->
         <Button Grid.Row="0" Content="Previous" Style="{StaticResource NavButtonStyle}" 
-                HorizontalAlignment="Left" Command="{Binding PreviousCommand}"/>
+                HorizontalAlignment="Left" Background="#007ACC" Command="{Binding PreviousCommand}" Foreground="White"/>
 
         <!-- Viewbox for automatic scaling of the table -->
         <Viewbox Grid.Row="1" Stretch="Uniform">
