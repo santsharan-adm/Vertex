@@ -74,9 +74,9 @@
         <!-- Navigation Buttons -->
         <Grid Grid.Row="0">
             <Button Content="Previous" Style="{StaticResource NavButtonStyle}" 
-                    HorizontalAlignment="Left" Background="#007ACC" Command="{Binding PreviousCommand}"/>
+                    HorizontalAlignment="Left" Command="{Binding PreviousCommand}"/>
             <Button Content="NEXT" Style="{StaticResource NavButtonStyle}" 
-                    HorizontalAlignment="Right" Background="#007ACC"  Command="{Binding NextCommand}"/>
+                    HorizontalAlignment="Right" Command="{Binding NextCommand}"/>
         </Grid>
 
         <!-- Main Content -->
