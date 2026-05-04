@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bending Machine HMI - Data Flow Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0F172A; color: white; overflow: hidden; height: 100vh; }
+        .container { display: flex; flex-direction: column; height: 100vh; }
+
+        .header { background: #1E293B; border-bottom: 2px solid #3B82F6; padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; height: 40px; }
+        .header-left { display: flex; gap: 12px; font-size: 13px; font-weight: bold; align-items: center; }
+        .status { background: #10B981; padding: 4px 12px; border-radius: 3px; font-size: 10px; }
+
+        .top-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; height: 200px; }
+        .param-tile { background: #1E293B; border: 2px solid #3B82F6; border-radius: 6px; padding: 12px; display: flex; flex-direction: column; }
+        .tile-title { font-size: 11px; font-weight: bold; color: #10B981; margin-bottom: 8px; border-bottom: 1px solid #10B981; padding-bottom: 6px; }
+        .tile-stage { font-size: 10px; color: #94A3B8; margin-bottom: 6px; }
+        .tile-lot-id { font-size: 14px; font-weight: bold; color: #3B82F6; margin-bottom: 8px; }
+        .param-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .param-label { font-size: 9px; color: #94A3B8; margin-bottom: 4px; font-weight: bold; }
+        .param-input { background: #0F172A; border: 1px solid #3B82F6; padding: 4px; margin-bottom: 3px; font-size: 9px; color: white; border-radius: 2px; }
+        .tile-qr { background: #0F172A; padding: 6px; border-radius: 3px; margin-top: auto; font-size: 8px; color: #94A3B8; border: 1px solid #10B981; }
+        .qr-code { background: #1E293B; padding: 2px; margin-bottom: 2px; font-size: 8px; color: #10B981; font-weight: bold; }
+
+        .middle-section { background: #1E293B; border: 2px solid #CBD5E1; border-radius: 6px; padding: 20px; display: flex; align-items: center; justify-content: space-between; height: 280px; margin: 8px; gap: 20px; }
+
+        .robot-box { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .robot-label { font-size: 10px; font-weight: bold; color: #94A3B8; }
+        .robot-icon { width: 50px; height: 50px; border: 2px solid #3B82F6; border-radius: 4px; background: #0F172A; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+
+        .tt-container { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .tt-label { font-size: 11px; font-weight: bold; color: #94A3B8; }
+
+        .tt-visual { width: 120px; height: 120px; border: 3px solid #3B82F6; border-radius: 50%; position: relative; background: radial-gradient(circle, #0F172A, #1E293B); animation: rotate 16s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .tt-position { width: 12px; height: 12px; background: #3B82F6; border-radius: 50%; position: absolute; border: 2px solid #0F172A; }
+        .tt-position.active { background: #10B981; box-shadow: 0 0 8px #10B981; }
+
+        .pos-0 { top: 8px; left: 50%; transform: translateX(-50%); }
+        .pos-1 { right: 8px; top: 50%; transform: translateY(-50%); }
+        .pos-2 { bottom: 8px; left: 50%; transform: translateX(-50%); }
+        .pos-3 { left: 8px; top: 50%; transform: translateY(-50%); }
+
+        .tt-pos-label { position: absolute; font-size: 8px; color: #94A3B8; font-weight: bold; }
+        .pos-0-label { top: -20px; left: 50%; transform: translateX(-50%); text-align: center; }
+        .pos-1-label { right: -30px; top: 40%; }
+        .pos-2-label { bottom: -20px; left: 50%; transform: translateX(-50%); }
+        .pos-3-label { left: -30px; top: 40%; }
+
+        .tt-info { font-size: 9px; color: #94A3B8; text-align: center; width: 100%; }
+        .tt-lot { font-size: 12px; font-weight: bold; color: #10B981; }
+
+        .transfer-arrow { font-size: 36px; color: #3B82F6; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .bottom-section { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; flex: 1; }
+        .scanned-parts { background: #1E293B; border: 2px solid #CBD5E1; border-radius: 6px; padding: 12px; overflow-y: auto; }
+        .table-title { font-size: 10px; font-weight: bold; color: #94A3B8; margin-bottom: 8px; border-bottom: 1px solid #3B82F6; padding-bottom: 6px; }
+        .table-row { display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-bottom: 4px; font-size: 9px; background: #0F172A; padding: 6px; border-radius: 2px; border-left: 2px solid #3B82F6; }
+
+        .process-events { background: #1E293B; border: 2px solid #CBD5E1; border-radius: 6px; padding: 12px; overflow-y: auto; }
+        .event-row { display: grid; grid-template-columns: auto 1fr; gap: 8px; margin-bottom: 4px; font-size: 9px; background: #0F172A; padding: 6px; border-radius: 2px; border-left: 2px solid #3B82F6; align-items: flex-start; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #3B82F6; border-radius: 2px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                ⚙️ FLEX BENDING MACHINE
+                <div class="status">● RUNNING</div>
+            </div>
+            <div class="header-right" style="font-size: 10px;">
+                Cycle: <strong id="cycleNum">001</strong> | Time: <strong id="cycleTime">0s</strong>
+            </div>
+        </div>
+
+        <div class="top-section">
+            <!-- BENDING 1 TILE -->
+            <div class="param-tile">
+                <div class="tile-title">🔴 BENDING 1 PARAMETERS</div>
+                <div class="tile-stage">At TT-1 Position 1</div>
+                <div class="tile-lot-id" id="bend1-lot">LOT: ---</div>
+                <div class="param-group">
+                    <div>
+                        <div class="param-label">Temperature</div>
+                        <div class="param-input" id="b1-t1">Temp-1: ---</div>
+                        <div class="param-input" id="b1-t2">Temp-2: ---</div>
+                        <div class="param-input" id="b1-t3">Temp-3: ---</div>
+                        <div class="param-input" id="b1-t4">Temp-4: ---</div>
+                    </div>
+                    <div>
+                        <div class="param-label">Pressure</div>
+                        <div class="param-input" id="b1-p1">P1: ---</div>
+                        <div class="param-input" id="b1-p2">P2: ---</div>
+                        <div class="param-input" id="b1-p3">P3: ---</div>
+                        <div class="param-input" id="b1-p4">P4: ---</div>
+                    </div>
+                </div>
+                <div class="tile-qr" id="b1-qr"></div>
+            </div>
+
+            <!-- BENDING 2 TILE -->
+            <div class="param-tile">
+                <div class="tile-title">🟡 BENDING 2 PARAMETERS</div>
+                <div class="tile-stage">At TT-1 Position 2</div>
+                <div class="tile-lot-id" id="bend2-lot">LOT: ---</div>
+                <div class="param-group">
+                    <div>
+                        <div class="param-label">Temperature</div>
+                        <div class="param-input" id="b2-t1">T1: ---</div>
+                        <div class="param-input" id="b2-t2">T2: ---</div>
+                        <div class="param-input" id="b2-t3">T3: ---</div>
+                        <div class="param-input" id="b2-t4">T4: ---</div>
+                    </div>
+                    <div>
+                        <div class="param-label">Pressure</div>
+                        <div class="param-input" id="b2-p1">P1: ---</div>
+                        <div class="param-input" id="b2-p2">P2: ---</div>
+                        <div class="param-input" id="b2-p3">P3: ---</div>
+                        <div class="param-input" id="b2-p4">P4: ---</div>
+                    </div>
+                </div>
+                <div class="tile-qr" id="b2-qr"></div>
+            </div>
+
+            <!-- BENDING 3 TILE -->
+            <div class="param-tile">
+                <div class="tile-title">⚪ BENDING 3 PARAMETERS</div>
+                <div class="tile-stage">At TT-2 Position 1</div>
+                <div class="tile-lot-id" id="bend3-lot">LOT: ---</div>
+                <div class="param-group">
+                    <div>
+                        <div class="param-label">Temperature</div>
+                        <div class="param-input" id="b3-t1">T1: ---</div>
+                        <div class="param-input" id="b3-t2">T2: ---</div>
+                        <div class="param-input" id="b3-t3">T3: ---</div>
+                        <div class="param-input" id="b3-t4">T4: ---</div>
+                    </div>
+                    <div>
+                        <div class="param-label">Pressure</div>
+                        <div class="param-input" id="b3-p1">P1: ---</div>
+                        <div class="param-input" id="b3-p2">P2: ---</div>
+                        <div class="param-input" id="b3-p3">P3: ---</div>
+                        <div class="param-input" id="b3-p4">P4: ---</div>
+                    </div>
+                </div>
+                <div class="tile-qr" id="b3-qr"></div>
+            </div>
+        </div>
+
+        <div class="middle-section">
+            <div class="robot-box">
+                <div class="robot-label">Input Robot</div>
+                <div class="robot-icon">🤖</div>
+                <div style="font-size: 9px; color: #94A3B8;" id="input-lot">LOT: ---</div>
+            </div>
+
+            <div class="tt-container">
+                <div class="tt-label">Status - DK (TT-1) - 4 Pos</div>
+                <div class="tt-visual" id="tt1">
+                    <div class="tt-position active pos-0" id="tt1-pos-0"></div>
+                    <div class="tt-position pos-1" id="tt1-pos-1"></div>
+                    <div class="tt-position pos-2" id="tt1-pos-2"></div>
+                    <div class="tt-position pos-3" id="tt1-pos-3"></div>
+                    <div class="tt-pos-label pos-0-label">0<br/>Entry</div>
+                    <div class="tt-pos-label pos-1-label">1<br/>Bend1</div>
+                    <div class="tt-pos-label pos-2-label">2<br/>Bend2</div>
+                    <div class="tt-pos-label pos-3-label">3<br/>Xfr</div>
+                </div>
+                <div class="tt-info">Pos: <strong id="tt1-pos">0</strong> | <span class="tt-lot" id="tt1-lot">---</span></div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                <div class="transfer-arrow">⇨</div>
+                <div style="font-size: 8px; color: #94A3B8;">Transfer</div>
+            </div>
+
+            <div class="tt-container">
+                <div class="tt-label">End Try (TT-2) - 3 Pos</div>
+                <div class="tt-visual" id="tt2">
+                    <div class="tt-position pos-0" id="tt2-pos-0"></div>
+                    <div class="tt-position pos-1" id="tt2-pos-1"></div>
+                    <div class="tt-position pos-2" id="tt2-pos-2"></div>
+                    <div class="tt-pos-label pos-0-label">0<br/>Rcv</div>
+                    <div class="tt-pos-label pos-2-label">1<br/>Bend3</div>
+                    <div class="tt-pos-label" style="bottom: -20px; left: 50%; transform: translateX(-50%);">2<br/>Exit</div>
+                </div>
+                <div class="tt-info">Pos: <strong id="tt2-pos">0</strong> | <span class="tt-lot" id="tt2-lot">---</span></div>
+            </div>
+
+            <div class="robot-box">
+                <div class="robot-label">Output Robot</div>
+                <div class="robot-icon">🤖</div>
+                <div style="font-size: 9px; color: #94A3B8;" id="output-lot">LOT: ---</div>
+            </div>
+        </div>
+
+        <div class="bottom-section">
+            <div class="scanned-parts">
+                <div class="table-title">📱 SCANNED PARTS</div>
+                <div id="scanned-table"></div>
+            </div>
+
+            <div class="process-events">
+                <div class="table-title">📋 PROCESS EVENTS</div>
+                <div id="process-table"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lot data (10 lots with QR codes)
+        const lots = {};
+        for (let i = 1; i <= 10; i++) {
+            const lotId = String(i).padStart(3, '0');
+            lots[lotId] = {
+                id: lotId,
+                qrcodes: [
+                    `ABCD${i}2345A001`,
+                    `ABCD${i}2345A002`,
+                    `ABCD${i}2345A003`,
+                    `ABCD${i}2345A004`
+                ],
+                temp: [80 + (i % 5), 80.1 + (i % 4), 80.2 + (i % 3), 80 + (i % 2)],
+                pressure: [7 + (i % 2) * 0.1, 7.1 + (i % 2) * 0.1, 6.8 + (i % 2) * 0.1, 6.9 + (i % 2) * 0.1]
+            };
+        }
+
+        // System state
+        let systemState = {
+            tt1_pos0: null,  // Entry position
+            tt1_pos1: null,  // Bending 1
+            tt1_pos2: null,  // Bending 2
+            tt1_pos3: null,  // Transfer
+            tt2_pos0: null,  // Receive
+            tt2_pos1: null,  // Bending 3
+            tt2_pos2: null,  // Exit
+            nextLotToEnter: '001',
+            completedLots: [],
+            processEvents: []
+        };
+
+        let cycleCounter = 0;
+        let timeCounter = 0;
+
+        function getParameterValues(lot, bendingStage) {
+            return {
+                temps: lot.temp,
+                pressures: lot.pressure
+            };
+        }
+
+        function updateDisplay() {
+            // Update cycle info
+            document.getElementById('cycleNum').textContent = systemState.nextLotToEnter;
+            document.getElementById('cycleTime').textContent = timeCounter + 's';
+
+            // Update TT positions
+            updateTTDisplay();
+
+            // Update parameter tiles
+            updateParameterTiles();
+
+            // Update robot displays
+            updateRobotDisplays();
+
+            // Update tables
+            updateTables();
+        }
+
+        function updateTTDisplay() {
+            // TT-1
+            const tt1Lots = [
+                { el: 'tt1-pos-0', lot: systemState.tt1_pos0, pos: 0 },
+                { el: 'tt1-pos-1', lot: systemState.tt1_pos1, pos: 1 },
+                { el: 'tt1-pos-2', lot: systemState.tt1_pos2, pos: 2 },
+                { el: 'tt1-pos-3', lot: systemState.tt1_pos3, pos: 3 }
+            ];
+
+            tt1Lots.forEach(item => {
+                const el = document.getElementById(item.el);
+                el.classList.toggle('active', !!item.lot);
+            });
+
+            // TT-2
+            const tt2Lots = [
+                { el: 'tt2-pos-0', lot: systemState.tt2_pos0, pos: 0 },
+                { el: 'tt2-pos-1', lot: systemState.tt2_pos1, pos: 1 },
+                { el: 'tt2-pos-2', lot: systemState.tt2_pos2, pos: 2 }
+            ];
+
+            tt2Lots.forEach(item => {
+                const el = document.getElementById(item.el);
+                el.classList.toggle('active', !!item.lot);
+            });
+
+            // Update text displays
+            document.getElementById('tt1-pos').textContent = systemState.tt1_pos0 ? '0' : (systemState.tt1_pos1 ? '1' : (systemState.tt1_pos2 ? '2' : (systemState.tt1_pos3 ? '3' : '0')));
+            document.getElementById('tt1-lot').textContent = systemState.tt1_pos0 || systemState.tt1_pos1 || systemState.tt1_pos2 || systemState.tt1_pos3 || '---';
+
+            document.getElementById('tt2-pos').textContent = systemState.tt2_pos0 ? '0' : (systemState.tt2_pos1 ? '1' : (systemState.tt2_pos2 ? '2' : '0'));
+            document.getElementById('tt2-lot').textContent = systemState.tt2_pos0 || systemState.tt2_pos1 || systemState.tt2_pos2 || '---';
+        }
+
+        function updateParameterTiles() {
+            // Bending 1 (TT-1 Pos 1)
+            if (systemState.tt1_pos1) {
+                const lot = lots[systemState.tt1_pos1];
+                document.getElementById('bend1-lot').textContent = `LOT: ${lot.id}`;
+                document.getElementById('b1-t1').textContent = `Temp-1: ${lot.temp[0]}°C`;
+                document.getElementById('b1-t2').textContent = `Temp-2: ${lot.temp[1]}°C`;
+                document.getElementById('b1-t3').textContent = `Temp-3: ${lot.temp[2]}°C`;
+                document.getElementById('b1-t4').textContent = `Temp-4: ${lot.temp[3]}°C`;
+                document.getElementById('b1-p1').textContent = `P1: ${lot.pressure[0]}N`;
+                document.getElementById('b1-p2').textContent = `P2: ${lot.pressure[1]}N`;
+                document.getElementById('b1-p3').textContent = `P3: ${lot.pressure[2]}N`;
+                document.getElementById('b1-p4').textContent = `P4: ${lot.pressure[3]}N`;
+                document.getElementById('b1-qr').innerHTML = lot.qrcodes.map(qr => `<div class="qr-code">${qr}</div>`).join('');
+            } else {
+                document.getElementById('bend1-lot').textContent = 'LOT: ---';
+                ['b1-t1', 'b1-t2', 'b1-t3', 'b1-t4', 'b1-p1', 'b1-p2', 'b1-p3', 'b1-p4'].forEach(id => document.getElementById(id).textContent = '---');
+                document.getElementById('b1-qr').innerHTML = '';
+            }
+
+            // Bending 2 (TT-1 Pos 2)
+            if (systemState.tt1_pos2) {
+                const lot = lots[systemState.tt1_pos2];
+                document.getElementById('bend2-lot').textContent = `LOT: ${lot.id}`;
+                document.getElementById('b2-t1').textContent = `T1: ${lot.temp[0]}°C`;
+                document.getElementById('b2-t2').textContent = `T2: ${lot.temp[1]}°C`;
+                document.getElementById('b2-t3').textContent = `T3: ${lot.temp[2]}°C`;
+                document.getElementById('b2-t4').textContent = `T4: ${lot.temp[3]}°C`;
+                document.getElementById('b2-p1').textContent = `P1: ${lot.pressure[0]}N`;
+                document.getElementById('b2-p2').textContent = `P2: ${lot.pressure[1]}N`;
+                document.getElementById('b2-p3').textContent = `P3: ${lot.pressure[2]}N`;
+                document.getElementById('b2-p4').textContent = `P4: ${lot.pressure[3]}N`;
+                document.getElementById('b2-qr').innerHTML = lot.qrcodes.map(qr => `<div class="qr-code">${qr}</div>`).join('');
+            } else {
+                document.getElementById('bend2-lot').textContent = 'LOT: ---';
+                ['b2-t1', 'b2-t2', 'b2-t3', 'b2-t4', 'b2-p1', 'b2-p2', 'b2-p3', 'b2-p4'].forEach(id => document.getElementById(id).textContent = '---');
+                document.getElementById('b2-qr').innerHTML = '';
+            }
+
+            // Bending 3 (TT-2 Pos 1)
+            if (systemState.tt2_pos1) {
+                const lot = lots[systemState.tt2_pos1];
+                document.getElementById('bend3-lot').textContent = `LOT: ${lot.id}`;
+                document.getElementById('b3-t1').textContent = `T1: ${lot.temp[0]}°C`;
+                document.getElementById('b3-t2').textContent = `T2: ${lot.temp[1]}°C`;
+                document.getElementById('b3-t3').textContent = `T3: ${lot.temp[2]}°C`;
+                document.getElementById('b3-t4').textContent = `T4: ${lot.temp[3]}°C`;
+                document.getElementById('b3-p1').textContent = `P1: ${lot.pressure[0]}N`;
+                document.getElementById('b3-p2').textContent = `P2: ${lot.pressure[1]}N`;
+                document.getElementById('b3-p3').textContent = `P3: ${lot.pressure[2]}N`;
+                document.getElementById('b3-p4').textContent = `P4: ${lot.pressure[3]}N`;
+                document.getElementById('b3-qr').innerHTML = lot.qrcodes.map(qr => `<div class="qr-code">${qr}</div>`).join('');
+            } else {
+                document.getElementById('bend3-lot').textContent = 'LOT: ---';
+                ['b3-t1', 'b3-t2', 'b3-t3', 'b3-t4', 'b3-p1', 'b3-p2', 'b3-p3', 'b3-p4'].forEach(id => document.getElementById(id).textContent = '---');
+                document.getElementById('b3-qr').innerHTML = '';
+            }
+        }
+
+        function updateRobotDisplays() {
+            document.getElementById('input-lot').textContent = `LOT: ${systemState.tt1_pos0 || '---'}`;
+            document.getElementById('output-lot').textContent = `LOT: ${systemState.tt2_pos2 || '---'}`;
+        }
+
+        function updateTables() {
+            // Scanned parts table
+            let scannedHTML = '<div class="table-row"><div>S.No</div><div>QR Code / UID</div></div>';
+            for (let i = 1; i <= 10; i++) {
+                const lotId = String(i).padStart(3, '0');
+                const isCompleted = systemState.completedLots.includes(lotId);
+                const color = isCompleted ? '#64748B' : '#FFFFFF';
+                scannedHTML += `<div class="table-row"><div style="color:${color}">${i}</div><div style="color:${color}">LOT-${lotId}</div></div>`;
+            }
+            document.getElementById('scanned-table').innerHTML = scannedHTML;
+
+            // Process events table
+            let eventsHTML = '';
+            const recentEvents = systemState.processEvents.slice(-6);
+            recentEvents.forEach((event, idx) => {
+                eventsHTML += `<div class="event-row"><div>${recentEvents.length - idx}</div><div>${event}</div></div>`;
+            });
+            document.getElementById('process-table').innerHTML = eventsHTML;
+        }
+
+        function moveLots() {
+            // Transfer from TT-1 Pos 3 to TT-2 Pos 0
+            if (systemState.tt1_pos3) {
+                systemState.tt2_pos0 = systemState.tt1_pos3;
+                systemState.processEvents.push(`Transfer Done: LOT-${systemState.tt1_pos3} to TT-2`);
+                systemState.tt1_pos3 = null;
+            }
+
+            // Move TT-2: Pos 0 → Pos 1, Pos 1 → Pos 2
+            if (systemState.tt2_pos1) {
+                systemState.tt2_pos2 = systemState.tt2_pos1;
+                systemState.processEvents.push(`Exit: LOT-${systemState.tt2_pos1} completed`);
+                systemState.completedLots.push(systemState.tt2_pos1);
+                systemState.tt2_pos1 = null;
+            }
+            if (systemState.tt2_pos0) {
+                systemState.tt2_pos1 = systemState.tt2_pos0;
+                systemState.processEvents.push(`Bending 3 Start: LOT-${systemState.tt2_pos0}`);
+                systemState.tt2_pos0 = null;
+            }
+
+            // Move TT-1: Pos 2 → Pos 3, Pos 1 → Pos 2, Pos 0 → Pos 1
+            if (systemState.tt1_pos2) {
+                systemState.tt1_pos3 = systemState.tt1_pos2;
+                systemState.tt1_pos2 = null;
+            }
+            if (systemState.tt1_pos1) {
+                systemState.tt1_pos2 = systemState.tt1_pos1;
+                systemState.processEvents.push(`Bending 2 Start: LOT-${systemState.tt1_pos1}`);
+                systemState.tt1_pos1 = null;
+            }
+            if (systemState.tt1_pos0) {
+                systemState.tt1_pos1 = systemState.tt1_pos0;
+                systemState.processEvents.push(`Bending 1 Start: LOT-${systemState.tt1_pos0}`);
+                systemState.tt1_pos0 = null;
+            }
+
+            // New lot enters if available
+            if (!systemState.tt1_pos0 && systemState.nextLotToEnter) {
+                systemState.tt1_pos0 = systemState.nextLotToEnter;
+                systemState.processEvents.push(`Entry: LOT-${systemState.nextLotToEnter} scanned`);
+
+                const nextNum = parseInt(systemState.nextLotToEnter) + 1;
+                systemState.nextLotToEnter = nextNum <= 10 ? String(nextNum).padStart(3, '0') : null;
+            }
+
+            // Limit events to last 10
+            if (systemState.processEvents.length > 10) {
+                systemState.processEvents = systemState.processEvents.slice(-10);
+            }
+        }
+
+        // Update every 2 seconds
+        setInterval(() => {
+            timeCounter += 2;
+            if (timeCounter % 4 === 0) {
+                moveLots();
+            }
+            updateDisplay();
+        }, 2000);
+
+        // Initial display
+        updateDisplay();
+    </script>
+</body>
+</html>

@@ -190,21 +190,84 @@ namespace IPCSoftware.Services.AppLoggerServices
             // Ensure folder exists
             if (!Directory.Exists(config.DataFolder))
                 Directory.CreateDirectory(config.DataFolder);
-           
 
-            // Build filename using pattern
+            // Build filename using pattern (handle both {yyyyMMdd} and yyyyMMdd patterns)
             string fileName = config.FileName
+                .Replace("{yyyyMMdd}", DateTime.Now.ToString("yyyyMMdd"))
                 .Replace("yyyyMMdd", DateTime.Now.ToString("yyyyMMdd"));
 
-            string fullPath = Path.Combine(config.DataFolder, fileName + ".csv");
+            // Determine CSV header based on log type
+            string csvHeader = type == LogType.TagTrace
+                ? "Timestamp,TagId,Value"              //"Timestamp,TagId,TagName,Value,PLCNo,ModbusAddress"
+                : "Timestamp,Level,Message,Source";
 
-            // Ensure CSV header exists
-            if (!File.Exists(fullPath))
+            // Check if incremental file rotation is needed based on size limit
+            if (config.LogRetentionFileSize > 0)
             {
-                File.WriteAllText(fullPath, "Timestamp,Level,Message,Source\n");
-            }
+                // Size-based rotation: find appropriate file with index
+                int fileIndex = 1;
+                long maxFileSizeBytes = config.LogRetentionFileSize * 1024 * 1024; // Convert MB to bytes
 
-            return fullPath;
+                while (fileIndex <= 999) // Safety limit
+                {
+                    string indexedFileName = $"{fileName}_{fileIndex:D3}.csv";
+                    string fullPath = Path.Combine(config.DataFolder, indexedFileName);
+
+                    // Atomic file creation to prevent TOCTOU race condition
+                    try
+                    {
+                        using (var fs = new FileStream(fullPath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                        using (var writer = new StreamWriter(fs))
+                        {
+                            writer.WriteLine(csvHeader);
+                        }
+                        return fullPath;
+                    }
+                    catch (IOException)
+                    {
+                        // File already exists, check if it has space
+                        try
+                        {
+                            var fileInfo = new FileInfo(fullPath);
+                            if (fileInfo.Length < maxFileSizeBytes)
+                            {
+                                return fullPath; // Use this file
+                            }
+                        }
+                        catch
+                        {
+                            // File might be locked or deleted, continue to next index
+                        }
+                    }
+
+                    // File is full or error occurred, try next index
+                    fileIndex++;
+                }
+
+                // If we hit the limit, use the last file
+                return Path.Combine(config.DataFolder, $"{fileName}_999.csv");
+            }
+            else
+            {
+                // No size-based rotation: use simple date-based filename
+                string fullPath = Path.Combine(config.DataFolder, fileName + ".csv");
+
+                // Atomic file creation to prevent TOCTOU race condition
+                try
+                {
+                    using (var fs = new FileStream(fullPath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                    using (var writer = new StreamWriter(fs))
+                    {
+                        writer.WriteLine(csvHeader);
+                    }
+                }
+                catch (IOException)
+                {
+                    // File already exists, which is fine - just use it
+                }
+
+                return fullPath;
+            }
         }
 
         public void CheckAndPerformPurge()
@@ -253,6 +316,7 @@ namespace IPCSoftware.Services.AppLoggerServices
                                 var dirInfo = new DirectoryInfo(dir);
                                 if (dirInfo.CreationTime < cutoffDate)
                                 {
+
                                     try { dirInfo.Delete(true); } catch { } // true = recursive delete
                                 }
                             }

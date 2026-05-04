@@ -3,7 +3,7 @@ using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.Devices.Camera;
 using IPCSoftware.Devices.PLC;
-using IPCSoftware.Services.ConfigServices;
+using IPCSoftware.Services.ConfigServices; //Added Later
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
@@ -19,16 +19,16 @@ namespace IPCSoftware.CoreService.AOI.Service
     {
         public CCDTriggerServiceAOI(
             ICycleManagerService cycleManager,
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService deviceService,
             IOptions<CcdSettings> ccdSettings,
-            IObservableCcdSettingsService observableCcdSettings,  // ✅ NEW: Added observable settings
-            IAppLogger logger) : base(cycleManager, tagService, ccdSettings, observableCcdSettings, logger)
+            IObservableCcdSettingsService observableCcdSettings,  // //Added by Rishabh - date - 08/04/2026//
+            IAppLogger logger) : base(cycleManager, deviceService, ccdSettings, observableCcdSettings, logger)
         {
         }
 
         override public async Task ProcessTriggers(Dictionary<int, object> tagValues, PLCClientManager manager)
         {
-            base.ProcessTriggers(tagValues, manager);
+            await base.ProcessTriggers(tagValues, manager);
             await _triggerLock.WaitAsync();
             try
             {
@@ -47,15 +47,15 @@ namespace IPCSoftware.CoreService.AOI.Service
 
                 if (isCycleEnabled && !_lastCycleStartState)
                 {
+                    // Rising edge of cycle start: reset only if no cycle is currently active
                     if (!_cycleManager.IsCycleResetCompleted)
                     {
-                        _logger.LogInfo("[CCD] Cycle Start Falling Edge -> Requesting Reset.", LogType.Error);
+                        _logger.LogInfo("[CCD] Cycle Start Rising Edge -> Requesting Reset.", LogType.Error);
                         _ = Task.Run(() => _cycleManager.RequestReset(true));
                     }
                     else
                     {
-                        // Add this log to see if it's being skipped intentionally
-                        _logger.LogInfo("[CCD] Cycle Start Falling Edge -> Reset already done.", LogType.Error);
+                        _logger.LogInfo("[CCD] Cycle Start Rising Edge -> Reset already done, skipping.", LogType.Error);
                     }
                 }
                 if (!isCycleEnabled && _lastCycleStartState)
@@ -180,7 +180,7 @@ namespace IPCSoftware.CoreService.AOI.Service
             base.WriteAckToPlcAsync(writebool);
             try
             {
-                var allTags = await _tagService.GetAllTagsAsync();
+                var allTags = await _deviceService.GetAllTagsAsync();
                 var ackTag = allTags.FirstOrDefault(t => t.Id == ConstantValues.Return_TAG_ID); // Look for TagNo 15
 
                 if (ackTag != null)
@@ -193,13 +193,16 @@ namespace IPCSoftware.CoreService.AOI.Service
                         {
                             await client.WriteAsync(ackTag, true);
                             _logger.LogInfo($"[CCD] Ack sent {1} to Tag {ConstantValues.Return_TAG_ID} {DateTime.Now.ToString("HH-mm-ss-fff")} ", LogType.Error);
-                            // sp.Start();
+
+                            // Auto-reset: pulse the bit back to false after 500 ms so it does not stay stuck high
+                            await Task.Delay(500);
+                            await client.WriteAsync(ackTag, false);
+                            _logger.LogInfo($"[CCD] Ack auto-reset to {0} (pulse complete) Tag {ConstantValues.Return_TAG_ID} {DateTime.Now.ToString("HH-mm-ss-fff")}", LogType.Error);
                         }
                         else
                         {
                             await client.WriteAsync(ackTag, false);
                             _logger.LogInfo($"[CCD] Ack sent {0} by Falling Edge  to Tag {ConstantValues.Return_TAG_ID} {DateTime.Now.ToString("HH-mm-ss-fff")}", LogType.Error);
-                            // sp.Stop();
                         }
                         //if (sp.Elapsed.TotalMilliseconds > 600)
                         //{

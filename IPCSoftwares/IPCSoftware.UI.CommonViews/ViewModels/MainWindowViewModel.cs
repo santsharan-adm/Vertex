@@ -24,7 +24,7 @@ using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Common.CommonExtensions;
 // AeLimitView is Not Required per refactoring spec
 
-public class MainWindowViewModel : BaseViewModel
+public class MainWindowViewModelBase : BaseViewModel
 {
 
     private readonly INavigationService _nav;
@@ -33,7 +33,7 @@ public class MainWindowViewModel : BaseViewModel
     private readonly AlarmViewModel _alarmVM;
 
     public ICommand SidebarItemClickCommand { get; }
-    public RibbonViewModel RibbonVM { get; }
+    public RibbonViewModelBase RibbonVM { get; }
     public ICommand CloseSidebarCommand { get; }
     public ICommand MinimizeAppCommand { get; }
     public ICommand CloseAppCommand { get; }
@@ -136,11 +136,11 @@ public class MainWindowViewModel : BaseViewModel
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
     public string AppVersion => _aboutMonitor.CurrentValue.ProductVersion;
 
-    public MainWindowViewModel(
+    public MainWindowViewModelBase(
         INavigationService nav, 
         CoreClient coreClient,
         IDialogService dialog,
-        RibbonViewModel ribbonVM, 
+        RibbonViewModelBase ribbonVM, 
         AlarmViewModel alarmVM,
         IOptionsMonitor<AboutSettings> aboutMonitor,
         IAppLogger logger) : base(logger)
@@ -475,6 +475,30 @@ public class MainWindowViewModel : BaseViewModel
                     //_nav.NavigateMain<LiveOeeView>();
                     _nav.NavigateToOEEDashboard();
                     break;
+                case "Bending1Monitor":
+                    _nav.NavigateToDashboard1();
+                    break;
+
+                case "Bending2Monitor":
+                    _nav.NavigateToDashboard2();
+                    break;
+                case "Bending3Monitor":
+                    _nav.NavigateToDashboard3();
+                    break;
+
+                case "UserControl1":
+                    _nav.NavigateToUserControl1();
+                    break;
+                
+                case "UserControl2":
+                    _nav.NavigateToUserControl2();
+                    break;
+
+                case "PostBendingMonitor":
+                    _nav.NavigateToPostBendingMonitor();
+                    break;            
+
+
 
                 case "Machine Summary":
                    // _nav.NavigateMain<ServoCalibrationView>();
@@ -485,6 +509,10 @@ public class MainWindowViewModel : BaseViewModel
 
                 case "Time Sync":
                     _nav.NavigateToSystemSettings();
+                    break;
+                //Added By Rishabh , Date -13/04/2026
+                case "Service Startup":
+                    _nav.NavigateToServiceStartup();       
                     break;
 
                 // Config Menu

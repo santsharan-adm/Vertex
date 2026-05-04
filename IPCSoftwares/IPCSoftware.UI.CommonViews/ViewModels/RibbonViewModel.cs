@@ -15,7 +15,7 @@ using System.Windows.Input;
 
 
 namespace IPCSoftware.UI.CommonViews.ViewModels;
-public class RibbonViewModel : BaseViewModel
+public class RibbonViewModelBase : BaseViewModel
 {
     private readonly INavigationService _nav;
     private readonly IDialogService _dialog;
@@ -43,14 +43,16 @@ public class RibbonViewModel : BaseViewModel
 
     // --- ALARM BANNER COMMANDS & PROPERTIES ---
 
-    public RibbonViewModel(
+    public RibbonViewModelBase(
         IOptions<ExternalSettings> extSetting,
         INavigationService nav,
         IDialogService dialog,
+        string headerName,
         Func<ProcessSequenceWindow> sequenceWindowFactory,
         IAppLogger logger) : base(logger)
     {
         MachineName = extSetting.Value.AOIMachineCode;
+        Header1 = headerName;
         _nav = nav;
         _dialog = dialog;
         _sequenceWindowFactory = sequenceWindowFactory;
@@ -70,35 +72,19 @@ public class RibbonViewModel : BaseViewModel
     public bool IsAdmin => string.Equals(UserSession.Role, "Admin", StringComparison.OrdinalIgnoreCase);
     public bool IsSupervisor => string.Equals(UserSession.Role, "Supervisor", StringComparison.OrdinalIgnoreCase);
     public bool IsOperator => string.Equals(UserSession.Role, "Operator", StringComparison.OrdinalIgnoreCase);
-
-    public string CurrentUserName => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Username.ToLower()) ?? "Guest";
-    public string CurrentUserRole=> CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Role.ToLower()) ?? "Guest";
+    public string CurrentUserName => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Username?.ToLower() ?? "guest");
+    public string CurrentUserRole => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(UserSession.Role?.ToLower() ?? "guest");
     public bool IsConfigRibbonVisible => IsAdmin || IsSupervisor;
 
 
     public string MachineName
     { get; }
-    private void OpenDashboardMenu()
-    {
-        try
-        {
-            LoadMenu(new List<string>
-            {
-                "Dashboard",
-                "Control",
-               
-                "PLC IO",
-                "Alarm View",
-                "Startup Condition",
-                "About"
-              
 
-            }, nameof(OpenDashboardMenu));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message, LogType.Diagnostics);
-        }
+    public string Header1
+    { get; }
+    public virtual void OpenDashboardMenu()
+    {
+        
     }
 
     //private void OpenSettingsMenu()
@@ -176,10 +162,12 @@ public class RibbonViewModel : BaseViewModel
                 "Report Config",
                 "Servo Parameters",
                 "Time Sync",
+                "Service Startup",
                 "Diagnostic",
                 "Product Settings",
                 "External Interface",
                 "AE Limit"
+                
             };
 
             // 3. Logic: Only Admin can see "User Config"
@@ -198,7 +186,7 @@ public class RibbonViewModel : BaseViewModel
         }
     }
 
-    private void Logout()
+    public virtual  void Logout()
     {
         try
         {
@@ -222,13 +210,13 @@ public class RibbonViewModel : BaseViewModel
     }
 
 
-    private void OpenLandingPage()
+    public virtual void OpenLandingPage()
     {
         OnLandingPageRequested?.Invoke();  // notify MainWindowViewModel
         _nav.NavigateMain<ModeOfOperation>();
     }
 
-    private void LoadMenu(List<string> items, string functionName)
+    public virtual void LoadMenu(List<string> items, string functionName)
     {
         string key = functionName.Replace("Open", "");  // "OpenDashboardMenu" → "DashboardMenu"
         ShowSidebar?.Invoke((key, items));

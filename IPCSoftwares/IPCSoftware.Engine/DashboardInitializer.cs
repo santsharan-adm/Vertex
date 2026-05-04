@@ -1,17 +1,20 @@
-﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.Devices.PLC;
+﻿using IPCSoftware.Communication.Common;
+using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.CoreService.Services.Dashboard;
 using IPCSoftware.Devices.Camera;
+using IPCSoftware.Devices.PLC;
 using IPCSoftware.Devices.UI;
-using IPCSoftware.Communication.Common;
 using IPCSoftware.Services;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
-using IPCSoftware.CoreService.Services.Dashboard;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.Json;
 
 namespace IPCSoftware.Engine
@@ -26,6 +29,7 @@ namespace IPCSoftware.Engine
         private readonly ShiftResetService _shiftReset;
         private readonly CCDTriggerServiceBase _ccdTrigger; // 1. Add field
         private readonly AlarmService _alarmService;
+       // private readonly IPLCTagConfigurationService _tagService;         //Added by Rishabh - date - 26/04/2026//
 
         // latest packets per PLC (unitno)
         private readonly Dictionary<int, PlcPacket> _latestPackets = new();
@@ -39,7 +43,7 @@ namespace IPCSoftware.Engine
             SystemMonitorService systemMonitor,
           UiListener ui,
           AlarmService alarmService,
-            CCDTriggerServiceBase ccdTrigger,
+            CCDTriggerServiceBase ccdTrigger,          
             IAppLogger logger) : base(logger)
         {
             _ui = ui;
@@ -50,6 +54,7 @@ namespace IPCSoftware.Engine
             _manager = manager;
             _algo =algo;
             _ccdTrigger = ccdTrigger;
+           
         }
 
       
@@ -65,18 +70,17 @@ namespace IPCSoftware.Engine
                 // Start PLC read loops
                 var plcTasks = _manager.Clients.Select(client =>
                 {
-                    client.OnPlcDataReceived += (plcNo, values) =>
+                    client.OnPlcDataReceived += async (plcNo, values) =>
                     {
+                        
+                      
+                        
                         // A. Process Raw Data -> Typed Values (Int/Bool/String)
                         // processedData is Dictionary<int, object> where int is Tag ID
                         var processedData = _algo.Apply(plcNo, values);
 
-                        string qrCodeNullCgeck = processedData.ContainsKey(ConstantValues.TAG_QR_DATA) ? processedData[ConstantValues.TAG_QR_DATA]?.ToString() : null;
-                        if (qrCodeNullCgeck != null && !(qrCodeNullCgeck.Contains('\0')))
-                        {
-                            _ccdTrigger.ProcessTriggers(processedData, _manager);
-                         
-                        }
+                     
+                        await _ccdTrigger.ProcessTriggers(processedData, _manager);
                         _oee.ProcessCycleTimeLogic(processedData);
                         _oee.Calculate(processedData);
                         _systemMonitor.Process(processedData);
@@ -141,10 +145,25 @@ namespace IPCSoftware.Engine
                 {
                     return await HandleUiWrite(request);
                 }
+                //-----------------------------------------------------------
+                //7) ALARM REQUEST (RequestId = 7)
+                //-----------------------------------------------------------
+
                 if (request.RequestId == 7)
                 {
                     return await HandleAlarmRequest(request);
                 }
+
+                //----------------------------------------------------------
+                //8) LOG REQUEST (RequestId = 8)       //Added on 30-04-2026
+                //----------------------------------------------------------
+
+                if (request.RequestId == 8) 
+                {
+                    return await HandleUiLogRequest (request);
+                }
+
+
 
                 //---------------------------------------------------------
                 // 1) IO REQUEST (RequestId = 5)
@@ -313,6 +332,58 @@ namespace IPCSoftware.Engine
             }
         }
 
+        //Added by Rishabh - 30/04/2026 -
+        //This method will handle the log request coming from UI and log it using AppLogger
+        private async Task<ResponsePackage> HandleUiLogRequest(RequestPackage request)
+        {
+            try
+            {
+                if (request.Parameters is JsonElement json)
+                {
+                    var logRequest = JsonSerializer.Deserialize<LogRequest>(json.GetRawText());
+
+                    if (logRequest != null)
+                    {
+                        switch (logRequest.Level)
+                        {
+                            case "INFO":
+                                _logger.LogInfo(logRequest.Message, logRequest.LogType);
+                                break;
+                            case "WARN":
+                                _logger.LogWarning(logRequest.Message, logRequest.LogType);
+                                break;
+                            case "ERROR":
+                                _logger.LogError(logRequest.Message, logRequest.LogType,
+                                    logRequest.MemberName, logRequest.FilePath, logRequest.LineNumber);
+                                break;
+                            case "TRACE":
+                                _logger.LogTrace(logRequest.Message);
+                                break;
+                        }
+
+                        return new ResponsePackage { ResponseId = 8, Success = true };
+                    }
+                }
+
+                return new ResponsePackage
+                {
+                    ResponseId = 8,
+                    Success = false,
+                    ErrorMessage = "Invalid log request"
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"HandleUiLogRequest error: {ex.Message}", LogType.Diagnostics);
+                return new ResponsePackage
+                {
+                    ResponseId = 8,
+                    Success = false,
+                    ErrorMessage = ex.Message
+                };
+            }
+        }
+
 
         private ResponsePackage OkAlarm(int alarmNo) =>
                                 new ResponsePackage
@@ -341,6 +412,9 @@ namespace IPCSoftware.Engine
             new ResponsePackage { ResponseId = 6, Success = false, ErrorMessage = msg };
 
 
+       
+
+
     }
 
     // ✅ Moved here FROM Worker.cs — lives in IPCSoftware.Engine assembly
@@ -356,5 +430,7 @@ namespace IPCSoftware.Engine
             PlcManager = manager;
             AlgorithmService = algo;
         }
+
+
     }
 }

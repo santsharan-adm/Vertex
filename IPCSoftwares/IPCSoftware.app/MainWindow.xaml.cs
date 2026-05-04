@@ -2,6 +2,7 @@ using IPCSoftware.UI.CommonViews;
 using IPCSoftware.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using IPCSoftware.App.AOI.ViewModels;
 
 namespace IPCSoftware.App
 {
@@ -11,8 +12,8 @@ namespace IPCSoftware.App
         {
             InitializeComponent();
 
-            var vm = App.ServiceProvider.GetService<MainWindowViewModel>();
-            DataContext = App.ServiceProvider.GetRequiredService<MainWindowViewModel>(); ;
+            var vm = App.ServiceProvider.GetService<MainWindowViewModelAOI>();
+            DataContext = App.ServiceProvider.GetRequiredService<MainWindowViewModelAOI>(); ;
 
             var nav = App.ServiceProvider.GetService<INavigationService>();
             nav.Configure(MainContent, RibbonHost);

@@ -4,9 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
+             xmlns:local="clr-namespace:IPCSoftware.UI.CommonViews"
              d:DesignWidth="1920" d:DesignHeight="140">
 
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <!-- Existing Icons -->
         <!--<Geometry x:Key="Icon_Home">M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z</Geometry>
         <Geometry x:Key="Icon_HomeOutline">M12 5.69L17 10.19V18H15V12H9V18H7V10.19L12 5.69M12 3L2 12H5V20H11V14H13V20H19V12H22L12 3Z</Geometry>
@@ -81,7 +83,7 @@
 
         <!-- Left: Logo & Title -->
         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="40,0">
-            <Button Command="{Binding NavigateLandingPageCommand}" Cursor="Hand" Click="Button_Click" >
+            <Button Command="{Binding NavigateLandingPageCommand}" Cursor="Hand">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="LogoBorder" Width="80" Height="80" CornerRadius="40" BorderBrush="White" BorderThickness="3">
@@ -110,7 +112,7 @@
                 </Button.Template>
             </Button>
             <StackPanel>
-            <TextBlock Text="AOI System" Foreground="White" FontSize="36" FontWeight="Bold" VerticalAlignment="Center" Margin="25,0,0,0">
+            <TextBlock Text="{Binding Header1}" Foreground="White" FontSize="36" FontWeight="Bold" VerticalAlignment="Center" Margin="25,0,0,0">
                 <TextBlock.Effect>
                     <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2" Opacity="0.3"/>
                 </TextBlock.Effect>

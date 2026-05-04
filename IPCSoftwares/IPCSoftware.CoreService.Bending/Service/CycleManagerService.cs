@@ -3,6 +3,7 @@ using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
 using IPCSoftware.Devices.Camera;
 using IPCSoftware.Devices.PLC;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
@@ -17,17 +18,18 @@ namespace IPCSoftware.CoreService.Bending.Service
     internal class CycleManagerServiceBending : CycleManagerServiceBase
     {
         public CycleManagerServiceBending(
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService deviceService,
             ILogConfigurationService logConfig,
             PLCClientManager plcManager,
             IOptions<CcdSettings> appSettings,
             IServoCalibrationService servoService,
             ProductionImageService imageService,
             IExternalInterfaceService extService,
+            IObservableCcdSettingsService observableCcdSettings,
             IAeLimitService aeLimitService,
             IProductConfigurationService productService,
             IAppLogger logger)
-            : base(tagService, logConfig, plcManager, appSettings, servoService, imageService, extService, aeLimitService, productService, logger)
+            : base(deviceService, logConfig, plcManager, appSettings, servoService, imageService, extService, observableCcdSettings , aeLimitService, productService, logger)
         {
             
         }

@@ -5,6 +5,7 @@ using IPCSoftware.Devices.Camera;
 using IPCSoftware.Devices.PLC;
 using IPCSoftware.Services;
 using IPCSoftware.Services.AppLoggerServices;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.AeLimit;
@@ -24,17 +25,18 @@ namespace IPCSoftware.CoreService.AOI.Service
     public class CycleManagerServiceAOI : CycleManagerServiceBase
     {
         public CycleManagerServiceAOI(
-            IPLCTagConfigurationService tagService,
+            IDeviceConfigurationService deviceService,
             ILogConfigurationService logConfig,
             PLCClientManager plcManager,
             IOptions<CcdSettings> appSettings,
             IServoCalibrationService servoService,
             ProductionImageService imageService,
-            IExternalInterfaceService extService,   // ✅ interface
-            IAeLimitService aeLimitService,
+            IExternalInterfaceService extService,
+            IObservableCcdSettingsService observableCcdSettings,
+            IAeLimitService aeLimitService,            
             IProductConfigurationService productService,
-            IAppLogger logger) : base (tagService,logConfig,plcManager, appSettings, 
-                servoService, imageService, extService, aeLimitService, productService, logger)
+            IAppLogger logger) : base (deviceService,logConfig,plcManager, appSettings, 
+                servoService, imageService, extService, observableCcdSettings, aeLimitService, productService, logger)
         {
 
         }
@@ -82,7 +84,7 @@ namespace IPCSoftware.CoreService.AOI.Service
                 // Reading first to compare is possible but writing ensures Source of Truth (JSON) is applied.
 
                 int tagId = ConstantValues.NO_OF_Station;
-                var allTags = await _tagService.GetAllTagsAsync();
+                var allTags = await _deviceService.GetAllTagsAsync();
                 var tagConfig = allTags.FirstOrDefault(t => t.Id == tagId);
 
                 if (tagConfig != null)
@@ -148,12 +150,7 @@ namespace IPCSoftware.CoreService.AOI.Service
                 _activeBatchId = qrString;
                 _currentSequenceStep = 0;
 
-                // 1. SYNC WITH MAC MINI
-                // This fetches the JSON, maps it, writes to PLC, and updates internal flags
-                // We use .Result or Wait() here cautiously because this is inside a sync void method called by TriggerService
-                // Ideally trigger service awaits this.
-
-
+                // 1. Write initial JSON state so UI can show the new BatchId immediately
                 try
                 {
                     if (File.Exists(_stateFilePath)) File.Delete(_stateFilePath);
@@ -165,25 +162,23 @@ namespace IPCSoftware.CoreService.AOI.Service
                     _logger.LogError($"Failed to update initial JSON state: {ex.Message}", LogType.Diagnostics);
                 }
 
+                // 2. Process and save QR image BEFORE awaiting Mac Mini so the UI shows it immediately
+                string destPath = _imageService.ProcessAndMoveImage(tempImagePath, _imageBaseOutputPath, _activeBatchId, 0.ToString(), 0, 0, 0, true);
+                UpdateJsonEntry(0, destPath, "OK", 0, 0, 0);
+
+                // 3. SYNC WITH MAC MINI (UI will show QR image and "waiting for Mac Mini response" overlay)
                 await _extService.SyncBatchStatusAsync(qrString);
                 if (_extService.Settings.IsMacMiniEnabled)
                 {
                     _aeLimitService.BeginCycle(_activeBatchId, qrString);
                 }
 
-
-
-                // 2. Initialize JSON State with Pre-Calculated NG status
+                // 4. Initialize JSON State with Pre-Calculated NG status
                 // This ensures UI shows Red immediately for NG parts
                 InitializeCycleStateWithExternalStatus();
 
-                // 3. Process QR Image
-                string destPath = _imageService.ProcessAndMoveImage(tempImagePath, _imageBaseOutputPath, _activeBatchId, 0.ToString(), 0, 0, 0, true);
-                // Update QR entry in JSON (Station 0)
-                UpdateJsonEntry(0, destPath, "OK", 0, 0, 0);
                 if (_extService.Settings.IsMacMiniEnabled)
                 {
-
                     _aeLimitService.UpdateStation(new AeStationUpdate
                     {
                         StationId = 0,
@@ -206,7 +201,20 @@ namespace IPCSoftware.CoreService.AOI.Service
             base.InitializeCycleStateWithExternalStatus();
             try
             {
-                var state = new CycleStateModel { BatchId = _activeBatchId, LastUpdated = DateTime.Now };
+                // Read existing state so we preserve station 0 (QR code image) written in StartNewCycle
+                CycleStateModel state = null;
+                if (File.Exists(_stateFilePath))
+                {
+                    try
+                    {
+                        string existing = File.ReadAllText(_stateFilePath);
+                        state = JsonConvert.DeserializeObject<CycleStateModel>(existing);
+                    }
+                    catch { }
+                }
+                if (state == null) state = new CycleStateModel { BatchId = _activeBatchId };
+                state.BatchId = _activeBatchId;
+                state.LastUpdated = DateTime.Now;
 
                 // Populate placeholders for all 12 stations based on External Status
                 // for (int i = 0; i < 12; i++)
@@ -237,7 +245,13 @@ namespace IPCSoftware.CoreService.AOI.Service
             try
             {
                 if (_stationMap == null || _stationMap.Length == 0) return;
-                // if (_currentSequenceStep >= _stationMap.Length) {   RequestReset(false); return; }
+
+                if (_currentSequenceStep >= _stationMap.Length)
+                {
+                    _logger.LogInfo($"[CycleManager] Sequence step {_currentSequenceStep} exceeds station map length {_stationMap.Length}. Requesting reset.", LogType.Error);
+                    RequestReset(false);
+                    return;
+                }
 
                 int physicalStationId = _stationMap[_currentSequenceStep];
                 Console.WriteLine($"--- PROCESSING STATION {physicalStationId} (Seq {_currentSequenceStep}) ---");
@@ -319,24 +333,19 @@ namespace IPCSoftware.CoreService.AOI.Service
 
                 if (_currentSequenceStep >= _stationMap.Length)
                 {
-                    _logger.LogInfo("[CycleManager] Reset skipped - already completed.", LogType.Diagnostics);
+                    _logger.LogInfo("[CycleManager] All stations complete. Finalizing cycle.", LogType.Diagnostics);
                     if (_extService.Settings.IsMacMiniEnabled)
                     {
                         // 1. Generate the Payload (Tuple: FilePath, TcpPayload)
                         var result = await _aeLimitService.CompleteCycleAsync();
 
                         // 2. Send via TCP to Mac Mini
-                        // The SendPdcaDataAsync method handles:
-                        // - TCP connection
-                        // - Sending the string
-                        // - Checking response for "OK"
-                        // - Raising/Clearing Alarm Bit (MACMINI_NOTCONNECTED)
                         if (!string.IsNullOrEmpty(result.TcpPayload))
                         {
                             await _extService.SendPdcaDataAsync(result.TcpPayload);
                         }
                     }
-                    //Task.Run(async () => { ; RequestReset(false); });
+                    RequestReset(false);
                 }
             }
             catch (Exception ex) { _logger.LogError(ex.Message, LogType.Diagnostics); }

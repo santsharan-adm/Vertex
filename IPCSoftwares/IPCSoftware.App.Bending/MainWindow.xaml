@@ -3,10 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:IPCSoftware.App.Bending"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:wpfext="clr-namespace:IPCSoftware.Common.WPFExtensions;assembly=IPCSoftware.WPFExtensions"
+        xmlns:vm="clr-namespace:IPCSoftware.App.Bending.ViewModels"
+        xmlns:cv="clr-namespace:IPCSoftware.UI.CommonViews;assembly=IPCSoftware.UI.CommonViews"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="IPC HMI Software" 
+        Height="1080" Width="1920"
+        WindowState="Maximized" 
+       WindowStyle="None"
+        Background="#F3F3F3" 
+        ResizeMode="NoResize">
 
-    </Grid>
+
+
+    <cv:MainPage x:Name="MainPage" />
 </Window>

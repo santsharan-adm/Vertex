@@ -16,7 +16,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 {
     public class PLCTagListViewModel : BaseViewModel
     {
-        private readonly IPLCTagConfigurationService _tagService;
+        private readonly IDeviceConfigurationService _deviceService;
         private readonly INavigationService _nav;
         private ObservableCollection<PLCTagConfigurationModel> _tags;
         private ObservableCollection<PLCTagConfigurationModel> _filteredTags;
@@ -59,11 +59,11 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public ICommand DeleteTagCommand { get; }
 
         public PLCTagListViewModel(
-            IPLCTagConfigurationService tagService, 
+            IDeviceConfigurationService deviceService, 
             INavigationService nav,
             IAppLogger logger) : base(logger)
         {
-            _tagService = tagService;
+            _deviceService = deviceService;
             _nav = nav;
             Tags = new ObservableCollection<PLCTagConfigurationModel>();
             FilteredTags = new ObservableCollection<PLCTagConfigurationModel>();
@@ -79,7 +79,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             try
             {
-                var tags = await _tagService.GetAllTagsAsync();
+                var tags = await _deviceService.GetAllTagsAsync();
                 Tags.Clear();
                 FilteredTags.Clear();
                 foreach (var tag in tags)
@@ -148,7 +148,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 if (tag == null) return;
 
                 // TODO: Add confirmation dialog
-                await _tagService.DeleteTagAsync(tag.Id);
+                await _deviceService.DeleteTagAsync(tag.Id);
                 await LoadDataAsync();
             }
             catch (Exception ex)

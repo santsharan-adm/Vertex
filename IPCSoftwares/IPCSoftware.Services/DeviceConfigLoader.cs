@@ -1,78 +1,151 @@
-﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+/******************************************************************************
+ * Project      : IPCSoftware-AOI /Bending
+ * Module       : DeviceConfigLoader
+ * File Name    : DeviceConfigLoader.cs
+ * Author       : Rishabh
+ * Organization : Motherson Technology Service Limited
+ * Created Date : 2026-04-18
+ *
+ * Description  :
+ * Loads and parses device configuration from CSV files, supporting multiple
+ * file format versions. Handles device settings with backward compatibility.
+ *
+ * Change History:
+ * ---------------------------------------------------------------------------
+ * Date        Author        Version     Description
+ * ---------------------------------------------------------------------------
+ * 2026-04-18  Rishabh       1.0         Initial creation
+ * 2026-04-25  Rishabh       2.0         Refactored to use IFileHandler interface
+ *                                       for dependency injection and loose coupling
+ * 2026-04-26  Krishna       2.2         Added error handling and logging for CSV parsing                           
+ *
+ ******************************************************************************/
+
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models.ConfigModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.IO;
+using IPCSoftware.Core.Interfaces;
 
 namespace IPCSoftware.Services
 {
     public class DeviceConfigLoader : BaseService
     {
-        public DeviceConfigLoader(
-            IAppLogger logger) : base(logger)
-        { }
-        private string Clean(string input)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(input))
-                    return input;
+        private readonly IFileHandler _fileHandler;
+        private List<DeviceModel> _devices = new List<DeviceModel>();
 
-                return input.Trim().Trim('"');
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, LogType.Diagnostics);
-                return string.Empty;
-            }
+        public DeviceConfigLoader(IAppLogger logger, IFileHandler fileHandler) : base(logger)
+        {
+            _fileHandler = fileHandler;
         }
 
-        public List<DeviceInterfaceModel> Load(string filePath)
+        public List<DeviceModel> Load(string filePath)
         {
             try
             {
-                var rows = CsvReader.Read(filePath);  // static call, returns string[]
+                var version = _fileHandler.Getversion(filePath);
+                var rows = _fileHandler.Read(filePath);
+                var devices = new List<DeviceModel>();
 
-                var devices = new List<DeviceInterfaceModel>();
-
-                foreach (var r in rows)
+                if (rows.Count == 0)
                 {
-                    // skip empty or malformed rows
-                    if (r.Length < 12)
-                        continue;
+                    _logger.LogError("Device Configuration Settings Not found", LogType.Error);
+                    return devices;
+                }
 
-                    try
+                _devices.Clear();
+
+                if (version == "1.0")
+                {
+                    foreach (var row in rows)
                     {
-                        var device = new DeviceInterfaceModel
+                        var device = ParseDeviceCsvLine(row);
+                        if (device != null)
                         {
-                            Id = int.Parse(Clean(r[0])),
-                            DeviceNo = int.Parse(Clean(r[1])),
-                            DeviceName = Clean(r[2]),
-                            UnitNo = int.Parse(Clean(r[3])),
-                            Name = Clean(r[4]),
-                            ComProtocol = Clean(r[5]),
-                            IPAddress = Clean(r[6]),
-                            PortNo = int.Parse(Clean(r[7])),
-                            Gateway = Clean(r[8]),
-                            Description = Clean(r[9]),
-                            Remark = Clean(r[10]),
-                            Enabled = bool.Parse(Clean(r[11]))
-                        };
-
-                        devices.Add(device);
+                            _devices.Add(device);
+                        }
                     }
-                    catch
+                }
+                else if (version == "2.0")
+                {
+                    foreach (var row in rows)
                     {
-                        // skip this row if any parsing fails
-                        continue;
+                        var device = ParseDeviceCsvLine(row);
+                        if (device != null)
+                        {
+                            _devices.Add(device);
+                        }
                     }
                 }
 
-                return devices.Where(d => d.Enabled).ToList();
+                return _devices;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
-                return new  List<DeviceInterfaceModel>(); ;
+                return null;
+            }
+        }
+
+        private DeviceModel ParseDeviceCsvLine(string[] values)
+        {
+            try
+            {
+                // DeviceModel requires minimum 9 fields
+                if (values.Length < 9)
+                    return null;
+
+                var device = new DeviceModel
+                {
+                    Id = int.Parse(values[0]),
+                    DeviceNo = int.Parse(values[1]),
+                    DeviceName = values[2],
+                    DeviceType = values[3],
+                    Make = values[4],
+                    Model = values[5],
+                    Description = values[6],
+                    Remark = values[7],
+                    Enabled = bool.Parse(values[8])
+                };
+
+                return device;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        // Added by Rishabh - date - 19/04/2026//
+        public async Task Save(string filepath ,List<DeviceModel> devices)
+        {
+            try
+            {
+                var sb = new StringBuilder();
+                string header = _fileHandler.GetHeader(filepath);
+                sb.AppendLine(header);
+
+                foreach (var device in devices ?? new List<DeviceModel>())
+                {
+                    sb.AppendLine($"{device.Id},{device.DeviceNo}," +
+                        $"\"{_fileHandler.EscapeCsv(device.DeviceName)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(device.DeviceType)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(device.Make)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(device.Model)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(device.Description)}\"," +
+                        $"\"{_fileHandler.EscapeCsv(device.Remark)}\"," +
+                        $"{device.Enabled}");
+                }
+                await _fileHandler.WriteCsv(filepath , sb.ToString());             //Added by Rishabh - date - 25/04/2026// 
+                                                                                   // await File.WriteAllTextAsync(filepath, sb.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error saving devices CSV: {ex.Message}", LogType.Diagnostics);
+                throw;
             }
         }
     }

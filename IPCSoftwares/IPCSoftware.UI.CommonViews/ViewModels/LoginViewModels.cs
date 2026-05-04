@@ -10,11 +10,12 @@ using System.Windows.Input;
 
 namespace IPCSoftware.UI.CommonViews.ViewModels
 {
-    public class LoginViewModel : BaseViewModel
+    public class LoginViewModelBase : BaseViewModel
     {
         private readonly IAuthService _authService;
         private readonly INavigationService _navigation;
         private readonly IDialogService _dialog;
+        private readonly RibbonViewModelBase _ribbonVM;
 
         public ICommand LoginCommand { get; }
 
@@ -42,21 +43,23 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             set => SetProperty(ref _isUsernameFocused, value);
 
         }
-        public LoginViewModel(
+        public LoginViewModelBase(
             IAuthService authService,
             INavigationService navigation,
             IDialogService dialog,
-            MainWindowViewModel? mainWindowViewModel,
+            MainWindowViewModelBase? mainWindowViewModel,
+            RibbonViewModelBase ribbonVM,
             IAppLogger logger) : base(logger)
         {
             _authService = authService;
             _navigation = navigation;
             _dialog = dialog;
             IsUsernameFocused = true;
+            _ribbonVM = ribbonVM;
             LoginCommand = new RelayCommand(async () => await ExecuteLoginAsync());
         }
 
-        private async Task ExecuteLoginAsync()
+        public virtual async Task ExecuteLoginAsync()
         {
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
             {
@@ -89,9 +92,11 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 UserSession.Username = Username;
                 UserSession.Role = result.Role;
 
+
+                
                 // Create Ribbon
-                var ribbonVM = ServiceLocator.GetService<RibbonViewModel>();
-                var ribbonView = new RibbonView { DataContext = ribbonVM };
+                //var ribbonVM = ServiceLocator.GetService<RibbonViewModel>();
+                var ribbonView = new RibbonView { DataContext = _ribbonVM };
 
                 // Load Ribbon
                 _navigation.NavigateTop(ribbonView);

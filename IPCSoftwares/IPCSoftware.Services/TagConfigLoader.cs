@@ -1,14 +1,18 @@
-﻿using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace IPCSoftware.Services
 {
     public class TagConfigLoader : BaseService
     {
-        public TagConfigLoader(IAppLogger logger) : base(logger)
-        { }
+        private readonly IFileHandler _fileHandler;
+        public TagConfigLoader(IAppLogger logger , IFileHandler fileHandler) : base(logger)
+        { _fileHandler = fileHandler; }
         // Constants matching definitions in AlgorithmAnalysisService/Requirements
         private const int DataType_Int16 = 1;
         private const int DataType_Word32 = 2;
@@ -22,14 +26,14 @@ namespace IPCSoftware.Services
         {
             try
             {
-                var version = CsvReader.Getversion(filePath);
-                var rows = CsvReader.Read(filePath);
+                var version = _fileHandler.Getversion(filePath);
+                var rows = _fileHandler.Read(filePath);
                 var tags = new List<PLCTagConfigurationModel>();
                 if (version == "1.0")
                 {
                     foreach (var r in rows)
                     {
-                        // Must be at least 15 columns: indices [0]..[14] (IOType is at [14])
+                        // Must be at least 17 columns: indices [0]..[16] (EnableTraceLog is at [16])
                         if (r.Length < 15) continue;
 
                         try
@@ -64,7 +68,9 @@ namespace IPCSoftware.Services
 
                                 // NEW: Read CanWrite (assuming column [13])
                                 CanWrite = ParseBoolean(r[13]),
-                                IOType = r[14]
+                                IOType = r[14],
+                                UseEngMinMax = r.Length > 15 ? ParseBoolean(r[15]) : false,
+                                EnableTraceLog = r.Length > 16 ? ParseBoolean(r[16]) : false
                                 //DMAddress = r[15]
 
                             };
@@ -79,13 +85,13 @@ namespace IPCSoftware.Services
                 }
                 else if (version == "2.0")
                 {
-                    
+
 
 
                     foreach (var r in rows)
                     {
-                        // Must be at least 15 columns: indices [0]..[14] (IOType is at [14])
-                        if (r.Length < 15) continue;
+                        // Must be at least 18 columns: indices [0]..[17] (IOType is at [17])
+                        if (r.Length < 18) continue;
 
                         try
                         {
@@ -114,12 +120,15 @@ namespace IPCSoftware.Services
                                 BitNo = bitNo,
                                 Offset = double.Parse(r[12]),
                                 Span = double.Parse(r[13]),
-                                Description = r[18],
-                                Remark = r[19],
+                                IOType = r[17],
 
-                                // NEW: Read CanWrite (assuming column [13])
+                                // NEW: Read UseEngMinMax and EnableTraceLog (columns 18 and 19 in Bending CSV)
+                                UseEngMinMax = r.Length > 18 ? ParseBoolean(r[18]) : false,
+                                EnableTraceLog = r.Length > 19 ? ParseBoolean(r[19]) : false,
+
+                                Description = r.Length > 20 ? r[20] : "",
+                                Remark = r.Length > 21 ? r[21] : ""
                                 //CanWrite = ParseBoolean(r[13]),
-                                IOType = r[17]
                                 //DMAddress = r[15]
 
                             };
@@ -254,6 +263,87 @@ namespace IPCSoftware.Services
                 _logger.LogError(ex.Message, LogType.Diagnostics);
                 return false;
             }
+        }
+
+        public async Task Save(string filepath, List<PLCTagConfigurationModel> tags)
+        {
+            try
+            {
+                var sb = new StringBuilder();
+                string ver = _fileHandler.Getversion(filepath);
+                string version = string.Format($"Version - {ver}");
+                sb.AppendLine(version);
+                string header = _fileHandler.GetHeader(filepath);
+                sb.AppendLine(header);
+
+                foreach (var tag in tags ?? new List<PLCTagConfigurationModel>())
+                {
+                    if (ver == "2.0")
+                    {
+                        sb.AppendLine($"{tag.Id}," +
+                            $"{tag.Id}," +
+                            $"{_fileHandler.EscapeCsv(tag.Name)}," +         // <--- Was $"\"{EscapeCsv(tag.Name)}\","
+                            $"{tag.PLCNo}," +
+                            $"{tag.ModbusAddress}," +
+                            $"{tag.Length}," +
+                            $"{tag.AlgNo}," +
+                            $"{GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
+                            $"{tag.BitNo}," +
+                            $"{tag.Offset}," +
+                            $"{tag.Span}," +
+                            $"{_fileHandler.EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
+                            $"{_fileHandler.EscapeCsv(tag.Remark)}," +       // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
+                            $"{tag.CanWrite}," +
+                            $"{_fileHandler.EscapeCsv(tag.IOType)}," +
+                            $"{tag.UseEngMinMax}," +
+                            $"{tag.EnableTraceLog}");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"{tag.Id}," +
+                       $"{tag.Id}," +
+                       $"{_fileHandler.EscapeCsv(tag.Name)}," +         // <--- Was $"\"{EscapeCsv(tag.Name)}\","
+                       $"{tag.PLCNo}," +
+                       $"{tag.ModbusAddress}," +
+                       $"{tag.Length}," +
+                       $"{tag.AlgNo}," +
+                       $"{GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
+                       $"{tag.BitNo}," +
+                       $"{tag.Offset}," +
+                       $"{tag.Span}," +
+                       $"{_fileHandler.EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
+                       $"{_fileHandler.EscapeCsv(tag.Remark)}," +       // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
+                       $"{tag.CanWrite}," +
+                       $"{_fileHandler.EscapeCsv(tag.IOType)}");  // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
+                                                     // $"{EscapeCsv(tag.DMAddress)},") ;
+                    }
+                }
+                await _fileHandler.WriteCsv(filepath, sb.ToString());             //Added by Rishabh - date - 25/04/2026// 
+                                                                                  // await File.WriteAllTextAsync(filepath, sb.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error saving devices CSV: {ex.Message}", LogType.Diagnostics);
+                throw;
+            }
+        }
+
+
+
+        // You likely need this helper to save "Int16" instead of "1" back to the CSV
+        private string GetDataTypeString(int typeId)
+        {
+            return typeId switch
+            {
+                1 => "Int16",
+                2 => "Word",
+                3 => "Bit",
+                4 => "Float",
+                5 => "String",
+                6 => "UInt16",
+                7 => "UInt32",
+                _ => "Int16"
+            };
         }
     }
 }

@@ -1,9 +1,10 @@
-using IPCSoftware.UI.CommonViews.ViewModels;
-using IPCSoftware.UI.CommonViews;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.UI.CommonViews;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Xaml.Behaviors.Layout;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -275,7 +276,7 @@ namespace IPCSoftware.Common.CommonFunctions
 
 
 
-        // NEW: CCD Settings Navigation
+        //  CCD Settings Navigation           //Added by Rishabh - date - 08/04/2026//
         public void NavigateToCcdSettings(DeviceModel parentDevice, CameraInterfaceModel cameraInterface, Func<Task> onSaveCallback)
         {
             var ccdView = _provider.GetService<CcdSettingsView>();
@@ -430,6 +431,17 @@ namespace IPCSoftware.Common.CommonFunctions
             NavigateMain<PLCTagListView>();
         }
 
+        //Added By Rishabh , Date -13/04/2026
+        public void NavigateToServiceStartup()
+        {
+            var view = _provider.GetService<ServiceStartupView>();
+            var viewModel = _provider.GetService<ServiceStartupViewModel>();
+            if (!CanNavigateFromCurrent()) return;
+            view.DataContext = viewModel;
+            _mainContent.Content = view;
+           // NavigateMain<ServiceStartupView>();
+        }
+
         public void NavigateToPLCTagConfiguration(PLCTagConfigurationModel tagToEdit, Func<Task> onSaveCallback)
         {
 
@@ -520,11 +532,26 @@ namespace IPCSoftware.Common.CommonFunctions
 
         public void NavigateToManualOperation() => NavigateMainByTypeName("ManualOperationView");
         public void NavigateToOEEDashboard() => NavigateMainByTypeName("OEEDashboard");
+
+        public void NavigateToDashboard1() => NavigateMainByTypeName("Bending1MonitorView");
+        public void NavigateToDashboard2() => NavigateMainByTypeName("Bending2MonitorView");
+        public void NavigateToDashboard3() => NavigateMainByTypeName("Bending3MonitorView");
+
+        public void NavigateToUserControl1() => NavigateMainByTypeName("UserControl1");
+
+        public void NavigateToUserControl2() => NavigateMainByTypeName("UserControl2");
+
+        public void NavigateToPostBendingMonitor() => NavigateMainByTypeName("PostBendingMonitor");
+
+        public void NavigateToBendingLandingPage() => NavigateMainByTypeName("WelcomePageView");
+
+        public void NavigateToAlarm() => NavigateMainByTypeName("AlarmView");
+
         public void NavigateToAeLimit() => NavigateMainByTypeName("AeLimitView");
 
         public bool CanNavigateFromCurrent()
         {
-            // 1. Get the current View
+            // 1. Get the current View  
             if (_mainContent?.Content is FrameworkElement currentView)
             {
                 // 2. Get the ViewModel from DataContext

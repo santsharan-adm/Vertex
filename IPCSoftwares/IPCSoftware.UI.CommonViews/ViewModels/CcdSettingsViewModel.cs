@@ -1,3 +1,27 @@
+
+/******************************************************************************
+ * Project      : IPCSoftware-AOI /Bending
+ * Module       : CcdSettingsViewModel
+ * File Name    : CcdSettingsViewModel.cs
+ * Author       : Rishabh
+ * Organization : Motherson Technology Service Limited
+ * Created Date : 2026-04-08
+ *
+ * Description  :
+ * Manages CCD camera configuration settings UI interactions, binding client/vendor metadata,
+ * and persisting changes to both the observable settings service and device configuration store.
+ *
+ * Change History:
+ * ---------------------------------------------------------------------------
+ * Date        Author        Version     Description
+ * ---------------------------------------------------------------------------
+ * 2026-04-08  Rishabh       1.0         Initial creation
+ * 
+ * 
+ *
+ ******************************************************************************/
+
+
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -23,47 +47,47 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
             Title = "CCD Settings";
             // default values from your appsettings example
-            QrCodeImagePath = @"D:\CCD\CAM\UI";
-            TempImgFolder = @"D:\CCD\CAM";
-            ImageRootFolder = "Production Images";
-            MetadataStyle = "METADATASTYLE003";
-            CurrentCycleStateFileName = "CurrentCycleState.json";
+            QrCodeImagePath = @"";
+            TempImgFolder = @"";
+            ImageRootFolder = "";
+            MetadataStyle = "";
+            CurrentCycleStateFileName = "";
 
-            Client_Version = "1.0";
-            Client_Date = "2025-01-01";
-            Client_Time = "12:00:00";
-            Client_VisionVendor = "Vertex";
-            Client_StationID = "ST-001";
-            Client_StationNickname = "MainStation";
-            Client_DUTSerialNumber = "SN-00000";
-            Client_ProcessCommand = "INSPECT";
-            Client_CameraNumber = "1";
-            Client_XPixelSizeMM = "0.0345";
-            Client_YPixelSizeMM = "0.0345";
-            Client_CameraGain = "15";
-            Client_CameraExposure = "5000";
-            Client_NumberOfLightSettings = "1";
-            Client_LightSetting1 = "100";
-            Client_LightSettingN = "0";
-            Client_DUTColor = "Black";
-            Client_ImageNickname = "NickName";
+            Client_Version = "";
+            Client_Date = "";
+            Client_Time = "";
+            Client_VisionVendor = "";
+            Client_StationID = "";
+            Client_StationNickname = "";
+            Client_DUTSerialNumber = "";
+            Client_ProcessCommand = "";
+            Client_CameraNumber = "";
+            Client_XPixelSizeMM = "";
+            Client_YPixelSizeMM = "";
+            Client_CameraGain = "";
+            Client_CameraExposure = "";
+            Client_NumberOfLightSettings = "";
+            Client_LightSetting1 = "";
+            Client_LightSettingN = "";
+            Client_DUTColor = "";
+            Client_ImageNickname = "";
 
-            Vendor_Version = "1.0";
-            Vendor_VisionVendor = "Vertex";
-            Vendor_StationID = "ST-001";
-            Vendor_StationNickname = "MainStation";
-            Vendor_DUTSerialNumber = "SN-00000";
-            Vendor_ProcessCommand = "INSPECT";
-            Vendor_CameraNumber = "1";
-            Vendor_XPixelSizeMM = "0.0345";
-            Vendor_YPixelSizeMM = "0.0345";
-            Vendor_CameraGain = "15";
-            Vendor_CameraExposure = "5000";
-            Vendor_NumberOfLightSettings = "1";
-            Vendor_LightSetting1 = "100";
-            Vendor_LightSettingN = "0";
-            Vendor_DUTColor = "Black";
-            Vendor_ImageNickname = "NickName";
+            Vendor_Version = "";
+            Vendor_VisionVendor = "";
+            Vendor_StationID = "";
+            Vendor_StationNickname = "";
+            Vendor_DUTSerialNumber = "";
+            Vendor_ProcessCommand = "";
+            Vendor_CameraNumber = "";
+            Vendor_XPixelSizeMM = "";
+            Vendor_YPixelSizeMM = "";
+            Vendor_CameraGain = "";
+            Vendor_CameraExposure = "";
+            Vendor_NumberOfLightSettings = "";
+            Vendor_LightSetting1 = "";
+            Vendor_LightSettingN = "";
+            Vendor_DUTColor = "";
+            Vendor_ImageNickname = "";
 
             SaveCommand = new RelayCommand(_ => SaveAsync(), _ => true);
             CancelCommand = new RelayCommand(_ => Cancel(), _ => true);
@@ -184,7 +208,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             CurrentCycleStateFileName = cameraInterface.CurrentCycleStateFileName ?? "";
 
             // Client metadata
-            Client_Version = cameraInterface.Client_Version ?? "1.0";
+            Client_Version = cameraInterface.Client_Version ?? "";
             Client_Date = cameraInterface.Client_Date ?? "";
             Client_Time = cameraInterface.Client_Time ?? "";
             Client_VisionVendor = cameraInterface.Client_VisionVendor ?? "";
@@ -204,7 +228,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             Client_ImageNickname = cameraInterface.Client_ImageNickname ?? "";
 
             // Vendor metadata
-            Vendor_Version = cameraInterface.Vendor_Version ?? "1.0";
+            Vendor_Version = cameraInterface.Vendor_Version ?? "";
             Vendor_Date = cameraInterface.Vendor_Date ?? "";
             Vendor_Time = cameraInterface.Vendor_Time ?? "";
             Vendor_VisionVendor = cameraInterface.Vendor_VisionVendor ?? "";

@@ -12,7 +12,7 @@ using System.Windows;
 
 namespace IPCSoftware.Common.UIClientComm
 {
-    public class UiTcpClient : BaseService
+    public class UiTcpClient 
     {
         private TcpClient _client;
         private NetworkStream _stream;
@@ -20,9 +20,14 @@ namespace IPCSoftware.Common.UIClientComm
         private bool _hasShownError = false;
         private readonly StringBuilder _messageAccumulator = new StringBuilder();
 
+        private IAppLogger _logger;
+
         // CRITICAL FIX: Track if ReadLoop is running
         private CancellationTokenSource _readLoopCts;
         private Task _readLoopTask;
+
+        // CRITICAL FIX: Prevent concurrent cleanup execution
+        private readonly SemaphoreSlim _cleanupLock = new SemaphoreSlim(1, 1);
 
         public bool IsConnected => _client?.Connected ?? false;
 
@@ -30,9 +35,16 @@ namespace IPCSoftware.Common.UIClientComm
         public event Action<bool> UiConnected;
         public event Action<AlarmMessage> AlarmMessageReceived;
 
-        public UiTcpClient(IDialogService dialog, IAppLogger logger) : base(logger)
+        public UiTcpClient(IDialogService dialog) 
         {
             _dialog = dialog;
+        }
+
+
+        //
+        public void SetLogger(IAppLogger logger)
+        {
+            _logger = logger;
         }
 
         public async Task<bool> StartAsync(string ip, int port)
@@ -70,7 +82,7 @@ namespace IPCSoftware.Common.UIClientComm
                 // Fire connected event
                 Application.Current?.Dispatcher.InvokeAsync(() => UiConnected?.Invoke(true));
 
-                _logger.LogInfo($"✅ TCP Connected to {ip}:{port}", LogType.Diagnostics);
+                _logger?.LogInfo($"✅ TCP Connected to {ip}:{port}", LogType.Diagnostics);
 
                 return true;
             }
@@ -79,7 +91,7 @@ namespace IPCSoftware.Common.UIClientComm
                 await CleanupAsync();
                 UiConnected?.Invoke(false);
 
-                _logger.LogError($"[TCP_CONNECT_ERROR] {ex.Message}", LogType.Diagnostics);
+                _logger?.LogError($"[TCP_CONNECT_ERROR] {ex.Message}", LogType.Diagnostics);
 
                 if (!_hasShownError)
                 {
@@ -107,7 +119,7 @@ namespace IPCSoftware.Common.UIClientComm
 
                     if (read <= 0)
                     {
-                        _logger.LogWarning("Read 0 bytes - connection closed", LogType.Diagnostics);
+                        _logger?.LogWarning("Read 0 bytes - connection closed", LogType.Diagnostics);
                         break;
                     }
 
@@ -143,15 +155,15 @@ namespace IPCSoftware.Common.UIClientComm
             }
             catch (OperationCanceledException)
             {
-                _logger.LogInfo("ReadLoop cancelled", LogType.Diagnostics);
+                _logger?.LogInfo("ReadLoop cancelled", LogType.Diagnostics);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"ReadLoop error: {ex.Message}", LogType.Diagnostics);
+                _logger?.LogError($"ReadLoop error: {ex.Message}", LogType.Diagnostics);
             }
             finally
             {
-                _logger.LogInfo("ReadLoop exiting - firing disconnect event", LogType.Diagnostics);
+                _logger?.LogInfo("ReadLoop exiting - firing disconnect event", LogType.Diagnostics);
                 UiConnected?.Invoke(false);
                 await CleanupAsync();
             }
@@ -161,7 +173,7 @@ namespace IPCSoftware.Common.UIClientComm
         {
             if (_stream == null || !IsConnected)
             {
-                _logger.LogWarning("Cannot send: Not connected", LogType.Diagnostics);
+                _logger?.LogWarning("Cannot send: Not connected", LogType.Diagnostics);
                 return;
             }
 
@@ -172,13 +184,15 @@ namespace IPCSoftware.Common.UIClientComm
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Send error: {ex.Message}", LogType.Diagnostics);
+                _logger?.LogError($"Send error: {ex.Message}", LogType.Diagnostics);
             }
         }
 
-        // CRITICAL FIX: Async cleanup with proper disposal
+        // CRITICAL FIX: Async cleanup with proper disposal and thread safety
         private async Task CleanupAsync()
         {
+            // Wait for exclusive access to cleanup logic
+            await _cleanupLock.WaitAsync();
             try
             {
                 // Cancel read loop
@@ -222,7 +236,12 @@ namespace IPCSoftware.Common.UIClientComm
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Cleanup error: {ex.Message}", LogType.Diagnostics);
+                _logger?.LogError($"Cleanup error: {ex.Message}", LogType.Diagnostics);
+            }
+            finally
+            {
+                // Always release the lock
+                _cleanupLock.Release();
             }
         }
     }

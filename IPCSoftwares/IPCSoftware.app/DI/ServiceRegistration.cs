@@ -1,4 +1,5 @@
-﻿using IPCSoftware.App.Services;
+﻿using IPCSoftware.App.AOI.ViewModels;
+using IPCSoftware.App.Services;
 using IPCSoftware.Common.CommonFunctions;
 using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Communication.External;
@@ -17,6 +18,7 @@ using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.UI.CommonViews;
+using IPCSoftware.UI.CommonViews.Services;
 using IPCSoftware.UI.CommonViews.ViewModels;
 using IPCSoftware.UI.CommonViews.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,12 +43,14 @@ namespace IPCSoftware.App.DI
     {
         public static void RegisterServices(IServiceCollection services)
         {
-            services.AddSingleton<IAppLogger, AppLoggerService>();
-            services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+           // services.AddSingleton<IAppLogger, AppLoggerService>();
+            services.AddSingleton<IAppLogger, UiErrorLogger>();                //Added by Rishabh - date - 08/04/2026// Purpose: Use UiErrorLogger for better error visibility in the UI.
+                                                                               // services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
 
-            // ✅ NEW: Register Observable CCD Settings Service (Singleton - shared across all services)
-            services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>();
+            //  NEW: Register Observable CCD Settings Service (Singleton - shared across all services)
+            services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>(); //Added by Rishabh - date - 08/04/2026//
+
 
             services.AddSingleton<ICycleManagerService, CycleManagerServiceAOI>();
             services.AddSingleton<ExternalInterfaceService>();
@@ -70,26 +74,30 @@ namespace IPCSoftware.App.DI
                 return new ProductionDataLogger(prodLogConfig);
             });
 
-            // ✅ UPDATED: CCDTriggerServiceAOI now includes IObservableCcdSettingsService
+            //  UPDATED: CCDTriggerServiceAOI now includes IObservableCcdSettingsService
             services.AddSingleton<CCDTriggerServiceAOI>(sp =>
                 new CCDTriggerServiceAOI(
                     sp.GetRequiredService<ICycleManagerService>(),
-                    sp.GetRequiredService<IPLCTagConfigurationService>(),
+                    sp.GetRequiredService<IDeviceConfigurationService>(),
                     sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<CcdSettings>>(),
-                    sp.GetRequiredService<IObservableCcdSettingsService>(),  // ✅ NEW: Observable settings
+                    sp.GetRequiredService<IObservableCcdSettingsService>(),  //  //Added by Rishabh - date - 08/04/2026//
                     sp.GetRequiredService<IAppLogger>()
                 )
             );
-
+            //services.AddSingleton<IFileHandler, CsvManager>();
+            services.AddSingleton<ConfigLoaderService>();                       //Added by Rishabh - date - 25/04/2026//
+            //services.AddSingleton<DeviceConfigLoader>();                             //Added by Rishabh - date - 18/04/2026//
+            //services.AddSingleton<DeviceInterfaceConfigLoader>();                    //Modified by Rishabh - date - 15/04/2026//
+            //services.AddSingleton<CameraConfigLoader>();                             //Added by Rishabh - date - 15/04/2026//
             services.AddSingleton<PLCClientManager>();
             services.AddSingleton<CameraFtpService>();
             services.AddTransient<ProductionImageService>();
             services.AddSingleton<AlarmService>();
-            services.AddSingleton(sp =>
-            {
-                var logger = sp.GetRequiredService<IAppLogger>();
-                return new UiListener(5050, logger);
-            });
+            //services.AddSingleton(sp =>
+            //{
+            //    var logger = sp.GetRequiredService<IAppLogger>();
+            //    return new UiListener(5050, logger);
+            //});
             services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
             services.AddSingleton<IApiTestSettingsService, ApiTestSettingsService>();
             services.AddSingleton<IAuthService, AuthService>();
@@ -105,8 +113,11 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<ILogService, LogService>();
 
             // ========== MAIN VIEWMODELS ==========
-            services.AddSingleton<RibbonViewModel>();
-            services.AddSingleton<MainWindowViewModel>();
+            // Register base types for dependency injection
+            services.AddSingleton<RibbonViewModelBase>(sp => sp.GetRequiredService<RibbonViewModelAOI>());
+            services.AddSingleton<RibbonViewModelAOI, RibbonViewModelAOI>();
+            services.AddSingleton<MainWindowViewModelBase>(sp => sp.GetRequiredService<MainWindowViewModelAOI>());
+            services.AddSingleton<MainWindowViewModelAOI>();
             services.AddTransient<OEEDashboardViewModel>();
             services.AddSingleton<UiTcpClient>();
             services.AddSingleton<ShiftResetService>();
@@ -124,14 +135,33 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceInterfaceConfigurationViewModel>();
             services.AddTransient<CameraDetailViewModel>();
             services.AddTransient<CameraInterfaceConfigurationViewModel>();
+            services.AddTransient<ServiceStartupView>();                 //Added by Rishabh -date - 15-04-2026
+            services.AddTransient<ServiceStartupViewModel>();            //Added by Rishabh -date - 15-04-2026
 
-            // ✅ UPDATED: CcdSettingsViewModel now includes IObservableCcdSettingsService
+
+            //  UPDATED: CcdSettingsViewModel now includes IObservableCcdSettingsService
             services.AddTransient<CcdSettingsViewModel>(sp =>
                 new CcdSettingsViewModel(
                     sp.GetRequiredService<IDeviceConfigurationService>(),
-                    sp.GetRequiredService<IObservableCcdSettingsService>()  // ✅ NEW: Observable settings
+                    sp.GetRequiredService<IObservableCcdSettingsService>()  // //Added by Rishabh - date - 08/04/2026//
+
                 )
             );
+
+
+
+            // 4. Post-registration: Set loggers
+            services.AddSingleton(sp =>
+            {
+                var logger = sp.GetRequiredService<IAppLogger>();
+                var tcpClient = sp.GetRequiredService<UiTcpClient>();
+                var coreClient = sp.GetRequiredService<CoreClient>();
+
+                tcpClient.SetLogger(logger);
+                coreClient.SetLogger(logger);
+
+                return sp; // Dummy return
+            });
 
             services.AddTransient<AeLimitView>();
             services.AddTransient<AeLimitViewModel>();
@@ -147,7 +177,7 @@ namespace IPCSoftware.App.DI
             services.AddTransient<AlarmListViewModel>();
             services.AddTransient<AlarmConfigurationViewModel>();
             services.AddTransient<BackupService>();
-            services.AddTransient<TagConfigLoader>();
+            //services.AddTransient<TagConfigLoader>();
             services.AddTransient<UserListViewModel>();
             services.AddTransient<UserConfigurationViewModel>();
             services.AddTransient<AlarmView>();
@@ -186,12 +216,16 @@ namespace IPCSoftware.App.DI
             services.AddTransient<PLCTagListView>();
             services.AddTransient<PLCTagConfigurationView>();
             services.AddTransient<LogViewerViewModel>();
-            services.AddTransient<LoginViewModel>();
+            // Register LoginViewModelBase to resolve LoginViewModelAOI
+            services.AddTransient<LoginViewModelBase>(sp => sp.GetRequiredService<LoginViewModelAOI>());           
+            services.AddTransient<LoginViewModelAOI>();
             services.AddTransient<LoginView>();
             services.AddTransient<TagControlView>();
             services.AddTransient<TagControlViewModel>();
             services.AddTransient<SystemSettingView>();
             services.AddTransient<SystemSettingViewModel>();
+           // services.AddTransient<ServiceStartupView>();
+            //services.AddTransient<ServiceStartupViewModel>();
             services.AddTransient<IPLCService, PlcService>();
             services.AddSingleton<CoreClient>();
             services.AddSingleton<ReportConfigViewModel>();

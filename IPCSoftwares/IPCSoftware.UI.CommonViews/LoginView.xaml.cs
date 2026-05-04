@@ -13,7 +13,7 @@ namespace IPCSoftware.UI.CommonViews
 {
     public partial class LoginView : UserControl
     {
-        public LoginView(LoginViewModel vm)
+        public LoginView(LoginViewModelBase vm)
         {
             InitializeComponent();
             DataContext = vm;

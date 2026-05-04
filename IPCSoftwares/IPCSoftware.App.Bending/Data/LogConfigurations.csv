@@ -3,3 +3,4 @@
 2,"Production","Production","C:\Datalog\Logs\Production","D:\Logs\Production\ReportLogs","Production_{yyyyMMdd}",5,5,True,"Manual","00:00:00",0,"","Production log configuration","Production system logs",True,"D:\Repos\Vertex\IPCSoftwares\ProductionImages","D:\Logs\Production\ImageLogs"
 3,"Error","Error","C:\Datalog\Logs\Error","D:\Logs\Backup\Error","Error_yyyyMMdd",60,5,False,"Monthly","04:00:00",1,"","Error log configuration","System error logs",True,"",""
 4,"Diagnostics","Diagnostics","C:\Datalog\Logs\Diagnostics","D:\Logs\Backup\Diagnostics","Diagnostics_yyyyMMdd",60,5,False,"Monthly","04:00:00",1,"","Diagnostics log configuration","System Diagnostics logs",True,"",""
+5,"IPCTraceLog","TagTrace","C:\Datalog\Logs\IPCTraceLog","D:\Logs\Backup\IPCTraceLog","TagTrace_{yyyyMMdd}",30,5,False,"Daily","05:00:00",0,"","Tag trace log configuration","IPC tag trace logs",True,"",""

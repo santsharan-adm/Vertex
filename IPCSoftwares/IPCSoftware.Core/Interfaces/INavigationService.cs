@@ -48,9 +48,25 @@ namespace IPCSoftware.Core.Interfaces
         // PLC Tag Configuration - NEW
         void NavigateToPLCTagList();
 
+        // Service Startup
+        void NavigateToServiceStartup();                                                                  //Added By Rishabh , Date -13/04/2026
+
         // App-specific view navigation (types defined in IPCSoftware.app assembly)
         void NavigateToManualOperation();
         void NavigateToOEEDashboard();
+
+        void NavigateToDashboard1();
+
+        void NavigateToDashboard2();
+
+        void NavigateToDashboard3();
+
+        void NavigateToUserControl1();
+        void NavigateToUserControl2();
+
+        void NavigateToPostBendingMonitor();
+        public void NavigateToBendingLandingPage();
+
         void NavigateToAeLimit();
 
         void NavigateToLogs(LogType logType);

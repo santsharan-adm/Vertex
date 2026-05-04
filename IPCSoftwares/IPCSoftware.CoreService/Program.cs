@@ -86,14 +86,19 @@ namespace IPCSoftware.CoreService
                             // 1. Configuration/Logging
                             //   services.AddSingleton<IConfiguration>(hostContext.Configuration);
                             // 2. Configuration Service (Resolvable by DI)
-                            services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
+                            //services.AddSingleton<IFileHandler, CsvManager>();
+                            services.AddSingleton<ConfigLoaderService>();           //Added by Rishabh - date - 27/04/2026//
+                          //  services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
                             services.AddSingleton<IAppLogger, AppLoggerService>();
                             services.AddSingleton<ILogManagerService, LogManagerService>();
                             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
+                            //services.AddSingleton<DeviceInterfaceConfigLoader>();   //Added by Rishabh - date - 17/04/2026//
+                            //services.AddSingleton<CameraConfigLoader>();   //Added by Rishabh - date - 16/04/2026//
+                            //services.AddSingleton<DeviceConfigLoader>();   //Added by Rishabh - date - 18/04/2026//
                             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
 
-                            // Register Observable CCD Settings Service
-                            services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>();
+                            services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>(); //Added by Rishabh - date - 08/04/2026//
+
 
                             services.AddSingleton<IAeLimitService, AeLimitService>();
                             services.AddSingleton<ExternalInterfaceService>();
@@ -107,7 +112,7 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<DashboardInitializerAOI>();
                             services.AddSingleton<OeeEngineAOI>();
                             services.AddSingleton<AlarmService>();
-                            services.AddTransient<TagConfigLoader>();
+                            //services.AddTransient<TagConfigLoader>();
                             services.AddTransient<BackupService>();
                             services.AddSingleton<ShiftResetService>();
                             services.AddSingleton<ITcpTrafficLogger, TcpTrafficLogger>();
@@ -151,9 +156,9 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<CCDTriggerServiceAOI>(sp =>
                                 new CCDTriggerServiceAOI(
                                     sp.GetRequiredService<ICycleManagerService>(),
-                                    sp.GetRequiredService<IPLCTagConfigurationService>(),
+                                    sp.GetRequiredService<IDeviceConfigurationService>(),
                                     sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<CcdSettings>>(),
-                                    sp.GetRequiredService<IObservableCcdSettingsService>(),  
+                                    sp.GetRequiredService<IObservableCcdSettingsService>(),   //Added by Rishabh - date - 08/04/2026//
                                     sp.GetRequiredService<IAppLogger>()
                                 )
                             );
@@ -201,10 +206,10 @@ namespace IPCSoftware.CoreService
 
         }
 
-        /// <summary>
-        /// Loads the active camera interface settings into the observable service
-        /// This ensures CCDTriggerService has valid values from startup
-        /// </summary>
+        /// //Added by Rishabh - date - 08/04/2026//
+        /// Discription : - * Loads the active camera interface settings into the observable service
+        ///                 * This ensures CCDTriggerService has valid values from startup
+   
         private static async Task LoadCcdSettingsAsync(IServiceProvider services)
         {
             try

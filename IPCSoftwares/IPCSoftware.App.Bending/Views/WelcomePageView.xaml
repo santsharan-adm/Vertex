@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="IPCSoftware.App.Bending.Views.WelcomePageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="White"
+             HorizontalAlignment="Stretch" 
+             VerticalAlignment="Stretch">
+
+    <Grid>
+        <TextBlock Text="Welcome to Bending Application" 
+                   Foreground="Black" 
+                   FontSize="48" 
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"
+                   TextAlignment="Center"/>
+    </Grid>
+</UserControl>

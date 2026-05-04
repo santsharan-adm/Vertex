@@ -1,11 +1,34 @@
-﻿using System;
+﻿/******************************************************************************
+ * Project      : IPCSoftware-AOI /Bending
+ * Module       : ObservableCcdSettings
+ * File Name    : ObservableCcdSettings.cs
+ * Author       : Rishabh
+ * Organization : Motherson Technology Service Limited
+ * Created Date : 2026-04-08
+ *
+ * Description  :
+ * Provides an observable CCD settings service that manages and broadcasts camera
+ * configuration changes (image paths, metadata styles, etc.) to all subscribers in real-time.
+ *
+ * Change History:
+ * ---------------------------------------------------------------------------
+ * Date        Author        Version     Description
+ * ---------------------------------------------------------------------------
+ * 2026-04-08  Rishabh       1.0         Initial creation
+ * 
+ * 
+ *
+ ******************************************************************************/
+
+using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.ConfigModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using IPCSoftware.Core.Interfaces;
-using IPCSoftware.Core.Interfaces.AppLoggerInterface;
-using IPCSoftware.Shared.Models.ConfigModels;
 
 namespace IPCSoftware.Services.ConfigServices
 {
@@ -20,6 +43,9 @@ namespace IPCSoftware.Services.ConfigServices
         string ImageRootFolder { get; set; }
         string MetadataStyle { get; set; }
         string CurrentCycleStateFileName { get; set; }
+
+        ClientMetaData ClientMetaDataParams { get; set; }
+        VendorMetaData VendorMetaDataParams { get; set; }
 
         event EventHandler<CcdSettingsChangedEventArgs> SettingsChanged;
         Task UpdateFromCameraInterfaceAsync(CameraInterfaceModel cameraInterface);
@@ -39,6 +65,8 @@ namespace IPCSoftware.Services.ConfigServices
         private string _imageRootFolder;
         private string _metadataStyle;
         private string _currentCycleStateFileName;
+        private ClientMetaData _clientMetaDataParams;
+        private VendorMetaData _vendorMetaDataParams;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<CcdSettingsChangedEventArgs> SettingsChanged;
@@ -80,6 +108,19 @@ namespace IPCSoftware.Services.ConfigServices
             set => SetProperty(ref _currentCycleStateFileName, value, nameof(CurrentCycleStateFileName));
         }
 
+
+        public ClientMetaData ClientMetaDataParams
+        {
+            get => _clientMetaDataParams;
+            set => SetProperty(ref _clientMetaDataParams, value, nameof(ClientMetaDataParams));
+        }
+
+        public VendorMetaData VendorMetaDataParams
+        {
+            get => _vendorMetaDataParams;
+            set => SetProperty(ref _vendorMetaDataParams, value, nameof(VendorMetaDataParams));
+        }
+
         /// <summary>
         /// Load settings from a CameraInterfaceModel and update observable properties
         /// </summary>
@@ -98,6 +139,8 @@ namespace IPCSoftware.Services.ConfigServices
                 ImageRootFolder = cameraInterface.ImageRootFolder ?? "";
                 MetadataStyle = cameraInterface.MetadataStyle ?? "";
                 CurrentCycleStateFileName = cameraInterface.CurrentCycleStateFileName ?? "";
+                ClientMetaDataParams = BuildClientMetaDataFromInterface(cameraInterface);
+                VendorMetaDataParams = BuildVendorMetaDataFromInterface(cameraInterface);
 
                 _logger?.LogInfo($"[CcdSettings] Updated from CameraInterface. TempImgFolder: {TempImgFolder}", LogType.Diagnostics);
                 await Task.CompletedTask;
@@ -129,6 +172,62 @@ namespace IPCSoftware.Services.ConfigServices
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
+        private ClientMetaData BuildClientMetaDataFromInterface(CameraInterfaceModel camera)
+        {
+            if (camera == null) return null;
+            return new ClientMetaData
+            {
+                Version = camera.Client_Version ?? "1.0",
+                Date = camera.Client_Date ?? "",
+                Time = camera.Client_Time ?? "",
+                VisionVendor = camera.Client_VisionVendor ?? "Client",
+                StationID = camera.Client_StationID ?? "",
+                StationNickname = camera.Client_StationNickname ?? "",
+                DUTSerialNumber = camera.Client_DUTSerialNumber ?? "",
+                ProcessCommand = camera.Client_ProcessCommand ?? "",
+                CameraNumber = camera.Client_CameraNumber ?? "",
+                XPixelSizeMM = camera.Client_XPixelSizeMM ?? "",
+                YPixelSizeMM = camera.Client_YPixelSizeMM ?? "",
+                CameraGain = camera.Client_CameraGain ?? "",
+                CameraExposure = camera.Client_CameraExposure ?? "",
+                NumberOfLightSettings = camera.Client_NumberOfLightSettings ?? "",
+                LightSetting1 = camera.Client_LightSetting1 ?? "",
+                LightSettingN = camera.Client_LightSettingN ?? "",
+                DUTColor = camera.Client_DUTColor ?? "",
+                ImageNickname = camera.Client_ImageNickname ?? ""
+
+            };
+        }
+
+        private VendorMetaData BuildVendorMetaDataFromInterface(CameraInterfaceModel camera)
+        {
+            if (camera == null) return null;
+            return new VendorMetaData
+            {
+                Version = camera.Vendor_Version ?? "1.0",
+                Date = camera.Vendor_Date ?? "",
+                Time = camera.Vendor_Time ?? "",
+                VisionVendor = camera.Vendor_VisionVendor ?? "Vendor",
+                StationID = camera.Vendor_StationID ?? "",
+                StationNickname = camera.Vendor_StationNickname ?? "",
+                DUTSerialNumber = camera.Vendor_DUTSerialNumber ?? "",
+                ProcessCommand = camera.Vendor_ProcessCommand ?? "",
+                CameraNumber = camera.Vendor_CameraNumber ?? "",
+                XPixelSizeMM = camera.Vendor_XPixelSizeMM ?? "",
+                YPixelSizeMM = camera.Vendor_YPixelSizeMM ?? "",
+                CameraGain = camera.Vendor_CameraGain ?? "",
+                CameraExposure = camera.Vendor_CameraExposure ?? "",
+                NumberOfLightSettings = camera.Vendor_NumberOfLightSettings ?? "",
+                LightSetting1 = camera.Vendor_LightSetting1 ?? "",
+                LightSettingN = camera.Vendor_LightSettingN ?? "",
+                DUTColor = camera.Vendor_DUTColor ?? "",
+                ImageNickname = camera.Vendor_ImageNickname ?? ""
+
+
+            };
         }
     }
 }
