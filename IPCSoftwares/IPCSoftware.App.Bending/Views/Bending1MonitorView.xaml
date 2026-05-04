@@ -73,7 +73,8 @@
 
         <!-- NEXT Button Section -->
         <Button Grid.Row="0" Content="NEXT" Style="{StaticResource NavButtonStyle}" 
-                HorizontalAlignment="Right" Command="{Binding NextCommand}"/>
+                
+                HorizontalAlignment="Right" Background="#007ACC" Command="{Binding NextCommand}" Click="Button_Click"/>
 
         <Viewbox Grid.Row="1" Stretch="Uniform">
             <Border BorderBrush="Black" BorderThickness="1.2" Width="980" Height="520">
@@ -117,7 +118,7 @@
                         <TextBlock Text="Load (N)" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="3" Style="{StaticResource TableBorderStyle}" Background="#F2F2F2">
-                        <TextBlock Text="Temp (&#176;C)" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="Temp (°C)" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="4" Style="{StaticResource TableBorderStyle}" Background="#F2F2F2">
                         <TextBlock Text="Bending&#x0a;Time (s)" Style="{StaticResource CommonTextStyle}"/>

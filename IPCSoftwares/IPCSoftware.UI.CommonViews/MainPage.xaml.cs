@@ -39,5 +39,6 @@ namespace IPCSoftware.UI.CommonViews
             TopBar.Visibility = visibility;
         }
 
+
     }
 }

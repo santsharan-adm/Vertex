@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using IPCSoftware.App.Bending.ViewModels;
 
 namespace IPCSoftware.App.Bending.Views
 {
@@ -20,9 +21,10 @@ namespace IPCSoftware.App.Bending.Views
     /// </summary>
     public partial class UserControl2 : UserControl
     {
-        public UserControl2()
+        public UserControl2(UserControl2ViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
     }
 }
