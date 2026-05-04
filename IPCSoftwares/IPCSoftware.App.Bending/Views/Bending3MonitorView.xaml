@@ -4,21 +4,43 @@
              Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
     <UserControl.Resources>
-        <!-- Updated Nav Button Style (160x60) -->
+        <!-- Modern Navigation Button Style (consistent with App.AOI) -->
         <Style x:Key="NavButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#AFAFAF"/>
-            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#666"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="Width" Value="160"/>
             <Setter Property="Height" Value="60"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="10"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" 
-                                BorderBrush="#888" BorderThickness="2" CornerRadius="8">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="8">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="8" ShadowDepth="2" Opacity="0.1"/>
+                            </Border.Effect>
+                            <ContentPresenter x:Name="content" 
+                                            HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#2196F3"/>
+                                <Setter TargetName="border" Property="Background" Value="#E3F2FD"/>
+                                <Setter TargetName="content" Property="TextElement.Foreground" Value="#2196F3"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#BBDEFB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -51,8 +73,8 @@
 
         <!-- Navigation Buttons -->
         <Grid Grid.Row="0">
-            <Button Content="Previous" Style="{StaticResource NavButtonStyle}" HorizontalAlignment="Left"/>
-            <Button Content="NEXT" Style="{StaticResource NavButtonStyle}" HorizontalAlignment="Right"/>
+            <Button Content="Previous" Style="{StaticResource NavButtonStyle}" 
+                    HorizontalAlignment="Left" Background="#007ACC" Command="{Binding PreviousCommand}"/>
         </Grid>
 
         <!-- Viewbox for responsive scaling -->
@@ -82,7 +104,7 @@
                     <Border Grid.Row="0" Grid.ColumnSpan="6" BorderBrush="Black" BorderThickness="0,0,0,1">
                         <Grid>
                             <TextBlock Text="Bending Monitor 3" Style="{StaticResource CommonTextStyle}" FontSize="18" FontWeight="Bold"/>
-                            <TextBlock Text="Batch No - 123456789" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" HorizontalAlignment="Left"/>
+                            <TextBlock Text="Batch No - 123456789"  Margin="3" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" HorizontalAlignment="Left"/>
                         </Grid>
                     </Border>
 
@@ -97,7 +119,7 @@
                         <TextBlock Text="Load (N)" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="3" Style="{StaticResource TableBorderStyle}" Background="#F2F2F2">
-                        <TextBlock Text="Temp (*C)" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="Temp (°C)" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="4" Style="{StaticResource TableBorderStyle}" Background="#F2F2F2">
                         <TextBlock Text="Bending&#x0a;Time (s)" Style="{StaticResource CommonTextStyle}"/>
@@ -135,7 +157,7 @@
                         <TextBlock Text="Product 1" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="ABCDQWER1234TYUI9087" Style="{StaticResource CommonTextStyle}" FontSize="10" TextWrapping="Wrap"/>
+                        <TextBlock Text="ABCDQWER1234TYUI9087" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Border>
                     <UniformGrid Grid.Row="3" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
@@ -163,14 +185,14 @@
                         <TextBlock Text="2.50" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                        <Rectangle Width="55" Height="48" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
                     <Border Grid.Row="4" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
                         <TextBlock Text="Product 2" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="XYZ1234567890ABCDEFG" Style="{StaticResource CommonTextStyle}" FontSize="10" TextWrapping="Wrap"/>
+                        <TextBlock Text="XYZ1234567890ABCDEFG" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Border>
                     <UniformGrid Grid.Row="4" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
@@ -198,14 +220,14 @@
                         <TextBlock Text="2.80" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                        <Rectangle Width="55" Height="48" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
                     <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
                         <TextBlock Text="Product 3" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="BEND9876543210QWERTY" Style="{StaticResource CommonTextStyle}" FontSize="10" TextWrapping="Wrap"/>
+                        <TextBlock Text="BEND9876543210QWERTY" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Border>
                     <UniformGrid Grid.Row="5" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
@@ -233,14 +255,14 @@
                         <TextBlock Text="3.19" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                        <Rectangle Width="55" Height="48" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
                     <Border Grid.Row="6" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
                         <TextBlock Text="Product 4" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="TEST2026APRIL30INDIA1" Style="{StaticResource CommonTextStyle}" FontSize="10" TextWrapping="Wrap"/>
+                        <TextBlock Text="TEST2026APRIL30INDIA1" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Border>
                     <UniformGrid Grid.Row="6" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
@@ -268,7 +290,7 @@
                         <TextBlock Text="4.17" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                        <Rectangle Width="55" Height="48" Fill="#D3D3D3" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
                 </Grid>
             </Border>

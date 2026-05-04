@@ -1,11 +1,17 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
+using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Shared;
 
 namespace IPCSoftware.App.Bending.ViewModels
 {
     public class Bending3MonitorViewModel : INotifyPropertyChanged
     {
+        private readonly INavigationService _navigationService;
+
+        public ICommand PreviousCommand { get; }
 
         private double EnsureNonNegative(double value) => Math.Max(0, value);
 
@@ -85,8 +91,11 @@ namespace IPCSoftware.App.Bending.ViewModels
         private string _p4_BT;
         public string P4_BT { get => _p4_BT; set { _p4_BT = value; OnPropertyChanged(); } }
 
-        public Bending3MonitorViewModel()
+        public Bending3MonitorViewModel(INavigationService navigationService)
         {
+            _navigationService = navigationService;
+            PreviousCommand = new RelayCommand(ExecutePrevious);
+
             P1_Upper = 50.5; P1_Value = 48.2; P1_Lower = 45.0;
             P1_LM = "2.22"; P1_TM = "68.4 °C"; P1_BT = "2.5s";
 
@@ -98,6 +107,11 @@ namespace IPCSoftware.App.Bending.ViewModels
 
             P4_Upper = 45.0; P4_Value = 44.5; P4_Lower = 40.0;
             P4_LM = "4.22"; P4_TM = "65.3 °C"; P4_BT = "2.2s";
+        }
+
+        private void ExecutePrevious()
+        {
+            _navigationService.NavigateToDashboard2();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

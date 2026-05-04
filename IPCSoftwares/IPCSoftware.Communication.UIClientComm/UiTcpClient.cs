@@ -24,6 +24,9 @@ namespace IPCSoftware.Common.UIClientComm
         private CancellationTokenSource _readLoopCts;
         private Task _readLoopTask;
 
+        // CRITICAL FIX: Prevent concurrent cleanup execution
+        private readonly SemaphoreSlim _cleanupLock = new SemaphoreSlim(1, 1);
+
         public bool IsConnected => _client?.Connected ?? false;
 
         public event Action<string> DataReceived;
@@ -176,9 +179,11 @@ namespace IPCSoftware.Common.UIClientComm
             }
         }
 
-        // CRITICAL FIX: Async cleanup with proper disposal
+        // CRITICAL FIX: Async cleanup with proper disposal and thread safety
         private async Task CleanupAsync()
         {
+            // Wait for exclusive access to cleanup logic
+            await _cleanupLock.WaitAsync();
             try
             {
                 // Cancel read loop
@@ -223,6 +228,11 @@ namespace IPCSoftware.Common.UIClientComm
             catch (Exception ex)
             {
                 _logger.LogError($"Cleanup error: {ex.Message}", LogType.Diagnostics);
+            }
+            finally
+            {
+                // Always release the lock
+                _cleanupLock.Release();
             }
         }
     }

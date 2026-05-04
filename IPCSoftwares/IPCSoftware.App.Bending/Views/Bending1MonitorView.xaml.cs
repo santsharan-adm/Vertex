@@ -5,11 +5,15 @@ namespace IPCSoftware.App.Bending.Views
 {
     public partial class Bending1MonitorView : UserControl
     {
-        public Bending1MonitorView()
+        public Bending1MonitorView(Bending1MonitorViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
+        }
 
-            this.DataContext = new Bending1MonitorViewModel();
+        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -45,9 +45,11 @@ namespace IPCSoftware.App.Bending.ViewModels
                 "UserControl1",
                 "UserControl2",
                 "PostBendingMonitor",
+                "PLC IO",
                 "Alarm View",
                 "Startup Condition",
                 "About"
+                
 
 
             }, nameof(OpenDashboardMenu));

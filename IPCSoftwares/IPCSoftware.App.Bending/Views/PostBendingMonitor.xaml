@@ -5,23 +5,43 @@
              Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
     <UserControl.Resources>
-        <!-- Updated Navigation Button Style with larger dimensions -->
+        <!-- Modern Navigation Button Style (consistent with App.AOI) -->
         <Style x:Key="NavButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#AFAFAF"/>
-            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#666"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="Width" Value="160"/>
             <Setter Property="Height" Value="60"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="10"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" 
-                                BorderBrush="#888" 
-                                BorderThickness="2" 
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
                                 CornerRadius="8">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="8" ShadowDepth="2" Opacity="0.1"/>
+                            </Border.Effect>
+                            <ContentPresenter x:Name="content" 
+                                            HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#2196F3"/>
+                                <Setter TargetName="border" Property="Background" Value="#E3F2FD"/>
+                                <Setter TargetName="content" Property="TextElement.Foreground" Value="#2196F3"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#BBDEFB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -56,12 +76,12 @@
 
         <!-- Navigation Button (Previous) -->
         <Button Grid.Row="0" Content="Previous" Style="{StaticResource NavButtonStyle}" 
-                HorizontalAlignment="Left" Background="#E0E0E0"/>
+                HorizontalAlignment="Left" Command="{Binding PreviousCommand}"/>
 
         <!-- Viewbox for automatic scaling of the table -->
         <Viewbox Grid.Row="1" Stretch="Uniform">
             <!-- Fixed resolution container for internal scaling -->
-            <Border BorderBrush="Black" BorderThickness="1.5" Width="980" Height="520">
+            <Border BorderBrush="Black" BorderThickness="1.2" Width="980" Height="520">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="70"/>
@@ -76,10 +96,10 @@
                     <Border Grid.Row="0" BorderBrush="Black" BorderThickness="0,0,0,1" Background="#F9F9F9">
                         <Grid>
                             <TextBlock Text="POST BENDING INSPECTION MONITOR" FontSize="22" FontWeight="Bold" 
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <TextBlock Text="Batch No. - 1234321" FontSize="14" FontWeight="Medium" 
+                                       HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+                            <TextBlock Text="Batch No. - 1234321"  FontSize="14" FontWeight="Medium" 
                                        HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                       Foreground="#555"/>
+                                       Foreground="#555" Margin="3"/>
                         </Grid>
                     </Border>
 
@@ -153,7 +173,7 @@
                                         <TextBlock Text="{Binding}" Style="{StaticResource CommonTextStyle}"/>
                                     </Border>
                                     <Border Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                                        <TextBlock Text="ABCDQWER1234TYUI9087" Style="{StaticResource CommonTextStyle}" FontSize="10" TextWrapping="Wrap"/>
+                                        <TextBlock Text="ABCDQWER1234TYUI9087" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
                                     </Border>
 
                                     <UniformGrid Grid.Column="2" Rows="3">
@@ -214,7 +234,7 @@
                                     </UniformGrid>
 
                                     <Border Grid.Column="7" Style="{StaticResource TableBorderStyle}">
-                                        <Rectangle Width="35" Height="30" Fill="#D3D3D3" RadiusX="2" RadiusY="2" 
+                                        <Rectangle Width="55" Height="48" Fill="#D3D3D3" RadiusX="2" RadiusY="2" 
                                                    Stroke="#999" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                     </Border>
                                 </Grid>
