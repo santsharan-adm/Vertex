@@ -1,5 +1,4 @@
 ﻿using IPCSoftware.App.Bending.ViewModels;
-using IPCSoftware.App.Bending.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.UI.CommonViews;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,7 +43,7 @@ namespace IPCSoftware.App.Bending
 
             // Load Ribbon
            // nav.NavigateTop(ribbonView);
-            nav.NavigateMain<LoginViewBending>();
+            nav.NavigateMain<LoginView>();
         }
     }
 }

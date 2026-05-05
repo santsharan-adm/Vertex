@@ -20,12 +20,6 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         private void ExecuteGoToMenu()
         {
-            // Add your navigation or menu logic here
-            // For now, we show a message to confirm binding works
-            MessageBox.Show("Navigation  Moving to Menu..."); 
-        }
-    }
-}
             _navigationService.NavigateToBendingLandingPage();
         }
 

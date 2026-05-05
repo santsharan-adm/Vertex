@@ -71,11 +71,9 @@
             <!-- 2: BLANK SPACE FOR ALARM -->
         </Grid.RowDefinitions>
 
-        <!-- Navigation Buttons -->
-        <Grid Grid.Row="0">
-            <Button Content="Previous" Style="{StaticResource NavButtonStyle}" 
-                    HorizontalAlignment="Left" Command="{Binding PreviousCommand}"/>
-        </Grid>
+        <!-- NEXT Button Section -->
+        <Button Grid.Row="0" Content="NEXT" Style="{StaticResource NavButtonStyle}" 
+                HorizontalAlignment="Right" Background="#007ACC" Command="{Binding NextCommand}"/>
 
         <!-- Viewbox for responsive scaling -->
         <Viewbox Grid.Row="1" Stretch="Uniform">

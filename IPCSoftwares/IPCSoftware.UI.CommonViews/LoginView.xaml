@@ -70,7 +70,7 @@
                                     </Border.Background>
                                 </Border>
 
-                                <TextBlock Text="AOI SYSTEM"
+                                <TextBlock Text="{Binding AppName}"
                                            FontSize="42"
                                            FontWeight="Bold"
                                            Foreground="White"
