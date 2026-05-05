@@ -5,6 +5,7 @@ using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;                                      //Added to implement Event Viewer logging
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -97,6 +98,7 @@ namespace IPCSoftware.Services.AppLoggerServices
                 {
                     // Fallback: If logging fails entirely, write to Debug console so we don't lose the error
                     System.Diagnostics.Debug.WriteLine($"[CRITICAL LOGGER FAIL] {ex.Message}");
+                    
                 }
             }
         }
@@ -131,6 +133,7 @@ namespace IPCSoftware.Services.AppLoggerServices
             // We try 3 times with a small delay.
             const int MaxRetries = 3;
             const int DelayOnRetryMs = 50;
+            bool fileWriteSuccess = false;
 
             for (int i = 0; i < MaxRetries; i++)
             {
@@ -159,7 +162,50 @@ namespace IPCSoftware.Services.AppLoggerServices
                     break;
                 }
             }
+
+            // Added by Rishabh - Date -30-04-2026
+            // IF : File write failed → Write to Event Viewer
+            if (!fileWriteSuccess)
+            {
+                WriteToEventViewer(entry);
+            }
         }
+        //*/
+
+        //Added by Rishabh - Date -30-04-2026
+        // Purpose: If file write fails (e.g., due to locks), we log the critical error to Windows Event Viewer as a fallback.
+        // This ensures we don't lose important logs even if the file is temporarily inaccessible.
+        private void WriteToEventViewer(LogEntry entry)
+        {
+            try
+            {
+                const string SOURCE = "IPCSoftware.CoreService";
+                const string LOG = "Application";
+
+                // Ensure event source exists
+                if (!EventLog.SourceExists(SOURCE))
+                {
+                    EventLog.CreateEventSource(SOURCE, LOG);
+                }
+
+                // Map log level to EventLog type
+                EventLogEntryType eventType = entry.Level switch
+                {
+                    "ERROR" => EventLogEntryType.Error,
+                    "WARN" => EventLogEntryType.Warning,
+                    _ => EventLogEntryType.Information
+                };
+
+                // Write to Event Viewer
+                EventLog.WriteEntry(SOURCE, entry.Message, eventType);
+            }
+            catch
+            {
+                // Last resort: Debug output
+                System.Diagnostics.Debug.WriteLine($"[CRITICAL] Event Viewer write failed: {entry.Message}");
+            }
+        }
+
 
         public void Dispose()
         {
