@@ -1761,15 +1761,6 @@ BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C
                 </Border>
             </Canvas>
         </Viewbox>
-
-
-        <!--Alarm Bar-->
-
-
-        <!--Statusbar-->
-
     </Grid>
-
-
 
 </UserControl>
