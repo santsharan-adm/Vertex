@@ -17,11 +17,11 @@ using IPCSoftware.App.Bending.ViewModels;
 namespace IPCSoftware.App.Bending.Views
 {
     /// <summary>
-    /// Interaction logic for UserControl1.xaml
+    /// Interaction logic for Dashboard1.xaml
     /// </summary>
-    public partial class UserControl1 : UserControl
+    public partial class Dashboard1 : UserControl
     {
-        public UserControl1(UserControl1ViewModel viewModel)
+        public Dashboard1(Dashboard1ViewModel viewModel)
         {
             InitializeComponent();
             DataContext = viewModel;

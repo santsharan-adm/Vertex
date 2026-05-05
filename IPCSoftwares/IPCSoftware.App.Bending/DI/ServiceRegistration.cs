@@ -205,7 +205,7 @@ namespace IPCSoftware.App.Bending.DI
             // Register LoginViewModelBase to resolve LoginViewModelBending
             services.AddTransient<LoginViewModelBase>(sp => sp.GetRequiredService<LoginViewModelBending>());
             services.AddTransient<LoginViewModelBending>();
-            services.AddTransient<LoginViewBending>();
+            services.AddTransient<LoginView>();
             services.AddTransient<TagControlView>();
             services.AddTransient<TagControlViewModel>();
             services.AddTransient<SystemSettingView>();
@@ -226,17 +226,17 @@ namespace IPCSoftware.App.Bending.DI
 
 
             ///Registring Bending Dashaboard specific views and viewmodels
-            services.AddTransient<RibbonViewBending>();
+            services.AddTransient<RibbonView>();
             services.AddTransient<Bending1MonitorViewModel>();
             services.AddTransient<Bending1MonitorView>();
             services.AddTransient<Bending2MonitorViewModel>();
             services.AddTransient<Bending2MonitorView>();
             services.AddTransient<Bending3MonitorViewModel>();
             services.AddTransient<Bending3MonitorView>();
-            services.AddTransient<UserControl1ViewModel>();
-            services.AddTransient<UserControl1>();
-            services.AddTransient<UserControl2ViewModel>();
-            services.AddTransient<UserControl2>();
+            services.AddTransient<Dashboard1ViewModel>();
+            services.AddTransient<Dashboard1>();
+            services.AddTransient<Dashboard2ViewModel>();
+            services.AddTransient<Dashboard2>();
             services.AddTransient<PostBendingViewModel>();
             services.AddTransient<PostBendingMonitor>();
             services.AddTransient<WelcomePageViewModel>();

@@ -23,9 +23,9 @@ namespace IPCSoftware.App.AOI.ViewModels
             IDialogService dialog,
             MainWindowViewModelBase? mainWindowViewModel,
             RibbonViewModelAOI ribbonVM,
-            IAppLogger logger) : base(authService, navigation, dialog, mainWindowViewModel, ribbonVM, logger)
+            IAppLogger logger) : base(authService, navigation, dialog, mainWindowViewModel, ribbonVM, "AOI SYSTEM", logger)
         {
-            
+
         }
 
         public override async Task ExecuteLoginAsync() 

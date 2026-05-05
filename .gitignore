@@ -450,10 +450,12 @@ IPCSoftwares/ProductionImages/WQRE_T_10-12-2025/0_WQRE_T_10-12-2025_16-35-49-214
 /IPCSoftwares/IPCSoftware.app/Data/DeviceInterfaces.csv
 /IPCSoftwares/IPCSoftware.app/Data/Devices.csv
 /IPCSoftwares/IPCSoftware.app/Data/LogConfigurations.csv
-/IPCSoftwares/IPCSoftware.app/Data/CameraInterfaces.csv
-/IPCSoftwares/IPCSoftware.app/Data/PLCTags.csv
-/IPCSoftwares/IPCSoftware.app/Data/Users.csv
-/IPCSoftwares/IPCSoftware.app/appsettings.Development.json
-/IPCSoftwares/IPCSoftware.app/appsettings.json
+*/Data/CameraInterfaces.csv
+*/PLCTags.csv
+*/Data/Users.csv
+*/appsettings.Development.json
+*/appsettings.json
 /IPCSoftwares/IPCSoftware.app/AlarmConfigurations.csv
 /IPCSoftwares/IPCSoftware.app/LogConfigurations.csv
+
+*.csv

@@ -27,7 +27,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             IDialogService dialog,
             MainWindowViewModelBase? mainWindowViewModel,
             RibbonViewModelBending ribbonVM,
-            IAppLogger logger) : base(authService, navigation, dialog, mainWindowViewModel, ribbonVM, logger)
+            IAppLogger logger) : base(authService, navigation, dialog, mainWindowViewModel, ribbonVM, "FLEX BENDING", logger)
         {
             _dialog = dialog;
             _authService = authService;
@@ -72,7 +72,7 @@ namespace IPCSoftware.App.Bending.ViewModels
 
                 // Create Ribbon
                 //var ribbonVM = ServiceLocator.GetService<RibbonViewModel>();
-                var ribbonView = new RibbonViewBending { DataContext = _ribbonVM };
+                var ribbonView = new RibbonView { DataContext = _ribbonVM };
 
                 // Load Ribbon
                 _navigation.NavigateTop(ribbonView);

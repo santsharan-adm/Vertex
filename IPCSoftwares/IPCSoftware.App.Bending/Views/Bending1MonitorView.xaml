@@ -73,8 +73,7 @@
 
         <!-- NEXT Button Section -->
         <Button Grid.Row="0" Content="NEXT" Style="{StaticResource NavButtonStyle}" 
-                
-                HorizontalAlignment="Right" Background="#007ACC" Command="{Binding NextCommand}" Click="Button_Click"/>
+                HorizontalAlignment="Right" Background="#007ACC" Command="{Binding NextCommand}"/>
 
         <Viewbox Grid.Row="1" Stretch="Uniform">
             <Border BorderBrush="Black" BorderThickness="1.2" Width="980" Height="520">

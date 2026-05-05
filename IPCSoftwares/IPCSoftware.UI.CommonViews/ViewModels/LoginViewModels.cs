@@ -25,6 +25,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public string Password { get => _password; set => SetProperty(ref _password, value); }
         private string _password;
 
+        public string AppName { get; }
 
         private bool _isLoading;
 
@@ -49,6 +50,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             IDialogService dialog,
             MainWindowViewModelBase? mainWindowViewModel,
             RibbonViewModelBase ribbonVM,
+            string appName,
             IAppLogger logger) : base(logger)
         {
             _authService = authService;
@@ -56,6 +58,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             _dialog = dialog;
             IsUsernameFocused = true;
             _ribbonVM = ribbonVM;
+            AppName = appName;
             LoginCommand = new RelayCommand(async () => await ExecuteLoginAsync());
         }
 

@@ -109,9 +109,14 @@ namespace IPCSoftware.App.Bending.ViewModels
             P4_LM = "4.22"; P4_TM = "65.3 °C"; P4_BT = "2.2s";
         }
 
-        private void ExecutePrevious()
+        private void ExecuteNext()
         {
-            _navigationService.NavigateToDashboard2();
+            _navigationService.NavigateToPostBendingMonitor();
+        }
+
+        private void ExecuteNext()
+        {
+            _navigationService.NavigateToPostBendingMonitor();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

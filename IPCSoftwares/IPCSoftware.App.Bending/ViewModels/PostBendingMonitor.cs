@@ -1,10 +1,17 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
 using IPCSoftware.App.Bending.Models;
+using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Shared;
+using System.Windows.Input;
 
 namespace IPCSoftware.App.Bending.ViewModels
 {
     public class PostBendingViewModel : BaseViewModel
     {
+        private readonly INavigationService _navigationService;
+
+        public ICommand PreviousCommand { get; }
         private string _batchNo = "1234321";
         public string BatchNo
         {
@@ -14,7 +21,7 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         public ObservableCollection<ProductData> ProductList { get; set; }
 
-        public PostBendingViewModel()
+        public PostBendingViewModel(INavigationService navigationService)
         {
             ProductList = new ObservableCollection<ProductData>
             {
@@ -23,6 +30,11 @@ namespace IPCSoftware.App.Bending.ViewModels
                 new ProductData { ProductName = "Product 3", QRCode = "ABCDQWER1234TYUW" },
                 new ProductData { ProductName = "Product 4", QRCode = "ABCDQWER1234TYUW" }
             };
+        }
+
+        private void ExecutePrevious()
+        {
+            _navigationService.NavigateToDashboard3();
         }
     }
 }

@@ -6,7 +6,6 @@ using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.UI.CommonViews;
 using IPCSoftware.UI.CommonViews.ViewModels;
 using IPCSoftware.App.Bending.ViewModels;
-using IPCSoftware.App.Bending.Views;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -43,13 +42,13 @@ namespace IPCSoftware.App.Bending.ViewModels
                 "Bending2Monitor",
                 "Bending3Monitor",
                 "PostBendingMonitor",
-                "UserControl1",
-                "UserControl2",
+                "Dashboard1",
+                "Dashboard2",
                 "PLC IO",
                 "Alarm View",
                 "Startup Condition",
                 "About"
-                
+
 
 
             }, nameof(OpenDashboardMenu));
@@ -80,7 +79,7 @@ namespace IPCSoftware.App.Bending.ViewModels
                     // proceed delete
                     OnLogout?.Invoke();
                     _nav.ClearTop();
-                    _nav.NavigateMain<LoginViewBending>();
+                    _nav.NavigateMain<LoginView>();
                     UserSession.Clear();
                 }
             }

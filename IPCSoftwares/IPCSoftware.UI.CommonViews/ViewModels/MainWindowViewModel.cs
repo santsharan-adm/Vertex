@@ -486,12 +486,12 @@ public class MainWindowViewModelBase : BaseViewModel
                     _nav.NavigateToDashboard3();
                     break;
 
-                case "UserControl1":
-                    _nav.NavigateToUserControl1();
+                case "Dashboard1":
+                    _nav.NavigateToDashboardControl1();
                     break;
-                
-                case "UserControl2":
-                    _nav.NavigateToUserControl2();
+
+                case "Dashboard2":
+                    _nav.NavigateToDashboardControl2();
                     break;
 
                 case "PostBendingMonitor":

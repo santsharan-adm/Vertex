@@ -537,9 +537,9 @@ namespace IPCSoftware.Common.CommonFunctions
         public void NavigateToDashboard2() => NavigateMainByTypeName("Bending2MonitorView");
         public void NavigateToDashboard3() => NavigateMainByTypeName("Bending3MonitorView");
 
-        public void NavigateToUserControl1() => NavigateMainByTypeName("UserControl1");
+        public void NavigateToDashboardControl1() => NavigateMainByTypeName("Dashboard1");
 
-        public void NavigateToUserControl2() => NavigateMainByTypeName("UserControl2");
+        public void NavigateToDashboardControl2() => NavigateMainByTypeName("Dashboard2");
 
         public void NavigateToPostBendingMonitor() => NavigateMainByTypeName("PostBendingMonitor");
 
