@@ -208,7 +208,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             CurrentCycleStateFileName = cameraInterface.CurrentCycleStateFileName ?? "";
 
             // Client metadata
-            Client_Version = cameraInterface.Client_Version ?? "1.0";
+            Client_Version = cameraInterface.Client_Version ?? "";
             Client_Date = cameraInterface.Client_Date ?? "";
             Client_Time = cameraInterface.Client_Time ?? "";
             Client_VisionVendor = cameraInterface.Client_VisionVendor ?? "";
@@ -228,7 +228,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             Client_ImageNickname = cameraInterface.Client_ImageNickname ?? "";
 
             // Vendor metadata
-            Vendor_Version = cameraInterface.Vendor_Version ?? "1.0";
+            Vendor_Version = cameraInterface.Vendor_Version ?? "";
             Vendor_Date = cameraInterface.Vendor_Date ?? "";
             Vendor_Time = cameraInterface.Vendor_Time ?? "";
             Vendor_VisionVendor = cameraInterface.Vendor_VisionVendor ?? "";

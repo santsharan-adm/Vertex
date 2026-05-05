@@ -47,10 +47,12 @@ public class RibbonViewModelBase : BaseViewModel
         IOptions<ExternalSettings> extSetting,
         INavigationService nav,
         IDialogService dialog,
+        string headerName,
         Func<ProcessSequenceWindow> sequenceWindowFactory,
         IAppLogger logger) : base(logger)
     {
         MachineName = extSetting.Value.AOIMachineCode;
+        Header1 = headerName;
         _nav = nav;
         _dialog = dialog;
         _sequenceWindowFactory = sequenceWindowFactory;
@@ -76,6 +78,9 @@ public class RibbonViewModelBase : BaseViewModel
 
 
     public string MachineName
+    { get; }
+
+    public string Header1
     { get; }
     public virtual void OpenDashboardMenu()
     {

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
+             xmlns:local="clr-namespace:IPCSoftware.UI.CommonViews"
              d:DesignWidth="1920" d:DesignHeight="140">
 
     <UserControl.Resources>
@@ -111,7 +112,7 @@
                 </Button.Template>
             </Button>
             <StackPanel>
-            <TextBlock Text="AOI System" Foreground="White" FontSize="36" FontWeight="Bold" VerticalAlignment="Center" Margin="25,0,0,0">
+            <TextBlock Text="{Binding Header1}" Foreground="White" FontSize="36" FontWeight="Bold" VerticalAlignment="Center" Margin="25,0,0,0">
                 <TextBlock.Effect>
                     <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2" Opacity="0.3"/>
                 </TextBlock.Effect>

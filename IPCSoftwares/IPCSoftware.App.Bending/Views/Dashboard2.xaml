@@ -68,8 +68,7 @@
                         </Button.Resources>
                         <TextBlock Text="WORK PAYOUT START" TextAlignment="Center"/>
                     </Button>
-                    <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10"
-                            Command="{Binding ToggleSidebarCommand}">
+                    <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="4"/>
@@ -110,23 +109,25 @@
                         </Border>
 
                         <UniformGrid Grid.Row="1" Grid.Column="0" Columns="1" Background="#0B1A2E">
-                            <Border BorderBrush="#1565C0" BorderThickness="0,0,1,1" Padding="3">
+                            <Border BorderBrush="#1565C0"  Padding="3">
                                 <TextBlock Text="BFBL03" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
                             </Border>
-                            <Border BorderBrush="#1565C0" BorderThickness="0,0,1,0" Padding="3">
+
+
+                            <Border BorderBrush="#1565C0"  Padding="3">
                                 <TextBlock Text="BFBL04" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
                             </Border>
                         </UniformGrid>
 
-                        <StackPanel Grid.Row="1" Grid.Column="1" Background="#0B1A2E" >
-                            <StackPanel Margin="0,2,0,5">
+                        <StackPanel Grid.Row="1" Grid.Column="1" Background="#0B1A2E"  >
+                            <StackPanel Margin="2">
                                 <TextBlock Text="ABCD12345A009" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
                                 <TextBlock Text="ABCD12345A010" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
                                 <TextBlock Text="ABCD12345A011" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
                                 <TextBlock Text="ABCD12345A012" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
                             </StackPanel>
 
-                            <Border Height="1" Background="#1565C0" Opacity="0.4" Margin="10,0"/>
+                            <Border Height="1" Background="#1565C0" Opacity="0.4"/>
 
                             <StackPanel Margin="0,5,0,2">
                                 <TextBlock Text="ABCD12345A013" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
@@ -316,24 +317,24 @@
 
 
                     <Border Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" Background="#1565C0">
-                        <TextBlock Text="Heater Temp" Style="{StaticResource HeaderText}" Foreground="White"/>
+                        <TextBlock Text="Heater Temp (50 - 60)" Style="{StaticResource HeaderText}" Foreground="White"/>
                     </Border>
 
                     <Border Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="3" Background="#1565C0">
-                        <TextBlock Text="Load" Style="{StaticResource HeaderText}" Foreground="White"/>
+                        <TextBlock Text="Load (5 - 10)" Style="{StaticResource HeaderText}" Foreground="White"/>
                     </Border>
 
                     <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="8" Background="#1565C0">
-                        <TextBlock Text="X" Style="{StaticResource HeaderText}" Foreground="White"/>
+                        <TextBlock Text="X (&gt;1 - &lt;2)" Style="{StaticResource HeaderText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="9" Background="#1565C0">
-                        <TextBlock Text="Y" Style="{StaticResource HeaderText}" Foreground="White"/>
+                        <TextBlock Text="Y &gt;3 - &lt;4" Style="{StaticResource HeaderText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="10" Background="#1565C0">
-                        <TextBlock Text="Z" Style="{StaticResource HeaderText}" Foreground="White"/>
+                        <TextBlock Text="Z (&gt;5 - &lt;6)" Style="{StaticResource HeaderText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="11" Background="#1565C0">
-                        <TextBlock Text="ø" Style="{StaticResource HeaderText}" Foreground="White"/>
+                        <TextBlock Text="ø (&gt;7 - &lt;8)" Style="{StaticResource HeaderText}" Foreground="White"/>
                     </Border>
 
                     <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="12" Background="#1565C0">
@@ -360,29 +361,7 @@
                         <TextBlock Text="Bend 3" Style="{StaticResource HeaderText}" FontWeight="Normal" FontSize="10" Foreground="White"/>
                     </Border>
 
-                    <Border Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Background="#1565C0">
-                        <TextBlock Text="Specs: Min 50 - Max 60" Style="{StaticResource HeaderText}" FontWeight="Normal" FontSize="9" Foreground="White"/>
-                    </Border>
-                    <Border Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="3" Background="#1565C0">
-                        <TextBlock Text="Specs: Min 5 - Max 10" Style="{StaticResource HeaderText}" FontWeight="Normal" FontSize="9" Foreground="White"/>
-                    </Border>
-
-
-                    <Border Grid.Row="2" Grid.Column="8" Background="#1565C0">
-                        <TextBlock Text="&gt;1 - &lt;2" Style="{StaticResource HeaderText}" FontWeight="Normal" FontSize="9" Foreground="White"/>
-                    </Border>
-                    <Border Grid.Row="2" Grid.Column="9" Background="#1565C0">
-                        <TextBlock Text="&gt;3 - &lt;4" Style="{StaticResource HeaderText}" FontWeight="Normal" FontSize="9" Foreground="White"/>
-                    </Border>
-                    <Border Grid.Row="2" Grid.Column="10" Background="#1565C0">
-                        <TextBlock Text="&gt;5 - &lt;6" Style="{StaticResource HeaderText}" FontWeight="Normal" FontSize="9" Foreground="White"/>
-                    </Border>
-                    <Border Grid.Row="2" Grid.Column="11" Background="#1565C0">
-                        <TextBlock Text="&gt;7 - &lt;8" Style="{StaticResource HeaderText}" FontWeight="Normal" FontSize="9" Foreground="White"/>
-                    </Border>
-
-
-                    <Border Grid.Row="3" Grid.RowSpan="4" Grid.Column="0" Background="#0B1A2E">
+                    <Border Grid.Row="3" Grid.RowSpan="4" Grid.Column="0" Background="#0B1A2E" BorderThickness="0">
                         <TextBlock Text="BFBL02" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
 
@@ -495,7 +474,7 @@
                     <Border Grid.Row="6" Grid.Column="12" Background="#0B1A2E"/>
 
 
-                    <Border Grid.Row="7" Grid.RowSpan="4" Grid.Column="0" Background="#0B1A2E">
+                    <Border Grid.Row="7" Grid.RowSpan="4" Grid.Column="0" Background="#0B1A2E" BorderThickness="0">
                         <TextBlock Text="BFBL01" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
 
@@ -717,8 +696,8 @@
 
                                 <!-- TT2: moves after each TT1 step (offset by 1.2s), +120° each time -->
                                 <DoubleAnimationUsingKeyFrames
-    Storyboard.TargetName="TT2RotateTransform"
-    Storyboard.TargetProperty="Angle">
+                                    Storyboard.TargetName="TT2RotateTransform"
+                                    Storyboard.TargetProperty="Angle">
                                     <!-- hold while TT1 does step 1 (0→0.8s move + 0.4s hold = 1.2s) -->
                                     <DiscreteDoubleKeyFrame KeyTime="0:0:0"    Value="0"/>
                                     <DiscreteDoubleKeyFrame KeyTime="0:0:1.2"  Value="0"/>
@@ -1134,7 +1113,7 @@
 
 
                 <!-- Tearing + Flipping Section -->
-                <Border CornerRadius="5" Canvas.Left="807" BorderBrush="Black" BorderThickness="1.5" Height="Auto" VerticalAlignment="Top" HorizontalAlignment="Center" Canvas.Top="2">
+                <Border CornerRadius="5" Canvas.Left="807" BorderBrush="Black" BorderThickness="1.5" Height="Auto" VerticalAlignment="Top" HorizontalAlignment="Center" Canvas.Top="5">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Height="45" >
 
                         <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
@@ -1650,7 +1629,7 @@
 
                 <!--PID FORCE-->
 
-                <Border Grid.Row="1" CornerRadius="8" Padding="2" Canvas.Left="970" Canvas.Top="175" Width="auto" Height="auto"
+                <Border Grid.Row="1" CornerRadius="8" Padding="2" Canvas.Left="960" Canvas.Top="175" Width="auto" Height="auto"
 BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C0" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <Grid Background="White">
                         <Grid.RowDefinitions>
@@ -1671,7 +1650,7 @@ BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C
                         <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
                             <TextBlock Text="PID" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="#1565C0" BorderBrush="Black" Padding="3,2" Grid.Column="1">
+                        <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
                             <TextBlock Text="Force" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
 
@@ -1745,7 +1724,7 @@ BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C
 
 
                 <!--NG BIN 2-->
-                <Border Canvas.Left="866" Canvas.Top="200" Width="85" Height="95" 
+                <Border Canvas.Left="882" Canvas.Top="200" Width="85" Height="95" 
                     BorderBrush="Black" BorderThickness="3" 
                     CornerRadius="8" Background="Gray" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <StackPanel VerticalAlignment="Center" Margin="2">
