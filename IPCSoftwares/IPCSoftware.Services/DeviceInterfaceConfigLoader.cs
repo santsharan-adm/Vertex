@@ -38,44 +38,85 @@ namespace IPCSoftware.Services
         {
             try
             {
+                string version = _fileHandler.Getversion(filePath);
                 var rows = _fileHandler.Read(filePath);  // static call, returns string[]
                 _deviceInterfaces.Clear();
                 // var devices = new List<DeviceInterfaceModel>();
 
-                foreach (var r in rows)
+                if (version == "2.0")
                 {
-                    // skip empty or malformed rows
-                    if (r.Length < 12)
-                        continue;
-
-                    try
+                    foreach (var r in rows)
                     {
-                        var device = new DeviceInterfaceModel
+                        // skip empty or malformed rows
+                        if (r.Length < 12)
+                            continue;
+
+                        try
                         {
-                            Id = int.Parse(Clean(r[0])),
-                            DeviceNo = int.Parse(Clean(r[1])),
-                            DeviceName = Clean(r[2]),
-                            UnitNo = int.Parse(Clean(r[3])),
-                            Name = Clean(r[4]),
-                            ComProtocol = Clean(r[5]),
-                            IPAddress = Clean(r[6]),
-                            PortNo = int.Parse(Clean(r[7])),
-                            Gateway = Clean(r[8]),
-                            Description = Clean(r[9]),
-                            Remark = Clean(r[10]),
-                            Enabled = bool.Parse(Clean(r[11]))
-                        };
+                            var device = new DeviceInterfaceModel
+                            {
+                                Id = int.Parse(Clean(r[0])),
+                                DeviceNo = int.Parse(Clean(r[1])),
+                                DeviceName = Clean(r[2]),
+                                UnitNo = int.Parse(Clean(r[3])),
+                                Name = Clean(r[4]),
+                                ComProtocol = Clean(r[5]),
+                                IPAddress = Clean(r[6]),
+                                PortNo = int.Parse(Clean(r[7])),
+                                Gateway = Clean(r[8]),
+                                Description = Clean(r[9]),
+                                Remark = Clean(r[10]),
+                                Enabled = bool.Parse(Clean(r[11]))
+                            };
 
-                        _deviceInterfaces.Add(device);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex.Message, LogType.Diagnostics);
-                        return null;
+                            _deviceInterfaces.Add(device);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex.Message, LogType.Diagnostics);
+                            return null;
+                        }
                     }
                 }
 
-                return _deviceInterfaces;
+                else 
+                {
+                    foreach (var r in rows)
+                    {
+                        // skip empty or malformed rows
+                        if (r.Length < 12)
+                            continue;
+
+                        try
+                        {
+                            var device = new DeviceInterfaceModel
+                            {
+                                Id = int.Parse(Clean(r[0])),
+                                DeviceNo = int.Parse(Clean(r[1])),
+                                DeviceName = Clean(r[2]),
+                                UnitNo = int.Parse(Clean(r[3])),
+                                Name = Clean(r[4]),
+                                ComProtocol = Clean(r[5]),
+                                IPAddress = Clean(r[6]),
+                                PortNo = int.Parse(Clean(r[7])),
+                                Gateway = Clean(r[8]),
+                                Description = Clean(r[9]),
+                                Remark = Clean(r[10]),
+                                Enabled = bool.Parse(Clean(r[11]))
+                            };
+
+                            _deviceInterfaces.Add(device);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex.Message, LogType.Diagnostics);
+                            return null;
+                        }
+                    }
+                }
+
+
+                    return _deviceInterfaces;
             }
             catch (Exception ex)
             {

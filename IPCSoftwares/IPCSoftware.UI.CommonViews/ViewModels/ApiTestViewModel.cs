@@ -191,7 +191,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 CurrentMachineCode = config.AOIMachineCode;
                 TwoDCodeData = "TEST_QR_CODE";
             }
-            catch { }
+            catch (Exception ex){ _logger.LogError($"Error loading from API Configuration" + ex, LogType.Error); };
         }
 
         private void SaveSettings()

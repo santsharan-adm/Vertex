@@ -210,7 +210,7 @@ namespace IPCSoftware.CoreService.AOI.Service
                         string existing = File.ReadAllText(_stateFilePath);
                         state = JsonConvert.DeserializeObject<CycleStateModel>(existing);
                     }
-                    catch { }
+                    catch (Exception ex) {_logger.LogError($"[CycleManager] Error reading state file: {ex.Message}", LogType.Diagnostics);}
                 }
                 if (state == null) state = new CycleStateModel { BatchId = _activeBatchId };
                 state.BatchId = _activeBatchId;
@@ -237,7 +237,7 @@ namespace IPCSoftware.CoreService.AOI.Service
 
                 File.WriteAllText(_stateFilePath, JsonConvert.SerializeObject(state, Formatting.Indented));
             }
-            catch { }
+            catch (Exception ex) {_logger.LogError($"[CycleManager] Error writing state file: {ex.Message}", LogType.Diagnostics);}
         }
 
         protected override async Task HandleInspectionStep(string tempImagePath, Dictionary<string, object> data)

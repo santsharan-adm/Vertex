@@ -125,7 +125,7 @@ namespace IPCSoftware.App.ViewModels
                     }
                 }
             }
-            catch { }
+            catch(Exception ex) { _logger.LogError($"Error raading Live Data " + ex, LogType.Error); };
         }
 
         private async Task SaveAndTransferAsync()

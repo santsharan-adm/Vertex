@@ -58,7 +58,7 @@ namespace IPCSoftware.Services
 
                 _devices.Clear();
 
-                if (version == "1.0")
+                if (version == "2.0")
                 {
                     foreach (var row in rows)
                     {
@@ -69,7 +69,7 @@ namespace IPCSoftware.Services
                         }
                     }
                 }
-                else if (version == "2.0")
+                else 
                 {
                     foreach (var row in rows)
                     {

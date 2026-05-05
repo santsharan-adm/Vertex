@@ -146,7 +146,10 @@ namespace IPCSoftware.Engine
                         double numericValue = convertibleValue.ToDouble(null);
                         return numericValue != 0.0;
                     }
-                    catch { } // Ignore conversion errors for non-numeric types
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error in conversion : " + ex, LogType.Error);
+                    } // Ignore conversion errors for non-numeric types
                 }
 
                 return false;

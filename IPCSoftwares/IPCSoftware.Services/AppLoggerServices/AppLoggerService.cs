@@ -22,6 +22,8 @@ namespace IPCSoftware.Services.AppLoggerServices
         private readonly BlockingCollection<LogEntry> _logQueue;
         private readonly CancellationTokenSource _cts;
         private readonly Task _processTask;
+        private readonly string SOURCE ;
+        private readonly string LOG ;
 
         private struct LogEntry
         {
@@ -32,7 +34,7 @@ namespace IPCSoftware.Services.AppLoggerServices
         }
 
 
-        public AppLoggerService(ILogManagerService logManager)
+        public AppLoggerService(ILogManagerService logManager ,string source , string log)
         {
             _logManager = logManager;
             _logQueue = new BlockingCollection<LogEntry>();
@@ -41,6 +43,9 @@ namespace IPCSoftware.Services.AppLoggerServices
             // Start the background listening thread
             // LongRunning hint tells scheduler to create a dedicated thread for this loop
             _processTask = Task.Factory.StartNew(ProcessLogQueue, TaskCreationOptions.LongRunning);
+            SOURCE = source;
+            LOG = log;
+
         }
 
         // Public APIs
@@ -86,6 +91,7 @@ namespace IPCSoftware.Services.AppLoggerServices
         // --- Background Consumer ---
         private void ProcessLogQueue()
         {
+
             // This loop runs until the app shuts down
             // No cancellation token needed - CompleteAdding() will end enumeration gracefully
             foreach (var entry in _logQueue.GetConsumingEnumerable())
@@ -158,7 +164,7 @@ namespace IPCSoftware.Services.AppLoggerServices
                 }
                 catch (Exception)
                 {
-                    // Other errors (permissions, path invalid) - break loop
+                   System.Diagnostics.Debug.WriteLine($"[LOGGER ERROR] Unexpected error writing to log file: {filePath}");
                     break;
                 }
             }
@@ -179,8 +185,8 @@ namespace IPCSoftware.Services.AppLoggerServices
         {
             try
             {
-                const string SOURCE = "IPCSoftware.CoreService";
-                const string LOG = "Application";
+                //const string SOURCE = "IPCSoftware.CoreService";
+                //const string LOG = "Application";
 
                 // Ensure event source exists
                 if (!EventLog.SourceExists(SOURCE))

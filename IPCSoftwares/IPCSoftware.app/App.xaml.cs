@@ -267,8 +267,9 @@ namespace IPCSoftware.App
                 {
                     await Task.Delay(2000, _appCts.Token);
                 }
-                catch (OperationCanceledException)
+                catch (OperationCanceledException oce)
                 {
+                    Console.WriteLine($"Execption during delay : "+oce);
                     break; // App is closing
                 }
             }

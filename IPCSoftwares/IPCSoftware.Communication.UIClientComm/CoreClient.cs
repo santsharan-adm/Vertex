@@ -124,7 +124,7 @@ namespace IPCSoftware.Common.UIClientComm
                 {
                     // Fail: Timeout
                     _logger?.LogError($"[CoreClient] Request {request.RequestId} Timed Out.", LogType.Diagnostics);
-                    try { _currentResponseTcs.TrySetCanceled(); } catch { }
+                    try { _currentResponseTcs.TrySetCanceled(); } catch (Exception ex) { _logger.LogError($"[CoreClient] Error cancelling request {request.RequestId}: {ex.Message}", LogType.Diagnostics); }
                     return null;
                 }
             }

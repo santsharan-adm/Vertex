@@ -42,10 +42,15 @@ namespace IPCSoftware.UI.CommonViews.Services
         private readonly IDialogService _dialog;
         private bool _hasWarnedUser = false;
 
-        public UiErrorLogger(CoreClient coreClient, IDialogService dialog)
+        private readonly string SOURCE_NAME ;
+        private readonly string LOG_NAME ;
+
+        public UiErrorLogger(CoreClient coreClient, IDialogService dialog ,string source , string log)
         {
             _coreClient = coreClient;
             _dialog = dialog;
+            SOURCE_NAME = source;
+            LOG_NAME = log;
         }
 
         public void LogInfo(string message, LogType type)
@@ -80,8 +85,6 @@ namespace IPCSoftware.UI.CommonViews.Services
 
         private void WriteToEventViewer(string message, string level)
         {
-            const string SOURCE_NAME = "IPCSoftware.UI";
-            const string LOG_NAME = "Application";
 
             try
             {

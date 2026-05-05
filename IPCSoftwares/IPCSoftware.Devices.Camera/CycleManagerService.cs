@@ -241,7 +241,7 @@ namespace IPCSoftware.Devices.Camera
                 {
                     foreach (var file in Directory.GetFiles(_observableCcdSettings?.TempImgFolder))
                     {
-                        try { File.Delete(file); } catch { }
+                        try { File.Delete(file); } catch { _logger.LogError($"Failed to delete file : {file}", LogType.Error); }
                     }
                 }
                 if (Directory.Exists(folder))
@@ -249,7 +249,7 @@ namespace IPCSoftware.Devices.Camera
                     // Delete all files
                     foreach (var file in Directory.GetFiles(folder))
                     {
-                        try { File.Delete(file); } catch { }
+                        try { File.Delete(file); } catch { _logger.LogError($"Failed to delete file : {file}", LogType.Error); }
                     }
                 }
                     Console.WriteLine("[System] Cycle Reset.");
