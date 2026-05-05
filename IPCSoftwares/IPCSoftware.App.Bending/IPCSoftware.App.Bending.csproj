@@ -60,6 +60,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IPCSoftware.CoreService.Bending\IPCSoftware.CoreService.Bending.csproj" />
     <ProjectReference Include="..\IPCSoftware.Devices.UI\IPCSoftware.Devices.UI.csproj" />
     <ProjectReference Include="..\IPCSoftware.UI.CommonViews\IPCSoftware.UI.CommonViews.csproj" />
     <ProjectReference Include="..\IPCSoftware.UI.Themes\IPCSoftware.UI.Themes.csproj" />

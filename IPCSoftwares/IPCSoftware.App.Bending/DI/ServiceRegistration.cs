@@ -164,6 +164,15 @@ namespace IPCSoftware.App.Bending.DI
             services.AddTransient<CameraInterfaceConfigurationViewModel>();
             services.AddTransient<ServiceStartupView>();                 //Added by Rishabh -date - 15-04-2026
             services.AddTransient<ServiceStartupViewModel>();            //Added by Rishabh -date - 15-04-2026
+            services.AddTransient<ServiceStartupView>();                 //Added by Rishabh -date - 15-04-2026
+            services.AddTransient<ServiceStartupViewModel>(sp =>         //Added by Rishabh -date - 05-05-2026
+            {
+                var logger = sp.GetRequiredService<IAppLogger>();
+                const string targetServiceName = "IPCSoftware.CoreService.Bending"; 
+
+                return new ServiceStartupViewModel(logger, targetServiceName);
+            });
+
 
 
             //  UPDATED: CcdSettingsViewModel now includes IObservableCcdSettingsService

@@ -73,6 +73,8 @@ namespace IPCSoftware.CoreService.Bending
                             // Core services
                             // services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
                             // services.AddSingleton<IAppLogger, AppLoggerService>();
+
+                            services.AddSingleton<ConfigLoaderService>();           //Added by Rishabh - date - 27/04/2026//
                             services.AddSingleton<IAppLogger>(sp =>
                             {
                                 var logger = sp.GetRequiredService<ILogManagerService>();
@@ -84,6 +86,7 @@ namespace IPCSoftware.CoreService.Bending
                             services.AddSingleton<ILogManagerService, LogManagerService>();
                             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
                             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
+                            services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>(); //Added by Rishabh - date - 08/04/2026//
                             services.AddSingleton<IAeLimitService, AeLimitService>();
                             services.AddSingleton<ExternalInterfaceService>();
                             services.AddSingleton<IExternalInterfaceService>(sp =>
@@ -130,7 +133,17 @@ namespace IPCSoftware.CoreService.Bending
                             services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
 
                             services.AddSingleton<SystemMonitorService>();
-                            services.AddSingleton<CCDTriggerServiceBending>();
+                           // services.AddSingleton<CCDTriggerServiceBending>();
+
+                            services.AddSingleton<CCDTriggerServiceBending>(sp =>    new CCDTriggerServiceBending(
+                                     sp.GetRequiredService<ICycleManagerService>(),
+                                     sp.GetRequiredService<IDeviceConfigurationService>(),
+                                     sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<CcdSettings>>(),
+                                     sp.GetRequiredService<IObservableCcdSettingsService>(),   //Added by Rishabh - date - 08/04/2026//
+                                     sp.GetRequiredService<IAppLogger>()
+    )
+);
+
                             services.AddSingleton<PLCClientManager>();
                             services.AddSingleton<CameraFtpService>();
                             services.AddTransient<ProductionImageService>();
@@ -149,6 +162,7 @@ namespace IPCSoftware.CoreService.Bending
                     config.GetSection("External").Bind(external);
 
                     ConstantValues.Initialize(configSettings);
+                    LoadCcdSettingsAsync(host.Services).GetAwaiter().GetResult();
 
                     host.Run();
                 }
@@ -158,6 +172,43 @@ namespace IPCSoftware.CoreService.Bending
                     Console.WriteLine(ex.StackTrace);
                     Environment.Exit(1);
                 }
+            }
+        }
+
+        private static async Task LoadCcdSettingsAsync(IServiceProvider services)
+        {
+            try
+            {
+                var deviceService = services.GetRequiredService<IDeviceConfigurationService>();
+                var observableSettings = services.GetRequiredService<IObservableCcdSettingsService>();
+                var logger = services.GetRequiredService<IAppLogger>();
+                // logger.LogInfo("[TEST] AppLogger initialized successfully", LogType.Diagnostics);  //Only for testing if AppLogger is working at this point
+                await deviceService.InitializeAsync();
+                // 1. Load all camera interfaces
+                var cameras = await deviceService.GetCameraDevicesAsync();
+                if (cameras == null || cameras.Count == 0)
+                {
+                    logger.LogWarning("[CoreService] No camera interfaces found in configuration.", LogType.Diagnostics);
+                    return;
+                }
+                // 2. Get the first enabled camera (or first one if none enabled)
+                var activeCamera = cameras.FirstOrDefault(c => c.Enabled) ?? cameras.FirstOrDefault();
+                if (activeCamera == null)
+                {
+                    logger.LogWarning("[CoreService] No valid camera interface found.", LogType.Diagnostics);
+                    return;
+                }
+                // 3. Load CCD settings into observable service
+                await observableSettings.UpdateFromCameraInterfaceAsync(activeCamera);
+                logger.LogInfo(
+                    $"[CoreService] Loaded CCD settings from camera: {activeCamera.Name} | " +
+                    $"TempImgFolder: {observableSettings.TempImgFolder}",
+                    LogType.Diagnostics);
+            }
+            catch (Exception ex)
+            {
+                var logger = services.GetRequiredService<IAppLogger>();
+                logger.LogError($"[CoreService] Error loading CCD settings: {ex.Message}", LogType.Diagnostics);
             }
         }
     }
