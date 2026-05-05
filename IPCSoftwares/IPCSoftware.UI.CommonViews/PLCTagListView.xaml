@@ -195,7 +195,7 @@
                     </DataGrid.InputBindings>
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Tag No" Binding="{Binding TagNo}" Width="100" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
+                        <DataGridTextColumn Header="Tag No" Binding="{Binding Id}" Width="100" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
 
                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" CellStyle="{StaticResource LeftAlignedCellStyle}"/>
 
