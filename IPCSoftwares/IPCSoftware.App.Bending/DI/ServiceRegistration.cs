@@ -19,6 +19,7 @@ using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.UI.CommonViews;
+using IPCSoftware.UI.CommonViews.Services;
 using IPCSoftware.UI.CommonViews.ViewModels;
 using IPCSoftware.UI.CommonViews.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,9 +45,19 @@ namespace IPCSoftware.App.Bending.DI
     {
         public static void RegisterServices(IServiceCollection services)
         {
-            services.AddSingleton<IAppLogger, AppLoggerService>();
+           // services.AddSingleton<IAppLogger, AppLoggerService>();
             // services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
+
+            services.AddSingleton<IAppLogger>(sp =>
+            {
+                var coreClient = sp.GetRequiredService<CoreClient>();
+                var dialog = sp.GetRequiredService<IDialogService>();
+                const string eventSource = "Bending- UI Specific";
+                const string eventLog = "Application";
+
+                return new UiErrorLogger(coreClient, dialog, eventSource, eventLog);
+            });
 
             //  NEW: Register Observable CCD Settings Service (Singleton - shared across all services)
             services.AddSingleton<IObservableCcdSettingsService, ObservableCcdSettingsService>(); //Added by Rishabh - date - 08/04/2026//
@@ -122,6 +133,21 @@ namespace IPCSoftware.App.Bending.DI
             //services.AddTransient<OEEDashboardViewModel>();
             services.AddSingleton<UiTcpClient>();
             //services.AddSingleton<ShiftResetService>();
+
+            // 4. Post-registration: Set loggers
+            services.AddSingleton(sp =>
+            {
+                var logger = sp.GetRequiredService<IAppLogger>();
+                var tcpClient = sp.GetRequiredService<UiTcpClient>();
+                var coreClient = sp.GetRequiredService<CoreClient>();
+
+                tcpClient.SetLogger(logger);
+                coreClient.SetLogger(logger);
+
+                return sp; // Dummy return
+            });
+
+
 
             // ========== COMMON VIEWS & VIEWMODELS ==========
             services.AddTransient<ShiftConfigurationViewModel>();

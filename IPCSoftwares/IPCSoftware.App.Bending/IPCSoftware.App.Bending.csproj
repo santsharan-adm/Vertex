@@ -62,6 +62,7 @@
   <ItemGroup>
     <ProjectReference Include="..\IPCSoftware.Devices.UI\IPCSoftware.Devices.UI.csproj" />
     <ProjectReference Include="..\IPCSoftware.UI.CommonViews\IPCSoftware.UI.CommonViews.csproj" />
+    <ProjectReference Include="..\IPCSoftware.UI.Themes\IPCSoftware.UI.Themes.csproj" />
     <ProjectReference Include="..\IPCSoftware.WPFExtensions\IPCSoftware.WPFExtensions.csproj" />
   </ItemGroup>
 

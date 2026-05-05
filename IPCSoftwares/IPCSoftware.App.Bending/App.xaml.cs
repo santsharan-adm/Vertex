@@ -1,6 +1,9 @@
 ﻿using IPCSoftware.App.Bending.DI;
+using IPCSoftware.Common.CommonFunctions;
 using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Services;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.Messaging;
@@ -12,12 +15,10 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Windows;
-using IPCSoftware.Common.CommonFunctions;
-using IPCSoftware.Services;
-using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
+using System.Windows;
+//using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 namespace IPCSoftware.App.Bending
 {
@@ -137,6 +138,7 @@ namespace IPCSoftware.App.Bending
 
             // Initialize central ServiceLocator so library projects can resolve services
             ServiceLocator.Initialize(ServiceProvider);
+
 
             TcpClient = ServiceProvider.GetService<UiTcpClient>();
 

@@ -4,6 +4,97 @@
              xmlns:local="clr-namespace:IPCSoftware.App.Bending"
              >
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Touch buttons Style -->
+                <ResourceDictionary Source="pack://application:,,,/IPCSoftware.UI.Themes;component/Themes/TouchButtons.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/IPCSoftware.UI.Themes;component/Themes/DataGridStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+            <!-- Ribbon Button Style -->
+            <Style x:Key="RibbonButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="Padding" Value="12,4"/>
+                <Setter Property="Margin" Value="8,0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="5">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#365DBC"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Background" Value="#274B96"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- =============================================== -->
+            <!-- 1. DEFINE THE SCROLLBAR STYLE (Keyed) -->
+            <!-- =============================================== -->
+            <Style x:Key="CustomScrollBarStyle" TargetType="ScrollBar">
+                <Setter Property="Width" Value="60"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ScrollBar">
+                            <Grid x:Name="GridRoot" Width="{TemplateBinding Width}" Background="{TemplateBinding Background}">
+                                <Track x:Name="PART_Track" IsDirectionReversed="true" Focusable="false">
+                                    <Track.Thumb>
+                                        <Thumb>
+                                            <Thumb.Template>
+                                                <ControlTemplate TargetType="Thumb">
+                                                    <Border x:Name="ThumbBorder" 
+                                                        Background="#B0B0B0" 
+                                                        CornerRadius="10" 
+                                                        Margin="4,2"/>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="ThumbBorder" Property="Background" Value="#888888"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsDragging" Value="True">
+                                                            <Setter TargetName="ThumbBorder" Property="Background" Value="#555555"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Thumb.Template>
+                                        </Thumb>
+                                    </Track.Thumb>
+                                    <!-- Hide Standard Arrows -->
+                                    <Track.IncreaseRepeatButton>
+                                        <RepeatButton Command="ScrollBar.LineDownCommand" Opacity="0" Focusable="false" Height="0"/>
+                                    </Track.IncreaseRepeatButton>
+                                    <Track.DecreaseRepeatButton>
+                                        <RepeatButton Command="ScrollBar.LineUpCommand" Opacity="0" Focusable="false" Height="0"/>
+                                    </Track.DecreaseRepeatButton>
+                                </Track>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- =============================================== -->
+            <!-- 2. APPLY GLOBALLY TO ALL DATAGRIDS -->
+            <!-- =============================================== -->
+            <Style TargetType="DataGrid">
+                <Style.Resources>
+                    <Style TargetType="ScrollBar" BasedOn="{StaticResource CustomScrollBarStyle}"/>
+                </Style.Resources>
+            </Style>
+
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

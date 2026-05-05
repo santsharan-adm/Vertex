@@ -13,6 +13,8 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         public ICommand PreviousCommand { get; }
 
+        public ICommand NextCommand => new RelayCommand(ExecuteNext);
+
         private double EnsureNonNegative(double value) => Math.Max(0, value);
 
         // ==================== PRODUCT 1 DATA ====================
@@ -114,9 +116,14 @@ namespace IPCSoftware.App.Bending.ViewModels
             _navigationService.NavigateToPostBendingMonitor();
         }
 
-        private void ExecuteNext()
+        //private void ExecuteNext()
+        //{
+        //    _navigationService.NavigateToPostBendingMonitor();
+        //}
+
+        private void ExecutePrevious() 
         {
-            _navigationService.NavigateToPostBendingMonitor();
+            _navigationService.NavigateToDashboard2();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
