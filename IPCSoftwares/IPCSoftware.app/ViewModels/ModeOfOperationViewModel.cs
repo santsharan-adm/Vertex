@@ -70,6 +70,7 @@ namespace IPCSoftware.App.ViewModels
         private readonly SafePoller _feedbackTimer;
         private readonly List<OperationMode> _activePulseModes = new List<OperationMode>();
         private readonly IServoCalibrationService _servoService; // Added by Rishabh -Date 06-05-2026
+        private readonly IDialogService _dialog;
 
         private readonly Dictionary<OperationMode, int> _writeTags = new();
         private readonly Dictionary<OperationMode, int> _statusTags = new();
@@ -80,6 +81,7 @@ namespace IPCSoftware.App.ViewModels
 
         // Added by Rishabh -Date -06-05-2026
         private ObservableCollection<RecipeItem> _recipeList;
+        private RecipeItem _lastConfirmedRecipe;
         public ObservableCollection<RecipeItem> RecipeList
         {
             get => _recipeList;
@@ -92,9 +94,10 @@ namespace IPCSoftware.App.ViewModels
             get => _selectedRecipe;
             set
             {
+                var newRecipe = value;
                 if (SetProperty(ref _selectedRecipe, value) && value != null)
                 {
-                    OnRecipeSelectionChanged(value);
+                    OnRecipeSelectionChanged(newRecipe , _lastConfirmedRecipe);
                 }
             }
         }
@@ -106,12 +109,12 @@ namespace IPCSoftware.App.ViewModels
 
         public ICommand UnifiedOperationCommand { get; }
 
-        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService) : base(logger)
+        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService , IDialogService dialog) : base(logger)
         {
             _coreClient = coreClient;
             _navService = navService;
             _servoService = servoService; // Added by rishabh - Date 06-05-2026
-
+            _dialog =  dialog;
             InitializeTags();
             InitializeButtons();
             _= InitializeRecipesAsync(); // Initialize Recipe List
@@ -139,6 +142,9 @@ namespace IPCSoftware.App.ViewModels
 
                 // Set default selection to first recipe
                 SelectedRecipe = RecipeList.FirstOrDefault();
+                _selectedRecipe = RecipeList.FirstOrDefault();
+                _lastConfirmedRecipe = _selectedRecipe; // Track initial selection
+                OnPropertyChanged(nameof(SelectedRecipe));
             }
             catch (Exception ex)
             {
@@ -159,20 +165,34 @@ namespace IPCSoftware.App.ViewModels
         }
 
         // // Added by Rishabh -Date -06-05-2026 ,  Handle Recipe Selection Change
-        private async void OnRecipeSelectionChanged(RecipeItem recipe)
+        private async void OnRecipeSelectionChanged(RecipeItem newRecipe , RecipeItem previousRecipe)
         {
             try
             {
-                _logger.LogInfo($"Recipe Selected: Program {recipe.ProgramNo} - {recipe.Name}", LogType.Audit);
+                if (previousRecipe != null && newRecipe.ProgramNo == previousRecipe.ProgramNo) { return; } // No change in selection
+                bool confirm = _dialog.ShowYesNo($"Are you sure you want to load {newRecipe.Name} ?", "Confirmation");
+                if (confirm)
+                {
+                    _lastConfirmedRecipe = newRecipe;
+                    _logger.LogInfo($"Recipe Selected: Program {newRecipe.ProgramNo} - {newRecipe.Name}", LogType.Audit);
+                    AddAudit($"Program Number Changed: {newRecipe.Name}");
+                }
+                else
+                {
+                    _selectedRecipe = previousRecipe;
+                    OnPropertyChanged(nameof(SelectedRecipe));
+                }
 
-                // TODO: Write selected recipe/program number to PLC
-                // Example: await _coreClient.WriteTagAsync(RECIPE_TAG_ID, recipe.ProgramNo);
+                //  Write selected recipe/program number to PLC
+                //  await _coreClient.WriteTagAsync(RECIPE_TAG_ID, recipe.ProgramNo);
 
-                AddAudit($"Program Number Changed: {recipe.Name}");
+                
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Recipe Selection Error: {ex.Message}", LogType.Diagnostics);
+                _selectedRecipe = previousRecipe;
+                OnPropertyChanged(nameof(SelectedRecipe));
             }
         }
 
