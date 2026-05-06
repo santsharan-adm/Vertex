@@ -8,134 +8,156 @@
              helpers:DisposeBehavior.AutoDispose="True"
              Background="#F3F3F3">
 
- <UserControl.Resources>
-    <Style x:Key="HmiColumnHeaderStyle" TargetType="DataGridColumnHeader">
-        <Setter Property="Height" Value="60"/>
-        <Setter Property="FontSize" Value="24"/>
-        <Setter Property="FontWeight" Value="Bold"/>
-        <Setter Property="Background" Value="#E0E0E0"/>
-        <Setter Property="BorderBrush" Value="#CCC"/>
-        <Setter Property="BorderThickness" Value="0,0,1,1"/>
-    </Style>
+    <UserControl.Resources>
+        <!-- Existing Styles... -->
+        <Style x:Key="HmiColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+        </Style>
 
-    <Style x:Key="HmiCellStyle" TargetType="DataGridCell">
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="Padding" Value="10"/>
-    </Style>
+        <Style x:Key="HmiCellStyle" TargetType="DataGridCell">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Padding" Value="10"/>
+        </Style>
 
-    <DataTemplate x:Key="ModeButtonTemplate">
-        <Button Margin="15" Width="330" Height="270"
-                IsEnabled="{Binding IsEnabled}">
+        <!-- NEW: ComboBox Style -->
+        <Style x:Key="RecipeComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#1E4FA8"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.4"/>
+                    <Setter Property="Background" Value="#F0F0F0"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
-            <i:Interaction.Behaviors>
-                <helpers:MomentaryBehavior 
-                    Command="{Binding DataContext.UnifiedOperationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                    CommandParameter="{Binding Mode}"/>
-            </i:Interaction.Behaviors>
+        <DataTemplate x:Key="ModeButtonTemplate">
+            <!-- Existing Button Template... -->
+            <Button Margin="15" Width="330" Height="270"
+                    IsEnabled="{Binding IsEnabled}">
 
-            <Button.Style>
-                <Style TargetType="Button">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="Button">
-                                <Grid>
-                                    <Border x:Name="ColorLayer" CornerRadius="15" BorderThickness="1" BorderBrush="#555">
-                                        <Border.Background>
-                                            <SolidColorBrush Color="{Binding BaseColor}"/>
-                                        </Border.Background>
-                                        <Border.Effect>
-                                            <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.3"/>
-                                        </Border.Effect>
-                                    </Border>
+                <i:Interaction.Behaviors>
+                    <helpers:MomentaryBehavior 
+                        Command="{Binding DataContext.UnifiedOperationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        CommandParameter="{Binding Mode}"/>
+                </i:Interaction.Behaviors>
 
-                                    <Border x:Name="GlossLayer" CornerRadius="15" Opacity="0.8" IsHitTestVisible="False">
-                                        <Border.Background>
-                                            <RadialGradientBrush GradientOrigin="0.5,0.2" Center="0.5,0.5" RadiusX="0.8" RadiusY="0.8">
-                                                <GradientStop Color="#CCFFFFFF" Offset="0"/>
-                                                <GradientStop Color="#00FFFFFF" Offset="1"/>
-                                            </RadialGradientBrush>
-                                        </Border.Background>
-                                    </Border>
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid>
+                                        <Border x:Name="ColorLayer" CornerRadius="15" BorderThickness="1" BorderBrush="#555">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding BaseColor}"/>
+                                            </Border.Background>
+                                            <Border.Effect>
+                                                <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.3"/>
+                                            </Border.Effect>
+                                        </Border>
 
-                                    <Border x:Name="ShadowLayer" CornerRadius="15" Opacity="0" IsHitTestVisible="False">
-                                        <Border.Background>
-                                            <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.7" RadiusY="0.7">
-                                                <GradientStop Color="#00000000" Offset="0.4"/> <GradientStop Color="#CC000000" Offset="1.2"/> </RadialGradientBrush>
-                                        </Border.Background>
-                                    </Border>
-                                    
-                                    <Border x:Name="ActiveGlow" CornerRadius="15" BorderThickness="3" BorderBrush="White" Opacity="0">
-                                        <Border.Effect>
-                                            <DropShadowEffect Color="White" BlurRadius="15" ShadowDepth="0"/>
-                                        </Border.Effect>
-                                    </Border>
+                                        <Border x:Name="GlossLayer" CornerRadius="15" Opacity="0.8" IsHitTestVisible="False">
+                                            <Border.Background>
+                                                <RadialGradientBrush GradientOrigin="0.5,0.2" Center="0.5,0.5" RadiusX="0.8" RadiusY="0.8">
+                                                    <GradientStop Color="#CCFFFFFF" Offset="0"/>
+                                                    <GradientStop Color="#00FFFFFF" Offset="1"/>
+                                                </RadialGradientBrush>
+                                            </Border.Background>
+                                        </Border>
 
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Grid>
+                                        <Border x:Name="ShadowLayer" CornerRadius="15" Opacity="0" IsHitTestVisible="False">
+                                            <Border.Background>
+                                                <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.7" RadiusY="0.7">
+                                                    <GradientStop Color="#00000000" Offset="0.4"/>
+                                                    <GradientStop Color="#CC000000" Offset="1.2"/>
+                                                </RadialGradientBrush>
+                                            </Border.Background>
+                                        </Border>
 
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsEnabled" Value="False">
-                                        <Setter TargetName="ColorLayer" Property="Opacity" Value="0.3"/>
-                                        <Setter TargetName="ColorLayer" Property="Effect" Value="{x:Null}"/>
-                                        <Setter TargetName="GlossLayer" Property="Opacity" Value="0.1"/>
-                                        <Setter Property="Foreground" Value="#888"/>
-                                    </Trigger>
+                                        <Border x:Name="ActiveGlow" CornerRadius="15" BorderThickness="3" BorderBrush="White" Opacity="0">
+                                            <Border.Effect>
+                                                <DropShadowEffect Color="White" BlurRadius="15" ShadowDepth="0"/>
+                                            </Border.Effect>
+                                        </Border>
 
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Cursor" Value="Hand"/>
-                                        <Setter TargetName="GlossLayer" Property="Opacity" Value="1.0"/>
-                                    </Trigger>
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Grid>
 
-                                    <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                        <Setter TargetName="ColorLayer" Property="Background">
-                                            <Setter.Value>
-                                                <SolidColorBrush Color="{Binding ActiveColor}"/>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Setter TargetName="ActiveGlow" Property="Opacity" Value="1"/>
-                                    </DataTrigger>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter TargetName="ColorLayer" Property="Opacity" Value="0.3"/>
+                                            <Setter TargetName="ColorLayer" Property="Effect" Value="{x:Null}"/>
+                                            <Setter TargetName="GlossLayer" Property="Opacity" Value="0.1"/>
+                                            <Setter Property="Foreground" Value="#888"/>
+                                        </Trigger>
 
-                                    <DataTrigger Binding="{Binding IsBlinking}" Value="True">
-                                        <DataTrigger.EnterActions>
-                                            <BeginStoryboard Name="BlinkAnim">
-                                                <Storyboard RepeatBehavior="Forever" AutoReverse="True">
-                                                    <DoubleAnimation Storyboard.TargetName="ShadowLayer"
-                                                                     Storyboard.TargetProperty="Opacity"
-                                                                     From="0.0" To="1.0" Duration="0:0:0.5"/>
-                                                                     
-                                                    <DoubleAnimation Storyboard.TargetName="ColorLayer"
-                                                                     Storyboard.TargetProperty="Opacity"
-                                                                     From="1.0" To="0.7" Duration="0:0:0.5"/>
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </DataTrigger.EnterActions>
-                                        <DataTrigger.ExitActions>
-                                            <StopStoryboard BeginStoryboardName="BlinkAnim"/>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetName="ShadowLayer" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0"/>
-                                                    <DoubleAnimation Storyboard.TargetName="ColorLayer" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0"/>
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </DataTrigger.ExitActions>
-                                    </DataTrigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                            <Setter TargetName="GlossLayer" Property="Opacity" Value="1.0"/>
+                                        </Trigger>
 
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Button.Style>
+                                        <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                            <Setter TargetName="ColorLayer" Property="Background">
+                                                <Setter.Value>
+                                                    <SolidColorBrush Color="{Binding ActiveColor}"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Setter TargetName="ActiveGlow" Property="Opacity" Value="1"/>
+                                        </DataTrigger>
 
-            <TextBlock Text="{Binding Name}" FontSize="45" FontWeight="Bold" Foreground="White" 
-                       TextWrapping="Wrap" TextAlignment="Center">
-                <TextBlock.Effect>
-                    <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="3" Opacity="0.6"/>
-                </TextBlock.Effect>
-            </TextBlock>
-        </Button>
-    </DataTemplate>
-</UserControl.Resources>
+                                        <DataTrigger Binding="{Binding IsBlinking}" Value="True">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard Name="BlinkAnim">
+                                                    <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                                        <DoubleAnimation Storyboard.TargetName="ShadowLayer"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         From="0.0" To="1.0" Duration="0:0:0.5"/>
+
+                                                        <DoubleAnimation Storyboard.TargetName="ColorLayer"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         From="1.0" To="0.7" Duration="0:0:0.5"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <DataTrigger.ExitActions>
+                                                <StopStoryboard BeginStoryboardName="BlinkAnim"/>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="ShadowLayer" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0"/>
+                                                        <DoubleAnimation Storyboard.TargetName="ColorLayer" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+
+                <TextBlock Text="{Binding Name}" FontSize="45" FontWeight="Bold" Foreground="White" 
+                           TextWrapping="Wrap" TextAlignment="Center">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="3" Opacity="0.6"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+            </Button>
+        </DataTemplate>
+    </UserControl.Resources>
 
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -185,14 +207,79 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
+            <!-- Button Grid with Recipe in Last Cell -->
             <Border Grid.Column="0" Background="White" CornerRadius="15" Padding="10" BorderBrush="#CCC" BorderThickness="1">
-                <ItemsControl ItemsSource="{Binding ModeButtons}" ItemTemplate="{StaticResource ModeButtonTemplate}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Rows="2" Columns="3"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
+                <!-- Use a Grid instead of UniformGrid to have precise control -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Row 0, Col 0: Auto Run -->
+                    <ContentControl Grid.Row="0" Grid.Column="0" Content="{Binding ModeButtons[0]}" ContentTemplate="{StaticResource ModeButtonTemplate}"/>
+
+                    <!-- Row 0, Col 1: Dry Run -->
+                    <ContentControl Grid.Row="0" Grid.Column="1" Content="{Binding ModeButtons[1]}" ContentTemplate="{StaticResource ModeButtonTemplate}"/>
+
+                    <!-- Row 0, Col 2: Manual -->
+                    <ContentControl Grid.Row="0" Grid.Column="2" Content="{Binding ModeButtons[2]}" ContentTemplate="{StaticResource ModeButtonTemplate}"/>
+
+                    <!-- Row 1, Col 0: Cycle Stop -->
+                    <ContentControl Grid.Row="1" Grid.Column="0" Content="{Binding ModeButtons[3]}" ContentTemplate="{StaticResource ModeButtonTemplate}"/>
+
+                    <!-- Row 1, Col 1: Machine Home -->
+                    <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding ModeButtons[4]}" ContentTemplate="{StaticResource ModeButtonTemplate}"/>
+
+                    <!-- Row 1, Col 2: RECIPE SELECTION (Last Cell) -->
+                    <Border Grid.Row="1" Grid.Column="2" Margin="15" Background="#F9F9F9" CornerRadius="15" 
+                            Padding="20" BorderBrush="#CCC" BorderThickness="1">
+                        <Border.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="8" Opacity="0.15" ShadowDepth="2"/>
+                        </Border.Effect>
+
+                        <Grid VerticalAlignment="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Label -->
+                            <TextBlock Grid.Row="0" 
+                                       Text="PROGRAM NUMBER" 
+                                       FontSize="20" 
+                                       FontWeight="Bold" 
+                                       Foreground="#333" 
+                                       Margin="0,0,0,15"
+                                       TextAlignment="Center"
+                                       TextWrapping="Wrap"/>
+
+                            <!-- ComboBox -->
+                            <ComboBox Grid.Row="1"
+                                      ItemsSource="{Binding RecipeList}" 
+                                      SelectedItem="{Binding SelectedRecipe, Mode=TwoWay}" 
+                                      DisplayMemberPath="Name"
+                                      IsEnabled="{Binding IsRecipeSelectionEnabled}"
+                                      Style="{StaticResource RecipeComboBoxStyle}">
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="FontSize" Value="22"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="Padding" Value="10"/>
+                                        <Setter Property="Height" Value="50"/>
+                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                            </ComboBox>
+                        </Grid>
+                    </Border>
+
+                </Grid>
             </Border>
 
             <Border Grid.Column="1" Margin="20 0 0 0" Background="White" CornerRadius="15" Padding="20" BorderBrush="#CCC" BorderThickness="1">

@@ -128,12 +128,12 @@ namespace IPCSoftware.Services.ConfigServices
                         Y10 = double.TryParse(values[36], out double Y10) ? Y10 : 0,
                         Y11 = double.TryParse(values[37], out double Y11) ? Y11 : 0,
                         Y12 = double.TryParse(values[38], out double Y12) ? Y12 : 0,
-                        Xmin = double.TryParse(values[38], out double xmin) ? xmin : 0,
-                        Xmax = double.TryParse(values[39], out double xmax) ? xmax : 0,
-                        Ymin = double.TryParse(values[40], out double ymin) ? ymin : 0,
-                        Ymax = double.TryParse(values[41], out double ymax) ? ymax : 0,
-                        AngleMin = double.TryParse(values[42], out double amin) ? amin : 0,
-                        AngleMax = double.TryParse(values[43], out double amax) ? amax : 0
+                        Xmin = double.TryParse(values[39], out double xmin) ? xmin : 0,
+                        Xmax = double.TryParse(values[40], out double xmax) ? xmax : 0,
+                        Ymin = double.TryParse(values[41], out double ymin) ? ymin : 0,
+                        Ymax = double.TryParse(values[42], out double ymax) ? ymax : 0,
+                        AngleMin = double.TryParse(values[43], out double amin) ? amin : 0,
+                        AngleMax = double.TryParse(values[44], out double amax) ? amax : 0
                     };
 
                     recipes.Add(recipe);

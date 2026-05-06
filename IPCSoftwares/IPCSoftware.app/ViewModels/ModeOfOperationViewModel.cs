@@ -68,44 +68,121 @@ namespace IPCSoftware.App.ViewModels
         private readonly CoreClient _coreClient;
         private readonly INavigationService _navService;
         private readonly SafePoller _feedbackTimer;
-        // Add this at the top of your class
         private readonly List<OperationMode> _activePulseModes = new List<OperationMode>();
+        private readonly IServoCalibrationService _servoService; // Added by Rishabh -Date 06-05-2026
 
         private readonly Dictionary<OperationMode, int> _writeTags = new();
-        private readonly Dictionary<OperationMode, int> _statusTags = new(); // For Blinking/Color
-        private readonly Dictionary<OperationMode, int> _enableTags = new(); // For IsEnabled
+        private readonly Dictionary<OperationMode, int> _statusTags = new();
+        private readonly Dictionary<OperationMode, int> _enableTags = new();
 
         public ObservableCollection<ModeButtonItem> ModeButtons { get; } = new ObservableCollection<ModeButtonItem>();
         public ObservableCollection<AuditLogModel> AuditLogs { get; set; } = new();
+
+        // Added by Rishabh -Date -06-05-2026
+        private ObservableCollection<RecipeItem> _recipeList;
+        public ObservableCollection<RecipeItem> RecipeList
+        {
+            get => _recipeList;
+            set => SetProperty(ref _recipeList, value);
+        }
+
+        private RecipeItem _selectedRecipe;
+        public RecipeItem SelectedRecipe
+        {
+            get => _selectedRecipe;
+            set
+            {
+                if (SetProperty(ref _selectedRecipe, value) && value != null)
+                {
+                    OnRecipeSelectionChanged(value);
+                }
+            }
+        }
+
+        public bool IsRecipeSelectionEnabled => !GetBtn(OperationMode.Auto).IsEnabled;
 
         private bool _isMachineHome;
         public bool IsMachineHome { get => _isMachineHome; set => SetProperty(ref _isMachineHome, value); }
 
         public ICommand UnifiedOperationCommand { get; }
-         
-        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService) : base(logger)
+
+        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService) : base(logger)
         {
             _coreClient = coreClient;
             _navService = navService;
+            _servoService = servoService; // Added by rishabh - Date 06-05-2026
 
             InitializeTags();
             InitializeButtons();
+            _= InitializeRecipesAsync(); // Initialize Recipe List
 
             UnifiedOperationCommand = new RelayCommand<string>(async (args) => await ExecuteOperationAsync(args));
 
-            _feedbackTimer = new SafePoller (TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
+            _feedbackTimer = new SafePoller(TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
             _feedbackTimer.Start();
+        }
+
+        //Added by Rishabh -Date -06-05-2026 , Initialize Recipe List from ServoConfigService
+        private async Task InitializeRecipesAsync()
+        {
+            try
+            {
+                var savedRecipes = await _servoService.LoadRecipeAsync();
+
+                RecipeList = new ObservableCollection<RecipeItem>(
+                    savedRecipes.Select(r => new RecipeItem
+                    {
+                        ProgramNo = r.ProgramNo,
+                        Name = $"Progam {r.ProgramNo}" 
+                    })
+                );
+
+                // Set default selection to first recipe
+                SelectedRecipe = RecipeList.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to load recipes: {ex.Message}", LogType.Diagnostics);
+
+                // Fallback to hardcoded list if file read fails
+                RecipeList = new ObservableCollection<RecipeItem>
+                {
+                    new RecipeItem { ProgramNo = 1, Name = "Program 1" },
+                    new RecipeItem { ProgramNo = 2, Name = "Program 2" },
+                    new RecipeItem { ProgramNo = 3, Name = "Program 3" },
+                    new RecipeItem { ProgramNo = 4, Name = "Program 4" },
+                    new RecipeItem { ProgramNo = 5, Name = "Program 5" }
+                };
+
+                SelectedRecipe = RecipeList.FirstOrDefault();
+            }
+        }
+
+        // // Added by Rishabh -Date -06-05-2026 ,  Handle Recipe Selection Change
+        private async void OnRecipeSelectionChanged(RecipeItem recipe)
+        {
+            try
+            {
+                _logger.LogInfo($"Recipe Selected: Program {recipe.ProgramNo} - {recipe.Name}", LogType.Audit);
+
+                // TODO: Write selected recipe/program number to PLC
+                // Example: await _coreClient.WriteTagAsync(RECIPE_TAG_ID, recipe.ProgramNo);
+
+                AddAudit($"Program Number Changed: {recipe.Name}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Recipe Selection Error: {ex.Message}", LogType.Diagnostics);
+            }
         }
 
         private void InitializeTags()
         {
-            // Write
             Map(OperationMode.Auto, ConstantValues.Mode_Auto, ConstantValues.Mode_Auto_Enable);
             Map(OperationMode.DryRun, ConstantValues.Mode_DryRun, ConstantValues.Mode_DryRun_Enable);
             Map(OperationMode.CycleStop, ConstantValues.Mode_CycleStop, ConstantValues.Mode_CycleStop_Enable);
             Map(OperationMode.MassRTO, ConstantValues.Mode_MassRTO, ConstantValues.Mode_MassRTO_Enable);
         }
-
 
         void Map(OperationMode m, TagPair tag, int enableTag)
         {
@@ -114,18 +191,16 @@ namespace IPCSoftware.App.ViewModels
             _enableTags[m] = enableTag;
         }
 
-
         private void InitializeButtons()
         {
             var list = new List<ModeButtonItem>
-            {
-                new ModeButtonItem { Mode = OperationMode.Auto,      Name = "Auto Run",     BaseColor = "#00BCFE", ActiveColor = "#00BCFE" },
-                new ModeButtonItem { Mode = OperationMode.DryRun,    Name = "Dry Run",      BaseColor = "#B200A1", ActiveColor = "#7E1A74" },
-                // Manual is usually always enabled unless you have a specific tag for it
-                new ModeButtonItem { Mode = OperationMode.Manual,    Name = "Manual",       BaseColor = "#607D8B", ActiveColor = "#607D8B", IsEnabled = true },
-                new ModeButtonItem { Mode = OperationMode.CycleStop, Name = "Cycle Stop",   BaseColor = "#FE8848", ActiveColor = "#FE8848" },
-                new ModeButtonItem { Mode = OperationMode.MassRTO,   Name = "Machine Home", BaseColor = "#01AE4C", ActiveColor = "#01AE4C" }
-            };
+        {
+            new ModeButtonItem { Mode = OperationMode.Auto,      Name = "Auto Run",     BaseColor = "#00BCFE", ActiveColor = "#00BCFE" },
+            new ModeButtonItem { Mode = OperationMode.DryRun,    Name = "Dry Run",      BaseColor = "#B200A1", ActiveColor = "#7E1A74" },
+            new ModeButtonItem { Mode = OperationMode.Manual,    Name = "Manual",       BaseColor = "#607D8B", ActiveColor = "#607D8B", IsEnabled = true },
+            new ModeButtonItem { Mode = OperationMode.CycleStop, Name = "Cycle Stop",   BaseColor = "#FE8848", ActiveColor = "#FE8848" },
+            new ModeButtonItem { Mode = OperationMode.MassRTO,   Name = "Machine Home", BaseColor = "#01AE4C", ActiveColor = "#01AE4C" }
+        };
             foreach (var item in list) ModeButtons.Add(item);
         }
 
@@ -138,10 +213,8 @@ namespace IPCSoftware.App.ViewModels
 
             try
             {
-                // 1. Manual Navigation
                 if (mode == OperationMode.Manual)
                 {
-                    // Logic: Only navigate if the button is Enabled
                     var btn = GetBtn(OperationMode.Manual);
                     if (isPressed && btn.IsEnabled)
                     {
@@ -150,7 +223,6 @@ namespace IPCSoftware.App.ViewModels
                     return;
                 }
 
-                // 2. PLC Write (Only if button is Enabled)
                 var buttonItem = GetBtn(mode);
                 if (buttonItem.IsEnabled && _writeTags.TryGetValue(mode, out int tagId))
                 {
@@ -159,42 +231,6 @@ namespace IPCSoftware.App.ViewModels
 
                     if (isPressed) AddAudit($"Operator Pressed: {mode}");
                 }
-
-                /* if ((buttonItem.IsEnabled || _activePulseModes.Contains(mode))
-             && _writeTags.TryGetValue(mode, out int tagId))
-                 {
-                     if (isPressed)
-                     {
-                         // --- LOCK: Prevent Feedback loop from disabling this button ---
-                         if (!_activePulseModes.Contains(mode))
-                         {
-                             _activePulseModes.Add(mode);
-                         }
-
-                         try
-                         {
-                             // A. Send 1
-                             await _coreClient.WriteTagAsync(tagId, 1);
-                             AddAudit($"Operator Pressed: {mode}");
-
-                             // B. Wait (Pulse Duration)
-                             await Task.Delay(250);
-
-                             // C. Send 0 (Crucial Step)
-                             await _coreClient.WriteTagAsync(tagId, 0);
-                         }
-                         finally
-                         {
-                             // --- UNLOCK: Allow Feedback loop to take over again ---
-                             if (_activePulseModes.Contains(mode))
-                             {
-                                 _activePulseModes.Remove(mode);
-                             }
-                         }
-                     }
-                 }*/
-
-
             }
             catch (Exception ex)
             {
@@ -206,16 +242,11 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                // Read range covering 11-14, 477-484 (Write, Enable, Status)
-                // Assuming CoreClient can handle disjointed reads or you just read a large block.
-                // If tags are far apart, you might need two calls or a block read. 
                 var liveData = await _coreClient.GetIoValuesAsync(5);
-                //Debug.Assert((liveData != null) && liveData.Count() > 0);
                 if (liveData.Count < 1) return;
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-
                     bool isAutoRunning = false;
                     bool isDryRunning = false;
                     bool isStopRunning = false;
@@ -223,7 +254,6 @@ namespace IPCSoftware.App.ViewModels
 
                     foreach (var btn in ModeButtons)
                     {
-                        // A. Update BLINKING/ACTIVE Status (from 481-483)
                         if (_statusTags.TryGetValue(btn.Mode, out int statusTagId))
                         {
                             if (liveData.TryGetValue(statusTagId, out object? val))
@@ -238,28 +268,8 @@ namespace IPCSoftware.App.ViewModels
                             }
                         }
 
-
-                        //if (_activePulseModes.Contains(btn.Mode))
-                        //{
-                        //    // If we are currently pulsing this button (Sending 1... Waiting... Sending 0),
-                        //    // FORCE it to stay Enabled. Ignore the PLC for a moment.
-                        //    btn.IsEnabled = true;
-                        //}
-                        //else
-                        //{
-                        //    // Normal behavior: Let PLC decide
-                        //    if (_enableTags.TryGetValue(btn.Mode, out int enableTagId))
-                        //    {
-                        //        if (liveData.TryGetValue(enableTagId, out object? val))
-                        //        {
-                        //            btn.IsEnabled = Convert.ToBoolean(val);
-                        //        }
-                        //    }
-                        //}
-
                         bool writeTagStatus = false;
 
-                        // B. Update ENABLE/DISABLE State (from 477-480)
                         if (_enableTags.TryGetValue(btn.Mode, out int enableTagId))
                         {
                             if (_writeTags.TryGetValue(btn.Mode, out int writeTabId))
@@ -271,31 +281,26 @@ namespace IPCSoftware.App.ViewModels
                             }
                             if (liveData.TryGetValue(enableTagId, out object? val))
                             {
-                                // PLC Logic dictates Enabled State directly
                                 btn.IsEnabled = writeTagStatus || Convert.ToBoolean(val);
                             }
                         }
-                        // Note: 'Manual' mode IsEnabled is skipped here as it has no tag in _enableTags map. 
-                        // It stays True (default) or you can add logic if needed.
                     }
 
                     var manualBtn = GetBtn(OperationMode.Manual);
-
-                    // If EITHER Auto OR Dry is running (True), Manual must be Disabled.
-                    // If BOTH are stopped (False), Manual is Enabled.
                     bool isSystemBusy = isAutoRunning || isDryRunning || isStopRunning || isRTORunning;
-
                     manualBtn.IsEnabled = !isSystemBusy;
 
+                    // Notify UI that Recipe Selection Enabled State May Have Changed
+                    OnPropertyChanged(nameof(IsRecipeSelectionEnabled));
+
                     _enableTags.TryGetValue(OperationMode.MassRTO, out int homeLampId);
-                    // C. Update Home Lamp
                     if (liveData.TryGetValue(homeLampId, out object? homeVal))
                     {
                         var homeLamp = Convert.ToBoolean(homeVal);
                         IsMachineHome = !homeLamp;
                     }
                 });
-            }   
+            }
             catch { }
         }
 
@@ -308,11 +313,17 @@ namespace IPCSoftware.App.ViewModels
             AuditLogs.Add(new AuditLogModel { Time = DateTime.Now.ToString("HH:mm:ss"), Message = message });
         }
 
-
         public void Dispose()
         {
-                _feedbackTimer.Dispose();
+            _feedbackTimer.Dispose();
         }
+    }
+
+    // Added by Rishabh -Date -06-05-2026 ,  Recipe Item Model
+    public class RecipeItem
+    {
+        public int ProgramNo { get; set; }
+        public string Name { get; set; }
     }
 }
 

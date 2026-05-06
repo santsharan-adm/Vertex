@@ -280,7 +280,7 @@ namespace IPCSoftware.App.ViewModels
                 }
 
                 var savedPositions = await _servoService.LoadPositionsAsync();
-                var Save = await _servoService.LoadRecipeAsync();
+                var SavedRecipe = await _servoService.LoadRecipeAsync();
 
                 // 4. Populate List for UI
                 Positions.Clear();
