@@ -10,6 +10,8 @@ namespace IPCSoftware.Core.Interfaces
     public interface IServoCalibrationService
     {
         Task<List<ServoPositionModel>> LoadPositionsAsync();
+
+        Task<List<ServoRecipeModel>> LoadRecipeAsync();
         Task SavePositionsAsync(List<ServoPositionModel> positions);
     }
 }
