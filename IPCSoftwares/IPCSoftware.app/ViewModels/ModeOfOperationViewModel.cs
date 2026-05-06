@@ -109,6 +109,8 @@ namespace IPCSoftware.App.ViewModels
 
         public ICommand UnifiedOperationCommand { get; }
 
+        private const int RECIPE_TAG_ID = 544;      //Will be change
+
         public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService , IDialogService dialog) : base(logger)
         {
             _coreClient = coreClient;
@@ -119,10 +121,13 @@ namespace IPCSoftware.App.ViewModels
             InitializeButtons();
             _= InitializeRecipesAsync(); // Initialize Recipe List
 
+
             UnifiedOperationCommand = new RelayCommand<string>(async (args) => await ExecuteOperationAsync(args));
 
             _feedbackTimer = new SafePoller(TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
             _feedbackTimer.Start();
+
+
         }
 
         //Added by Rishabh -Date -06-05-2026 , Initialize Recipe List from ServoConfigService
@@ -184,7 +189,7 @@ namespace IPCSoftware.App.ViewModels
                 }
 
                 //  Write selected recipe/program number to PLC
-                //  await _coreClient.WriteTagAsync(RECIPE_TAG_ID, recipe.ProgramNo);
+                 await _coreClient.WriteTagAsync(RECIPE_TAG_ID, newRecipe.ProgramNo);
 
                 
             }
