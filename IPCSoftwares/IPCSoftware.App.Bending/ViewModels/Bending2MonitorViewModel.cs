@@ -3,96 +3,361 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
+using IPCSoftware.UI.CommonViews.ViewModels;
 
 namespace IPCSoftware.App.Bending.ViewModels
 {
-    public class Bending2MonitorViewModel : INotifyPropertyChanged
+    public class Bending2MonitorViewModel : BaseViewModel
     {
         private readonly INavigationService _navigationService;
 
         public ICommand NextCommand { get; }
         public ICommand PreviousCommand { get; }
 
-        private double EnsureNonNegative(double value) => Math.Max(0, value);
-
         // ==================== PRODUCT 1 DATA ====================
         private double _p1_Upper;
-        public double P1_Upper { get => _p1_Upper; set { _p1_Upper = EnsureNonNegative(value); OnPropertyChanged(); } }
+        public double P1_Upper
+        {
+            get => _p1_Upper;
+            set
+            {
+                if (_p1_Upper != value)
+                {
+                    _p1_Upper = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private double _p1_Value;
-        public double P1_Value { get => _p1_Value; set { _p1_Value = EnsureNonNegative(value); OnPropertyChanged(); } }
+        public double P1_Value
+        {
+            get => _p1_Value;
+            set
+            {
+                if (_p1_Value != value)
+                {
+                    _p1_Value = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private double _p1_Lower;
-        public double P1_Lower { get => _p1_Lower; set { _p1_Lower = EnsureNonNegative(value); OnPropertyChanged(); } }
+        public double P1_Lower
+        {
+            get => _p1_Lower;
+            set
+            {
+                if (_p1_Lower != value)
+                {
+                    _p1_Lower = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string _p1_LM;
-        public string P1_LM { get => _p1_LM; set { _p1_LM = value; OnPropertyChanged(); } }
+        public string P1_LM
+        {
+            get => _p1_LM;
+            set
+            {
+                if (_p1_LM != value)
+                {
+                    _p1_LM = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string _p1_TM;
-        public string P1_TM { get => _p1_TM; set { _p1_TM = value; OnPropertyChanged(); } }
+        public string P1_TM
+        {
+            get => _p1_TM;
+            set
+            {
+                if (_p1_TM != value)
+                {
+                    _p1_TM = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string _p1_BT;
-        public string P1_BT { get => _p1_BT; set { _p1_BT = value; OnPropertyChanged(); } }
+        public string P1_BT
+        {
+            get => _p1_BT;
+            set
+            {
+                if (_p1_BT != value)
+                {
+                    _p1_BT = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         // ==================== PRODUCT 2 DATA ====================
         private double _p2_Upper;
-        public double P2_Upper { get => _p2_Upper; set { _p2_Upper = EnsureNonNegative(value); OnPropertyChanged(); } }
+        public double P2_Upper
+        {
+            get => _p2_Upper;
+            set
+            {
+                if (_p2_Upper != value)
+                {
+                    _p2_Upper = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private double _p2_Value;
-        public double P2_Value { get => _p2_Value; set { _p2_Value = EnsureNonNegative(value); OnPropertyChanged(); } }
+        public double P2_Value
+        {
+            get => _p2_Value;
+            set
+            {
+                if (_p2_Value != value)
+                {
+                    _p2_Value = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private double _p2_Lower;
-        public double P2_Lower { get => _p2_Lower; set { _p2_Lower = EnsureNonNegative(value); OnPropertyChanged(); } }
+        public double P2_Lower
+        {
+            get => _p2_Lower;
+            set
+            {
+                if (_p2_Lower != value)
+                {
+                    _p2_Lower = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string _p2_LM;
-        public string P2_LM { get => _p2_LM; set { _p2_LM = value; OnPropertyChanged(); } }
+        public string P2_LM
+        {
+            get => _p2_LM;
+            set
+            {
+                if (_p2_LM != value)
+                {
+                    _p2_LM = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string _p2_TM;
-        public string P2_TM { get => _p2_TM; set { _p2_TM = value; OnPropertyChanged(); } }
+        public string P2_TM
+        {
+            get => _p2_TM;
+            set
+            {
+                if (_p2_TM != value)
+                {
+                    _p2_TM = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string _p2_BT;
-        public string P2_BT { get => _p2_BT; set { _p2_BT = value; OnPropertyChanged(); } }
+        public string P2_BT
+        {
+            get => _p2_BT;
+            set
+            {
+                if (_p2_BT != value)
+                {
+                    _p2_BT = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         // ==================== PRODUCT 3 DATA ====================
         private double _p3_Upper;
-        public double P3_Upper { get => _p3_Upper; set { _p3_Upper = EnsureNonNegative(value); OnPropertyChanged(); } }
+        public double P3_Upper
+        {
+            get => _p3_Upper;
+            set
+            {
+                if (_p3_Upper != value)
+                {
+                    _p3_Upper = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private double _p3_Value;
-        public double P3_Value { get => _p3_Value; set { _p3_Value = EnsureNonNegative(value); OnPropertyChanged(); } }
+        public double P3_Value
+        {
+            get => _p3_Value;
+            set
+            {
+                if (_p3_Value != value)
+                {
+                    _p3_Value = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private double _p3_Lower;
-        public double P3_Lower { get => _p3_Lower; set { _p3_Lower = EnsureNonNegative(value); OnPropertyChanged(); } }
+        public double P3_Lower
+        {
+            get => _p3_Lower;
+            set
+            {
+                if (_p3_Lower != value)
+                {
+                    _p3_Lower = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string _p3_LM;
-        public string P3_LM { get => _p3_LM; set { _p3_LM = value; OnPropertyChanged(); } }
+        public string P3_LM
+        {
+            get => _p3_LM;
+            set
+            {
+                if (_p3_LM != value)
+                {
+                    _p3_LM = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string _p3_TM;
-        public string P3_TM { get => _p3_TM; set { _p3_TM = value; OnPropertyChanged(); } }
+        public string P3_TM
+        {
+            get => _p3_TM;
+            set
+            {
+                if (_p3_TM != value)
+                {
+                    _p3_TM = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string _p3_BT;
-        public string P3_BT { get => _p3_BT; set { _p3_BT = value; OnPropertyChanged(); } }
+        public string P3_BT
+        {
+            get => _p3_BT;
+            set
+            {
+                if (_p3_BT != value)
+                {
+                    _p3_BT = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         // ==================== PRODUCT 4 DATA ====================
         private double _p4_Upper;
-        public double P4_Upper { get => _p4_Upper; set { _p4_Upper = EnsureNonNegative(value); OnPropertyChanged(); } }
+        public double P4_Upper
+        {
+            get => _p4_Upper;
+            set
+            {
+                if (_p4_Upper != value)
+                {
+                    _p4_Upper = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private double _p4_Value;
-        public double P4_Value { get => _p4_Value; set { _p4_Value = EnsureNonNegative(value); OnPropertyChanged(); } }
+        public double P4_Value
+        {
+            get => _p4_Value;
+            set
+            {
+                if (_p4_Value != value)
+                {
+                    _p4_Value = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private double _p4_Lower;
-        public double P4_Lower { get => _p4_Lower; set { _p4_Lower = EnsureNonNegative(value); OnPropertyChanged(); } }
+        public double P4_Lower
+        {
+            get => _p4_Lower;
+            set
+            {
+                if (_p4_Lower != value)
+                {
+                    _p4_Lower = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string _p4_LM;
-        public string P4_LM { get => _p4_LM; set { _p4_LM = value; OnPropertyChanged(); } }
+        public string P4_LM
+        {
+            get => _p4_LM;
+            set
+            {
+                if (_p4_LM != value)
+                {
+                    _p4_LM = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string _p4_TM;
-        public string P4_TM { get => _p4_TM; set { _p4_TM = value; OnPropertyChanged(); } }
+        public string P4_TM
+        {
+            get => _p4_TM;
+            set
+            {
+                if (_p4_TM != value)
+                {
+                    _p4_TM = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string _p4_BT;
-        public string P4_BT { get => _p4_BT; set { _p4_BT = value; OnPropertyChanged(); } }
+        public string P4_BT
+        {
+            get => _p4_BT;
+            set
+            {
+                if (_p4_BT != value)
+                {
+                    _p4_BT = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
-        public Bending2MonitorViewModel(INavigationService navigationService)
+        public Bending2MonitorViewModel(INavigationService navigationService, IAppLogger logger)
+            : base(logger)
         {
             _navigationService = navigationService;
             NextCommand = new RelayCommand(ExecuteNext);

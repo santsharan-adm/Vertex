@@ -2,8 +2,10 @@
 using System.Windows.Input;
 using IPCSoftware.App.Bending.Models;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using System.Windows.Input;
+using IPCSoftware.UI.CommonViews.ViewModels;
 
 namespace IPCSoftware.App.Bending.ViewModels
 {
@@ -23,7 +25,8 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         public ObservableCollection<ProductData> ProductList { get; set; }
 
-        public PostBendingViewModel(INavigationService navigationService)
+        public PostBendingViewModel(INavigationService navigationService, IAppLogger logger)
+            : base(logger)
         {
             ProductList = new ObservableCollection<ProductData>
             {
