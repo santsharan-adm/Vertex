@@ -1,7 +1,7 @@
-﻿
+﻿    
 namespace IPCSoftware.UI.CommonViews.ViewModels
 {
-    internal class CommonOpenFileDialog
+    internal class CommonOpenFileDialogModel
     {
         public bool IsFolderPicker { get; set; }
         public string Title { get; set; }

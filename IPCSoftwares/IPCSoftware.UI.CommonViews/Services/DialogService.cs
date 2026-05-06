@@ -1,6 +1,7 @@
-using IPCSoftware.UI.CommonViews.ViewModels;
-using IPCSoftware.UI.CommonViews;
 using IPCSoftware.Core.Interfaces;
+using IPCSoftware.UI.CommonViews;
+using IPCSoftware.UI.CommonViews.ViewModels;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,22 @@ namespace IPCSoftware.Common.CommonFunctions
             // FALSE = Info (Blue button, Hide Cancel)
             var vm = new CustomMessageBoxViewModel(message, "Warning", "OK", "", false);
             ShowWindow(vm);
+        }
+
+        public string ShowBrowseDialog(string title)
+        {
+
+            var dialog = new CommonOpenFileDialogModel
+            {
+                IsFolderPicker = true,
+                Title = title,
+                AllowNonFileSystemItems = false,
+                Multiselect = false
+            };
+            if ((CommonFileDialogResult)dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                return dialog.FileName;
+            return string.Empty;
+
         }
 
 

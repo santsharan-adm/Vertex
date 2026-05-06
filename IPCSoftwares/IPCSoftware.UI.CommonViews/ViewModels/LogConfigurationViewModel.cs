@@ -1,17 +1,18 @@
-﻿using IPCSoftware.Services.ConfigServices;
+﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using MS.WindowsAPICodePack.Internal;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using IPCSoftware.Core.Interfaces;
-using System.IO;
-using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 
 namespace IPCSoftware.UI.CommonViews.ViewModels
 {
@@ -376,37 +377,38 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             try
             {
-                var dialog = new CommonOpenFileDialog
+                
+                string result = _dialog.ShowBrowseDialog(title);
+
+                if (!string.IsNullOrEmpty(result))
                 {
-                    IsFolderPicker = true,
-                    Title = title,
-                    AllowNonFileSystemItems = false,
-                    Multiselect = false
-                };
-                if ((CommonFileDialogResult)dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                    return dialog.FileName;
+                    DataFolder = Path.Combine(result, "Logs", SelectedLogType);
+                }
+
+             return result;
+
+
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
             return string.Empty;
+
         }
 
         private void OnBrowseDataFolder()
         {
             try
             {
-                var dialog = new CommonOpenFileDialog
-                {
-                    IsFolderPicker = true,
-                    Title = "Select Data Folder",
-                    AllowNonFileSystemItems = false,
-                    Multiselect = false
-                };
+                string result=_dialog.ShowBrowseDialog("Select Data Folder"); 
 
-                if ((CommonFileDialogResult)dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                if (!string.IsNullOrEmpty(result))
                 {
-                    DataFolder = Path.Combine(dialog.FileName, "Logs", SelectedLogType);
+                    DataFolder = Path.Combine(result, "Logs", SelectedLogType);
 
                 }
+
             }
             catch (Exception ex)
             {
