@@ -1,13 +1,15 @@
-﻿using System;
+﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Shared;
+using IPCSoftware.UI.CommonViews.ViewModels;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using IPCSoftware.Core.Interfaces;
-using IPCSoftware.Shared;
 
 namespace IPCSoftware.App.Bending.ViewModels
 {
-    public class Bending3MonitorViewModel : INotifyPropertyChanged
+    public class Bending3MonitorViewModel : BaseViewModel
     {
         private readonly INavigationService _navigationService;
 
@@ -355,7 +357,8 @@ namespace IPCSoftware.App.Bending.ViewModels
             }
         }
 
-        public Bending3MonitorViewModel(INavigationService navigationService)
+        public Bending3MonitorViewModel(INavigationService navigationService, IAppLogger logger)
+            : base(logger)
         {
             _navigationService = navigationService;
             PreviousCommand = new RelayCommand(ExecutePrevious);

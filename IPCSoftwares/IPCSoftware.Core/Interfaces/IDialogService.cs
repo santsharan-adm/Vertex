@@ -12,6 +12,7 @@ namespace IPCSoftware.Core.Interfaces
         void ShowWarning(string message);
 
         bool ShowYesNo(string message, string title = "Confirm");
+        string ShowBrowseDialoge(string message);
 
     }
 }

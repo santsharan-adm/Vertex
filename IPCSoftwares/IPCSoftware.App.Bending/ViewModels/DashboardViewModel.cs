@@ -1,8 +1,10 @@
-﻿using System.Windows.Media;
+﻿using IPCSoftware.UI.CommonViews.ViewModels;
+using System.Windows.Media;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 
 namespace IPCSoftware.App.Bending.ViewModels
 {
-    public class DashboardViewModel : ViewModelBase
+    public class DashboardViewModel : BaseViewModel
     {
         private string _robot1Name = "ROBOT 1";
         public string Robot1Name
@@ -18,7 +20,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             set { _robot2Name = value; OnPropertyChanged(); }
         }
 
-        public DashboardViewModel()
+        public DashboardViewModel(IAppLogger logger) : base(logger)
         {
         }
     }

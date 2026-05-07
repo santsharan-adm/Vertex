@@ -1,17 +1,18 @@
-﻿using IPCSoftware.Services.ConfigServices;
+﻿//using Microsoft.WindowsAPICodePack.Dialogs;
+using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using IPCSoftware.Core.Interfaces;
-using System.IO;
-using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 
 namespace IPCSoftware.UI.CommonViews.ViewModels
 {
@@ -214,6 +215,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public LogConfigurationViewModel(ILogConfigurationService logService,
             IDialogService dialog,
             ILogManagerService logManager,
+             LogConfigurationView logConfigurationView,
              IAppLogger logger) : base(logger)
         {
             _dialog = dialog;
@@ -394,19 +396,14 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             try
             {
-                var dialog = new CommonOpenFileDialog
+                string retVal=_dialog.ShowBrowseDialoge("Select Backup Folder");
+                
+                if (string.IsNullOrEmpty(retVal))
                 {
-                    IsFolderPicker = true,
-                    Title = "Select Data Folder",
-                    AllowNonFileSystemItems = false,
-                    Multiselect = false
-                };
-
-                if ((CommonFileDialogResult)dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    DataFolder = Path.Combine(dialog.FileName, "Logs", SelectedLogType);
-
+                    BackupFolder = Path.Combine(retVal, "LogsBackup", SelectedLogType);
+                    
                 }
+                
             }
             catch (Exception ex)
             {
@@ -419,23 +416,19 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             try
             {
-                var dialog = new CommonOpenFileDialog
+                string retVal=_dialog.ShowBrowseDialoge("Select Backup Folder");
+                
+                if (string.IsNullOrEmpty(retVal))
                 {
-                    IsFolderPicker = true,
-                    Title = "Select Backup Folder",
-                    AllowNonFileSystemItems = false,
-                    Multiselect = false
-                };
-
-                if ((CommonFileDialogResult)dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    BackupFolder = Path.Combine(dialog.FileName, "LogsBackup", SelectedLogType);
+                    BackupFolder = Path.Combine(retVal, "LogsBackup", SelectedLogType);
+                    
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
             }
+
         }
 
 
