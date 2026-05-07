@@ -3,6 +3,10 @@ using System.Collections.ObjectModel;
 using System.Timers;
 using System.Windows.Threading;
 using IPCSoftware.App.Bending.Models;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.UI.CommonViews.ViewModels;
+using Microsoft.Extensions.Logging;
+
 
 namespace IPCSoftware.App.Bending.ViewModels
 {
@@ -152,7 +156,8 @@ namespace IPCSoftware.App.Bending.ViewModels
         public ObservableCollection<string> ScannedPartsList { get; set; }
         public ObservableCollection<string> ProcessEventsList { get; set; }
 
-        public MainViewModel()
+        public MainViewModel(IAppLogger Logger)
+                : base(Logger)
         {
             InitializeViewModel();
             StartSimulation();
