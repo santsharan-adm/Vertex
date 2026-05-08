@@ -33,6 +33,17 @@ namespace IPCSoftware.Common.CommonFunctions
             ShowWindow(vm);
         }
 
+        public string ShowBrowseDialoge(string message)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = message
+            };
+
+            var result = dialog.ShowDialog();
+            return result == true ? dialog.FileName : string.Empty;
+        }
+
 
 
 
