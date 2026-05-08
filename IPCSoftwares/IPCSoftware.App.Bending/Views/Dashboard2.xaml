@@ -3,16 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cc="clr-namespace:IPCSoftware.App.Bending.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="900" d:DesignWidth="1672" Background="#F1F5F9">
 
     <UserControl.Resources>
-        <SolidColorBrush x:Key="PanelBorder" Color="#1E293B"/>
-        <SolidColorBrush x:Key="AccentBlue" Color="#3B82F6"/>
-        <SolidColorBrush x:Key="OkGreen" Color="#10B981"/>
-        <SolidColorBrush x:Key="NgRed" Color="#EF4444"/>
-        <SolidColorBrush x:Key="TableBg" Color="#0F172A"/>
-        <SolidColorBrush x:Key="RowEvenBg" Color="#1E293B"/>
+        <ResourceDictionary Source="pack://application:,,,/IPCSoftware.App.Bending;component/Resources/BendingRD1.xaml"/>
     </UserControl.Resources>
 
     <Grid Margin="3">
@@ -695,28 +691,28 @@
                                 </DoubleAnimationUsingKeyFrames>
 
                                 <!-- TT2: moves after each TT1 step (offset by 1.2s), +120° each time -->
-                                <DoubleAnimationUsingKeyFrames
+                                <!--<DoubleAnimationUsingKeyFrames
                                     Storyboard.TargetName="TT2RotateTransform"
                                     Storyboard.TargetProperty="Angle">
-                                    <!-- hold while TT1 does step 1 (0→0.8s move + 0.4s hold = 1.2s) -->
+                                    --><!-- hold while TT1 does step 1 (0→0.8s move + 0.4s hold = 1.2s) --><!--
                                     <DiscreteDoubleKeyFrame KeyTime="0:0:0"    Value="0"/>
                                     <DiscreteDoubleKeyFrame KeyTime="0:0:1.2"  Value="0"/>
-                                    <!-- Step 1: TT2 moves -->
+                                    --><!-- Step 1: TT2 moves --><!--
                                     <LinearDoubleKeyFrame   KeyTime="0:0:2.0" Value="120"/>
-                                    <!-- hold while TT1 does step 2 -->
+                                    --><!-- hold while TT1 does step 2 --><!--
                                     <DiscreteDoubleKeyFrame KeyTime="0:0:3.6"  Value="120"/>
-                                    <!-- Step 2: TT2 moves -->
+                                    --><!-- Step 2: TT2 moves --><!--
                                     <LinearDoubleKeyFrame   KeyTime="0:0:4.4" Value="240"/>
-                                    <!-- hold while TT1 does step 3 -->
+                                    --><!-- hold while TT1 does step 3 --><!--
                                     <DiscreteDoubleKeyFrame KeyTime="0:0:6.0"  Value="240"/>
-                                    <!-- Step 3: TT2 moves -->
+                                    --><!-- Step 3: TT2 moves --><!--
                                     <LinearDoubleKeyFrame   KeyTime="0:0:6.8" Value="360"/>
-                                    <!-- hold while TT1 does step 4 -->
+                                    --><!-- hold while TT1 does step 4 --><!--
                                     <DiscreteDoubleKeyFrame KeyTime="0:0:8.4"  Value="360"/>
-                                    <!-- Step 4: TT2 moves (wraps back for next cycle) -->
+                                    --><!-- Step 4: TT2 moves (wraps back for next cycle) --><!--
                                     <LinearDoubleKeyFrame   KeyTime="0:0:9.2" Value="480"/>
                                     <DiscreteDoubleKeyFrame KeyTime="0:0:9.6"  Value="480"/>
-                                </DoubleAnimationUsingKeyFrames>
+                                </DoubleAnimationUsingKeyFrames>-->
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
@@ -1368,66 +1364,9 @@
                 <!--<Canvas Canvas.Left="330" Canvas.Top="170">-->
 
                 <!-- Turn Table 2 rotating disc: circle + triangle + ellipses, all rotate around center (80,75) -->
-                <TextBlock Canvas.Left="681" Canvas.Top="230" Text="TURN TABLE 2" FontWeight="Bold" FontSize="15" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="-0.193,0.469"/>
-                <Border Canvas.Left="674" Canvas.Top="60" Width="180" Height="180"
-        CornerRadius="90" BorderThickness="4"
-        ClipToBounds="True" RenderTransformOrigin="0.5,0.5" 
-        HorizontalAlignment="Center" VerticalAlignment="Top">
+                
 
-                    <Border.RenderTransform>
-                        <RotateTransform x:Name="TT2RotateTransform" Angle="0"/>
-                    </Border.RenderTransform>
-
-                    <Viewbox Stretch="Uniform" Margin="10">
-                        <Canvas Width="200" Height="200" Background="Transparent">
-
-                            <Path Stroke="Black" StrokeThickness="7" Fill="Transparent" StrokeLineJoin="Round">
-                                <Path.Data>
-                                    <PathGeometry>
-                                        <PathFigure StartPoint="40,25" IsClosed="True">
-                                            <LineSegment Point="160,95"/>
-                                            <ArcSegment Point="160,105" Size="15,15" SweepDirection="Clockwise"/>
-
-                                            <LineSegment Point="40,175"/>
-                                            <ArcSegment Point="30,165" Size="15,15" SweepDirection="Clockwise"/>
-
-                                            <LineSegment Point="30,35"/>
-                                            <ArcSegment Point="40,25" Size="15,15" SweepDirection="Clockwise"/>
-                                        </PathFigure>
-                                    </PathGeometry>
-                                </Path.Data>
-                            </Path>
-
-                            <StackPanel Orientation="Vertical" Canvas.Left="34" Canvas.Top="72" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Canvas.Left="75" Canvas.Top="49" RenderTransformOrigin="0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                <StackPanel.RenderTransform>
-                                    <RotateTransform Angle="30"/>
-                                </StackPanel.RenderTransform>
-                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Canvas.Left="68" Canvas.Top="138" RenderTransformOrigin="0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                <StackPanel.RenderTransform>
-                                    <RotateTransform Angle="-30"/>
-                                </StackPanel.RenderTransform>
-                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                            </StackPanel>
-
-                        </Canvas>
-                    </Viewbox>
-                </Border>
+                <cc:TurnTable2CC Canvas.Left="674" Canvas.Top="60" />
 
                 <!--INSPECTION UNIT-->
                 <Border Canvas.Left="651" Canvas.Top="305" Width="160" Height="55" 
