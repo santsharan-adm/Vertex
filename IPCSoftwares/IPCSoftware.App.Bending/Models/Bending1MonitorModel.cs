@@ -1,11 +1,29 @@
-﻿namespace IPCSoftware.App.Bending.Models
+﻿using IPCSoftware.App.Bending.Models;
+
+public class BendingMoitorModel1
 {
-    public class Bending1MonitorModel
-    {
-        public string Title { get; set; }
-        public string SubTitle { get; set; }
-        public string LoadValue { get; set; }
-        public string TempValue { get; set; }
-        public string TimeValue { get; set; }
-    }
+    public string Product { get; set; }
+
+    public string QRCode { get; set; }
+
+
+    //-- Load (N) --//
+
+    public ParameterLImitValues Load { get; set; }
+
+
+
+    //-- Temp (°C) --//
+
+    public ParameterLImitValues Temprature { get; set; }
+
+
+    //-- Bending Time --//
+
+    public double BendingTime { get; set; }
+
+    
+    //-- Result --//
+
+    public bool Result { get; set; }
 }

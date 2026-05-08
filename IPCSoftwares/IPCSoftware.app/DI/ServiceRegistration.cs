@@ -124,7 +124,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IAeLimitService, AeLimitService>();
             services.AddSingleton<INavigationService, NavigationService>();
-            services.AddSingleton<IDialogService, DialogService>();
+            //services.AddSingleton<IDialogService, DialogService>();
             services.AddSingleton<ILogManagerService, LogManagerService>();
             services.AddSingleton<IShiftManagementService, ShiftManagementService>();
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
@@ -147,7 +147,16 @@ namespace IPCSoftware.App.DI
             services.AddTransient<ShiftConfigurationViewModel>();
             services.AddTransient<ShiftConfigurationView>();
             services.AddTransient<LogListViewModel>();
-            services.AddTransient<LogConfigurationViewModel>();
+            services.AddTransient<LogConfigurationViewModel>(sp =>
+                new LogConfigurationViewModel(
+                    sp.GetRequiredService<ILogConfigurationService>(),
+                    sp.GetRequiredService<IDialogService>(),
+                    sp.GetRequiredService<ILogManagerService>(),
+                    sp.GetRequiredService<LogConfigurationView>(),
+                    sp.GetRequiredService<IAppLogger>()
+                   
+                )
+            );
             services.AddTransient<StartupConditionView>();
             services.AddTransient<StartupConditionViewModel>();
             services.AddTransient<DeviceListViewModel>();

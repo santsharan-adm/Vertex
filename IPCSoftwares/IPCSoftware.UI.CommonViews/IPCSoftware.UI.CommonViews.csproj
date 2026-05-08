@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0-windows</TargetFramework>
@@ -22,7 +22,6 @@
 		<PackageReference Include="System.Diagnostics.EventLog" Version="10.0.7" />
 		<PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.4" />
 		<PackageReference Include="System.Threading.AccessControl" Version="10.0.7" />
-		<PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="10.0.3" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 	</ItemGroup>
