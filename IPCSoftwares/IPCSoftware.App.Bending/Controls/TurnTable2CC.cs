@@ -73,19 +73,19 @@ namespace IPCSoftware.App.Bending.Controls
             base.OnApplyTemplate();
             rotateTransform = GetTemplateChild("Part_TriangleRotate") as RotateTransform;
             ellipseP1F1 = GetTemplateChild("Part_ElipsePos1Flex1") as Ellipse;
-            ellipseP1F2 = GetTemplateChild("Part_ElipsePos1Flex1") as Ellipse;
-            ellipseP1F3 = GetTemplateChild("Part_ElipsePos1Flex1") as Ellipse;
-            ellipseP1F4 = GetTemplateChild("Part_ElipsePos1Flex1") as Ellipse;
+            ellipseP1F2 = GetTemplateChild("Part_ElipsePos1Flex2") as Ellipse;
+            ellipseP1F3 = GetTemplateChild("Part_ElipsePos1Flex3") as Ellipse;
+            ellipseP1F4 = GetTemplateChild("Part_ElipsePos1Flex4") as Ellipse;
 
-            ellipseP2F1 = GetTemplateChild("Part_ElipsePos1Flex1") as Ellipse;
-            ellipseP2F2 = GetTemplateChild("Part_ElipsePos1Flex1") as Ellipse;
-            ellipseP2F3 = GetTemplateChild("Part_ElipsePos1Flex1") as Ellipse;
-            ellipseP2F4 = GetTemplateChild("Part_ElipsePos1Flex1") as Ellipse;
+            ellipseP2F1 = GetTemplateChild("Part_ElipsePos2Flex1") as Ellipse;
+            ellipseP2F2 = GetTemplateChild("Part_ElipsePos2Flex2") as Ellipse;
+            ellipseP2F3 = GetTemplateChild("Part_ElipsePos2Flex3") as Ellipse;
+            ellipseP2F4 = GetTemplateChild("Part_ElipsePos2Flex4") as Ellipse;
 
-            ellipseP3F1 = GetTemplateChild("Part_ElipsePos1Flex1") as Ellipse;
-            ellipseP3F2 = GetTemplateChild("Part_ElipsePos1Flex1") as Ellipse;
-            ellipseP3F3 = GetTemplateChild("Part_ElipsePos1Flex1") as Ellipse;
-            ellipseP3F4 = GetTemplateChild("Part_ElipsePos1Flex1") as Ellipse;
+            ellipseP3F1 = GetTemplateChild("Part_ElipsePos3Flex1") as Ellipse;
+            ellipseP3F2 = GetTemplateChild("Part_ElipsePos3Flex2") as Ellipse;
+            ellipseP3F3 = GetTemplateChild("Part_ElipsePos3Flex3") as Ellipse;
+            ellipseP3F4 = GetTemplateChild("Part_ElipsePos3Flex4") as Ellipse;
 
             SetEllipseOffset(ellipseP1F1, 4, 0);
             SetEllipseOffset(ellipseP1F2, 4, 0);
@@ -103,16 +103,17 @@ namespace IPCSoftware.App.Bending.Controls
             SetEllipseOffset(ellipseP3F4, 0, -4.2);
 
            
-
-
         }
 
-        void SetEllipseOffset(Ellipse ellpse,double x, double y)
+        void SetEllipseOffset(Ellipse ellpse, double x, double y)
         {
-            double x1 = Canvas.GetLeft(ellpse);
-            double y1 = Canvas.GetTop(ellpse);
-            Canvas.SetLeft(ellpse, x1 + x);
-            Canvas.SetTop(ellpse, y1 + y);
+            if (ellpse != null)
+            {
+                double x1 = Canvas.GetLeft(ellpse);
+                double y1 = Canvas.GetTop(ellpse);
+                Canvas.SetLeft(ellpse, x1 + x);
+                Canvas.SetTop(ellpse, y1 + y);
+            }
         }
         public void RotateTable(double angle)
         {

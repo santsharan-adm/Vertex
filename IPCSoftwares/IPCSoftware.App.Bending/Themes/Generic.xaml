@@ -58,4 +58,42 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="{x:Type local:InspectionUnitOutputCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:InspectionUnitOutputCC}">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+
+                            <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="2">
+                                <TextBlock Text="INSPECTION UNIT OUTPUT" 
+                                        FontSize="15" 
+                                        FontWeight="ExtraBold" 
+                                        Foreground="#0F172A" 
+                                        HorizontalAlignment="Center"/>  
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="3">
+                                    <Viewbox Width="25" Height="30" Margin="2,0">
+                                        <Path Fill="#475569" Data="M12,20H4A2,2 0 0,1 2,18V8A2,2 0 0,1 4,6H5L7,4H11L13,6H14A2,2 0 0,1 16,8V10.5L20,8V18L16,15.5V18A2,2 0 0,1 14,20H12M4,8V18H14V8H10.83L9,6H9L8.83,6H7.17L5.34,8H4M9,17A4,4 0 0,1 5,13A4,4 0 0,1 9,9A4,4 0 0,1 13,13A4,4 0 0,1 9,17M9,11A2,2 0 0,0 7,13A2,2 0 0,0 9,15A2,2 0 0,0 11,13A2,2 0 0,0 9,11Z"/>
+                                    </Viewbox>
+                                    <Viewbox Width="25" Height="30" Margin="2,0">
+                                        <Path Fill="#475569" Data="M12,20H4A2,2 0 0,1 2,18V8A2,2 0 0,1 4,6H5L7,4H11L13,6H14A2,2 0 0,1 16,8V10.5L20,8V18L16,15.5V18A2,2 0 0,1 14,20H12M4,8V18H14V8H10.83L9,6H9L8.83,6H7.17L5.34,8H4M9,17A4,4 0 0,1 5,13A4,4 0 0,1 9,9A4,4 0 0,1 13,13A4,4 0 0,1 9,17M9,11A2,2 0 0,0 7,13A2,2 0 0,0 9,15A2,2 0 0,0 11,13A2,2 0 0,0 9,11Z"/>
+                                    </Viewbox>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>
