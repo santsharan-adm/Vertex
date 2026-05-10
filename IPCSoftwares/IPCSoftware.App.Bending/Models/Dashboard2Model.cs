@@ -141,11 +141,10 @@ namespace IPCSoftware.App.Bending.Models
 
     public class InputTrayModel
     {
-        public int Component1 { get; set; }
-        public int Component2 { get; set; }
-        public int Component3 { get; set; }
-        public int Component4 { get; set; }
-
+        public bool IsLoaded { get; set; }
+        public int Numberofcomponent { get; set; }
+        public int TraySize { get; set; }
+        public int NumberOfTrays { get; set; }
     }
 
 
@@ -153,10 +152,10 @@ namespace IPCSoftware.App.Bending.Models
 
     public class OutputTrayModel
     {
-        public int Component1 { get; set; }
-        public int Component2 { get; set; }
-        public int Component3 { get; set; }
-        public int Component4 { get; set; }
+        public bool IsUnLoaded { get; set; }
+        public int Numberofcomponent { get; set; }
+        public int TraySize { get; set; }
+        public int NumberOfTrays { get; set; }
 
     }
 
@@ -175,8 +174,6 @@ namespace IPCSoftware.App.Bending.Models
 
         public NGBinModel NGBin2 { get; set; }
     }
-
-
 
     // Efficiency Values
 

@@ -1074,39 +1074,6 @@
                                 </StackPanel>
                             </Border>
 
-                            <!--<Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
-                                <StackPanel>
-                                    <Border Background="{StaticResource AccentBlue}" Padding="6,3">
-                                        <TextBlock Text="BEND 4" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
-                                    </Border>
-                                    <Grid Margin="1">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W1B4Clamp"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W2B4Clamp"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W3B4Clamp"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W4B4Clamp"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W1B4Punch"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W2B4Punch"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W3B4Punch"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W4B4Punch"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W1B4Heat"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W2B4Heat"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W3B4Heat"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W4B4Heat"/>
-                                    </Grid>
-                                </StackPanel>
-                            </Border>-->
-
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -1361,8 +1328,6 @@
                     </Grid>
                 </Border>
 
-
-
                 <!--</Canvas>-->
 
                 <!--<Canvas Canvas.Left="330" Canvas.Top="170">-->
@@ -1370,14 +1335,13 @@
                 <!-- Turn Table 2 rotating disc: circle + triangle + ellipses, all rotate around center (80,75) -->
                 <TextBlock Canvas.Left="681" Canvas.Top="230" Text="TURN TABLE 2" FontWeight="Bold" FontSize="15" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="-0.193,0.469"/>
                 <Border Canvas.Left="674" Canvas.Top="60" Width="180" Height="180"
-        CornerRadius="90" BorderThickness="4"
-        ClipToBounds="True" RenderTransformOrigin="0.5,0.5" 
-        HorizontalAlignment="Center" VerticalAlignment="Top">
+                   CornerRadius="90" BorderThickness="4"
+                   ClipToBounds="True" RenderTransformOrigin="0.5,0.5" 
+                   HorizontalAlignment="Center" VerticalAlignment="Top">
 
                     <Border.RenderTransform>
                         <RotateTransform x:Name="TT2RotateTransform" Angle="0"/>
                     </Border.RenderTransform>
-
                     <Viewbox Stretch="Uniform" Margin="10">
                         <Canvas Width="200" Height="200" Background="Transparent">
 
@@ -1439,15 +1403,12 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-
-
                         <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="2">
                             <TextBlock Text="INSPECTION UNIT" 
                     FontSize="15" 
                     FontWeight="ExtraBold" 
                     Foreground="#0F172A" 
                     HorizontalAlignment="Center"/>
-
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="3">
                                 <Viewbox Width="25" Height="30" Margin="2,0">
                                     <Path Fill="#475569" Data="M12,20H4A2,2 0 0,1 2,18V8A2,2 0 0,1 4,6H5L7,4H11L13,6H14A2,2 0 0,1 16,8V10.5L20,8V18L16,15.5V18A2,2 0 0,1 14,20H12M4,8V18H14V8H10.83L9,6H9L8.83,6H7.17L5.34,8H4M9,17A4,4 0 0,1 5,13A4,4 0 0,1 9,9A4,4 0 0,1 13,13A4,4 0 0,1 9,17M9,11A2,2 0 0,0 7,13A2,2 0 0,0 9,15A2,2 0 0,0 11,13A2,2 0 0,0 9,11Z"/>

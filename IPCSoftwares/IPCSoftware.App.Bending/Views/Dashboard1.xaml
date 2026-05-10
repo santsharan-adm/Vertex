@@ -38,7 +38,8 @@
                     <TextBlock Text="CONTROLS" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center"/>
                 </Border>
                 <StackPanel Margin="2">
-                    <Button Padding="3,4" Margin="0,1" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="9.5">
+                    <Button Padding="3,4" Margin="0,1" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="9.5"
+                            Command="{Binding AutoRunCommand}">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="4"/>
@@ -46,7 +47,8 @@
                         </Button.Resources>
                         <TextBlock Text="AUTO RUN" TextAlignment="Center"/>
                     </Button>
-                    <Button Padding="3,4" Margin="0,1" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="9.5">
+                    <Button Padding="3,4" Margin="0,1" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="9.5"
+                            Command="{Binding DryRunCommand}">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="4"/>
@@ -54,7 +56,8 @@
                         </Button.Resources>
                         <TextBlock Text="DRY RUN" TextAlignment="Center"/>
                     </Button>
-                    <Button Padding="3,4" Margin="0,1" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="9.5">
+                    <Button Padding="3,4" Margin="0,1" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="9.5"
+                            Command="{Binding CycleStartStopCommand}">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="4"/>
@@ -62,7 +65,8 @@
                         </Button.Resources>
                         <TextBlock Text="CYCLE START/STOP" TextAlignment="Center"/>
                     </Button>
-                    <Button Padding="3,4" Margin="0,1" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="9.5">
+                    <Button Padding="3,4" Margin="0,1" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="9.5"
+                            Command="{Binding WorkPayoutStartCommand}">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="4"/>
@@ -216,15 +220,10 @@
                                 <TextBlock Text="Output Tray Unload" Foreground="White" FontSize="9"/>
                                 <TextBlock Grid.Column="1" Text="#BFBL001" Foreground="White" FontSize="9" FontWeight="Bold"/>
                             </Grid>
-
-
-
                         </Grid>
                     </ScrollViewer>
                 </Grid>
             </Border>
-
-
         </Grid>
 
         <!-- EFFICIENCY BREAKDOWN -->
@@ -1574,14 +1573,10 @@
 
                 <!--</Canvas>-->
 
-                <!--<Canvas Canvas.Left="330" Canvas.Top="170">-->
-
                 <!-- Turn Table 2 rotating disc: circle + triangle + ellipses, all rotate around center (80,75) -->
                 <TextBlock Canvas.Left="579" Canvas.Top="275" Text="TURN TABLE 2" FontWeight="Bold" FontSize="15" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <Border Canvas.Left="598" Canvas.Top="120" Width="160" Height="160"
-                        CornerRadius="80"
-                      
-                     
+                        CornerRadius="80"                    
                         BorderThickness="3.5"
                         ClipToBounds="True"
                         RenderTransformOrigin="0.5,0.5"
@@ -1695,8 +1690,6 @@
                     CornerRadius="2" HorizontalAlignment="Left" VerticalAlignment="Center">
 
                     <Grid >
-
-
                         <StackPanel VerticalAlignment="Center">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <Ellipse Width="6" Height="6" Fill="#F1F5F9" Margin="3" VerticalAlignment="Center"/>
@@ -1705,7 +1698,6 @@
                         FontWeight="Bold" 
                         Foreground="Black" RenderTransformOrigin="0.205,0.661" Height="17" Width="132"/>
                             </StackPanel>
-
                             <TextBlock Text="UNLOAD" 
                     FontSize="10" 
                     FontWeight="Bold" 
@@ -1714,8 +1706,6 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-
-
                 <!--</Canvas>-->
                 <!--NG BIN 1-->
                 <Border Canvas.Top="40"  Width="85" Height="95" 
