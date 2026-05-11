@@ -332,34 +332,34 @@
 
                                 <!-- Top row -->
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0">
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_TopRow1" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_TopRow2" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_TopRow3" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_TopRow4" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 </StackPanel>
 
                                 <!-- Bottom row -->
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,129,0,0">
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_BottomRow1" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_BottomRow2" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_BottomRow3" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_BottomRow4" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 </StackPanel>
 
                                 <!-- Left column -->
                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,0,0,0">
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_LeftCol1" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_LeftCol2" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_LeftCol3" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_LeftCol4" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 </StackPanel>
 
                                 <!-- Right column -->
                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="129,0,0,0">
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_RightCol1" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_RightCol2" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_RightCol3" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse x:Name="Part_TT1_RightCol4" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
