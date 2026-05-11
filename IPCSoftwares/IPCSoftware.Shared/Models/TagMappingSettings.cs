@@ -143,6 +143,8 @@ namespace IPCSoftware.Shared.Models
         public int ManualB12 { get; set; }
         public int ManualB16 { get; set; }
 
+        public int ProgramNo {get; set ;}
+
 
         public XYPair JogSpeedLow { get; set; } = new();
        // public XYPair JogSpeedHigh{ get; set; } = new();

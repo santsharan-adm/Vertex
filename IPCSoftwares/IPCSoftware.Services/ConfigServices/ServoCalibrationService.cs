@@ -1,4 +1,5 @@
 ﻿using IPCSoftware.Core.Interfaces;
+using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
@@ -17,15 +18,16 @@ namespace IPCSoftware.Services.ConfigServices
         private readonly string _filePath;  
         private readonly string _dataFolder;
         private readonly IProductConfigurationService _productService;
+        private readonly IAppLogger _logger;
 
         private readonly string _RecipeFilePath;
 
 
         public ServoCalibrationService(IOptions<ConfigSettings> configSettings,
-              IProductConfigurationService productService)
+              IProductConfigurationService productService , IAppLogger logger)
         {
             //string folder = configSettings.Value.DataFolder ?? AppContext.BaseDirectory;
-
+            _logger = logger;
             var config = configSettings.Value;
             string dataFolderPath = config.DataFolder;
             _productService = productService;
@@ -61,21 +63,16 @@ namespace IPCSoftware.Services.ConfigServices
             }
         }
 
-        public async Task<List<ServoRecipeModel>> LoadRecipeAsync()
+        public async Task<List<ServoRecipeModel>> LoadRecipeAsync()                          //Modifed by Rishabh -Date 11/05/2026
         {
-            if (!File.Exists(_RecipeFilePath))
-            {
-                return new List<ServoRecipeModel>(); // Return empty list if recipe file doesn't exist
-            }
-
+            var recipes = new List<ServoRecipeModel>();
             try
             {
-                var lines = await File.ReadAllLinesAsync(_RecipeFilePath);
-                var recipes = new List<ServoRecipeModel>();
+                var lines = await File.ReadAllLinesAsync(_RecipeFilePath);               
 
                 if (lines.Length < 2) // Need header + at least one data row
                 {
-                    return new List<ServoRecipeModel>();
+                    return recipes;
                 }
 
                 var headers = lines[0].Split(',').Select(h => h.Trim()).ToArray();
@@ -139,12 +136,14 @@ namespace IPCSoftware.Services.ConfigServices
                     recipes.Add(recipe);
                 }
 
-                return recipes;
+                
             }
-            catch
+            catch (Exception ex)
             {
-                return new List<ServoRecipeModel>();
+                _logger.LogError($"Failed to load recipe file: {ex.Message}",LogType.Error);
             }
+
+            return recipes;
         }
 
 

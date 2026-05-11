@@ -237,47 +237,143 @@
                     <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding ModeButtons[4]}" ContentTemplate="{StaticResource ModeButtonTemplate}"/>
 
                     <!-- Row 1, Col 2: RECIPE SELECTION (Last Cell) -->
-                    <Border Grid.Row="1" Grid.Column="2" Margin="15" Background="#F9F9F9" CornerRadius="15" 
-                            Padding="20" BorderBrush="#CCC" BorderThickness="1">
-                        <Border.Effect>
-                            <DropShadowEffect Color="Black" BlurRadius="8" Opacity="0.15" ShadowDepth="2"/>
-                        </Border.Effect>
+                    <!-- Row 1, Col 2: RECIPE SELECTION (Last Cell) -->
+                    <Grid Grid.Row="1" Grid.Column="2" Margin="15">
+                        <Border x:Name="RecipeSelectionBorder" 
+            Width="330" 
+            Height="270" 
+            CornerRadius="15" 
+            BorderThickness="1" 
+            BorderBrush="#555">
 
-                        <Grid VerticalAlignment="Center">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
+                            <!-- Base Color Layer -->
+                            <Border.Background>
+                                <SolidColorBrush x:Name="RecipeBaseColor" Color="Salmon"/>
+                            </Border.Background>
 
-                            <!-- Label -->
-                            <TextBlock Grid.Row="0" 
-                                       Text="PROGRAM NUMBER" 
-                                       FontSize="20" 
-                                       FontWeight="Bold" 
-                                       Foreground="#333" 
-                                       Margin="0,0,0,15"
-                                       TextAlignment="Center"
-                                       TextWrapping="Wrap"/>
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.3"/>
+                            </Border.Effect>
 
-                            <!-- ComboBox -->
-                            <ComboBox Grid.Row="1"
-                                      ItemsSource="{Binding RecipeList}" 
-                                      SelectedItem="{Binding SelectedRecipe, Mode=TwoWay}" 
-                                      DisplayMemberPath="Name"
-                                      IsEnabled="{Binding IsRecipeSelectionEnabled}"
-                                      Style="{StaticResource RecipeComboBoxStyle}">
-                                <ComboBox.ItemContainerStyle>
-                                    <Style TargetType="ComboBoxItem">
-                                        <Setter Property="FontSize" Value="22"/>
-                                        <Setter Property="FontWeight" Value="Bold"/>
-                                        <Setter Property="Padding" Value="10"/>
-                                        <Setter Property="Height" Value="50"/>
-                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                    </Style>
-                                </ComboBox.ItemContainerStyle>
-                            </ComboBox>
-                        </Grid>
-                    </Border>
+                            <!-- Content Grid -->
+                            <Grid>
+                                <!-- Gloss/Gradient Layer (matches button style) -->
+                                <Border x:Name="RecipeGlossLayer" 
+                    CornerRadius="15" 
+                    Opacity="0.8" 
+                    IsHitTestVisible="False">
+                                    <Border.Background>
+                                        <RadialGradientBrush GradientOrigin="0.5,0.2" 
+                                         Center="0.5,0.5" 
+                                         RadiusX="0.8" 
+                                         RadiusY="0.8">
+                                            <GradientStop Color="#CCFFFFFF" Offset="0"/>
+                                            <GradientStop Color="#00FFFFFF" Offset="1"/>
+                                        </RadialGradientBrush>
+                                    </Border.Background>
+                                </Border>
+
+                                <!-- Main Content -->
+                                <Grid VerticalAlignment="Center" Margin="20">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Label -->
+                                    <TextBlock Grid.Row="0" 
+                           Text="Select Program No" 
+                           FontSize="45" 
+                           FontWeight="Bold" 
+                           Foreground="White" 
+                           TextWrapping="Wrap" 
+                           TextAlignment="Center"
+                           Margin="0,0,0,15">
+                                        <TextBlock.Effect>
+                                            <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="3" Opacity="0.6"/>
+                                        </TextBlock.Effect>
+                                    </TextBlock>
+
+                                    <!-- ComboBox -->
+                                    <ComboBox Grid.Row="1"
+                          ItemsSource="{Binding RecipeList}" 
+                          SelectedItem="{Binding SelectedRecipe, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                          DisplayMemberPath="Name"
+                          IsEnabled="{Binding IsRecipeSelectionEnabled}"
+                          Style="{StaticResource RecipeComboBoxStyle}">
+                                        <ComboBox.ItemContainerStyle>
+                                            <Style TargetType="ComboBoxItem">
+                                                <Setter Property="FontSize" Value="22"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                <Setter Property="Padding" Value="10"/>
+                                                <Setter Property="Height" Value="50"/>
+                                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                            </Style>
+                                        </ComboBox.ItemContainerStyle>
+                                    </ComboBox>
+                                </Grid>
+                            </Grid>
+
+                            <!-- Style with Triggers for Enable/Disable Effects -->
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <!-- When Disabled (Recipe Selection NOT Enabled) -->
+                                        <DataTrigger Binding="{Binding IsRecipeSelectionEnabled}" Value="False">
+                                            <Setter Property="Background">
+                                                <Setter.Value>
+                                                    <SolidColorBrush Color="#607D8B"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Setter Property="Opacity" Value="0.3"/>
+                                            <Setter Property="Effect" Value="{x:Null}"/>
+                                        </DataTrigger>
+
+                                        <!-- When Enabled (Recipe Selection IS Enabled) - Active State -->
+                                        <DataTrigger Binding="{Binding IsRecipeSelectionEnabled}" Value="True">
+                                            <Setter Property="Background">
+                                                <Setter.Value>
+                                                    <SolidColorBrush Color="#48D1CC"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Setter Property="Opacity" Value="1.0"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+
+                        <!-- Additional Gloss Layer Control (separate for better trigger control) -->
+                        <Border x:Name="OuterGlossControl" 
+            Width="330" 
+            Height="270" 
+            CornerRadius="15" 
+            IsHitTestVisible="False">
+                            <Border CornerRadius="15">
+                                <Border.Background>
+                                    <RadialGradientBrush GradientOrigin="0.5,0.2" 
+                                     Center="0.5,0.5" 
+                                     RadiusX="0.8" 
+                                     RadiusY="0.8">
+                                        <GradientStop Color="#CCFFFFFF" Offset="0"/>
+                                        <GradientStop Color="#00FFFFFF" Offset="1"/>
+                                    </RadialGradientBrush>
+                                </Border.Background>
+                            </Border>
+
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Opacity" Value="0.8"/>
+                                    <Style.Triggers>
+                                        <!-- Dim gloss when disabled -->
+                                        <DataTrigger Binding="{Binding IsRecipeSelectionEnabled}" Value="False">
+                                            <Setter Property="Opacity" Value="0.1"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+                    </Grid>
 
                 </Grid>
             </Border>

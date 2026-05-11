@@ -109,6 +109,8 @@ namespace IPCSoftware.Shared.Models
         public static int Servo_XYOriginReadX;
         public static int Servo_XYOriginReadY;
 
+        public static int ProgramNumber;
+
         public static XYPair Servo_JogSpeed_Low = new();
         public static XYPair Servo_OffSet = new();
         public static XYPair Servo_Move_Speed= new();
@@ -228,6 +230,8 @@ namespace IPCSoftware.Shared.Models
 
                 Servo_XYOriginReadX = s.ManualB12;
                 Servo_XYOriginReadY = s.ManualB16;
+
+                ProgramNumber = s.ProgramNo;
 
                 Servo_JogSpeed_Low = s.JogSpeedLow;
                 Servo_OffSet = s.OriginOffSet;

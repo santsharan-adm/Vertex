@@ -542,3 +542,4 @@
 541,541,SYS_DATA_SEQ_12,1,40424,1,0,Int16,0,0,0,DM10424,Sqeucne for Cavity 12,True,None
 542,542,Control_Data_B10,1,40057,1,0,UInt16,0,0,0,DM10057,Number of Stations,True,None
 543,543,SYS_DATA_B9,1,40480,1,0,Bit,0,0,0,DM10480,CCD Transfer Complete,True,None
+544,544,Program Number,1,40425,1,0,Int16,0,0,0,Program Number from IPC to PLC,Program Number from IPC to PLC,True,None

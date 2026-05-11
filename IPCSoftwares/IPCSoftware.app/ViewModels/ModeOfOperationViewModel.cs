@@ -89,16 +89,34 @@ namespace IPCSoftware.App.ViewModels
         }
 
         private RecipeItem _selectedRecipe;
-        public RecipeItem SelectedRecipe
+        public RecipeItem SelectedRecipe                                      //Modified By Rishabh Date- 11-05-2026
         {
             get => _selectedRecipe;
             set
             {
+                if (_selectedRecipe == value) return; // No change, do nothing
                 var newRecipe = value;
-                if (SetProperty(ref _selectedRecipe, value) && value != null)
-                {
-                    OnRecipeSelectionChanged(newRecipe , _lastConfirmedRecipe);
+                var previousRecipe = _selectedRecipe;
+              
+                if (SetProperty(ref _selectedRecipe, value))
+                {                   
+                    bool confirm = _dialog.ShowYesNo($"Are you sure you want to load {value.Name}?", "Confirmation");
+                    if (confirm)
+                    {                       
+                        _lastConfirmedRecipe = value;
+                        ApplyRecipeSelection(value);
+                    }
+                    else
+                    {
+                        Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            _selectedRecipe = previousRecipe;
+                            OnPropertyChanged(nameof(SelectedRecipe));
+                        }), System.Windows.Threading.DispatcherPriority.ContextIdle);
+                    }
+
                 }
+
             }
         }
 
@@ -109,7 +127,7 @@ namespace IPCSoftware.App.ViewModels
 
         public ICommand UnifiedOperationCommand { get; }
 
-        private const int RECIPE_TAG_ID = 544;      //Will be change
+
 
         public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService , IDialogService dialog) : base(logger)
         {
@@ -146,7 +164,7 @@ namespace IPCSoftware.App.ViewModels
                 );
 
                 // Set default selection to first recipe
-                SelectedRecipe = RecipeList.FirstOrDefault();
+               // SelectedRecipe = RecipeList.FirstOrDefault();
                 _selectedRecipe = RecipeList.FirstOrDefault();
                 _lastConfirmedRecipe = _selectedRecipe; // Track initial selection
                 OnPropertyChanged(nameof(SelectedRecipe));
@@ -158,48 +176,63 @@ namespace IPCSoftware.App.ViewModels
                 // Fallback to hardcoded list if file read fails
                 RecipeList = new ObservableCollection<RecipeItem>
                 {
-                    new RecipeItem { ProgramNo = 1, Name = "Program 1" },
-                    new RecipeItem { ProgramNo = 2, Name = "Program 2" },
-                    new RecipeItem { ProgramNo = 3, Name = "Program 3" },
-                    new RecipeItem { ProgramNo = 4, Name = "Program 4" },
-                    new RecipeItem { ProgramNo = 5, Name = "Program 5" }
+                    new RecipeItem { ProgramNo = 1, Name = "Program 1" }
                 };
 
-                SelectedRecipe = RecipeList.FirstOrDefault();
+                _selectedRecipe = RecipeList.FirstOrDefault();
+                _lastConfirmedRecipe = _selectedRecipe;
+                OnPropertyChanged(nameof(SelectedRecipe));
             }
         }
 
-        // // Added by Rishabh -Date -06-05-2026 ,  Handle Recipe Selection Change
-        private async void OnRecipeSelectionChanged(RecipeItem newRecipe , RecipeItem previousRecipe)
+        private async void ApplyRecipeSelection(RecipeItem newRecipe)
         {
             try
             {
-                if (previousRecipe != null && newRecipe.ProgramNo == previousRecipe.ProgramNo) { return; } // No change in selection
-                bool confirm = _dialog.ShowYesNo($"Are you sure you want to load {newRecipe.Name} ?", "Confirmation");
-                if (confirm)
-                {
-                    _lastConfirmedRecipe = newRecipe;
-                    _logger.LogInfo($"Recipe Selected: Program {newRecipe.ProgramNo} - {newRecipe.Name}", LogType.Audit);
-                    AddAudit($"Program Number Changed: {newRecipe.Name}");
-                }
-                else
-                {
-                    _selectedRecipe = previousRecipe;
-                    OnPropertyChanged(nameof(SelectedRecipe));
-                }
+                _lastConfirmedRecipe = newRecipe;
+                _logger.LogInfo($"Recipe Selected: Program {newRecipe.ProgramNo} - {newRecipe.Name}", LogType.Audit);
+                AddAudit($"Program Number Changed: {newRecipe.Name}");
 
-                //  Write selected recipe/program number to PLC
-                 await _coreClient.WriteTagAsync(RECIPE_TAG_ID, newRecipe.ProgramNo);
-
-                
+                // Write selected recipe/program number to PLC
+                await _coreClient.WriteTagAsync(ConstantValues.ProgramNumber, newRecipe.ProgramNo);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Recipe Selection Error: {ex.Message}", LogType.Diagnostics);
-                _selectedRecipe = previousRecipe;
-                OnPropertyChanged(nameof(SelectedRecipe));
             }
         }
+
+        // // Added by Rishabh -Date -06-05-2026 ,  Handle Recipe Selection Change
+        //private async void OnRecipeSelectionChanged(RecipeItem newRecipe , RecipeItem previousRecipe)
+        //{
+        //    try
+        //    {
+        //        if (previousRecipe != null && newRecipe.ProgramNo == previousRecipe.ProgramNo) { return; } // No change in selection
+        //        bool confirm = _dialog.ShowYesNo($"Are you sure you want to load {newRecipe.Name} ?", "Confirmation");
+        //        if (confirm)
+        //        {
+        //            _lastConfirmedRecipe = newRecipe;
+        //            _logger.LogInfo($"Recipe Selected: Program {newRecipe.ProgramNo} - {newRecipe.Name}", LogType.Audit);
+        //            AddAudit($"Program Number Changed: {newRecipe.Name}");
+        //        }
+        //        else
+        //        {
+        //            _selectedRecipe = previousRecipe;
+        //            OnPropertyChanged(nameof(SelectedRecipe));
+        //        }
+
+        //        //  Write selected recipe/program number to PLC
+        //         await _coreClient.WriteTagAsync(ConstantValues.ProgramNumber, newRecipe.ProgramNo);
+
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Recipe Selection Error: {ex.Message}", LogType.Diagnostics);
+        //        _selectedRecipe = previousRecipe;
+        //        OnPropertyChanged(nameof(SelectedRecipe));
+        //    }
+        //}
 
         private void InitializeTags()
         {
