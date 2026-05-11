@@ -1,379 +1,430 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using IPCSoftware.App.Bending.Models;
+using IPCSoftware.Common.CommonExtensions;
+using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.UI.CommonViews.ViewModels;
 
 namespace IPCSoftware.App.Bending.ViewModels
 {
-    public class Bending1MonitorViewModel : BaseViewModel
+    public class Bending1MonitorViewModel : BaseViewModel, IDisposable
     {
         private readonly INavigationService _navigationService;
-
+        private readonly CoreClient _coreClient;
+        private readonly SafePoller _liveDataTimer;
 
         public ICommand NextCommand { get; }
 
+        private string _batchNo = "Loading...";
+        public string BatchNo
+        {
+            get => _batchNo;
+            set => SetProperty(ref _batchNo, value);
+        }
+
         // ==================== PRODUCT 1 DATA ====================
-        private double _p1_Upper;
-        public double P1_Upper
+        private string _p1_Product = "Product 1";
+        public string P1_Product
         {
-            get => _p1_Upper;
-            set
-            {
-                if (_p1_Upper != value)
-                {
-                    _p1_Upper = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p1_Product;
+            set => SetProperty(ref _p1_Product, value);
         }
 
-        private double _p1_Value;
-        public double P1_Value
+        private string _p1_QRCode = "---";
+        public string P1_QRCode
         {
-            get => _p1_Value;
-            set
-            {
-                if (_p1_Value != value)
-                {
-                    _p1_Value = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p1_QRCode;
+            set => SetProperty(ref _p1_QRCode, value);
         }
 
-        private double _p1_Lower;
-        public double P1_Lower
+        private double _p1_Load_Upper;
+        public double P1_Load_Upper
         {
-            get => _p1_Lower;
-            set
-            {
-                if (_p1_Lower != value)
-                {
-                    _p1_Lower = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p1_Load_Upper;
+            set => SetProperty(ref _p1_Load_Upper, value);
         }
 
-        private string _p1_LM;
-        public string P1_LM
+        private double _p1_Load_Value;
+        public double P1_Load_Value
         {
-            get => _p1_LM;
-            set
-            {
-                if (_p1_LM != value)
-                {
-                    _p1_LM = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p1_Load_Value;
+            set => SetProperty(ref _p1_Load_Value, value);
         }
 
-        private string _p1_TM;
-        public string P1_TM
+        private double _p1_Load_Lower;
+        public double P1_Load_Lower
         {
-            get => _p1_TM;
-            set
-            {
-                if (_p1_TM != value)
-                {
-                    _p1_TM = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p1_Load_Lower;
+            set => SetProperty(ref _p1_Load_Lower, value);
         }
 
-        private string _p1_BT;
-        public string P1_BT
+        private double _p1_Temp_Upper;
+        public double P1_Temp_Upper
         {
-            get => _p1_BT;
-            set
-            {
-                if (_p1_BT != value)
-                {
-                    _p1_BT = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p1_Temp_Upper;
+            set => SetProperty(ref _p1_Temp_Upper, value);
+        }
+
+        private double _p1_Temp_Value;
+        public double P1_Temp_Value
+        {
+            get => _p1_Temp_Value;
+            set => SetProperty(ref _p1_Temp_Value, value);
+        }
+
+        private double _p1_Temp_Lower;
+        public double P1_Temp_Lower
+        {
+            get => _p1_Temp_Lower;
+            set => SetProperty(ref _p1_Temp_Lower, value);
+        }
+
+        private double _p1_BendingTime;
+        public double P1_BendingTime
+        {
+            get => _p1_BendingTime;
+            set => SetProperty(ref _p1_BendingTime, value);
+        }
+
+        private bool _p1_Result;
+        public bool P1_Result
+        {
+            get => _p1_Result;
+            set => SetProperty(ref _p1_Result, value);
         }
 
         // ==================== PRODUCT 2 DATA ====================
-        private double _p2_Upper;
-        public double P2_Upper
+        private string _p2_Product = "Product 2";
+        public string P2_Product
         {
-            get => _p2_Upper;
-            set
-            {
-                if (_p2_Upper != value)
-                {
-                    _p2_Upper = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p2_Product;
+            set => SetProperty(ref _p2_Product, value);
         }
 
-        private double _p2_Value;
-        public double P2_Value
+        private string _p2_QRCode = "---";
+        public string P2_QRCode
         {
-            get => _p2_Value;
-            set
-            {
-                if (_p2_Value != value)
-                {
-                    _p2_Value = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p2_QRCode;
+            set => SetProperty(ref _p2_QRCode, value);
         }
 
-        private double _p2_Lower;
-        public double P2_Lower
+        private double _p2_Load_Upper;
+        public double P2_Load_Upper
         {
-            get => _p2_Lower;
-            set
-            {
-                if (_p2_Lower != value)
-                {
-                    _p2_Lower = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p2_Load_Upper;
+            set => SetProperty(ref _p2_Load_Upper, value);
         }
 
-        private string _p2_LM;
-        public string P2_LM
+        private double _p2_Load_Value;
+        public double P2_Load_Value
         {
-            get => _p2_LM;
-            set
-            {
-                if (_p2_LM != value)
-                {
-                    _p2_LM = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p2_Load_Value;
+            set => SetProperty(ref _p2_Load_Value, value);
         }
 
-        private string _p2_TM;
-        public string P2_TM
+        private double _p2_Load_Lower;
+        public double P2_Load_Lower
         {
-            get => _p2_TM;
-            set
-            {
-                if (_p2_TM != value)
-                {
-                    _p2_TM = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p2_Load_Lower;
+            set => SetProperty(ref _p2_Load_Lower, value);
         }
 
-        private string _p2_BT;
-        public string P2_BT
+        private double _p2_Temp_Upper;
+        public double P2_Temp_Upper
         {
-            get => _p2_BT;
-            set
-            {
-                if (_p2_BT != value)
-                {
-                    _p2_BT = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p2_Temp_Upper;
+            set => SetProperty(ref _p2_Temp_Upper, value);
+        }
+
+        private double _p2_Temp_Value;
+        public double P2_Temp_Value
+        {
+            get => _p2_Temp_Value;
+            set => SetProperty(ref _p2_Temp_Value, value);
+        }
+
+        private double _p2_Temp_Lower;
+        public double P2_Temp_Lower
+        {
+            get => _p2_Temp_Lower;
+            set => SetProperty(ref _p2_Temp_Lower, value);
+        }
+
+        private double _p2_BendingTime;
+        public double P2_BendingTime
+        {
+            get => _p2_BendingTime;
+            set => SetProperty(ref _p2_BendingTime, value);
+        }
+
+        private bool _p2_Result;
+        public bool P2_Result
+        {
+            get => _p2_Result;
+            set => SetProperty(ref _p2_Result, value);
         }
 
         // ==================== PRODUCT 3 DATA ====================
-        private double _p3_Upper;
-        public double P3_Upper
+        private string _p3_Product = "Product 3";
+        public string P3_Product
         {
-            get => _p3_Upper;
-            set
-            {
-                if (_p3_Upper != value)
-                {
-                    _p3_Upper = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p3_Product;
+            set => SetProperty(ref _p3_Product, value);
         }
 
-        private double _p3_Value;
-        public double P3_Value
+        private string _p3_QRCode = "---";
+        public string P3_QRCode
         {
-            get => _p3_Value;
-            set
-            {
-                if (_p3_Value != value)
-                {
-                    _p3_Value = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p3_QRCode;
+            set => SetProperty(ref _p3_QRCode, value);
         }
 
-        private double _p3_Lower;
-        public double P3_Lower
+        private double _p3_Load_Upper;
+        public double P3_Load_Upper
         {
-            get => _p3_Lower;
-            set
-            {
-                if (_p3_Lower != value)
-                {
-                    _p3_Lower = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p3_Load_Upper;
+            set => SetProperty(ref _p3_Load_Upper, value);
         }
 
-        private string _p3_LM;
-        public string P3_LM
+        private double _p3_Load_Value;
+        public double P3_Load_Value
         {
-            get => _p3_LM;
-            set
-            {
-                if (_p3_LM != value)
-                {
-                    _p3_LM = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p3_Load_Value;
+            set => SetProperty(ref _p3_Load_Value, value);
         }
 
-        private string _p3_TM;
-        public string P3_TM
+        private double _p3_Load_Lower;
+        public double P3_Load_Lower
         {
-            get => _p3_TM;
-            set
-            {
-                if (_p3_TM != value)
-                {
-                    _p3_TM = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p3_Load_Lower;
+            set => SetProperty(ref _p3_Load_Lower, value);
         }
 
-        private string _p3_BT;
-        public string P3_BT
+        private double _p3_Temp_Upper;
+        public double P3_Temp_Upper
         {
-            get => _p3_BT;
-            set
-            {
-                if (_p3_BT != value)
-                {
-                    _p3_BT = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p3_Temp_Upper;
+            set => SetProperty(ref _p3_Temp_Upper, value);
+        }
+
+        private double _p3_Temp_Value;
+        public double P3_Temp_Value
+        {
+            get => _p3_Temp_Value;
+            set => SetProperty(ref _p3_Temp_Value, value);
+        }
+
+        private double _p3_Temp_Lower;
+        public double P3_Temp_Lower
+        {
+            get => _p3_Temp_Lower;
+            set => SetProperty(ref _p3_Temp_Lower, value);
+        }
+
+        private double _p3_BendingTime;
+        public double P3_BendingTime
+        {
+            get => _p3_BendingTime;
+            set => SetProperty(ref _p3_BendingTime, value);
+        }
+
+        private bool _p3_Result;
+        public bool P3_Result
+        {
+            get => _p3_Result;
+            set => SetProperty(ref _p3_Result, value);
         }
 
         // ==================== PRODUCT 4 DATA ====================
-        private double _p4_Upper;
-        public double P4_Upper
+        private string _p4_Product = "Product 4";
+        public string P4_Product
         {
-            get => _p4_Upper;
-            set
-            {
-                if (_p4_Upper != value)
-                {
-                    _p4_Upper = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p4_Product;
+            set => SetProperty(ref _p4_Product, value);
         }
 
-        private double _p4_Value;
-        public double P4_Value
+        private string _p4_QRCode = "---";
+        public string P4_QRCode
         {
-            get => _p4_Value;
-            set
-            {
-                if (_p4_Value != value)
-                {
-                    _p4_Value = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p4_QRCode;
+            set => SetProperty(ref _p4_QRCode, value);
         }
 
-        private double _p4_Lower;
-        public double P4_Lower
+        private double _p4_Load_Upper;
+        public double P4_Load_Upper
         {
-            get => _p4_Lower;
-            set
-            {
-                if (_p4_Lower != value)
-                {
-                    _p4_Lower = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p4_Load_Upper;
+            set => SetProperty(ref _p4_Load_Upper, value);
         }
 
-        private string _p4_LM;
-        public string P4_LM
+        private double _p4_Load_Value;
+        public double P4_Load_Value
         {
-            get => _p4_LM;
-            set
-            {
-                if (_p4_LM != value)
-                {
-                    _p4_LM = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p4_Load_Value;
+            set => SetProperty(ref _p4_Load_Value, value);
         }
 
-        private string _p4_TM;
-        public string P4_TM
+        private double _p4_Load_Lower;
+        public double P4_Load_Lower
         {
-            get => _p4_TM;
-            set
-            {
-                if (_p4_TM != value)
-                {
-                    _p4_TM = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p4_Load_Lower;
+            set => SetProperty(ref _p4_Load_Lower, value);
         }
 
-        private string _p4_BT;
-        public string P4_BT
+        private double _p4_Temp_Upper;
+        public double P4_Temp_Upper
         {
-            get => _p4_BT;
-            set
-            {
-                if (_p4_BT != value)
-                {
-                    _p4_BT = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _p4_Temp_Upper;
+            set => SetProperty(ref _p4_Temp_Upper, value);
         }
 
-        public Bending1MonitorViewModel(INavigationService navigationService, IAppLogger logger)
+        private double _p4_Temp_Value;
+        public double P4_Temp_Value
+        {
+            get => _p4_Temp_Value;
+            set => SetProperty(ref _p4_Temp_Value, value);
+        }
+
+        private double _p4_Temp_Lower;
+        public double P4_Temp_Lower
+        {
+            get => _p4_Temp_Lower;
+            set => SetProperty(ref _p4_Temp_Lower, value);
+        }
+
+        private double _p4_BendingTime;
+        public double P4_BendingTime
+        {
+            get => _p4_BendingTime;
+            set => SetProperty(ref _p4_BendingTime, value);
+        }
+
+        private bool _p4_Result;
+        public bool P4_Result
+        {
+            get => _p4_Result;
+            set => SetProperty(ref _p4_Result, value);
+        }
+
+        public Bending1MonitorViewModel(INavigationService navigationService, CoreClient coreClient, IAppLogger logger)
             : base(logger)
         {
             _navigationService = navigationService;
+            _coreClient = coreClient;
             NextCommand = new RelayCommand(ExecuteNext);
 
-            P1_Upper = 50.5; P1_Value = 48.2; P1_Lower = 45.0;
-            P1_LM = "2.22"; P1_TM = "68.4 °C"; P1_BT = "2.5s";
+            _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(500), OnLiveDataTick, OnPollingError);
+            _liveDataTimer.Start();
+        }
 
+        private async Task OnLiveDataTick()
+        {
+            try
+            {
+                var data = await _coreClient.GetIoValuesAsync(5);
+                if (data != null && data.Count > 0)
+                {
+                    UpdateFromPlcData(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Bending1Monitor] Error reading PLC data: {ex.Message}", LogType.Error);
+            }
+        }
 
-            P2_Upper = 55.0; P2_Value = 52.1; P2_Lower = 50.0;
-            P2_LM = "3.35"; P2_TM = "70.1 °C"; P2_BT = "2.8s";
+        private void UpdateFromPlcData(System.Collections.Generic.Dictionary<int, object> data)
+        {
+            if (data.TryGetValue(1000, out object batchNo))
+                BatchNo = batchNo?.ToString() ?? "---";
 
-            P3_Upper = 60.0; P3_Value = 58.9; P3_Lower = 55.0;
-            P3_LM = "5.32"; P3_TM = "72.6 °C"; P3_BT = "3.1s";
+            if (data.TryGetValue(1001, out object p1Qr))
+                P1_QRCode = p1Qr?.ToString() ?? "---";
+            if (data.TryGetValue(1002, out object p1LoadUpper))
+                P1_Load_Upper = Convert.ToDouble(p1LoadUpper);
+            if (data.TryGetValue(1003, out object p1LoadValue))
+                P1_Load_Value = Convert.ToDouble(p1LoadValue);
+            if (data.TryGetValue(1004, out object p1LoadLower))
+                P1_Load_Lower = Convert.ToDouble(p1LoadLower);
+            if (data.TryGetValue(1005, out object p1TempUpper))
+                P1_Temp_Upper = Convert.ToDouble(p1TempUpper);
+            if (data.TryGetValue(1006, out object p1TempValue))
+                P1_Temp_Value = Convert.ToDouble(p1TempValue);
+            if (data.TryGetValue(1007, out object p1TempLower))
+                P1_Temp_Lower = Convert.ToDouble(p1TempLower);
+            if (data.TryGetValue(1008, out object p1BendTime))
+                P1_BendingTime = Convert.ToDouble(p1BendTime);
+            if (data.TryGetValue(1009, out object p1Result))
+                P1_Result = Convert.ToBoolean(p1Result);
 
-            P4_Upper = 45.0; P4_Value = 44.5; P4_Lower = 40.0;
-            P4_LM = "4.22"; P4_TM = "65.3 °C"; P4_BT = "2.2s";
+            if (data.TryGetValue(1011, out object p2Qr))
+                P2_QRCode = p2Qr?.ToString() ?? "---";
+            if (data.TryGetValue(1012, out object p2LoadUpper))
+                P2_Load_Upper = Convert.ToDouble(p2LoadUpper);
+            if (data.TryGetValue(1013, out object p2LoadValue))
+                P2_Load_Value = Convert.ToDouble(p2LoadValue);
+            if (data.TryGetValue(1014, out object p2LoadLower))
+                P2_Load_Lower = Convert.ToDouble(p2LoadLower);
+            if (data.TryGetValue(1015, out object p2TempUpper))
+                P2_Temp_Upper = Convert.ToDouble(p2TempUpper);
+            if (data.TryGetValue(1016, out object p2TempValue))
+                P2_Temp_Value = Convert.ToDouble(p2TempValue);
+            if (data.TryGetValue(1017, out object p2TempLower))
+                P2_Temp_Lower = Convert.ToDouble(p2TempLower);
+            if (data.TryGetValue(1018, out object p2BendTime))
+                P2_BendingTime = Convert.ToDouble(p2BendTime);
+            if (data.TryGetValue(1019, out object p2Result))
+                P2_Result = Convert.ToBoolean(p2Result);
+
+            if (data.TryGetValue(1021, out object p3Qr))
+                P3_QRCode = p3Qr?.ToString() ?? "---";
+            if (data.TryGetValue(1022, out object p3LoadUpper))
+                P3_Load_Upper = Convert.ToDouble(p3LoadUpper);
+            if (data.TryGetValue(1023, out object p3LoadValue))
+                P3_Load_Value = Convert.ToDouble(p3LoadValue);
+            if (data.TryGetValue(1024, out object p3LoadLower))
+                P3_Load_Lower = Convert.ToDouble(p3LoadLower);
+            if (data.TryGetValue(1025, out object p3TempUpper))
+                P3_Temp_Upper = Convert.ToDouble(p3TempUpper);
+            if (data.TryGetValue(1026, out object p3TempValue))
+                P3_Temp_Value = Convert.ToDouble(p3TempValue);
+            if (data.TryGetValue(1027, out object p3TempLower))
+                P3_Temp_Lower = Convert.ToDouble(p3TempLower);
+            if (data.TryGetValue(1028, out object p3BendTime))
+                P3_BendingTime = Convert.ToDouble(p3BendTime);
+            if (data.TryGetValue(1029, out object p3Result))
+                P3_Result = Convert.ToBoolean(p3Result);
+
+            if (data.TryGetValue(1031, out object p4Qr))
+                P4_QRCode = p4Qr?.ToString() ?? "---";
+            if (data.TryGetValue(1032, out object p4LoadUpper))
+                P4_Load_Upper = Convert.ToDouble(p4LoadUpper);
+            if (data.TryGetValue(1033, out object p4LoadValue))
+                P4_Load_Value = Convert.ToDouble(p4LoadValue);
+            if (data.TryGetValue(1034, out object p4LoadLower))
+                P4_Load_Lower = Convert.ToDouble(p4LoadLower);
+            if (data.TryGetValue(1035, out object p4TempUpper))
+                P4_Temp_Upper = Convert.ToDouble(p4TempUpper);
+            if (data.TryGetValue(1036, out object p4TempValue))
+                P4_Temp_Value = Convert.ToDouble(p4TempValue);
+            if (data.TryGetValue(1037, out object p4TempLower))
+                P4_Temp_Lower = Convert.ToDouble(p4TempLower);
+            if (data.TryGetValue(1038, out object p4BendTime))
+                P4_BendingTime = Convert.ToDouble(p4BendTime);
+            if (data.TryGetValue(1039, out object p4Result))
+                P4_Result = Convert.ToBoolean(p4Result);
+        }
+
+        private void OnPollingError(Exception ex)
+        {
+            _logger.LogError($"[Bending1Monitor] Polling error: {ex.Message}", LogType.Error);
         }
 
         private void ExecuteNext()
@@ -381,10 +432,10 @@ namespace IPCSoftware.App.Bending.ViewModels
             _navigationService.NavigateToDashboard2();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        public void Dispose()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            _liveDataTimer?.Stop();
+            _liveDataTimer?.Dispose();
         }
     }
 }
