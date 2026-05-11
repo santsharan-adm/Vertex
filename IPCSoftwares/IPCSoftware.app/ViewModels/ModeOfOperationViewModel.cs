@@ -149,7 +149,7 @@ namespace IPCSoftware.App.ViewModels
         }
 
         //Added by Rishabh -Date -06-05-2026 , Initialize Recipe List from ServoConfigService
-        //Modfied by Rishabh -Date -11-05-2026 
+        //Modfied by Rishabh -Date -11-05-2026
         private async Task InitializeRecipesAsync()
         {
             try
