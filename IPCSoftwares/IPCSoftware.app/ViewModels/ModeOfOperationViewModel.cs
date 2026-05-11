@@ -149,6 +149,7 @@ namespace IPCSoftware.App.ViewModels
         }
 
         //Added by Rishabh -Date -06-05-2026 , Initialize Recipe List from ServoConfigService
+        //Modfied by Rishabh -Date -11-05-2026 
         private async Task InitializeRecipesAsync()
         {
             try
@@ -163,10 +164,35 @@ namespace IPCSoftware.App.ViewModels
                     })
                 );
 
-                // Set default selection to first recipe
-               // SelectedRecipe = RecipeList.FirstOrDefault();
-                _selectedRecipe = RecipeList.FirstOrDefault();
-                _lastConfirmedRecipe = _selectedRecipe; // Track initial selection
+
+                // Read current program number from PLC
+                var Data = await _coreClient.GetIoValuesAsync(5);
+                if (Data.TryGetValue(ConstantValues.ProgramNumber, out object value))
+                {
+                    int currentProgramNo = Convert.ToUInt16(value);
+
+                    // Finding the matching recipe in the list by ProgramNo
+                    var matchingRecipe = RecipeList.FirstOrDefault(r => r.ProgramNo == currentProgramNo);
+
+                    if (matchingRecipe != null)
+                    {
+                        // Set the selected recipe to match what's in the PLC
+                        _selectedRecipe = matchingRecipe;
+                        _lastConfirmedRecipe = _selectedRecipe;
+                    }
+                    else
+                    {                       
+                        _logger.LogError($"PLC Program Number {currentProgramNo} not found in recipe list. Using default.", LogType.Diagnostics);
+                        _selectedRecipe = RecipeList.FirstOrDefault();
+                        _lastConfirmedRecipe = _selectedRecipe;
+                    }
+                }
+                else
+                {                   
+                    _selectedRecipe = RecipeList.FirstOrDefault();
+                    _lastConfirmedRecipe = _selectedRecipe;
+                }
+                              
                 OnPropertyChanged(nameof(SelectedRecipe));
             }
             catch (Exception ex)
