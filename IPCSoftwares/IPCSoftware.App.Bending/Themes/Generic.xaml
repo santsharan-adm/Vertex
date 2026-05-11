@@ -96,4 +96,922 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <!-- Controls Panel -->
+    <Style TargetType="{x:Type local:ControlsPanelCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:ControlsPanelCC}">
+                    <Border CornerRadius="8" HorizontalAlignment="Stretch"
+                            BorderBrush="#1565C0" BorderThickness="2" Background="#0B1A2E">
+                        <StackPanel>
+                            <Border Background="#1565C0" CornerRadius="6,6,0,0" Padding="3">
+                                <TextBlock Text="CONTROLS" FontWeight="Bold" FontSize="11" Foreground="White" HorizontalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Margin="3">
+                                <Button Margin="3" Padding="3,6" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="4"/>
+                                        </Style>
+                                    </Button.Resources>
+                                    <TextBlock Text="AUTO RUN" TextAlignment="Center"/>
+                                </Button>
+                                <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="4"/>
+                                        </Style>
+                                    </Button.Resources>
+                                    <TextBlock Text="DRY RUN" TextAlignment="Center"/>
+                                </Button>
+                                <Button Margin="3" Padding="3,6" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="4"/>
+                                        </Style>
+                                    </Button.Resources>
+                                    <TextBlock Text="CYCLE START/STOP" TextAlignment="Center"/>
+                                </Button>
+                                <Button Margin="3" Padding="3,6" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="4"/>
+                                        </Style>
+                                    </Button.Resources>
+                                    <TextBlock Text="WORK PAYOUT START" TextAlignment="Center"/>
+                                </Button>
+                                <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="4"/>
+                                        </Style>
+                                    </Button.Resources>
+                                    <TextBlock Text="Go To Menu" TextAlignment="Center"/>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Batch QR Code Panel -->
+    <Style TargetType="{x:Type local:BatchQRCodePanelCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:BatchQRCodePanelCC}">
+                    <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                        <Border BorderBrush="#1565C0" BorderThickness="1" Background="White" CornerRadius="8,8,0,0" Margin="0,3,0,0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2" CornerRadius="5,0,0,0">
+                                    <TextBlock Text="Batch No." FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                </Border>
+                                <Border Grid.Row="0" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                    <TextBlock Text="QR Code" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9" TextWrapping="Wrap"/>
+                                </Border>
+
+                                <UniformGrid Grid.Row="1" Grid.Column="0" Columns="1" Background="#0B1A2E">
+                                    <Border BorderBrush="#1565C0" Padding="3">
+                                        <TextBlock Text="BFBL03" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                    </Border>
+                                    <Border BorderBrush="#1565C0" Padding="3">
+                                        <TextBlock Text="BFBL04" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                    </Border>
+                                </UniformGrid>
+
+                                <StackPanel Grid.Row="1" Grid.Column="1" Background="#0B1A2E">
+                                    <StackPanel Margin="2">
+                                        <TextBlock Text="ABCD12345A009" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                        <TextBlock Text="ABCD12345A010" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                        <TextBlock Text="ABCD12345A011" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                        <TextBlock Text="ABCD12345A012" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                    </StackPanel>
+                                    <Border Height="1" Background="#1565C0" Opacity="0.4"/>
+                                    <StackPanel Margin="0,5,0,2">
+                                        <TextBlock Text="ABCD12345A013" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                        <TextBlock Text="ABCD12345A014" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                        <TextBlock Text="ABCD12345A015" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                        <TextBlock Text="ABCD12345A016" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderBrush="#1565C0" BorderThickness="1" Background="White" CornerRadius="0,0,8,8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Efficiency Breakdown -->
+    <Style TargetType="{x:Type local:EfficiencyBreakdownCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:EfficiencyBreakdownCC}">
+                    <Border Background="#1E293B" CornerRadius="8" Padding="4,3" VerticalAlignment="Top" Margin="3">
+                        <StackPanel>
+                            <TextBlock Text="EFFICIENCY BREAKDOWN" Foreground="White" FontWeight="Bold" FontSize="10" Padding="0,0,0,3"/>
+
+                            <Grid Height="15" Margin="0,1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="75"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="30"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Availability" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
+                                    <Border CornerRadius="3" Background="#334155"/>
+                                    <Border CornerRadius="3" Background="#10B981" HorizontalAlignment="Left" Width="96"/>
+                                </Grid>
+                                <TextBlock Grid.Column="2" Text="96%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            </Grid>
+
+                            <Grid Height="15" Margin="0,1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="75"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="30"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Performance" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
+                                    <Border CornerRadius="3" Background="#334155"/>
+                                    <Border CornerRadius="3" Background="#3B82F6" HorizontalAlignment="Left" Width="91"/>
+                                </Grid>
+                                <TextBlock Grid.Column="2" Text="91%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            </Grid>
+
+                            <Grid Height="15" Margin="0,1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="75"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="30"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Quality" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
+                                    <Border CornerRadius="3" Background="#334155"/>
+                                    <Border CornerRadius="3" Background="#F59E0B" HorizontalAlignment="Left" Width="97"/>
+                                </Grid>
+                                <TextBlock Grid.Column="2" Text="97%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            </Grid>
+
+                            <Grid Height="15" Margin="0,1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="75"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="30"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="OEE Details" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
+                                    <Border CornerRadius="3" Background="#334155"/>
+                                    <Border CornerRadius="3" Background="#3B82F6" HorizontalAlignment="Left" Width="91"/>
+                                </Grid>
+                                <TextBlock Grid.Column="2" Text="91%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            </Grid>
+
+                            <Border Height="1" Background="#475569" Margin="3"/>
+
+                            <Grid Height="20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border CornerRadius="3" Background="#064E3B" Padding="5,3">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Ellipse Width="6" Height="6" Fill="#10B981" VerticalAlignment="Center"/>
+                                        <TextBlock Text=" OK : 156" Foreground="#10B981" FontSize="9" FontWeight="Bold" VerticalAlignment="Center" Margin="2"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="2" CornerRadius="3" Background="#450A0A" Padding="5,3">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Ellipse Width="6" Height="6" Fill="#EF4444" VerticalAlignment="Center"/>
+                                        <TextBlock Text=" NG : 4" Foreground="#EF4444" FontSize="9" FontWeight="Bold" VerticalAlignment="Center" Margin="2"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Turn Table 1 -->
+    <Style TargetType="{x:Type local:TurnTable1CC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:TurnTable1CC}">
+                    <Grid>
+                        <TextBlock Canvas.Left="0" Canvas.Top="0" Text="TURN TABLE 1" FontWeight="Bold" FontSize="15" 
+                                   Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
+                        <Border Width="160" Height="160" CornerRadius="80" Background="White"
+                                BorderBrush="{StaticResource PanelBorder}" BorderThickness="3.5"
+                                HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Grid RenderTransformOrigin="0.5,0.5" Margin="2">
+                                <Grid.RenderTransform>
+                                    <RotateTransform x:Name="Part_TT1RotateTransform" Angle="0"/>
+                                </Grid.RenderTransform>
+
+                                <!-- Top row -->
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0">
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                </StackPanel>
+
+                                <!-- Bottom row -->
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,129,0,0">
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                </StackPanel>
+
+                                <!-- Left column -->
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,0,0,0">
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                </StackPanel>
+
+                                <!-- Right column -->
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="129,0,0,0">
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Transfer Module -->
+    <Style TargetType="{x:Type local:TransferModuleCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:TransferModuleCC}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="TRANSFER MODULE" FontWeight="Black" FontSize="10" 
+                                   Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                        <Border Grid.Row="1" Width="85" Height="85" Background="White" 
+                                BorderBrush="{StaticResource PanelBorder}" BorderThickness="3" CornerRadius="42.5">
+                            <Border BorderBrush="#F59E0B" BorderThickness="1.5" CornerRadius="4" Width="40" Height="40">
+                                <TextBlock Text="🔄" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Foreground="#F59E0B"/>
+                            </Border>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Inspection Unit Input -->
+    <Style TargetType="{x:Type local:InspectionUnitInputCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:InspectionUnitInputCC}">
+                    <Border Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3" CornerRadius="4">
+                        <Grid Margin="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                                <TextBlock Text="INSPECTION UNIT INPUT" FontSize="15" FontWeight="ExtraBold" 
+                                           Foreground="#0F172A" HorizontalAlignment="Center"/>
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="3">
+                                    <Border Background="#E2E8F0" CornerRadius="2" Padding="4,1">
+                                        <TextBlock Text="QR" FontSize="10" FontWeight="Bold" Foreground="#475569" Height="14"/>
+                                    </Border>
+                                    <TextBlock Text="+" Foreground="#94A3B8" Margin="4,0" VerticalAlignment="Center" FontSize="8"/>
+                                    <Viewbox Width="25" Height="30" Margin="2,0">
+                                        <Path Fill="#475569" Data="M12,20H4A2,2 0 0,1 2,18V8A2,2 0 0,1 4,6H5L7,4H11L13,6H14A2,2 0 0,1 16,8V10.5L20,8V18L16,15.5V18A2,2 0 0,1 14,20H12M4,8V18H14V8H10.83L9,6H9L8.83,6H7.17L5.34,8H4M9,17A4,4 0 0,1 5,13A4,4 0 0,1 9,9A4,4 0 0,1 13,13A4,4 0 0,1 9,17M9,11A2,2 0 0,0 7,13A2,2 0 0,0 9,15A2,2 0 0,0 11,13A2,2 0 0,0 9,11Z"/>
+                                    </Viewbox>
+                                    <Viewbox Width="25" Height="30" Margin="2,0">
+                                        <Path Fill="#475569" Data="M12,20H4A2,2 0 0,1 2,18V8A2,2 0 0,1 4,6H5L7,4H11L13,6H14A2,2 0 0,1 16,8V10.5L20,8V18L16,15.5V18A2,2 0 0,1 14,20H12M4,8V18H14V8H10.83L9,6H9L8.83,6H7.17L5.34,8H4M9,17A4,4 0 0,1 5,13A4,4 0 0,1 9,9A4,4 0 0,1 13,13A4,4 0 0,1 9,17M9,11A2,2 0 0,0 7,13A2,2 0 0,0 9,15A2,2 0 0,0 11,13A2,2 0 0,0 9,11Z"/>
+                                    </Viewbox>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Input Tray -->
+    <Style TargetType="{x:Type local:InputTrayCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:InputTrayCC}">
+                    <Border Background="#F1F5F9" BorderBrush="#475569" BorderThickness="3" CornerRadius="2">
+                        <StackPanel VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="INPUT TRAY" FontSize="15" FontWeight="Bold" Foreground="#1E293B"/>
+                            </StackPanel>
+                            <TextBlock Text="LOAD" FontSize="10" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Output Tray -->
+    <Style TargetType="{x:Type local:OutputTrayCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:OutputTrayCC}">
+                    <Border Background="White" BorderBrush="#475569" BorderThickness="3" CornerRadius="2">
+                        <Grid Margin="3">
+                            <StackPanel VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="#F1F5F9" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="OUTPUT TRAY" FontSize="15" FontWeight="Bold" Foreground="Black" Height="17" Width="132"/>
+                                </StackPanel>
+                                <TextBlock Text="UNLOAD" FontSize="10" FontWeight="Bold" Foreground="Black" 
+                                           HorizontalAlignment="Center" Height="14" Width="66"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- NG Bin -->
+    <Style TargetType="{x:Type local:NgBinCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:NgBinCC}">
+                    <Border BorderBrush="Black" BorderThickness="3" CornerRadius="8" Background="Gray">
+                        <StackPanel VerticalAlignment="Center" Margin="2">
+                            <TextBlock FontSize="15" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" Margin="2">
+                                <Run Text="NG BIN "/>
+                                <Run Text="{TemplateBinding Property=BinNumber}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Robot Base -->
+    <Style TargetType="{x:Type local:RobotBaseCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:RobotBaseCC}">
+                    <Border BorderBrush="{StaticResource PanelBorder}" BorderThickness="3" CornerRadius="8" Background="White">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock FontSize="15" FontWeight="Bold" Foreground="#1E293B" 
+                                       HorizontalAlignment="Center" Margin="2" Height="28">
+                                <Run Text="ROBOT "/>
+                                <Run Text="{TemplateBinding Property=RobotNumber}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Robot Hand -->
+    <Style TargetType="{x:Type local:RobotHandCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:RobotHandCC}">
+                    <Canvas Width="16" Height="22">
+                        <!-- Yellow wrist joint -->
+                        <Ellipse Width="16" Height="16" Fill="#F59E0B" Canvas.Left="0" Canvas.Top="0"
+                                 Stroke="#1E293B" StrokeThickness="1.5"/>
+                        <!-- Left claw finger -->
+                        <Path Data="M 3,13 L 0,22 L 7,17 Z" Fill="#EF4444"
+                              Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="0" Canvas.Top="0"/>
+                        <!-- Right claw finger -->
+                        <Path Data="M 13,13 L 16,22 L 9,17 Z" Fill="#EF4444"
+                              Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="0" Canvas.Top="0"/>
+                    </Canvas>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- PID Table -->
+    <Style TargetType="{x:Type local:PidTableCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:PidTableCC}">
+                    <Border CornerRadius="8" Padding="2" BorderBrush="{StaticResource AccentBlue}" 
+                            BorderThickness="1" Background="#1565C0">
+                        <Grid Background="White">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" MinWidth="38"/>
+                                <ColumnDefinition Width="Auto" MinWidth="58"/>
+                                <ColumnDefinition Width="Auto" MinWidth="58"/>
+                                <ColumnDefinition Width="Auto" MinWidth="58"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                <TextBlock Text="PID" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                <TextBlock FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="Heater"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TableType, RelativeSource={RelativeSource TemplatedParent}}" Value="Force">
+                                                    <Setter Property="Text" Value="Force"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                <TextBlock Text="S.No." FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                <TextBlock Text="Bend 1" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="2" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                <TextBlock Text="Bend 2" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                <TextBlock Text="Bend 3" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <!-- Data rows -->
+                            <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="1" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="2" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="3" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="4" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+
+                            <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+
+                            <Border Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+
+                            <Border Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Rail Connector -->
+    <Style TargetType="{x:Type local:RailConnectorCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:RailConnectorCC}">
+                    <Canvas>
+                        <!-- Top rail -->
+                        <Line X1="0" Y1="0" X2="40" Y2="0" Stroke="#1E293B" StrokeThickness="3" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
+                        <!-- Bottom rail -->
+                        <Line X1="0" Y1="16" X2="40" Y2="16" Stroke="#1E293B" StrokeThickness="3" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
+                        <!-- Left cap -->
+                        <Line X1="0" Y1="-3" X2="0" Y2="17" Stroke="#1E293B" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                        <!-- Right cap -->
+                        <Line X1="66" Y1="-3" X2="66" Y2="17" Stroke="#1E293B" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                    </Canvas>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Slot Display -->
+    <Style TargetType="{x:Type local:SlotDisplayCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:SlotDisplayCC}">
+                    <Grid>
+                        <!-- Horizontal slots by default -->
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding IsVertical, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse, RelativeSource={RelativeSource TemplatedParent}}">
+                            <Rectangle Width="12" Height="12" Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
+                            <Rectangle Width="12" Height="12" Fill="#F59E0B" RadiusX="1" RadiusY="1" Margin="4,0,0,0"/>
+                        </StackPanel>
+
+                        <!-- Vertical slots -->
+                        <Border BorderBrush="black" BorderThickness="2" Padding="1" CornerRadius="2" 
+                                Visibility="{Binding IsVertical, Converter={StaticResource BoolToVisibilityConverter}, RelativeSource={RelativeSource TemplatedParent}}">
+                            <StackPanel Orientation="Vertical">
+                                <Rectangle Width="12" Height="12" Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
+                                <Rectangle Height="1"/>
+                                <Rectangle Width="12" Height="12" Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
+                                <Rectangle Height="1"/>
+                                <Rectangle Width="12" Height="12" Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
+                                <Rectangle Height="1"/>
+                                <Rectangle Width="12" Height="12" Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Bend Status Indicators -->
+    <Style TargetType="{x:Type local:BendStatusIndicatorsCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:BendStatusIndicatorsCC}">
+                    <Border CornerRadius="5" BorderBrush="Black" BorderThickness="1.5">
+                        <StackPanel Orientation="Horizontal" Margin="0">
+                            <!-- Labels column -->
+                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
+                                <StackPanel>
+                                    <Border Background="{StaticResource AccentBlue}" Padding="3">
+                                        <TextBlock Text="BEND" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Grid Margin="3">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="15"/>
+                                            <RowDefinition Height="15"/>
+                                            <RowDefinition Height="15"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Text="CLAMP" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="3" FontWeight="Bold"/>
+                                        <TextBlock Grid.Row="1" Text="PUNCH" Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="3" FontWeight="Bold"/>
+                                        <TextBlock Grid.Row="2" Text="HEAT"  Foreground="White" FontSize="9" VerticalAlignment="Center" Margin="3" FontWeight="Bold"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Bend 1 -->
+                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
+                                <StackPanel>
+                                    <Border Background="{StaticResource AccentBlue}" Padding="6,3">
+                                        <TextBlock Text="BEND 1" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Grid Margin="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Bend 2 -->
+                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
+                                <StackPanel>
+                                    <Border Background="{StaticResource AccentBlue}" Padding="6,3">
+                                        <TextBlock Text="BEND 2" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Grid Margin="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Bend 3 -->
+                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
+                                <StackPanel>
+                                    <Border Background="{StaticResource AccentBlue}" Padding="6,3">
+                                        <TextBlock Text="BEND 3" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Grid Margin="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Tearing Flipping Status -->
+    <Style TargetType="{x:Type local:TearingFlippingStatusCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:TearingFlippingStatusCC}">
+                    <Border CornerRadius="5" BorderBrush="Black" BorderThickness="1.5">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Height="45">
+                            <!-- Tearing -->
+                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
+                                <StackPanel>
+                                    <Border Background="{StaticResource AccentBlue}" Padding="6,3">
+                                        <TextBlock Text="Tearing" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Grid Margin="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="0"/>
+                                            <RowDefinition Height="15"/>
+                                            <RowDefinition Height="0"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Flipping -->
+                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
+                                <StackPanel>
+                                    <Border Background="{StaticResource AccentBlue}" Padding="6,3">
+                                        <TextBlock Text="Flipping" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Grid Margin="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="0"/>
+                                            <RowDefinition Height="15"/>
+                                            <RowDefinition Height="0"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Bending Data Table - Note: This is a complex table that will be data-bound in actual implementation -->
+    <Style TargetType="{x:Type local:BendingDataTableCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:BendingDataTableCC}">
+                    <Border Background="#0B1A2E" CornerRadius="4" Padding="2" BorderBrush="#1565C0" BorderThickness="1">
+                        <Border BorderThickness="1" BorderBrush="#1565C0" HorizontalAlignment="Stretch">
+                            <Grid Background="White">
+                                <Grid.Resources>
+                                    <Style TargetType="Border" x:Key="HeaderBorder">
+                                        <Setter Property="Background" Value="#B4C6E7"/>
+                                        <Setter Property="BorderBrush" Value="White"/>
+                                        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                                    </Style>
+                                    <Style TargetType="TextBlock" x:Key="HeaderText">
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                        <Setter Property="FontSize" Value="11"/>
+                                    </Style>
+                                    <Style TargetType="TextBlock" x:Key="DataText">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="FontSize" Value="11"/>
+                                    </Style>
+                                </Grid.Resources>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="20"/>
+                                    <RowDefinition Height="20"/>
+                                    <RowDefinition Height="20"/>
+                                    <RowDefinition Height="20"/>
+                                    <RowDefinition Height="20"/>
+                                    <RowDefinition Height="20"/>
+                                    <RowDefinition Height="20"/>
+                                    <RowDefinition Height="20"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Header rows -->
+                                <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Background="#1565C0">
+                                    <TextBlock Text="Batch No." Style="{StaticResource HeaderText}" Foreground="White"/>
+                                </Border>
+                                <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Background="#1565C0">
+                                    <TextBlock Text="QR code" Style="{StaticResource HeaderText}" Foreground="White"/>
+                                </Border>
+
+                                <Border Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" Background="#1565C0">
+                                    <TextBlock Text="Heater Temp (50 - 60)" Style="{StaticResource HeaderText}" Foreground="White"/>
+                                </Border>
+                                <Border Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="3" Background="#1565C0">
+                                    <TextBlock Text="Load (5 - 10)" Style="{StaticResource HeaderText}" Foreground="White"/>
+                                </Border>
+
+                                <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="8" Background="#1565C0">
+                                    <TextBlock Text="X (&gt;1 - &lt;2)" Style="{StaticResource HeaderText}" Foreground="White"/>
+                                </Border>
+                                <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="9" Background="#1565C0">
+                                    <TextBlock Text="Y &gt;3 - &lt;4" Style="{StaticResource HeaderText}" Foreground="White"/>
+                                </Border>
+                                <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="10" Background="#1565C0">
+                                    <TextBlock Text="Z (&gt;5 - &lt;6)" Style="{StaticResource HeaderText}" Foreground="White"/>
+                                </Border>
+                                <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="11" Background="#1565C0">
+                                    <TextBlock Text="ø (&gt;7 - &lt;8)" Style="{StaticResource HeaderText}" Foreground="White"/>
+                                </Border>
+                                <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="12" Background="#1565C0">
+                                    <TextBlock Text="Result" Style="{StaticResource HeaderText}" Foreground="White"/>
+                                </Border>
+
+                                <!-- Bend sub-headers -->
+                                <Border Grid.Row="1" Grid.Column="2" Background="#1565C0">
+                                    <TextBlock Text="Bend 1" Style="{StaticResource HeaderText}" FontWeight="Normal" FontSize="10" Foreground="White"/>
+                                </Border>
+                                <Border Grid.Row="1" Grid.Column="3" Background="#1565C0">
+                                    <TextBlock Text="Bend 2" Style="{StaticResource HeaderText}" FontWeight="Normal" FontSize="10" Foreground="White"/>
+                                </Border>
+                                <Border Grid.Row="1" Grid.Column="4" Background="#1565C0">
+                                    <TextBlock Text="Bend 3" Style="{StaticResource HeaderText}" FontWeight="Normal" FontSize="10" Foreground="White"/>
+                                </Border>
+                                <Border Grid.Row="1" Grid.Column="5" Background="#1565C0">
+                                    <TextBlock Text="Bend 1" Style="{StaticResource HeaderText}" FontWeight="Normal" FontSize="10" Foreground="White"/>
+                                </Border>
+                                <Border Grid.Row="1" Grid.Column="6" Background="#1565C0">
+                                    <TextBlock Text="Bend 2" Style="{StaticResource HeaderText}" FontWeight="Normal" FontSize="10" Foreground="White"/>
+                                </Border>
+                                <Border Grid.Row="1" Grid.Column="7" Background="#1565C0">
+                                    <TextBlock Text="Bend 3" Style="{StaticResource HeaderText}" FontWeight="Normal" FontSize="10" Foreground="White"/>
+                                </Border>
+
+                                <!-- Sample data rows - in real implementation, this will be data-bound -->
+                                <!-- Batch BFBL02 -->
+                                <Border Grid.Row="3" Grid.RowSpan="4" Grid.Column="0" Background="#0B1A2E" BorderThickness="0">
+                                    <TextBlock Text="BFBL02" Style="{StaticResource DataText}" Foreground="White"/>
+                                </Border>
+
+                                <!-- Note: Additional data rows would be added here in actual implementation -->
+                                <!-- This template shows the structure. Data binding will be used for dynamic content -->
+                            </Grid>
+                        </Border>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>
