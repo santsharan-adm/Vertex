@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Models\Bending1MonitorModel.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="component\Assets\robot.png" />
   </ItemGroup>
 

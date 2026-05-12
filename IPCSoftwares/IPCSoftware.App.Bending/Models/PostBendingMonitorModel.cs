@@ -56,5 +56,9 @@ namespace IPCSoftware.App.Bending.Models
 
         public double LowerLimit { get; set; }
 
+        // Aliases for compatibility
+        public double Upper { get => UpperLimit; set => UpperLimit = value; }
+        public double Value { get => PresentValue; set => PresentValue = value; }
+        public double Lower { get => LowerLimit; set => LowerLimit = value; }
     }
 }
