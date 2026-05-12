@@ -475,14 +475,14 @@ public class MainWindowViewModelBase : BaseViewModel
                     //_nav.NavigateMain<LiveOeeView>();
                     _nav.NavigateToOEEDashboard();
                     break;
-                case "Bending1Monitor":
+                case "Bending1 Monitor":
                     _nav.NavigateToDashboard1();
                     break;
 
-                case "Bending2Monitor":
+                case "Bending2 Monitor":
                     _nav.NavigateToDashboard2();
                     break;
-                case "Bending3Monitor":
+                case "Bending3 Monitor":
                     _nav.NavigateToDashboard3();
                     break;
 
@@ -494,7 +494,7 @@ public class MainWindowViewModelBase : BaseViewModel
                     _nav.NavigateToDashboardControl2();
                     break;
 
-                case "PostBendingMonitor":
+                case "Post Bend Monitor":
                     _nav.NavigateToPostBendingMonitor();
                     break;            
 

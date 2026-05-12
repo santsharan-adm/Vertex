@@ -1,24 +1,58 @@
 ﻿using IPCSoftware.App.Bending.Models;
+using IPCSoftware.Shared;
 
-public class BendingMoitorModel1
+namespace IPCSoftware.App.Bending.Models
 {
-    public string Product { get; set; }
+    public class Bending1MonitorModel : ObservableObjectVM
+    {
+        private string _product;
+        public string Product
+        {
+            get => _product;
+            set => SetProperty(ref _product, value);
+        }
 
-    public string QRCode { get; set; }
+        private string _qrCode;
+        public string QRCode
+        {
+            get => _qrCode;
+            set => SetProperty(ref _qrCode, value);
+        }
 
-    //-- Load (N) --//
+        //-- Load (N) --//
 
-    public ParameterLImitValues Load { get; set; }
+        private ParameterLImitValues _load;
+        public ParameterLImitValues Load
+        {
+            get => _load;
+            set => SetProperty(ref _load, value);
+        }
 
-    //-- Temp (°C) --//
+        //-- Temp (°C) --//
 
-    public ParameterLImitValues Temprature { get; set; }
+        private ParameterLImitValues _temprature;
+        public ParameterLImitValues Temprature
+        {
+            get => _temprature;
+            set => SetProperty(ref _temprature, value);
+        }
 
-    //-- Bending Time --//
+        //-- Bending Time --//
 
-    public double BendingTime { get; set; }
-    
-    //-- Result --//
+        private double _bendingTime;
+        public double BendingTime
+        {
+            get => _bendingTime;
+            set => SetProperty(ref _bendingTime, value);
+        }
 
-    public bool Result { get; set; }
+        //-- Result --//
+
+        private bool _result;
+        public bool Result
+        {
+            get => _result;
+            set => SetProperty(ref _result, value);
+        }
+    }
 }

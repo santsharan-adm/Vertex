@@ -4,11 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:cc="clr-namespace:IPCSoftware.App.Bending.Controls"
+             xmlns:conv="clr-namespace:IPCSoftware.App.Bending.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="900" d:DesignWidth="1672" Background="#F1F5F9">
 
     <UserControl.Resources>
-        <ResourceDictionary Source="pack://application:,,,/IPCSoftware.App.Bending;component/Resources/BendingRD1.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/IPCSoftware.App.Bending;component/Resources/BendingRD1.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <conv:BoolToColorConverter      x:Key="BoolToColor"/>
+            <conv:BoolToResultTextConverter  x:Key="BoolToResultText"/>
+            <conv:BoolToResultColorConverter x:Key="BoolToResultColor"/>
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid Margin="3">
@@ -64,7 +72,8 @@
                         </Button.Resources>
                         <TextBlock Text="WORK PAYOUT START" TextAlignment="Center"/>
                     </Button>
-                    <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                    <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10"
+                            Command="{Binding ToggleSidebarCommand}">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="4"/>
@@ -105,31 +114,29 @@
                         </Border>
 
                         <UniformGrid Grid.Row="1" Grid.Column="0" Columns="1" Background="#0B1A2E">
-                            <Border BorderBrush="#1565C0"  Padding="3">
-                                <TextBlock Text="BFBL03" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                            <Border BorderBrush="#1565C0" Padding="3">
+                                <TextBlock Text="{Binding InspectionTable.BatchNo}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
                             </Border>
-
-
-                            <Border BorderBrush="#1565C0"  Padding="3">
-                                <TextBlock Text="BFBL04" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                            <Border BorderBrush="#1565C0" Padding="3">
+                                <TextBlock Text="{Binding InspectionTable2.BatchNo}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
                             </Border>
                         </UniformGrid>
 
-                        <StackPanel Grid.Row="1" Grid.Column="1" Background="#0B1A2E"  >
+                        <StackPanel Grid.Row="1" Grid.Column="1" Background="#0B1A2E">
                             <StackPanel Margin="2">
-                                <TextBlock Text="ABCD12345A009" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="ABCD12345A010" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="ABCD12345A011" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="ABCD12345A012" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding InspectionTable.LineItem1.QRCode1}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding InspectionTable.LineItem2.QRCode1}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding InspectionTable.LineItem3.QRCode1}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding InspectionTable.LineItem4.QRCode1}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
                             </StackPanel>
 
                             <Border Height="1" Background="#1565C0" Opacity="0.4"/>
 
                             <StackPanel Margin="0,5,0,2">
-                                <TextBlock Text="ABCD12345A013" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="ABCD12345A014" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="ABCD12345A015" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="ABCD12345A016" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding InspectionTable2.LineItem1.QRCode1}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding InspectionTable2.LineItem2.QRCode1}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding InspectionTable2.LineItem3.QRCode1}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding InspectionTable2.LineItem4.QRCode1}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -160,9 +167,9 @@
                             <TextBlock Text="Availability" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
                             <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
                                 <Border CornerRadius="3" Background="#334155"/>
-                                <Border CornerRadius="3" Background="#10B981" HorizontalAlignment="Left" Width="96"/>
+                                <Border CornerRadius="3" Background="#10B981" HorizontalAlignment="Left" Width="{Binding Efficiency.Availability}"/>
                             </Grid>
-                            <TextBlock Grid.Column="2" Text="96%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Efficiency.Availability, StringFormat={}{0}%}" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                         </Grid>
 
                         <Grid Height="15" Margin="0,1">
@@ -174,9 +181,9 @@
                             <TextBlock Text="Performance" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
                             <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
                                 <Border CornerRadius="3" Background="#334155"/>
-                                <Border CornerRadius="3" Background="#3B82F6" HorizontalAlignment="Left" Width="91"/>
+                                <Border CornerRadius="3" Background="#3B82F6" HorizontalAlignment="Left" Width="{Binding Efficiency.Performance}"/>
                             </Grid>
-                            <TextBlock Grid.Column="2" Text="91%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Efficiency.Performance, StringFormat={}{0}%}" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                         </Grid>
 
                         <Grid Height="15" Margin="0,1">
@@ -188,9 +195,9 @@
                             <TextBlock Text="Quality" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
                             <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
                                 <Border CornerRadius="3" Background="#334155"/>
-                                <Border CornerRadius="3" Background="#F59E0B" HorizontalAlignment="Left" Width="97"/>
+                                <Border CornerRadius="3" Background="#F59E0B" HorizontalAlignment="Left" Width="{Binding Efficiency.Quality}"/>
                             </Grid>
-                            <TextBlock Grid.Column="2" Text="97%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Efficiency.Quality, StringFormat={}{0}%}" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                         </Grid>
 
                         <Grid Height="15" Margin="0,1">
@@ -202,9 +209,9 @@
                             <TextBlock Text="OEE Details" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
                             <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
                                 <Border CornerRadius="3" Background="#334155"/>
-                                <Border CornerRadius="3" Background="#3B82F6" HorizontalAlignment="Left" Width="91"/>
+                                <Border CornerRadius="3" Background="#3B82F6" HorizontalAlignment="Left" Width="{Binding Efficiency.OEEDetails}"/>
                             </Grid>
-                            <TextBlock Grid.Column="2" Text="91%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Efficiency.OEEDetails, StringFormat={}{0}%}" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                         </Grid>
 
                         <Border Height="1" Background="#475569" Margin="3"/>
@@ -218,13 +225,17 @@
                             <Border CornerRadius="3" Background="#064E3B" Padding="5,3">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Ellipse Width="6" Height="6" Fill="#10B981" VerticalAlignment="Center"/>
-                                    <TextBlock Text=" OK : 156" Foreground="#10B981" FontSize="9" FontWeight="Bold" VerticalAlignment="Center" Margin="2"/>
+                                    <TextBlock Foreground="#10B981" FontSize="9" FontWeight="Bold" VerticalAlignment="Center" Margin="2">
+                                        <TextBlock.Text><MultiBinding StringFormat=" OK : {0}"><Binding Path="Efficiency.OKCount"/></MultiBinding></TextBlock.Text>
+                                    </TextBlock>
                                 </StackPanel>
                             </Border>
                             <Border Grid.Column="2" CornerRadius="3" Background="#450A0A" Padding="5,3">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Ellipse Width="6" Height="6" Fill="#EF4444" VerticalAlignment="Center"/>
-                                    <TextBlock Text=" NG : 4" Foreground="#EF4444" FontSize="9" FontWeight="Bold" VerticalAlignment="Center" Margin="2"/>
+                                    <TextBlock Foreground="#EF4444" FontSize="9" FontWeight="Bold" VerticalAlignment="Center" Margin="2">
+                                        <TextBlock.Text><MultiBinding StringFormat=" NG : {0}"><Binding Path="Efficiency.NGCount"/></MultiBinding></TextBlock.Text>
+                                    </TextBlock>
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -330,7 +341,7 @@
                         <TextBlock Text="Z (&gt;5 - &lt;6)" Style="{StaticResource HeaderText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="11" Background="#1565C0">
-                        <TextBlock Text="ø (&gt;7 - &lt;8)" Style="{StaticResource HeaderText}" Foreground="White"/>
+                        <TextBlock Text="� (&gt;7 - &lt;8)" Style="{StaticResource HeaderText}" Foreground="White"/>
                     </Border>
 
                     <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="12" Background="#1565C0">
@@ -358,269 +369,324 @@
                     </Border>
 
                     <Border Grid.Row="3" Grid.RowSpan="4" Grid.Column="0" Background="#0B1A2E" BorderThickness="0">
-                        <TextBlock Text="BFBL02" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.BatchNo}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
 
                     <Border Grid.Row="3" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="ABCD12345A0000000001" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem1.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="55" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem1.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="3" Background="#0B1A2E">
-                        <TextBlock Text="55" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem1.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="55" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem1.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="7" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem1.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="7" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem1.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="5" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem1.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
-                    <Border Grid.Row="3" Grid.Column="8"  Background="#0B1A2E"/>
-                    <Border Grid.Row="3" Grid.Column="9" Background="#0B1A2E"/>
-                    <Border Grid.Row="3" Grid.Column="10" Background="#0B1A2E"/>
-                    <Border Grid.Row="3" Grid.Column="11" Background="#0B1A2E"/>
-                    <Border Grid.Row="3" Grid.Column="12" Background="#0B1A2E"/>
+                    <Border Grid.Row="3" Grid.Column="8"  Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem1.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="9" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem1.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="10" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem1.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="11" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem1.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="12" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem1.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding InspectionTable.LineItem1.Result1, Converter={StaticResource BoolToResultColor}}"
+                                   Style="{StaticResource DataText}" FontWeight="Bold"/>
+                    </Border>
 
                     <Border Grid.Row="4" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="ABCD12345A0000000002" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem2.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="57" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem2.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="3" Background="#0B1A2E" >
-                        <TextBlock Text="57" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem2.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="57" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem2.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="6" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem2.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="6" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem2.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="6" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem2.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
-                    <Border Grid.Row="4" Grid.Column="8" Background="#0B1A2E"/>
-                    <Border Grid.Row="4" Grid.Column="9" Background="#0B1A2E"/>
-                    <Border Grid.Row="4" Grid.Column="10" Background="#0B1A2E"/>
-                    <Border Grid.Row="4" Grid.Column="11" Background="#0B1A2E"/>
-                    <Border Grid.Row="4" Grid.Column="12" Background="#0B1A2E"/>
+                    <Border Grid.Row="4" Grid.Column="8" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem2.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="4" Grid.Column="9" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem2.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="4" Grid.Column="10" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem2.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="4" Grid.Column="11" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem2.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="4" Grid.Column="12" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem2.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding InspectionTable.LineItem2.Result1, Converter={StaticResource BoolToResultColor}}"
+                                   Style="{StaticResource DataText}" FontWeight="Bold"/>
+                    </Border>
 
                     <Border Grid.Row="5" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="ABCD12345A0000000003" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem3.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="56" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem3.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="3" Background="#0B1A2E">
-                        <TextBlock Text="56" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem3.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="56" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem3.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="8" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem3.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="8" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem3.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="4" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem3.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
-                    <Border Grid.Row="5" Grid.Column="8" Background="#0B1A2E"/>
-                    <Border Grid.Row="5" Grid.Column="9" Background="#0B1A2E"/>
-                    <Border Grid.Row="5" Grid.Column="10" Background="#0B1A2E"/>
-                    <Border Grid.Row="5" Grid.Column="11" Background="#0B1A2E"/>
-                    <Border Grid.Row="5" Grid.Column="12" Background="#0B1A2E"/>
+                    <Border Grid.Row="5" Grid.Column="8" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem3.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="9" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem3.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="10" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem3.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="11" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem3.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="12" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem3.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding InspectionTable.LineItem3.Result1, Converter={StaticResource BoolToResultColor}}"
+                                   Style="{StaticResource DataText}" FontWeight="Bold"/>
+                    </Border>
 
                     <Border Grid.Row="6" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="ABCD12345A0000000004" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem4.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="56" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem4.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="3" Background="#0B1A2E">
-                        <TextBlock Text="56" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem4.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="56" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem4.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="7" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem4.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="7" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem4.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="7" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable.LineItem4.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
-                    <Border Grid.Row="6" Grid.Column="8" Background="#0B1A2E"/>
-                    <Border Grid.Row="6" Grid.Column="9" Background="#0B1A2E"/>
-                    <Border Grid.Row="6" Grid.Column="10" Background="#0B1A2E"/>
-                    <Border Grid.Row="6" Grid.Column="11" Background="#0B1A2E"/>
-                    <Border Grid.Row="6" Grid.Column="12" Background="#0B1A2E"/>
+                    <Border Grid.Row="6" Grid.Column="8" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem4.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="6" Grid.Column="9" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem4.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="6" Grid.Column="10" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem4.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="6" Grid.Column="11" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem4.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                    </Border>
+                    <Border Grid.Row="6" Grid.Column="12" Background="#0B1A2E">
+                        <TextBlock Text="{Binding InspectionTable.LineItem4.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding InspectionTable.LineItem4.Result1, Converter={StaticResource BoolToResultColor}}"
+                                   Style="{StaticResource DataText}" FontWeight="Bold"/>
+                    </Border>
 
 
                     <Border Grid.Row="7" Grid.RowSpan="4" Grid.Column="0" Background="#0B1A2E" BorderThickness="0">
-                        <TextBlock Text="BFBL01" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.BatchNo}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
 
                     <Border Grid.Row="7" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="ABCD12345A0000000005" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem1.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="57" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem1.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="3" Background="#0B1A2E">
-                        <TextBlock Text="57" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem1.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="57" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem1.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="7" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem1.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="7" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem1.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="7" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem1.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="8" Background="#0B1A2E">
-                        <TextBlock Text="1.6" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem1.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="9" Background="#0B1A2E">
-                        <TextBlock Text="3.4" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem1.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="10" Background="#0B1A2E">
-                        <TextBlock Text="5.4" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem1.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="11" Background="#0B1A2E">
-                        <TextBlock Text="7.5" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem1.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="12" Background="#0B1A2E">
-                        <TextBlock Text="OK" Style="{StaticResource DataText}" Foreground="#00B050" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem1.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding InspectionTable2.LineItem1.Result1, Converter={StaticResource BoolToResultColor}}"
+                                   Style="{StaticResource DataText}" FontWeight="Bold"/>
                     </Border>
 
                     <Border Grid.Row="8" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="ABCD12345A0000000006" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem2.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="56" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem2.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="3" Background="#0B1A2E">
-                        <TextBlock Text="56" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem2.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="56" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem2.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="6" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem2.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="6" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem2.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="6" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem2.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="8" Background="#0B1A2E">
-                        <TextBlock Text="1.4" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem2.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="9" Background="#0B1A2E">
-                        <TextBlock Text="3.5" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem2.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="10" Background="#0B1A2E">
-                        <TextBlock Text="5.6" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem2.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="11" Background="#0B1A2E">
-                        <TextBlock Text="7.6" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem2.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="12" Background="#0B1A2E">
-                        <TextBlock Text="OK" Style="{StaticResource DataText}" Foreground="#00B050" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem2.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding InspectionTable2.LineItem2.Result1, Converter={StaticResource BoolToResultColor}}"
+                                   Style="{StaticResource DataText}" FontWeight="Bold"/>
                     </Border>
 
                     <Border Grid.Row="9" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="ABCD12345A0000000007" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem3.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="55" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem3.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="3" Background="#0B1A2E">
-                        <TextBlock Text="55" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem3.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="55" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem3.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="8" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem3.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="8" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem3.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="8" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem3.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="8" Background="#0B1A2E">
-                        <TextBlock Text="1.6" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem3.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="9" Background="#0B1A2E">
-                        <TextBlock Text="3.6" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem3.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="10" Background="#0B1A2E">
-                        <TextBlock Text="5.5" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem3.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="11" Background="#0B1A2E">
-                        <TextBlock Text="7.7" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem3.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="12" Background="#0B1A2E">
-                        <TextBlock Text="OK" Style="{StaticResource DataText}" Foreground="#00B050" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem3.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding InspectionTable2.LineItem3.Result1, Converter={StaticResource BoolToResultColor}}"
+                                   Style="{StaticResource DataText}" FontWeight="Bold"/>
                     </Border>
 
                     <Border Grid.Row="10" Grid.Column="1" Background="#0B1A2E">
-
-                        <TextBlock Text="ABCD12345A0000000008" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem4.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="55" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem4.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="3" Background="#0B1A2E">
-                        <TextBlock Text="55" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem4.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="55" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem4.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="7" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem4.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="7" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem4.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="7" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem4.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="8" Background="#0B1A2E">
-                        <TextBlock Text="1.5" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem4.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="9" Background="#0B1A2E">
-                        <TextBlock Text="3.4" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem4.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="10" Background="#0B1A2E">
-                        <TextBlock Text="5.5" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem4.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="11" Background="#0B1A2E">
-                        <TextBlock Text="8.2" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem4.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="12" Background="#0B1A2E">
-                        <TextBlock Text="NG" Style="{StaticResource DataText}" Foreground="Red" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding InspectionTable2.LineItem4.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding InspectionTable2.LineItem4.Result1, Converter={StaticResource BoolToResultColor}}"
+                                   Style="{StaticResource DataText}" FontWeight="Bold"/>
                     </Border>
 
                 </Grid>
@@ -662,12 +728,12 @@
                             <Storyboard RepeatBehavior="Forever">
                                 <!--
                                     One full cycle = 4 steps, each step:
-                                      TT1 rotates +90° over 0.8s, holds 0.4s
-                                      TT2 rotates +120° over 0.8s, holds 0.4s
-                                    Step duration = 2.4s  ×  4 steps = 9.6s total
+                                      TT1 rotates +90� over 0.8s, holds 0.4s
+                                      TT2 rotates +120� over 0.8s, holds 0.4s
+                                    Step duration = 2.4s  �  4 steps = 9.6s total
                                 -->
 
-                                <!-- TT1: 0→90 at t=0..0.8, hold; 90→180 at t=2.4..3.2; 180→270 at t=4.8..5.6; 270→360 at t=7.2..8.0 -->
+                                <!-- TT1: 0?90 at t=0..0.8, hold; 90?180 at t=2.4..3.2; 180?270 at t=4.8..5.6; 270?360 at t=7.2..8.0 -->
                                 <DoubleAnimationUsingKeyFrames
                                     Storyboard.TargetName="TT1RotateTransform"
                                     Storyboard.TargetProperty="Angle">
@@ -690,11 +756,11 @@
                                     <DiscreteDoubleKeyFrame KeyTime="0:0:9.6"  Value="360"/>
                                 </DoubleAnimationUsingKeyFrames>
 
-                                <!-- TT2: moves after each TT1 step (offset by 1.2s), +120° each time -->
+                                <!-- TT2: moves after each TT1 step (offset by 1.2s), +120� each time -->
                                 <!--<DoubleAnimationUsingKeyFrames
                                     Storyboard.TargetName="TT2RotateTransform"
                                     Storyboard.TargetProperty="Angle">
-                                    --><!-- hold while TT1 does step 1 (0→0.8s move + 0.4s hold = 1.2s) --><!--
+                                    --><!-- hold while TT1 does step 1 (0?0.8s move + 0.4s hold = 1.2s) --><!--
                                     <DiscreteDoubleKeyFrame KeyTime="0:0:0"    Value="0"/>
                                     <DiscreteDoubleKeyFrame KeyTime="0:0:1.2"  Value="0"/>
                                     --><!-- Step 1: TT2 moves --><!--
@@ -717,7 +783,7 @@
                         </BeginStoryboard>
                     </EventTrigger>
 
-                    <!-- Arm 1 tip animation: Input Tray → Inspection → TT1 → Input Tray -->
+                    <!-- Arm 1 tip animation: Input Tray ? Inspection ? TT1 ? Input Tray -->
                     <EventTrigger RoutedEvent="Loaded">
                         <BeginStoryboard>
                             <Storyboard RepeatBehavior="Forever">
@@ -803,7 +869,7 @@
                         </BeginStoryboard>
                     </EventTrigger>
 
-                    <!-- Robot Arm 2 animation: Output Tray → Inspection → TT2 → Output Tray -->
+                    <!-- Robot Arm 2 animation: Output Tray ? Inspection ? TT2 ? Output Tray -->
                     <EventTrigger RoutedEvent="Loaded">
                         <BeginStoryboard>
                             <Storyboard RepeatBehavior="Forever">
@@ -892,11 +958,11 @@
                 <!--<Canvas>-->
 
 
-                <!-- Arm 1 upper segment: Robot 1 right edge → elbow (fixed) -->
+                <!-- Arm 1 upper segment: Robot 1 right edge ? elbow (fixed) -->
                 <Line X1="68" Y1="307" X2="108" Y2="307"
                       Stroke="{StaticResource PanelBorder}" StrokeThickness="8"
                       StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Left" Canvas.Left="152" VerticalAlignment="Top" Canvas.Top="54"/>
-                <!-- Arm 1 lower segment: elbow → tip (animated) -->
+                <!-- Arm 1 lower segment: elbow ? tip (animated) -->
                 <Line x:Name="Arm1Lower"
                       X1="108" Y1="307" X2="197" Y2="350"
                       Stroke="{StaticResource PanelBorder}" StrokeThickness="8"
@@ -918,11 +984,11 @@
                           Stroke="#7F1D1D" StrokeThickness="0.8" Canvas.Left="172.308" Canvas.Top="-3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Canvas>
 
-                <!-- Arm 2 upper segment: Robot 2 left edge → elbow (fixed) -->
+                <!-- Arm 2 upper segment: Robot 2 left edge ? elbow (fixed) -->
                 <Line X1="810" Y1="307" X2="770" Y2="307"
                       Stroke="{StaticResource PanelBorder}" StrokeThickness="8"
                       StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Left" Canvas.Left="94" VerticalAlignment="Center" Canvas.Top="58"/>
-                <!-- Arm 2 lower segment: elbow → tip (animated) -->
+                <!-- Arm 2 lower segment: elbow ? tip (animated) -->
                 <Line x:Name="Arm2Lower"
                       X1="770" Y1="307" X2="689" Y2="350"
                       Stroke="{StaticResource PanelBorder}" StrokeThickness="8"
@@ -988,18 +1054,18 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W1B1Clamp"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W2B1Clamp"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W3B1Clamp"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W4B1Clamp"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W1B1Punch"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W2B1Punch"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W3B1Punch"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W4B1Punch"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W1B1Heat"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W2B1Heat"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W3B1Heat"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W4B1Heat"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex1.Clamp, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W1B1Clamp"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex2.Clamp, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W2B1Clamp"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex3.Clamp, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W3B1Clamp"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex4.Clamp, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W4B1Clamp"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex1.Punch, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W1B1Punch"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex2.Punch, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W2B1Punch"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex3.Punch, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W3B1Punch"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex4.Punch, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W4B1Punch"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex1.Heat, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W1B1Heat"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex2.Heat, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W2B1Heat"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex3.Heat, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W3B1Heat"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex4.Heat, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W4B1Heat"/>
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -1021,18 +1087,18 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W1B2Clamp"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W2B2Clamp"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W3B2Clamp"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W4B2Clamp"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W1B2Punch"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W2B2Punch"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W3B2Punch"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W4B2Punch"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W1B2Heat"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W2B2Heat"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W3B2Heat"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W4B2Heat"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending2.Flex1.Clamp, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W1B2Clamp"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending2.Flex2.Clamp, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W2B2Clamp"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending2.Flex3.Clamp, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W3B2Clamp"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending2.Flex4.Clamp, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W4B2Clamp"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending2.Flex1.Punch, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W1B2Punch"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending2.Flex2.Punch, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W2B2Punch"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending2.Flex3.Punch, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W3B2Punch"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending2.Flex4.Punch, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W4B2Punch"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending2.Flex1.Heat, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W1B2Heat"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending2.Flex2.Heat, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W2B2Heat"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending2.Flex3.Heat, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W3B2Heat"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending2.Flex4.Heat, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W4B2Heat"/>
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -1054,18 +1120,18 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W1B3Clamp"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W2B3Clamp"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W3B3Clamp"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W4B3Clamp"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W1B3Punch"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W2B3Punch"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W3B3Punch"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3" ToolTip="W4B3Punch"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W1B3Heat"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W2B3Heat"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W3B3Heat"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3" ToolTip="W4B3Heat"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending3.Flex1.Clamp, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W1B3Clamp"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending3.Flex2.Clamp, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W2B3Clamp"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending3.Flex3.Clamp, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W3B3Clamp"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending3.Flex4.Clamp, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W4B3Clamp"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending3.Flex1.Punch, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W1B3Punch"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending3.Flex2.Punch, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W2B3Punch"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending3.Flex3.Punch, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W3B3Punch"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending3.Flex4.Punch, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W4B3Punch"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending3.Flex1.Heat, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W1B3Heat"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending3.Flex2.Heat, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W2B3Heat"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending3.Flex3.Heat, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W3B3Heat"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending3.Flex4.Heat, Converter={StaticResource BoolToColor}}" Margin="3" ToolTip="W4B3Heat"/>
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -1130,10 +1196,10 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat1"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat2"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat3"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat4"/>
+                                    <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex1.Tearing, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat1"/>
+                                    <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex2.Tearing, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat2"/>
+                                    <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex3.Tearing, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat3"/>
+                                    <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex4.Tearing, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat4"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -1156,10 +1222,10 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat1"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat2"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat3"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat4"/>
+                                    <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex1.Flipping, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat1"/>
+                                    <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex2.Flipping, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat2"/>
+                                    <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex3.Flipping, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat3"/>
+                                    <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex4.Flipping, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat4"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -1170,7 +1236,7 @@
                 <!--<Canvas Canvas.Left="110" Canvas.Top="170">-->
 
 
-                <!-- ══ Rail connector: TT1 right edge → Transfer Module left edge ══ -->
+                <!-- Rail connector: TT1 right edge to Transfer Module left edge -->
                 <!-- Top rail -->
                 <Line X1="385" Y1="196" X2="425" Y2="196"
                           Stroke="#1E293B" StrokeThickness="3"
@@ -1223,7 +1289,7 @@
                             
                             HorizontalAlignment="Left" VerticalAlignment="Center">
 
-                    <!-- Single Grid rotated as one unit — all 16 ellipses orbit clockwise -->
+                    <!-- Single Grid rotated as one unit � all 16 ellipses orbit clockwise -->
                     <Grid RenderTransformOrigin="0.5,0.5" Margin="2">
                         <Grid.RenderTransform>
                             <RotateTransform x:Name="TT1RotateTransform" Angle="0"/>
@@ -1289,7 +1355,7 @@
                     CornerRadius="42.5" HorizontalAlignment="Center" VerticalAlignment="Top" >
                     <Grid>
                         <Border BorderBrush="#F59E0B" BorderThickness="1.5" CornerRadius="4" Width="40" Height="40" VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock Text="🔄" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Foreground="#F59E0B"/>
+                            <TextBlock Text="??" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Foreground="#F59E0B"/>
                         </Border>
 
                     </Grid>
@@ -1338,8 +1404,6 @@
                         CornerRadius="2" HorizontalAlignment="Left" VerticalAlignment="Center">
 
                     <Grid>
-
-
                         <StackPanel VerticalAlignment="Center">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock Text="INPUT TRAY" 
@@ -1348,7 +1412,7 @@
                            Foreground="#1E293B"/>
                             </StackPanel>
 
-                            <TextBlock Text="LOAD" 
+                            <TextBlock Text="{Binding InputTray.Numberofcomponent, StringFormat='Count: {0}'}" 
                        FontSize="10" 
                        FontWeight="Bold" 
                        Foreground="Black" 
@@ -1391,7 +1455,7 @@
                         Foreground="Black" RenderTransformOrigin="0.205,0.661" Height="17" Width="132"/>
                             </StackPanel>
 
-                            <TextBlock Text="UNLOAD" 
+                            <TextBlock Text="{Binding OutputTray.Numberofcomponent, StringFormat='Count: {0}'}" 
                     FontSize="10" 
                     FontWeight="Bold" 
                     Foreground="Black" 
@@ -1413,6 +1477,9 @@
                            Foreground="Black"
                            HorizontalAlignment="Center" 
                            Margin="2"/>
+                        <TextBlock Text="{Binding NGBin.NGBin1.RejectedCount, StringFormat='Rej: {0}'}"
+                           FontSize="10" FontWeight="Bold" Foreground="Black"
+                           HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Border>
 
@@ -1502,42 +1569,42 @@
                         </Border>
 
                         <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending1.Flex1.Temperature, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending1.Flex2.Temperature, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending1.Flex3.Temperature, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending1.Flex4.Temperature, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
 
                         <Border Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending2.Flex1.Temperature, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="3" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending2.Flex2.Temperature, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="4" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending2.Flex3.Temperature, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="5" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending2.Flex4.Temperature, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
 
                         <Border Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending3.Flex1.Temperature, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="3" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending3.Flex2.Temperature, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="4" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending3.Flex3.Temperature, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="5" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending3.Flex4.Temperature, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                     </Grid>
                 </Border>
@@ -1596,42 +1663,42 @@ BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C
                         </Border>
 
                         <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending1.Flex1.Force, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending1.Flex2.Force, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending1.Flex3.Force, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending1.Flex4.Force, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
 
                         <Border Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending2.Flex1.Force, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="3" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending2.Flex2.Force, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="4" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending2.Flex3.Force, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="5" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending2.Flex4.Force, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
 
                         <Border Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending3.Flex1.Force, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="3" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending3.Flex2.Force, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="4" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending3.Flex3.Force, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                         <Border Grid.Row="5" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                            <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <TextBlock Text="{Binding BendingIndicators.Bending3.Flex4.Force, StringFormat='{}{0:F2}'}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                         </Border>
                     </Grid>
                 </Border>
@@ -1643,14 +1710,15 @@ BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C
                     BorderBrush="Black" BorderThickness="3" 
                     CornerRadius="8" Background="Gray" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <StackPanel VerticalAlignment="Center" Margin="2">
-
-
                         <TextBlock Text="NG BIN 2" 
                    FontSize="15" 
                    FontWeight="Bold" 
                    Foreground="Black"
                    HorizontalAlignment="Center" 
                    Margin="2"/>
+                        <TextBlock Text="{Binding NGBin.NGBin2.RejectedCount, StringFormat='Rej: {0}'}"
+                   FontSize="10" FontWeight="Bold" Foreground="Black"
+                   HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Border>
             </Canvas>

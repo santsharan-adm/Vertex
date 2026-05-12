@@ -189,8 +189,8 @@ namespace IPCSoftware.App.Bending.Models
 
         // Production Count
 
-        public bool OKCount { get; set; }
+        public int OKCount { get; set; }
 
-        public bool NGCount { get; set; }
+        public int NGCount { get; set; }
     }
 }
