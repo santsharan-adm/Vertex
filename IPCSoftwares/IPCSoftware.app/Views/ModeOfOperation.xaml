@@ -237,14 +237,13 @@
                     <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding ModeButtons[4]}" ContentTemplate="{StaticResource ModeButtonTemplate}"/>
 
                     <!-- Row 1, Col 2: RECIPE SELECTION (Last Cell) -->
-                    <!-- Row 1, Col 2: RECIPE SELECTION (Last Cell) -->
                     <Grid Grid.Row="1" Grid.Column="2" Margin="15">
                         <Border x:Name="RecipeSelectionBorder" 
-            Width="330" 
-            Height="270" 
-            CornerRadius="15" 
-            BorderThickness="1" 
-            BorderBrush="#555">
+                                Width="330" 
+                                Height="270" 
+                                CornerRadius="15" 
+                                BorderThickness="1" 
+                                BorderBrush="#555">
 
                             <!-- Base Color Layer -->
                             <Border.Background>
@@ -259,14 +258,14 @@
                             <Grid>
                                 <!-- Gloss/Gradient Layer (matches button style) -->
                                 <Border x:Name="RecipeGlossLayer" 
-                    CornerRadius="15" 
-                    Opacity="0.8" 
-                    IsHitTestVisible="False">
+                                        CornerRadius="15" 
+                                        Opacity="0.8" 
+                                        IsHitTestVisible="False">
                                     <Border.Background>
                                         <RadialGradientBrush GradientOrigin="0.5,0.2" 
-                                         Center="0.5,0.5" 
-                                         RadiusX="0.8" 
-                                         RadiusY="0.8">
+                                                             Center="0.5,0.5" 
+                                                             RadiusX="0.8" 
+                                                             RadiusY="0.8">
                                             <GradientStop Color="#CCFFFFFF" Offset="0"/>
                                             <GradientStop Color="#00FFFFFF" Offset="1"/>
                                         </RadialGradientBrush>
@@ -282,13 +281,13 @@
 
                                     <!-- Label -->
                                     <TextBlock Grid.Row="0" 
-                           Text="Select Program No" 
-                           FontSize="45" 
-                           FontWeight="Bold" 
-                           Foreground="White" 
-                           TextWrapping="Wrap" 
-                           TextAlignment="Center"
-                           Margin="0,0,0,15">
+                                               Text="Select Program No" 
+                                               FontSize="45" 
+                                               FontWeight="Bold" 
+                                               Foreground="White" 
+                                               TextWrapping="Wrap" 
+                                               TextAlignment="Center"
+                                               Margin="0,0,0,15">
                                         <TextBlock.Effect>
                                             <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="3" Opacity="0.6"/>
                                         </TextBlock.Effect>
@@ -296,11 +295,18 @@
 
                                     <!-- ComboBox -->
                                     <ComboBox Grid.Row="1"
-                          ItemsSource="{Binding RecipeList}" 
-                          SelectedItem="{Binding SelectedRecipe, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                          DisplayMemberPath="Name"
-                          IsEnabled="{Binding IsRecipeSelectionEnabled}"
-                          Style="{StaticResource RecipeComboBoxStyle}">
+                                              ItemsSource="{Binding RecipeList}" 
+                                              SelectedItem="{Binding SelectedRecipe, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                              DisplayMemberPath="Name"
+                                              IsEnabled="{Binding IsRecipeSelectionEnabled}"
+                                              HorizontalContentAlignment="Center"
+                                              Style="{StaticResource RecipeComboBoxStyle}">
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="SelectionChanged">
+                                                <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}" CommandParameter="{Binding SelectedItem}"/>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+
                                         <ComboBox.ItemContainerStyle>
                                             <Style TargetType="ComboBoxItem">
                                                 <Setter Property="FontSize" Value="22"/>
@@ -308,6 +314,7 @@
                                                 <Setter Property="Padding" Value="10"/>
                                                 <Setter Property="Height" Value="50"/>
                                                 <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
                                             </Style>
                                         </ComboBox.ItemContainerStyle>
                                     </ComboBox>
@@ -345,16 +352,16 @@
 
                         <!-- Additional Gloss Layer Control (separate for better trigger control) -->
                         <Border x:Name="OuterGlossControl" 
-            Width="330" 
-            Height="270" 
-            CornerRadius="15" 
-            IsHitTestVisible="False">
+                                Width="330" 
+                                Height="270" 
+                                CornerRadius="15" 
+                                IsHitTestVisible="False">
                             <Border CornerRadius="15">
                                 <Border.Background>
                                     <RadialGradientBrush GradientOrigin="0.5,0.2" 
-                                     Center="0.5,0.5" 
-                                     RadiusX="0.8" 
-                                     RadiusY="0.8">
+                                                         Center="0.5,0.5" 
+                                                         RadiusX="0.8" 
+                                                         RadiusY="0.8">
                                         <GradientStop Color="#CCFFFFFF" Offset="0"/>
                                         <GradientStop Color="#00FFFFFF" Offset="1"/>
                                     </RadialGradientBrush>

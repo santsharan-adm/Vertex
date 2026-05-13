@@ -56,8 +56,6 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _isBlinking, value);
         }
 
-
-
         public string BaseColor { get; set; }
         public string ActiveColor { get; set; }
     }
@@ -92,32 +90,7 @@ namespace IPCSoftware.App.ViewModels
         public RecipeItem SelectedRecipe                                      //Modified By Rishabh Date- 11-05-2026
         {
             get => _selectedRecipe;
-            set
-            {
-                if (_selectedRecipe == value) return; // No change, do nothing
-                var newRecipe = value;
-                var previousRecipe = _selectedRecipe;
-              
-                if (SetProperty(ref _selectedRecipe, value))
-                {                   
-                    bool confirm = _dialog.ShowYesNo($"Are you sure you want to load {value.Name}?", "Confirmation");
-                    if (confirm)
-                    {                       
-                        _lastConfirmedRecipe = value;
-                        ApplyRecipeSelection(value);
-                    }
-                    else
-                    {
-                        Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                        {
-                            _selectedRecipe = previousRecipe;
-                            OnPropertyChanged(nameof(SelectedRecipe));
-                        }), System.Windows.Threading.DispatcherPriority.ContextIdle);
-                    }
-
-                }
-
-            }
+            set => SetProperty(ref _selectedRecipe, value);
         }
 
         public bool IsRecipeSelectionEnabled => !GetBtn(OperationMode.Auto).IsEnabled;
@@ -127,43 +100,73 @@ namespace IPCSoftware.App.ViewModels
 
         public ICommand UnifiedOperationCommand { get; }
 
+        public ICommand SelectionChangedCommand { get; }
 
+        private bool _isProcessingSelection = false;        //Added by Rishabh -Date -13-05-2026
 
-        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService , IDialogService dialog) : base(logger)
+        private bool _isInitialized = false;               //Added by Rishabh -Date -13-05-2026
+
+        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService, IDialogService dialog) : base(logger)
         {
             _coreClient = coreClient;
             _navService = navService;
             _servoService = servoService; // Added by rishabh - Date 06-05-2026
-            _dialog =  dialog;
+            _dialog = dialog;
             InitializeTags();
             InitializeButtons();
-            _= InitializeRecipesAsync(); // Initialize Recipe List
-
+            _ = InitializeRecipesAsync(); // Initialize Recipe List
 
             UnifiedOperationCommand = new RelayCommand<string>(async (args) => await ExecuteOperationAsync(args));
 
+            SelectionChangedCommand = new RelayCommand(OnProgramSelectionChanged);
+
             _feedbackTimer = new SafePoller(TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
             _feedbackTimer.Start();
+        }
 
-
+        //Added by Rishabh -Date -13-05-2026 , Handle Recipe Selection Change with Confirmation Dialog
+        void OnProgramSelectionChanged()
+        {
+            if (_isProcessingSelection) return;
+            if (_isInitialized) return;
+            bool confirm = _dialog.ShowYesNo($"Are you sure you want to load {_selectedRecipe.Name}?", "Confirmation");
+            try
+            {
+                _isProcessingSelection = true;
+                if (confirm)
+                {
+                    ApplyRecipeSelection();
+                }
+                else
+                {
+                    // Revert selection to last confirmed recipe             
+                    SelectedRecipe = _lastConfirmedRecipe;
+                    //OnPropertyChanged(nameof(SelectedRecipe));
+                }
+            }
+            finally
+            {
+                _isProcessingSelection = false;
+            }
         }
 
         //Added by Rishabh -Date -06-05-2026 , Initialize Recipe List from ServoConfigService
         //Modfied by Rishabh -Date -11-05-2026
+        //Modified by Rishabh -Date -13-05-2026
         private async Task InitializeRecipesAsync()
         {
             try
             {
+                _isInitialized = true;
                 var savedRecipes = await _servoService.LoadRecipeAsync();
 
                 RecipeList = new ObservableCollection<RecipeItem>(
                     savedRecipes.Select(r => new RecipeItem
                     {
                         ProgramNo = r.ProgramNo,
-                        Name = $"Progam {r.ProgramNo}" 
+                        Name = $"Progam {r.ProgramNo}"
                     })
                 );
-
 
                 // Read current program number from PLC
                 var Data = await _coreClient.GetIoValuesAsync(5);
@@ -177,23 +180,21 @@ namespace IPCSoftware.App.ViewModels
                     if (matchingRecipe != null)
                     {
                         // Set the selected recipe to match what's in the PLC
-                        _selectedRecipe = matchingRecipe;
+                        SelectedRecipe = matchingRecipe;
                         _lastConfirmedRecipe = _selectedRecipe;
                     }
                     else
-                    {                       
+                    {
                         _logger.LogError($"PLC Program Number {currentProgramNo} not found in recipe list. Using default.", LogType.Diagnostics);
                         _selectedRecipe = RecipeList.FirstOrDefault();
                         _lastConfirmedRecipe = _selectedRecipe;
                     }
                 }
                 else
-                {                   
-                    _selectedRecipe = RecipeList.FirstOrDefault();
+                {
+                    SelectedRecipe = RecipeList.FirstOrDefault();
                     _lastConfirmedRecipe = _selectedRecipe;
                 }
-                              
-                OnPropertyChanged(nameof(SelectedRecipe));
             }
             catch (Exception ex)
             {
@@ -205,60 +206,41 @@ namespace IPCSoftware.App.ViewModels
                     new RecipeItem { ProgramNo = 1, Name = "Program 1" }
                 };
 
-                _selectedRecipe = RecipeList.FirstOrDefault();
-                _lastConfirmedRecipe = _selectedRecipe;
-                OnPropertyChanged(nameof(SelectedRecipe));
+                SelectedRecipe = RecipeList.FirstOrDefault();
+                _lastConfirmedRecipe = SelectedRecipe;
+            }
+            finally
+            {
+                _isInitialized = false;
             }
         }
 
-        private async void ApplyRecipeSelection(RecipeItem newRecipe)
+        //Added by Rishabh -Date -11-05-2026
+        private async void ApplyRecipeSelection()
         {
             try
             {
-                _lastConfirmedRecipe = newRecipe;
-                _logger.LogInfo($"Recipe Selected: Program {newRecipe.ProgramNo} - {newRecipe.Name}", LogType.Audit);
-                AddAudit($"Program Number Changed: {newRecipe.Name}");
+                //RecipeItem newRecipe = SelectedRecipe;
+                //_lastConfirmedRecipe = newRecipe;
+                _logger.LogInfo($"Recipe Selected: Program {SelectedRecipe.ProgramNo} - {SelectedRecipe.Name}", LogType.Audit);
+                AddAudit($"Program Number Changed: {SelectedRecipe.Name}");
 
                 // Write selected recipe/program number to PLC
-                await _coreClient.WriteTagAsync(ConstantValues.ProgramNumber, newRecipe.ProgramNo);
+                bool bResult = await _coreClient.WriteTagAsync(ConstantValues.ProgramNumber, SelectedRecipe.ProgramNo);
+                if (bResult)
+                {
+                    _lastConfirmedRecipe = SelectedRecipe;
+                }
+                else
+                {
+                    SelectedRecipe = _lastConfirmedRecipe;
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Recipe Selection Error: {ex.Message}", LogType.Diagnostics);
             }
         }
-
-        // // Added by Rishabh -Date -06-05-2026 ,  Handle Recipe Selection Change
-        //private async void OnRecipeSelectionChanged(RecipeItem newRecipe , RecipeItem previousRecipe)
-        //{
-        //    try
-        //    {
-        //        if (previousRecipe != null && newRecipe.ProgramNo == previousRecipe.ProgramNo) { return; } // No change in selection
-        //        bool confirm = _dialog.ShowYesNo($"Are you sure you want to load {newRecipe.Name} ?", "Confirmation");
-        //        if (confirm)
-        //        {
-        //            _lastConfirmedRecipe = newRecipe;
-        //            _logger.LogInfo($"Recipe Selected: Program {newRecipe.ProgramNo} - {newRecipe.Name}", LogType.Audit);
-        //            AddAudit($"Program Number Changed: {newRecipe.Name}");
-        //        }
-        //        else
-        //        {
-        //            _selectedRecipe = previousRecipe;
-        //            OnPropertyChanged(nameof(SelectedRecipe));
-        //        }
-
-        //        //  Write selected recipe/program number to PLC
-        //         await _coreClient.WriteTagAsync(ConstantValues.ProgramNumber, newRecipe.ProgramNo);
-
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Recipe Selection Error: {ex.Message}", LogType.Diagnostics);
-        //        _selectedRecipe = previousRecipe;
-        //        OnPropertyChanged(nameof(SelectedRecipe));
-        //    }
-        //}
 
         private void InitializeTags()
         {
@@ -278,13 +260,13 @@ namespace IPCSoftware.App.ViewModels
         private void InitializeButtons()
         {
             var list = new List<ModeButtonItem>
-        {
-            new ModeButtonItem { Mode = OperationMode.Auto,      Name = "Auto Run",     BaseColor = "#00BCFE", ActiveColor = "#00BCFE" },
-            new ModeButtonItem { Mode = OperationMode.DryRun,    Name = "Dry Run",      BaseColor = "#B200A1", ActiveColor = "#7E1A74" },
-            new ModeButtonItem { Mode = OperationMode.Manual,    Name = "Manual",       BaseColor = "#607D8B", ActiveColor = "#607D8B", IsEnabled = true },
-            new ModeButtonItem { Mode = OperationMode.CycleStop, Name = "Cycle Stop",   BaseColor = "#FE8848", ActiveColor = "#FE8848" },
-            new ModeButtonItem { Mode = OperationMode.MassRTO,   Name = "Machine Home", BaseColor = "#01AE4C", ActiveColor = "#01AE4C" }
-        };
+            {
+                new ModeButtonItem { Mode = OperationMode.Auto,      Name = "Auto Run",     BaseColor = "#00BCFE", ActiveColor = "#00BCFE" },
+                new ModeButtonItem { Mode = OperationMode.DryRun,    Name = "Dry Run",      BaseColor = "#B200A1", ActiveColor = "#7E1A74" },
+                new ModeButtonItem { Mode = OperationMode.Manual,    Name = "Manual",       BaseColor = "#607D8B", ActiveColor = "#607D8B", IsEnabled = true },
+                new ModeButtonItem { Mode = OperationMode.CycleStop, Name = "Cycle Stop",   BaseColor = "#FE8848", ActiveColor = "#FE8848" },
+                new ModeButtonItem { Mode = OperationMode.MassRTO,   Name = "Machine Home", BaseColor = "#01AE4C", ActiveColor = "#01AE4C" }
+            };
             foreach (var item in list) ModeButtons.Add(item);
         }
 
@@ -410,5 +392,3 @@ namespace IPCSoftware.App.ViewModels
         public string Name { get; set; }
     }
 }
-
-  
