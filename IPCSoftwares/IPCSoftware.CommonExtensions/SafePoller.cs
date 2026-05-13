@@ -7,7 +7,7 @@ namespace IPCSoftware.Common.CommonExtensions
     public class SafePoller : IDisposable
     {
         private readonly DispatcherTimer _timer;
-        private readonly Func<Task> _asyncAction; // The work to do
+        internal readonly Func<Task> _asyncAction; // The work to do
         private readonly Action<Exception> _onError;
 
         private bool _isBusy;
@@ -26,6 +26,12 @@ namespace IPCSoftware.Common.CommonExtensions
         public void Start() => _timer.Start();
         public void Stop() => _timer.Stop();
 
+        internal virtual async Task LiveDataTickAsync()
+        {
+            if (_asyncAction != null)
+                await _asyncAction();
+        }
+
         private async void Timer_Tick(object? sender, EventArgs e)
         {
             // 1. Safety Checks
@@ -37,7 +43,7 @@ namespace IPCSoftware.Common.CommonExtensions
                 _isBusy = true;
 
                 // 3. Do the actual work
-                await _asyncAction();
+                await LiveDataTickAsync();
             }
             catch (Exception ex)
             {
