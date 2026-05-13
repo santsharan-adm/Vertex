@@ -129,7 +129,7 @@ namespace IPCSoftware.App.ViewModels
         {
             if (_isProcessingSelection) return;
             if (_isInitialized) return;
-            bool confirm = _dialog.ShowYesNo($"Are you sure you want to load {_selectedRecipe.Name}?", "Confirmation");
+            bool confirm = _dialog.ShowYesNo($"Are you sure you want to load {SelectedRecipe.Name}?", "Confirmation");
             try
             {
                 _isProcessingSelection = true;
@@ -181,19 +181,19 @@ namespace IPCSoftware.App.ViewModels
                     {
                         // Set the selected recipe to match what's in the PLC
                         SelectedRecipe = matchingRecipe;
-                        _lastConfirmedRecipe = _selectedRecipe;
+                        _lastConfirmedRecipe = SelectedRecipe;
                     }
                     else
                     {
                         _logger.LogError($"PLC Program Number {currentProgramNo} not found in recipe list. Using default.", LogType.Diagnostics);
-                        _selectedRecipe = RecipeList.FirstOrDefault();
-                        _lastConfirmedRecipe = _selectedRecipe;
+                        SelectedRecipe = RecipeList.FirstOrDefault();
+                        _lastConfirmedRecipe = SelectedRecipe;
                     }
                 }
                 else
                 {
                     SelectedRecipe = RecipeList.FirstOrDefault();
-                    _lastConfirmedRecipe = _selectedRecipe;
+                    _lastConfirmedRecipe = SelectedRecipe;
                 }
             }
             catch (Exception ex)
