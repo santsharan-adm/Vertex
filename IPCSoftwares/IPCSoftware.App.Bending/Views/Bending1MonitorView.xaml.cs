@@ -9,6 +9,7 @@ namespace IPCSoftware.App.Bending.Views
         {
             InitializeComponent();
             DataContext = viewModel;
+            Loaded += (_, _) => viewModel.Initialize();
         }
     }
 }

@@ -1,379 +1,72 @@
-﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.ObjectModel;
+using System.Threading;
 using System.Windows.Input;
+using IPCSoftware.App.Bending.Models;
+using IPCSoftware.Common.CommonExtensions;
+using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.UI.CommonViews.ViewModels;
 
 namespace IPCSoftware.App.Bending.ViewModels
 {
-    public class Bending2MonitorViewModel : BaseViewModel
+    public class Bending2MonitorViewModel : BaseViewModel, IDisposable
     {
         private readonly INavigationService _navigationService;
+        private readonly CoreClient _coreClient;
+        private SafePoller _liveDataPoller;
+        private int _liveDataRunning;
+        private bool _disposed;
 
         public ICommand NextCommand { get; }
         public ICommand PreviousCommand { get; }
 
-        // ==================== PRODUCT 1 DATA ====================
-        private double _p1_Upper;
-        public double P1_Upper
+        #region Properties
+
+        // --- Batch Info ---
+
+        private string _batchNo = "Loading...";
+        public string BatchNo
         {
-            get => _p1_Upper;
-            set
-            {
-                if (_p1_Upper != value)
-                {
-                    _p1_Upper = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _batchNo;
+            set => SetProperty(ref _batchNo, value);
         }
 
-        private double _p1_Value;
-        public double P1_Value
-        {
-            get => _p1_Value;
-            set
-            {
-                if (_p1_Value != value)
-                {
-                    _p1_Value = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        // --- Product Table ---
 
-        private double _p1_Lower;
-        public double P1_Lower
+        public ObservableCollection<Bending1MonitorModel> Products { get; } = new()
         {
-            get => _p1_Lower;
-            set
-            {
-                if (_p1_Lower != value)
-                {
-                    _p1_Lower = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+            new Bending1MonitorModel { Product = "Product 1" },
+            new Bending1MonitorModel { Product = "Product 2" },
+            new Bending1MonitorModel { Product = "Product 3" },
+            new Bending1MonitorModel { Product = "Product 4" }
+        };
 
-        private string _p1_LM;
-        public string P1_LM
-        {
-            get => _p1_LM;
-            set
-            {
-                if (_p1_LM != value)
-                {
-                    _p1_LM = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        #endregion
 
-        private string _p1_TM;
-        public string P1_TM
-        {
-            get => _p1_TM;
-            set
-            {
-                if (_p1_TM != value)
-                {
-                    _p1_TM = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private string _p1_BT;
-        public string P1_BT
-        {
-            get => _p1_BT;
-            set
-            {
-                if (_p1_BT != value)
-                {
-                    _p1_BT = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        // ==================== PRODUCT 2 DATA ====================
-        private double _p2_Upper;
-        public double P2_Upper
-        {
-            get => _p2_Upper;
-            set
-            {
-                if (_p2_Upper != value)
-                {
-                    _p2_Upper = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private double _p2_Value;
-        public double P2_Value
-        {
-            get => _p2_Value;
-            set
-            {
-                if (_p2_Value != value)
-                {
-                    _p2_Value = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private double _p2_Lower;
-        public double P2_Lower
-        {
-            get => _p2_Lower;
-            set
-            {
-                if (_p2_Lower != value)
-                {
-                    _p2_Lower = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private string _p2_LM;
-        public string P2_LM
-        {
-            get => _p2_LM;
-            set
-            {
-                if (_p2_LM != value)
-                {
-                    _p2_LM = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private string _p2_TM;
-        public string P2_TM
-        {
-            get => _p2_TM;
-            set
-            {
-                if (_p2_TM != value)
-                {
-                    _p2_TM = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private string _p2_BT;
-        public string P2_BT
-        {
-            get => _p2_BT;
-            set
-            {
-                if (_p2_BT != value)
-                {
-                    _p2_BT = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        // ==================== PRODUCT 3 DATA ====================
-        private double _p3_Upper;
-        public double P3_Upper
-        {
-            get => _p3_Upper;
-            set
-            {
-                if (_p3_Upper != value)
-                {
-                    _p3_Upper = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private double _p3_Value;
-        public double P3_Value
-        {
-            get => _p3_Value;
-            set
-            {
-                if (_p3_Value != value)
-                {
-                    _p3_Value = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private double _p3_Lower;
-        public double P3_Lower
-        {
-            get => _p3_Lower;
-            set
-            {
-                if (_p3_Lower != value)
-                {
-                    _p3_Lower = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private string _p3_LM;
-        public string P3_LM
-        {
-            get => _p3_LM;
-            set
-            {
-                if (_p3_LM != value)
-                {
-                    _p3_LM = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private string _p3_TM;
-        public string P3_TM
-        {
-            get => _p3_TM;
-            set
-            {
-                if (_p3_TM != value)
-                {
-                    _p3_TM = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private string _p3_BT;
-        public string P3_BT
-        {
-            get => _p3_BT;
-            set
-            {
-                if (_p3_BT != value)
-                {
-                    _p3_BT = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        // ==================== PRODUCT 4 DATA ====================
-        private double _p4_Upper;
-        public double P4_Upper
-        {
-            get => _p4_Upper;
-            set
-            {
-                if (_p4_Upper != value)
-                {
-                    _p4_Upper = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private double _p4_Value;
-        public double P4_Value
-        {
-            get => _p4_Value;
-            set
-            {
-                if (_p4_Value != value)
-                {
-                    _p4_Value = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private double _p4_Lower;
-        public double P4_Lower
-        {
-            get => _p4_Lower;
-            set
-            {
-                if (_p4_Lower != value)
-                {
-                    _p4_Lower = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private string _p4_LM;
-        public string P4_LM
-        {
-            get => _p4_LM;
-            set
-            {
-                if (_p4_LM != value)
-                {
-                    _p4_LM = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private string _p4_TM;
-        public string P4_TM
-        {
-            get => _p4_TM;
-            set
-            {
-                if (_p4_TM != value)
-                {
-                    _p4_TM = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private string _p4_BT;
-        public string P4_BT
-        {
-            get => _p4_BT;
-            set
-            {
-                if (_p4_BT != value)
-                {
-                    _p4_BT = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public Bending2MonitorViewModel(INavigationService navigationService, IAppLogger logger)
+        public Bending2MonitorViewModel(
+            INavigationService navigationService,
+            CoreClient coreClient,
+            IAppLogger logger)
             : base(logger)
         {
             _navigationService = navigationService;
+            _coreClient = coreClient;
+
             NextCommand = new RelayCommand(ExecuteNext);
             PreviousCommand = new RelayCommand(ExecutePrevious);
+        }
 
-            P1_Upper = 50.5; P1_Value = 48.2; P1_Lower = 45.0;
-            P1_LM = "2.22"; P1_TM = "68.4 °C"; P1_BT = "2.5s";
+        public void Initialize()
+        {
+            _liveDataPoller = new SafePoller(
+                TimeSpan.FromMilliseconds(500),
+                LiveDataTickAsync,
+                ex => _logger.LogError($"[Bending2Monitor] Poller error: {ex.Message}", LogType.Diagnostics));
 
-            P2_Upper = 55.0; P2_Value = 52.1; P2_Lower = 50.0;
-            P2_LM = "3.35"; P2_TM = "70.1 °C"; P2_BT = "2.8s";
-
-            P3_Upper = 60.0; P3_Value = 58.9; P3_Lower = 55.0;
-            P3_LM = "5.32"; P3_TM = "72.6 °C"; P3_BT = "3.1s";
-
-            P4_Upper = 45.0; P4_Value = 44.5; P4_Lower = 40.0;
-            P4_LM = "4.22"; P4_TM = "65.3 °C"; P4_BT = "2.2s";
+            _liveDataPoller.Start();
         }
 
         private void ExecuteNext()
@@ -386,10 +79,84 @@ namespace IPCSoftware.App.Bending.ViewModels
             _navigationService.NavigateToDashboard1();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        private async Task LiveDataTickAsync()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            if (Interlocked.Exchange(ref _liveDataRunning, 1) == 1)
+                return;
+
+            try
+            {
+                if (!_coreClient.isConnected)
+                    return;
+
+                var data = await _coreClient.GetIoValuesAsync(6);
+                if (data != null && data.Count > 0)
+                {
+                    UpdateFromPlcData(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Bending2Monitor] LiveDataTickAsync error: {ex.Message}", LogType.Diagnostics);
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _liveDataRunning, 0);
+            }
+        }
+
+        private void UpdateFromPlcData(Dictionary<int, object> data)
+        {
+            if (data.TryGetValue(2000, out object batchNo))
+                BatchNo = batchNo?.ToString() ?? "---";
+
+            // PLC data structure: Each product has 10 tags (QR, LoadUpper, LoadValue, LoadLower, TempUpper, TempValue, TempLower, BendingTime, Result, padding)
+            // Base offsets: Product 1 = 2001, Product 2 = 2011, Product 3 = 2021, Product 4 = 2031
+            int[] baseOffsets = { 2001, 2011, 2021, 2031 };
+
+            for (int i = 0; i < Products.Count && i < baseOffsets.Length; i++)
+            {
+                int baseOffset = baseOffsets[i];
+                var product = Products[i];
+
+                // QR Code
+                if (data.TryGetValue(baseOffset, out object qrCode))
+                    product.QRCode = qrCode?.ToString() ?? "---";
+
+                // Load data
+                product.Load ??= new ParameterLImitValues();
+                if (data.TryGetValue(baseOffset + 1, out object loadUpper))
+                    product.Load.UpperLimit = Convert.ToDouble(loadUpper);
+                if (data.TryGetValue(baseOffset + 2, out object loadValue))
+                    product.Load.PresentValue = Convert.ToDouble(loadValue);
+                if (data.TryGetValue(baseOffset + 3, out object loadLower))
+                    product.Load.LowerLimit = Convert.ToDouble(loadLower);
+
+                // Temperature data
+                product.Temprature ??= new ParameterLImitValues();
+                if (data.TryGetValue(baseOffset + 4, out object tempUpper))
+                    product.Temprature.UpperLimit = Convert.ToDouble(tempUpper);
+                if (data.TryGetValue(baseOffset + 5, out object tempValue))
+                    product.Temprature.PresentValue = Convert.ToDouble(tempValue);
+                if (data.TryGetValue(baseOffset + 6, out object tempLower))
+                    product.Temprature.LowerLimit = Convert.ToDouble(tempLower);
+
+                // Bending Time and Result
+                if (data.TryGetValue(baseOffset + 7, out object bendingTime))
+                    product.BendingTime = Convert.ToDouble(bendingTime);
+                if (data.TryGetValue(baseOffset + 8, out object result))
+                    product.Result = Convert.ToBoolean(result);
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            _disposed = true;
+            _liveDataPoller?.Stop();
+            _liveDataPoller?.Dispose();
         }
     }
 }

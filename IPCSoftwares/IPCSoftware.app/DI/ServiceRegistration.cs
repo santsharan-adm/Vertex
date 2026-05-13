@@ -124,7 +124,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IAeLimitService, AeLimitService>();
             services.AddSingleton<INavigationService, NavigationService>();
-            //services.AddSingleton<IDialogService, DialogService>();
+            services.AddSingleton<IDialogService, DialogService>();
             services.AddSingleton<ILogManagerService, LogManagerService>();
             services.AddSingleton<IShiftManagementService, ShiftManagementService>();
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();

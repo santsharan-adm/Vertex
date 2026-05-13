@@ -7,4 +7,10 @@
     <RootNamespace>IPCSoftware.Common.CommonExtensions</RootNamespace>
     <AssemblyName>IPCSoftware.CommonExtensions</AssemblyName>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IPCSoftware.Communication.UIClientComm\IPCSoftware.Communication.UIClientComm.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Core\IPCSoftware.Core.csproj" />
+    <ProjectReference Include="..\IPCSoftware.Shared\IPCSoftware.Shared.csproj" />
+  </ItemGroup>
 </Project>
+

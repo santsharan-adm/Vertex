@@ -15,10 +15,11 @@ namespace IPCSoftware.App.Bending.ViewModels
     public class Bending1MonitorViewModel : BaseViewModel, IDisposable
     {
         private readonly INavigationService _navigationService;
-        private readonly CoreClient _coreClient;
-        private SafePoller _liveDataPoller;
-        private int _liveDataRunning;
+
+        private SafePollerEx _liveDataPoller;
+
         private bool _disposed;
+        private readonly CoreClient _coreClient;
 
         public ICommand NextCommand { get; }
 
@@ -59,9 +60,10 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         public void Initialize()
         {
-            _liveDataPoller = new SafePoller(
+            _liveDataPoller = new SafePollerEx(_coreClient,
                 TimeSpan.FromMilliseconds(500),
-                LiveDataTickAsync,
+                UpdateFromPlcData,
+                _logger,
                 ex => _logger.LogError($"[Bending1Monitor] Poller error: {ex.Message}", LogType.Diagnostics));
 
             _liveDataPoller.Start();
@@ -72,33 +74,33 @@ namespace IPCSoftware.App.Bending.ViewModels
             _navigationService.NavigateToDashboard2();
         }
 
-        private async Task LiveDataTickAsync()
-        {
-            if (Interlocked.Exchange(ref _liveDataRunning, 1) == 1)
-                return;
+        //private async Task LiveDataTickAsync()
+        //{
+        //    if (Interlocked.Exchange(ref _liveDataRunning, 1) == 1)
+        //        return;
 
-            try
-            {
-                if (!_coreClient.isConnected)
-                    return;
+        //    try
+        //    {
+        //        if (!_coreClient.isConnected)
+        //            return;
 
-                var data = await _coreClient.GetIoValuesAsync(5);
-                if (data != null && data.Count > 0)
-                {
-                    UpdateFromPlcData(data);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"[Bending1Monitor] LiveDataTickAsync error: {ex.Message}", LogType.Diagnostics);
-            }
-            finally
-            {
-                Interlocked.Exchange(ref _liveDataRunning, 0);
-            }
-        }
+        //        var data = await _coreClient.GetIoValuesAsync(5);
+        //        if (data != null && data.Count > 0)
+        //        {
+        //            UpdateFromPlcData(data);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"[Bending1Monitor] LiveDataTickAsync error: {ex.Message}", LogType.Diagnostics);
+        //    }
+        //    finally
+        //    {
+        //        Interlocked.Exchange(ref _liveDataRunning, 0);
+        //    }
+        //}
 
-        private void UpdateFromPlcData(Dictionary<int, object> data)
+        private async Task UpdateFromPlcData(Dictionary<int, object> data)
         {
             if (data.TryGetValue(1000, out object batchNo))
                 BatchNo = batchNo?.ToString() ?? "---";
