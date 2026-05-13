@@ -102,45 +102,52 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         private async Task UpdateFromPlcData(Dictionary<int, object> data)
         {
-            if (data.TryGetValue(1000, out object batchNo))
-                BatchNo = batchNo?.ToString() ?? "---";
-
-            // PLC data structure: Each product has 10 tags (QR, LoadUpper, LoadValue, LoadLower, TempUpper, TempValue, TempLower, BendingTime, Result, padding)
-            // Base offsets: Product 1 = 1001, Product 2 = 1011, Product 3 = 1021, Product 4 = 1031
-            int[] baseOffsets = { 1001, 1011, 1021, 1031 };
-
-            for (int i = 0; i < Products.Count && i < baseOffsets.Length; i++)
+            try
             {
-                int baseOffset = baseOffsets[i];
-                var product = Products[i];
+                if (data.TryGetValue(1000, out object batchNo))
+                    BatchNo = batchNo?.ToString() ?? "---";
 
-                // QR Code
-                if (data.TryGetValue(baseOffset, out object qrCode))
-                    product.QRCode = qrCode?.ToString() ?? "---";
+                // PLC data structure: Each product has 10 tags (QR, LoadUpper, LoadValue, LoadLower, TempUpper, TempValue, TempLower, BendingTime, Result, padding)
+                // Base offsets: Product 1 = 1001, Product 2 = 1011, Product 3 = 1021, Product 4 = 1031
+                int[] baseOffsets = { 1001, 1011, 1021, 1031 };
 
-                // Load data
-                product.Load ??= new ParameterLImitValues();
-                if (data.TryGetValue(baseOffset + 1, out object loadUpper))
-                    product.Load.UpperLimit = Convert.ToDouble(loadUpper);
-                if (data.TryGetValue(baseOffset + 2, out object loadValue))
-                    product.Load.PresentValue = Convert.ToDouble(loadValue);
-                if (data.TryGetValue(baseOffset + 3, out object loadLower))
-                    product.Load.LowerLimit = Convert.ToDouble(loadLower);
+                for (int i = 0; i < Products.Count && i < baseOffsets.Length; i++)
+                {
+                    int baseOffset = baseOffsets[i];
+                    var product = Products[i];
 
-                // Temperature data
-                product.Temprature ??= new ParameterLImitValues();
-                if (data.TryGetValue(baseOffset + 4, out object tempUpper))
-                    product.Temprature.UpperLimit = Convert.ToDouble(tempUpper);
-                if (data.TryGetValue(baseOffset + 5, out object tempValue))
-                    product.Temprature.PresentValue = Convert.ToDouble(tempValue);
-                if (data.TryGetValue(baseOffset + 6, out object tempLower))
-                    product.Temprature.LowerLimit = Convert.ToDouble(tempLower);
+                    // QR Code
+                    if (data.TryGetValue(baseOffset, out object qrCode))
+                        product.QRCode = qrCode?.ToString() ?? "---";
 
-                // Bending Time and Result
-                if (data.TryGetValue(baseOffset + 7, out object bendingTime))
-                    product.BendingTime = Convert.ToDouble(bendingTime);
-                if (data.TryGetValue(baseOffset + 8, out object result))
-                    product.Result = Convert.ToBoolean(result);
+                    // Load data
+                    product.Load ??= new ParameterLImitValues();
+                    if (data.TryGetValue(baseOffset + 1, out object loadUpper))
+                        product.Load.UpperLimit = Convert.ToDouble(loadUpper);
+                    if (data.TryGetValue(baseOffset + 2, out object loadValue))
+                        product.Load.PresentValue = Convert.ToDouble(loadValue);
+                    if (data.TryGetValue(baseOffset + 3, out object loadLower))
+                        product.Load.LowerLimit = Convert.ToDouble(loadLower);
+
+                    // Temperature data
+                    product.Temprature ??= new ParameterLImitValues();
+                    if (data.TryGetValue(baseOffset + 4, out object tempUpper))
+                        product.Temprature.UpperLimit = Convert.ToDouble(tempUpper);
+                    if (data.TryGetValue(baseOffset + 5, out object tempValue))
+                        product.Temprature.PresentValue = Convert.ToDouble(tempValue);
+                    if (data.TryGetValue(baseOffset + 6, out object tempLower))
+                        product.Temprature.LowerLimit = Convert.ToDouble(tempLower);
+
+                    // Bending Time and Result
+                    if (data.TryGetValue(baseOffset + 7, out object bendingTime))
+                        product.BendingTime = Convert.ToDouble(bendingTime);
+                    if (data.TryGetValue(baseOffset + 8, out object result))
+                        product.Result = Convert.ToBoolean(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Bending1Monitor] UpdateFromPlcData error: {ex.Message}", LogType.Diagnostics);
             }
         }
 
