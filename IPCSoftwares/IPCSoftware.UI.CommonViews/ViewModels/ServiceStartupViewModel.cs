@@ -95,7 +95,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             _servicePoller.Start();
 
             // Perform initial status check
-            _ = CheckServiceStatus();
+            _ = CheckServiceStatus(new Dictionary<int, object>());
 
             _logger.LogInfo("[ServiceStartup] ViewModel initialized", LogType.Diagnostics);
         }
@@ -105,7 +105,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         /// <summary>
         /// Checks the current status of the Windows Service
         /// </summary>
-        private async Task CheckServiceStatus()
+        private async Task CheckServiceStatus(Dictionary<int, object> data)
         {
             try
             {

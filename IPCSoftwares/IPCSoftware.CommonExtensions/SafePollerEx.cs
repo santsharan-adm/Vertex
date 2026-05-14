@@ -12,13 +12,11 @@ namespace IPCSoftware.Common.CommonExtensions
     public class SafePollerEx : SafePoller
     {
         protected readonly IAppLogger _logger;
-        private readonly Func<Dictionary<int, object>, Task> _dataAction;
-
-        public SafePollerEx(CoreClient coreClient, TimeSpan interval, Func<Dictionary<int, object>, Task> asyncAction, IAppLogger logger, Action<Exception> onError = null) : base(interval, null, onError)
+        //(CoreClient coreClient, Action<List<IoValue>> asyncAction, int intervalMs = 1000) : base(asyncAction, intervalMs)
+        public SafePollerEx(CoreClient coreClient,TimeSpan interval, Func<Dictionary<int, object>, Task> asyncAction,IAppLogger logger, Action<Exception> onError = null):base(interval, asyncAction, onError)
         {
             _coreClient = coreClient;
             _logger = logger;
-            _dataAction = asyncAction;
         }
         private int _liveDataRunning;
         private readonly CoreClient _coreClient;
@@ -35,7 +33,7 @@ namespace IPCSoftware.Common.CommonExtensions
                 var data = await _coreClient.GetIoValuesAsync(5);
                 if (data != null && data.Count > 0)
                 {
-                    await _dataAction(data);
+                    await _asyncAction(data);
                     return;
                 }
             }
@@ -47,6 +45,7 @@ namespace IPCSoftware.Common.CommonExtensions
             {
                 Interlocked.Exchange(ref _liveDataRunning, 0);
             }
+
 
         }
 

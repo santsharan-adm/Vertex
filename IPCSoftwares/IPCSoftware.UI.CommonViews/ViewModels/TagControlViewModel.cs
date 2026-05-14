@@ -70,7 +70,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         }
 
 
-        private async Task TimerTick()
+        private async Task TimerTick(Dictionary<int, object> data)
         {
             try
             {

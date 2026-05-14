@@ -136,6 +136,7 @@ public class MainWindowViewModelBase : BaseViewModel
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
     public string AppVersion => _aboutMonitor.CurrentValue.ProductVersion;
 
+
     public MainWindowViewModelBase(
         INavigationService nav, 
         CoreClient coreClient,
@@ -274,7 +275,7 @@ public class MainWindowViewModelBase : BaseViewModel
 
 
 
-    private async Task LiveDataTimerTick()
+private async Task LiveDataTimerTick(Dictionary<int, object> data)  
     {
         try 
         {

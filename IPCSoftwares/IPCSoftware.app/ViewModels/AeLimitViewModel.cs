@@ -108,12 +108,12 @@ namespace IPCSoftware.App.ViewModels
             };
         }
 
-        private async Task OnLiveDataTick()
+        private async Task OnLiveDataTick(Dictionary<int, object> data)
         {
             try
             {
                 // Read values to show "Min (Live)" column
-                var data = await _coreClient.GetIoValuesAsync(5);
+                data = await _coreClient.GetIoValuesAsync(5);
                 if (data != null)
                 {
                     foreach (var param in _allLiveParams)

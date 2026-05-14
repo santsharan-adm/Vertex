@@ -641,7 +641,7 @@ namespace IPCSoftware.App.ViewModels
         #region Timer Loops
 
 
-        private async Task ResetSequenceTick()
+        private async Task ResetSequenceTick(Dictionary<int, object> data)
         {
             // Prevent re-entry if the previous tick is still processing (e.g. slow network)
             if (Interlocked.Exchange(ref _resetTimerRunning, 1) == 1) return;
@@ -702,7 +702,7 @@ namespace IPCSoftware.App.ViewModels
         }
 
         // Loop 1: Live Data (TCP)
-        private async Task LiveDataTimerTick()
+        private async Task LiveDataTimerTick(Dictionary<int, object> data)
         {
             if (Interlocked.Exchange(ref _liveDataRunning, 1) == 1) return;
             try
@@ -782,7 +782,7 @@ namespace IPCSoftware.App.ViewModels
 
 
         // Loop 2: Cycle Sync (JSON)
-        private async Task UiSyncTick()
+        private async Task UiSyncTick(Dictionary<int, object> data)
         {
           
             SyncUiWithJson();

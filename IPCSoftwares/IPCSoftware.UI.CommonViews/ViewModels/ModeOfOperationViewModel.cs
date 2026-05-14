@@ -80,6 +80,10 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public ObservableCollection<ModeButtonItem> ModeButtons { get; } = new ObservableCollection<ModeButtonItem>();
         public ObservableCollection<AuditLogModel> AuditLogs { get; set; } = new();
 
+        private async Task FeedbackLoop_Tick(Dictionary<int, object> data)
+        {
+
+        }
         private bool _isMachineHome;
         public bool IsMachineHome { get => _isMachineHome; set => SetProperty(ref _isMachineHome, value); }
 

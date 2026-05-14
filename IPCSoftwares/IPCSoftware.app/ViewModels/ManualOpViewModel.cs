@@ -258,7 +258,7 @@ namespace IPCSoftware.App.ViewModels
         }
 
       
-        private async Task FeedbackLoop_Tick()
+        private async Task FeedbackLoop_Tick(Dictionary<int, object> data)
         {
             try
             {

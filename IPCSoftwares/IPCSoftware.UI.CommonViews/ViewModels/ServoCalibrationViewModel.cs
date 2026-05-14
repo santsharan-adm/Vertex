@@ -321,13 +321,13 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             }
         }
 
-        private async Task OnLiveDataTick()
+        private async Task OnLiveDataTick(Dictionary<int, object> data)
         {
          
             try
             {
                 // Request IO Packet (ID 5 assumed to cover all tags)
-                var data = await _coreClient.GetIoValuesAsync(5);
+                data = await _coreClient.GetIoValuesAsync(5);
 
                 if (data != null)
                 {

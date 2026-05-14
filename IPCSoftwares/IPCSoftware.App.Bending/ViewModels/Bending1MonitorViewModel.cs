@@ -62,7 +62,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         {
             _liveDataPoller = new SafePollerEx(_coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateFromPlcData,
+                UpdateFromService,
                 _logger,
                 ex => _logger.LogError($"[Bending1Monitor] Poller error: {ex.Message}", LogType.Diagnostics));
 
@@ -87,7 +87,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         //        var data = await _coreClient.GetIoValuesAsync(5);
         //        if (data != null && data.Count > 0)
         //        {
-        //            UpdateFromPlcData(data);
+        //            UpdateFromService(data);
         //        }
         //    }
         //    catch (Exception ex)
@@ -100,7 +100,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         //    }
         //}
 
-        private async Task UpdateFromPlcData(Dictionary<int, object> data)
+        private async Task UpdateFromService(Dictionary<int, object> data)
         {
             try
             {
@@ -108,8 +108,8 @@ namespace IPCSoftware.App.Bending.ViewModels
                     BatchNo = batchNo?.ToString() ?? "---";
 
                 // PLC data structure: Each product has 10 tags (QR, LoadUpper, LoadValue, LoadLower, TempUpper, TempValue, TempLower, BendingTime, Result, padding)
-                // Base offsets: Product 1 = 1001, Product 2 = 1011, Product 3 = 1021, Product 4 = 1031
-                int[] baseOffsets = { 1001, 1011, 1021, 1031 };
+                // Base offsets: Product 1 = 1001, Product 2 = 1021, Product 3 = 1041, Product 4 = 1061
+                int[] baseOffsets = { 1001, 1021, 1041, 1061 };
 
                 for (int i = 0; i < Products.Count && i < baseOffsets.Length; i++)
                 {
@@ -147,7 +147,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Bending1Monitor] UpdateFromPlcData error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Bending1Monitor] UpdateFromService error: {ex.Message}", LogType.Diagnostics);
             }
         }
 

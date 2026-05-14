@@ -105,17 +105,17 @@ IAeLimitService aeLimitService,
             };
         }
 
-        private async Task OnLiveDataTick()
+        private async Task OnLiveDataTick(Dictionary<int, object> data)
     {
             try
       {
       // Read values to show "Min (Live)" column
- var data = await _coreClient.GetIoValuesAsync(5);
-      if (data != null)
+ var liveData = await _coreClient.GetIoValuesAsync(5);
+      if (liveData != null)
           {
           foreach (var param in _allLiveParams)
  {
-       if (data.TryGetValue(param.ReadTagId, out object val))
+       if (liveData.TryGetValue(param.ReadTagId, out object val))
       {
          param.CurrentValue = Convert.ToDouble(val);
     }

@@ -7,13 +7,13 @@ namespace IPCSoftware.Common.CommonExtensions
     public class SafePoller : IDisposable
     {
         private readonly DispatcherTimer _timer;
-        internal readonly Func<Task> _asyncAction; // The work to do
+        internal readonly Func<Dictionary<int, object>, Task> _asyncAction; // The work to do
         private readonly Action<Exception> _onError;
 
         private bool _isBusy;
         private bool _disposed;
 
-        public SafePoller(TimeSpan interval, Func<Task> asyncAction, Action<Exception> onError = null)
+        public SafePoller(TimeSpan interval, Func<Dictionary<int, object>, Task> asyncAction, Action<Exception> onError = null)
         {
             _asyncAction = asyncAction;
             _onError = onError;
@@ -28,8 +28,6 @@ namespace IPCSoftware.Common.CommonExtensions
 
         internal virtual async Task LiveDataTickAsync()
         {
-            if (_asyncAction != null)
-                await _asyncAction();
         }
 
         private async void Timer_Tick(object? sender, EventArgs e)
