@@ -5,8 +5,7 @@
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
              helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:ServoCalibrationViewModel}"
-             
-     helpers:DisposeBehavior.AutoDispose="True"
+             helpers:DisposeBehavior.AutoDispose="True"
              Background="#F3F3F3">
 
     <UserControl.Resources>
@@ -101,11 +100,22 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- NEW: ComboBox Style for Program Number -->
+        <Style x:Key="ProgramComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#1E4FA8"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
     </UserControl.Resources>
 
     <Grid Margin="40">
         <TabControl Background="Transparent"  helpers:BlockTabChangeBehavior.BlockWhen="{Binding HasUnsavedChanges}"  BorderThickness="0">
-            
 
             <!-- TAB 1: SETUP & LIVE DATA -->
             <TabItem Header="Servo Params">
@@ -173,9 +183,6 @@
                                         </DataGridTemplateColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
-
-                               
-                                
                             </Grid>
                         </Border>
 
@@ -217,37 +224,17 @@
                                         </DataGridTemplateColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
-
-                                <!--<Button Grid.Row="2" Content="CONFIRM Y PARAMS" Command="{Binding ConfirmYParamsCommand}"
-                                        Background="#007ACC" Foreground="White" FontSize="24" FontWeight="Bold"
-                                        Height="70" Margin="15" Cursor="Hand">
-                                    <Button.Template>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="10">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsPressed" Value="True">
-                                                    <Setter Property="Opacity" Value="0.8"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Button.Template>
-                                </Button>-->
                             </Grid>
                         </Border>
-                        
-                        
-                        
                     </Grid>
 
                     <Button Grid.Row="2" Content="SAVE" Width=" 400" HorizontalAlignment="Center" Command="{Binding ConfirmXParamsCommand}"
-             Background="#007ACC" Foreground="White" FontSize="24" FontWeight="Bold"
-             Height="70" Margin="15" Cursor="Hand">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" CornerRadius="10">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/> 
+                            Background="#007ACC" Foreground="White" FontSize="24" FontWeight="Bold"
+                            Height="70" Margin="15" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsPressed" Value="True">
@@ -257,7 +244,6 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-
                 </Grid>
             </TabItem>
 
@@ -276,27 +262,168 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
+                        <!-- Left Section: Position Teaching + Program Number Controls -->
+
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <TextBlock Text="Position Teaching" FontSize="36" FontWeight="Bold" Foreground="#333"/>
+                            <TextBlock Text="Position Teaching" FontSize="36" FontWeight="Bold" Foreground="#333" Margin="0,0,0,15"/>
+
+                            <!-- Program Number Controls -->
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="PROGRAM NUMBER:" FontSize="24" FontWeight="SemiBold" Foreground="#555" VerticalAlignment="Center" Margin="0,0,15,0"/>
+
+                                <!-- TextBox for Manual Entry (New Program Number) --><!--
+                                <TextBox x:Name="NewProgramNumberTextBox"
+                                 Text="{Binding NewProgramNumberText, UpdateSourceTrigger=PropertyChanged}"
+                                 Width="150"
+                                 Height="60"
+                                 FontSize="24"
+                                 FontWeight="Bold"
+                                 VerticalContentAlignment="Center"
+                                 HorizontalContentAlignment="Center"
+                                 Margin="0,0,15,0"
+                                 Background="White"
+                                 BorderBrush="#1E4FA8"
+                                 BorderThickness="2"/>-->
+
+                                <!-- ComboBox for Existing Programs -->
+                                <ComboBox ItemsSource="{Binding AvailableProgramNumbers}"
+                                  SelectedItem="{Binding SelectedProgramNumber, Mode=TwoWay}"
+                                  Width="150"
+                                  Height="60"
+                                  FontSize="24"
+                                  FontWeight="Bold"
+                                  Margin="0,0,15,0"
+                                  HorizontalContentAlignment="Center"
+                                  VerticalContentAlignment="Center"
+                                  Background="White"
+                                  BorderBrush="#1E4FA8"
+                                  BorderThickness="2"/>
+
+                                <!-- ADD Button -->
+                                <Button Content="ADD" 
+                                    Command="{Binding AddProgramCommand}"
+                                    Background="#28A745" 
+                                    Foreground="White" 
+                                    FontSize="22" 
+                                    FontWeight="Bold"
+                                    Height="60" 
+                                    Width="120" 
+                                    Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Opacity" Value="0.8"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+
+                                <!-- Delete Button -->
+                                <Button Content="DELETE" 
+                                    Command="{Binding DeleteProgramCommand}"
+                                    Background="#1E4FA8" 
+                                    Foreground="White" 
+                                    FontSize="22" 
+                                    FontWeight="Bold"
+                                    Height="60" 
+                                    Width="120" 
+                                    Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="8" Margin="10,0,0,0">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Opacity" Value="0.8"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+
+                                <!-- Edit Button -->
+                                <Button Content="EDIT" 
+                                    Command="{Binding UpdateProgramCommand}"
+                                    Background="#E67E22" 
+                                    Foreground="White" 
+                                    FontSize="22" 
+                                    FontWeight="Bold"
+                                    Height="60" 
+                                    Width="120" 
+                                    Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="8" Margin="10,0,0,0">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Opacity" Value="0.8"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+
+
+                            </StackPanel>
                         </StackPanel>
 
-                        <!-- Live Value Card -->
-                        <Border Grid.Column="1" Background="#1E4FA8" CornerRadius="20" Padding="25,25" MinWidth="500">
-                            <Border.Effect>
-                                <DropShadowEffect Color="Black" BlurRadius="30" Opacity="0.3"/>
-                            </Border.Effect>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <StackPanel Margin="0,0,60,0">
-                                    <TextBlock Text="LIVE X" Foreground="#CCC" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="{Binding LiveX, StringFormat=F2, UpdateSourceTrigger=PropertyChanged}" Foreground="White" FontSize="60" FontWeight="Bold" HorizontalAlignment="Center"/>
+                        <!-- Right Section: Current Running Program + Live Values -->
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <!-- Current Running Program TextBox -->
+                            <Border Background="#28A745" 
+                                    CornerRadius="12" 
+                                    Padding="20,10" 
+                                    Margin="0,0,0,15"
+                                    HorizontalAlignment="Right">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Black" BlurRadius="20" Opacity="0.3"/>
+                                </Border.Effect>
+                                <StackPanel>
+                                    <TextBlock Text="CURRENT RUNNING PROGRAM" 
+                                               Foreground="#E0E0E0" 
+                                               FontSize="18" 
+                                               FontWeight="Bold" 
+                                               HorizontalAlignment="Center"
+                                               Margin="0,0,0,5"/>
+                                    <TextBox Text="{Binding CurrentRunningProgram, Mode=OneWay}" 
+                                             Foreground="White" 
+                                             FontSize="48" 
+                                             FontWeight="Bold" 
+                                             HorizontalAlignment="Center"
+                                             IsReadOnly="True"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             TextAlignment="Center"
+                                             MinWidth="100"/>
                                 </StackPanel>
-                                <Border Width="2" Background="#FFFFFF" Opacity="0.3" Margin="0,10"/>
-                                <StackPanel Margin="60,0,0,0">
-                                    <TextBlock Text="LIVE Y" Foreground="#CCC" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="{Binding LiveY, StringFormat=F2, UpdateSourceTrigger=PropertyChanged}" Foreground="White" FontSize="60" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            </Border>
+
+                            <!-- Live Value Card -->
+                            <Border Background="#1E4FA8" CornerRadius="20" Padding="25,25" MinWidth="500">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Black" BlurRadius="30" Opacity="0.3"/>
+                                </Border.Effect>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <StackPanel Margin="0,0,60,0">
+                                        <TextBlock Text="LIVE X" Foreground="#CCC" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="{Binding LiveX, StringFormat=F2, UpdateSourceTrigger=PropertyChanged}" Foreground="White" FontSize="60" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                    <Border Width="2" Background="#FFFFFF" Opacity="0.3" Margin="0,10"/>
+                                    <StackPanel Margin="60,0,0,0">
+                                        <TextBlock Text="LIVE Y" Foreground="#CCC" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="{Binding LiveY, StringFormat=F2, UpdateSourceTrigger=PropertyChanged}" Foreground="White" FontSize="60" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
-                        </Border>
+                            </Border>
+                        </StackPanel>
                     </Grid>
 
                     <!-- Position List -->
@@ -375,10 +502,10 @@
 
                                                 <!-- TEACH BUTTON (Captures Live) -->
                                                 <Button Command="{Binding DataContext.TeachCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                            CommandParameter="{Binding}"
-                            Background="#007ACC" Foreground="White" 
-                            Height="50" Width="150" Cursor="Hand" Margin="0,0,10,0"
-                            ToolTip="Capture current Live Position">
+                                                        CommandParameter="{Binding}"
+                                                        Background="#007ACC" Foreground="White" 
+                                                        Height="50" Width="150" Cursor="Hand" Margin="0,0,10,0"
+                                                        ToolTip="Capture current Live Position">
                                                     <Button.Template>
                                                         <ControlTemplate TargetType="Button">
                                                             <Border Background="{TemplateBinding Background}" CornerRadius="6">
@@ -397,10 +524,10 @@
 
                                                 <!-- WRITE BUTTON (Manual Entry) -->
                                                 <Button Command="{Binding DataContext.WritePositionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                            CommandParameter="{Binding}"
-                            Background="#E67E22" Foreground="White" 
-                            Height="50" Width="150" Cursor="Hand"
-                            ToolTip="Write manually typed value to PLC">
+                                                        CommandParameter="{Binding}"
+                                                        Background="#E67E22" Foreground="White" 
+                                                        Height="50" Width="150" Cursor="Hand"
+                                                        ToolTip="Write manually typed value to PLC">
                                                     <Button.Template>
                                                         <ControlTemplate TargetType="Button">
                                                             <Border Background="{TemplateBinding Background}" CornerRadius="6">
@@ -421,16 +548,11 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-
-
-
-
                             </DataGrid.Columns>
                         </DataGrid>
                     </Border>
 
                     <!-- Footer: Jog Buttons & Save -->
-
                     <Grid Grid.Row="2"  Margin="0,30,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"/>
@@ -439,9 +561,9 @@
                         </Grid.ColumnDefinitions>
                         <!-- HOME POS BUTTON -->
                         <Button Content="X-Y ORIGIN" Grid.Column="0" HorizontalAlignment="Left" Margin="0,0,20,0"
-Command="{Binding ConfirmYCoordsCommand}" Width="300"
-Height="80" FontSize="24" FontWeight="Bold"
-Background="#1E4FA8" Foreground="White" Cursor="Hand">
+                                Command="{Binding ConfirmYCoordsCommand}" Width="300"
+                                Height="80" FontSize="24" FontWeight="Bold"
+                                Background="#1E4FA8" Foreground="White" Cursor="Hand">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border Background="{TemplateBinding Background}" CornerRadius="12">
@@ -456,11 +578,7 @@ Background="#1E4FA8" Foreground="White" Cursor="Hand">
                             </Button.Template>
                         </Button>
 
-
                         <StackPanel Grid.Column="1" HorizontalAlignment="Center" Orientation="Horizontal" >
-
-
-                        
                             <!-- JOG BUTTONS (Standard Events) -->
 
                             <!-- X JOG - -->
@@ -512,8 +630,6 @@ Background="#1E4FA8" Foreground="White" Cursor="Hand">
                                 </i:Interaction.Triggers>
                             </Button>
 
-                            
-                            
                             <!-- Y JOG - -->
                             <Button Content="Y JOG -" HorizontalAlignment="Right" Style="{StaticResource JogButtonStyle}" Background="#007ACC">
                                 <i:Interaction.Triggers>
@@ -561,16 +677,13 @@ Background="#1E4FA8" Foreground="White" Cursor="Hand">
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
                             </Button>
-
-                     
-
                         </StackPanel>
 
                         <!-- SAVE (Confirm X Coord) -->
                         <Button Content="SAVE" Grid.Column="2" HorizontalAlignment="Right"
-                Command="{Binding ConfirmXCoordsCommand}"
-                Width="300" Height="80" FontSize="24" FontWeight="Bold"
-                Background="#1E4FA8" Foreground="White" Cursor="Hand" Margin="0,0,20,0">
+                                Command="{Binding ConfirmXCoordsCommand}"
+                                Width="300" Height="80" FontSize="24" FontWeight="Bold"
+                                Background="#1E4FA8" Foreground="White" Cursor="Hand" Margin="0,0,20,0">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border Background="{TemplateBinding Background}" CornerRadius="12">
@@ -585,7 +698,6 @@ Background="#1E4FA8" Foreground="White" Cursor="Hand">
                             </Button.Template>
                         </Button>
                     </Grid>
-               
                 </Grid>
             </TabItem>
 

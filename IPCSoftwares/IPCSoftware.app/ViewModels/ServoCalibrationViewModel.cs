@@ -3,6 +3,7 @@ using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.CoreService;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -20,6 +21,8 @@ namespace IPCSoftware.App.ViewModels
 {
     public class ServoCalibrationViewModel : BaseViewModel, IDisposable, INavigationalAware
     {
+        private readonly IRecipeManagementService _recipeManagementService;
+        private readonly IAeLimitService _aeLimitService;
         private readonly CoreClient _coreClient;
        // private readonly DispatcherTimer _liveDataTimer;
         private readonly SafePoller _liveDataTimer;
@@ -29,6 +32,18 @@ namespace IPCSoftware.App.ViewModels
 
         private bool _initialPlcLoadDone = false;
         private ProductSettingsModel _productSettings;
+
+        int _lastProgramAdded;
+
+        //private string _newProgramNumberText;
+        //public  string NewProgramNumberText 
+        //{
+        //    get => _newProgramNumberText;
+        //    set => SetProperty(ref _newProgramNumberText, value);
+        //}
+
+        
+
 
         private bool _hasUnsavedChanges;
         public bool HasUnsavedChanges
@@ -52,7 +67,32 @@ namespace IPCSoftware.App.ViewModels
         private bool _isJogXPlusActive; public bool IsJogXPlusActive { get => _isJogXPlusActive; set => SetProperty(ref _isJogXPlusActive, value); }
         private bool _isJogYMinusActive; public bool IsJogYMinusActive { get => _isJogYMinusActive; set => SetProperty(ref _isJogYMinusActive, value); }
         private bool _isJogYPlusActive; public bool IsJogYPlusActive { get => _isJogYPlusActive; set => SetProperty(ref _isJogYPlusActive, value); }
+        //
 
+        int _nextProgramId;
+
+        
+        // Available Program Numbers for ComboBox
+        private ObservableCollection<int> _availableProgramNumbers = new ObservableCollection<int>();
+        public ObservableCollection<int> AvailableProgramNumbers
+        {
+            get =>  _availableProgramNumbers;
+            set => SetProperty(ref _availableProgramNumbers, value);
+        }
+        // Selected Program Number (for adding new programs)
+        private int _selectedProgramNumber;
+        public int SelectedProgramNumber
+        {
+            get => _selectedProgramNumber;
+            set => SetProperty(ref _selectedProgramNumber, value);
+        }
+        // Current Running Program (reads from PLC Tag 544)
+        private int _currentRunningProgram;
+        public int CurrentRunningProgram
+        {
+            get => _currentRunningProgram;
+            set => SetProperty(ref _currentRunningProgram, value);
+        }
 
         // --- Properties ---
         private double _liveX;
@@ -118,10 +158,17 @@ namespace IPCSoftware.App.ViewModels
         // NEW: Jog Command (Takes [Direction, IsPressed])
         public ICommand JogCommand { get; }
 
+        public ICommand AddProgramCommand { get; }
+
+        public ICommand DeleteProgramCommand { get; }
+
+        public ICommand UpdateProgramCommand { get; }
         public ServoCalibrationViewModel(CoreClient coreClient,
             IServoCalibrationService servoService,
             IDialogService dialog,
              IProductConfigurationService productService,
+             IRecipeManagementService recipeManagementService,
+             IAeLimitService aeLimitService,
             IAppLogger logger)
              : base(logger)
         {
@@ -129,6 +176,8 @@ namespace IPCSoftware.App.ViewModels
             _coreClient = coreClient;
             _servoService = servoService; 
             _productService = productService;
+            _recipeManagementService = recipeManagementService;
+            _aeLimitService = aeLimitService;
 
             TeachCommand = new RelayCommand<ServoPositionModel>(OnTeachPosition);
             WritePositionCommand = new RelayCommand<ServoPositionModel>(OnWritePositionManual);
@@ -141,10 +190,18 @@ namespace IPCSoftware.App.ViewModels
 
             JogCommand = new RelayCommand<object>(async (args) => await OnJogAsync(args));
 
+            AddProgramCommand = new RelayCommand(OnAddProgram);
+
+            DeleteProgramCommand = new RelayCommand(OnDeleteProgram);
+
+            UpdateProgramCommand = new RelayCommand(OnUpdateProgram);
+
             InitializeParameters();
             // Load positions from JSON via Service
             _ = InitializePositionsAsync();
-       
+
+            InitializeAvailableProgramNumbers();
+
             //InitializePositions();
             _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(100),
                                     OnLiveDataTick  // Pass the method directly
@@ -153,7 +210,269 @@ namespace IPCSoftware.App.ViewModels
 
         }
 
-     
+        // ---  Initialize Available Program Numbers  ---
+        private async  void InitializeAvailableProgramNumbers()
+        {
+            await RefreshProgramNumbersAsync();
+
+        }
+
+        // Add new helper method to refresh program numbers
+        private async Task RefreshProgramNumbersAsync()
+        {
+            try
+            {
+                var savedRecipes = await _servoService.LoadRecipeAsync();
+                AvailableProgramNumbers.Clear();
+
+                foreach (var recipe in savedRecipes.OrderBy(r => r.ProgramNo))
+                {
+                    AvailableProgramNumbers.Add(recipe.ProgramNo);
+                }
+
+                if (AvailableProgramNumbers.Any())
+                {
+                    SelectedProgramNumber = AvailableProgramNumbers.Last();
+                    OnPropertyChanged(nameof(SelectedProgramNumber));
+                    _nextProgramId = AvailableProgramNumbers.Max();
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to refresh program numbers: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+
+        // ---  Add Program Command Handler  ---
+        private async void OnAddProgram()
+        {
+            try
+            {
+
+                bool confirm = _dialog.ShowYesNo($"Add Program {_nextProgramId+1} with current positions and Limits?", "Confirm Add Recipe");
+
+                if (!confirm) return;
+
+                //Collecting data from current positions 
+                var savedPositions = Positions.ToList();
+
+                //Collecting data from AE Limits
+                 var aeLimitSettings = await _aeLimitService.GetSettingsAsync();
+                var firstStation = aeLimitSettings?.Stations?.FirstOrDefault();
+
+
+                var newRecipe = new ServoRecipeModel
+                {
+                    ProgramNo = ++_nextProgramId,
+                    
+                    //Sequence Indexes (S1-S12)
+
+                    S1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.SequenceIndex ?? 0,
+                    S2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.SequenceIndex ?? 0,
+                    S3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.SequenceIndex ?? 0,
+                    S4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.SequenceIndex ?? 0,
+                    S5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.SequenceIndex ?? 0,
+                    S6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.SequenceIndex ?? 0,
+                    S7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.SequenceIndex ?? 0,
+                    S8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.SequenceIndex ?? 0,
+                    S9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.SequenceIndex ?? 0,
+                    S10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.SequenceIndex ?? 0,
+                    S11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.SequenceIndex ?? 0,
+                    S12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.SequenceIndex ?? 0,
+
+                    // X Coordinate (X0-X12)
+                    X0 = savedPositions.FirstOrDefault(p => p.PositionId == 0)?.X ?? 0,
+                    X1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.X ?? 0,
+                    X2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.X ?? 0,
+                    X3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.X ?? 0,
+                    X4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.X ?? 0,
+                    X5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.X ?? 0,
+                    X6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.X ?? 0,
+                    X7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.X ?? 0,
+                    X8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.X ?? 0,
+                    X9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.X ?? 0,
+                    X10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.X ?? 0,
+                    X11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.X ?? 0,
+                    X12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.X ?? 0,
+                    // Y Coordinate (Y0-Y12)
+                    Y0 = savedPositions.FirstOrDefault(p => p.PositionId == 0)?.Y ?? 0,
+                    Y1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.Y ?? 0,
+                    Y2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.Y ?? 0,
+                    Y3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.Y ?? 0,
+                    Y4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.Y ?? 0,
+                    Y5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.Y ?? 0,
+                    Y6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.Y ?? 0,
+                    Y7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.Y ?? 0,
+                    Y8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.Y ?? 0,
+                    Y9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.Y ?? 0,
+                    Y10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.Y ?? 0,
+                    Y11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.Y ?? 0,
+                    Y12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.Y ?? 0,
+                    // AE Limits 
+
+                    Xmin = firstStation?.InspectionX?.Lower ?? 0,
+                    Xmax = firstStation?.InspectionX?.Upper ?? 0,
+                    Ymin = firstStation?.InspectionY?.Lower ?? 0,
+                    Ymax = firstStation?.InspectionY?.Upper ?? 0,
+                    AngleMin = firstStation?.InspectionAngle?.Lower ?? 0,
+                    AngleMax = firstStation?.InspectionAngle?.Upper ?? 0
+
+                };
+
+                _lastProgramAdded = newRecipe.ProgramNo;
+
+                // Add recipe via service
+                bool success = await _recipeManagementService.AddRecipeAsync(newRecipe);
+
+                if (success)
+                {
+                    _logger.LogInfo($"Recipe Added successfully: Program {_lastProgramAdded}", LogType.Audit);
+                    _dialog.ShowMessage($"Program {_lastProgramAdded} added successfully.");
+
+                    await RefreshProgramNumbersAsync();
+                    //_nextProgramId++;
+                }
+                else
+                {
+                    _dialog.ShowWarning($"Failed to add program {_lastProgramAdded}. It may already exist.");
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Add Program Error: {ex.Message}", LogType.Diagnostics);
+                _dialog.ShowWarning("Failed to add program. Please check logs.");
+            }
+        }
+
+        // =------ Delete Program Command Handler  ------//
+
+        private async void OnDeleteProgram()
+        {
+            try
+            {
+                //Check if the selected program is currently running
+                if (SelectedProgramNumber == CurrentRunningProgram) { _dialog.ShowWarning("Cannot remove running program"); return; }
+                //Check if at least 2 programs will remain after deletion
+                if (AvailableProgramNumbers.Count <= 2) { _dialog.ShowWarning("Cannot delete. At least 2 programs must remain in the list."); return; }
+
+                bool confirm = _dialog.ShowYesNo($" Do you want to remove Program {SelectedProgramNumber}?", "Confirm Delete Recipe");
+                
+
+                if (!confirm) return;              
+                                
+                else
+                {
+                    await _recipeManagementService.DeleteRecipeAsync(SelectedProgramNumber);
+                    _logger.LogInfo($"Program {SelectedProgramNumber} deleted successfully.", LogType.Audit);
+                    _dialog.ShowMessage($"Program {SelectedProgramNumber} deleted successfully.");
+                    await RefreshProgramNumbersAsync();
+                }
+
+            }
+
+            catch(Exception ex)
+            {
+                _logger.LogError($"Failed to Delete the program: {ex}",LogType.Error);
+            }
+        }
+
+        private async void OnUpdateProgram()
+        {
+            try
+            {
+                bool confirm = _dialog.ShowYesNo($" Do you want to edit Program {SelectedProgramNumber}?", "Confirm Delete Recipe");
+                if (!confirm) return;
+                //Collecting data from current positions 
+                var savedPositions = Positions.ToList();
+
+                //Collecting data from AE Limits
+                var aeLimitSettings = await _aeLimitService.GetSettingsAsync();
+                var firstStation = aeLimitSettings?.Stations?.FirstOrDefault();
+
+                var UpdatedRecipe = new ServoRecipeModel
+                {
+                    ProgramNo = SelectedProgramNumber,
+
+                    //Sequence Indexes (S1-S12)
+
+                    S1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.SequenceIndex ?? 0,
+                    S2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.SequenceIndex ?? 0,
+                    S3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.SequenceIndex ?? 0,
+                    S4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.SequenceIndex ?? 0,
+                    S5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.SequenceIndex ?? 0,
+                    S6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.SequenceIndex ?? 0,
+                    S7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.SequenceIndex ?? 0,
+                    S8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.SequenceIndex ?? 0,
+                    S9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.SequenceIndex ?? 0,
+                    S10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.SequenceIndex ?? 0,
+                    S11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.SequenceIndex ?? 0,
+                    S12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.SequenceIndex ?? 0,
+
+                    // X Coordinate (X0-X12)
+                    X0 = savedPositions.FirstOrDefault(p => p.PositionId == 0)?.X ?? 0,
+                    X1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.X ?? 0,
+                    X2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.X ?? 0,
+                    X3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.X ?? 0,
+                    X4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.X ?? 0,
+                    X5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.X ?? 0,
+                    X6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.X ?? 0,
+                    X7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.X ?? 0,
+                    X8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.X ?? 0,
+                    X9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.X ?? 0,
+                    X10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.X ?? 0,
+                    X11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.X ?? 0,
+                    X12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.X ?? 0,
+                    // Y Coordinate (Y0-Y12)
+                    Y0 = savedPositions.FirstOrDefault(p => p.PositionId == 0)?.Y ?? 0,
+                    Y1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.Y ?? 0,
+                    Y2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.Y ?? 0,
+                    Y3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.Y ?? 0,
+                    Y4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.Y ?? 0,
+                    Y5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.Y ?? 0,
+                    Y6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.Y ?? 0,
+                    Y7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.Y ?? 0,
+                    Y8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.Y ?? 0,
+                    Y9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.Y ?? 0,
+                    Y10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.Y ?? 0,
+                    Y11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.Y ?? 0,
+                    Y12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.Y ?? 0,
+                    // AE Limits 
+
+                    Xmin = firstStation?.InspectionX?.Lower ?? 0,
+                    Xmax = firstStation?.InspectionX?.Upper ?? 0,
+                    Ymin = firstStation?.InspectionY?.Lower ?? 0,
+                    Ymax = firstStation?.InspectionY?.Upper ?? 0,
+                    AngleMin = firstStation?.InspectionAngle?.Lower ?? 0,
+                    AngleMax = firstStation?.InspectionAngle?.Upper ?? 0
+
+                };
+
+                bool success =  await _recipeManagementService.UpdateRecipeAsync(UpdatedRecipe);
+
+
+                if (success)
+                {
+                    _logger.LogInfo($"Recipe updated successfully: Program {SelectedProgramNumber}", LogType.Audit);
+                    _dialog.ShowMessage($"Program {SelectedProgramNumber} updated successfully.");
+
+                    await RefreshProgramNumbersAsync();
+                    
+                }
+                else
+                {
+                    _dialog.ShowWarning($"Failed to edit program {SelectedProgramNumber}");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to edit the program :{ex}", LogType.Error);
+            }
+        }
+
 
         private async Task OnJogAsync(object args)
         {
@@ -342,6 +661,12 @@ namespace IPCSoftware.App.ViewModels
                     // 1. Update Live Position
                     if (data.TryGetValue(ConstantValues.Servo_Live.X  , out object xVal)) LiveX = Convert.ToDouble(xVal);
                     if (data.TryGetValue(ConstantValues.Servo_Live.Y, out object yVal)) LiveY = Convert.ToDouble(yVal);
+
+                    // --- Read Current Running Program from PLC (Tag 544) ---
+                    if (data.TryGetValue(ConstantValues.ProgramNumber, out object programVal))
+                    {
+                        CurrentRunningProgram = Convert.ToInt32(programVal);
+                    }
 
                     // 2. Update X Parameters
                     foreach (var param in XParameters)

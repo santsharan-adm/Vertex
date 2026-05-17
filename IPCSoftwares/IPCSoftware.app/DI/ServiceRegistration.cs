@@ -31,6 +31,7 @@ namespace IPCSoftware.App.DI
         public static void RegisterServices(IServiceCollection services)
         {
             // services.AddHostedService<Worker>();
+            services.AddSingleton<IRecipeManagementService, RecipeManagementService>();
             services.AddSingleton<IAppLogger, AppLoggerService>();
             services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
