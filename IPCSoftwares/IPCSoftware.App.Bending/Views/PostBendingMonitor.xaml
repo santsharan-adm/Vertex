@@ -1,10 +1,12 @@
 ﻿<UserControl x:Class="IPCSoftware.App.Bending.Views.PostBendingMonitor"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:converters="clr-namespace:IPCSoftware.App.Bending.Converters"
              Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
     <UserControl.Resources>
+        <converters:BoolToColorConverter x:Key="BoolToColorConverter"/>
+
         <!-- Modern Navigation Button Style (consistent with App.AOI) -->
         <Style x:Key="NavButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="White"/>
@@ -49,7 +51,7 @@
 
         <!-- Table Border Style -->
         <Style x:Key="TableBorderStyle" TargetType="Border">
-            <Setter Property="BorderBrush" Value="#333"/>
+            <Setter Property="BorderBrush" Value="Black"/>
             <Setter Property="BorderThickness" Value="0.5"/>
         </Style>
 
@@ -58,8 +60,9 @@
             <Setter Property="Foreground" Value="#222"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Center"/>
         </Style>
     </UserControl.Resources>
 
@@ -85,162 +88,314 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="70"/>
-                        <!-- Title Section -->
+                        <!-- Row 0: Title / Header -->
                         <RowDefinition Height="40"/>
-                        <!-- Header Row -->
+                        <!-- Row 1: Column Headers -->
                         <RowDefinition Height="*"/>
-                        <!-- Data Rows -->
+                        <!-- Row 2:  P1 Upper Limit  -->
+                        <RowDefinition Height="*"/>
+                        <!-- Row 3:  P1 Present Value -->
+                        <RowDefinition Height="*"/>
+                        <!-- Row 4:  P1 Lower Limit  -->
+                        <RowDefinition Height="*"/>
+                        <!-- Row 5:  P2 Upper Limit  -->
+                        <RowDefinition Height="*"/>
+                        <!-- Row 6:  P2 Present Value -->
+                        <RowDefinition Height="*"/>
+                        <!-- Row 7:  P2 Lower Limit  -->
+                        <RowDefinition Height="*"/>
+                        <!-- Row 8:  P3 Upper Limit  -->
+                        <RowDefinition Height="*"/>
+                        <!-- Row 9:  P3 Present Value -->
+                        <RowDefinition Height="*"/>
+                        <!-- Row 10: P3 Lower Limit  -->
+                        <RowDefinition Height="*"/>
+                        <!-- Row 11: P4 Upper Limit  -->
+                        <RowDefinition Height="*"/>
+                        <!-- Row 12: P4 Present Value -->
+                        <RowDefinition Height="*"/>
+                        <!-- Row 13: P4 Lower Limit  -->
                     </Grid.RowDefinitions>
 
-                    <!-- 1. HEADER SECTION -->
-                    <Border Grid.Row="0" BorderBrush="Black" BorderThickness="0,0,0,1" Background="#F9F9F9">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Row 0: Header -->
+                    <Border Grid.Row="0" Grid.ColumnSpan="8" BorderBrush="Black" BorderThickness="0,0,0,1" Background="#F9F9F9">
                         <Grid>
-                            <TextBlock Text="POST BENDING INSPECTION MONITOR" FontSize="22" FontWeight="Bold" 
-                                       HorizontalAlignment="Center"  VerticalAlignment="Center"/>
-                            <TextBlock Text="Batch No. - 1234321"  FontSize="14" FontWeight="Medium" 
-                                       HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                       Foreground="#555" Margin="3"/>
+                            <TextBlock Text="POST BENDING INSPECTION MONITOR" FontSize="22" FontWeight="Bold"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="14" FontWeight="Medium"
+                                       HorizontalAlignment="Left" VerticalAlignment="Center"
+                                       Foreground="#555" Margin="3">
+                                <Run Text="Batch No. - "/>
+                                <Run Text="{Binding BatchNo, Mode=OneWay}"/>
+                            </TextBlock>
                         </Grid>
                     </Border>
 
-                    <!-- 2. TABLE COLUMN HEADERS -->
-                    <Grid Grid.Row="1" Background="#EEEEEE">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="110"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="100"/>
-                        </Grid.ColumnDefinitions>
+                    <!-- Row 1: Column Headers -->
+                    <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource TableBorderStyle}" Background="#EEEEEE">
+                        <TextBlock Text="Product" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource TableBorderStyle}" Background="#EEEEEE">
+                        <TextBlock Text="QR Code" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource TableBorderStyle}" Background="#EEEEEE"/>
+                    <Border Grid.Row="1" Grid.Column="3" Style="{StaticResource TableBorderStyle}" Background="#EEEEEE">
+                        <TextBlock Text="X" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="4" Style="{StaticResource TableBorderStyle}" Background="#EEEEEE">
+                        <TextBlock Text="Y" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="5" Style="{StaticResource TableBorderStyle}" Background="#EEEEEE">
+                        <TextBlock Text="Z" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="6" Style="{StaticResource TableBorderStyle}" Background="#EEEEEE">
+                        <TextBlock Text="W" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="7" Style="{StaticResource TableBorderStyle}" Background="#EEEEEE">
+                        <TextBlock Text="Result" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
 
-                        <Border Grid.Column="0" Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="Product" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
-                        </Border>
-                        <Border Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="QR Code" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
-                        </Border>
-                        <Border Grid.Column="2" Style="{StaticResource TableBorderStyle}"/>
-                        <Border Grid.Column="3" Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="X" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
-                        </Border>
-                        <Border Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="Y" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
-                        </Border>
-                        <Border Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="Z" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
-                        </Border>
-                        <Border Grid.Column="6" Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="W" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
-                        </Border>
-                        <Border Grid.Column="7" Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="Result" FontWeight="Bold" Style="{StaticResource CommonTextStyle}"/>
-                        </Border>
-                    </Grid>
+                    <!-- ═══════════════ Product 1  (Rows 2-4) ═══════════════ -->
+                    <Border Grid.Row="2" Grid.RowSpan="3" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_Product}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="2" Grid.RowSpan="3" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
+                    </Border>
+                    <!-- Sub-row labels -->
+                    <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Upper Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Present Value" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="4" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Lower Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <!-- X -->
+                    <Border Grid.Row="2" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_X_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_X_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="4" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_X_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <!-- Y -->
+                    <Border Grid.Row="2" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_Y_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_Y_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="4" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_Y_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <!-- Z -->
+                    <Border Grid.Row="2" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_Z_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_Z_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="4" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_Z_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <!-- W -->
+                    <Border Grid.Row="2" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_W_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_W_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="4" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P1_W_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <!-- Result -->
+                    <Border Grid.Row="2" Grid.RowSpan="3" Grid.Column="7" Style="{StaticResource TableBorderStyle}">
+                        <Rectangle Width="55" Height="48" Fill="{Binding P1_Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                    </Border>
 
-                    <!-- 3. PRODUCTS DATA -->
-                    <ItemsControl Grid.Row="2">
-                        <ItemsControl.ItemsSource>
-                            <x:Array Type="{x:Type sys:String}">
-                                <sys:String>Product 1</sys:String>
-                                <sys:String>Product 2</sys:String>
-                                <sys:String>Product 3</sys:String>
-                                <sys:String>Product 4</sys:String>
-                            </x:Array>
-                        </ItemsControl.ItemsSource>
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid Columns="1"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="80"/>
-                                        <ColumnDefinition Width="180"/>
-                                        <ColumnDefinition Width="110"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="100"/>
-                                    </Grid.ColumnDefinitions>
+                    <!-- ═══════════════ Product 2  (Rows 5-7) ═══════════════ -->
+                    <Border Grid.Row="5" Grid.RowSpan="3" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_Product}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="5" Grid.RowSpan="3" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Upper Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="6" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Present Value" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="7" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Lower Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_X_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="6" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_X_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="7" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_X_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_Y_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="6" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_Y_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="7" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_Y_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_Z_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="6" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_Z_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="7" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_Z_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_W_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="6" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_W_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="7" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P2_W_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="5" Grid.RowSpan="3" Grid.Column="7" Style="{StaticResource TableBorderStyle}">
+                        <Rectangle Width="55" Height="48" Fill="{Binding P2_Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                    </Border>
 
-                                    <Border Grid.Column="0" Style="{StaticResource TableBorderStyle}">
-                                        <TextBlock Text="{Binding}" Style="{StaticResource CommonTextStyle}"/>
-                                    </Border>
-                                    <Border Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                                        <TextBlock Text="ABCDQWER1234TYUI9087" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
-                                    </Border>
+                    <!-- ═══════════════ Product 3  (Rows 8-10) ═══════════════ -->
+                    <Border Grid.Row="8" Grid.RowSpan="3" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_Product}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="8" Grid.RowSpan="3" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
+                    </Border>
+                    <Border Grid.Row="8" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Upper Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="9" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Present Value" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="10" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Lower Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="8" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_X_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="9" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_X_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="10" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_X_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="8" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_Y_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="9" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_Y_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="10" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_Y_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="8" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_Z_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="9" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_Z_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="10" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_Z_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="8" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_W_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="9" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_W_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="10" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P3_W_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="8" Grid.RowSpan="3" Grid.Column="7" Style="{StaticResource TableBorderStyle}">
+                        <Rectangle Width="55" Height="48" Fill="{Binding P3_Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                    </Border>
 
-                                    <UniformGrid Grid.Column="2" Rows="3">
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="Upper Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="Present Value" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="Lower Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                    </UniformGrid>
+                    <!-- ═══════════════ Product 4  (Rows 11-13) ═══════════════ -->
+                    <Border Grid.Row="11" Grid.RowSpan="3" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_Product}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="11" Grid.RowSpan="3" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
+                    </Border>
+                    <Border Grid.Row="11" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Upper Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="12" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Present Value" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="13" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="Lower Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="11" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_X_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="12" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_X_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="13" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_X_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="11" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_Y_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="12" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_Y_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="13" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_Y_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="11" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_Z_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="12" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_Z_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="13" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_Z_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="11" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_W_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="12" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_W_Value}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="13" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding P4_W_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
+                    <Border Grid.Row="11" Grid.RowSpan="3" Grid.Column="7" Style="{StaticResource TableBorderStyle}">
+                        <Rectangle Width="55" Height="48" Fill="{Binding P4_Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                    </Border>
 
-                                    <UniformGrid Grid.Column="3" Rows="3">
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="432.223" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="123.333" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="231.675" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                    </UniformGrid>
-                                    <UniformGrid Grid.Column="4" Rows="3">
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="432.223" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="123.333" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="231.675" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                    </UniformGrid>
-                                    <UniformGrid Grid.Column="5" Rows="3">
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="432.223" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="123.333" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="231.675" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                    </UniformGrid>
-                                    <UniformGrid Grid.Column="6" Rows="3">
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="432.223" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="123.333" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                        <Border Style="{StaticResource TableBorderStyle}">
-                                            <TextBlock Text="231.675" Style="{StaticResource CommonTextStyle}"/>
-                                        </Border>
-                                    </UniformGrid>
-
-                                    <Border Grid.Column="7" Style="{StaticResource TableBorderStyle}">
-                                        <Rectangle Width="55" Height="48" Fill="#D3D3D3" RadiusX="2" RadiusY="2" 
-                                                   Stroke="#999" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    </Border>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
                 </Grid>
             </Border>
         </Viewbox>

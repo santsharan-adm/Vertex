@@ -12,6 +12,9 @@ namespace IPCSoftware.App.Bending.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (value == null)
+                return new SolidColorBrush(Colors.Transparent);
+
             if (value is bool isActive)
             {
                 string param = parameter?.ToString();

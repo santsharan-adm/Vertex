@@ -92,14 +92,8 @@ namespace IPCSoftware.App.Bending.ViewModels
                 if (data.TryGetValue(1000, out object batchNo))
                     BatchNo = batchNo?.ToString() ?? "---";
 
-                // PLC data structure:
-                // Each product has 10 tags
-                // Base offsets:
-                // Product 1 = 1001
-                // Product 2 = 1021
-                // Product 3 = 1041
-                // Product 4 = 1061
-
+                // PLC data structure: Each product has 10 tags (QR, LoadUpper, LoadValue, LoadLower, TempUpper, TempValue, TempLower, BendingTime, Result, padding)
+                // Base offsets: Product 1 = 1001, Product 2 = 1021, Product 3 = 1041, Product 4 = 1061
                 int[] baseOffsets = { 1001, 1021, 1041, 1061 };
 
                 for (int i = 0; i < Products.Count && i < baseOffsets.Length; i++)
@@ -113,32 +107,25 @@ namespace IPCSoftware.App.Bending.ViewModels
 
                     // Load data
                     product.Load ??= new ParameterLImitValues();
-
                     if (data.TryGetValue(baseOffset + 1, out object loadUpper))
                         product.Load.UpperLimit = Convert.ToDouble(loadUpper);
-
                     if (data.TryGetValue(baseOffset + 2, out object loadValue))
                         product.Load.PresentValue = Convert.ToDouble(loadValue);
-
                     if (data.TryGetValue(baseOffset + 3, out object loadLower))
                         product.Load.LowerLimit = Convert.ToDouble(loadLower);
 
                     // Temperature data
                     product.Temprature ??= new ParameterLImitValues();
-
                     if (data.TryGetValue(baseOffset + 4, out object tempUpper))
                         product.Temprature.UpperLimit = Convert.ToDouble(tempUpper);
-
                     if (data.TryGetValue(baseOffset + 5, out object tempValue))
                         product.Temprature.PresentValue = Convert.ToDouble(tempValue);
-
                     if (data.TryGetValue(baseOffset + 6, out object tempLower))
                         product.Temprature.LowerLimit = Convert.ToDouble(tempLower);
 
                     // Bending Time and Result
                     if (data.TryGetValue(baseOffset + 7, out object bendingTime))
                         product.BendingTime = Convert.ToDouble(bendingTime);
-
                     if (data.TryGetValue(baseOffset + 8, out object result))
                         product.Result = Convert.ToBoolean(result);
                 }
