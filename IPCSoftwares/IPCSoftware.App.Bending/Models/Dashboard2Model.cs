@@ -192,5 +192,10 @@ namespace IPCSoftware.App.Bending.Models
         public int OKCount { get; set; }
 
         public int NGCount { get; set; }
+
+        // Time Metrics
+        public string OperatingTime { get; set; } 
+        public string Downtime { get; set; }
+        public string CycleTime { get; set; }
     }
 }

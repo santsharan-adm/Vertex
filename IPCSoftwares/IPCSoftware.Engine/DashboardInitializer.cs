@@ -207,6 +207,26 @@ namespace IPCSoftware.Engine
                     };
                 }
 
+                //---------------------------------------------------------
+                // Dashboard2 REQUEST (RequestId = 2)
+                //---------------------------------------------------------
+                if (request.RequestId == 2)
+                {
+                    if (!_latestPackets.TryGetValue(1, out var packet))
+                    {
+                        return new ResponsePackage
+                        {
+                            ResponseId = 2,
+                            Parameters = new Dictionary<int, object>()
+                        };
+                    }
+                    return new ResponsePackage
+                    {
+                        ResponseId = 2,
+                        Parameters = _oee.CalculateDashboard2(packet.Values)
+                    };
+                }
+
 
                 if (request.RequestId == 1)
                 {

@@ -121,8 +121,8 @@ namespace IPCSoftware.App.Bending.ViewModels
                 if (!_coreClient.isConnected)
                     return;
 
-                // --- OEE / Efficiency data (RequestId = 4, matching OEEDashboard) ---
-                var oeeTask = _coreClient.GetIoValuesAsync(4);
+                // --- OEE / Efficiency data (RequestId = 2, dedicated to Dashboard2) ---
+                var oeeTask = _coreClient.GetIoValuesAsync(2);
                 var oeeCompleted = await Task.WhenAny(oeeTask, Task.Delay(2000));
 
                 if (oeeCompleted != oeeTask)
@@ -132,19 +132,22 @@ namespace IPCSoftware.App.Bending.ViewModels
                 else
                 {
                     var oeeData = await oeeTask;
-                    if (oeeData != null && oeeData.TryGetValue(4, out object oeeObj))
+                    if (oeeData != null && oeeData.TryGetValue(2, out object d2Obj))
                     {
-                        var oeeResult = Deserialize<OeeResult>(oeeObj);
-                        if (oeeResult != null)
+                        var d2Result = Deserialize<Dashboard2Result>(d2Obj);
+                        if (d2Result != null)
                         {
                             Efficiency = new EfficiencyBreakdown
                             {
-                                Availability = (int)Math.Round(oeeResult.Availability * 100),
-                                Performance  = (int)Math.Round(oeeResult.Performance * 100),
-                                Quality      = (int)Math.Round(oeeResult.Quality * 100),
-                                OEEDetails   = (int)Math.Round(oeeResult.OverallOEE * 100),
-                                OKCount      = oeeResult.OKParts,
-                                NGCount      = oeeResult.NGParts,
+                                Availability  = (int)Math.Round(d2Result.Availability * 100),
+                                Performance   = (int)Math.Round(d2Result.Performance * 100),
+                                Quality       = (int)Math.Round(d2Result.Quality * 100),
+                                OEEDetails    = (int)Math.Round(d2Result.OverallOEE * 100),
+                                OKCount       = d2Result.OKParts,
+                                NGCount       = d2Result.NGParts,
+                                OperatingTime = FormatDuration(d2Result.OperatingTime),
+                                Downtime      = FormatDuration(d2Result.Downtime),
+                                CycleTime     = $"{d2Result.CycleTime / 1000.0:F2} s",
                             };
                         }
                     }
@@ -171,6 +174,12 @@ namespace IPCSoftware.App.Bending.ViewModels
             {
                 return null;
             }
+        }
+
+        private static string FormatDuration(double totalSeconds)
+        {
+            TimeSpan t = TimeSpan.FromSeconds(totalSeconds);
+            return t.TotalDays >= 1 ? $"{t.Days}d {t.Hours}h {t.Minutes}m" : t.ToString(@"hh\:mm\:ss");
         }
 
         public void Dispose()

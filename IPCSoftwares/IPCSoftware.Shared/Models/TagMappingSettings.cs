@@ -14,6 +14,7 @@ namespace IPCSoftware.Shared.Models
         public ManualTags Manual { get; set; } = new();
         public ServoTags Servo { get; set; } = new();
         public External ExternalTags { get; set; } = new();
+        public Dashboard2 Dashboard2 { get; set; } = new();
     }
 
     public class TagPair
@@ -58,7 +59,7 @@ namespace IPCSoftware.Shared.Models
     {
         public int CavityStatus { get; set; }
         public int DataReady { get; set; }
-    
+
     }
 
 
@@ -71,6 +72,7 @@ namespace IPCSoftware.Shared.Models
         public int ValueX { get; set; }
         public int ValueY { get; set; }
         public int ValueZ { get; set; }
+
         public int QR2dCode { get; set; }
         public int CtlCycleTimeA1 { get; set; }
         public int CycleTime { get; set; }
@@ -82,7 +84,7 @@ namespace IPCSoftware.Shared.Models
         public int NG { get; set; }
         public double IdealCycleTime { get; set; }
 
-       // public int AckLimitWrite { get; set; }
+        // public int AckLimitWrite { get; set; }
         public TagPair AckLimit { get; set; } = new();
         public TagPair MinX { get; set; } = new();
         public TagPair MaxX { get; set; } = new();
@@ -96,8 +98,8 @@ namespace IPCSoftware.Shared.Models
 
     public class ModeTags
     {
-        public TagPair Auto{ get; set; } = new();
-        public TagPair DryRun { get; set; } = new();    
+        public TagPair Auto { get; set; } = new();
+        public TagPair DryRun { get; set; } = new();
         public TagPair CycleStop { get; set; } = new();
         public TagPair MassRTO { get; set; } = new();
 
@@ -145,19 +147,33 @@ namespace IPCSoftware.Shared.Models
 
 
         public XYPair JogSpeedLow { get; set; } = new();
-       // public XYPair JogSpeedHigh{ get; set; } = new();
-        public XYPair OriginOffSet{ get; set; } = new();
-        public XYPair MoveSpeed{ get; set; } = new();
-        public XYPair Accel{ get; set; } = new();
+        // public XYPair JogSpeedHigh{ get; set; } = new();
+        public XYPair OriginOffSet { get; set; } = new();
+        public XYPair MoveSpeed { get; set; } = new();
+        public XYPair Accel { get; set; } = new();
         public XYPair DeAccel { get; set; } = new();
         public XYPair PosStart { get; set; } = new();
         public XYPair Live { get; set; } = new();
 
         //public int LiveX { get; set; }  
-       // public int LiveY { get; set; }
-      //  public int PosXStart { get; set; }
-       // public int PosYStart { get; set; }
-       // public int ParamXStart { get; set; }
-       // public int ParamYStart { get; set; }
-    }
-}
+        // public int LiveY { get; set; }
+        //  public int PosXStart { get; set; }
+        // public int PosYStart { get; set; }
+        // public int ParamXStart { get; set; }
+        // public int ParamYStart { get; set; }
+
+
+            }
+
+            public class Dashboard2
+            {
+                public int ValueW { get; set; }
+                public int Heat { get; set; }
+                public int Punch { get; set; }
+                public int Clamp { get; set; }
+                public int Tearing { get; set; }
+                public int Flipping { get; set; }
+            }
+
+        }
+

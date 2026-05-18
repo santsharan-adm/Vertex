@@ -390,8 +390,8 @@ namespace IPCSoftware.App.ViewModels
           
             IOptions<CcdSettings> ccdSettng,
             IOptions<ConfigSettings> configSettng,
-           IOptionsMonitor<ExternalSettings> settingsMonitor,
-           IObservableCcdSettingsService observableCcdSettings,
+            IOptionsMonitor<ExternalSettings> settingsMonitor,
+            IObservableCcdSettingsService observableCcdSettings,
             CoreClient coreClient,
             IDialogService dialog,
             ILogConfigurationService logConfigService,

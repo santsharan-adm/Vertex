@@ -109,7 +109,7 @@ namespace IPCSoftware.App.Bending.ViewModels
 
                 // PLC data structure: Each product has 10 tags (QR, LoadUpper, LoadValue, LoadLower, TempUpper, TempValue, TempLower, BendingTime, Result, padding)
                 // Base offsets: Product 1 = 1001, Product 2 = 1011, Product 3 = 1021, Product 4 = 1031
-                int[] baseOffsets = { 1001, 1011, 1021, 1031 };
+                int[] baseOffsets = { 1001, 1021, 1041, 1061 };
 
                 for (int i = 0; i < Products.Count && i < baseOffsets.Length; i++)
                 {

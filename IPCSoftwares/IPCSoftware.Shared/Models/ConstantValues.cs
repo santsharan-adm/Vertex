@@ -26,6 +26,12 @@ namespace IPCSoftware.Shared.Models
         public static int TAG_X;
         public static int TAG_Y;
         public static int TAG_Z;
+        public static int TAG_W;
+        public static int TAG_Heat;
+        public static int TAG_Punch;
+        public static int TAG_Clamp;
+        public static int TAG_Tearing;
+        public static int TAG_Flipping;
         public static int TAG_CTL_CYCLETIME_A1;
         public static int TAG_CycleTime;
         public static int TAG_CTL_CYCLETIME_B1;
@@ -165,6 +171,7 @@ namespace IPCSoftware.Shared.Models
                 TAG_X = oee.ValueX;
                 TAG_Y = oee.ValueY;
                 TAG_Z = oee.ValueZ;
+                
                 TAG_CTL_CYCLETIME_A1 = oee.CtlCycleTimeA1;
                 TAG_CycleTime = oee.CycleTime;
                 TAG_CTL_CYCLETIME_B1 = oee.CtlCycleTimeB1;
@@ -242,6 +249,16 @@ namespace IPCSoftware.Shared.Models
                 {
                     Ext_CavityStatus = e.CavityStatus;
                     Ext_DataReady = e.DataReady;
+
+
+                    //Dashboard2 oee Tag
+
+                    TAG_W = tags.Dashboard2.ValueW;
+                    TAG_Heat = tags.Dashboard2.Heat;
+                    TAG_Punch = tags.Dashboard2.Punch;
+                    TAG_Clamp = tags.Dashboard2.Clamp;
+                    TAG_Tearing = tags.Dashboard2.Tearing;
+                    TAG_Flipping = tags.Dashboard2.Flipping;
 
                 }
             }
