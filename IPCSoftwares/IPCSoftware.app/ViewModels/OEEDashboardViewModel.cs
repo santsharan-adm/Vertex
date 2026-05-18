@@ -31,7 +31,7 @@ namespace IPCSoftware.App.ViewModels
     public class OEEDashboardViewModel : BaseViewModel, IDisposable
     {
         // --- DI Services ---
-      
+
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
         private readonly string _prodCsvFolder;
@@ -132,7 +132,7 @@ namespace IPCSoftware.App.ViewModels
         public ImageSource QrCodeImage
         {
             get => _qrCodeImage;
-           // set => SetProperty(ref _qrCodeImage, value);
+            // set => SetProperty(ref _qrCodeImage, value);
             set
             {
                 if (SetProperty(ref _qrCodeImage, value))
@@ -363,7 +363,7 @@ namespace IPCSoftware.App.ViewModels
         public Brush StatusBrushTheta { get => _statusBrushTheta; set => SetProperty(ref _statusBrushTheta, value); }
 
         // --- UPDATED PROPERTIES (Call UpdateStatusColors in setters) ---
-       
+
 
         // --- LOGIC HELPER ---
         private void UpdateStatusColors()
@@ -387,11 +387,11 @@ namespace IPCSoftware.App.ViewModels
 
 
         public OEEDashboardViewModel(
-          
+
             IOptions<CcdSettings> ccdSettng,
             IOptions<ConfigSettings> configSettng,
-            IOptionsMonitor<ExternalSettings> settingsMonitor,
-            IObservableCcdSettingsService observableCcdSettings,
+           IOptionsMonitor<ExternalSettings> settingsMonitor,
+           IObservableCcdSettingsService observableCcdSettings,
             CoreClient coreClient,
             IDialogService dialog,
             ILogConfigurationService logConfigService,
@@ -401,21 +401,21 @@ namespace IPCSoftware.App.ViewModels
         {
             var ccd = ccdSettng.Value;
             _settingsMonitor = settingsMonitor;
-         
+
             _coreClient = coreClient;
             _dialog = dialog;
             _productService = productService;
             SwitchDirection = configSettng.Value.SwitchConveyorDirection;
             IsMacMiniEnabled = _settingsMonitor.CurrentValue.IsMacMiniEnabled;
-            _observableCcdSettings =observableCcdSettings;
+            _observableCcdSettings = observableCcdSettings;
 
             var prodLogConfigTask = logConfigService.GetByLogTypeAsync(LogType.Production);
             prodLogConfigTask.Wait();
             var prodLogConfig = prodLogConfigTask.Result;
             _prodCsvFolder = prodLogConfig?.DataFolder ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
             //Added by Rishabh Date -14-04-2026//
-            
-            InitializeObservableCcdSettingsAsync (deviceService);
+
+            InitializeObservableCcdSettingsAsync(deviceService);
 
             // Path to shared state file
             //Modified by Rishabh - date - 14/04/2026 
@@ -443,7 +443,7 @@ namespace IPCSoftware.App.ViewModels
             _liveDataTimer.Start();
 
             // 2. UI Sync Timer (200ms) - Gets Images and Station Data from JSON (Cycle Synced)
-            _uiSyncTimer = new SafePoller( TimeSpan.FromMilliseconds(100), UiSyncTick);
+            _uiSyncTimer = new SafePoller(TimeSpan.FromMilliseconds(100), UiSyncTick);
             _uiSyncTimer.Start();
 
             _resetLogicTimer = new SafePoller(TimeSpan.FromMilliseconds(200), ResetSequenceTick);
@@ -510,7 +510,7 @@ namespace IPCSoftware.App.ViewModels
             //  GoodUnits = 1325;
             //  RejectedUnits = 48;
             Remarks = "All processes stable.";
-          //  CycleTrend = new List<double> { 2.8, 2.9, 2.7, 3.0, 2.8, 2.9, 2.85, 2.75, 2.9 };
+            //  CycleTrend = new List<double> { 2.8, 2.9, 2.7, 3.0, 2.8, 2.9, 2.85, 2.75, 2.9 };
         }
 
         private async void LoadCycleTimeTrend()
@@ -641,7 +641,7 @@ namespace IPCSoftware.App.ViewModels
         #region Timer Loops
 
 
-        private async Task ResetSequenceTick()
+        private async Task ResetSequenceTick(Dictionary<int, object> data)
         {
             // Prevent re-entry if the previous tick is still processing (e.g. slow network)
             if (Interlocked.Exchange(ref _resetTimerRunning, 1) == 1) return;
@@ -685,7 +685,7 @@ namespace IPCSoftware.App.ViewModels
                             _dialog.ShowMessage("Cycle Reset Successful.");
                             _resetState = ResetSequenceState.Idle;
                         }
-                       
+
                         break;
                 }
             }
@@ -702,7 +702,7 @@ namespace IPCSoftware.App.ViewModels
         }
 
         // Loop 1: Live Data (TCP)
-        private async Task LiveDataTimerTick()
+        private async Task LiveDataTimerTick(Dictionary<int, object> data)
         {
             if (Interlocked.Exchange(ref _liveDataRunning, 1) == 1) return;
             try
@@ -782,9 +782,9 @@ namespace IPCSoftware.App.ViewModels
 
 
         // Loop 2: Cycle Sync (JSON)
-        private async Task UiSyncTick()
+        private async Task UiSyncTick(Dictionary<int, object> data)
         {
-          
+
             SyncUiWithJson();
         }
 
@@ -869,7 +869,7 @@ namespace IPCSoftware.App.ViewModels
                     var uiItem = CameraImages.FirstOrDefault(x => x.StationNumber == kvp.Key);
                     if (uiItem != null)
                     {
-                    if (uiItem.LastLoadedFilePath != data.ImagePath)
+                        if (uiItem.LastLoadedFilePath != data.ImagePath)
                         {
                             string pathCopy = data.ImagePath;
                             uiItem.LastLoadedFilePath = pathCopy;
@@ -1045,26 +1045,26 @@ namespace IPCSoftware.App.ViewModels
         private ResetSequenceState _resetState = ResetSequenceState.Idle;
         private DateTime _resetTimeoutStart;
 
-  
+
         private void ShowImage(CameraImageItem img)
         {
             try
- {
-       if (img == null) return;
-     string title = $"INSPECTION POSITION {img.StationNumber}";
-       // ✅ NOW WORKING - FullImageView has been migrated to UI.CommonViews!
-     var window = new IPCSoftware.UI.CommonViews.Views.FullImageView(img, title,
-    LimitX_Min,  LimitX_Max,
-     LimitY_Min,  LimitY_Max,
-            _limitTheta_Min,  _limitTheta_Max, UnitX, UnitY,
-            UnitTheta);
+            {
+                if (img == null) return;
+                string title = $"INSPECTION POSITION {img.StationNumber}";
+                // ✅ NOW WORKING - FullImageView has been migrated to UI.CommonViews!
+                var window = new IPCSoftware.UI.CommonViews.Views.FullImageView(img, title,
+               LimitX_Min, LimitX_Max,
+                LimitY_Min, LimitY_Max,
+                       _limitTheta_Min, _limitTheta_Max, UnitX, UnitY,
+                       UnitTheta);
                 window.ShowDialog();
             }
-    catch (Exception ex)
-   {
-    _logger.LogError(ex.Message, LogType.Diagnostics);
-         }
-  }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
+        }
 
 
         private async void OpenCardDetail(string cardType)
@@ -1272,7 +1272,7 @@ namespace IPCSoftware.App.ViewModels
                         case AggregationType.Average:
                             result = values.Average();
                             if (unit.Equals("s", StringComparison.OrdinalIgnoreCase))
-                            result = result / 100.0;
+                                result = result / 100.0;
                             // If unit is %, multiply by 100 if raw data is 0.0-1.0
                             if (unit == "%" && result <= 1.0 && result > 0) result *= 100;
                             return $"{result:F2}{unit}";
@@ -1373,7 +1373,7 @@ namespace IPCSoftware.App.ViewModels
                 _liveDataTimer.Dispose();
 
                 _uiSyncTimer.Dispose();
-                _resetLogicTimer.Dispose(); 
+                _resetLogicTimer.Dispose();
 
             }
             catch (Exception ex)

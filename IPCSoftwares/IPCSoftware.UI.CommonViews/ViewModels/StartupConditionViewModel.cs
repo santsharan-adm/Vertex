@@ -47,7 +47,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
             _configPath = Path.Combine(_dataFolder, "StartupConditions.json");
             _ = InitializeAsync();
-         
+
 
             _timer = new SafePoller(TimeSpan.FromMilliseconds(100), OnTimerTick);
             _timer.Start();
@@ -112,14 +112,14 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         }
 
 
-        private async Task OnTimerTick()
+        private async Task OnTimerTick(Dictionary<int, object> data)
         {
             try
             {
                 // Poll ID 5 (IO Data)
-                var data = await _coreClient.GetIoValuesAsync(5);
+                var iodata = await _coreClient.GetIoValuesAsync(5);
 
-                if (data != null)
+                if (iodata != null)
                 {
                     bool allMet = true;
 
@@ -129,7 +129,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                     {
                         foreach (var cond in Conditions)
                         {
-                            if (data.TryGetValue(cond.TagId, out object val))
+                            if (iodata.TryGetValue(cond.TagId, out object val))
                             {
                                 bool state = false;
                                 if (val is bool b) state = b;

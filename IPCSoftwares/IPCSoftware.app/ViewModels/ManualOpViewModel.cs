@@ -48,7 +48,7 @@ namespace IPCSoftware.App.ViewModels
 
         // --- Filtered Lists for UI ItemsControl ---
         // DYNAMIC FILTER: Show only configured positions
-        public IEnumerable<ModeItem> GridPositionModes => Modes.Where(x => x.Group == "Move to Position" && x.Mode != ManualOperationMode.MoveToPos0)  .Take(_configuredTotalItems);
+        public IEnumerable<ModeItem> GridPositionModes => Modes.Where(x => x.Group == "Move to Position" && x.Mode != ManualOperationMode.MoveToPos0).Take(_configuredTotalItems);
 
         // --- Individual Properties for UI Binding (Reduced Logic) ---
         // These look up the ModeItem in the list dynamically to save state management code
@@ -90,10 +90,10 @@ namespace IPCSoftware.App.ViewModels
             _productService = productService;
 
             // 1. Initialize Modes List
-      /*      Modes = new ObservableCollection<ModeItem>(
-                Enum.GetValues(typeof(ManualOperationMode))
-                    .Cast<ManualOperationMode>()
-                    .Select(m => new ModeItem { Mode = m, Group = GetGroupName(m) }));*/
+            /*      Modes = new ObservableCollection<ModeItem>(
+                      Enum.GetValues(typeof(ManualOperationMode))
+                          .Cast<ManualOperationMode>()
+                          .Select(m => new ModeItem { Mode = m, Group = GetGroupName(m) }));*/
 
             // 2. Map All Tags
             //InitializeTags();
@@ -112,7 +112,7 @@ namespace IPCSoftware.App.ViewModels
             });
 
             // 5. Feedback Timer
-            _feedbackTimer = new SafePoller ( TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
+            _feedbackTimer = new SafePoller(TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
             _feedbackTimer.Start();
         }
 
@@ -185,11 +185,11 @@ namespace IPCSoftware.App.ViewModels
 
         }
 
-        private void  OnBackClick()
+        private void OnBackClick()
         {
             Dispose();
-             _nav.NavigateMain<ModeOfOperation>();
-        }   
+            _nav.NavigateMain<ModeOfOperation>();
+        }
         void Map(ManualOperationMode m, TagPair tag)
         {
             _writeTags[m] = tag.Write;
@@ -210,7 +210,7 @@ namespace IPCSoftware.App.ViewModels
 
             if (isPosButton)
             {
-                if (isPressed)  
+                if (isPressed)
                 {
                     // If we are currently locked, IGNORE this press completely.
                     if (_isPositionLocked) return;
@@ -257,14 +257,14 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-      
-        private async Task FeedbackLoop_Tick()
+
+        private async Task FeedbackLoop_Tick(Dictionary<int, object> data)
         {
             try
             {
                 // Read enough tags to cover all buttons (e.g., 80 to 150)
                 var liveData = await _coreClient.GetIoValuesAsync(5);
-               // Debug.Assert((liveData != null)&& liveData.Count()>0);
+                // Debug.Assert((liveData != null)&& liveData.Count()>0);
                 if (liveData == null || !liveData.Any()) return;
 
                 foreach (var item in Modes)

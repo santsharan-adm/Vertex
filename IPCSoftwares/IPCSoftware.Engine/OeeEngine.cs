@@ -301,7 +301,7 @@ namespace IPCSoftware.Engine
         // =========================================================
         // LIVE CALCULATION FOR UI (Called continuously)
         // =========================================================
-        public Dictionary<int, object> Calculate(Dictionary<int, object> values)
+        public virtual Dictionary<int, object> Calculate(Dictionary<int, object> values)
         {
             try
             {
@@ -426,7 +426,7 @@ namespace IPCSoftware.Engine
                 r.Tearing  = GetDouble(values, ConstantValues.TAG_Tearing);
                 r.Flipping = GetDouble(values, ConstantValues.TAG_Flipping);
                 
-                return new Dictionary<int, object> { { 2, r } };
+                return new Dictionary<int, object> { { 4, r } };
             }
             catch (Exception ex)
             {

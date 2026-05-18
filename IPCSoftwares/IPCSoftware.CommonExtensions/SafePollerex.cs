@@ -12,16 +12,16 @@ namespace IPCSoftware.Common.CommonExtensions
     public class SafePollerEx : SafePoller
     {
         protected readonly IAppLogger _logger;
-        private readonly Func<Dictionary<int, object>, Task> _dataAction;
-
-        public SafePollerEx(CoreClient coreClient, TimeSpan interval, Func<Dictionary<int, object>, Task> asyncAction, IAppLogger logger, Action<Exception> onError = null) : base(interval, null, onError)
+        //(CoreClient coreClient, Action<List<IoValue>> asyncAction, int intervalMs = 1000) : base(asyncAction, intervalMs)
+        public SafePollerEx(CoreClient coreClient, TimeSpan interval, Func<Dictionary<int, object>, Task> asyncAction, IAppLogger logger, Action<Exception> onError = null, int requestId = 4) : base(interval, asyncAction, onError)
         {
             _coreClient = coreClient;
             _logger = logger;
-            _dataAction = asyncAction;
+            _requestId = requestId;
         }
         private int _liveDataRunning;
         private readonly CoreClient _coreClient;
+        private readonly int _requestId;
         internal override async Task LiveDataTickAsync()
         {
             if (Interlocked.Exchange(ref _liveDataRunning, 1) == 1)
@@ -32,10 +32,10 @@ namespace IPCSoftware.Common.CommonExtensions
                 if (!_coreClient.isConnected)
                     return;
 
-                var data = await _coreClient.GetIoValuesAsync(5);
+                var data = await _coreClient.GetIoValuesAsync(_requestId);
                 if (data != null && data.Count > 0)
                 {
-                    await _dataAction(data);
+                    await _asyncAction(data);
                     return;
                 }
             }
@@ -47,6 +47,8 @@ namespace IPCSoftware.Common.CommonExtensions
             {
                 Interlocked.Exchange(ref _liveDataRunning, 0);
             }
+
+
 
         }
 

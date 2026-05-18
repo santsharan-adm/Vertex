@@ -22,7 +22,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     public class ServoCalibrationViewModel : BaseViewModel, IDisposable, INavigationalAware
     {
         private readonly CoreClient _coreClient;
-       // private readonly DispatcherTimer _liveDataTimer;
+        // private readonly DispatcherTimer _liveDataTimer;
         private readonly SafePoller _liveDataTimer;
         private readonly IServoCalibrationService _servoService; // Injected Service
         private readonly IDialogService _dialog; // Injected Service
@@ -44,8 +44,8 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
 
         // Start of Coordinate Registers (13 Positions: 0 to 12)
-        private  int START_TAG_POS_X = ConstantValues.Servo_Pos_Start.X;
-        private  int START_TAG_POS_Y = ConstantValues.Servo_Pos_Start.Y;
+        private int START_TAG_POS_X = ConstantValues.Servo_Pos_Start.X;
+        private int START_TAG_POS_Y = ConstantValues.Servo_Pos_Start.Y;
 
         // Visual Feedback Properties for Jog Buttons
         // These are set True ONLY when B-Tag is received from PLC
@@ -99,7 +99,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public ObservableCollection<ServoParameterItem> XParameters { get; } = new();
         public ObservableCollection<ServoParameterItem> YParameters { get; } = new();
 
-       // public List<int> AvailableSequences { get; } = Enumerable.Range(1, 12).ToList();
+        // public List<int> AvailableSequences { get; } = Enumerable.Range(1, 12).ToList();
         public ObservableCollection<int> AvailableSequences { get; } = new ObservableCollection<int>();
 
         private ServoPositionModel ClonePosition(ServoPositionModel p) => new ServoPositionModel { PositionId = p.PositionId, Name = p.Name, Description = p.Description, SequenceIndex = p.SequenceIndex, X = p.X, Y = p.Y };
@@ -128,7 +128,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         {
             _dialog = dialog;
             _coreClient = coreClient;
-            _servoService = servoService; 
+            _servoService = servoService;
             _productService = productService;
 
             TeachCommand = new RelayCommand<ServoPositionModel>(OnTeachPosition);
@@ -145,7 +145,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             InitializeParameters();
             // Load positions from JSON via Service
             _ = InitializePositionsAsync();
-       
+
             //InitializePositions();
             _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(100),
                                     OnLiveDataTick  // Pass the method directly
@@ -154,11 +154,11 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
         }
 
-     
+
 
         private async Task OnJogAsync(object args)
         {
-            
+
             if (args is not string commandStr) return;
             var parts = commandStr.Split('|');
             if (parts.Length != 2) return;
@@ -174,19 +174,19 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 switch (dir)
                 {
                     case JogDirection.XPlus:
-                       // if (IsJogXMinusActive) { _logger.LogWarning("Interlock: Cannot Jog X+ while X- is active.", LogType.Audit); return; }
+                        // if (IsJogXMinusActive) { _logger.LogWarning("Interlock: Cannot Jog X+ while X- is active.", LogType.Audit); return; }
                         writeTagId = ConstantValues.Manual_XFwd.Write;
                         break;
                     case JogDirection.XMinus:
-                       // if (IsJogXPlusActive) { _logger.LogWarning("Interlock: Cannot Jog X- while X+ is active.", LogType.Audit); return; }
-                        writeTagId = ConstantValues.Manual_XRev.Write ;
+                        // if (IsJogXPlusActive) { _logger.LogWarning("Interlock: Cannot Jog X- while X+ is active.", LogType.Audit); return; }
+                        writeTagId = ConstantValues.Manual_XRev.Write;
                         break;
                     case JogDirection.YPlus:
-                       // if (IsJogYMinusActive) { _logger.LogWarning("Interlock: Cannot Jog Y+ while Y- is active.", LogType.Audit); return; }
-                        writeTagId = ConstantValues.Manual_YFwd.Write ;
+                        // if (IsJogYMinusActive) { _logger.LogWarning("Interlock: Cannot Jog Y+ while Y- is active.", LogType.Audit); return; }
+                        writeTagId = ConstantValues.Manual_YFwd.Write;
                         break;
                     case JogDirection.YMinus:
-                      //  if (IsJogYPlusActive) { _logger.LogWarning("Interlock: Cannot Jog Y- while Y+ is active.", LogType.Audit); return; }
+                        //  if (IsJogYPlusActive) { _logger.LogWarning("Interlock: Cannot Jog Y- while Y+ is active.", LogType.Audit); return; }
                         writeTagId = ConstantValues.Manual_YRev.Write;
                         break;
                 }
@@ -209,7 +209,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 {
                     _logger.LogInfo($"JOG START: {dir} (Tag {writeTagId})", LogType.Audit);
                     await _coreClient.WriteTagAsync(writeTagId, 1);
-                   // await Task.Delay(1000);
+                    // await Task.Delay(1000);
                     //await _coreClient.WriteTagAsync(writeTagId, 0);
                 }
                 else
@@ -241,37 +241,37 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             XParameters.Add(Create(pair.X));
             YParameters.Add(Create(pair.Y));
         }
-            
 
-       
-       /* private async Task InitializePositionsAsync()
-        {
-            try
-            {
-                // Use the service to load positions (which includes SequenceIndex and Coordinates)
-                var positions = await _servoService.LoadPositionsAsync();
 
-                Positions.Clear();
 
-                foreach (var pos in positions.OrderBy(p => p.PositionId))
-                {
-                    Positions.Add(pos);
-                }
-                // Ensure ordered by ID for UI consistency
-               
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Init Positions Error: {ex.Message}", LogType.Diagnostics);
-            }
-        }
-*/
+        /* private async Task InitializePositionsAsync()
+         {
+             try
+             {
+                 // Use the service to load positions (which includes SequenceIndex and Coordinates)
+                 var positions = await _servoService.LoadPositionsAsync();
+
+                 Positions.Clear();
+
+                 foreach (var pos in positions.OrderBy(p => p.PositionId))
+                 {
+                     Positions.Add(pos);
+                 }
+                 // Ensure ordered by ID for UI consistency
+
+             }
+             catch (Exception ex)
+             {
+                 _logger.LogError($"Init Positions Error: {ex.Message}", LogType.Diagnostics);
+             }
+         }
+ */
         private async Task InitializePositionsAsync()
         {
             try
             {
                 // 1. Load Product Config
-            
+
                 var prodConfig = await _productService.LoadAsync();
                 int totalItems = prodConfig.TotalItems;
                 AvailableSequences.Clear();
@@ -321,17 +321,17 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             }
         }
 
-        private async Task OnLiveDataTick()
+        private async Task OnLiveDataTick(Dictionary<int, object> data)
         {
-         
+
             try
             {
                 // Request IO Packet (ID 5 assumed to cover all tags)
-                var data = await _coreClient.GetIoValuesAsync(5);
+                data = await _coreClient.GetIoValuesAsync(5);
 
                 if (data != null)
                 {
-           
+
                     // 1. Update Jog Status (B-Tags)
                     // Visual feedback depends strictly on these values
                     if (data.TryGetValue(ConstantValues.Manual_XRev.Read, out object xm)) IsJogXMinusActive = Convert.ToBoolean(xm);
@@ -340,7 +340,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                     if (data.TryGetValue(ConstantValues.Manual_YFwd.Read, out object yp)) IsJogYPlusActive = Convert.ToBoolean(yp);
 
                     // 1. Update Live Position
-                    if (data.TryGetValue(ConstantValues.Servo_Live.X  , out object xVal)) LiveX = Convert.ToDouble(xVal);
+                    if (data.TryGetValue(ConstantValues.Servo_Live.X, out object xVal)) LiveX = Convert.ToDouble(xVal);
                     if (data.TryGetValue(ConstantValues.Servo_Live.Y, out object yVal)) LiveY = Convert.ToDouble(yVal);
 
                     // 2. Update X Parameters
@@ -387,9 +387,9 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             {
                 System.Diagnostics.Debug.WriteLine($"Live Data Error: {ex.Message}");
             }
-          
+
         }
-        
+
 
 
         private async void OnTeachPosition(ServoPositionModel position)
@@ -405,7 +405,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                     return;
                 }
 
-                    int xTag = START_TAG_POS_X + position.PositionId;
+                int xTag = START_TAG_POS_X + position.PositionId;
                 int yTag = START_TAG_POS_Y + position.PositionId;
 
                 _logger.LogInfo($"Teaching Pos {position.PositionId}: X={LiveX}, Y={LiveY}", LogType.Audit);
@@ -425,7 +425,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                     // Handle partial or total failure
                     if (!successX && !successY)
                     {
-                       
+
                         _dialog.ShowWarning("Failed to update X and Y. Please check logs.");
                     }
                     else
@@ -449,7 +449,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                     Positions[index] = position;
                 }
                 _initialPlcLoadDone = false;
-               // UpdateCoord();
+                // UpdateCoord();
             }
             catch (Exception ex)
             {
@@ -476,7 +476,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
                 _logger.LogInfo($"Manually Writing Pos {position.PositionId}: X={position.X:F2}, Y={position.Y:F2}", LogType.Audit);
 
-             
+
 
                 // 1. Capture individual results
                 bool successX = await _coreClient.WriteTagAsync(xTag, position.X);
@@ -503,14 +503,14 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 }
 
                 _initialPlcLoadDone = false;
-              //  UpdateCoord();
+                //  UpdateCoord();
                 // Optional: Flash success or log
             }
             catch (Exception ex) { _logger.LogError($"Manual Write Error: {ex.Message}", LogType.Diagnostics); }
         }
 
 
-   
+
 
         private async void OnWriteParameter(ServoParameterItem param)
         {
@@ -544,12 +544,12 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             if (HasUnsavedChanges)
             {
                 // STRICT MESSAGE: No option to discard. User must go back and Save.
-       /*         _dialog.ShowWarning(
-                    "⚠️ UNSAVED CHANGES DETECTED\n\n" +
-                    "You have written new values to the machine.\n" +
-                    "You CANNOT leave this page until you press the 'SAVE' button to confirm them.\n\n" +
-                    "Please Save your changes.");
-*/
+                /*         _dialog.ShowWarning(
+                             "⚠️ UNSAVED CHANGES DETECTED\n\n" +
+                             "You have written new values to the machine.\n" +
+                             "You CANNOT leave this page until you press the 'SAVE' button to confirm them.\n\n" +
+                             "Please Save your changes.");
+         */
                 _dialog.ShowWarning(
                 "⚠️ UNSAVED CHANGES\n" +
                 "You must SAVE your changes before leaving this page.");
@@ -566,7 +566,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 {
                     // --- VALIDATION LOGIC START ---
                     var userSequences = Positions
-                        .Where(p => p.PositionId != 0 )
+                        .Where(p => p.PositionId != 0)
                         .Select(p => p.SequenceIndex)
                         .ToList();
 
@@ -596,22 +596,22 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                         await _coreClient.WriteTagAsync(targetTagId, pos.SequenceIndex);
                     }
 
-                   /* for (int i = 1; i <= 12; i++)
-                    {
-                        // 1. Find which PositionId is assigned to Sequence 'i'
-                        var positionAtThisStep = Positions.FirstOrDefault(p => p.PositionId == i);
+                    /* for (int i = 1; i <= 12; i++)
+                     {
+                         // 1. Find which PositionId is assigned to Sequence 'i'
+                         var positionAtThisStep = Positions.FirstOrDefault(p => p.PositionId == i);
 
-                        // 2. Get the Value (Position ID) - Default to 0 if not found
-                        int seqIdToWrite = positionAtThisStep != null ? positionAtThisStep.SequenceIndex : 0;
+                         // 2. Get the Value (Position ID) - Default to 0 if not found
+                         int seqIdToWrite = positionAtThisStep != null ? positionAtThisStep.SequenceIndex : 0;
 
-                        // 3. Calculate Tag ID (Start + Offset)
-                        // Seq 1 writes to BaseTag + 0
-                        // Seq 2 writes to BaseTag + 1 ...
-                        int targetTagId = ConstantValues.Servo_Seq_Start + (i - 1);
+                         // 3. Calculate Tag ID (Start + Offset)
+                         // Seq 1 writes to BaseTag + 0
+                         // Seq 2 writes to BaseTag + 1 ...
+                         int targetTagId = ConstantValues.Servo_Seq_Start + (i - 1);
 
-                        // 4. Write to PLC
-                        await _coreClient.WriteTagAsync(targetTagId, seqIdToWrite);
-                    }*/
+                         // 4. Write to PLC
+                         await _coreClient.WriteTagAsync(targetTagId, seqIdToWrite);
+                     }*/
                     _logger.LogInfo("[Servo] Sequence Map Written Successfully.", LogType.Audit);
 
                 }
@@ -619,7 +619,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 _logger.LogInfo($"Confirming {description}...", LogType.Audit);
 
                 // Pulse 1 -> 0
-              //  await _coreClient.WriteTagAsync(tagId, 1);
+                //  await _coreClient.WriteTagAsync(tagId, 1);
 
                 if (await _coreClient.WriteTagAsync(tagId, 1))
                 {
@@ -642,9 +642,9 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             catch (Exception ex) { _logger.LogError($"Confirm Error ({description}): {ex.Message}", LogType.Diagnostics); }
         }
 
-      
 
- 
+
+
         public void Dispose()
         {
             try

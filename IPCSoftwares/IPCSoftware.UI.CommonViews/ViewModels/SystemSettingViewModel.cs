@@ -122,11 +122,11 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 ex => _logger.LogError($"Service Poll Error: {ex.Message}", LogType.Diagnostics));
             _servicePoller.Start();
 
-            _ = UpdateIpcTimeAsync();
-            _ = CheckServiceStatusAsync();
+            _ = UpdateIpcTimeAsync(new Dictionary<int, object>());
+            _ = CheckServiceStatusAsync(new Dictionary<int, object>());
         }
 
-        private async Task CheckServiceStatusAsync()
+        private async Task CheckServiceStatusAsync(Dictionary<int, object> data)
         {
             try
             {
@@ -268,7 +268,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             }
             finally
             {
-                await CheckServiceStatusAsync();
+                await CheckServiceStatusAsync(new Dictionary<int, object>());
             }
         }
 
@@ -361,7 +361,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             }
             finally
             {
-                await CheckServiceStatusAsync();
+                await CheckServiceStatusAsync(new Dictionary<int, object>());
             }
         }
 
@@ -372,7 +372,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        private Task UpdateIpcTimeAsync()
+        private Task UpdateIpcTimeAsync(Dictionary<int, object> data)
         {
             var now = DateTime.Now;
             IpcDate = now.ToString("dd-MMM-yyyy");
@@ -381,18 +381,18 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             return Task.CompletedTask;
         }
 
-        private async Task PlcPollTickAsync()
+        private async Task PlcPollTickAsync(Dictionary<int, object> data)
         {
-            var data = await _coreClient.GetIoValuesAsync(5);
+            var plcdta = await _coreClient.GetIoValuesAsync(5);
 
-            if (data.Count > 0)
+            if (plcdta.Count > 0)
             {
-                int y = GetInt(data, ConstantValues.TAG_Time_Year.Read);
-                int M = GetInt(data, ConstantValues.TAG_Time_Month.Read);
-                int d = GetInt(data, ConstantValues.TAG_Time_Day.Read);
-                int h = GetInt(data, ConstantValues.TAG_Time_Hour.Read);
-                int m = GetInt(data, ConstantValues.TAG_Time_Minute.Read);
-                int s = GetInt(data, ConstantValues.TAG_Time_Second.Read);
+                int y = GetInt(plcdta, ConstantValues.TAG_Time_Year.Read);
+                int M = GetInt(plcdta, ConstantValues.TAG_Time_Month.Read);
+                int d = GetInt(plcdta, ConstantValues.TAG_Time_Day.Read);
+                int h = GetInt(plcdta, ConstantValues.TAG_Time_Hour.Read);
+                int m = GetInt(plcdta, ConstantValues.TAG_Time_Minute.Read);
+                int s = GetInt(plcdta, ConstantValues.TAG_Time_Second.Read);
 
                 if (y > 0 && M > 0 && d > 0)
                 {

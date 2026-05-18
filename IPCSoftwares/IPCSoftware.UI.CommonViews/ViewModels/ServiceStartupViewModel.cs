@@ -63,14 +63,14 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 {
                     OnPropertyChanged(nameof(IsServiceRunning));
                     OnPropertyChanged(nameof(ServiceStatusColor));
-                   // RaiseCanExecuteChanged();
+                    // RaiseCanExecuteChanged();
                 }
             }
         }
 
         public bool IsServiceRunning => ServiceStatus == "Running";
-        
-        public string ServiceStatusColor => IsServiceRunning 
+
+        public string ServiceStatusColor => IsServiceRunning
             ? "#28A745"           // Green
             : (ServiceStatus == "Stopped" ? "#DC3545" : "#FFC107"); // Red or Yellow
 
@@ -89,13 +89,13 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
             // Service Status Poller (Check every 2 seconds)
             _servicePoller = new SafePoller(
-                TimeSpan.FromSeconds(2), 
+                TimeSpan.FromSeconds(2),
                 CheckServiceStatus,
                 ex => _logger.LogError($"Service Poll Error: {ex.Message}", LogType.Diagnostics));
             _servicePoller.Start();
 
             // Perform initial status check
-            _ = CheckServiceStatus();
+            _ = CheckServiceStatus(new Dictionary<int, object>());
 
             _logger.LogInfo("[ServiceStartup] ViewModel initialized", LogType.Diagnostics);
         }
@@ -105,7 +105,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         /// <summary>
         /// Checks the current status of the Windows Service
         /// </summary>
-        private async Task CheckServiceStatus()
+        private async Task CheckServiceStatus(Dictionary<int, object> data)
         {
             try
             {
@@ -121,9 +121,9 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             catch (Exception ex)
             {
                 // Service might not be installed or permission denied
-                Application.Current?.Dispatcher?.Invoke(() => 
+                Application.Current?.Dispatcher?.Invoke(() =>
                     ServiceStatus = "Not Found/Access Denied");
-                
+
                 _logger.LogWarning($"Service check failed: {ex.Message}", LogType.Diagnostics);
             }
             await Task.CompletedTask;
@@ -153,7 +153,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             try
             {
                 // Validate action
-                if (!action.Equals("start", StringComparison.OrdinalIgnoreCase) && 
+                if (!action.Equals("start", StringComparison.OrdinalIgnoreCase) &&
                     !action.Equals("stop", StringComparison.OrdinalIgnoreCase))
                 {
                     throw new ArgumentException($"Invalid action: {action}");
@@ -167,23 +167,23 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 Process.Start(psi);
 
                 // User-friendly message
-                string auditMsg = action.Equals("start", StringComparison.OrdinalIgnoreCase) 
-                    ? "Started" 
+                string auditMsg = action.Equals("start", StringComparison.OrdinalIgnoreCase)
+                    ? "Started"
                     : "Stopped";
 
                 AddAudit($"Service {auditMsg}");
                 _logger.LogInfo($"Service {auditMsg}", LogType.Audit);
 
                 // Optimistic status update (poller will correct if needed)
-                ServiceStatus = action.Equals("start", StringComparison.OrdinalIgnoreCase) 
-                    ? "Starting..." 
+                ServiceStatus = action.Equals("start", StringComparison.OrdinalIgnoreCase)
+                    ? "Starting..."
                     : "Stopping...";
             }
             catch (Exception ex)
             {
                 string action_name = action.Equals("start", StringComparison.OrdinalIgnoreCase) ? "start" : "stop";
                 _logger.LogError($"Failed to {action_name} service: {ex.Message}", LogType.Diagnostics);
-                
+
                 AddAudit($"Service {action} FAILED: {ex.Message}");
 
                 // Show error dialog

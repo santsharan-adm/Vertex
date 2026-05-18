@@ -136,11 +136,12 @@ public class MainWindowViewModelBase : BaseViewModel
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
     public string AppVersion => _aboutMonitor.CurrentValue.ProductVersion;
 
+
     public MainWindowViewModelBase(
-        INavigationService nav, 
+        INavigationService nav,
         CoreClient coreClient,
         IDialogService dialog,
-        RibbonViewModelBase ribbonVM, 
+        RibbonViewModelBase ribbonVM,
         AlarmViewModel alarmVM,
         IOptionsMonitor<AboutSettings> aboutMonitor,
         IAppLogger logger) : base(logger)
@@ -153,7 +154,7 @@ public class MainWindowViewModelBase : BaseViewModel
         _alarmVM.ActiveAlarms.CollectionChanged += (s, e) => RefreshAlarmBanner();
         _timer = new SafePoller
         (TimeSpan.FromSeconds(1), LiveDataTimerTick);
-        _timer.Start(); 
+        _timer.Start();
         // 3. Subscribe to Alarm Events
         _coreClient.OnAlarmMessageReceived += OnAlarmReceived;
 
@@ -162,7 +163,7 @@ public class MainWindowViewModelBase : BaseViewModel
 
         RibbonVM = ribbonVM;
         RibbonVM.ShowSidebar = LoadSidebarMenu;
-        RibbonVM.OnLogout = ResetLandingState; 
+        RibbonVM.OnLogout = ResetLandingState;
         RibbonVM.OnLandingPageRequested = ResetLandingState;
 
         CloseAppCommand = new RelayCommand(ExecuteCloseApp);
@@ -184,7 +185,7 @@ public class MainWindowViewModelBase : BaseViewModel
 
         _aboutMonitor.OnChange(settings => {
             OnPropertyChanged(nameof(AppVersion));
-         
+
         });
     }
     private bool CanExecuteAcknowledgeBannerAlarm()
@@ -274,11 +275,11 @@ public class MainWindowViewModelBase : BaseViewModel
 
 
 
-    private async Task LiveDataTimerTick()
+    private async Task LiveDataTimerTick(Dictionary<int, object> data)
     {
-        try 
+        try
         {
-            IsConnected =  _coreClient.isConnected;
+            IsConnected = _coreClient.isConnected;
 
             var liveData = await _coreClient.GetIoValuesAsync(5);
 
@@ -363,7 +364,7 @@ public class MainWindowViewModelBase : BaseViewModel
     // ==============================
     public bool IsRibbonVisible => UserSession.IsLoggedIn;
     public string CurrentUserName => UserSession.Username ?? "Guest";
-    public string CurrentUserRole=> UserSession.Role ?? "Guest";
+    public string CurrentUserRole => UserSession.Role ?? "Guest";
     public bool IsAdmin => UserSession.Role == "Admin";
 
     // ==============================
@@ -400,7 +401,7 @@ public class MainWindowViewModelBase : BaseViewModel
 
             foreach (var item in menu.Items)
                 SidebarItems.Add(item);
-            if (currentRibbonKey == menu.Key )
+            if (currentRibbonKey == menu.Key)
             {
                 if (!IsSidebarDocked)
                 {
@@ -438,7 +439,7 @@ public class MainWindowViewModelBase : BaseViewModel
         {
             Application.Current.Shutdown();
         }
-           
+
 
     }
 
@@ -452,7 +453,7 @@ public class MainWindowViewModelBase : BaseViewModel
             // Close sidebar
             if (!IsSidebarDocked)
             {
-              IsSidebarOpen = false;
+                IsSidebarOpen = false;
             }
             if (string.IsNullOrWhiteSpace(existingUserControl))
             {
@@ -475,14 +476,14 @@ public class MainWindowViewModelBase : BaseViewModel
                     //_nav.NavigateMain<LiveOeeView>();
                     _nav.NavigateToOEEDashboard();
                     break;
-                case "Bending1 Monitor":
+                case "Bending1Monitor":
                     _nav.NavigateToDashboard1();
                     break;
 
-                case "Bending2 Monitor":
+                case "Bending2Monitor":
                     _nav.NavigateToDashboard2();
                     break;
-                case "Bending3 Monitor":
+                case "Bending3Monitor":
                     _nav.NavigateToDashboard3();
                     break;
 
@@ -494,14 +495,14 @@ public class MainWindowViewModelBase : BaseViewModel
                     _nav.NavigateToDashboardControl2();
                     break;
 
-                case "Post Bend Monitor":
+                case "PostBendingMonitor":
                     _nav.NavigateToPostBendingMonitor();
-                    break;            
+                    break;
 
 
 
                 case "Machine Summary":
-                   // _nav.NavigateMain<ServoCalibrationView>();
+                    // _nav.NavigateMain<ServoCalibrationView>();
                     break;
                 case "Servo Parameters":
                     _nav.NavigateMain<ServoCalibrationView>();
@@ -512,7 +513,7 @@ public class MainWindowViewModelBase : BaseViewModel
                     break;
                 //Added By Rishabh , Date -13/04/2026
                 case "Service Startup":
-                    _nav.NavigateToServiceStartup();       
+                    _nav.NavigateToServiceStartup();
                     break;
 
                 // Config Menu
@@ -565,14 +566,14 @@ public class MainWindowViewModelBase : BaseViewModel
                     _nav.NavigateMain<ReportConfigView>();
                     break;
 
-                case "Alarm View": 
+                case "Alarm View":
                     _nav.NavigateMain<AlarmView>(); break;
 
-                case "Production Data": 
+                case "Production Data":
                     _nav.NavigateMain<ReportViewerView>(); break;
 
 
-                case "Production Images": 
+                case "Production Images":
                     _nav.NavigateMain<ProductionImageView>(); break;
 
 
@@ -594,7 +595,7 @@ public class MainWindowViewModelBase : BaseViewModel
                 case "Alarm Logs":
                     _nav.NavigateMain<AlarmLogView>();
                     break;
-                
+
                 case "External Interface":
                     _nav.NavigateMain<ApiTestView>();
                     break;

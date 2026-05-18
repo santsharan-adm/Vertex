@@ -22,7 +22,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     public class TagControlViewModel : BaseViewModel, IDisposable
     {
         private readonly IDeviceConfigurationService _deviceService;
-       // private readonly DispatcherTimer _timer;
+        // private readonly DispatcherTimer _timer;
         private readonly SafePoller _timer;
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
@@ -61,16 +61,16 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             // Load tags on startup
             InitializeAsync();
 
-            _timer = new SafePoller( TimeSpan.FromMilliseconds(100),
+            _timer = new SafePoller(TimeSpan.FromMilliseconds(100),
                                      TimerTick  // Pass the method directly
                                    );
             _timer.Start();
 
-        
+
         }
 
 
-        private async Task TimerTick()
+        private async Task TimerTick(Dictionary<int, object> data)
         {
             try
             {
@@ -195,9 +195,9 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 {
                     // [STEP 4] RESUME TIMER
                     // Always restart the timer, even if the write failed
-                  
-                        _timer.Start();
-                    
+
+                    _timer.Start();
+
                 }
             }
             catch (Exception ex)
@@ -282,7 +282,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             };
         }
 
- 
+
         public void Dispose()
         {
             // Just dispose the pollers. They automatically stop and unsubscribe.

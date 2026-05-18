@@ -55,7 +55,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             _poller.Start();
         }
 
-        private async Task PollAsync()
+        private async Task PollAsync(Dictionary<int, object> data)
         {
             var snapshot = await _coreClient.GetIoValuesAsync(5);
             if (snapshot == null || snapshot.Count == 0) return;

@@ -80,11 +80,15 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public ObservableCollection<ModeButtonItem> ModeButtons { get; } = new ObservableCollection<ModeButtonItem>();
         public ObservableCollection<AuditLogModel> AuditLogs { get; set; } = new();
 
+        private async Task FeedbackLoop_Tick(Dictionary<int, object> data)
+        {
+
+        }
         private bool _isMachineHome;
         public bool IsMachineHome { get => _isMachineHome; set => SetProperty(ref _isMachineHome, value); }
 
         public ICommand UnifiedOperationCommand { get; }
-         
+
         public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService) : base(logger)
         {
             _coreClient = coreClient;
@@ -95,7 +99,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
             UnifiedOperationCommand = new RelayCommand<string>(async (args) => await ExecuteOperationAsync(args));
 
-            _feedbackTimer = new SafePoller (TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
+            _feedbackTimer = new SafePoller(TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
             _feedbackTimer.Start();
         }
 
@@ -297,7 +301,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                         IsMachineHome = !homeLamp;
                     }
                 });
-            }   
+            }
             catch { }
         }
 
@@ -313,9 +317,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
         public void Dispose()
         {
-                _feedbackTimer.Dispose();
+            _feedbackTimer.Dispose();
         }
     }
 }
-
-  

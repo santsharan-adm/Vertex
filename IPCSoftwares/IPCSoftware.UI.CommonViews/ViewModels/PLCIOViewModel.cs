@@ -68,7 +68,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
             _timer = new SafePoller(TimeSpan.FromMilliseconds(100),
                 TimerTick);
-            
+
             _timer.Start();
         }
 
@@ -137,9 +137,9 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             }
         }
 
-        private async Task TimerTick()
+        private async Task TimerTick(Dictionary<int, object> data)
         {
-            if ( _isWriting)
+            if (_isWriting)
                 return;
 
             try
@@ -147,7 +147,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 var liveData = await _coreClient.GetIoValuesAsync(5);
                 UpdateValues(liveData);
             }
-          
+
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
@@ -226,7 +226,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             }
         }
 
-      
+
     }
 
 }

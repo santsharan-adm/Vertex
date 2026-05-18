@@ -22,6 +22,15 @@ namespace IPCSoftware.App.Bending.Controls
             set => SetValue(BinNumberProperty, value);
         }
 
+        public static readonly DependencyProperty RejectedCountProperty =
+            DependencyProperty.Register(nameof(RejectedCount), typeof(int), typeof(NgBinCC), new PropertyMetadata(0));
+
+        public int RejectedCount
+        {
+            get => (int)GetValue(RejectedCountProperty);
+            set => SetValue(RejectedCountProperty, value);
+        }
+
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
