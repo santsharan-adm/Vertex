@@ -293,24 +293,24 @@ namespace IPCSoftware.App.ViewModels
         }
     }
 
-    public class AeLimitParameterItem : ObservableObjectVM
-    {
-        public string Name { get; set; }
-        public int ReadTagId { get; set; }
-        public int WriteTagId { get; set; }
+    //public class AeLimitParameterItem : ObservableObjectVM
+    //{
+    //    public string Name { get; set; }
+    //    public int ReadTagId { get; set; }
+    //    public int WriteTagId { get; set; }
 
-        private double _currentValue;
-        public double CurrentValue
-        {
-            get => _currentValue;
-            set => SetProperty(ref _currentValue, value);
-        }
+    //    private double _currentValue;
+    //    public double CurrentValue
+    //    {
+    //        get => _currentValue;
+    //        set => SetProperty(ref _currentValue, value);
+    //    }
 
-        private double _newValue;
-        public double NewValue
-        {
-            get => _newValue;
-            set => SetProperty(ref _newValue, value);
-        }
-    }
+    //    private double _newValue;
+    //    public double NewValue
+    //    {
+    //        get => _newValue;
+    //        set => SetProperty(ref _newValue, value);
+    //    }
+    //}
 }

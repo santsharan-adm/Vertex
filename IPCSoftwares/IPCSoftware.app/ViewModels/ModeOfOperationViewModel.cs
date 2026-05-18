@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -74,20 +75,22 @@ namespace IPCSoftware.App.ViewModels
         private readonly Dictionary<OperationMode, int> _statusTags = new();
         private readonly Dictionary<OperationMode, int> _enableTags = new();
 
+        private readonly ServoCalibrationViewModel _servoViewModel;
+
         public ObservableCollection<ModeButtonItem> ModeButtons { get; } = new ObservableCollection<ModeButtonItem>();
         public ObservableCollection<AuditLogModel> AuditLogs { get; set; } = new();
 
         // Added by Rishabh -Date -06-05-2026
-        private ObservableCollection<RecipeItem> _recipeList;
-        private RecipeItem _lastConfirmedRecipe;
-        public ObservableCollection<RecipeItem> RecipeList
+        private ObservableCollection<ServoRecipeModel> _recipeList;
+        private ServoRecipeModel _lastConfirmedRecipe;
+        public ObservableCollection<ServoRecipeModel> RecipeList
         {
             get => _recipeList;
             set => SetProperty(ref _recipeList, value);
         }
 
-        private RecipeItem _selectedRecipe;
-        public RecipeItem SelectedRecipe                                      //Modified By Rishabh Date- 11-05-2026
+        private ServoRecipeModel _selectedRecipe;
+        public ServoRecipeModel SelectedRecipe                                      //Modified By Rishabh Date- 11-05-2026
         {
             get => _selectedRecipe;
             set => SetProperty(ref _selectedRecipe, value);
@@ -106,11 +109,12 @@ namespace IPCSoftware.App.ViewModels
 
         private bool _isInitialized = false;               //Added by Rishabh -Date -13-05-2026
 
-        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService, IDialogService dialog) : base(logger)
+        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService,ServoCalibrationViewModel servoViewModel, IDialogService dialog) : base(logger)
         {
             _coreClient = coreClient;
             _navService = navService;
             _servoService = servoService; // Added by rishabh - Date 06-05-2026
+            _servoViewModel = servoViewModel;
             _dialog = dialog;
             InitializeTags();
             InitializeButtons();
@@ -129,7 +133,7 @@ namespace IPCSoftware.App.ViewModels
         {
             if (_isProcessingSelection) return;
             if (_isInitialized) return;
-            bool confirm = _dialog.ShowYesNo($"Are you sure you want to load {SelectedRecipe.Name}?", "Confirmation");
+            bool confirm = _dialog.ShowYesNo($"Are you sure you want to load {SelectedRecipe.ProductCode}?", "Confirmation");
             try
             {
                 _isProcessingSelection = true;
@@ -160,13 +164,7 @@ namespace IPCSoftware.App.ViewModels
                 _isInitialized = true;
                 var savedRecipes = await _servoService.LoadRecipeAsync();
 
-                RecipeList = new ObservableCollection<RecipeItem>(
-                    savedRecipes.Select(r => new RecipeItem
-                    {
-                        ProgramNo = r.ProgramNo,
-                        Name = $"Progam {r.ProgramNo}"
-                    })
-                );
+                RecipeList = new ObservableCollection<ServoRecipeModel>(savedRecipes);              
 
                 // Read current program number from PLC
                 var Data = await _coreClient.GetIoValuesAsync(5);
@@ -201,9 +199,9 @@ namespace IPCSoftware.App.ViewModels
                 _logger.LogError($"Failed to load recipes: {ex.Message}", LogType.Diagnostics);
 
                 // Fallback to hardcoded list if file read fails
-                RecipeList = new ObservableCollection<RecipeItem>
+                RecipeList = new ObservableCollection<ServoRecipeModel>
                 {
-                    new RecipeItem { ProgramNo = 1, Name = "Program 1" }
+                    new ServoRecipeModel { ProgramNo = 1, ProductCode = "DEF-001" }
                 };
 
                 SelectedRecipe = RecipeList.FirstOrDefault();
@@ -216,17 +214,19 @@ namespace IPCSoftware.App.ViewModels
         }
 
         //Added by Rishabh -Date -11-05-2026
-        private async void ApplyRecipeSelection()
+        public async void ApplyRecipeSelection()
         {
             try
             {
                 //RecipeItem newRecipe = SelectedRecipe;
                 //_lastConfirmedRecipe = newRecipe;
-                _logger.LogInfo($"Recipe Selected: Program {SelectedRecipe.ProgramNo} - {SelectedRecipe.Name}", LogType.Audit);
-                AddAudit($"Program Number Changed: {SelectedRecipe.Name}");
+                _logger.LogInfo($"Recipe Selected: Program {SelectedRecipe.ProgramNo} - {SelectedRecipe.ProductCode}", LogType.Audit);
+                AddAudit($"Program Number Changed: {SelectedRecipe.ProductCode}");
 
                 // Write selected recipe/program number to PLC
                 bool bResult = await _coreClient.WriteTagAsync(ConstantValues.ProgramNumber, SelectedRecipe.ProgramNo);
+                await _servoViewModel.PulseBit(ConstantValues.Servo_CoordSave, "X Coordinates");
+                await _servoViewModel.SaveAeLimitsAsync();
                 if (bResult)
                 {
                     _lastConfirmedRecipe = SelectedRecipe;
@@ -386,9 +386,9 @@ namespace IPCSoftware.App.ViewModels
     }
 
     // Added by Rishabh -Date -06-05-2026 ,  Recipe Item Model
-    public class RecipeItem
-    {
-        public int ProgramNo { get; set; }
-        public string Name { get; set; }
-    }
+    //public class RecipeItem
+    //{
+    //    public int ProgramNo { get; set; }
+    //    public string Name { get; set; }
+    //}
 }

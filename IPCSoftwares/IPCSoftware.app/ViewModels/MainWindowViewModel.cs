@@ -476,7 +476,7 @@ public class MainWindowViewModel : BaseViewModel
                 case "Machine Summary":
                    // _nav.NavigateMain<ServoCalibrationView>();
                     break;
-                case "Servo Parameters":
+                case "Product Config":
                     _nav.NavigateMain<ServoCalibrationView>();
                     break;
 

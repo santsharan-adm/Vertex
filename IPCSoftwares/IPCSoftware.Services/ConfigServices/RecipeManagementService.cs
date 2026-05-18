@@ -149,8 +149,8 @@ namespace IPCSoftware.Services.ConfigServices
             sb.AppendLine("ProgramNo,S1,S2,S3,S4,S5,S6,S7,S8,S9,S10,S11,S12," +
                          "X0,X1,X2,X3,X4,X5,X6,X7,X8,X9,X10,X11,X12," +
                          "Y0,Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12," +
-                         "Xmin,Xmax,Ymin,Ymax,AngleMin,AngleMax");
-
+                         "Xmin,Xmax,Ymin,Ymax,AngleMin,AngleMax,ProductName,ProductCode,TotalItems,GridRows,GridColumns");
+                 
             // Data rows
             foreach (var recipe in recipes)
             {
@@ -172,7 +172,8 @@ namespace IPCSoftware.Services.ConfigServices
                    $"{FormatDouble(recipe.Y4)},{FormatDouble(recipe.Y5)},{FormatDouble(recipe.Y6)},{FormatDouble(recipe.Y7)}," +
                    $"{FormatDouble(recipe.Y8)},{FormatDouble(recipe.Y9)},{FormatDouble(recipe.Y10)},{FormatDouble(recipe.Y11)},{FormatDouble(recipe.Y12)}," +
                    $"{FormatDouble(recipe.Xmin)},{FormatDouble(recipe.Xmax)},{FormatDouble(recipe.Ymin)},{FormatDouble(recipe.Ymax)}," +
-                   $"{FormatDouble(recipe.AngleMin)},{FormatDouble(recipe.AngleMax)}";
+                   $"{FormatDouble(recipe.AngleMin)},{FormatDouble(recipe.AngleMax)},"+
+                   $"{recipe.ProductName},{recipe.ProductCode},{recipe.TotalItems},{recipe.GridRows},{recipe.GridColumns}";
         }
 
         private string FormatDouble(double value)

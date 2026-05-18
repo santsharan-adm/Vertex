@@ -6,12 +6,15 @@ using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.CoreService;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.AeLimit;        //Added after
 using IPCSoftware.Shared.Models.ConfigModels;
+using Microsoft.Extensions.Options;            //Added after
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -29,20 +32,62 @@ namespace IPCSoftware.App.ViewModels
         private readonly IServoCalibrationService _servoService; // Injected Service
         private readonly IDialogService _dialog; // Injected Service
         private readonly IProductConfigurationService _productService;
+        private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;       //added after
+        private readonly ModeOfOperationViewModel _modeOfOperationViewModel;       //added after
 
         private bool _initialPlcLoadDone = false;
         private ProductSettingsModel _productSettings;
+        private AeLimitSettings _aeLimitSettings;             //Added after
 
         int _lastProgramAdded;
 
-        //private string _newProgramNumberText;
-        //public  string NewProgramNumberText 
-        //{
-        //    get => _newProgramNumberText;
-        //    set => SetProperty(ref _newProgramNumberText, value);
-        //}
+        // ===================================================================
+        // TAB 3: AE LIMIT PROPERTIES (from AeLimitViewModel)
+        // ===================================================================
+        public AeLimitParameterItem AeMinX { get; private set; }
+        public AeLimitParameterItem AeMaxX { get; private set; }
+        public AeLimitParameterItem AeMinY { get; private set; }
+        public AeLimitParameterItem AeMaxY { get; private set; }
+        public AeLimitParameterItem AeMinZ { get; private set; }
+        public AeLimitParameterItem AeMaxZ { get; private set; }
 
-        
+        private string _aeUnitX;
+        public string AeUnitX { get => _aeUnitX; set => SetProperty(ref _aeUnitX, value); }
+
+        private string _aeUnitY;
+        public string AeUnitY { get => _aeUnitY; set => SetProperty(ref _aeUnitY, value); }
+
+        private string _aeUnitAngle;
+        public string AeUnitAngle { get => _aeUnitAngle; set => SetProperty(ref _aeUnitAngle, value); }
+
+        public ICommand AeLimitRefreshCommand { get; }
+        public ICommand AeLimitSaveCommand { get; }
+
+
+        // ===================================================================
+        // TAB 4: PRODUCT SETTINGS PROPERTIES (from ProductSettingsViewModel)
+        // ===================================================================
+        private string _productName;
+        public string ProductName { get => _productName; set => SetProperty(ref _productName, value); }
+
+        private string _productCode;
+        public string ProductCode { get => _productCode; set => SetProperty(ref _productCode, value); }
+
+        private int _selectedItemCount;
+        public int SelectedItemCount { get => _selectedItemCount; set => SetProperty(ref _selectedItemCount, value); }
+
+        private int _gridRows;
+        public int GridRows { get => _gridRows; set => SetProperty(ref _gridRows, value); }
+
+        private int _gridColumns;
+        public int GridColumns { get => _gridColumns; set => SetProperty(ref _gridColumns, value); }
+
+        public ObservableCollection<int> ItemCounts { get; } = new ObservableCollection<int>(Enumerable.Range(1, 12));
+        public ObservableCollection<int> ColumnOptions { get; } = new ObservableCollection<int>(Enumerable.Range(1, 3));
+        public ObservableCollection<int> RowOptions { get; } = new ObservableCollection<int>(Enumerable.Range(1, 4));
+
+        public ICommand ProductSaveCommand { get; }
+
 
 
         private bool _hasUnsavedChanges;
@@ -73,15 +118,15 @@ namespace IPCSoftware.App.ViewModels
 
         
         // Available Program Numbers for ComboBox
-        private ObservableCollection<int> _availableProgramNumbers = new ObservableCollection<int>();
-        public ObservableCollection<int> AvailableProgramNumbers
+        private ObservableCollection<string> _availableProgramNumbers = new ObservableCollection<string>();
+        public ObservableCollection<string> AvailableProgramNumbers
         {
             get =>  _availableProgramNumbers;
             set => SetProperty(ref _availableProgramNumbers, value);
         }
         // Selected Program Number (for adding new programs)
-        private int _selectedProgramNumber;
-        public int SelectedProgramNumber
+        private string _selectedProgramNumber;
+        public string SelectedProgramNumber
         {
             get => _selectedProgramNumber;
             set => SetProperty(ref _selectedProgramNumber, value);
@@ -169,6 +214,8 @@ namespace IPCSoftware.App.ViewModels
              IProductConfigurationService productService,
              IRecipeManagementService recipeManagementService,
              IAeLimitService aeLimitService,
+             IOptionsMonitor<ExternalSettings> settingMonitor,  //Added after
+             ModeOfOperationViewModel modeOfOperationViewModel,
             IAppLogger logger)
              : base(logger)
         {
@@ -178,6 +225,8 @@ namespace IPCSoftware.App.ViewModels
             _productService = productService;
             _recipeManagementService = recipeManagementService;
             _aeLimitService = aeLimitService;
+            _settingsMonitor = settingMonitor;
+            _modeOfOperationViewModel = modeOfOperationViewModel;
 
             TeachCommand = new RelayCommand<ServoPositionModel>(OnTeachPosition);
             WritePositionCommand = new RelayCommand<ServoPositionModel>(OnWritePositionManual);
@@ -185,7 +234,7 @@ namespace IPCSoftware.App.ViewModels
 
             ConfirmXParamsCommand = new RelayCommand(async () => await PulseBit(ConstantValues.Servo_ParamSave, "X Servo Params"));
             ConfirmYParamsCommand = new RelayCommand(async () => await PulseBit(ConstantValues.Servo_ParamA2, "Y Servo Params"));
-            ConfirmXCoordsCommand = new RelayCommand(async () => await PulseBit(ConstantValues.Servo_CoordSave, "X Coordinates"));
+            ConfirmXCoordsCommand = new RelayCommand(WriteSelectedRecipeAsync);                                           //async () => await PulseBit(ConstantValues.Servo_CoordSave, "X Coordinates"));
             ConfirmYCoordsCommand = new RelayCommand(async () => await PulseBit(ConstantValues.Servo_XYOrigin, "Y Coordinates"));
 
             JogCommand = new RelayCommand<object>(async (args) => await OnJogAsync(args));
@@ -196,11 +245,26 @@ namespace IPCSoftware.App.ViewModels
 
             UpdateProgramCommand = new RelayCommand(OnUpdateProgram);
 
+            //  AE Limit Commands
+            AeLimitRefreshCommand = new RelayCommand(async () => await LoadAeLimitsAsync());
+            AeLimitSaveCommand = new RelayCommand(OnUpdateProgram);//async () => await SaveAeLimitsAsync());
+
+            //  Product Settings Command
+            ProductSaveCommand = new RelayCommand(async () => await SaveProductSettingsAsync());
+
+
             InitializeParameters();
             // Load positions from JSON via Service
             _ = InitializePositionsAsync();
 
             InitializeAvailableProgramNumbers();
+
+            //Initialize AE Limits Parametrs
+            InitializeAeLimitParameters();
+
+            //Load AE Limits and Product Settings
+            _ = LoadAeLimitsAsync();
+            _ = LoadProductSettingsAsync();
 
             //InitializePositions();
             _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(100),
@@ -209,6 +273,152 @@ namespace IPCSoftware.App.ViewModels
             _liveDataTimer.Start();
 
         }
+
+        // ===================================================================
+        // AE LIMIT LOGIC
+        // ===================================================================
+        private void InitializeAeLimitParameters()
+        {
+            AeMinX = new AeLimitParameterItem { Name = "Min X", ReadTagId = ConstantValues.MIN_X.Read, WriteTagId = ConstantValues.MIN_X.Write };
+            AeMaxX = new AeLimitParameterItem { Name = "Max X", ReadTagId = ConstantValues.MAX_X.Read, WriteTagId = ConstantValues.MAX_X.Write };
+            AeMinY = new AeLimitParameterItem { Name = "Min Y", ReadTagId = ConstantValues.MIN_Y.Read, WriteTagId = ConstantValues.MIN_Y.Write };
+            AeMaxY = new AeLimitParameterItem { Name = "Max Y", ReadTagId = ConstantValues.MAX_Y.Read, WriteTagId = ConstantValues.MAX_Y.Write };
+            AeMinZ = new AeLimitParameterItem { Name = "Min Angle", ReadTagId = ConstantValues.MIN_Z.Read, WriteTagId = ConstantValues.MIN_Z.Write };
+            AeMaxZ = new AeLimitParameterItem { Name = "Max Angle", ReadTagId = ConstantValues.MAX_Z.Read, WriteTagId = ConstantValues.MAX_Z.Write };
+        }
+
+        private async Task LoadAeLimitsAsync()
+        {
+            try
+            {
+                // Load Units from Config
+                var extConfig = _settingsMonitor.CurrentValue;
+                AeUnitX = !string.IsNullOrEmpty(extConfig.InspectionXUnit) ? extConfig.InspectionXUnit : "mm";
+                AeUnitY = !string.IsNullOrEmpty(extConfig.InspectionYUnit) ? extConfig.InspectionYUnit : "mm";
+                AeUnitAngle = !string.IsNullOrEmpty(extConfig.InspectionAngleUnit) ? extConfig.InspectionAngleUnit : "deg";
+
+                // Load Limits from JSON
+                _aeLimitSettings = await _aeLimitService.GetSettingsAsync();
+
+                if (_aeLimitSettings?.Stations != null && _aeLimitSettings.Stations.Count > 0)
+                {
+                    var refStation = _aeLimitSettings.Stations[0];
+                    AeMinX.NewValue = refStation.InspectionX.Lower;
+                    AeMaxX.NewValue = refStation.InspectionX.Upper;
+                    AeMinY.NewValue = refStation.InspectionY.Lower;
+                    AeMaxY.NewValue = refStation.InspectionY.Upper;
+                    AeMinZ.NewValue = refStation.InspectionAngle.Lower;
+                    AeMaxZ.NewValue = refStation.InspectionAngle.Upper;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[AE Limit] Load failed: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+
+        public async Task SaveAeLimitsAsync()
+        {
+            try
+            {
+                // Save to JSON
+                _aeLimitSettings = await _aeLimitService.GetSettingsAsync();
+                if (_aeLimitSettings?.Stations != null)
+                {
+                    foreach (var station in _aeLimitSettings.Stations)
+                    {
+                        station.InspectionX.Lower = AeMinX.NewValue;
+                        station.InspectionX.Upper = AeMaxX.NewValue;
+                        station.InspectionY.Lower = AeMinY.NewValue;
+                        station.InspectionY.Upper = AeMaxY.NewValue;
+                        station.InspectionAngle.Lower = AeMinZ.NewValue;
+                        station.InspectionAngle.Upper = AeMaxZ.NewValue;
+                    }
+                }
+                await _aeLimitService.SaveSettingsAsync(_aeLimitSettings);
+
+                // Write to PLC
+                await _coreClient.WriteTagAsync(AeMinX.WriteTagId, AeMinX.NewValue);
+                await _coreClient.WriteTagAsync(AeMaxX.WriteTagId, AeMaxX.NewValue);
+                await _coreClient.WriteTagAsync(AeMinY.WriteTagId, AeMinY.NewValue);
+                await _coreClient.WriteTagAsync(AeMaxY.WriteTagId, AeMaxY.NewValue);
+                await _coreClient.WriteTagAsync(AeMinZ.WriteTagId, AeMinZ.NewValue);
+                await _coreClient.WriteTagAsync(AeMaxZ.WriteTagId, AeMaxZ.NewValue);
+
+                // Handshake (optional, based on your PLC logic)
+                await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1);
+                await Task.Delay(200);
+                await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
+
+                _dialog.ShowMessage("AE Limits Saved Successfully!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[AE Limit] Save failed: {ex.Message}", LogType.Diagnostics);
+                _dialog.ShowWarning("Failed to save AE Limits.");
+            }
+        }
+
+        // ===================================================================
+        // PRODUCT SETTINGS LOGIC
+        // ===================================================================
+        private async Task LoadProductSettingsAsync()
+        {
+            try
+            {
+                var config = await _productService.LoadAsync();
+                ProductName = config.ProductName;
+                ProductCode = config.ProductCode;
+                SelectedItemCount = config.TotalItems;
+                GridRows = config.GridRows > 0 ? config.GridRows : 4;
+                GridColumns = config.GridColumns > 0 ? config.GridColumns : 3;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Product Settings] Load failed: {ex.Message}", LogType.Diagnostics);
+            }
+        }
+
+        private async Task SaveProductSettingsAsync()
+        {
+            try
+            {
+                // Validation
+                if (GridRows * GridColumns < SelectedItemCount)
+                {
+                    _dialog.ShowWarning($"Grid Layout ({GridRows}x{GridColumns}) is too small for {SelectedItemCount} items.");
+                    return;
+                }
+
+                var config = new ProductSettingsModel
+                {
+                    ProductName = ProductName,
+                    ProductCode = ProductCode,
+                    TotalItems = SelectedItemCount,
+                    GridRows = GridRows,
+                    GridColumns = GridColumns
+                };
+
+                await _productService.SaveAsync(config);
+
+                // Write to PLC
+                if (_coreClient.isConnected)
+                {
+                    await _coreClient.WriteTagAsync(ConstantValues.NO_OF_Station, SelectedItemCount);
+                }
+
+                _dialog.ShowMessage("Product Settings Saved Successfully!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Product Settings] Save failed: {ex.Message}", LogType.Diagnostics);
+                _dialog.ShowWarning("Failed to save Product Settings.");
+            }
+        }
+
+
+
+
 
         // ---  Initialize Available Program Numbers  ---
         private async  void InitializeAvailableProgramNumbers()
@@ -227,14 +437,14 @@ namespace IPCSoftware.App.ViewModels
 
                 foreach (var recipe in savedRecipes.OrderBy(r => r.ProgramNo))
                 {
-                    AvailableProgramNumbers.Add(recipe.ProgramNo);
+                    AvailableProgramNumbers.Add(recipe.ProductCode);
                 }
 
                 if (AvailableProgramNumbers.Any())
                 {
-                    SelectedProgramNumber = AvailableProgramNumbers.Last();
+                    SelectedProgramNumber = AvailableProgramNumbers.First();
                     OnPropertyChanged(nameof(SelectedProgramNumber));
-                    _nextProgramId = AvailableProgramNumbers.Max();
+                    _nextProgramId = savedRecipes.Max(r => r.ProgramNo);
                     
                 }
             }
@@ -249,6 +459,24 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
+                var savedRecipes = await _servoService.LoadRecipeAsync();               
+                var productSetup = await _productService.LoadAsync();
+                string currentProductCode = productSetup?.ProductCode ?? "0";
+             
+                if (string.IsNullOrWhiteSpace(currentProductCode) || currentProductCode == "0")
+                {
+                    _dialog.ShowWarning("Please configure a valid Product Code before adding a recipe.");
+                    return;
+                }
+                                
+                bool productCodeExists = savedRecipes.Any(r =>
+                    string.Equals(r.ProductCode, currentProductCode, StringComparison.OrdinalIgnoreCase));
+
+                if (productCodeExists)
+                {
+                    _dialog.ShowWarning($"Recipe with Product Code '{currentProductCode}' already exists.");
+                    return;
+                }
 
                 bool confirm = _dialog.ShowYesNo($"Add Program {_nextProgramId+1} with current positions and Limits?", "Confirm Add Recipe");
 
@@ -260,6 +488,10 @@ namespace IPCSoftware.App.ViewModels
                 //Collecting data from AE Limits
                  var aeLimitSettings = await _aeLimitService.GetSettingsAsync();
                 var firstStation = aeLimitSettings?.Stations?.FirstOrDefault();
+                //var productSetup = await _productService.LoadAsync();
+                
+
+
 
 
                 var newRecipe = new ServoRecipeModel
@@ -316,7 +548,17 @@ namespace IPCSoftware.App.ViewModels
                     Ymin = firstStation?.InspectionY?.Lower ?? 0,
                     Ymax = firstStation?.InspectionY?.Upper ?? 0,
                     AngleMin = firstStation?.InspectionAngle?.Lower ?? 0,
-                    AngleMax = firstStation?.InspectionAngle?.Upper ?? 0
+                    AngleMax = firstStation?.InspectionAngle?.Upper ?? 0,
+
+                    //Product Setup 
+
+                    ProductName = productSetup?.ProductName??"0",
+                    ProductCode = productSetup?.ProductCode ?? "0",
+                    TotalItems = productSetup?.TotalItems ?? 0,
+                    GridRows = productSetup?.GridRows ?? 0,
+                    GridColumns = productSetup?.GridColumns ?? 0
+                    
+
 
                 };
 
@@ -353,23 +595,32 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                //Check if the selected program is currently running
-                if (SelectedProgramNumber == CurrentRunningProgram) { _dialog.ShowWarning("Cannot remove running program"); return; }
+              
                 //Check if at least 2 programs will remain after deletion
-                if (AvailableProgramNumbers.Count <= 2) { _dialog.ShowWarning("Cannot delete. At least 2 programs must remain in the list."); return; }
+                if (AvailableProgramNumbers.Count <= 1) { _dialog.ShowWarning("Cannot delete. At least 1 programs must remain in the list."); return; }
+
+                var savedRecipe = await _servoService.LoadRecipeAsync();
+                var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProductCode == SelectedProgramNumber);
+                if (selectedRecipe == null)
+                {
+                    _dialog.ShowWarning("Selected program not found.");
+                    return;
+                }
+
+                //Check if the selected program is currently running
+                if (selectedRecipe.ProgramNo == CurrentRunningProgram) { _dialog.ShowWarning("Cannot remove running program"); return; }
 
                 bool confirm = _dialog.ShowYesNo($" Do you want to remove Program {SelectedProgramNumber}?", "Confirm Delete Recipe");
                 
 
                 if (!confirm) return;              
-                                
-                else
-                {
-                    await _recipeManagementService.DeleteRecipeAsync(SelectedProgramNumber);
-                    _logger.LogInfo($"Program {SelectedProgramNumber} deleted successfully.", LogType.Audit);
-                    _dialog.ShowMessage($"Program {SelectedProgramNumber} deleted successfully.");
-                    await RefreshProgramNumbersAsync();
-                }
+                             
+                              
+                await _recipeManagementService.DeleteRecipeAsync(selectedRecipe.ProgramNo);
+                _logger.LogInfo($"Program {SelectedProgramNumber} deleted successfully.", LogType.Audit);
+                _dialog.ShowMessage($"Program {SelectedProgramNumber} deleted successfully.");
+                await RefreshProgramNumbersAsync();
+                
 
             }
 
@@ -383,6 +634,15 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
+                // Find the recipe by ProductCode
+                var savedRecipes = await _servoService.LoadRecipeAsync();
+                var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == SelectedProgramNumber);
+
+                if (selectedRecipe == null)
+                {
+                    _dialog.ShowWarning("Selected program not found.");
+                    return;
+                }
                 bool confirm = _dialog.ShowYesNo($" Do you want to edit Program {SelectedProgramNumber}?", "Confirm Delete Recipe");
                 if (!confirm) return;
                 //Collecting data from current positions 
@@ -391,10 +651,11 @@ namespace IPCSoftware.App.ViewModels
                 //Collecting data from AE Limits
                 var aeLimitSettings = await _aeLimitService.GetSettingsAsync();
                 var firstStation = aeLimitSettings?.Stations?.FirstOrDefault();
+                var productSetup = await _productService.LoadAsync();
 
                 var UpdatedRecipe = new ServoRecipeModel
                 {
-                    ProgramNo = SelectedProgramNumber,
+                    ProgramNo = selectedRecipe.ProgramNo,
 
                     //Sequence Indexes (S1-S12)
 
@@ -446,7 +707,15 @@ namespace IPCSoftware.App.ViewModels
                     Ymin = firstStation?.InspectionY?.Lower ?? 0,
                     Ymax = firstStation?.InspectionY?.Upper ?? 0,
                     AngleMin = firstStation?.InspectionAngle?.Lower ?? 0,
-                    AngleMax = firstStation?.InspectionAngle?.Upper ?? 0
+                    AngleMax = firstStation?.InspectionAngle?.Upper ?? 0,
+
+                    //Product Setup 
+
+                    ProductName = productSetup?.ProductName ?? "0",
+                    ProductCode = productSetup?.ProductCode ?? "0",
+                    TotalItems = productSetup?.TotalItems ?? 0,
+                    GridRows = productSetup?.GridRows ?? 0,
+                    GridColumns = productSetup?.GridColumns ?? 0
 
                 };
 
@@ -470,6 +739,31 @@ namespace IPCSoftware.App.ViewModels
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to edit the program :{ex}", LogType.Error);
+            }
+        }
+
+        public async void WriteSelectedRecipeAsync()
+        {
+            try
+            {
+                var savedRecipe = await _servoService.LoadRecipeAsync();
+                var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProductCode == SelectedProgramNumber);
+                if (selectedRecipe.ProgramNo == CurrentRunningProgram)
+                {
+                    _modeOfOperationViewModel.ApplyRecipeSelection();
+                     OnAddProgram();
+
+                }
+
+                else
+                {
+                    OnAddProgram();
+
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"Failed to load Product Code {SelectedProgramNumber}", LogType.Error);
             }
         }
 
@@ -883,7 +1177,7 @@ namespace IPCSoftware.App.ViewModels
             }
             return true; // Allow
         }
-        private async Task PulseBit(int tagId, string description)
+        public async Task PulseBit(int tagId, string description)
         {
             try
             {
@@ -981,7 +1275,34 @@ namespace IPCSoftware.App.ViewModels
                 _logger.LogError(ex.Message, LogType.Diagnostics);
             }
         }
+
+
+
     }
+
+
+    // ADDED: Helper class for AE Limit Parameters
+    public class AeLimitParameterItem : ObservableObjectVM
+    {
+        public string Name { get; set; }
+        public int ReadTagId { get; set; }
+        public int WriteTagId { get; set; }
+
+        private double _currentValue;
+        public double CurrentValue
+        {
+            get => _currentValue;
+            set => SetProperty(ref _currentValue, value);
+        }
+
+        private double _newValue;
+        public double NewValue
+        {
+            get => _newValue;
+            set => SetProperty(ref _newValue, value);
+        }
+    }
+
 
     public enum JogDirection
     {

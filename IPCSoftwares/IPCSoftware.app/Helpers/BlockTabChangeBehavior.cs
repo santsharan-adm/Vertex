@@ -10,7 +10,7 @@ using System.Windows.Controls;
 
 namespace IPCSoftware.App.Helpers
 {
-    internal class BlockTabChangeBehavior
+    public class BlockTabChangeBehavior
     {
         public static readonly DependencyProperty BlockWhenProperty =
         DependencyProperty.RegisterAttached(

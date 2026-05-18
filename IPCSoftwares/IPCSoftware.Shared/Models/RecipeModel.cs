@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 
 namespace IPCSoftware.Shared.Models
 {
@@ -60,8 +61,19 @@ namespace IPCSoftware.Shared.Models
         public double AngleMin { get; set; }
         public double AngleMax { get; set; }
 
+        public string ProductName { get; set; }
+
+        public string ProductCode { get; set; }
+
+        public int TotalItems { get; set; }
+
+        public int GridRows { get; set; }
+
+        public int GridColumns { get; set; }
 
 
 
-    }
+       };
+
 }
+

@@ -173,7 +173,7 @@ public class RibbonViewModel : BaseViewModel
                 "Shift Config",
 
                 "Report Config",
-                "Servo Parameters",
+                "Product Config",
                 "Time Sync",
                 "Diagnostic",
                 "Product Settings",

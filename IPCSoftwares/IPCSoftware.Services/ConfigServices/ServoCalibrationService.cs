@@ -130,7 +130,13 @@ namespace IPCSoftware.Services.ConfigServices
                         Ymin = double.TryParse(values[41], out double ymin) ? ymin : 0,
                         Ymax = double.TryParse(values[42], out double ymax) ? ymax : 0,
                         AngleMin = double.TryParse(values[43], out double amin) ? amin : 0,
-                        AngleMax = double.TryParse(values[44], out double amax) ? amax : 0
+                        AngleMax = double.TryParse(values[44], out double amax) ? amax : 0,
+                        ProductName = values[45],
+                        ProductCode = values[46],
+                        TotalItems = int.TryParse(values[47], out int totalitem) ? totalitem : 0,
+                        GridRows = int.TryParse(values[48], out int gridrow) ? gridrow : 0,
+                        GridColumns = int.TryParse(values[49], out int gridcols) ? gridcols : 0,
+
                     };
 
                     recipes.Add(recipe);

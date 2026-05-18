@@ -297,7 +297,7 @@
                                     <ComboBox Grid.Row="1"
                                               ItemsSource="{Binding RecipeList}" 
                                               SelectedItem="{Binding SelectedRecipe, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                              DisplayMemberPath="Name"
+                                              DisplayMemberPath="ProductCode"
                                               IsEnabled="{Binding IsRecipeSelectionEnabled}"
                                               HorizontalContentAlignment="Center"
                                               Style="{StaticResource RecipeComboBoxStyle}">

@@ -5,8 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:helpers="clr-namespace:IPCSoftware.App.Helpers"
              xmlns:vm="clr-namespace:IPCSoftware.App.ViewModels"
-             mc:Ignorable="d"
-             helpers:ViewModelLocator.AutoWireViewModel="{x:Type vm:AeLimitViewModel}"
+             mc:Ignorable="d"             
              d:DesignHeight="900"
              d:DesignWidth="1400">
 
