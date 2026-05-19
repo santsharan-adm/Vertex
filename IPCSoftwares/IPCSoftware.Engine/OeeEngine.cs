@@ -25,8 +25,10 @@ namespace IPCSoftware.Engine
         private bool _lastCycleStartTriggerState = false; // For Cycle Start/Reset
         private bool _lastCcdTriggerState = false;        // For CCD Trigger
 
+        // True only after the cycle start tag has gone HIGH at least once this session
+        private bool _cycleEverStarted = false;
 
-        private int _lastCycleTime = 1;
+        private int _lastCycleTime = 0;
         protected readonly string _servoCalibrationPath;
 
         // Holds all data for the current 2D code / part
@@ -98,6 +100,12 @@ namespace IPCSoftware.Engine
                 // 2. Handle Cycle Start / Reset (CycleStart Trigger - Tag 20)
                 // =========================================================
                 bool currentCycleStartState = GetBoolState(tagValues, ConstantValues.CYCLE_START_TRIGGER_TAG_ID);
+
+                // DETECT FIRST START (Rising Edge: False -> True)
+                if (currentCycleStartState && !_lastCycleStartTriggerState)
+                {
+                    _cycleEverStarted = true;
+                }
 
                 // DETECT RESET (Falling Edge: True -> False)
                 if (!currentCycleStartState && _lastCycleStartTriggerState)
@@ -397,6 +405,10 @@ namespace IPCSoftware.Engine
         {
             try
             {
+                // Do not show any values until the cycle start tag has gone HIGH at least once
+                if (!_cycleEverStarted)
+                    return new Dictionary<int, object> { { 4, new Dashboard2Result() } };
+
                 Dashboard2Result r = new Dashboard2Result();
 
                 int operatingMin  = GetInt(values, ConstantValues.TAG_UpTime);
@@ -414,8 +426,11 @@ namespace IPCSoftware.Engine
                     : 0.0;
                 r.OverallOEE = r.Availability * r.Performance * r.Quality;
 
-                r.OKParts  = okParts;
-                r.NGParts  = ngParts;
+                r.OKParts       = okParts;
+                r.NGParts       = ngParts;
+                r.OperatingTime = operatingMin ;  // PLC gives minutes → convert to seconds for display
+                r.Downtime      = downTimeMin ;   // PLC gives minutes → convert to seconds for display
+                r.CycleTime     = _lastCycleTime;     // already in seconds
                 r.XValue   = GetDouble(values, ConstantValues.TAG_X);
                 r.YValue   = GetDouble(values, ConstantValues.TAG_Y);
                 r.ZValue   = GetDouble(values, ConstantValues.TAG_Z);

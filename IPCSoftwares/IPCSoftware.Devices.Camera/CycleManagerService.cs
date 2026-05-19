@@ -58,6 +58,16 @@ namespace IPCSoftware.Devices.Camera
             var ccd = appSettings.Value;
             //_tempImageFolderPath = ccd.TempImgFolder;
             _observableCcdSettings = observableCcdSettings;
+
+            // Initialize observable settings from appsettings
+            _observableCcdSettings.QrCodeImagePath = ccd.QrCodeImagePath;
+            _observableCcdSettings.CurrentCycleStateFileName = ccd.CurrentCycleStateFileName;
+            _observableCcdSettings.TempImgFolder = ccd.TempImgFolder;
+            _observableCcdSettings.ImageRootFolder = ccd.ImageRootFolder;
+            _observableCcdSettings.MetadataStyle = ccd.MetadataStyle;
+            _observableCcdSettings.ClientMetaDataParams = ccd.ClientMetaDataParams;
+            _observableCcdSettings.VendorMetaDataParams = ccd.VendorMetaDataParams;
+
             _deviceService = deviceService;
             _plcManager = plcManager;
             _imageService = imageService;

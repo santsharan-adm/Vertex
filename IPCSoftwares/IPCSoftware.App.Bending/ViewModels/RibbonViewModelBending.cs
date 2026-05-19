@@ -44,8 +44,6 @@ namespace IPCSoftware.App.Bending.ViewModels
                         "Bending2 Monitor",
                         "Bending3 Monitor",
                         "Post Bend Monitor",
-                        "Dashboard1",
-                        "Dashboard2",
                         "PLC IO",
                         "Alarm View",
                         "Startup Condition",

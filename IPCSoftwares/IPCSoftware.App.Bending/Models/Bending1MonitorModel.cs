@@ -5,6 +5,8 @@ namespace IPCSoftware.App.Bending.Models
 {
     public class Bending1MonitorModel : ObservableObjectVM
     {
+        public string BatchNo { get; set; }
+        
         private string _product;
         public string Product
         {

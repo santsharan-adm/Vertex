@@ -82,7 +82,7 @@
                     HorizontalAlignment="Right" Background="#007ACC" Foreground="White" Command="{Binding NextCommand}"/>
         </Grid>
 
-        <!-- Viewbox for responsive scaling -->
+        <!-- Main Content -->
         <Viewbox Grid.Row="1" Stretch="Uniform">
             <Border BorderBrush="Black" BorderThickness="1.2" Width="980" Height="520">
                 <Grid>
@@ -109,11 +109,15 @@
                     <Border Grid.Row="0" Grid.ColumnSpan="6" BorderBrush="Black" BorderThickness="0,0,0,1">
                         <Grid>
                             <TextBlock Text="Bending Monitor 3" Style="{StaticResource CommonTextStyle}" FontSize="18" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding BatchNo, StringFormat='Batch No - {0}'}" Margin="3" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" HorizontalAlignment="Left"/>
+                            <TextBlock Style="{StaticResource CommonTextStyle}" FontSize="11" 
+                                       FontWeight="Bold" HorizontalAlignment="Left" Margin="3">
+                                <Run Text="Batch No - "/>
+                                <Run Text="{Binding BatchNo, Mode=OneWay}"/>
+                            </TextBlock>
                         </Grid>
                     </Border>
 
-                    <!-- Table Column Headers -->
+                    <!-- Table Headers -->
                     <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Style="{StaticResource TableBorderStyle}" Background="#F2F2F2">
                         <TextBlock Text="Product" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
@@ -133,7 +137,7 @@
                         <TextBlock Text="Result" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
 
-                    <!-- Nested Grid for Limits -->
+                    <!-- Sub Headers -->
                     <UniformGrid Grid.Row="2" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
                             <TextBlock Text="Upper Limit" Style="{StaticResource CommonTextStyle}" FontSize="11"/>
@@ -157,155 +161,154 @@
                         </Border>
                     </UniformGrid>
 
-                    <!-- Product Data Rows -->
+                    <!-- Row 3: Product 1 -->
                     <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding Products[0].Product}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding P1_Product}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding Products[0].QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding P1_QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Border>
                     <UniformGrid Grid.Row="3" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[0].Load.UpperLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P1_Load_Upper, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[0].Load.PresentValue, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P1_Load_Value, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[0].Load.LowerLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P1_Load_Lower, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                     </UniformGrid>
                     <UniformGrid Grid.Row="3" Grid.Column="3" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[0].Temprature.UpperLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P1_Temp_Upper, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[0].Temprature.PresentValue, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P1_Temp_Value, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[0].Temprature.LowerLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P1_Temp_Lower, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                     </UniformGrid>
                     <Border Grid.Row="3" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding Products[0].BendingTime, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding P1_BendingTime, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <Rectangle Width="55" Height="48" RadiusX="2" RadiusY="2" Stroke="#999"
-                                   Fill="{Binding Products[0].Result, Converter={StaticResource BoolToColorConverter}}"/>
+                        <Rectangle Width="55" Height="48" Fill="{Binding P1_Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
+                    <!-- Row 4: Product 2 -->
                     <Border Grid.Row="4" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding Products[1].Product}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding P2_Product}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding Products[1].QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding P2_QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Border>
                     <UniformGrid Grid.Row="4" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[1].Load.UpperLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P2_Load_Upper, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[1].Load.PresentValue, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P2_Load_Value, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[1].Load.LowerLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P2_Load_Lower, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                     </UniformGrid>
                     <UniformGrid Grid.Row="4" Grid.Column="3" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[1].Temprature.UpperLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P2_Temp_Upper, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[1].Temprature.PresentValue, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P2_Temp_Value, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[1].Temprature.LowerLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P2_Temp_Lower, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                     </UniformGrid>
                     <Border Grid.Row="4" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding Products[1].BendingTime, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding P2_BendingTime, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <Rectangle Width="55" Height="48" RadiusX="2" RadiusY="2" Stroke="#999"
-                                   Fill="{Binding Products[1].Result, Converter={StaticResource BoolToColorConverter}}"/>
+                        <Rectangle Width="55" Height="48" Fill="{Binding P2_Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
+                    <!-- Row 5: Product 3 -->
                     <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding Products[2].Product}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding P3_Product}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding Products[2].QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding P3_QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Border>
                     <UniformGrid Grid.Row="5" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[2].Load.UpperLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P3_Load_Upper, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[2].Load.PresentValue, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P3_Load_Value, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[2].Load.LowerLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P3_Load_Lower, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                     </UniformGrid>
                     <UniformGrid Grid.Row="5" Grid.Column="3" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[2].Temprature.UpperLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P3_Temp_Upper, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[2].Temprature.PresentValue, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P3_Temp_Value, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[2].Temprature.LowerLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P3_Temp_Lower, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                     </UniformGrid>
                     <Border Grid.Row="5" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding Products[2].BendingTime, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding P3_BendingTime, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <Rectangle Width="55" Height="48" RadiusX="2" RadiusY="2" Stroke="#999"
-                                   Fill="{Binding Products[2].Result, Converter={StaticResource BoolToColorConverter}}"/>
+                        <Rectangle Width="55" Height="48" Fill="{Binding P3_Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
+                    <!-- Row 6: Product 4 -->
                     <Border Grid.Row="6" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding Products[3].Product}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding P4_Product}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding Products[3].QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding P4_QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Border>
                     <UniformGrid Grid.Row="6" Grid.Column="2" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[3].Load.UpperLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P4_Load_Upper, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[3].Load.PresentValue, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P4_Load_Value, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[3].Load.LowerLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P4_Load_Lower, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                     </UniformGrid>
                     <UniformGrid Grid.Row="6" Grid.Column="3" Columns="3">
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[3].Temprature.UpperLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P4_Temp_Upper, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[3].Temprature.PresentValue, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P4_Temp_Value, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                         <Border Style="{StaticResource TableBorderStyle}">
-                            <TextBlock Text="{Binding Products[3].Temprature.LowerLimit, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                            <TextBlock Text="{Binding P4_Temp_Lower, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                         </Border>
                     </UniformGrid>
                     <Border Grid.Row="6" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding Products[3].BendingTime, StringFormat='F2'}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding P4_BendingTime, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <Rectangle Width="55" Height="48" RadiusX="2" RadiusY="2" Stroke="#999"
-                                   Fill="{Binding Products[3].Result, Converter={StaticResource BoolToColorConverter}}"/>
+                        <Rectangle Width="55" Height="48" Fill="{Binding P4_Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
                 </Grid>
             </Border>
         </Viewbox>
 
-        <!-- Blank Placeholder for Alarm Bar -->
+        <!-- Blank Space for Alarm at the bottom -->
         <Border Grid.Row="2" Background="Transparent" />
     </Grid>
 </UserControl>

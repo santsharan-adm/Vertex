@@ -32,9 +32,9 @@ namespace IPCSoftware.Engine
        // private readonly IPLCTagConfigurationService _tagService;         //Added by Rishabh - date - 26/04/2026//
 
         // latest packets per PLC (unitno)
-        private readonly Dictionary<int, PlcPacket> _latestPackets = new();
+        protected readonly Dictionary<int, PlcPacket> _latestPackets = new();
 
-        private Dictionary<int, object>? _lastValues = null;
+        protected Dictionary<int, object>? _lastValues = null;
 
         public DashboardInitializerBase(PLCClientManager manager,
             AlgorithmAnalysisService algo,
@@ -131,7 +131,7 @@ namespace IPCSoftware.Engine
         }
 
 
-        public async Task<ResponsePackage> HandleUiRequest(RequestPackage request)
+        public virtual async Task<ResponsePackage> HandleUiRequest(RequestPackage request)
         {
             try
             {

@@ -90,7 +90,7 @@ namespace IPCSoftware.Devices.PLC
                         _logger.LogTrace(csvLine);
                     }
 
-                   
+
 
                     // 2. Algorithm Application (Scaling or Raw Pass-through)
                     object finalValue = ApplyScaling(rawTypedValue, tag);

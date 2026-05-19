@@ -17,7 +17,7 @@
   <!-- Primary brushes -->
   <SolidColorBrush x:Key="PanelBorder" Color="#1E293B"/>
   <SolidColorBrush x:Key="AccentBlue" Color="#1565C0"/>
-  <SolidColorBrush x:Key="TableBg" Color="#F1F5F9"/>
+  <SolidColorBrush x:Key="TableBg" Color="#0B1A2E"/>
   <SolidColorBrush x:Key="OkGreen" Color="#00B050"/>
   <SolidColorBrush x:Key="NgRed" Color="#EF4444"/>
 
