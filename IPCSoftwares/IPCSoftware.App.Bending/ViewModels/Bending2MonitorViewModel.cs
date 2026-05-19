@@ -35,14 +35,68 @@ namespace IPCSoftware.App.Bending.ViewModels
             set => SetProperty(ref _batchNo, value);
         }
 
+        // --- Product ---
+
+        private string _product;
+        public string Product
+        {
+            get => _product;
+            set => SetProperty(ref _product, value);
+        }
+
+        // --- QR Code ---
+
+        private string _qrCode;
+        public string QRCode
+        {
+            get => _qrCode;
+            set => SetProperty(ref _qrCode, value);
+        }
+
+        // --- Load (N) ---
+
+        private ParameterLImitValues _load = new();
+        public ParameterLImitValues Load
+        {
+            get => _load;
+            set => SetProperty(ref _load, value);
+        }
+
+        // --- Temperature (°C) ---
+
+        private ParameterLImitValues _temprature = new();
+        public ParameterLImitValues Temprature
+        {
+            get => _temprature;
+            set => SetProperty(ref _temprature, value);
+        }
+
+        // --- Bending Time ---
+
+        private double _bendingTime;
+        public double BendingTime
+        {
+            get => _bendingTime;
+            set => SetProperty(ref _bendingTime, value);
+        }
+
+        // --- Result ---
+
+        private bool _result;
+        public bool Result
+        {
+            get => _result;
+            set => SetProperty(ref _result, value);
+        }
+
         // --- Product Table ---
 
-        public ObservableCollection<Bending1MonitorModel> Products { get; } = new()
+        public ObservableCollection<BendingMonitorProductModel> Products { get; } = new()
         {
-            new Bending1MonitorModel { Product = "Product 1" },
-            new Bending1MonitorModel { Product = "Product 2" },
-            new Bending1MonitorModel { Product = "Product 3" },
-            new Bending1MonitorModel { Product = "Product 4" }
+            new BendingMonitorProductModel { Product = "Product 1" },
+            new BendingMonitorProductModel { Product = "Product 2" },
+            new BendingMonitorProductModel { Product = "Product 3" },
+            new BendingMonitorProductModel { Product = "Product 4" }
         };
 
         #endregion
@@ -111,13 +165,13 @@ namespace IPCSoftware.App.Bending.ViewModels
                         product.Load.LowerLimit = Convert.ToDouble(loadLower);
 
                     // Temperature data
-                    product.Temprature ??= new ParameterLImitValues();
+                    product.Temperature ??= new ParameterLImitValues();
                     if (data.TryGetValue(baseOffset + 4, out object tempUpper))
-                        product.Temprature.UpperLimit = Convert.ToDouble(tempUpper);
+                        product.Temperature.UpperLimit = Convert.ToDouble(tempUpper);
                     if (data.TryGetValue(baseOffset + 5, out object tempValue))
-                        product.Temprature.PresentValue = Convert.ToDouble(tempValue);
+                        product.Temperature.PresentValue = Convert.ToDouble(tempValue);
                     if (data.TryGetValue(baseOffset + 6, out object tempLower))
-                        product.Temprature.LowerLimit = Convert.ToDouble(tempLower);
+                        product.Temperature.LowerLimit = Convert.ToDouble(tempLower);
 
                     // Bending Time and Result
                     if (data.TryGetValue(baseOffset + 7, out object bendingTime))
