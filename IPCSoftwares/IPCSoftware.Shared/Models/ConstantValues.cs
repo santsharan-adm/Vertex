@@ -18,7 +18,7 @@ namespace IPCSoftware.Shared.Models
         public static int NO_OF_Station;
 
 
-        public static int CYCLE_START_TRIGGER_TAG_ID ;
+        public static int CYCLE_START_TRIGGER_TAG_ID;
         public static int TRIGGER_TAG_ID;
         public static int Return_TAG_ID;
         public static int TAG_QR_DATA;
@@ -51,9 +51,9 @@ namespace IPCSoftware.Shared.Models
         public static TagPair ACK_LIMIT = new();
 
 
-        public static int RESET_TAG_ID ; // B26 (Your Reset/Start Command)
-        public static int RESET_ACK_TAG_ID ;
-        public static int REVERSE_TAG_ID ;
+        public static int RESET_TAG_ID; // B26 (Your Reset/Start Command)
+        public static int RESET_ACK_TAG_ID;
+        public static int REVERSE_TAG_ID;
         public static int REVERSE_ACK_TAG_ID;
 
 
@@ -62,12 +62,12 @@ namespace IPCSoftware.Shared.Models
         public static int TAG_TimeSync_Req;
         public static int TAG_TimeSync_Ack;
 
-        public static  TagPair TAG_Time_Year = new ();
-        public static TagPair TAG_Time_Month = new ();
-        public static TagPair TAG_Time_Day = new ();
-        public static TagPair TAG_Time_Hour = new ();
-        public static TagPair TAG_Time_Minute = new ();
-        public static TagPair TAG_Time_Second = new ();
+        public static TagPair TAG_Time_Year = new();
+        public static TagPair TAG_Time_Month = new();
+        public static TagPair TAG_Time_Day = new();
+        public static TagPair TAG_Time_Hour = new();
+        public static TagPair TAG_Time_Minute = new();
+        public static TagPair TAG_Time_Second = new();
 
 
         public static int TAG_Global_Ack;
@@ -117,12 +117,12 @@ namespace IPCSoftware.Shared.Models
 
         public static XYPair Servo_JogSpeed_Low = new();
         public static XYPair Servo_OffSet = new();
-        public static XYPair Servo_Move_Speed= new();
-        public static XYPair Servo_Accel= new();
-        public static XYPair Servo_DeAccel= new();
-        public static XYPair Servo_Pos_Start= new();
-        public static XYPair Servo_Live= new();
-  
+        public static XYPair Servo_Move_Speed = new();
+        public static XYPair Servo_Accel = new();
+        public static XYPair Servo_DeAccel = new();
+        public static XYPair Servo_Pos_Start = new();
+        public static XYPair Servo_Live = new();
+
 
         /// <summary>
         /// Populates static fields from the root AppConfigSettings.
@@ -131,7 +131,7 @@ namespace IPCSoftware.Shared.Models
         {
             if (rootConfig == null) return;
 
-            
+
 
             // 2. Map Tags (From Config.TagMapping)
             if (rootConfig != null && rootConfig.TagMapping != null)
@@ -146,7 +146,7 @@ namespace IPCSoftware.Shared.Models
                 TAG_Heartbeat_IPC = sys.HeartbeatIPC;
                 TAG_TimeSync_Req = sys.TimeSyncReq;
                 TAG_TimeSync_Ack = sys.TimeSyncAck;
-            
+
                 TAG_Time_Year = sys.Year;
                 TAG_Time_Month = sys.Month;
                 TAG_Time_Day = sys.Day;
@@ -167,11 +167,11 @@ namespace IPCSoftware.Shared.Models
                 TRIGGER_TAG_ID = oee.TriggerCCD;
                 Return_TAG_ID = oee.ReadCompleteCCD;
                 TAG_QR_DATA = oee.QR2dCode;
-                TAG_STATUS  = oee.Status;
+                TAG_STATUS = oee.Status;
                 TAG_X = oee.ValueX;
                 TAG_Y = oee.ValueY;
                 TAG_Z = oee.ValueZ;
-                
+
                 TAG_CTL_CYCLETIME_A1 = oee.CtlCycleTimeA1;
                 TAG_CycleTime = oee.CycleTime;
                 TAG_CTL_CYCLETIME_B1 = oee.CtlCycleTimeB1;
@@ -183,11 +183,11 @@ namespace IPCSoftware.Shared.Models
                 IDEAL_CYCLE_TIME = oee.IdealCycleTime;
                 MIN_X = oee.MinX;
                 MAX_X = oee.MaxX;
-                MIN_Y= oee.MinY;
+                MIN_Y = oee.MinY;
                 MAX_Y = oee.MaxY;
                 MIN_Z = oee.MinZ;
                 MAX_Z = oee.MaxZ;
-               // ACK_LIMIT_WRITE = oee.AckLimitWrite;
+                // ACK_LIMIT_WRITE = oee.AckLimitWrite;
                 ACK_LIMIT = oee.AckLimit;
 
 
@@ -229,7 +229,7 @@ namespace IPCSoftware.Shared.Models
                 var s = tags.Servo;
                 Servo_ParamSave = s.ParamA1;
                 Servo_ParamA2 = s.ParamA2;
-                Servo_CoordSave= s.ParamA3;
+                Servo_CoordSave = s.ParamA3;
                 Servo_XYOrigin = s.ParamA4;
                 Servo_Seq_Start = s.ServoSeqStart;
 
@@ -244,28 +244,32 @@ namespace IPCSoftware.Shared.Models
                 Servo_Pos_Start = s.PosStart;
                 Servo_Live = s.Live;
 
+                // External Tags
                 var e = tags.ExternalTags;
                 if (e != null)
                 {
                     Ext_CavityStatus = e.CavityStatus;
                     Ext_DataReady = e.DataReady;
-
-
-                    //Dashboard2 oee Tag
-
-                    TAG_W = tags.Dashboard2.ValueW;
-                    TAG_Heat = tags.Dashboard2.Heat;
-                    TAG_Punch = tags.Dashboard2.Punch;
-                    TAG_Clamp = tags.Dashboard2.Clamp;
-                    TAG_Tearing = tags.Dashboard2.Tearing;
-                    TAG_Flipping = tags.Dashboard2.Flipping;
-
                 }
+
+                // Dashboard2 OEE Tags
+                var dashboard2 = tags.Dashboard2;
+                if (dashboard2 != null)
+                {
+                    TAG_W = dashboard2.ValueW;
+                    TAG_Heat = dashboard2.Heat;
+                    TAG_Punch = dashboard2.Punch;
+                    TAG_Clamp = dashboard2.Clamp;
+                    TAG_Tearing = dashboard2.Tearing;
+                    TAG_Flipping = dashboard2.Flipping;
+                }
+
             }
         }
-
     }
 
-
-
 }
+
+
+
+

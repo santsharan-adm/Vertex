@@ -24,23 +24,21 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         // Pollers
 
-        private SafePollerEx _liveDataPoller;               // RequestId = 4  (OEE / Dashboard2Result)
-        private SafePollerEx _ioPoller;                     // RequestId = 5  (Raw IO: mode states, ack flags)
-        private SafePollerEx _resetPoller;                  // RequestId = 5  (Reset sequence ack check)
-
-        // Per-model pollers (RequestIds 11-22)
-        private SafePollerEx _inspectionTable1Poller;       // RequestId = 11
-        private SafePollerEx _inspectionTable2Poller;       // RequestId = 12
-        private SafePollerEx _bendingIndicatorsPoller;      // RequestId = 13
-        private SafePollerEx _turnTable1Poller;             // RequestId = 14
-        private SafePollerEx _turnTable2Poller;             // RequestId = 15
-        private SafePollerEx _transferModulePoller;         // RequestId = 16
-        private SafePollerEx _inspectionDataPoller;         // RequestId = 17
-        private SafePollerEx _robotStatusPoller;            // RequestId = 18
-        private SafePollerEx _inputTrayPoller;              // RequestId = 19
-        private SafePollerEx _outputTrayPoller;             // RequestId = 20
-        private SafePollerEx _ngBinPoller;                  // RequestId = 21
-        private SafePollerEx _efficiencyBreakdownPoller;    // RequestId = 22
+                private SafePollerEx _liveDataPoller;
+                private SafePollerEx _ioPoller;
+                private SafePollerEx _resetPoller;
+                private SafePollerEx _inspectionTable1Poller;
+                private SafePollerEx _inspectionTable2Poller;
+                private SafePollerEx _bendingIndicatorsPoller;
+                private SafePollerEx _turnTable1Poller;
+                private SafePollerEx _turnTable2Poller;
+                private SafePollerEx _transferModulePoller;
+                private SafePollerEx _inspectionDataPoller;
+                private SafePollerEx _robotStatusPoller;
+                private SafePollerEx _inputTrayPoller;
+                private SafePollerEx _outputTrayPoller;
+                private SafePollerEx _ngBinPoller;
+                private SafePollerEx _efficiencyBreakdownPoller;
 
         private bool _disposed;
 
@@ -172,7 +170,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             set => SetProperty(ref _dashboard2Data, value);
         }
 
-        // --- Machine Mode States (from RequestId = 5) ---
+        // --- Machine Mode States ---
 
         private bool _isAutoRunActive;
         public bool IsAutoRunActive
@@ -851,7 +849,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _resetPoller?.Dispose();
 
             // Dispose Dashboard2 model pollers
-            _inspectionTable1Poller?.Stop();
+            _inspectionTable1Poller?.Stop(); 
             _inspectionTable1Poller?.Dispose();
             _inspectionTable2Poller?.Stop();
             _inspectionTable2Poller?.Dispose();

@@ -8,7 +8,7 @@ namespace IPCSoftware.App.Bending.Views
     /// </summary>
     public partial class PostBendingMonitor : UserControl
     {
-        public PostBendingMonitor(PostBendingViewModel viewModel)
+        public PostBendingMonitor(PostBendingMonitorViewModel viewModel)
         {
             InitializeComponent();
             DataContext = viewModel;
