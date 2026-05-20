@@ -129,9 +129,6 @@ namespace IPCSoftware.App.Bending.Models
             set => SetProperty(ref _lowerLimit, value);
         }
 
-        // Aliases for compatibility
-        public double Upper { get => UpperLimit; set => UpperLimit = value; }
-        public double Value { get => PresentValue; set => PresentValue = value; }
-        public double Lower { get => LowerLimit; set => LowerLimit = value; }
+       
     }
 }

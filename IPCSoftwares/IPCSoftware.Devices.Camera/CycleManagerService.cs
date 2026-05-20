@@ -29,7 +29,7 @@ namespace IPCSoftware.Devices.Camera
         protected readonly IExternalInterfaceService _extService;  // ✅ interface
         protected readonly IAeLimitService _aeLimitService;
         protected readonly IProductConfigurationService _productService;
-        protected readonly IObservableCcdSettingsService _observableCcdSettings ;  
+        protected readonly IObservableCcdSettingsService _observableCcdSettings;
 
         protected string _activeBatchId = string.Empty;
         protected int _currentSequenceStep = 0;
@@ -58,6 +58,16 @@ namespace IPCSoftware.Devices.Camera
             var ccd = appSettings.Value;
             //_tempImageFolderPath = ccd.TempImgFolder;
             _observableCcdSettings = observableCcdSettings;
+
+            // Initialize observable settings from appsettings
+            _observableCcdSettings.QrCodeImagePath = ccd.QrCodeImagePath;
+            _observableCcdSettings.CurrentCycleStateFileName = ccd.CurrentCycleStateFileName;
+            _observableCcdSettings.TempImgFolder = ccd.TempImgFolder;
+            _observableCcdSettings.ImageRootFolder = ccd.ImageRootFolder;
+            _observableCcdSettings.MetadataStyle = ccd.MetadataStyle;
+            _observableCcdSettings.ClientMetaDataParams = ccd.ClientMetaDataParams;
+            _observableCcdSettings.VendorMetaDataParams = ccd.VendorMetaDataParams;
+
             _deviceService = deviceService;
             _plcManager = plcManager;
             _imageService = imageService;
@@ -66,7 +76,7 @@ namespace IPCSoftware.Devices.Camera
             _aeLimitService = aeLimitService;
             _productService = productService;
             _stateFilePath = Path.Combine(_observableCcdSettings.QrCodeImagePath, _observableCcdSettings.CurrentCycleStateFileName);
-            var logs =  logConfig.GetAllAsync();
+            var logs = logConfig.GetAllAsync();
             var allLogs = logConfig.GetAllAsync().GetAwaiter().GetResult();
             var config = allLogs.FirstOrDefault(c => c.LogType == LogType.Production);
             var basePath = config.ProductionImagePath;
@@ -80,12 +90,12 @@ namespace IPCSoftware.Devices.Camera
 
         virtual protected async Task LoadStationMapAsync()
         {
-           
+
         }
 
         virtual protected async Task SyncTotalStationsToPlc(int totalItems)
         {
-            
+
         }
 
         /*        private async Task LoadStationMapAsync()
@@ -108,32 +118,32 @@ namespace IPCSoftware.Devices.Camera
 
         public virtual async Task HandleIncomingData(string tempImagePath, Dictionary<string, object> stationData, string qrString = null)
         {
-            
+
         }
 
         virtual protected async Task StartNewCycle(string tempImagePath, string qrString)
         {
-            
+
         }
 
 
 
         virtual protected void InitializeCycleStateWithExternalStatus()
         {
-            
+
         }
 
         virtual protected async Task HandleInspectionStep(string tempImagePath, Dictionary<string, object> data)
         {
-            
+
         }
 
         virtual protected void UpdateJsonEntry(int stationNo, string imgPath, string status, double x, double y, double z)
         {
-            
+
         }
 
-   
+
         private async Task WriteTagAsync()
         {
             // Use ConstantValues for Tag ID (initialized from appsettings via Program.cs)
@@ -170,7 +180,7 @@ namespace IPCSoftware.Devices.Camera
 
         private int _resetInProgress = 0;
 
-       
+
 
 
         public void RequestReset(bool fromCcd = false)
@@ -203,7 +213,7 @@ namespace IPCSoftware.Devices.Camera
             }
         }
 
-       
+
         private void ForceResetCycle(bool ccdReset = false)
         {
             try
@@ -233,7 +243,7 @@ namespace IPCSoftware.Devices.Camera
                 //if ( _extService.Settings.IsMacMiniEnabled)
                 //{
                 //}
-                    _aeLimitService.AbortCycle();
+                _aeLimitService.AbortCycle();
 
                 // 4. File Cleanup (Can be slow, do last)
                 string folder = Path.GetDirectoryName(_stateFilePath);
@@ -252,7 +262,7 @@ namespace IPCSoftware.Devices.Camera
                         try { File.Delete(file); } catch { _logger.LogError($"Failed to delete file : {file}", LogType.Error); }
                     }
                 }
-                    Console.WriteLine("[System] Cycle Reset.");
+                Console.WriteLine("[System] Cycle Reset.");
                 _logger.LogError("[System] Cycle Reset — Folder cleared completely.", LogType.Error);
             }
             catch (Exception ex)

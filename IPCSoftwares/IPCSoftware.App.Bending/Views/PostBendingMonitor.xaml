@@ -137,7 +137,7 @@
                                        HorizontalAlignment="Left" VerticalAlignment="Center"
                                        Foreground="#555" Margin="3">
                                 <Run Text="Batch No. - "/>
-                                <Run Text="{Binding BatchNo, Mode=OneWay}"/>
+                                <Run Text="{Binding PostBendingModel.BatchNo}"/>
                             </TextBlock>
                         </Grid>
                     </Border>
@@ -168,10 +168,10 @@
 
                     <!-- ═══════════════ Product 1  (Rows 2-4) ═══════════════ -->
                     <Border Grid.Row="2" Grid.RowSpan="3" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_Product}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product1.Product}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="2" Grid.RowSpan="3" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product1.QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Border>
                     <!-- Sub-row labels -->
                     <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
@@ -185,55 +185,53 @@
                     </Border>
                     <!-- X -->
                     <Border Grid.Row="2" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_X_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product1.X.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_X_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product1.X.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_X_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product1.X.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <!-- Y -->
                     <Border Grid.Row="2" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_Y_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product1.Y.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
-                    <Border Grid.Row="3" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_Y_Value}" Style="{StaticResource CommonTextStyle}"/>
-                    </Border>
+                    <TextBlock Text="{Binding PostBendingModel.Product1.Y.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     <Border Grid.Row="4" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_Y_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product1.Y.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <!-- Z -->
                     <Border Grid.Row="2" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_Z_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product1.Z.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_Z_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product1.Z.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_Z_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product1.Z.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <!-- W -->
                     <Border Grid.Row="2" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_W_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product1.W.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="3" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_W_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product1.W.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P1_W_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product1.W.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <!-- Result -->
                     <Border Grid.Row="2" Grid.RowSpan="3" Grid.Column="7" Style="{StaticResource TableBorderStyle}">
-                        <Rectangle Width="55" Height="48" Fill="{Binding P1_Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                        <Rectangle Width="55" Height="48" Fill="{Binding PostBendingModel.Product1.Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
                     <!-- ═══════════════ Product 2  (Rows 5-7) ═══════════════ -->
                     <Border Grid.Row="5" Grid.RowSpan="3" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_Product}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.Product}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="5" Grid.RowSpan="3" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
                         <TextBlock Text="Upper Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
@@ -245,51 +243,51 @@
                         <TextBlock Text="Lower Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_X_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.X.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_X_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.X.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_X_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.X.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_Y_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.Y.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_Y_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.Y.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_Y_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.Y.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_Z_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.Z.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_Z_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.Z.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_Z_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.Z.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_W_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.W.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_W_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.W.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P2_W_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product2.W.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="5" Grid.RowSpan="3" Grid.Column="7" Style="{StaticResource TableBorderStyle}">
-                        <Rectangle Width="55" Height="48" Fill="{Binding P2_Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                        <Rectangle Width="55" Height="48" Fill="{Binding PostBendingModel.Product2.Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
                     <!-- ═══════════════ Product 3  (Rows 8-10) ═══════════════ -->
                     <Border Grid.Row="8" Grid.RowSpan="3" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_Product}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.Product}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="8" Grid.RowSpan="3" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
                         <TextBlock Text="Upper Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
@@ -301,51 +299,51 @@
                         <TextBlock Text="Lower Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_X_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.X.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_X_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.X.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_X_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.X.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_Y_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.Y.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_Y_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.Y.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_Y_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.Y.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_Z_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.Z.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_Z_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.Z.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_Z_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.Z.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_W_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.W.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_W_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.W.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P3_W_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product3.W.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="8" Grid.RowSpan="3" Grid.Column="7" Style="{StaticResource TableBorderStyle}">
-                        <Rectangle Width="55" Height="48" Fill="{Binding P3_Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                        <Rectangle Width="55" Height="48" Fill="{Binding PostBendingModel.Product3.Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
                     <!-- ═══════════════ Product 4  (Rows 11-13) ═══════════════ -->
                     <Border Grid.Row="11" Grid.RowSpan="3" Grid.Column="0" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_Product}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.Product}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="11" Grid.RowSpan="3" Grid.Column="1" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.QRCode}" Style="{StaticResource CommonTextStyle}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Border>
                     <Border Grid.Row="11" Grid.Column="2" Style="{StaticResource TableBorderStyle}">
                         <TextBlock Text="Upper Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
@@ -357,43 +355,43 @@
                         <TextBlock Text="Lower Limit" FontSize="10" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="11" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_X_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.X.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="12" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_X_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.X.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="13" Grid.Column="3" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_X_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.X.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="11" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_Y_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.Y.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="12" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_Y_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.Y.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="13" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_Y_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.Y.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="11" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_Z_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.Z.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="12" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_Z_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.Z.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="13" Grid.Column="5" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_Z_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.Z.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="11" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_W_Upper}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.W.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="12" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_W_Value}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.W.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="13" Grid.Column="6" Style="{StaticResource TableBorderStyle}">
-                        <TextBlock Text="{Binding P4_W_Lower}" Style="{StaticResource CommonTextStyle}"/>
+                        <TextBlock Text="{Binding PostBendingModel.Product4.W.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
                     <Border Grid.Row="11" Grid.RowSpan="3" Grid.Column="7" Style="{StaticResource TableBorderStyle}">
-                        <Rectangle Width="55" Height="48" Fill="{Binding P4_Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
+                        <Rectangle Width="55" Height="48" Fill="{Binding PostBendingModel.Product4.Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
 
                 </Grid>

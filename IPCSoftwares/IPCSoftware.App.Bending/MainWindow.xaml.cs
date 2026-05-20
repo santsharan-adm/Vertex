@@ -17,16 +17,16 @@ namespace IPCSoftware.App.Bending
         public MainWindow()
         {
             InitializeComponent();
-        //}
+            //}
 
-        //protected override void OnInitialized(EventArgs e)
-        //{
-        //    base.OnInitialized(e);
-        //    this.Loaded += MainWindow_Loaded;
-        //}
+            //protected override void OnInitialized(EventArgs e)
+            //{
+            //    base.OnInitialized(e);
+            //    this.Loaded += MainWindow_Loaded;
+            //}
 
-        //private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        //{
+            //private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+            //{
             var vm = App.ServiceProvider.GetRequiredService<MainWindowViewModelBending>();
             DataContext = vm;
 
@@ -42,7 +42,7 @@ namespace IPCSoftware.App.Bending
             var ribbonView = new RibbonView { DataContext = vm.RibbonVM };
 
             // Load Ribbon
-           // nav.NavigateTop(ribbonView);
+            // nav.NavigateTop(ribbonView);
             nav.NavigateMain<LoginView>();
         }
     }

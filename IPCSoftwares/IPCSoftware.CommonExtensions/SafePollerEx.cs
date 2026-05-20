@@ -46,7 +46,7 @@ namespace IPCSoftware.Common.CommonExtensions
                 Interlocked.Exchange(ref _liveDataRunning, 0);
             }
 
-
+ 
 
         }
 

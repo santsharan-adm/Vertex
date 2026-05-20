@@ -1,8 +1,24 @@
-﻿using IPCSoftware.Shared;
+using IPCSoftware.App.Bending.Models;
+using IPCSoftware.Shared;
 
 namespace IPCSoftware.App.Bending.Models
 {
-    public class Bending1MonitorModel : ObservableObjectVM
+    public class BendingMonitorModel : ObservableObjectVM
+    {
+        private string _batchNo = "Loading...";
+        public string BatchNo
+        {
+            get => _batchNo;
+            set => SetProperty(ref _batchNo, value);
+        }
+
+        public BendingMonitorProductModel Product1 { get; set; } = new();
+        public BendingMonitorProductModel Product2 { get; set; } = new();
+        public BendingMonitorProductModel Product3 { get; set; } = new();
+        public BendingMonitorProductModel Product4 { get; set; } = new();
+    }
+
+    public class BendingMonitorProductModel : ObservableObjectVM
     {
         private string _product;
         public string Product
@@ -20,20 +36,20 @@ namespace IPCSoftware.App.Bending.Models
 
         //-- Load (N) --//
 
-        private ParameterLImitValues _load = new();
+        private ParameterLImitValues _load;
         public ParameterLImitValues Load
         {
             get => _load;
             set => SetProperty(ref _load, value);
         }
 
-        //-- Temperature (°C) --//
+        //-- Temp (�C) --//
 
-        private ParameterLImitValues _temprature = new();
-        public ParameterLImitValues Temprature
+        private ParameterLImitValues _temperature;
+        public ParameterLImitValues Temperature
         {
-            get => _temprature;
-            set => SetProperty(ref _temprature, value);
+            get => _temperature;
+            set => SetProperty(ref _temperature, value);
         }
 
         //-- Bending Time --//
