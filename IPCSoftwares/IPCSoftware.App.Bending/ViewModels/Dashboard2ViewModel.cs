@@ -388,7 +388,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _inputTrayPoller.Start();
             _outputTrayPoller.Start();
             _ngBinPoller.Start();
-            _efficiencyBreakdownPoller.Start();
+            //_efficiencyBreakdownPoller.Start();
         }
 
         // ----------------------------------------------------------------

@@ -16,7 +16,7 @@ namespace IPCSoftware.App.Bending.Models
         public BendingMonitorProductModel Product2 { get; set; } = new();
         public BendingMonitorProductModel Product3 { get; set; } = new();
         public BendingMonitorProductModel Product4 { get; set; } = new();
-}
+    }
 
     public class BendingMonitorProductModel : ObservableObjectVM
     {
@@ -27,7 +27,7 @@ namespace IPCSoftware.App.Bending.Models
             set => SetProperty(ref _product, value);
         }
 
-        private string _qrCode;
+        private string _qrCode = "---";
         public string QRCode
         {
             get => _qrCode;
@@ -36,7 +36,7 @@ namespace IPCSoftware.App.Bending.Models
 
         //-- Load (N) --//
 
-        private ParameterLImitValues _load;
+        private ParameterLImitValues _load = new ParameterLImitValues();
         public ParameterLImitValues Load
         {
             get => _load;
@@ -45,7 +45,7 @@ namespace IPCSoftware.App.Bending.Models
 
         //-- Temp (°C) --//
 
-        private ParameterLImitValues _temperature;
+        private ParameterLImitValues _temperature = new ParameterLImitValues();
         public ParameterLImitValues Temperature
         {
             get => _temperature;
@@ -54,7 +54,7 @@ namespace IPCSoftware.App.Bending.Models
 
         //-- Bending Time --//
 
-        private double _bendingTime;
+        private double _bendingTime = 0;
         public double BendingTime
         {
             get => _bendingTime;
@@ -63,7 +63,7 @@ namespace IPCSoftware.App.Bending.Models
 
         //-- Result --//
 
-        private bool _result;
+        private bool _result = false;
         public bool Result
         {
             get => _result;
