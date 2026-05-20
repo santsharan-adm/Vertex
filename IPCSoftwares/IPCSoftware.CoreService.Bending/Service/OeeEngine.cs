@@ -26,10 +26,10 @@ namespace IPCSoftware.CoreService.Bending.Service
 
         // Override Calculate() so that Request ID 4 returns Bending OEE (Dashboard2Result)
         // matching the same contract as AOI — both use key 4 in the response dictionary.
-        public override Dictionary<int, object> Calculate(Dictionary<int, object> values)
-        {
-            // CalculateDashboard2 now returns { 4, Dashboard2Result } directly.
-            return CalculateDashboard2(values);
-        }
+        //public override Dictionary<int, object> Calculate(Dictionary<int, object> values)
+        //{
+        //    // CalculateDashboard2 now returns { 4, Dashboard2Result } directly.
+        //    return CalculateDashboard2(values);
+        //}
     }
 }

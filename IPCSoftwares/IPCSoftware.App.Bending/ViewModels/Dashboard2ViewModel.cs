@@ -57,32 +57,32 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         // --- Inspection Tables (Lot 1 & Lot 2) ---
 
-        private DashboardInspectionModel _inspectionTable = new();
-        public DashboardInspectionModel InspectionTable
+        private DashboardInspectionModel _dashboardInspectionModelBatch1 = new();
+        public DashboardInspectionModel DashboardInspectionModelBatch1
         {
-            get => _inspectionTable;
-            set => SetProperty(ref _inspectionTable, value);
+            get => _dashboardInspectionModelBatch1;
+            set => SetProperty(ref _dashboardInspectionModelBatch1, value);
         }
 
-        private DashboardInspectionModel _inspectionTable2 = new();
-        public DashboardInspectionModel InspectionTable2
+        private DashboardInspectionModel _dashboardInspectionModelBatch2 = new();
+        public DashboardInspectionModel DashboardInspectionModelBatch2  
         {
-            get => _inspectionTable2;
-            set => SetProperty(ref _inspectionTable2, value);
+            get => _dashboardInspectionModelBatch2;
+            set => SetProperty(ref _dashboardInspectionModelBatch2, value);
         }
 
-        private DashboardInspectionModel _inspectionTable3 = new();
-        public DashboardInspectionModel InspectionTable3
+        private DashboardInspectionModel _dashboardInspectionModelBatch3 = new();
+        public DashboardInspectionModel DashboardInspectionModelBatch3
         {
-            get => _inspectionTable3;
-            set => SetProperty(ref _inspectionTable3, value);
+            get => _dashboardInspectionModelBatch3;
+            set => SetProperty(ref _dashboardInspectionModelBatch3, value);
         }
 
-        private DashboardInspectionModel _inspectionTable4 = new();
-        public DashboardInspectionModel InspectionTable4
+        private DashboardInspectionModel _dashboardInspectionModelBatch4 = new();
+        public DashboardInspectionModel DashboardInspectionModelBatch4
         {
-            get => _inspectionTable4;
-            set => SetProperty(ref _inspectionTable4, value);
+            get => _dashboardInspectionModelBatch4;   
+            set => SetProperty(ref _dashboardInspectionModelBatch4, value);
         }
 
         // --- Bending Station Indicators (Temperature, Force, Status) ---
@@ -160,23 +160,23 @@ namespace IPCSoftware.App.Bending.ViewModels
             set => SetProperty(ref _robotStatus, value);
         }
 
-        // --- Efficiency Breakdown ---
+        // --- Oee/Efficiency  ---
 
-        private EfficiencyBreakdown _efficiencyBreakdown = new();
-        public EfficiencyBreakdown EfficiencyBreakdown
+        private OeeResult _oeeResult = new();
+        public OeeResult OeeResult
         {
-            get => _efficiencyBreakdown;
-            set => SetProperty(ref _efficiencyBreakdown, value);
+            get => _oeeResult;
+            set => SetProperty(ref _oeeResult, value);
         }
 
         // --- OEE / Efficiency ---
 
-        private Dashboard2Result _dashboard2Data = new();
-        public Dashboard2Result Dashboard2Data
-        {
-            get => _dashboard2Data;
-            set => SetProperty(ref _dashboard2Data, value);
-        }
+        //private Dashboard2Result _dashboard2Data = new();
+        //public Dashboard2Result Dashboard2Data
+        //{
+        //    get => _dashboard2Data;
+        //    set => SetProperty(ref _dashboard2Data, value);
+        //}
 
         // --- Machine Mode States ---
 
@@ -237,38 +237,38 @@ namespace IPCSoftware.App.Bending.ViewModels
             // Dashboard2 Model Pollers (Request IDs 11-22)
             // ----------------------------------------------------------------
 
-            // RequestId = 11 — InspectionTable (Lot 1)
+            // RequestId = 11 — DashboardInspectionModelBatch1 (Lot 1)
             _inspectionTable1Poller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                InspectionDataTable1,
+                UpdateDashboardInspectionModelBatch1FromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] InspectionTable1 poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 11);
 
-            // RequestId = 12 — InspectionTable2 (Lot 2)
+            // RequestId = 12 — DashboardInspectionModelBatch2 (Lot 2)
             _inspectionTable2Poller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                InspectionDataTable2,
+                UpdateDashboardInspectionModelBatch2FromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] InspectionTable2 poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 12);
 
-            // RequestId = 23 — InspectionTable3 (Lot 3)
+            // RequestId = 23 — DashboardInspectionModelBatch3 (Lot 3)
             _inspectionTable3Poller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                InspectionDataTable3,
+                UpdateDashboardInspectionModelBatch3FromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] InspectionTable3 poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 23);
 
-            // RequestId = 24 — InspectionTable4 (Lot 4)
+            // RequestId = 24 — DashboardInspectionModelBatch4 (Lot 4)
             _inspectionTable4Poller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                InspectionDataTable4,
+                UpdateDashboardInspectionModelBatch4FromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] InspectionTable4 poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 24);
@@ -277,7 +277,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _bendingIndicatorsPoller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateBendingIndicators,
+                UpdateBendingIndicatorsFromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] BendingIndicators poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 13);
@@ -286,7 +286,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _turnTable1Poller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateTurnTable1,
+                UpdateTurnTable1FromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] TurnTable1 poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 14);
@@ -295,7 +295,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _turnTable2Poller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateTurnTable2,
+                UpdateTurnTable2FromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] TurnTable2 poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 15);
@@ -304,7 +304,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _transferModulePoller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateTransferModule,
+                UpdateTransferModuleFromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] TransferModule poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 16);
@@ -313,7 +313,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _inspectionDataPoller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateInspectionData,
+                UpdateInspectionDataFromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] InspectionData poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 17);
@@ -322,7 +322,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _robotStatusPoller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateRobotStatus,
+                UpdateRobotStatusFromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] RobotStatus poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 18);
@@ -331,7 +331,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _inputTrayPoller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateInputTray,
+                UpdateInputTrayFromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] InputTray poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 19);
@@ -340,7 +340,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _outputTrayPoller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateOutputTray,
+                UpdateOutputTrayFromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] OutputTray poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 20);
@@ -349,19 +349,28 @@ namespace IPCSoftware.App.Bending.ViewModels
             _ngBinPoller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateNGBin,
+                UpdateNGBinFromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] NGBin poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 21);
 
-            // RequestId = 22 — EfficiencyBreakdown
-            _efficiencyBreakdownPoller = new SafePollerEx(
-                _coreClient,
-                TimeSpan.FromMilliseconds(500),
-                UpdateEfficiencyBreakdown,
-                _logger,
-                ex => _logger.LogError($"[Dashboard2] EfficiencyBreakdown poller error: {ex.Message}", LogType.Diagnostics),
-                requestId: 22);
+            // RequestId = 25 — NGBin
+            _ngBinPoller = new SafePollerEx(
+               _coreClient,
+               TimeSpan.FromMilliseconds(500),
+               UpdateNGBin2FromService,
+               _logger,
+               ex => _logger.LogError($"[Dashboard2] NGBin poller error: {ex.Message}", LogType.Diagnostics),
+               requestId: 25);
+
+            //// RequestId = 22 — EfficiencyBreakdown
+            //_efficiencyBreakdownPoller = new SafePollerEx(
+            //    _coreClient,
+            //    TimeSpan.FromMilliseconds(500),
+            //    UpdateEfficiencyBreakdown,
+            //    _logger,
+            //    ex => _logger.LogError($"[Dashboard2] EfficiencyBreakdown poller error: {ex.Message}", LogType.Diagnostics),
+            //    requestId: 22);
 
             // Start all pollers
             _liveDataPoller.Start();
@@ -391,10 +400,10 @@ namespace IPCSoftware.App.Bending.ViewModels
             {
                 if (data.TryGetValue(4, out object d2Obj))
                 {
-                    var d2Result = Deserialize<Dashboard2Result>(d2Obj);
+                    var d2Result = Deserialize<OeeResult>(d2Obj);
                     if (d2Result != null)
                     {
-                        Dashboard2Data = d2Result;
+                        OeeResult = d2Result;
                     }
                 }
             }
@@ -433,7 +442,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         // ----------------------------------------------------------------
 
         // RequestId = 11 — InspectionTable (Lot 1)
-        private async Task InspectionDataTable1(Dictionary<int, object> data)
+        private async Task UpdateDashboardInspectionModelBatch1FromService(Dictionary<int, object> data)
         {
             try
             {
@@ -442,7 +451,7 @@ namespace IPCSoftware.App.Bending.ViewModels
                     var model = Deserialize<DashboardInspectionModel>(modelObj);
                     if (model != null)
                     {
-                        InspectionTable = model;
+                        DashboardInspectionModelBatch1 = model;
                     }
                 }
             }
@@ -455,7 +464,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         }
 
         // RequestId = 12 — InspectionTable2 (Lot 2)
-        private async Task InspectionDataTable2(Dictionary<int, object> data)
+        private async Task UpdateDashboardInspectionModelBatch2FromService(Dictionary<int, object> data)
         {
             try
             {
@@ -464,20 +473,20 @@ namespace IPCSoftware.App.Bending.ViewModels
                     var model = Deserialize<DashboardInspectionModel>(modelObj);
                     if (model != null)
                     {
-                        InspectionTable2 = model;
+                        DashboardInspectionModelBatch2 = model;
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] UpdateInspectionTable2 error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Dashboard2] UpdateDashboardInspectionModelBatch2FromService error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
         }
 
         // RequestId = 23 — InspectionTable3 (Lot 3)
-        private async Task InspectionDataTable3(Dictionary<int, object> data)
+        private async Task UpdateDashboardInspectionModelBatch3FromService(Dictionary<int, object> data)
         {
             try
             {
@@ -486,20 +495,20 @@ namespace IPCSoftware.App.Bending.ViewModels
                     var model = Deserialize<DashboardInspectionModel>(modelObj);
                     if (model != null)
                     {
-                        InspectionTable3 = model;
+                        DashboardInspectionModelBatch3 = model;
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] UpdateInspectionTable3 error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Dashboard2] UpdateDashboardInspectionModelBatch3FromService error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
         }
 
         // RequestId = 24 — InspectionTable4 (Lot 4)
-        private async Task InspectionDataTable4(Dictionary<int, object> data)
+        private async Task UpdateDashboardInspectionModelBatch4FromService(Dictionary<int, object> data)
         {
             try
             {
@@ -508,20 +517,20 @@ namespace IPCSoftware.App.Bending.ViewModels
                     var model = Deserialize<DashboardInspectionModel>(modelObj);
                     if (model != null)
                     {
-                        InspectionTable4 = model;
+                        DashboardInspectionModelBatch4 = model;
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] UpdateInspectionTable4 error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Dashboard2] UpdateDashboardInspectionModelBatch4FromService error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
         }
 
         // RequestId = 13 — BendingIndicators
-        private async Task UpdateBendingIndicators(Dictionary<int, object> data)
+        private async Task UpdateBendingIndicatorsFromService(Dictionary<int, object> data)
         {
             try
             {
@@ -536,14 +545,14 @@ namespace IPCSoftware.App.Bending.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] UpdateBendingIndicators error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Dashboard2] UpdateBendingIndicatorsFromService error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
         }
 
         // RequestId = 14 — TurnTable1
-        private async Task UpdateTurnTable1(Dictionary<int, object> data)
+        private async Task UpdateTurnTable1FromService(Dictionary<int, object> data)
         {
             try
             {
@@ -558,14 +567,14 @@ namespace IPCSoftware.App.Bending.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] UpdateTurnTable1 error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Dashboard2] UpdateTurnTable1FromService error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
         }
 
         // RequestId = 15 — TurnTable2
-        private async Task UpdateTurnTable2(Dictionary<int, object> data)
+        private async Task UpdateTurnTable2FromService(Dictionary<int, object> data)
         {
             try
             {
@@ -580,14 +589,14 @@ namespace IPCSoftware.App.Bending.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] UpdateTurnTable2 error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Dashboard2] UpdateTurnTable2FromService error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
         }
 
         // RequestId = 16 — TransferModule
-        private async Task UpdateTransferModule(Dictionary<int, object> data)
+        private async Task UpdateTransferModuleFromService(Dictionary<int, object> data)
         {
             try
             {
@@ -602,14 +611,14 @@ namespace IPCSoftware.App.Bending.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] UpdateTransferModule error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Dashboard2] pdateTransferModuleFromService error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
         }
 
         // RequestId = 17 — InspectionData
-        private async Task UpdateInspectionData(Dictionary<int, object> data)
+        private async Task UpdateInspectionDataFromService(Dictionary<int, object> data)
         {
             try
             {
@@ -624,14 +633,14 @@ namespace IPCSoftware.App.Bending.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] UpdateInspectionData error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Dashboard2] UpdateInspectionDataFromService error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
         }
 
         // RequestId = 18 — RobotStatus
-        private async Task UpdateRobotStatus(Dictionary<int, object> data)
+        private async Task UpdateRobotStatusFromService(Dictionary<int, object> data)
         {
             try
             {
@@ -646,14 +655,14 @@ namespace IPCSoftware.App.Bending.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] UpdateRobotStatus error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Dashboard2] UpdateRobotStatusFromService error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
         }
 
         // RequestId = 19 — InputTray
-        private async Task UpdateInputTray(Dictionary<int, object> data)
+        private async Task UpdateInputTrayFromService(Dictionary<int, object> data)
         {
             try
             {
@@ -668,14 +677,14 @@ namespace IPCSoftware.App.Bending.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] UpdateInputTray error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Dashboard2] UpdateInputTrayFromService error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
         }
 
         // RequestId = 20 — OutputTray
-        private async Task UpdateOutputTray(Dictionary<int, object> data)
+        private async Task UpdateOutputTrayFromService(Dictionary<int, object> data)
         {
             try
             {
@@ -690,14 +699,14 @@ namespace IPCSoftware.App.Bending.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] UpdateOutputTray error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Dashboard2] UpdateOutputTrayFromService error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
         }
 
         // RequestId = 21 — NGBin
-        private async Task UpdateNGBin(Dictionary<int, object> data)
+        private async Task UpdateNGBinFromService(Dictionary<int, object> data)
         {
             try
             {
@@ -718,27 +727,49 @@ namespace IPCSoftware.App.Bending.ViewModels
             await Task.CompletedTask;
         }
 
-        // RequestId = 22 — EfficiencyBreakdown
-        private async Task UpdateEfficiencyBreakdown(Dictionary<int, object> data)
+        private async Task UpdateNGBin2FromService(Dictionary<int, object> data)
         {
             try
             {
-                if (data.TryGetValue(22, out object modelObj))
+                if (data.TryGetValue(25, out object modelObj))
                 {
-                    var model = Deserialize<EfficiencyBreakdown>(modelObj);
+                    var model = Deserialize<NGBinGroupModel>(modelObj);
                     if (model != null)
                     {
-                        EfficiencyBreakdown = model;
+                        NGBin = model;
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] UpdateEfficiencyBreakdown error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Dashboard2]  UpdateNGBin2FromService error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
         }
+
+
+        // RequestId = 22 — EfficiencyBreakdown
+        //private async Task UpdateEfficiencyBreakdown(Dictionary<int, object> data)
+        //{
+        //    try
+        //    {
+        //        if (data.TryGetValue(22, out object modelObj))
+        //        {
+        //            var model = Deserialize<EfficiencyBreakdown>(modelObj);
+        //            if (model != null)
+        //            {
+        //                EfficiencyBreakdown = model;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"[Dashboard2] UpdateEfficiencyBreakdown error: {ex.Message}", LogType.Diagnostics);
+        //    }
+
+        //    await Task.CompletedTask;
+        //}
 
         // ----------------------------------------------------------------
         // Commands  —  RequestId = 6 (WriteTag)

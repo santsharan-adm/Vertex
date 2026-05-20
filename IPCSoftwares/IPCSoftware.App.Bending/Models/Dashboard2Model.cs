@@ -178,28 +178,7 @@ namespace IPCSoftware.App.Bending.Models
 
     // Efficiency Values
 
-    public class EfficiencyBreakdown : ObservableObjectVM
-    {
-        public int Availability { get; set; }
-
-        public int Performance { get; set; }
-
-        public int Quality { get; set; }
-
-        public int OEEDetails { get; set; }
-
-        // Production Count
-
-        public int OKCount { get; set; }
-
-        public int NGCount { get; set; }
-
-        // Time Metrics
-        public string OperatingTime { get; set; }
-        public string Downtime { get; set; }
-        public string CycleTime { get; set; }
-
-    }
+    
 
     public class ControlFromService : ObservableObjectVM
     {

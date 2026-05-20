@@ -37,37 +37,10 @@ namespace IPCSoftware.CoreService.Bending.Service
         // ----------------------------------------------------------------
         public override async Task<ResponsePackage> HandleUiRequest(RequestPackage request)
         {
-            if (request.RequestId >= 11 && request.RequestId <= 22)
+            if (request.RequestId == 11)
+                        
             {
                 if (!_latestPackets.TryGetValue(1, out var packet))
-                {
-                    return new ResponsePackage
-                    {
-                        ResponseId = request.RequestId,
-                        Parameters = _lastValues ?? new Dictionary<int, object>()
-                    };
-                }
-
-                return new ResponsePackage
-                {
-                    ResponseId = request.RequestId,
-                    Parameters = packet.Values
-                };
-            }
-
-            // Route Bending screen IDs to their corresponding PLC unit packets
-            int plcUnit = request.RequestId switch
-            {
-                1001 => 1,
-                1021 => 2,
-                1041 => 3,
-                1061 => 4,
-                _    => -1
-            };
-
-            if (plcUnit != -1)
-            {
-                if (!_latestPackets.TryGetValue(plcUnit, out var packet))
                 {
                     return new ResponsePackage
                     {

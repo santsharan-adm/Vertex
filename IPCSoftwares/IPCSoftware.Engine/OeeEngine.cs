@@ -315,10 +315,10 @@ namespace IPCSoftware.Engine
             {
                 if (IsDryRunMode(values))
                 {
-                    return new Dictionary<int, object> { { 4, new OeeResult() } };
+                    return new Dictionary<int, object> { { 4, new OeeResultAOI() } };
                 }
 
-                OeeResult r = new OeeResult();
+                OeeResultAOI r = new OeeResultAOI();
 
                 // 1. Extract Raw Values
                 int operatingMin = GetInt(values, ConstantValues.TAG_UpTime);
@@ -401,54 +401,54 @@ namespace IPCSoftware.Engine
         // =========================================================
         // DASHBOARD2 CALCULATION (RequestId = 2)
         // =========================================================
-        public Dictionary<int, object> CalculateDashboard2(Dictionary<int, object> values)
-        {
-            try
-            {
-                // Do not show any values until the cycle start tag has gone HIGH at least once
-                if (!_cycleEverStarted)
-                    return new Dictionary<int, object> { { 4, new Dashboard2Result() } };
+        //public Dictionary<int, object> CalculateDashboard2(Dictionary<int, object> values)
+        //{
+        //    try
+        //    {
+        //        // Do not show any values until the cycle start tag has gone HIGH at least once
+        //        if (!_cycleEverStarted)
+        //            return new Dictionary<int, object> { { 4, new Dashboard2Result() } };
 
-                Dashboard2Result r = new Dashboard2Result();
+        //        Dashboard2Result r = new Dashboard2Result();
 
-                int operatingMin  = GetInt(values, ConstantValues.TAG_UpTime);
-                int downTimeMin   = GetInt(values, ConstantValues.TAG_DownTime);
-                int totalParts    = GetInt(values, ConstantValues.TAG_InFlow);
-                int okParts       = GetInt(values, ConstantValues.TAG_OK);
-                int ngParts       = GetInt(values, ConstantValues.TAG_NG);
-                double idealCycle = ConstantValues.IDEAL_CYCLE_TIME;
+        //        int operatingMin  = GetInt(values, ConstantValues.TAG_UpTime);
+        //        int downTimeMin   = GetInt(values, ConstantValues.TAG_DownTime);
+        //        int totalParts    = GetInt(values, ConstantValues.TAG_InFlow);
+        //        int okParts       = GetInt(values, ConstantValues.TAG_OK);
+        //        int ngParts       = GetInt(values, ConstantValues.TAG_NG);
+        //        double idealCycle = ConstantValues.IDEAL_CYCLE_TIME;
 
-                double totalTimeMin = operatingMin + downTimeMin;
-                r.Availability = totalTimeMin > 0 ? (double)operatingMin / totalTimeMin : 0.0;
-                r.Quality      = totalParts   > 0 ? (double)okParts / totalParts        : 0.0;
-                r.Performance  = (operatingMin > 0 && idealCycle > 0)
-                    ? Math.Min(1.0, (idealCycle * totalParts) / (double)operatingMin)
-                    : 0.0;
-                r.OverallOEE = r.Availability * r.Performance * r.Quality;
+        //        double totalTimeMin = operatingMin + downTimeMin;
+        //        r.Availability = totalTimeMin > 0 ? (double)operatingMin / totalTimeMin : 0.0;
+        //        r.Quality      = totalParts   > 0 ? (double)okParts / totalParts        : 0.0;
+        //        r.Performance  = (operatingMin > 0 && idealCycle > 0)
+        //            ? Math.Min(1.0, (idealCycle * totalParts) / (double)operatingMin)
+        //            : 0.0;
+        //        r.OverallOEE = r.Availability * r.Performance * r.Quality;
 
-                r.OKParts       = okParts;
-                r.NGParts       = ngParts;
-                r.OperatingTime = operatingMin ;  // PLC gives minutes → convert to seconds for display
-                r.Downtime      = downTimeMin ;   // PLC gives minutes → convert to seconds for display
-                r.CycleTime     = _lastCycleTime;     // already in seconds
-                r.XValue   = GetDouble(values, ConstantValues.TAG_X);
-                r.YValue   = GetDouble(values, ConstantValues.TAG_Y);
-                r.ZValue   = GetDouble(values, ConstantValues.TAG_Z);
-                r.WValue   = GetDouble(values, ConstantValues.TAG_W);
-                r.Heat     = GetDouble(values, ConstantValues.TAG_Heat);
-                r.Punch    = GetDouble(values, ConstantValues.TAG_Punch);
-                r.Clamp    = GetDouble(values, ConstantValues.TAG_Clamp);
-                r.Tearing  = GetDouble(values, ConstantValues.TAG_Tearing);
-                r.Flipping = GetDouble(values, ConstantValues.TAG_Flipping);
+        //        r.OKParts       = okParts;
+        //        r.NGParts       = ngParts;
+        //        r.OperatingTime = operatingMin ;  // PLC gives minutes → convert to seconds for display
+        //        r.Downtime      = downTimeMin ;   // PLC gives minutes → convert to seconds for display
+        //        r.CycleTime     = _lastCycleTime;     // already in seconds
+        //        r.XValue   = GetDouble(values, ConstantValues.TAG_X);
+        //        r.YValue   = GetDouble(values, ConstantValues.TAG_Y);
+        //        r.ZValue   = GetDouble(values, ConstantValues.TAG_Z);
+        //        r.WValue   = GetDouble(values, ConstantValues.TAG_W);
+        //        r.Heat     = GetDouble(values, ConstantValues.TAG_Heat);
+        //        r.Punch    = GetDouble(values, ConstantValues.TAG_Punch);
+        //        r.Clamp    = GetDouble(values, ConstantValues.TAG_Clamp);
+        //        r.Tearing  = GetDouble(values, ConstantValues.TAG_Tearing);
+        //        r.Flipping = GetDouble(values, ConstantValues.TAG_Flipping);
                 
-                return new Dictionary<int, object> { { 4, r } };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, LogType.Diagnostics);
-                throw;
-            }
-        }
+        //        return new Dictionary<int, object> { { 4, r } };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message, LogType.Diagnostics);
+        //        throw;
+        //    }
+        //}
 
         // =========================================================
         // HELPERS

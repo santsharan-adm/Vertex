@@ -716,7 +716,7 @@ namespace IPCSoftware.App.ViewModels
                     if (resultDict != null && resultDict.TryGetValue(4, out object oeeObj))
                     {
                         var json = JsonConvert.SerializeObject(oeeObj);
-                        var oeeResult = JsonConvert.DeserializeObject<OeeResult>(json);
+                        var oeeResult = JsonConvert.DeserializeObject<OeeResultAOI>(json);
                         if (oeeResult != null)
                         {
                             Availability = Math.Round(oeeResult.Availability * 100, 1);
