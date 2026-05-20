@@ -15,48 +15,40 @@ namespace IPCSoftware.App.Bending.ViewModels
 {
     public class Dashboard2ViewModel : BaseViewModel, IDisposable
     {
-        
+
         // DI Services
-        
+
         private readonly INavigationService _navigationService;
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
 
         // Pollers
 
-                private SafePollerEx _liveDataPoller;
-                private SafePollerEx _ioPoller;
-                private SafePollerEx _resetPoller;
-                private SafePollerEx _inspectionTable1Poller;
-                private SafePollerEx _inspectionTable2Poller;
-                private SafePollerEx _bendingIndicatorsPoller;
-                private SafePollerEx _turnTable1Poller;
-                private SafePollerEx _turnTable2Poller;
-                private SafePollerEx _transferModulePoller;
-                private SafePollerEx _inspectionDataPoller;
-                private SafePollerEx _robotStatusPoller;
-                private SafePollerEx _inputTrayPoller;
-                private SafePollerEx _outputTrayPoller;
-                private SafePollerEx _ngBinPoller;
-                private SafePollerEx _efficiencyBreakdownPoller;
+        private SafePollerEx _liveDataPoller;
+        private SafePollerEx _ioPoller;
+        private SafePollerEx _inspectionTable1Poller;
+        private SafePollerEx _inspectionTable2Poller;
+        private SafePollerEx _bendingIndicatorsPoller;
+        private SafePollerEx _turnTable1Poller;
+        private SafePollerEx _turnTable2Poller;
+        private SafePollerEx _transferModulePoller;
+        private SafePollerEx _inspectionDataPoller;
+        private SafePollerEx _robotStatusPoller;
+        private SafePollerEx _inputTrayPoller;
+        private SafePollerEx _outputTrayPoller;
+        private SafePollerEx _ngBinPoller;
+        private SafePollerEx _efficiencyBreakdownPoller;
 
         private bool _disposed;
 
-        
-        // Reset sequence state machine  (mirrors AOI OEEDashboardViewModel)
-        
-        private enum ResetSequenceState { Idle, TriggerReset, WaitingForAck }
-        private ResetSequenceState _resetState = ResetSequenceState.Idle;
-        private DateTime _resetTimeoutStart;
-        private int _resetPollerRunning = 0;
 
-        
         // Commands
-        
+
         public ICommand ToggleSidebarCommand { get; }
         public ICommand AutoRunCommand { get; }
         public ICommand DryRunCommand { get; }
         public ICommand CycleStartStopCommand { get; }
+        public ICommand WorkPayoutStartCommand { get; }
         public ICommand AcknowledgeAlarmCommand { get; }
 
         #region Properties
@@ -172,31 +164,17 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         // --- Machine Mode States ---
 
-        private bool _isAutoRunActive;
-        public bool IsAutoRunActive
+        private ControlFromService _controlFromService = new();
+        public ControlFromService ControlFromService
         {
-            get => _isAutoRunActive;
-            set => SetProperty(ref _isAutoRunActive, value);
-        }
-
-        private bool _isDryRunActive;
-        public bool IsDryRunActive
-        {
-            get => _isDryRunActive;
-            set => SetProperty(ref _isDryRunActive, value);
-        }
-
-        private bool _isCycleRunning;
-        public bool IsCycleRunning
-        {
-            get => _isCycleRunning;
-            set => SetProperty(ref _isCycleRunning, value);
+            get => _controlFromService;
+            set => SetProperty(ref _controlFromService, value);
         }
 
         #endregion
 
-       //-Constructor
-        
+        //-Constructor
+
         public Dashboard2ViewModel(
             INavigationService navigationService,
             CoreClient coreClient,
@@ -208,10 +186,11 @@ namespace IPCSoftware.App.Bending.ViewModels
             _dialog = dialog;
 
             // --- Commands ---
-            ToggleSidebarCommand    = new RelayCommand(ExecuteGoToMenu);
-            AutoRunCommand          = new RelayCommand(async () => await ExecuteAutoRunAsync());
-            DryRunCommand           = new RelayCommand(async () => await ExecuteDryRunAsync());
-            CycleStartStopCommand   = new RelayCommand(StartResetSequence);
+            ToggleSidebarCommand = new RelayCommand(ExecuteGoToMenu);
+            AutoRunCommand = new RelayCommand(async () => await ExecuteAutoRunAsync());
+            DryRunCommand = new RelayCommand(async () => await ExecuteDryRunAsync());
+            CycleStartStopCommand = new RelayCommand(async () => await ExecuteCycleStartStopAsync());
+            WorkPayoutStartCommand = new RelayCommand(async () => await ExecuteWorkPayoutStartAsync());
             AcknowledgeAlarmCommand = new RelayCommand<int>(async alarmNo => await ExecuteAcknowledgeAlarmAsync(alarmNo));
         }
 
@@ -229,22 +208,13 @@ namespace IPCSoftware.App.Bending.ViewModels
                 ex => _logger.LogError($"[Dashboard2] OEE poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 4);
 
-            // RequestId = 5 — Raw IO values (mode state, ack flags)
+            // RequestId = 5 — Bending control button states (Auto Run, Dry Run, Cycle Start/Stop, Work Payout Start)
             _ioPoller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateIoFromService,
+                PollBendingControlStates,
                 _logger,
-                ex => _logger.LogError($"[Dashboard2] IO poller error: {ex.Message}", LogType.Diagnostics),
-                requestId: 5);
-
-            // Reset-sequence poller — also reads RequestId = 5 but only acts when reset is in progress
-            _resetPoller = new SafePollerEx(
-                _coreClient,
-                TimeSpan.FromMilliseconds(200),
-                ResetSequenceTickAsync,
-                _logger,
-                ex => _logger.LogError($"[Dashboard2] Reset poller error: {ex.Message}", LogType.Diagnostics),
+                ex => _logger.LogError($"[Dashboard2] Bending controls poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 5);
 
             // ----------------------------------------------------------------
@@ -255,7 +225,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _inspectionTable1Poller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateInspectionTable1,
+                InspectionDataTable1,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] InspectionTable1 poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 11);
@@ -264,7 +234,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _inspectionTable2Poller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateInspectionTable2,
+                InspectionDataTable2,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] InspectionTable2 poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 12);
@@ -362,7 +332,6 @@ namespace IPCSoftware.App.Bending.ViewModels
             // Start all pollers
             _liveDataPoller.Start();
             _ioPoller.Start();
-            _resetPoller.Start();
             _inspectionTable1Poller.Start();
             _inspectionTable2Poller.Start();
             _bendingIndicatorsPoller.Start();
@@ -402,23 +371,22 @@ namespace IPCSoftware.App.Bending.ViewModels
         }
 
         // ----------------------------------------------------------------
-        // RequestId = 5  —  Raw IO values (machine mode states)
+        // RequestId = 5  —  Bending control button states
+        //   Reads only the 4 tags that back the Dashboard2 control buttons:
+        //   AUTO RUN | DRY RUN | CYCLE START/STOP | WORK PAYOUT START
         // ----------------------------------------------------------------
-        private async Task UpdateIoFromService(Dictionary<int, object> data)
+        private async Task PollBendingControlStates(Dictionary<int, object> data)
         {
             try
             {
-                bool autoRun  = GetBoolState(data, ConstantValues.Mode_Auto.Read);
-                bool dryRun   = GetBoolState(data, ConstantValues.Mode_DryRun.Read);
-                bool cycleRun = GetBoolState(data, ConstantValues.CYCLE_START_TRIGGER_TAG_ID);
-
-                if (IsAutoRunActive != autoRun)   IsAutoRunActive  = autoRun;
-                if (IsDryRunActive  != dryRun)    IsDryRunActive   = dryRun;
-                if (IsCycleRunning  != cycleRun)  IsCycleRunning   = cycleRun;
+                ControlFromService.Autorun         = GetBoolState(data, ConstantValues.Mode_Auto.Read)       ? 1 : 0;
+                ControlFromService.DryRun          = GetBoolState(data, ConstantValues.Mode_DryRun.Read)     ? 1 : 0;
+                ControlFromService.CycleStrt       = GetBoolState(data, ConstantValues.Mode_CycleStop.Read)  ? 1 : 0;
+                ControlFromService.WorkPayoutStart = GetBoolState(data, ConstantValues.Mode_WorkPayout.Read) ? 1 : 0;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] UpdateIoFromService error: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[Dashboard2] PollBendingControlStates error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
@@ -429,7 +397,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         // ----------------------------------------------------------------
 
         // RequestId = 11 — InspectionTable (Lot 1)
-        private async Task UpdateInspectionTable1(Dictionary<int, object> data)
+        private async Task InspectionDataTable1(Dictionary<int, object> data)
         {
             try
             {
@@ -451,7 +419,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         }
 
         // RequestId = 12 — InspectionTable2 (Lot 2)
-        private async Task UpdateInspectionTable2(Dictionary<int, object> data)
+        private async Task InspectionDataTable2(Dictionary<int, object> data)
         {
             try
             {
@@ -704,7 +672,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         {
             try
             {
-                bool newState = !IsAutoRunActive;
+                bool newState = ControlFromService.Autorun == 0;
                 await _coreClient.WriteTagAsync(ConstantValues.Mode_Auto.Write, newState);
                 _logger.LogInfo($"[Dashboard2] AUTO RUN → {newState}", LogType.Diagnostics);
             }
@@ -718,7 +686,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         {
             try
             {
-                bool newState = !IsDryRunActive;
+                bool newState = ControlFromService.DryRun == 0;
                 await _coreClient.WriteTagAsync(ConstantValues.Mode_DryRun.Write, newState);
                 _logger.LogInfo($"[Dashboard2] DRY RUN → {newState}", LogType.Diagnostics);
             }
@@ -728,67 +696,35 @@ namespace IPCSoftware.App.Bending.ViewModels
             }
         }
 
-        // ----------------------------------------------------------------
-        // Reset Sequence  (CYCLE START / STOP)  —  RequestId = 5 + 6
-        // ----------------------------------------------------------------
-        private void StartResetSequence()
+        private async Task ExecuteWorkPayoutStartAsync()
         {
-            if (_resetState != ResetSequenceState.Idle)
-            {
-                _logger.LogWarning("[Dashboard2] Reset already in progress.", LogType.Diagnostics);
-                return;
-            }
-
-            _resetState = ResetSequenceState.TriggerReset;
-            _resetTimeoutStart = DateTime.Now;
-            _logger.LogInfo("[Dashboard2] Reset sequence started.", LogType.Diagnostics);
-        }
-
-        private async Task ResetSequenceTickAsync(Dictionary<int, object> data)
-        {
-            if (System.Threading.Interlocked.Exchange(ref _resetPollerRunning, 1) == 1)
-                return;
-
             try
             {
-                switch (_resetState)
-                {
-                    case ResetSequenceState.Idle:
-                        return;
-
-                    case ResetSequenceState.TriggerReset:
-                        await _coreClient.WriteTagAsync(ConstantValues.RESET_TAG_ID, true);
-                        _resetState = ResetSequenceState.WaitingForAck;
-                        _logger.LogInfo("[Dashboard2] Reset trigger sent, waiting for ack...", LogType.Diagnostics);
-                        break;
-
-                    case ResetSequenceState.WaitingForAck:
-                        bool ackReceived = GetBoolState(data, ConstantValues.RESET_ACK_TAG_ID);
-                        if (ackReceived)
-                        {
-                            _logger.LogInfo("[Dashboard2] Reset acknowledged by PLC.", LogType.Diagnostics);
-                            await _coreClient.WriteTagAsync(ConstantValues.RESET_TAG_ID, false);
-                            _resetState = ResetSequenceState.Idle;
-                        }
-                        else if ((DateTime.Now - _resetTimeoutStart).TotalSeconds > 5)
-                        {
-                            _logger.LogWarning("[Dashboard2] Reset ack timeout (5s). Resetting state.", LogType.Diagnostics);
-                            _resetState = ResetSequenceState.Idle;
-                        }
-                        break;
-                }
+                bool newState = ControlFromService.WorkPayoutStart == 0;
+                await _coreClient.WriteTagAsync(ConstantValues.Mode_WorkPayout.Write, newState);
+                _logger.LogInfo($"[Dashboard2] WORK PAYOUT START → {newState}", LogType.Diagnostics);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[Dashboard2] ResetSequenceTickAsync error: {ex.Message}", LogType.Diagnostics);
-                _resetState = ResetSequenceState.Idle;
+                _logger.LogError($"[Dashboard2] ExecuteWorkPayoutStartAsync error: {ex.Message}", LogType.Diagnostics);
             }
-            finally
-            {
-                System.Threading.Interlocked.Exchange(ref _resetPollerRunning, 0);
-            }
+        }
 
-            await Task.CompletedTask;
+        // ----------------------------------------------------------------
+        // CYCLE START / STOP  —  toggles Mode_CycleStop tag
+        // ----------------------------------------------------------------
+        private async Task ExecuteCycleStartStopAsync()
+        {
+            try
+            {
+                bool newState = ControlFromService.CycleStrt == 0;
+                await _coreClient.WriteTagAsync(ConstantValues.Mode_CycleStop.Write, newState);
+                _logger.LogInfo($"[Dashboard2] CYCLE START/STOP → {newState}", LogType.Diagnostics);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Dashboard2] ExecuteCycleStartStopAsync error: {ex.Message}", LogType.Diagnostics);
+            }
         }
 
         // ----------------------------------------------------------------
@@ -845,11 +781,9 @@ namespace IPCSoftware.App.Bending.ViewModels
             _liveDataPoller?.Dispose();
             _ioPoller?.Stop();
             _ioPoller?.Dispose();
-            _resetPoller?.Stop();
-            _resetPoller?.Dispose();
 
             // Dispose Dashboard2 model pollers
-            _inspectionTable1Poller?.Stop(); 
+            _inspectionTable1Poller?.Stop();
             _inspectionTable1Poller?.Dispose();
             _inspectionTable2Poller?.Stop();
             _inspectionTable2Poller?.Dispose();
@@ -875,4 +809,8 @@ namespace IPCSoftware.App.Bending.ViewModels
             _efficiencyBreakdownPoller?.Dispose();
         }
     }
+
+
 }
+
+

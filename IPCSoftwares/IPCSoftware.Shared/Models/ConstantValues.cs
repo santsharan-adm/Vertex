@@ -78,10 +78,12 @@ namespace IPCSoftware.Shared.Models
         public static TagPair Mode_DryRun = new();
         public static TagPair Mode_CycleStop = new();
         public static TagPair Mode_MassRTO = new();
+        public static TagPair Mode_WorkPayout = new();
         public static int Mode_Auto_Enable = new();
         public static int Mode_DryRun_Enable = new();
         public static int Mode_CycleStop_Enable = new();
         public static int Mode_MassRTO_Enable = new();
+        public static int Mode_WorkPayout_Enable = new();
 
         // MANUAL (Write/Read Pairs)
         public static TagPair Manual_TrayDown = new();
@@ -197,11 +199,13 @@ namespace IPCSoftware.Shared.Models
                 Mode_DryRun = modes.DryRun;
                 Mode_CycleStop = modes.CycleStop;
                 Mode_MassRTO = modes.MassRTO;
+                Mode_WorkPayout = modes.WorkPayoutStart;
 
                 Mode_Auto_Enable = modes.AutoEnable;
                 Mode_DryRun_Enable = modes.DryRunEnable;
                 Mode_CycleStop_Enable = modes.CycleStopEnable;
                 Mode_MassRTO_Enable = modes.MassRTOEnable;
+                Mode_WorkPayout_Enable = modes.WorkPayoutStartEnable;
 
 
                 // Manual

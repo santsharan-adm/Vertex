@@ -1,9 +1,10 @@
-﻿using System;
+﻿using IPCSoftware.Shared;
+using System;
 
 namespace IPCSoftware.App.Bending.Models
 {
 
-    public class DashboardInspectionModel
+    public class DashboardInspectionModel : ObservableObjectVM
     {
 
         public string BatchNo { get; set; }
@@ -13,7 +14,7 @@ namespace IPCSoftware.App.Bending.Models
         public DashboardInspectionLineModel LineItem4 { get; set; }
 
     }
-    public class DashboardInspectionLineModel
+    public class DashboardInspectionLineModel : ObservableObjectVM
     {
 
         public string QRCode1 { get; set; }
@@ -33,7 +34,7 @@ namespace IPCSoftware.App.Bending.Models
         public bool Result1 { get; set; }
     }
 
-    public class BendingIndicator
+    public class BendingIndicator : ObservableObjectVM
     {
         public bool Clamp { get; set; }
         public bool Heat { get; set; }
@@ -44,7 +45,7 @@ namespace IPCSoftware.App.Bending.Models
         public float Force { get; set; }
 
     }
-    public class FlexBendingIndicator
+    public class FlexBendingIndicator : ObservableObjectVM
     {
         public BendingIndicator Flex1 { get; set; }
 
@@ -56,7 +57,7 @@ namespace IPCSoftware.App.Bending.Models
 
     }
 
-    public class BendingIndicators
+    public class BendingIndicators : ObservableObjectVM
     {
         public FlexBendingIndicator Bending1 { get; set; }
         public FlexBendingIndicator Bending2 { get; set; }
@@ -65,7 +66,7 @@ namespace IPCSoftware.App.Bending.Models
     }
 
     //TurnTable1
-    public class TurnTable1DataPointModel
+    public class TurnTable1DataPointModel : ObservableObjectVM
     {
         public TurnTablePositionItemsModel Position1 { get; set; }
         public TurnTablePositionItemsModel Position2 { get; set; }
@@ -75,7 +76,7 @@ namespace IPCSoftware.App.Bending.Models
         public bool Rotate { get; set; }
     }
 
-    public class TurnTablePositionItemsModel
+    public class TurnTablePositionItemsModel : ObservableObjectVM
     {
         public bool Flex1 { get; set; }
         public bool Flex2 { get; set; }
@@ -84,7 +85,7 @@ namespace IPCSoftware.App.Bending.Models
     }
 
     //TurnTable2
-    public class TurnTable2DataPointModel
+    public class TurnTable2DataPointModel : ObservableObjectVM
     {
         public TurnTable2PositionItemsModel Position1 { get; set; }
 
@@ -98,7 +99,7 @@ namespace IPCSoftware.App.Bending.Models
 
     }
 
-    public class TurnTable2PositionItemsModel
+    public class TurnTable2PositionItemsModel : ObservableObjectVM
     {
 
         public bool Flex1 { get; set; }
@@ -110,7 +111,7 @@ namespace IPCSoftware.App.Bending.Models
 
 
     //Transfer Module
-    public class TransferModuleModel
+    public class TransferModuleModel : ObservableObjectVM
     {
         public bool Flex1 { get; set; }
         public bool Flex2 { get; set; }
@@ -122,15 +123,15 @@ namespace IPCSoftware.App.Bending.Models
 
     //Inspection unit
 
-    public class InspectionDataModel
+    public class InspectionDataModel : ObservableObjectVM
     {
         public string QRCode { get; set; }
-        public string Camera1 { get; set; }
-        public string Camera2 { get; set; }
+        public string Cam1Imagepath { get; set; }
+        public string Cam2Imagepath { get; set; }
     }
 
     //Robot
-    public class RobotProcessStatus
+    public class RobotProcessStatus : ObservableObjectVM
     {
         public int Movement { get; set; }
         public int Rotation { get; set; }
@@ -139,7 +140,7 @@ namespace IPCSoftware.App.Bending.Models
 
     //InputTray
 
-    public class InputTrayModel
+    public class InputTrayModel : ObservableObjectVM
     {
         public bool IsLoaded { get; set; }
         public int Numberofcomponent { get; set; }
@@ -150,7 +151,7 @@ namespace IPCSoftware.App.Bending.Models
 
     //OutputTray
 
-    public class OutputTrayModel
+    public class OutputTrayModel : ObservableObjectVM
     {
         public bool IsUnLoaded { get; set; }
         public int Numberofcomponent { get; set; }
@@ -161,14 +162,14 @@ namespace IPCSoftware.App.Bending.Models
 
 
     //NGBIN
-    public class NGBinModel
+    public class NGBinModel : ObservableObjectVM
     {
         public int RejectedCount { get; set; }
 
         public bool IsFull { get; set; }
     }
 
-    public class NGBinGroupModel
+    public class NGBinGroupModel : ObservableObjectVM
     {
         public NGBinModel NGBin1 { get; set; }
 
@@ -177,7 +178,7 @@ namespace IPCSoftware.App.Bending.Models
 
     // Efficiency Values
 
-    public class EfficiencyBreakdown
+    public class EfficiencyBreakdown : ObservableObjectVM
     {
         public int Availability { get; set; }
 
@@ -194,8 +195,23 @@ namespace IPCSoftware.App.Bending.Models
         public int NGCount { get; set; }
 
         // Time Metrics
-        public string OperatingTime { get; set; } 
+        public string OperatingTime { get; set; }
         public string Downtime { get; set; }
         public string CycleTime { get; set; }
+
+    }
+
+    public class ControlFromService : ObservableObjectVM
+    {
+        public int Autorun { get; set; }
+
+        public int DryRun { get; set; }
+
+        public int CycleStrt { get; set; }
+
+        public int CycleStop { get; set; }
+
+        public int WorkPayoutStart { get; set; }
+
     }
 }

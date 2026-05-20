@@ -102,11 +102,13 @@ namespace IPCSoftware.Shared.Models
         public TagPair DryRun { get; set; } = new();
         public TagPair CycleStop { get; set; } = new();
         public TagPair MassRTO { get; set; } = new();
+        public TagPair WorkPayoutStart { get; set; } = new();
 
         public int AutoEnable { get; set; }
         public int DryRunEnable { get; set; }
         public int CycleStopEnable { get; set; }
         public int MassRTOEnable { get; set; }
+        public int WorkPayoutStartEnable { get; set; }
 
     }
 
