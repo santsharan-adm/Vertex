@@ -171,14 +171,11 @@ public class RibbonViewModel : BaseViewModel
                 // "User Config" is removed from here intentionally
                 "PLC TAG Config",
                 "Shift Config",
-
                 "Report Config",
                 "Product Config",
                 "Time Sync",
                 "Diagnostic",
-                "Product Settings",
                 "External Interface",
-                "AE Limit"
             };
 
             // 3. Logic: Only Admin can see "User Config"

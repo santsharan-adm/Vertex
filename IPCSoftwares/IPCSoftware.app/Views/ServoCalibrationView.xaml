@@ -402,8 +402,8 @@
                                          BorderThickness="2"/>-->
 
                                 <!-- ComboBox for Existing Programs -->
-                                <ComboBox ItemsSource="{Binding AvailableProgramNumbers}"
-                                          SelectedItem="{Binding SelectedProgramNumber, Mode=TwoWay}"
+                                <ComboBox ItemsSource="{Binding AvailableProgramCode}"
+                                          SelectedItem="{Binding SelectedProgramCode, Mode=TwoWay}"
                                           Width="150"
                                           Height="60"
                                           FontSize="24"
@@ -415,86 +415,14 @@
                                           BorderBrush="#1E4FA8"
                                           BorderThickness="2"/>
 
-                                <!-- ADD Button -->
-                                <Button Content="ADD" 
-                                        Command="{Binding AddProgramCommand}"
-                                        Background="#28A745" 
-                                        Foreground="White" 
-                                        FontSize="22" 
-                                        FontWeight="Bold"
-                                        Height="60" 
-                                        Width="120" 
-                                        Cursor="Hand">
-                                    <Button.Template>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="8">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsPressed" Value="True">
-                                                    <Setter Property="Opacity" Value="0.8"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Button.Template>
-                                </Button>
 
-                                <!-- DELETE Button -->
-                                <Button Content="DELETE" 
-                                        Command="{Binding DeleteProgramCommand}"
-                                        Background="#1E4FA8" 
-                                        Foreground="White" 
-                                        FontSize="22" 
-                                        FontWeight="Bold"
-                                        Height="60" 
-                                        Width="120" 
-                                        Cursor="Hand"
-                                        Margin="10,0,0,0">
-                                    <Button.Template>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="8">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsPressed" Value="True">
-                                                    <Setter Property="Opacity" Value="0.8"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Button.Template>
-                                </Button>
-
-                                <!-- UPDATE Button -->
-                                <Button Content="UPDATE" 
-                                        Command="{Binding UpdateProgramCommand}"
-                                        Background="#E67E22" 
-                                        Foreground="White" 
-                                        FontSize="22" 
-                                        FontWeight="Bold"
-                                        Height="60" 
-                                        Width="120" 
-                                        Cursor="Hand"
-                                        Margin="10,0,0,0">
-                                    <Button.Template>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="8">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsPressed" Value="True">
-                                                    <Setter Property="Opacity" Value="0.8"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Button.Template>
-                                </Button>
                                 <!-- Current Running Program TextBox -->
                                 <Border Background="#28A745" 
                                     CornerRadius="12" 
                                     Padding="10,10" 
                                     Margin="10,0,0,0"
                                     Height="60" 
-                                    Width="310" 
+                                    Width="Auto" 
                                     HorizontalAlignment="Right">
                                     <Border.Effect>
                                         <DropShadowEffect Color="Black" BlurRadius="20" Opacity="0.1"/>
@@ -503,7 +431,7 @@
                                     <!-- Changed from StackPanel (vertical) to Horizontal StackPanel -->
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <TextBlock Text="RUNNING PRODUCT : " 
-                                       Foreground="#E0E0E0" 
+                                       Foreground="White" 
                                        FontSize="22" 
                                        FontWeight="Bold" 
                                        VerticalAlignment="Center"
@@ -517,7 +445,7 @@
                                          Background="Transparent"
                                          BorderThickness="0"
                                          TextAlignment="Center"
-                                         MinWidth="50"/>
+                                         MinWidth="0"/>
                                     </StackPanel>
                                 </Border>
 
@@ -843,8 +771,8 @@
                             <StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="PRODUCT CODE:" FontSize="24" FontWeight="SemiBold" Foreground="#555" VerticalAlignment="Center" Margin="0,0,45,0"/>
                                 <!-- ComboBox for Existing Programs -->
-                                <ComboBox ItemsSource="{Binding AvailableProgramNumbers}"
-                                          SelectedItem="{Binding SelectedProgramNumber, Mode=TwoWay}"
+                                <ComboBox ItemsSource="{Binding AvailableProgramCode}"
+                                          SelectedItem="{Binding SelectedProgramCode, Mode=TwoWay}"
                                           Width="250"
                                           Height="60"
                                           FontSize="24"
@@ -935,21 +863,27 @@
                             </Border.Effect>
 
                             <StackPanel Width="600" HorizontalAlignment="Left">
+                                <!-- ComboBox for Existing Programs -->
+                                
+                                <TextBlock Text="Select Product Code" FontSize="20" Foreground="#555" Margin="0,0,0,10"/>
+                                <ComboBox ItemsSource="{Binding AvailableProgramCode}"
+                                          SelectedItem="{Binding SelectedProgramNumber, Mode=TwoWay}"
+                                          Text="{Binding FreshProductCode , Mode=TwoWay}"
+                                          IsEditable="True"
+                                          Width="300" FontSize="20" Margin="0,0,0,0" Padding="10,10" HorizontalAlignment="Left" VerticalAlignment="Center" />
                                 <!-- Product Name -->
                                 <TextBlock Text="Product Name" FontSize="20" Foreground="#555" Margin="0,0,0,10"/>
-                                <TextBox Text="{Binding ProductName, UpdateSourceTrigger=PropertyChanged}" 
-                                         FontSize="20" Padding="10" Margin="0,0,0,30" BorderBrush="#CCC"/>
-
-                                <!-- Product Code -->
-                                <TextBlock Text="Product Code" FontSize="20" Foreground="#555" Margin="0,0,0,10"/>
-                                <TextBox Text="{Binding ProductCode, UpdateSourceTrigger=PropertyChanged}" 
-                                         FontSize="20" Padding="10" Margin="0,0,0,30" BorderBrush="#CCC"/>
+                                <ComboBox ItemsSource="{Binding AvailableProductName, UpdateSourceTrigger=PropertyChanged}"
+                                          SelectedItem="{Binding SelectedProductName, Mode=TwoWay}"
+                                          Text="{Binding FreshProductName, Mode=TwoWay}"
+                                          IsEditable="True"
+                                         Width="300" FontSize="20" Padding="10" Margin="0,0,0,30" HorizontalAlignment="Left" BorderBrush="#CCC"/>
 
                                 <!-- Item Count -->
                                 <TextBlock Text="Total Active Items (to process)" FontSize="20" Foreground="#555" Margin="0,0,0,10"/>
                                 <ComboBox ItemsSource="{Binding ItemCounts}" 
-                                          SelectedItem="{Binding SelectedItemCount}"
-                                          FontSize="20" Padding="10" Margin="0,0,0,30" HorizontalContentAlignment="Center"/>
+                                          SelectedItem="{Binding SelectedItemCount, Mode=TwoWay}"
+                                          FontSize="20" Padding="10" Margin="0,0,0,30" Width="300" HorizontalAlignment="Left" />
 
                                 <!-- Grid Layout -->
                                 <TextBlock Text="Dashboard Grid Layout (Rows x Columns)" FontSize="20" Foreground="#555" Margin="0,0,0,10"/>
@@ -957,7 +891,7 @@
                                     <StackPanel Margin="0,0,20,0">
                                         <TextBlock Text="Rows" FontSize="16" Foreground="#777" Margin="0,0,0,5"/>
                                         <ComboBox ItemsSource="{Binding RowOptions}" 
-                                                  SelectedItem="{Binding GridRows}"
+                                                  SelectedItem="{Binding GridRows , Mode=TwoWay}"
                                                   Width="120" FontSize="24" Padding="10"/>
                                     </StackPanel>
 
@@ -966,25 +900,98 @@
                                     <StackPanel>
                                         <TextBlock Text="Columns" FontSize="16" Foreground="#777" Margin="0,0,0,5"/>
                                         <ComboBox ItemsSource="{Binding ColumnOptions}" 
-                                                  SelectedItem="{Binding GridColumns}"
+                                                  SelectedItem="{Binding GridColumns , Mode=TwoWay}"
                                                   Width="120" FontSize="24" Padding="10"/>
                                     </StackPanel>
-                                    <!-- ComboBox for Existing Programs -->
-                                    <StackPanel Margin="80,5,0,0">
-                                        <TextBlock Text="Product Code" FontSize="16" Foreground="#777" Margin="40,0,0,0"/>
-                                        <ComboBox ItemsSource="{Binding AvailableProgramNumbers}"
-                                          SelectedItem="{Binding SelectedProgramNumber, Mode=TwoWay}"
-                                          Width="220" FontSize="24" Padding="10,10"/>
-                                    </StackPanel>
+
                                     
                                 </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,0" >
+                                  <!-- ADD Button -->
+                                <Button Content="ADD NEW" 
+                                        Command="{Binding AddProgramCommand}"
+                                        Background="#28A745" 
+                                        Foreground="White" 
+                                        FontSize="22" 
+                                        FontWeight="Bold"
+                                        Height="60" 
+                                        Width="120"
+                                        Margin="0,0,10,0"
+                                        Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="5">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Opacity" Value="0.8"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                                    <!-- SAVE Button -->
+                                    <Button Content="SAVE" 
+                                        Command="{Binding SaveProgramCommand}"
+                                        Background="#E67E22" 
+                                        Foreground="White" 
+                                        FontSize="22" 
+                                        FontWeight="Bold"
+                                        Height="60" 
+                                        Width="120" 
+                                        Cursor="Hand"
+                                        Margin="0,0,10,0">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Opacity" Value="0.8"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <!-- Edit Button -->
+                                <Button Content="EDIT" 
+                                       Command="{Binding EditProgramCommand}"
+                                       Background="DarkCyan" 
+                                       Foreground="White" 
+                                       FontSize="22" 
+                                       FontWeight="Bold"
+                                       Height="60" 
+                                       Width="120"
+                                       Margin="0,0,10,0"
+                                       Cursor="Hand">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="5">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Opacity" Value="0.8"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
 
-                                <!-- Save -->
-                                <Button Content="SAVE SETTINGS" 
-                                        Command="{Binding ProductSaveCommand}"
-                                        Background="#007ACC" Foreground="White"
-                                        FontSize="24" FontWeight="Bold"
-                                        Height="70" Cursor="Hand">
+
+                                 <!-- DELETE Button -->
+                                <Button Content="DELETE" 
+                                        Command="{Binding DeleteProgramCommand}"
+                                        Background="#1E4FA8" 
+                                        Foreground="White" 
+                                        FontSize="22" 
+                                        FontWeight="Bold"
+                                        Height="60" 
+                                        Width="120" 
+                                        Cursor="Hand"
+                                        Margin="0,0,10,0">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border Background="{TemplateBinding Background}" CornerRadius="8">
@@ -998,6 +1005,10 @@
                                         </ControlTemplate>
                                     </Button.Template>
                                 </Button>
+
+
+
+                                </StackPanel>
                             </StackPanel>
                         </Border>
                     </Grid>

@@ -281,13 +281,13 @@
 
                                     <!-- Label -->
                                     <TextBlock Grid.Row="0" 
-                                               Text="Select Program No" 
-                                               FontSize="45" 
+                                               Text="Select Program Code" 
+                                               FontSize="40" 
                                                FontWeight="Bold" 
                                                Foreground="White" 
                                                TextWrapping="Wrap" 
                                                TextAlignment="Center"
-                                               Margin="0,0,0,15">
+                                               Margin="0,0,0,0">
                                         <TextBlock.Effect>
                                             <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="3" Opacity="0.6"/>
                                         </TextBlock.Effect>

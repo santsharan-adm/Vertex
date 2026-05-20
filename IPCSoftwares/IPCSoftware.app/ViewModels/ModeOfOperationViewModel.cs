@@ -3,6 +3,7 @@ using IPCSoftware.App.NavServices;
 using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
 using IPCSoftware.App.Views;
+using IPCSoftware.App.ViewModels;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
@@ -70,12 +71,13 @@ namespace IPCSoftware.App.ViewModels
         private readonly List<OperationMode> _activePulseModes = new List<OperationMode>();
         private readonly IServoCalibrationService _servoService; // Added by Rishabh -Date 06-05-2026
         private readonly IDialogService _dialog;
+        private readonly IRecipeApplicationService _recipeAppService; // Added by Rishabh -Date 18-05-2026
 
         private readonly Dictionary<OperationMode, int> _writeTags = new();
         private readonly Dictionary<OperationMode, int> _statusTags = new();
         private readonly Dictionary<OperationMode, int> _enableTags = new();
 
-        private readonly ServoCalibrationViewModel _servoViewModel;
+
 
         public ObservableCollection<ModeButtonItem> ModeButtons { get; } = new ObservableCollection<ModeButtonItem>();
         public ObservableCollection<AuditLogModel> AuditLogs { get; set; } = new();
@@ -95,6 +97,7 @@ namespace IPCSoftware.App.ViewModels
             get => _selectedRecipe;
             set => SetProperty(ref _selectedRecipe, value);
         }
+        
 
         public bool IsRecipeSelectionEnabled => !GetBtn(OperationMode.Auto).IsEnabled;
 
@@ -109,12 +112,12 @@ namespace IPCSoftware.App.ViewModels
 
         private bool _isInitialized = false;               //Added by Rishabh -Date -13-05-2026
 
-        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService,ServoCalibrationViewModel servoViewModel, IDialogService dialog) : base(logger)
+        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService, IRecipeApplicationService recipeAppService, IDialogService dialog) : base(logger)
         {
             _coreClient = coreClient;
             _navService = navService;
-            _servoService = servoService; // Added by rishabh - Date 06-05-2026
-            _servoViewModel = servoViewModel;
+            _servoService = servoService; // Added by rishabh - Date 06-05-2026       
+            _recipeAppService = recipeAppService;
             _dialog = dialog;
             InitializeTags();
             InitializeButtons();
@@ -126,7 +129,12 @@ namespace IPCSoftware.App.ViewModels
 
             _feedbackTimer = new SafePoller(TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
             _feedbackTimer.Start();
+
+
         }
+
+
+
 
         //Added by Rishabh -Date -13-05-2026 , Handle Recipe Selection Change with Confirmation Dialog
         void OnProgramSelectionChanged()
@@ -223,10 +231,9 @@ namespace IPCSoftware.App.ViewModels
                 _logger.LogInfo($"Recipe Selected: Program {SelectedRecipe.ProgramNo} - {SelectedRecipe.ProductCode}", LogType.Audit);
                 AddAudit($"Program Number Changed: {SelectedRecipe.ProductCode}");
 
+                await _recipeAppService.ApplyRecipeToPlcAsync(SelectedRecipe);
                 // Write selected recipe/program number to PLC
                 bool bResult = await _coreClient.WriteTagAsync(ConstantValues.ProgramNumber, SelectedRecipe.ProgramNo);
-                await _servoViewModel.PulseBit(ConstantValues.Servo_CoordSave, "X Coordinates");
-                await _servoViewModel.SaveAeLimitsAsync();
                 if (bResult)
                 {
                     _lastConfirmedRecipe = SelectedRecipe;

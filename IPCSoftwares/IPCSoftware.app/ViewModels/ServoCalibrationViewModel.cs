@@ -33,7 +33,6 @@ namespace IPCSoftware.App.ViewModels
         private readonly IDialogService _dialog; // Injected Service
         private readonly IProductConfigurationService _productService;
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;       //added after
-        private readonly ModeOfOperationViewModel _modeOfOperationViewModel;       //added after
 
         private bool _initialPlcLoadDone = false;
         private ProductSettingsModel _productSettings;
@@ -76,6 +75,8 @@ namespace IPCSoftware.App.ViewModels
         private int _selectedItemCount;
         public int SelectedItemCount { get => _selectedItemCount; set => SetProperty(ref _selectedItemCount, value); }
 
+        
+
         private int _gridRows;
         public int GridRows { get => _gridRows; set => SetProperty(ref _gridRows, value); }
 
@@ -86,7 +87,7 @@ namespace IPCSoftware.App.ViewModels
         public ObservableCollection<int> ColumnOptions { get; } = new ObservableCollection<int>(Enumerable.Range(1, 3));
         public ObservableCollection<int> RowOptions { get; } = new ObservableCollection<int>(Enumerable.Range(1, 4));
 
-        public ICommand ProductSaveCommand { get; }
+        //public ICommand ProductSaveCommand { get; }
 
 
 
@@ -117,23 +118,57 @@ namespace IPCSoftware.App.ViewModels
         int _nextProgramId;
 
         
-        // Available Program Numbers for ComboBox
-        private ObservableCollection<string> _availableProgramNumbers = new ObservableCollection<string>();
-        public ObservableCollection<string> AvailableProgramNumbers
+        // Available Program Code for ComboBox
+        private ObservableCollection<string> _availableProgramCode = new ObservableCollection<string>();
+        public ObservableCollection<string> AvailableProgramCode
         {
-            get =>  _availableProgramNumbers;
-            set => SetProperty(ref _availableProgramNumbers, value);
+            get =>  _availableProgramCode;
+            set => SetProperty(ref _availableProgramCode, value);
         }
-        // Selected Program Number (for adding new programs)
-        private string _selectedProgramNumber;
-        public string SelectedProgramNumber
+        // Entered Fresh Program Code for ComboBox
+
+        private string _freshProgramCode;
+        public string FreshProductCode
         {
-            get => _selectedProgramNumber;
-            set => SetProperty(ref _selectedProgramNumber, value);
+            get => _freshProgramCode;
+            set => SetProperty(ref _freshProgramCode, value);
         }
+
+        // Selected Program Code (for adding new programs)
+        private string _selectedProgramCode;
+        public string SelectedProgramCode
+        {
+            get => _selectedProgramCode;
+            set => SetProperty(ref _selectedProgramCode, value);
+        }
+
+        // Entered Fresh Product Name 
+        private string _freshProductName;
+        public  string FreshProductName
+        {
+            get => _freshProductName;
+            set => SetProperty(ref _freshProductName, value);
+        }
+
+        // Select Program Code (for Adding new product)
+        private string _selectedProgramName;
+        public string SelectedProductName
+        {   get => _selectedProgramName;
+            set => SetProperty(ref _selectedProgramName, value);
+        }
+
+        // Available Program Name
+
+        private ObservableCollection<string> _availableProgramName = new ObservableCollection<string>();
+        public ObservableCollection<string> AvailableProductName
+        {
+            get => _availableProgramName;
+            set => SetProperty(ref _availableProgramName, value);
+        }
+
         // Current Running Program (reads from PLC Tag 544)
-        private int _currentRunningProgram;
-        public int CurrentRunningProgram
+        private string _currentRunningProgram;
+        public string CurrentRunningProgram
         {
             get => _currentRunningProgram;
             set => SetProperty(ref _currentRunningProgram, value);
@@ -205,9 +240,11 @@ namespace IPCSoftware.App.ViewModels
 
         public ICommand AddProgramCommand { get; }
 
+        public ICommand EditProgramCommand { get; }
+
         public ICommand DeleteProgramCommand { get; }
 
-        public ICommand UpdateProgramCommand { get; }
+        public ICommand SaveProgramCommand { get; }
         public ServoCalibrationViewModel(CoreClient coreClient,
             IServoCalibrationService servoService,
             IDialogService dialog,
@@ -215,7 +252,7 @@ namespace IPCSoftware.App.ViewModels
              IRecipeManagementService recipeManagementService,
              IAeLimitService aeLimitService,
              IOptionsMonitor<ExternalSettings> settingMonitor,  //Added after
-             ModeOfOperationViewModel modeOfOperationViewModel,
+
             IAppLogger logger)
              : base(logger)
         {
@@ -225,8 +262,7 @@ namespace IPCSoftware.App.ViewModels
             _productService = productService;
             _recipeManagementService = recipeManagementService;
             _aeLimitService = aeLimitService;
-            _settingsMonitor = settingMonitor;
-            _modeOfOperationViewModel = modeOfOperationViewModel;
+            _settingsMonitor = settingMonitor;     
 
             TeachCommand = new RelayCommand<ServoPositionModel>(OnTeachPosition);
             WritePositionCommand = new RelayCommand<ServoPositionModel>(OnWritePositionManual);
@@ -239,18 +275,20 @@ namespace IPCSoftware.App.ViewModels
 
             JogCommand = new RelayCommand<object>(async (args) => await OnJogAsync(args));
 
-            AddProgramCommand = new RelayCommand(OnAddProgram);
+            AddProgramCommand = new RelayCommand(OnNewProgram);
+
+            EditProgramCommand = new RelayCommand(OnSaveProgram);
 
             DeleteProgramCommand = new RelayCommand(OnDeleteProgram);
 
-            UpdateProgramCommand = new RelayCommand(OnUpdateProgram);
+            SaveProgramCommand = new RelayCommand(OnAddProgram);
 
             //  AE Limit Commands
             AeLimitRefreshCommand = new RelayCommand(async () => await LoadAeLimitsAsync());
-            AeLimitSaveCommand = new RelayCommand(OnUpdateProgram);//async () => await SaveAeLimitsAsync());
+            AeLimitSaveCommand = new RelayCommand(OnSaveProgram);//async () => await SaveAeLimitsAsync());
 
             //  Product Settings Command
-            ProductSaveCommand = new RelayCommand(async () => await SaveProductSettingsAsync());
+            //ProductSaveCommand = new RelayCommand(async () => await SaveProductSettingsAsync());
 
 
             InitializeParameters();
@@ -433,19 +471,33 @@ namespace IPCSoftware.App.ViewModels
             try
             {
                 var savedRecipes = await _servoService.LoadRecipeAsync();
-                AvailableProgramNumbers.Clear();
+                AvailableProgramCode.Clear();
+                AvailableProductName.Clear();
 
                 foreach (var recipe in savedRecipes.OrderBy(r => r.ProgramNo))
                 {
-                    AvailableProgramNumbers.Add(recipe.ProductCode);
+                    AvailableProgramCode.Add(recipe.ProductCode);
+                    AvailableProductName.Add(recipe.ProductName);
                 }
 
-                if (AvailableProgramNumbers.Any())
+                if (AvailableProgramCode.Any())
                 {
-                    SelectedProgramNumber = AvailableProgramNumbers.First();
-                    OnPropertyChanged(nameof(SelectedProgramNumber));
+                    //Availabe Product Code List Initialize
+
+                    SelectedProgramCode = AvailableProgramCode.Last();
+                    FreshProductCode = AvailableProgramCode.Last();
+                    OnPropertyChanged(nameof(SelectedProgramCode));
+                    OnPropertyChanged(nameof(SelectedProgramCode));
                     _nextProgramId = savedRecipes.Max(r => r.ProgramNo);
-                    
+
+                    //Availabe Product Name List Initialize
+
+                    SelectedProductName = AvailableProductName.Last();
+                    FreshProductName    = AvailableProductName.Last();
+                    OnPropertyChanged(nameof(SelectedProductName));
+                    OnPropertyChanged(nameof(FreshProductName));
+
+
                 }
             }
             catch (Exception ex)
@@ -454,52 +506,100 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
+        //-- New Program Command Handler (Prepares the form for new entry) ---
+        private void OnNewProgram()
+        {
+            FreshProductCode = string.Empty;
+            FreshProductName = string.Empty;
+            SelectedProgramCode = null;
+            SelectedProductName = null;
+            SelectedItemCount = 1;
+                GridRows = 1;
+                GridColumns = 1;
+            OnPropertyChanged(nameof(FreshProductCode));
+            OnPropertyChanged(nameof(FreshProductName));
+            OnPropertyChanged(nameof(SelectedProgramCode));
+            OnPropertyChanged(nameof(SelectedProductName));
+
+        }
+
         // ---  Add Program Command Handler  ---
         private async void OnAddProgram()
         {
             try
             {
-                var savedRecipes = await _servoService.LoadRecipeAsync();               
-                var productSetup = await _productService.LoadAsync();
-                string currentProductCode = productSetup?.ProductCode ?? "0";
-             
-                if (string.IsNullOrWhiteSpace(currentProductCode) || currentProductCode == "0")
+
+                //var userInput = _dialog.UserInput(
+                //    "Product Code:",
+                //    "", // Default value for Field1
+                //    "Product Name:",
+                //    ""  // Default value for Field2
+                //);
+
+                //if (!userInput.Confirmed)
+                //{
+                //    _logger.LogInfo("Add Program cancelled by user.", LogType.Audit);
+                //    return;
+                //}
+
+                string enteredProductCode = FreshProductCode??SelectedProgramCode;// Use Selected Program Code if Fresh Code value not entered
+                string enteredProductName = FreshProductName??SelectedProductName; //Use Selected Program Name if Fresh Name value not entered
+                int enteredTotalItem = SelectedItemCount;
+                int enteredGridRow = GridRows;
+                int enteredGridCol = GridColumns;
+
+                // Validation
+                if (enteredGridRow * enteredGridCol < enteredTotalItem)
                 {
-                    _dialog.ShowWarning("Please configure a valid Product Code before adding a recipe.");
+                    _dialog.ShowWarning($"Grid Layout ({enteredGridRow}x{enteredGridCol}) is too small for {enteredTotalItem} items.");
                     return;
                 }
-                                
+
+
+                if (string.IsNullOrWhiteSpace(enteredProductCode))
+                {
+                    _dialog.ShowWarning("Product Code cannot be empty");
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(enteredProductName))
+                {
+                    _dialog.ShowWarning("Product Name cannot be empty");
+                    return;
+                }
+
+
+
+                var savedRecipes = await _servoService.LoadRecipeAsync();
                 bool productCodeExists = savedRecipes.Any(r =>
-                    string.Equals(r.ProductCode, currentProductCode, StringComparison.OrdinalIgnoreCase));
+                    string.Equals(r.ProductCode, enteredProductCode, StringComparison.OrdinalIgnoreCase));
+
+                bool productNameExists = savedRecipes.Any(r =>
+                    string.Equals(r.ProductName, enteredProductName, StringComparison.OrdinalIgnoreCase));
 
                 if (productCodeExists)
                 {
-                    _dialog.ShowWarning($"Recipe with Product Code '{currentProductCode}' already exists.");
+                    _dialog.ShowWarning($"Recipe with Product Name '{enteredProductCode}' already exists");
                     return;
                 }
 
-                bool confirm = _dialog.ShowYesNo($"Add Program {_nextProgramId+1} with current positions and Limits?", "Confirm Add Recipe");
+                if (productNameExists)
+                {
+                    _dialog.ShowWarning($"Recipe with Product Name '{enteredProductName}' already exists");
+                    return;
+                }
 
-                if (!confirm) return;
 
-                //Collecting data from current positions 
                 var savedPositions = Positions.ToList();
-
-                //Collecting data from AE Limits
-                 var aeLimitSettings = await _aeLimitService.GetSettingsAsync();
+                var aeLimitSettings = await _aeLimitService.GetSettingsAsync();
                 var firstStation = aeLimitSettings?.Stations?.FirstOrDefault();
-                //var productSetup = await _productService.LoadAsync();
-                
-
-
-
+                var productSetup = await _productService.LoadAsync();
 
                 var newRecipe = new ServoRecipeModel
                 {
                     ProgramNo = ++_nextProgramId,
-                    
-                    //Sequence Indexes (S1-S12)
 
+                    // Sequence Indexes (S1-S12)
                     S1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.SequenceIndex ?? 0,
                     S2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.SequenceIndex ?? 0,
                     S3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.SequenceIndex ?? 0,
@@ -513,7 +613,7 @@ namespace IPCSoftware.App.ViewModels
                     S11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.SequenceIndex ?? 0,
                     S12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.SequenceIndex ?? 0,
 
-                    // X Coordinate (X0-X12)
+                    // X Coordinates (X0-X12)
                     X0 = savedPositions.FirstOrDefault(p => p.PositionId == 0)?.X ?? 0,
                     X1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.X ?? 0,
                     X2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.X ?? 0,
@@ -527,7 +627,8 @@ namespace IPCSoftware.App.ViewModels
                     X10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.X ?? 0,
                     X11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.X ?? 0,
                     X12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.X ?? 0,
-                    // Y Coordinate (Y0-Y12)
+
+                    // Y Coordinates (Y0-Y12)
                     Y0 = savedPositions.FirstOrDefault(p => p.PositionId == 0)?.Y ?? 0,
                     Y1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.Y ?? 0,
                     Y2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.Y ?? 0,
@@ -541,8 +642,8 @@ namespace IPCSoftware.App.ViewModels
                     Y10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.Y ?? 0,
                     Y11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.Y ?? 0,
                     Y12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.Y ?? 0,
-                    // AE Limits 
 
+                    // AE Limits 
                     Xmin = firstStation?.InspectionX?.Lower ?? 0,
                     Xmax = firstStation?.InspectionX?.Upper ?? 0,
                     Ymin = firstStation?.InspectionY?.Lower ?? 0,
@@ -550,37 +651,37 @@ namespace IPCSoftware.App.ViewModels
                     AngleMin = firstStation?.InspectionAngle?.Lower ?? 0,
                     AngleMax = firstStation?.InspectionAngle?.Upper ?? 0,
 
-                    //Product Setup 
-
-                    ProductName = productSetup?.ProductName??"0",
-                    ProductCode = productSetup?.ProductCode ?? "0",
-                    TotalItems = productSetup?.TotalItems ?? 0,
-                    GridRows = productSetup?.GridRows ?? 0,
-                    GridColumns = productSetup?.GridColumns ?? 0
-                    
-
-
+                    // Product Setup -
+                    ProductName = enteredProductName,
+                    ProductCode = enteredProductCode,
+                    TotalItems = enteredTotalItem,
+                    GridRows = enteredGridRow,
+                    GridColumns = enteredGridCol
+                };
+                var config = new ProductSettingsModel
+                {
+                    ProductName = enteredProductName,
+                    ProductCode = enteredProductCode,
+                    TotalItems = enteredTotalItem,
+                    GridRows = enteredGridRow,
+                    GridColumns = enteredGridCol
                 };
 
+                await _productService.SaveAsync(config);
                 _lastProgramAdded = newRecipe.ProgramNo;
 
-                // Add recipe via service
                 bool success = await _recipeManagementService.AddRecipeAsync(newRecipe);
 
                 if (success)
                 {
-                    _logger.LogInfo($"Recipe Added successfully: Program {_lastProgramAdded}", LogType.Audit);
-                    _dialog.ShowMessage($"Program {_lastProgramAdded} added successfully.");
-
+                    _logger.LogInfo($"Recipe Added: Program {_lastProgramAdded} - {enteredProductCode}", LogType.Audit);
+                    _dialog.ShowMessage($"Program {_lastProgramAdded} with Product Code '{enteredProductCode}' added successfully.");
                     await RefreshProgramNumbersAsync();
-                    //_nextProgramId++;
                 }
                 else
                 {
-                    _dialog.ShowWarning($"Failed to add program {_lastProgramAdded}. It may already exist.");
+                    _dialog.ShowWarning($"Failed to add program {_lastProgramAdded}.");
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -597,10 +698,10 @@ namespace IPCSoftware.App.ViewModels
             {
               
                 //Check if at least 2 programs will remain after deletion
-                if (AvailableProgramNumbers.Count <= 1) { _dialog.ShowWarning("Cannot delete. At least 1 programs must remain in the list."); return; }
+                if (AvailableProgramCode.Count <= 1) { _dialog.ShowWarning("Cannot delete. At least 1 programs must remain in the list."); return; }
 
                 var savedRecipe = await _servoService.LoadRecipeAsync();
-                var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProductCode == SelectedProgramNumber);
+                var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
                 if (selectedRecipe == null)
                 {
                     _dialog.ShowWarning("Selected program not found.");
@@ -608,17 +709,17 @@ namespace IPCSoftware.App.ViewModels
                 }
 
                 //Check if the selected program is currently running
-                if (selectedRecipe.ProgramNo == CurrentRunningProgram) { _dialog.ShowWarning("Cannot remove running program"); return; }
+                if (selectedRecipe.ProductCode == CurrentRunningProgram) { _dialog.ShowWarning("Cannot remove running program"); return; }
 
-                bool confirm = _dialog.ShowYesNo($" Do you want to remove Program {SelectedProgramNumber}?", "Confirm Delete Recipe");
+                bool confirm = _dialog.ShowYesNo($" Do you want to remove Program {SelectedProgramCode}?", "Confirm Delete Recipe");
                 
 
                 if (!confirm) return;              
                              
                               
                 await _recipeManagementService.DeleteRecipeAsync(selectedRecipe.ProgramNo);
-                _logger.LogInfo($"Program {SelectedProgramNumber} deleted successfully.", LogType.Audit);
-                _dialog.ShowMessage($"Program {SelectedProgramNumber} deleted successfully.");
+                _logger.LogInfo($"Program {SelectedProgramCode} deleted successfully.", LogType.Audit);
+                _dialog.ShowMessage($"Program {SelectedProgramCode} deleted successfully.");
                 await RefreshProgramNumbersAsync();
                 
 
@@ -630,20 +731,21 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        private async void OnUpdateProgram()
+        // =------ Edit Program Command Handler  ------//
+        private async void OnSaveProgram()
         {
             try
             {
                 // Find the recipe by ProductCode
                 var savedRecipes = await _servoService.LoadRecipeAsync();
-                var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == SelectedProgramNumber);
+                var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
 
                 if (selectedRecipe == null)
                 {
                     _dialog.ShowWarning("Selected program not found.");
                     return;
                 }
-                bool confirm = _dialog.ShowYesNo($" Do you want to edit Program {SelectedProgramNumber}?", "Confirm Delete Recipe");
+                bool confirm = _dialog.ShowYesNo($" Do you want to edit Program {SelectedProgramCode}?", "Confirm Update Recipe");
                 if (!confirm) return;
                 //Collecting data from current positions 
                 var savedPositions = Positions.ToList();
@@ -713,26 +815,36 @@ namespace IPCSoftware.App.ViewModels
 
                     ProductName = productSetup?.ProductName ?? "0",
                     ProductCode = productSetup?.ProductCode ?? "0",
-                    TotalItems = productSetup?.TotalItems ?? 0,
-                    GridRows = productSetup?.GridRows ?? 0,
-                    GridColumns = productSetup?.GridColumns ?? 0
+                    TotalItems = productSetup?.TotalItems ?? 1,
+                    GridRows = productSetup?.GridRows ?? 1,
+                    GridColumns = productSetup?.GridColumns ?? 1
 
                 };
+                var config = new ProductSettingsModel
+                {
+                    ProductName = productSetup?.ProductName ?? "0",
+                    ProductCode = productSetup?.ProductCode ?? "0",
+                    TotalItems = productSetup?.TotalItems ?? 1,
+                    GridRows = productSetup?.GridRows ?? 1,
+                    GridColumns = productSetup?.GridColumns ?? 1
+                };
 
-                bool success =  await _recipeManagementService.UpdateRecipeAsync(UpdatedRecipe);
+                await _productService.SaveAsync(config);
+
+                bool success = await _recipeManagementService.UpdateRecipeAsync(UpdatedRecipe);
 
 
                 if (success)
                 {
-                    _logger.LogInfo($"Recipe updated successfully: Program {SelectedProgramNumber}", LogType.Audit);
-                    _dialog.ShowMessage($"Program {SelectedProgramNumber} updated successfully.");
+                    _logger.LogInfo($"Recipe updated successfully: Program {SelectedProgramCode}", LogType.Audit);
+                    _dialog.ShowMessage($"Program {SelectedProgramCode} updated successfully.");
 
                     await RefreshProgramNumbersAsync();
-                    
+
                 }
                 else
                 {
-                    _dialog.ShowWarning($"Failed to edit program {SelectedProgramNumber}");
+                    _dialog.ShowWarning($"Failed to edit program {SelectedProgramCode}");
                 }
 
             }
@@ -747,23 +859,50 @@ namespace IPCSoftware.App.ViewModels
             try
             {
                 var savedRecipe = await _servoService.LoadRecipeAsync();
-                var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProductCode == SelectedProgramNumber);
-                if (selectedRecipe.ProgramNo == CurrentRunningProgram)
+                var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
+                if (selectedRecipe.ProductCode == CurrentRunningProgram)
                 {
-                    _modeOfOperationViewModel.ApplyRecipeSelection();
-                     OnAddProgram();
+                    //OnAddProgram();
+                    await PulseBit(ConstantValues.Servo_CoordSave, "X Coordinates");
+                   // await SaveAeLimitsAsync();
+                    if (_coreClient.isConnected)
+                    {
+                        await _coreClient.WriteTagAsync(ConstantValues.NO_OF_Station, SelectedItemCount);
+
+                    }
+                    // await SaveProductSettingsAsync();
+
+
+                    // Write to PLC
+                    await _coreClient.WriteTagAsync(AeMinX.WriteTagId, selectedRecipe.Xmin);
+                    await _coreClient.WriteTagAsync(AeMaxX.WriteTagId, selectedRecipe.Xmax);
+                    await _coreClient.WriteTagAsync(AeMinY.WriteTagId, selectedRecipe.Ymin);
+                    await _coreClient.WriteTagAsync(AeMaxY.WriteTagId, selectedRecipe.Ymax);
+                    await _coreClient.WriteTagAsync(AeMinZ.WriteTagId, selectedRecipe.AngleMin);
+                    await _coreClient.WriteTagAsync(AeMaxZ.WriteTagId, selectedRecipe.AngleMax);
+
+                    // Handshake (optional, based on your PLC logic)
+                    await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1);
+                    await Task.Delay(200);
+                    await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
+
+
+
+
+
+                    HasUnsavedChanges = false;
 
                 }
 
                 else
                 {
-                    OnAddProgram();
-
+                    OnSaveProgram();
+                    HasUnsavedChanges = false;
                 }
             }
             catch(Exception ex)
             {
-                _logger.LogError($"Failed to load Product Code {SelectedProgramNumber}", LogType.Error);
+                _logger.LogError($"Failed to load Product Code {SelectedProgramCode} : {ex}", LogType.Error);
             }
         }
 
@@ -959,7 +1098,8 @@ namespace IPCSoftware.App.ViewModels
                     // --- Read Current Running Program from PLC (Tag 544) ---
                     if (data.TryGetValue(ConstantValues.ProgramNumber, out object programVal))
                     {
-                        CurrentRunningProgram = Convert.ToInt32(programVal);
+
+                        CurrentRunningProgram =  SelectedProgramCode ;//Convert.ToInt32(programVal);
                     }
 
                     // 2. Update X Parameters
@@ -1242,7 +1382,7 @@ namespace IPCSoftware.App.ViewModels
 
                 if (await _coreClient.WriteTagAsync(tagId, 1))
                 {
-                    _dialog.ShowMessage("Value updated sucessfully.");
+                    _dialog.ShowMessage("Recipe loaded sucessfully.");
                 }
                 else
                 {

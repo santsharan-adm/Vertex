@@ -33,6 +33,19 @@ namespace IPCSoftware.App.NavServices
             ShowWindow(vm);
         }
 
+        public UserInputResult UserInput( string field1title,string field1value,string field2title, string field2value )
+        {
+            var vm = new CustomUserInputBoxViewModel("","Save Recipe","Save","Cancle" ,field1title,field1value,field2title,field2value,true);
+            bool dialogResult = ShowInputWindow(vm);
+            return new UserInputResult
+            {
+                Confirmed = dialogResult,
+                Field1Value = vm.Field1Value,
+                Field2Value = vm.Field2Value
+            };
+        }
+
+
 
 
 
@@ -40,6 +53,18 @@ namespace IPCSoftware.App.NavServices
         private bool ShowWindow(CustomMessageBoxViewModel vm)
         {
             var msgBox = new CustomMessageBox();
+            if (Application.Current.MainWindow != null)
+            {
+                msgBox.Owner = Application.Current.MainWindow;
+            }
+            msgBox.Initialize(vm);
+            var result = msgBox.ShowDialog();
+            return result == true;
+        }
+
+        private bool ShowInputWindow(CustomUserInputBoxViewModel vm)
+        {
+            var msgBox = new CustomUserInputBox();
             if (Application.Current.MainWindow != null)
             {
                 msgBox.Owner = Application.Current.MainWindow;
