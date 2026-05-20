@@ -28,6 +28,8 @@ namespace IPCSoftware.App.Bending.ViewModels
         private SafePollerEx _ioPoller;
         private SafePollerEx _inspectionTable1Poller;
         private SafePollerEx _inspectionTable2Poller;
+        private SafePollerEx _inspectionTable3Poller;
+        private SafePollerEx _inspectionTable4Poller;
         private SafePollerEx _bendingIndicatorsPoller;
         private SafePollerEx _turnTable1Poller;
         private SafePollerEx _turnTable2Poller;
@@ -67,6 +69,20 @@ namespace IPCSoftware.App.Bending.ViewModels
         {
             get => _inspectionTable2;
             set => SetProperty(ref _inspectionTable2, value);
+        }
+
+        private DashboardInspectionModel _inspectionTable3 = new();
+        public DashboardInspectionModel InspectionTable3
+        {
+            get => _inspectionTable3;
+            set => SetProperty(ref _inspectionTable3, value);
+        }
+
+        private DashboardInspectionModel _inspectionTable4 = new();
+        public DashboardInspectionModel InspectionTable4
+        {
+            get => _inspectionTable4;
+            set => SetProperty(ref _inspectionTable4, value);
         }
 
         // --- Bending Station Indicators (Temperature, Force, Status) ---
@@ -239,6 +255,24 @@ namespace IPCSoftware.App.Bending.ViewModels
                 ex => _logger.LogError($"[Dashboard2] InspectionTable2 poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 12);
 
+            // RequestId = 23 — InspectionTable3 (Lot 3)
+            _inspectionTable3Poller = new SafePollerEx(
+                _coreClient,
+                TimeSpan.FromMilliseconds(500),
+                InspectionDataTable3,
+                _logger,
+                ex => _logger.LogError($"[Dashboard2] InspectionTable3 poller error: {ex.Message}", LogType.Diagnostics),
+                requestId: 23);
+
+            // RequestId = 24 — InspectionTable4 (Lot 4)
+            _inspectionTable4Poller = new SafePollerEx(
+                _coreClient,
+                TimeSpan.FromMilliseconds(500),
+                InspectionDataTable4,
+                _logger,
+                ex => _logger.LogError($"[Dashboard2] InspectionTable4 poller error: {ex.Message}", LogType.Diagnostics),
+                requestId: 24);
+
             // RequestId = 13 — BendingIndicators
             _bendingIndicatorsPoller = new SafePollerEx(
                 _coreClient,
@@ -334,6 +368,8 @@ namespace IPCSoftware.App.Bending.ViewModels
             _ioPoller.Start();
             _inspectionTable1Poller.Start();
             _inspectionTable2Poller.Start();
+            _inspectionTable3Poller.Start();
+            _inspectionTable4Poller.Start();
             _bendingIndicatorsPoller.Start();
             _turnTable1Poller.Start();
             _turnTable2Poller.Start();
@@ -435,6 +471,50 @@ namespace IPCSoftware.App.Bending.ViewModels
             catch (Exception ex)
             {
                 _logger.LogError($"[Dashboard2] UpdateInspectionTable2 error: {ex.Message}", LogType.Diagnostics);
+            }
+
+            await Task.CompletedTask;
+        }
+
+        // RequestId = 23 — InspectionTable3 (Lot 3)
+        private async Task InspectionDataTable3(Dictionary<int, object> data)
+        {
+            try
+            {
+                if (data.TryGetValue(23, out object modelObj))
+                {
+                    var model = Deserialize<DashboardInspectionModel>(modelObj);
+                    if (model != null)
+                    {
+                        InspectionTable3 = model;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Dashboard2] UpdateInspectionTable3 error: {ex.Message}", LogType.Diagnostics);
+            }
+
+            await Task.CompletedTask;
+        }
+
+        // RequestId = 24 — InspectionTable4 (Lot 4)
+        private async Task InspectionDataTable4(Dictionary<int, object> data)
+        {
+            try
+            {
+                if (data.TryGetValue(24, out object modelObj))
+                {
+                    var model = Deserialize<DashboardInspectionModel>(modelObj);
+                    if (model != null)
+                    {
+                        InspectionTable4 = model;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Dashboard2] UpdateInspectionTable4 error: {ex.Message}", LogType.Diagnostics);
             }
 
             await Task.CompletedTask;
@@ -787,6 +867,10 @@ namespace IPCSoftware.App.Bending.ViewModels
             _inspectionTable1Poller?.Dispose();
             _inspectionTable2Poller?.Stop();
             _inspectionTable2Poller?.Dispose();
+            _inspectionTable3Poller?.Stop();
+            _inspectionTable3Poller?.Dispose();
+            _inspectionTable4Poller?.Stop();
+            _inspectionTable4Poller?.Dispose();
             _bendingIndicatorsPoller?.Stop();
             _bendingIndicatorsPoller?.Dispose();
             _turnTable1Poller?.Stop();
