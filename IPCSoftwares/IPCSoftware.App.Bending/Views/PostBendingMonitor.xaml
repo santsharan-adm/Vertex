@@ -197,7 +197,9 @@
                     <Border Grid.Row="2" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
                         <TextBlock Text="{Binding PostBendingModel.Product1.Y.UpperLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
-                    <TextBlock Text="{Binding PostBendingModel.Product1.Y.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
+                    <Border Grid.Row="3" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
+                        <TextBlock Text="{Binding PostBendingModel.Product1.Y.PresentValue, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
+                    </Border>
                     <Border Grid.Row="4" Grid.Column="4" Style="{StaticResource TableBorderStyle}">
                         <TextBlock Text="{Binding PostBendingModel.Product1.Y.LowerLimit, StringFormat='{}{0:0.00}'}" Style="{StaticResource CommonTextStyle}"/>
                     </Border>
@@ -393,7 +395,6 @@
                     <Border Grid.Row="11" Grid.RowSpan="3" Grid.Column="7" Style="{StaticResource TableBorderStyle}">
                         <Rectangle Width="55" Height="48" Fill="{Binding PostBendingModel.Product4.Result, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Result}" RadiusX="2" RadiusY="2" Stroke="#999"/>
                     </Border>
-
                 </Grid>
             </Border>
         </Viewbox>

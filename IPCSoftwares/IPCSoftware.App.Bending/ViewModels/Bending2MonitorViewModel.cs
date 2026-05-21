@@ -36,7 +36,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         // Pollers
         // ----------------------------------------------------------------
 
-        // RequestId = 26 — Bending1 Monitor live data
+        // RequestId = 27 — Bending2 Monitor live data
         private SafePollerEx _liveDataPoller;
 
         private bool _disposed;
@@ -80,13 +80,13 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         public void Initialize()
         {
-            // RequestId = 26 — Bending1 Monitor live data
+            // RequestId = 27 — Bending2 Monitor live data
             _liveDataPoller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
                 UpdateBending2MonitorFromService,
                 _logger,
-                ex => _logger.LogError($"[Bending1Monitor] Poller error: {ex.Message}", LogType.Diagnostics),
+                ex => _logger.LogError($"[Bending2Monitor] Poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 27);
 
             _liveDataPoller.Start();
@@ -95,7 +95,7 @@ namespace IPCSoftware.App.Bending.ViewModels
 
 
         // ----------------------------------------------------------------
-        // RequestId = 26 — Bending1 Monitor data update
+        // RequestId = 27 — Bending2 Monitor data update
         // ----------------------------------------------------------------
 
         private async Task UpdateBending2MonitorFromService(Dictionary<int, object> data)
@@ -105,7 +105,7 @@ namespace IPCSoftware.App.Bending.ViewModels
                 if (data == null)
                     return;
 
-                if (data.TryGetValue(26, out object modelObj))
+                if (data.TryGetValue(27, out object modelObj))
                 {
                     var model = Deserialize<BendingMonitorModel>(modelObj);
                     if (model != null)
