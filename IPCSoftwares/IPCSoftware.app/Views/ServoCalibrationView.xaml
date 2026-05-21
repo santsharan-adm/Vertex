@@ -783,7 +783,7 @@
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
                                 </ComboBox>
-                                <Button Content="Refresh" Command="{Binding AeLimitRefreshCommand}" Style="{StaticResource OutlineButton}" Width="150" Margin="0,0,10,0" />
+                                <!--<Button Content="Refresh" Command="{Binding AeLimitRefreshCommand}" Style="{StaticResource OutlineButton}" Width="150" Margin="0,0,10,0" />-->
                                 <Button Content="Save" Command="{Binding AeLimitSaveCommand}" Style="{StaticResource PrimaryButton}" Width="200" />
                             </StackPanel>
                         </Grid>

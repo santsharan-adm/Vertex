@@ -459,8 +459,6 @@ namespace IPCSoftware.App.ViewModels
 
 
 
-
-
         // ---  Initialize Available Program Numbers  ---
         private async  void InitializeAvailableProgramNumbers()
         {
@@ -1086,46 +1084,73 @@ namespace IPCSoftware.App.ViewModels
             try
             {
                 // 1. Load Product Config
-            
-                var prodConfig = await _productService.LoadAsync();
-                int totalItems = prodConfig.TotalItems;
+              //  var savedPositions = await _servoService.LoadPositionsAsync(); ///From ServoCalibration.Json
+                var savedRecipes = await _servoService.LoadRecipeAsync();       // From Recipe.csv
+
+                if (savedRecipes == null || !savedRecipes.Any())
+                {
+                    _logger.LogWarning("No recipes found. Cannot initialize positions.", LogType.Diagnostics);
+                    return;
+                }
+
+                //==============///=======================//
+                var lastSavedRecipe = savedRecipes.Last();
+                int totalItems = lastSavedRecipe.TotalItems;
+
+                //var prodConfig = await _productService.LoadAsync();
+                //int totalItems = prodConfig.TotalItems;
+
                 AvailableSequences.Clear();
                 for (int i = 1; i <= totalItems; i++)
                 {
                     AvailableSequences.Add(i);
                 }
 
-                var savedPositions = await _servoService.LoadPositionsAsync();
-                var SavedRecipe = await _servoService.LoadRecipeAsync();
+                var recipePositionData = new Dictionary<int, (double X, double Y, int Seq, string Name)>
+                {
+                    { 0, (lastSavedRecipe.X0, lastSavedRecipe.Y0, 0, "Position 0 (Home)") },
+                    { 1, (lastSavedRecipe.X1, lastSavedRecipe.Y1, lastSavedRecipe.S1, "Position 1") },
+                    { 2, (lastSavedRecipe.X2, lastSavedRecipe.Y2, lastSavedRecipe.S2, "Position 2") },
+                    { 3, (lastSavedRecipe.X3, lastSavedRecipe.Y3, lastSavedRecipe.S3, "Position 3") },
+                    { 4, (lastSavedRecipe.X4, lastSavedRecipe.Y4, lastSavedRecipe.S4, "Position 4") },
+                    { 5, (lastSavedRecipe.X5, lastSavedRecipe.Y5, lastSavedRecipe.S5, "Position 5") },
+                    { 6, (lastSavedRecipe.X6, lastSavedRecipe.Y6, lastSavedRecipe.S6, "Position 6") },
+                    { 7, (lastSavedRecipe.X7, lastSavedRecipe.Y7, lastSavedRecipe.S7, "Position 7") },
+                    { 8, (lastSavedRecipe.X8, lastSavedRecipe.Y8, lastSavedRecipe.S8, "Position 8") },
+                    { 9, (lastSavedRecipe.X9, lastSavedRecipe.Y9, lastSavedRecipe.S9, "Position 9") },
+                    { 10, (lastSavedRecipe.X10, lastSavedRecipe.Y10, lastSavedRecipe.S10, "Position 10") },
+                    { 11, (lastSavedRecipe.X11, lastSavedRecipe.Y11, lastSavedRecipe.S11, "Position 11") },
+                    { 12, (lastSavedRecipe.X12, lastSavedRecipe.Y12, lastSavedRecipe.S12, "Position 12") }
+                };
 
                 // 4. Populate List for UI
                 Positions.Clear();
-
-                // Ensure Position 0 (Home) exists
-                var homePos = savedPositions.FirstOrDefault(p => p.PositionId == 0) ?? new ServoPositionModel { PositionId = 0, Name = "Position 0 (Home)", SequenceIndex = 0 };
-                homePos.IsEnabled = true;
-                Positions.Add(homePos);
+                // Add Position 0 (Home) - Always enabled
+                if (recipePositionData.TryGetValue(0, out var homeData))
+                {
+                    Positions.Add(new ServoPositionModel
+                    {
+                        PositionId = 0,
+                        Name = homeData.Name,
+                        SequenceIndex = homeData.Seq,
+                        X = homeData.X,
+                        Y = homeData.Y,
+                        IsEnabled = true
+                    });
+                } 
 
                 // Add only the number of items configured (1 to TotalItems)
                 for (int i = 1; i <= totalItems; i++)
                 {
-                    var existingPos = savedPositions.FirstOrDefault(p => p.PositionId == i);
-
-                    if (existingPos != null)
+                    if (recipePositionData.TryGetValue(i, out var posData))
                     {
-                        existingPos.IsEnabled = true;
-                        Positions.Add(existingPos);
-                    }
-                    else
-                    {
-                        // Create fresh if not found in JSON (e.g., config increased)
                         Positions.Add(new ServoPositionModel
                         {
                             PositionId = i,
-                            Name = $"Position {i}",
-                            SequenceIndex = i,
-                            X = 0,
-                            Y = 0,
+                            Name = posData.Name,
+                            SequenceIndex = posData.Seq,
+                            X = posData.X,
+                            Y = posData.Y,
                             IsEnabled = true
                         });
                     }
@@ -1653,35 +1678,64 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                // Update Positions collection with recipe data
-                var positionData = new Dictionary<int, (double X, double Y, int Seq)>
+                int totalItems = recipe.TotalItems;
+
+                AvailableSequences.Clear();
+                for(int i=1; i <= totalItems; i++)
                 {
-                    { 0, (recipe.X0, recipe.Y0, 0) },
-                    { 1, (recipe.X1, recipe.Y1, recipe.S1) },
-                    { 2, (recipe.X2, recipe.Y2, recipe.S2) },
-                    { 3, (recipe.X3, recipe.Y3, recipe.S3) },
-                    { 4, (recipe.X4, recipe.Y4, recipe.S4) },
-                    { 5, (recipe.X5, recipe.Y5, recipe.S5) },
-                    { 6, (recipe.X6, recipe.Y6, recipe.S6) },
-                    { 7, (recipe.X7, recipe.Y7, recipe.S7) },
-                    { 8, (recipe.X8, recipe.Y8, recipe.S8) },
-                    { 9, (recipe.X9, recipe.Y9, recipe.S9) },
-                    { 10, (recipe.X10, recipe.Y10, recipe.S10) },
-                    { 11, (recipe.X11, recipe.Y11, recipe.S11) },
-                    { 12, (recipe.X12, recipe.Y12, recipe.S12) }
+                    AvailableSequences.Add(i);
+                }
+                // Update Positions collection with recipe data
+                var recipePositionData = new Dictionary<int, (double X, double Y, int Seq, string Name)>
+                {
+                    { 0, (recipe.X0, recipe.Y0, 0, "Position 0 (Home)") },
+                    { 1, (recipe.X1, recipe.Y1, recipe.S1, "Position 1") },
+                    { 2, (recipe.X2, recipe.Y2, recipe.S2, "Position 2") },
+                    { 3, (recipe.X3, recipe.Y3, recipe.S3, "Position 3") },
+                    { 4, (recipe.X4, recipe.Y4, recipe.S4, "Position 4") },
+                    { 5, (recipe.X5, recipe.Y5, recipe.S5, "Position 5") },
+                    { 6, (recipe.X6, recipe.Y6, recipe.S6, "Position 6") },
+                    { 7, (recipe.X7, recipe.Y7, recipe.S7, "Position 7") },
+                    { 8, (recipe.X8, recipe.Y8, recipe.S8, "Position 8") },
+                    { 9, (recipe.X9, recipe.Y9, recipe.S9, "Position 9") },
+                    { 10, (recipe.X10, recipe.Y10, recipe.S10, "Position 10") },
+                    { 11, (recipe.X11, recipe.Y11, recipe.S11, "Position 11") },
+                    { 12, (recipe.X12, recipe.Y12, recipe.S12, "Position 12") }
                 };
 
-                foreach (var pos in Positions)
+                Positions.Clear();
+                //Add Position 0 - always enabled
+                if (recipePositionData.TryGetValue(0, out var homeData))
                 {
-                    if (positionData.TryGetValue(pos.PositionId, out var data))
+                    Positions.Add(new ServoPositionModel
                     {
-                        pos.X = data.X;
-                        pos.Y = data.Y;
-                        pos.SequenceIndex = data.Seq;
-                    }
-                }
+                        PositionId = 0,
+                        Name = homeData.Name,
+                        SequenceIndex = homeData.Seq,
+                        X = homeData.X,
+                        Y = homeData.Y,
+                        IsEnabled = true
+                    });
 
-                _logger.LogInfo($"Loaded {Positions.Count} positions from recipe", LogType.Diagnostics);
+                }
+               //Add positions1 to TotalItems (only active postions from recipe
+               for (int i =1; i <= totalItems; i++)
+                {
+                    if(recipePositionData.TryGetValue(i, out var posData))
+                    {
+                        Positions.Add(new ServoPositionModel
+                        {
+                            PositionId = i,
+                            Name = posData.Name,
+                            SequenceIndex = posData.Seq,
+                            X = posData.X,
+                            Y = posData.Y,
+                            IsEnabled = true
+                        });
+
+                                            }
+                }
+                _logger.LogInfo($"Loaded {Positions.Count} positions from recipe '{recipe.ProductCode}'", LogType.Diagnostics);
             }
             catch (Exception ex)
             {
