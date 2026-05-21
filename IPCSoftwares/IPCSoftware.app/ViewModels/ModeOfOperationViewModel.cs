@@ -229,7 +229,7 @@ namespace IPCSoftware.App.ViewModels
                 //RecipeItem newRecipe = SelectedRecipe;
                 //_lastConfirmedRecipe = newRecipe;
                 _logger.LogInfo($"Recipe Selected: Program {SelectedRecipe.ProgramNo} - {SelectedRecipe.ProductCode}", LogType.Audit);
-                AddAudit($"Program Number Changed: {SelectedRecipe.ProductCode}");
+
 
                 await _recipeAppService.ApplyRecipeToPlcAsync(SelectedRecipe);
                 // Write selected recipe/program number to PLC
@@ -242,6 +242,8 @@ namespace IPCSoftware.App.ViewModels
                 {
                     SelectedRecipe = _lastConfirmedRecipe;
                 }
+                _dialog.ShowMessage($"Recipe '{SelectedRecipe.ProductCode}' loaded successfully.");
+                AddAudit($"Program Number Changed: {SelectedRecipe.ProductCode}");
             }
             catch (Exception ex)
             {

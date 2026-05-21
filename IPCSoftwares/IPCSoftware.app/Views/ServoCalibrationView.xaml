@@ -234,7 +234,7 @@
     </UserControl.Resources>
 
     <Grid Margin="40">
-        <TabControl Background="Transparent" BorderThickness="0"> <!--helpers:BlockTabChangeBehavior.BlockWhen="{Binding HasUnsavedChanges}"-->  
+        <TabControl Background="Transparent" helpers:BlockTabChangeBehavior.BlockWhen="{Binding HasUnsavedChanges}" BorderThickness="0">   
 
             <!-- TAB 1: SETUP & LIVE DATA -->
             <TabItem Header="Servo Params">
@@ -387,19 +387,6 @@
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="PRODUCT CODE:" FontSize="24" FontWeight="SemiBold" Foreground="#555" VerticalAlignment="Center" Margin="0,0,15,0"/>
 
-                                <!-- TextBox for Manual Entry (New Program Number) --><!--
-                                <TextBox x:Name="NewProgramNumberTextBox"
-                                         Text="{Binding NewProgramNumberText, UpdateSourceTrigger=PropertyChanged}"
-                                         Width="150"
-                                         Height="60"
-                                         FontSize="24"
-                                         FontWeight="Bold"
-                                         VerticalContentAlignment="Center"
-                                         HorizontalContentAlignment="Center"
-                                         Margin="0,0,15,0"
-                                         Background="White"
-                                         BorderBrush="#1E4FA8"
-                                         BorderThickness="2"/>-->
 
                                 <!-- ComboBox for Existing Programs -->
                                 <ComboBox ItemsSource="{Binding AvailableProgramCode}"
@@ -413,7 +400,14 @@
                                           VerticalContentAlignment="Center"
                                           Background="White"
                                           BorderBrush="#1E4FA8"
-                                          BorderThickness="2"/>
+                                          BorderThickness="2">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </ComboBox>
+
 
 
                                 <!-- Current Running Program TextBox -->
@@ -573,7 +567,7 @@
                                                     </Button.Template>
                                                 </Button>
 
-                                                <!-- WRITE BUTTON (Manual Entry) -->
+                                                <!-- WRITE BUTTON (Manual Entry) --><!--
                                                 <Button Command="{Binding DataContext.WritePositionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                         CommandParameter="{Binding}"
                                                         Background="#E67E22" Foreground="White" 
@@ -593,7 +587,7 @@
                                                             </ControlTemplate.Triggers>
                                                         </ControlTemplate>
                                                     </Button.Template>
-                                                </Button>
+                                                </Button>-->
 
                                             </StackPanel>
                                         </DataTemplate>
@@ -782,9 +776,15 @@
                                           VerticalContentAlignment="Center"
                                           Background="White"
                                           BorderBrush="#1E4FA8"
-                                          BorderThickness="2"/>
-                                <Button Content="Refresh" Command="{Binding AeLimitRefreshCommand}" Style="{StaticResource OutlineButton}" Width="150" Margin="0,0,20,0" />
-                                <Button Content="Save &amp; Transfer" Command="{Binding AeLimitSaveCommand}" Style="{StaticResource PrimaryButton}" Width="250" />
+                                          BorderThickness="2">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </ComboBox>
+                                <Button Content="Refresh" Command="{Binding AeLimitRefreshCommand}" Style="{StaticResource OutlineButton}" Width="150" Margin="0,0,10,0" />
+                                <Button Content="Save" Command="{Binding AeLimitSaveCommand}" Style="{StaticResource PrimaryButton}" Width="200" />
                             </StackPanel>
                         </Grid>
 
@@ -867,10 +867,16 @@
                                 
                                 <TextBlock Text="Select Product Code" FontSize="20" Foreground="#555" Margin="0,0,0,10"/>
                                 <ComboBox ItemsSource="{Binding AvailableProgramCode}"
-                                          SelectedItem="{Binding SelectedProgramNumber, Mode=TwoWay}"
+                                          SelectedItem="{Binding SelectedProgramCode, Mode=TwoWay}"
                                           Text="{Binding FreshProductCode , Mode=TwoWay}"
                                           IsEditable="True"
-                                          Width="300" FontSize="20" Margin="0,0,0,0" Padding="10,10" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                          Width="300" FontSize="20" Margin="0,0,0,0" Padding="10,10" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </ComboBox>
                                 <!-- Product Name -->
                                 <TextBlock Text="Product Name" FontSize="20" Foreground="#555" Margin="0,0,0,10"/>
                                 <ComboBox ItemsSource="{Binding AvailableProductName, UpdateSourceTrigger=PropertyChanged}"

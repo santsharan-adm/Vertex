@@ -200,9 +200,8 @@ namespace IPCSoftware.App.ViewModels
                 // Same check as Navigation
                 if (HasUnsavedChanges)
                 {
-                    _dialog.ShowWarning(
-                        "⚠️ UNSAVED CHANGES\n\n" +
-                        "You must SAVE your changes before switching tabs.");
+                    _dialog.ShowWarning("⚠️ UNSAVED CHANGES You must SAVE your changes before switching tabs.");
+
 
                     // Force Tab back to original
                     OnPropertyChanged(nameof(SelectedTabIndex));
@@ -245,6 +244,8 @@ namespace IPCSoftware.App.ViewModels
         public ICommand DeleteProgramCommand { get; }
 
         public ICommand SaveProgramCommand { get; }
+
+        public ICommand SelectionChangedCommand { get; }
         public ServoCalibrationViewModel(CoreClient coreClient,
             IServoCalibrationService servoService,
             IDialogService dialog,
@@ -270,7 +271,7 @@ namespace IPCSoftware.App.ViewModels
 
             ConfirmXParamsCommand = new RelayCommand(async () => await PulseBit(ConstantValues.Servo_ParamSave, "X Servo Params"));
             ConfirmYParamsCommand = new RelayCommand(async () => await PulseBit(ConstantValues.Servo_ParamA2, "Y Servo Params"));
-            ConfirmXCoordsCommand = new RelayCommand(WriteSelectedRecipeAsync);                                           //async () => await PulseBit(ConstantValues.Servo_CoordSave, "X Coordinates"));
+            ConfirmXCoordsCommand = new RelayCommand(async () =>       WriteSelectedRecipeAsync());                                           //async () => await PulseBit(ConstantValues.Servo_CoordSave, "X Coordinates"));
             ConfirmYCoordsCommand = new RelayCommand(async () => await PulseBit(ConstantValues.Servo_XYOrigin, "Y Coordinates"));
 
             JogCommand = new RelayCommand<object>(async (args) => await OnJogAsync(args));
@@ -283,8 +284,10 @@ namespace IPCSoftware.App.ViewModels
 
             SaveProgramCommand = new RelayCommand(OnAddProgram);
 
+            SelectionChangedCommand = new RelayCommand(async () => await OnProgramSelectionChangedAsync());
+
             //  AE Limit Commands
-            AeLimitRefreshCommand = new RelayCommand(async () => await LoadAeLimitsAsync());
+           // AeLimitRefreshCommand = new RelayCommand(async () =>  LoadAeLimitsFromRecipe());
             AeLimitSaveCommand = new RelayCommand(OnSaveProgram);//async () => await SaveAeLimitsAsync());
 
             //  Product Settings Command
@@ -298,7 +301,7 @@ namespace IPCSoftware.App.ViewModels
             InitializeAvailableProgramNumbers();
 
             //Initialize AE Limits Parametrs
-            InitializeAeLimitParameters();
+             InitializeAeLimitParameters();
 
             //Load AE Limits and Product Settings
             _ = LoadAeLimitsAsync();
@@ -520,6 +523,7 @@ namespace IPCSoftware.App.ViewModels
             OnPropertyChanged(nameof(FreshProductName));
             OnPropertyChanged(nameof(SelectedProgramCode));
             OnPropertyChanged(nameof(SelectedProductName));
+            HasUnsavedChanges = true;
 
         }
 
@@ -541,7 +545,8 @@ namespace IPCSoftware.App.ViewModels
                 //    _logger.LogInfo("Add Program cancelled by user.", LogType.Audit);
                 //    return;
                 //}
-
+                bool confirm = _dialog.ShowYesNo($" Do you want to Add Program {FreshProductCode}?", "Confirm Add Recipe");
+                if (!confirm) { return; }
                 string enteredProductCode = FreshProductCode??SelectedProgramCode;// Use Selected Program Code if Fresh Code value not entered
                 string enteredProductName = FreshProductName??SelectedProductName; //Use Selected Program Name if Fresh Name value not entered
                 int enteredTotalItem = SelectedItemCount;
@@ -682,6 +687,8 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _dialog.ShowWarning($"Failed to add program {_lastProgramAdded}.");
                 }
+
+                HasUnsavedChanges = false;
             }
             catch (Exception ex)
             {
@@ -738,7 +745,23 @@ namespace IPCSoftware.App.ViewModels
             {
                 // Find the recipe by ProductCode
                 var savedRecipes = await _servoService.LoadRecipeAsync();
-                var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
+                var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == (string.IsNullOrEmpty(SelectedProgramCode) ? FreshProductCode : SelectedProgramCode));
+
+
+                string enteredProductCode =  SelectedProgramCode??FreshProductCode;// Use Selected Program Code if Fresh Code value not entered
+                string enteredProductName =  SelectedProductName??FreshProductName; //Use Selected Program Name if Fresh Name value not entered
+                int enteredTotalItem      = SelectedItemCount;
+                int enteredGridRow        = GridRows;
+                int enteredGridCol        = GridColumns;
+
+                if (!(enteredProductCode != null)) { _dialog.ShowWarning("Product Code cannot be empty"); return; }
+                if (!(enteredProductName != null)) { _dialog.ShowWarning("Product Name cannot be empty"); return; }
+                // Validation
+                if (enteredGridRow * enteredGridCol < enteredTotalItem)
+                {
+                    _dialog.ShowWarning($"Grid Layout ({enteredGridRow}x{enteredGridCol}) is too small for {enteredTotalItem} items.");
+                    return;
+                }
 
                 if (selectedRecipe == null)
                 {
@@ -811,22 +834,21 @@ namespace IPCSoftware.App.ViewModels
                     AngleMin = firstStation?.InspectionAngle?.Lower ?? 0,
                     AngleMax = firstStation?.InspectionAngle?.Upper ?? 0,
 
-                    //Product Setup 
 
-                    ProductName = productSetup?.ProductName ?? "0",
-                    ProductCode = productSetup?.ProductCode ?? "0",
-                    TotalItems = productSetup?.TotalItems ?? 1,
-                    GridRows = productSetup?.GridRows ?? 1,
-                    GridColumns = productSetup?.GridColumns ?? 1
-
+                    // Product Setup -
+                    ProductName = enteredProductName,
+                    ProductCode = enteredProductCode,
+                    TotalItems = enteredTotalItem,
+                    GridRows = enteredGridRow,
+                    GridColumns = enteredGridCol
                 };
                 var config = new ProductSettingsModel
                 {
-                    ProductName = productSetup?.ProductName ?? "0",
-                    ProductCode = productSetup?.ProductCode ?? "0",
-                    TotalItems = productSetup?.TotalItems ?? 1,
-                    GridRows = productSetup?.GridRows ?? 1,
-                    GridColumns = productSetup?.GridColumns ?? 1
+                    ProductName = enteredProductName,
+                    ProductCode = enteredProductCode,
+                    TotalItems = enteredTotalItem,
+                    GridRows = enteredGridRow,
+                    GridColumns = enteredGridCol
                 };
 
                 await _productService.SaveAsync(config);
@@ -846,61 +868,103 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _dialog.ShowWarning($"Failed to edit program {SelectedProgramCode}");
                 }
-
+                HasUnsavedChanges = false;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to edit the program :{ex}", LogType.Error);
             }
         }
-
-        public async void WriteSelectedRecipeAsync()
+        // Called from within ModeOfOperationViewModel (uses recipe.ProductCode)
+        public async void WriteSelectedRecipeAsync(ServoRecipeModel recipe)
         {
             try
             {
                 var savedRecipe = await _servoService.LoadRecipeAsync();
-                var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
-                if (selectedRecipe.ProductCode == CurrentRunningProgram)
+                var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProductCode == recipe.ProductCode);
+
+                bool seqconfirm = await PulseBitFromRecipe(recipe, ConstantValues.Servo_CoordSave, "X Coordinates");
+
+                if (!seqconfirm)
                 {
-                    //OnAddProgram();
-                    await PulseBit(ConstantValues.Servo_CoordSave, "X Coordinates");
-                   // await SaveAeLimitsAsync();
-                    if (_coreClient.isConnected)
-                    {
-                        await _coreClient.WriteTagAsync(ConstantValues.NO_OF_Station, SelectedItemCount);
+                    _logger.LogWarning($"PLC did not acknowledge coordinate save for Product Code {SelectedProgramCode}", LogType.Audit);
+                    _dialog.ShowWarning("PLC did not acknowledge coordinate save. Please check connection.");
+                    return;
+                }
 
-                    }
-                    // await SaveProductSettingsAsync();
+                if (_coreClient.isConnected)
+                {
+                    await _coreClient.WriteTagAsync(ConstantValues.NO_OF_Station, SelectedItemCount);
 
-
-                    // Write to PLC
-                    await _coreClient.WriteTagAsync(AeMinX.WriteTagId, selectedRecipe.Xmin);
-                    await _coreClient.WriteTagAsync(AeMaxX.WriteTagId, selectedRecipe.Xmax);
-                    await _coreClient.WriteTagAsync(AeMinY.WriteTagId, selectedRecipe.Ymin);
-                    await _coreClient.WriteTagAsync(AeMaxY.WriteTagId, selectedRecipe.Ymax);
-                    await _coreClient.WriteTagAsync(AeMinZ.WriteTagId, selectedRecipe.AngleMin);
-                    await _coreClient.WriteTagAsync(AeMaxZ.WriteTagId, selectedRecipe.AngleMax);
+                    // Write Ae Limits to PLC
+                    await _coreClient.WriteTagAsync(AeMinX.WriteTagId, recipe.Xmin);
+                    await _coreClient.WriteTagAsync(AeMaxX.WriteTagId, recipe.Xmax);
+                    await _coreClient.WriteTagAsync(AeMinY.WriteTagId, recipe.Ymin);
+                    await _coreClient.WriteTagAsync(AeMaxY.WriteTagId, recipe.Ymax);
+                    await _coreClient.WriteTagAsync(AeMinZ.WriteTagId, recipe.AngleMin);
+                    await _coreClient.WriteTagAsync(AeMaxZ.WriteTagId, recipe.AngleMax);
 
                     // Handshake (optional, based on your PLC logic)
                     await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1);
                     await Task.Delay(200);
                     await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
 
+                }
 
 
+                //HasUnsavedChanges = false;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"Failed to load Product Code {SelectedProgramCode} : {ex}", LogType.Error);
+            }
+        }
 
+        // Called from within ServoCalibrationViewModel (uses SelectedProgramCode)
+        public async void WriteSelectedRecipeAsync()
+        {
+            try
+            {
+                var savedRecipe = await _servoService.LoadRecipeAsync();
+                var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
 
-                    HasUnsavedChanges = false;
+                if (selectedRecipe == null)
+                {
+                    _dialog.ShowWarning("Selected recipe not found.");
+                    return;
+                }
+                if (selectedRecipe.ProductCode == CurrentRunningProgram)
+                {
+                    bool seqconfirm = await PulseBitFromRecipe(selectedRecipe, ConstantValues.Servo_CoordSave, "X Coordinates");
+                    if (_coreClient.isConnected)
+                    {
+                        await _coreClient.WriteTagAsync(ConstantValues.NO_OF_Station, SelectedItemCount);
 
+                        // Write Ae Limits to PLC
+                        await _coreClient.WriteTagAsync(AeMinX.WriteTagId, selectedRecipe.Xmin);
+                        await _coreClient.WriteTagAsync(AeMaxX.WriteTagId, selectedRecipe.Xmax);
+                        await _coreClient.WriteTagAsync(AeMinY.WriteTagId, selectedRecipe.Ymin);
+                        await _coreClient.WriteTagAsync(AeMaxY.WriteTagId, selectedRecipe.Ymax);
+                        await _coreClient.WriteTagAsync(AeMinZ.WriteTagId, selectedRecipe.AngleMin);
+                        await _coreClient.WriteTagAsync(AeMaxZ.WriteTagId, selectedRecipe.AngleMax);
+
+                        // Handshake (optional, based on your PLC logic)
+                        await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1);
+                        await Task.Delay(200);
+                        await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
+
+                    }
                 }
 
                 else
                 {
                     OnSaveProgram();
-                    HasUnsavedChanges = false;
                 }
+
+                // Call the overloaded version with the recipe
+              //  WriteSelectedRecipeAsync(selectedRecipe);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Failed to load Product Code {SelectedProgramCode} : {ex}", LogType.Error);
             }
@@ -1098,8 +1162,17 @@ namespace IPCSoftware.App.ViewModels
                     // --- Read Current Running Program from PLC (Tag 544) ---
                     if (data.TryGetValue(ConstantValues.ProgramNumber, out object programVal))
                     {
-
-                        CurrentRunningProgram =  SelectedProgramCode ;//Convert.ToInt32(programVal);
+                        int currentProgramNo = Convert.ToInt32(programVal);
+                        var savedRecipe = await _servoService.LoadRecipeAsync();
+                        var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProgramNo == currentProgramNo);
+                       if (selectedRecipe != null)
+                        {
+                            CurrentRunningProgram = selectedRecipe.ProductCode;
+                        }
+                        else
+                        {
+                            CurrentRunningProgram = "*";
+                        }
                     }
 
                     // 2. Update X Parameters
@@ -1266,10 +1339,7 @@ namespace IPCSoftware.App.ViewModels
                 // Optional: Flash success or log
             }
             catch (Exception ex) { _logger.LogError($"Manual Write Error: {ex.Message}", LogType.Diagnostics); }
-        }
-
-
-   
+        }   
 
         private async void OnWriteParameter(ServoParameterItem param)
         {
@@ -1309,9 +1379,8 @@ namespace IPCSoftware.App.ViewModels
                     "You CANNOT leave this page until you press the 'SAVE' button to confirm them.\n\n" +
                     "Please Save your changes.");
 */
-                _dialog.ShowWarning(
-                "⚠️ UNSAVED CHANGES\n" +
-                "You must SAVE your changes before leaving this page.");
+                _dialog.ShowWarning( "⚠️ UNSAVED CHANGES. You must SAVE your changes before leaving this page.");
+
 
                 return false; // BLOCK NAVIGATION
             }
@@ -1324,6 +1393,7 @@ namespace IPCSoftware.App.ViewModels
                 if (description.Contains("Coordinates"))
                 {
                     // --- VALIDATION LOGIC START ---
+
                     var userSequences = Positions
                         .Where(p => p.PositionId != 0 )
                         .Select(p => p.SequenceIndex)
@@ -1401,9 +1471,272 @@ namespace IPCSoftware.App.ViewModels
             catch (Exception ex) { _logger.LogError($"Confirm Error ({description}): {ex.Message}", LogType.Diagnostics); }
         }
 
-      
+        public async Task<bool> PulseBitFromRecipe(ServoRecipeModel recipe, int tagId, string description)
+        {
+            if (recipe == null)
+            {
+                _dialog.ShowWarning("No recipe selected. Cannot write to PLC.");
+                return false;
+            }
 
- 
+            try
+            {
+                if (description.Contains("Coordinates"))
+                {
+                    // Extract sequence indexes from recipe (S1-S12)
+                    var sequenceMap = new Dictionary<int, int>
+                        {
+                            { 1, recipe.S1 },
+                            { 2, recipe.S2 },
+                            { 3, recipe.S3 },
+                            { 4, recipe.S4 },
+                            { 5, recipe.S5 },
+                            { 6, recipe.S6 },
+                            { 7, recipe.S7 },
+                            { 8, recipe.S8 },
+                            { 9, recipe.S9 },
+                            { 10, recipe.S10 },
+                            { 11, recipe.S11 },
+                            { 12, recipe.S12 }
+                        };
+
+                    // Filter active sequences (only up to TotalItems)
+                    int activeItemCount = recipe.TotalItems;
+                    var activeSequences = sequenceMap
+                        .Where(kvp => kvp.Key <= activeItemCount)
+                        .Select(kvp => kvp.Value)
+                        .ToList();
+
+                    //  Validate sequence numbers
+                    // Check for duplicates
+                    if (activeSequences.Distinct().Count() != activeSequences.Count)
+                    {
+                        _dialog.ShowWarning("Validation Failed: Duplicate sequence numbers detected in recipe.");
+                        return false;
+                    }
+
+                    // Check range (1 to TotalItems)
+                    if (activeSequences.Any(s => s < 1 || s > activeItemCount))
+                    {
+                        _dialog.ShowWarning($"Validation Failed: Sequence numbers must be between 1 and {activeItemCount}.");
+                        return false;
+                    }
+
+                    //  Write Sequence Indexes to PLC 
+                    _logger.LogInfo($"[Recipe] Writing Sequence Map from recipe '{recipe.ProductCode}' to PLC...", LogType.Audit);
+
+                    for (int positionId = 1; positionId <= activeItemCount; positionId++)
+                    {
+                        int sequenceIndex = sequenceMap[positionId];
+                        int targetTagId = ConstantValues.Servo_Seq_Start + (positionId - 1);
+
+                        await _coreClient.WriteTagAsync(targetTagId, sequenceIndex);
+                        _logger.LogInfo($"[Recipe] Position {positionId} -> Sequence {sequenceIndex} (Tag {targetTagId})", LogType.Diagnostics);
+                    }
+
+                    //  Write X & Y Coordinates to PLC
+                    _logger.LogInfo($"[Recipe] Writing Coordinates from recipe '{recipe.ProductCode}' to PLC...", LogType.Audit);
+
+                    // X Coordinates (X0-X12)
+                    await _coreClient.WriteTagAsync(START_TAG_POS_X + 0, recipe.X0);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_X + 1, recipe.X1);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_X + 2, recipe.X2);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_X + 3, recipe.X3);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_X + 4, recipe.X4);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_X + 5, recipe.X5);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_X + 6, recipe.X6);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_X + 7, recipe.X7);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_X + 8, recipe.X8);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_X + 9, recipe.X9);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_X + 10, recipe.X10);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_X + 11, recipe.X11);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_X + 12, recipe.X12);
+
+                    // Y Coordinates (Y0-Y12)
+                    await _coreClient.WriteTagAsync(START_TAG_POS_Y + 0, recipe.Y0);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_Y + 1, recipe.Y1);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_Y + 2, recipe.Y2);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_Y + 3, recipe.Y3);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_Y + 4, recipe.Y4);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_Y + 5, recipe.Y5);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_Y + 6, recipe.Y6);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_Y + 7, recipe.Y7);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_Y + 8, recipe.Y8);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_Y + 9, recipe.Y9);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_Y + 10, recipe.Y10);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_Y + 11, recipe.Y11);
+                    await _coreClient.WriteTagAsync(START_TAG_POS_Y + 12, recipe.Y12);
+
+                    _logger.LogInfo("[Recipe] Coordinates Written Successfully.", LogType.Audit);
+                }
+
+                //  Pulse Confirmation Bit (e.g., Servo_CoordSave)
+                _logger.LogInfo($"Confirming {description} for recipe '{recipe.ProductCode}'...", LogType.Audit);
+
+                if (await _coreClient.WriteTagAsync(tagId, 1))
+                {
+                    //_dialog.ShowMessage($"Recipe '{recipe.ProductCode}' loaded successfully.");
+                    _logger.LogInfo($"Recipe '{recipe.ProductCode}' loaded successfully.", LogType.Audit);
+
+                }
+                else
+                {
+                    _dialog.ShowWarning("Failed to pulse confirmation bit. Please check PLC connection.");
+                    return false;
+                }
+
+                await Task.Delay(200); // Wait for PLC to process
+                await _coreClient.WriteTagAsync(tagId, 0); // Reset pulse bit
+
+                _logger.LogInfo($"{description} for recipe '{recipe.ProductCode}' Confirmed.", LogType.Audit);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"PulseBitFromRecipe Error ({description}): {ex.Message}", LogType.Diagnostics);
+                _dialog.ShowWarning($"Failed to load recipe '{recipe?.ProductCode}'. Check logs for details.");
+                 return false;
+            }
+        }
+
+        
+        private async Task OnProgramSelectionChangedAsync()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(SelectedProgramCode))
+                {
+                    _logger.LogWarning("No program code selected", LogType.Audit);
+                    return;
+                }
+
+                // Load all saved recipes
+                var savedRecipes = await _servoService.LoadRecipeAsync();
+                var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
+
+                if (selectedRecipe == null)
+                {
+                    _dialog.ShowWarning($"Recipe with Product Code '{SelectedProgramCode}' not found.");
+                    return;
+                }
+
+                _logger.LogInfo($"Loading recipe: {SelectedProgramCode}", LogType.Audit);
+
+                // ===================================================================
+                // TAB 2: LOAD SERVO COORDINATES & SEQUENCES
+                // ===================================================================
+                await LoadServoCoordinatesFromRecipe(selectedRecipe);
+
+                // ===================================================================
+                // TAB 3: LOAD AE LIMITS
+                // ===================================================================
+                LoadAeLimitsFromRecipe(selectedRecipe);
+
+                // ===================================================================
+                // TAB 4: LOAD PRODUCT SETTINGS
+                // ===================================================================
+                LoadProductSettingsFromRecipe(selectedRecipe);
+
+                _logger.LogInfo($"Recipe '{SelectedProgramCode}' loaded successfully into all tabs.", LogType.Audit);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to load recipe details: {ex.Message}", LogType.Error);
+                _dialog.ShowWarning("Failed to load recipe. Check logs for details.");
+            }
+        }
+
+        // ===================================================================
+        // TAB 2: LOAD SERVO COORDINATES FROM RECIPE
+        // ===================================================================
+        private async Task LoadServoCoordinatesFromRecipe(ServoRecipeModel recipe)
+        {
+            try
+            {
+                // Update Positions collection with recipe data
+                var positionData = new Dictionary<int, (double X, double Y, int Seq)>
+                {
+                    { 0, (recipe.X0, recipe.Y0, 0) },
+                    { 1, (recipe.X1, recipe.Y1, recipe.S1) },
+                    { 2, (recipe.X2, recipe.Y2, recipe.S2) },
+                    { 3, (recipe.X3, recipe.Y3, recipe.S3) },
+                    { 4, (recipe.X4, recipe.Y4, recipe.S4) },
+                    { 5, (recipe.X5, recipe.Y5, recipe.S5) },
+                    { 6, (recipe.X6, recipe.Y6, recipe.S6) },
+                    { 7, (recipe.X7, recipe.Y7, recipe.S7) },
+                    { 8, (recipe.X8, recipe.Y8, recipe.S8) },
+                    { 9, (recipe.X9, recipe.Y9, recipe.S9) },
+                    { 10, (recipe.X10, recipe.Y10, recipe.S10) },
+                    { 11, (recipe.X11, recipe.Y11, recipe.S11) },
+                    { 12, (recipe.X12, recipe.Y12, recipe.S12) }
+                };
+
+                foreach (var pos in Positions)
+                {
+                    if (positionData.TryGetValue(pos.PositionId, out var data))
+                    {
+                        pos.X = data.X;
+                        pos.Y = data.Y;
+                        pos.SequenceIndex = data.Seq;
+                    }
+                }
+
+                _logger.LogInfo($"Loaded {Positions.Count} positions from recipe", LogType.Diagnostics);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to load servo coordinates: {ex.Message}", LogType.Error);
+            }
+        }
+
+        // ===================================================================
+        // TAB 3: LOAD AE LIMITS FROM RECIPE
+        // ===================================================================
+        private void LoadAeLimitsFromRecipe(ServoRecipeModel recipe)
+        {
+            try
+            {
+                AeMinX.NewValue = recipe.Xmin;
+                AeMaxX.NewValue = recipe.Xmax;
+                AeMinY.NewValue = recipe.Ymin;
+                AeMaxY.NewValue = recipe.Ymax;
+                AeMinZ.NewValue = recipe.AngleMin;
+                AeMaxZ.NewValue = recipe.AngleMax;
+
+                _logger.LogInfo("AE Limits loaded from recipe", LogType.Diagnostics);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to load AE limits: {ex.Message}", LogType.Error);
+            }
+        }
+
+        // ===================================================================
+        // TAB 4: LOAD PRODUCT SETTINGS FROM RECIPE
+        // ===================================================================
+        private void LoadProductSettingsFromRecipe(ServoRecipeModel recipe)
+        {
+            try
+            {
+                ProductName = recipe.ProductName;
+                ProductCode = recipe.ProductCode;
+                SelectedItemCount = recipe.TotalItems;
+                GridRows = recipe.GridRows > 0 ? recipe.GridRows : 4;
+                GridColumns = recipe.GridColumns > 0 ? recipe.GridColumns : 3;
+
+                // Update FreshProduct fields as well (for edit mode)
+                FreshProductName = recipe.ProductName;
+                FreshProductCode = recipe.ProductCode;
+
+                _logger.LogInfo($"Product settings loaded: {ProductName} ({ProductCode})", LogType.Diagnostics);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to load product settings: {ex.Message}", LogType.Error);
+            }
+        }
+
+
         public void Dispose()
         {
             try

@@ -62,14 +62,17 @@ namespace IPCSoftware.App.Helpers
             {
                 // 🔔 SHOW MESSAGE ONLY WHEN USER TRIES TO SWITCH
                 DialogService dialog = new DialogService();
-                dialog.ShowWarning(
-                    "⚠️ Unsaved changes detected.\n\n You must SAVE your changes before switching tabs.");
+                //dialog.ShowWarning("⚠️ Unsaved changes. You must SAVE your changes before switching tabs.");
+                bool result = dialog.ShowYesNo("⚠️ Unsaved changes. You must SAVE your changes before switching tabs.", title: "Confirmation");
 
-                // ⛔ revert tab
-                tab.Dispatcher.BeginInvoke(() =>
+                if (result)
                 {
-                    tab.SelectedIndex = lastIndex;
-                });
+                    // ⛔ revert tab
+                    tab.Dispatcher.BeginInvoke(() =>
+                    {
+                        tab.SelectedIndex = lastIndex;
+                    });
+                }
             }
             else
             {

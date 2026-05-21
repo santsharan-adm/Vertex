@@ -32,7 +32,7 @@ namespace IPCSoftware.App.Services
 
             try
             {
-                _servoViewModel.WriteSelectedRecipeAsync();
+                _servoViewModel.WriteSelectedRecipeAsync(recipe);
             }
 
             catch (Exception ex)
