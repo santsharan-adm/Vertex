@@ -1,7 +1,6 @@
-﻿using IPCSoftware.App.Bending.Models;
-using IPCSoftware.Shared;
+﻿using IPCSoftware.Shared;
 
-namespace IPCSoftware.App.Bending.Models
+namespace IPCSoftware.Shared.Models.Bending
 {
     public class BendingMonitorModel : ObservableObjectVM
     {
@@ -68,6 +67,30 @@ namespace IPCSoftware.App.Bending.Models
         {
             get => _result;
             set => SetProperty(ref _result, value);
+        }
+    }
+
+    public class ParameterLImitValues : ObservableObjectVM
+    {
+        private double _upperLimit;
+        public double UpperLimit
+        {
+            get => _upperLimit;
+            set => SetProperty(ref _upperLimit, value);
+        }
+
+        private double _presentValue;
+        public double PresentValue
+        {
+            get => _presentValue;
+            set => SetProperty(ref _presentValue, value);
+        }
+
+        private double _lowerLimit;
+        public double LowerLimit
+        {
+            get => _lowerLimit;
+            set => SetProperty(ref _lowerLimit, value);
         }
     }
 }

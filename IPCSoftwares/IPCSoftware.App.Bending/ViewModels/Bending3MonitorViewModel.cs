@@ -4,6 +4,7 @@ using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
+using IPCSoftware.Shared.Models.Bending;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.UI.CommonViews.ViewModels;
 using Newtonsoft.Json;

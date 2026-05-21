@@ -75,6 +75,7 @@
 
   <ItemGroup>
     <Folder Include="Docs\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
   <ItemGroup>

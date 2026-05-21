@@ -1,7 +1,7 @@
 ﻿using IPCSoftware.Shared;
 using System;
 
-namespace IPCSoftware.App.Bending.Models
+namespace IPCSoftware.Shared.Models.Bending
 {
 
     public class DashboardInspectionModel : ObservableObjectVM
@@ -62,6 +62,9 @@ namespace IPCSoftware.App.Bending.Models
         public FlexBendingIndicator Bending1 { get; set; }
         public FlexBendingIndicator Bending2 { get; set; }
         public FlexBendingIndicator Bending3 { get; set; }
+
+        public FlexBendingIndicator Tearing { get; set; }
+        public FlexBendingIndicator Flipping { get; set; }
 
     }
 

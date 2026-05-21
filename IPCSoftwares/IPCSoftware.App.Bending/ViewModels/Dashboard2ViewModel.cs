@@ -1,5 +1,4 @@
 ﻿using System.Windows.Input;
-using IPCSoftware.App.Bending.Models;
 using IPCSoftware.Common.CommonExtensions;
 using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces;
@@ -7,6 +6,7 @@ using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Services;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.Bending;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.UI.CommonViews.ViewModels;
 using Newtonsoft.Json;
@@ -414,6 +414,8 @@ namespace IPCSoftware.App.Bending.ViewModels
 
             await Task.CompletedTask;
         }
+
+
 
         // ----------------------------------------------------------------
         // RequestId = 5  —  Bending control button states
