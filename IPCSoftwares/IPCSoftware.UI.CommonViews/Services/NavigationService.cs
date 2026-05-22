@@ -166,7 +166,7 @@ namespace IPCSoftware.Common.CommonFunctions
             if (!CanNavigateFromCurrent()) return;
             var detailView = _provider.GetService<DeviceDetailView>();
             var detailVM = _provider.GetService<DeviceDetailViewModel>();
-             
+
             detailView.DataContext = detailVM;
             await detailVM.LoadDevice(device);
 
@@ -179,7 +179,7 @@ namespace IPCSoftware.Common.CommonFunctions
             if (!CanNavigateFromCurrent()) return;
             var detailView = _provider.GetService<CameraDetailView>();
             var detailVM = _provider.GetService<CameraDetailViewModel>();
-             
+
             detailView.DataContext = detailVM;
             await detailVM.LoadDevice(device);
 
@@ -439,7 +439,7 @@ namespace IPCSoftware.Common.CommonFunctions
             if (!CanNavigateFromCurrent()) return;
             view.DataContext = viewModel;
             _mainContent.Content = view;
-           // NavigateMain<ServiceStartupView>();
+            // NavigateMain<ServiceStartupView>();
         }
 
         public void NavigateToPLCTagConfiguration(PLCTagConfigurationModel tagToEdit, Func<Task> onSaveCallback)
@@ -544,6 +544,10 @@ namespace IPCSoftware.Common.CommonFunctions
         public void NavigateToPostBendingMonitor() => NavigateMainByTypeName("PostBendingMonitor");
 
         public void NavigateToBendingLandingPage() => NavigateMainByTypeName("WelcomePageView");
+
+        public void NavigateToBending1Monitor() => NavigateMainByTypeName("Bending1MonitorView");
+        public void NavigateToBending2Monitor() => NavigateMainByTypeName("Bending2MonitorView");
+        public void NavigateToBending3Monitor() => NavigateMainByTypeName("Bending3MonitorView");
 
         public void NavigateToAlarm() => NavigateMainByTypeName("AlarmView");
 

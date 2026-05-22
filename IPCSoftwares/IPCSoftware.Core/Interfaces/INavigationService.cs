@@ -6,13 +6,13 @@ namespace IPCSoftware.Core.Interfaces
 {
     public interface INavigationService
     {
-     /*   void Configure(ContentControl mainHost, ContentControl topHost);
+        /*   void Configure(ContentControl mainHost, ContentControl topHost);
 
-        void NavigateMain<TView>() where TView : class, new();
+           void NavigateMain<TView>() where TView : class, new();
 
-        void NavigateTop<TView>() where TView : class, new();
-        void ClearTop();
-        void ClearMain();*/
+           void NavigateTop<TView>() where TView : class, new();
+           void ClearTop();
+           void ClearMain();*/
         void NavigateTop(object view);
 
 
@@ -66,6 +66,10 @@ namespace IPCSoftware.Core.Interfaces
 
         void NavigateToPostBendingMonitor();
         public void NavigateToBendingLandingPage();
+
+        void NavigateToBending1Monitor();
+        void NavigateToBending2Monitor();
+        void NavigateToBending3Monitor();
 
         void NavigateToAeLimit();
 

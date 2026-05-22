@@ -30,7 +30,12 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         private void ExecuteNext()
         {
-            _navigationService.NavigateToDashboard2();
+            _navigationService.NavigateToPostBendingMonitor();
+        }
+
+        private void ExecutePrevious()
+        {
+            _navigationService.NavigateToBending2Monitor();
         }
 
         // ----------------------------------------------------------------
@@ -46,6 +51,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         // Commands
         // ----------------------------------------------------------------
 
+        public ICommand PreviousCommand { get; }
         public ICommand NextCommand { get; }
 
         // ----------------------------------------------------------------
@@ -72,6 +78,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _navigationService = navigationService;
             _coreClient = coreClient;
 
+            PreviousCommand = new RelayCommand(ExecutePrevious);
             NextCommand = new RelayCommand(ExecuteNext);
         }
 

@@ -477,14 +477,14 @@ public class MainWindowViewModelBase : BaseViewModel
                     _nav.NavigateToOEEDashboard();
                     break;
                 case "Bending1 Monitor":
-                    _nav.NavigateToDashboard1();
+                    _nav.NavigateToBending1Monitor();
                     break;
 
                 case "Bending2 Monitor":
-                    _nav.NavigateToDashboard2();
+                    _nav.NavigateToBending2Monitor();
                     break;
                 case "Bending3 Monitor":
-                    _nav.NavigateToDashboard3();
+                    _nav.NavigateToBending3Monitor();
                     break;
 
                 case "Dashboard1":

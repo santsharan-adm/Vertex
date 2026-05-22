@@ -29,7 +29,7 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         private void ExecutePrevious()
         {
-            _navigationService.NavigateToDashboard3();
+            _navigationService.NavigateToBending3Monitor();
         }
 
         // ----------------------------------------------------------------
