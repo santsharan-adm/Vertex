@@ -1,4 +1,4 @@
-﻿using IPCSoftware.App.Bending.Models;
+﻿using IPCSoftware.Shared.Models.Bending.IPCSoftware.App.Bending.Models;
 using IPCSoftware.Common.CommonExtensions;
 using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces;
