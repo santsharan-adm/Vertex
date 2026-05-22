@@ -991,10 +991,12 @@ namespace IPCSoftware.App.ViewModels
             }
         }
         // Called from within ModeOfOperationViewModel (uses recipe.ProductCode)
-        public async void WriteSelectedRecipeAsync(ServoRecipeModel recipe)
+        public async Task<Dictionary<int,bool>>  WriteSelectedRecipeAsync(ServoRecipeModel recipe)
         {
+            var dict = new Dictionary<int, bool>();
             try
             {
+               
                // var savedRecipe = await _servoService.LoadRecipeAsync();
                 var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == recipe.ProductCode);
 
@@ -1003,9 +1005,11 @@ namespace IPCSoftware.App.ViewModels
                 if (!seqconfirm)
                 {
                     _logger.LogWarning($"PLC did not acknowledge coordinate save for Product Code {SelectedProgramCode}", LogType.Audit);                  
-                    _dialog.ShowWarning("PLC did not acknowledge coordinate save. Please check connection.");                    
-                    return;
+                    _dialog.ShowWarning("PLC did not acknowledge coordinate save. Please check connection.");
+                    dict.Add(1, false);
+                    return dict;
                 }
+                dict.Add(1,true);
 
                 var config = new ProductSettingsModel
                 {
@@ -1016,33 +1020,52 @@ namespace IPCSoftware.App.ViewModels
                         GridColumns = recipe.GridColumns
                 };
 
-                await _productService.SaveAsync(config);
+                await _productService.SaveAsync(config);  // need to remove dependency from json later
                 if (_coreClient.isConnected)
                 {
-                    bool confirmItemwrite = await _coreClient.WriteTagAsync(ConstantValues.NO_OF_Station, SelectedItemCount);
-                    if (!confirmItemwrite) { _dialog.ShowWarning("Error Writing Total Item in Plc"); return; }
-
+                    bool confirmItemwrite = await _coreClient.WriteTagAsync(ConstantValues.NO_OF_Station, recipe.TotalItems);
+                    
+                    if (!confirmItemwrite) { _dialog.ShowWarning("Error Writing Total Item in Plc"); dict.Add(2, false); return dict; }
+                    dict.Add(2, true);
                     // Write Ae Limits to PLC
-                    await _coreClient.WriteTagAsync(AeMinX.WriteTagId, recipe.Xmin);
-                    await _coreClient.WriteTagAsync(AeMaxX.WriteTagId, recipe.Xmax);
-                    await _coreClient.WriteTagAsync(AeMinY.WriteTagId, recipe.Ymin);
-                    await _coreClient.WriteTagAsync(AeMaxY.WriteTagId, recipe.Ymax);
-                    await _coreClient.WriteTagAsync(AeMinZ.WriteTagId, recipe.AngleMin);
-                    await _coreClient.WriteTagAsync(AeMaxZ.WriteTagId, recipe.AngleMax);
+                    bool XminConf =  await _coreClient.WriteTagAsync(AeMinX.WriteTagId, recipe.Xmin);
+                    bool XmaxConf = await _coreClient.WriteTagAsync(AeMaxX.WriteTagId, recipe.Xmax);
+                    bool YminConf = await _coreClient.WriteTagAsync(AeMinY.WriteTagId, recipe.Ymin);
+                    bool YmaxConf = await _coreClient.WriteTagAsync(AeMaxY.WriteTagId, recipe.Ymax);
+                    bool ZminConf = await _coreClient.WriteTagAsync(AeMinZ.WriteTagId, recipe.AngleMin);
+                    bool ZmaxConf = await _coreClient.WriteTagAsync(AeMaxZ.WriteTagId, recipe.AngleMax);
 
+                    if( !(XminConf && XmaxConf && YminConf && YmaxConf && ZminConf && ZmaxConf)) 
+                    {
+                        _dialog.ShowWarning("Error Writing AE Limits in Plc");
+                        dict.Add(3, false); 
+                        return dict;
+                    }
+                    dict.Add(3, true);
                     // Handshake (optional, based on your PLC logic)
-                    await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1);
+                    bool ackConf1 = await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1);
                     await Task.Delay(200);
-                    await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
+                    bool ackConf2 = await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
 
+                    if(!(ackConf1 && ackConf2))
+                    { _logger.LogError($"Error writing ack limit TagId : {ConstantValues.ACK_LIMIT}", LogType.Error);
+                       dict.Add(4, false);
+                        return dict;
+                    }
+                    dict.Add(4, true);
+                    
                 }
 
-
+                return dict;
                 //HasUnsavedChanges = false;
             }
             catch(Exception ex)
             {
                 _logger.LogError($"Failed to load Product Code {SelectedProgramCode} : {ex}", LogType.Error);
+                dict.Add(1, false);
+                dict.Add(2, false);
+                dict.Add(3, false);
+                return dict;
             }
         }
 

@@ -27,17 +27,22 @@ namespace IPCSoftware.App.Services
             _servoViewModel = servoViewModel;
         }
 
-        public async Task ApplyRecipeToPlcAsync(ServoRecipeModel recipe)
+        public async Task<Dictionary<int,bool>> ApplyRecipeToPlcAsync(ServoRecipeModel recipe)
         {
+            var dict = new Dictionary<int, bool>();
 
             try
             {
-                _servoViewModel.WriteSelectedRecipeAsync(recipe);
+                dict = await _servoViewModel.WriteSelectedRecipeAsync(recipe);
+                //if (dict.ContainsKey(1)) { bool result1 = dict[1]; }
+                return dict;
             }
 
             catch (Exception ex)
             {
                 _logger.LogError($"Error writing sequence indexes to PLC: {ex.Message}", LogType.Error);
+                return dict = new Dictionary<int,bool>();
+                
             }
 
         }

@@ -5,7 +5,7 @@ namespace IPCSoftware.App.Services
 {
     public interface IRecipeApplicationService
     {
-        Task ApplyRecipeToPlcAsync(ServoRecipeModel recipe);
+        Task<Dictionary<int, bool>> ApplyRecipeToPlcAsync(ServoRecipeModel recipe);
         Task SaveAeLimitsAsync();
         Task PulseBitAsync(int tagId, string description);
     }

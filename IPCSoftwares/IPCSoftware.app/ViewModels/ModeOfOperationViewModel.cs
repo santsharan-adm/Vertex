@@ -231,7 +231,11 @@ namespace IPCSoftware.App.ViewModels
                 _logger.LogInfo($"Recipe Selected: Program {SelectedRecipe.ProgramNo} - {SelectedRecipe.ProductCode}", LogType.Audit);
 
 
-                await _recipeAppService.ApplyRecipeToPlcAsync(SelectedRecipe);
+                var allResults = await _recipeAppService.ApplyRecipeToPlcAsync(SelectedRecipe);
+                if (allResults.ContainsKey(1)) { bool servoResult = allResults[1]; if (!servoResult) { AddAudit($"Servo Coordinated Write Failed"); } else { AddAudit($"Servo Coordinated Write Successfully"); } }
+                if (allResults.ContainsKey(2)) { bool positionResult = allResults[2]; if (!positionResult) { AddAudit($"Position Sequence Write Failed"); } else { AddAudit($"Position Sequence Write Successfully"); } }
+                if (allResults.ContainsKey(3)) { bool aeLimitsResult = allResults[3]; if (!aeLimitsResult) { AddAudit($"AE Limits Parameters Write Failed"); } else { AddAudit($"AE Limits Parameters Write Successfully"); } }
+                if (allResults.ContainsKey(4)) { bool ackResult = allResults[4]; if (!ackResult) { AddAudit($"Acknowledge Write Failed"); } else { AddAudit($"Acknowledge Limits Write Successfully"); } }
                 // Write selected recipe/program number to PLC
                 bool bResult = await _coreClient.WriteTagAsync(ConstantValues.ProgramNumber, SelectedRecipe.ProgramNo);
                 if (bResult)
@@ -242,11 +246,14 @@ namespace IPCSoftware.App.ViewModels
                 {
                     SelectedRecipe = _lastConfirmedRecipe;
                 }
-                _dialog.ShowMessage($"Recipe '{SelectedRecipe.ProductCode}' loaded successfully.");
-                AddAudit($"Servo Coordinated Write Successfully");
-                AddAudit($"Position Sequence Write Successfully");
-                AddAudit($"AE Limits Parameters Write Successfully");
-                AddAudit($"Program Code Changed: {SelectedRecipe.ProductCode}");
+                if (bResult && allResults.Values.All(r => r == true))
+                {
+                    _dialog.ShowMessage($"Recipe '{SelectedRecipe.ProductCode}' loaded successfully.");
+                }
+                else
+                {
+                    _dialog.ShowMessage($"Failed to load recipe '{SelectedRecipe.ProductCode}'. Please check the audit log for details.");
+                }
             }
             catch (Exception ex)
             {
