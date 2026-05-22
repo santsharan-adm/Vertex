@@ -243,7 +243,10 @@ namespace IPCSoftware.App.ViewModels
                     SelectedRecipe = _lastConfirmedRecipe;
                 }
                 _dialog.ShowMessage($"Recipe '{SelectedRecipe.ProductCode}' loaded successfully.");
-                AddAudit($"Program Number Changed: {SelectedRecipe.ProductCode}");
+                AddAudit($"Servo Coordinated Write Successfully");
+                AddAudit($"Position Sequence Write Successfully");
+                AddAudit($"AE Limits Parameters Write Successfully");
+                AddAudit($"Program Code Changed: {SelectedRecipe.ProductCode}");
             }
             catch (Exception ex)
             {

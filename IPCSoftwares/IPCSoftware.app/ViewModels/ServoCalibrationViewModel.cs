@@ -238,11 +238,9 @@ namespace IPCSoftware.App.ViewModels
         public ICommand JogCommand { get; }
 
         public ICommand AddProgramCommand { get; }
-
         public ICommand EditProgramCommand { get; }
-
+        public ICommand CancelProgramCommand { get; }
         public ICommand DeleteProgramCommand { get; }
-
         public ICommand SaveProgramCommand { get; }
 
         public ICommand SelectionChangedCommand { get; }
@@ -280,6 +278,8 @@ namespace IPCSoftware.App.ViewModels
 
             EditProgramCommand = new RelayCommand(OnSaveProgram);
 
+            CancelProgramCommand = new RelayCommand(OnCancelProgram);
+
             DeleteProgramCommand = new RelayCommand(OnDeleteProgram);
 
             SaveProgramCommand = new RelayCommand(OnAddProgram);
@@ -295,17 +295,15 @@ namespace IPCSoftware.App.ViewModels
 
 
             InitializeParameters();
-            // Load positions from JSON via Service
-            _ = InitializePositionsAsync();
 
-            InitializeAvailableProgramNumbers();
-
-            //Initialize AE Limits Parametrs
-             InitializeAeLimitParameters();
-
-            //Load AE Limits and Product Settings
-            _ = LoadAeLimitsAsync();
-            _ = LoadProductSettingsAsync();
+            _ = Task.Run(async () =>
+            {
+                await InitializeAvailableProgramNumbers();
+                await InitializePositionsAsync();                
+                InitializeAeLimitParameters();
+                await LoadAeLimitsAsync();
+               // await LoadProductSettingsAsync();
+            });
 
             //InitializePositions();
             _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(100),
@@ -313,6 +311,93 @@ namespace IPCSoftware.App.ViewModels
                                   );
             _liveDataTimer.Start();
 
+        }
+
+        /// Initialize Servo Postion Models
+        List<ServoRecipeModel> savedRecipes = new List<ServoRecipeModel>();
+
+        private async Task InitializePositionsAsync()
+        {
+            try
+            {
+                // 1. Load Product Config
+                //  var savedPositions = await _servoService.LoadPositionsAsync(); ///From ServoCalibration.Json
+
+                // savedRecipes = await _servoService.LoadRecipeAsync();       // From Recipe.csv
+
+                if (savedRecipes == null || !savedRecipes.Any())
+                {
+                    _logger.LogWarning("No recipes found. Cannot initialize positions.", LogType.Diagnostics);
+                    return;
+                }
+
+                //==============///=======================//
+                var lastSavedRecipe = savedRecipes.Last();
+                int totalItems = lastSavedRecipe.TotalItems;
+
+                //var prodConfig = await _productService.LoadAsync();
+                //int totalItems = prodConfig.TotalItems;
+
+                AvailableSequences.Clear();
+                for (int i = 1; i <= totalItems; i++)
+                {
+                    AvailableSequences.Add(i);
+                }
+
+                var recipePositionData = new Dictionary<int, (double X, double Y, int Seq, string Name)>
+                {
+                    { 0, (lastSavedRecipe.X0, lastSavedRecipe.Y0, 0, "Position 0 (Home)") },
+                    { 1, (lastSavedRecipe.X1, lastSavedRecipe.Y1, lastSavedRecipe.S1, "Position 1") },
+                    { 2, (lastSavedRecipe.X2, lastSavedRecipe.Y2, lastSavedRecipe.S2, "Position 2") },
+                    { 3, (lastSavedRecipe.X3, lastSavedRecipe.Y3, lastSavedRecipe.S3, "Position 3") },
+                    { 4, (lastSavedRecipe.X4, lastSavedRecipe.Y4, lastSavedRecipe.S4, "Position 4") },
+                    { 5, (lastSavedRecipe.X5, lastSavedRecipe.Y5, lastSavedRecipe.S5, "Position 5") },
+                    { 6, (lastSavedRecipe.X6, lastSavedRecipe.Y6, lastSavedRecipe.S6, "Position 6") },
+                    { 7, (lastSavedRecipe.X7, lastSavedRecipe.Y7, lastSavedRecipe.S7, "Position 7") },
+                    { 8, (lastSavedRecipe.X8, lastSavedRecipe.Y8, lastSavedRecipe.S8, "Position 8") },
+                    { 9, (lastSavedRecipe.X9, lastSavedRecipe.Y9, lastSavedRecipe.S9, "Position 9") },
+                    { 10, (lastSavedRecipe.X10, lastSavedRecipe.Y10, lastSavedRecipe.S10, "Position 10") },
+                    { 11, (lastSavedRecipe.X11, lastSavedRecipe.Y11, lastSavedRecipe.S11, "Position 11") },
+                    { 12, (lastSavedRecipe.X12, lastSavedRecipe.Y12, lastSavedRecipe.S12, "Position 12") }
+                };
+
+                // 4. Populate List for UI
+                Positions.Clear();
+                // Add Position 0 (Home) - Always enabled
+                if (recipePositionData.TryGetValue(0, out var homeData))
+                {
+                    Positions.Add(new ServoPositionModel
+                    {
+                        PositionId = 0,
+                        Name = homeData.Name,
+                        SequenceIndex = homeData.Seq,
+                        X = homeData.X,
+                        Y = homeData.Y,
+                        IsEnabled = true
+                    });
+                }
+
+                // Add only the number of items configured (1 to TotalItems)
+                for (int i = 1; i <= totalItems; i++)
+                {
+                    if (recipePositionData.TryGetValue(i, out var posData))
+                    {
+                        Positions.Add(new ServoPositionModel
+                        {
+                            PositionId = i,
+                            Name = posData.Name,
+                            SequenceIndex = posData.Seq,
+                            X = posData.X,
+                            Y = posData.Y,
+                            IsEnabled = true
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Init Positions Error: {ex.Message}", LogType.Diagnostics);
+            }
         }
 
         // ===================================================================
@@ -460,7 +545,7 @@ namespace IPCSoftware.App.ViewModels
 
 
         // ---  Initialize Available Program Numbers  ---
-        private async  void InitializeAvailableProgramNumbers()
+        private async Task InitializeAvailableProgramNumbers()
         {
             await RefreshProgramNumbersAsync();
 
@@ -471,7 +556,9 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                var savedRecipes = await _servoService.LoadRecipeAsync();
+                //Reload savedRecipes from file ( in case of modification by another)
+                await LoadRecipesAsync();
+
                 AvailableProgramCode.Clear();
                 AvailableProductName.Clear();
 
@@ -507,6 +594,30 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
+        //Load All Recipes from Recipe.csv 
+        private async Task LoadRecipesAsync() 
+        {
+            try
+            {
+                savedRecipes = await _servoService.LoadRecipeAsync();
+                if (savedRecipes == null || !savedRecipes.Any())
+                {
+                    _logger.LogWarning("No Saved Recipes found", LogType.Error);
+                    savedRecipes = new List<ServoRecipeModel>();
+                }
+                else
+                {
+                    _logger.LogInfo($"Loaded {savedRecipes.Count} recipes", LogType.Diagnostics);
+                }
+            }
+
+            catch(Exception ex)
+            {
+                _logger.LogError($"Failed to load recipes: {ex.Message}", LogType.Error);
+                savedRecipes = new List<ServoRecipeModel>(); // Fallback to empty list
+
+            }
+        }
         //-- New Program Command Handler (Prepares the form for new entry) ---
         private void OnNewProgram()
         {
@@ -531,18 +642,6 @@ namespace IPCSoftware.App.ViewModels
             try
             {
 
-                //var userInput = _dialog.UserInput(
-                //    "Product Code:",
-                //    "", // Default value for Field1
-                //    "Product Name:",
-                //    ""  // Default value for Field2
-                //);
-
-                //if (!userInput.Confirmed)
-                //{
-                //    _logger.LogInfo("Add Program cancelled by user.", LogType.Audit);
-                //    return;
-                //}
                 bool confirm = _dialog.ShowYesNo($" Do you want to Add Program {FreshProductCode}?", "Confirm Add Recipe");
                 if (!confirm) { return; }
                 string enteredProductCode = FreshProductCode??SelectedProgramCode;// Use Selected Program Code if Fresh Code value not entered
@@ -573,7 +672,7 @@ namespace IPCSoftware.App.ViewModels
 
 
 
-                var savedRecipes = await _servoService.LoadRecipeAsync();
+              //  var savedRecipes = await _servoService.LoadRecipeAsync();
                 bool productCodeExists = savedRecipes.Any(r =>
                     string.Equals(r.ProductCode, enteredProductCode, StringComparison.OrdinalIgnoreCase));
 
@@ -596,7 +695,7 @@ namespace IPCSoftware.App.ViewModels
                 var savedPositions = Positions.ToList();
                 var aeLimitSettings = await _aeLimitService.GetSettingsAsync();
                 var firstStation = aeLimitSettings?.Stations?.FirstOrDefault();
-                var productSetup = await _productService.LoadAsync();
+               // var productSetup = await _productService.LoadAsync();
 
                 var newRecipe = new ServoRecipeModel
                 {
@@ -695,6 +794,24 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
+        // -- - Cancel Program Command Handler (Resets the form to selected program) ---
+        private void OnCancelProgram()
+        {
+            HasUnsavedChanges = false;
+            SelectedProgramCode = AvailableProgramCode.Last();
+            FreshProductCode = AvailableProgramCode.Last();
+            OnPropertyChanged(nameof(SelectedProgramCode));
+            OnPropertyChanged(nameof(SelectedProgramCode));
+            _nextProgramId = savedRecipes.Max(r => r.ProgramNo);
+
+            //Availabe Product Name List Initialize
+
+            SelectedProductName = AvailableProductName.Last();
+            FreshProductName = AvailableProductName.Last();
+            OnPropertyChanged(nameof(SelectedProductName));
+            OnPropertyChanged(nameof(FreshProductName));
+        }
+
         // =------ Delete Program Command Handler  ------//
 
         private async void OnDeleteProgram()
@@ -705,8 +822,8 @@ namespace IPCSoftware.App.ViewModels
                 //Check if at least 2 programs will remain after deletion
                 if (AvailableProgramCode.Count <= 1) { _dialog.ShowWarning("Cannot delete. At least 1 programs must remain in the list."); return; }
 
-                var savedRecipe = await _servoService.LoadRecipeAsync();
-                var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
+                //var savedRecipe = await _servoService.LoadRecipeAsync();
+                var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
                 if (selectedRecipe == null)
                 {
                     _dialog.ShowWarning("Selected program not found.");
@@ -742,7 +859,7 @@ namespace IPCSoftware.App.ViewModels
             try
             {
                 // Find the recipe by ProductCode
-                var savedRecipes = await _servoService.LoadRecipeAsync();
+                //var savedRecipes = await _servoService.LoadRecipeAsync();
                 var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == (string.IsNullOrEmpty(SelectedProgramCode) ? FreshProductCode : SelectedProgramCode));
 
 
@@ -774,7 +891,7 @@ namespace IPCSoftware.App.ViewModels
                 //Collecting data from AE Limits
                 var aeLimitSettings = await _aeLimitService.GetSettingsAsync();
                 var firstStation = aeLimitSettings?.Stations?.FirstOrDefault();
-                var productSetup = await _productService.LoadAsync();
+              //  var productSetup = await _productService.LoadAsync();
 
                 var UpdatedRecipe = new ServoRecipeModel
                 {
@@ -878,21 +995,32 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                var savedRecipe = await _servoService.LoadRecipeAsync();
-                var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProductCode == recipe.ProductCode);
+               // var savedRecipe = await _servoService.LoadRecipeAsync();
+                var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == recipe.ProductCode);
 
                 bool seqconfirm = await PulseBitFromRecipe(recipe, ConstantValues.Servo_CoordSave, "X Coordinates");
 
                 if (!seqconfirm)
                 {
-                    _logger.LogWarning($"PLC did not acknowledge coordinate save for Product Code {SelectedProgramCode}", LogType.Audit);
-                    _dialog.ShowWarning("PLC did not acknowledge coordinate save. Please check connection.");
+                    _logger.LogWarning($"PLC did not acknowledge coordinate save for Product Code {SelectedProgramCode}", LogType.Audit);                  
+                    _dialog.ShowWarning("PLC did not acknowledge coordinate save. Please check connection.");                    
                     return;
                 }
 
+                var config = new ProductSettingsModel
+                {
+                        ProductName = recipe.ProductName,
+                        ProductCode = recipe.ProductCode,
+                        TotalItems = recipe.TotalItems,
+                        GridRows = recipe.GridRows,
+                        GridColumns = recipe.GridColumns
+                };
+
+                await _productService.SaveAsync(config);
                 if (_coreClient.isConnected)
                 {
-                    await _coreClient.WriteTagAsync(ConstantValues.NO_OF_Station, SelectedItemCount);
+                    bool confirmItemwrite = await _coreClient.WriteTagAsync(ConstantValues.NO_OF_Station, SelectedItemCount);
+                    if (!confirmItemwrite) { _dialog.ShowWarning("Error Writing Total Item in Plc"); return; }
 
                     // Write Ae Limits to PLC
                     await _coreClient.WriteTagAsync(AeMinX.WriteTagId, recipe.Xmin);
@@ -923,8 +1051,8 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                var savedRecipe = await _servoService.LoadRecipeAsync();
-                var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
+               // var savedRecipe = await _servoService.LoadRecipeAsync();
+                var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
 
                 if (selectedRecipe == null)
                 {
@@ -951,6 +1079,8 @@ namespace IPCSoftware.App.ViewModels
                         await Task.Delay(200);
                         await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
 
+                        //Save csv after write operation
+                        OnSaveProgram();
                     }
                 }
 
@@ -1054,113 +1184,8 @@ namespace IPCSoftware.App.ViewModels
             XParameters.Add(Create(pair.X));
             YParameters.Add(Create(pair.Y));
         }
-            
 
-       
-       /* private async Task InitializePositionsAsync()
-        {
-            try
-            {
-                // Use the service to load positions (which includes SequenceIndex and Coordinates)
-                var positions = await _servoService.LoadPositionsAsync();
 
-                Positions.Clear();
-
-                foreach (var pos in positions.OrderBy(p => p.PositionId))
-                {
-                    Positions.Add(pos);
-                }
-                // Ensure ordered by ID for UI consistency
-               
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Init Positions Error: {ex.Message}", LogType.Diagnostics);
-            }
-        }
-*/
-        private async Task InitializePositionsAsync()
-        {
-            try
-            {
-                // 1. Load Product Config
-              //  var savedPositions = await _servoService.LoadPositionsAsync(); ///From ServoCalibration.Json
-                var savedRecipes = await _servoService.LoadRecipeAsync();       // From Recipe.csv
-
-                if (savedRecipes == null || !savedRecipes.Any())
-                {
-                    _logger.LogWarning("No recipes found. Cannot initialize positions.", LogType.Diagnostics);
-                    return;
-                }
-
-                //==============///=======================//
-                var lastSavedRecipe = savedRecipes.Last();
-                int totalItems = lastSavedRecipe.TotalItems;
-
-                //var prodConfig = await _productService.LoadAsync();
-                //int totalItems = prodConfig.TotalItems;
-
-                AvailableSequences.Clear();
-                for (int i = 1; i <= totalItems; i++)
-                {
-                    AvailableSequences.Add(i);
-                }
-
-                var recipePositionData = new Dictionary<int, (double X, double Y, int Seq, string Name)>
-                {
-                    { 0, (lastSavedRecipe.X0, lastSavedRecipe.Y0, 0, "Position 0 (Home)") },
-                    { 1, (lastSavedRecipe.X1, lastSavedRecipe.Y1, lastSavedRecipe.S1, "Position 1") },
-                    { 2, (lastSavedRecipe.X2, lastSavedRecipe.Y2, lastSavedRecipe.S2, "Position 2") },
-                    { 3, (lastSavedRecipe.X3, lastSavedRecipe.Y3, lastSavedRecipe.S3, "Position 3") },
-                    { 4, (lastSavedRecipe.X4, lastSavedRecipe.Y4, lastSavedRecipe.S4, "Position 4") },
-                    { 5, (lastSavedRecipe.X5, lastSavedRecipe.Y5, lastSavedRecipe.S5, "Position 5") },
-                    { 6, (lastSavedRecipe.X6, lastSavedRecipe.Y6, lastSavedRecipe.S6, "Position 6") },
-                    { 7, (lastSavedRecipe.X7, lastSavedRecipe.Y7, lastSavedRecipe.S7, "Position 7") },
-                    { 8, (lastSavedRecipe.X8, lastSavedRecipe.Y8, lastSavedRecipe.S8, "Position 8") },
-                    { 9, (lastSavedRecipe.X9, lastSavedRecipe.Y9, lastSavedRecipe.S9, "Position 9") },
-                    { 10, (lastSavedRecipe.X10, lastSavedRecipe.Y10, lastSavedRecipe.S10, "Position 10") },
-                    { 11, (lastSavedRecipe.X11, lastSavedRecipe.Y11, lastSavedRecipe.S11, "Position 11") },
-                    { 12, (lastSavedRecipe.X12, lastSavedRecipe.Y12, lastSavedRecipe.S12, "Position 12") }
-                };
-
-                // 4. Populate List for UI
-                Positions.Clear();
-                // Add Position 0 (Home) - Always enabled
-                if (recipePositionData.TryGetValue(0, out var homeData))
-                {
-                    Positions.Add(new ServoPositionModel
-                    {
-                        PositionId = 0,
-                        Name = homeData.Name,
-                        SequenceIndex = homeData.Seq,
-                        X = homeData.X,
-                        Y = homeData.Y,
-                        IsEnabled = true
-                    });
-                } 
-
-                // Add only the number of items configured (1 to TotalItems)
-                for (int i = 1; i <= totalItems; i++)
-                {
-                    if (recipePositionData.TryGetValue(i, out var posData))
-                    {
-                        Positions.Add(new ServoPositionModel
-                        {
-                            PositionId = i,
-                            Name = posData.Name,
-                            SequenceIndex = posData.Seq,
-                            X = posData.X,
-                            Y = posData.Y,
-                            IsEnabled = true
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Init Positions Error: {ex.Message}", LogType.Diagnostics);
-            }
-        }
 
         private async Task OnLiveDataTick()
         {
@@ -1188,8 +1213,8 @@ namespace IPCSoftware.App.ViewModels
                     if (data.TryGetValue(ConstantValues.ProgramNumber, out object programVal))
                     {
                         int currentProgramNo = Convert.ToInt32(programVal);
-                        var savedRecipe = await _servoService.LoadRecipeAsync();
-                        var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProgramNo == currentProgramNo);
+                       // var savedRecipe = await _servoService.LoadRecipeAsync();
+                        var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProgramNo == currentProgramNo);
                        if (selectedRecipe != null)
                         {
                             CurrentRunningProgram = selectedRecipe.ProductCode;
@@ -1477,7 +1502,7 @@ namespace IPCSoftware.App.ViewModels
 
                 if (await _coreClient.WriteTagAsync(tagId, 1))
                 {
-                    _dialog.ShowMessage("Recipe loaded sucessfully.");
+                    _dialog.ShowMessage("Value Updated sucessfully.");
                 }
                 else
                 {
@@ -1636,7 +1661,7 @@ namespace IPCSoftware.App.ViewModels
                 }
 
                 // Load all saved recipes
-                var savedRecipes = await _servoService.LoadRecipeAsync();
+               // var savedRecipes = await _servoService.LoadRecipeAsync();
                 var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
 
                 if (selectedRecipe == null)

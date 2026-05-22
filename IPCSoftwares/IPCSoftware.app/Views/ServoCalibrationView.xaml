@@ -763,6 +763,38 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="AE Limit Configuration" FontSize="38" Foreground="#1F2937" FontWeight="Bold" />
                             <StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center">
+                                <!-- Current Running Program TextBox -->
+                                <Border Background="#28A745" 
+                                    CornerRadius="12" 
+                                    Padding="10,10" 
+                                    Margin="10,0,100,0"
+                                    Height="60" 
+                                    Width="Auto" 
+                                    HorizontalAlignment="Center">
+                                    <Border.Effect>
+                                        <DropShadowEffect Color="Black" BlurRadius="20" Opacity="0.1"/>
+                                    </Border.Effect>
+
+                                    <!-- Changed from StackPanel (vertical) to Horizontal StackPanel -->
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="RUNNING PRODUCT : " 
+                                       Foreground="White" 
+                                       FontSize="22" 
+                                       FontWeight="Bold" 
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,0,0"/>
+                                        <TextBox Text="{Binding CurrentRunningProgram, Mode=OneWay}" 
+                                         Foreground="White" 
+                                         FontSize="22" 
+                                         FontWeight="Bold" 
+                                         VerticalAlignment="Center"
+                                         IsReadOnly="True"
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         TextAlignment="Center"
+                                         MinWidth="0"/>
+                                    </StackPanel>
+                                </Border>
                                 <TextBlock Text="PRODUCT CODE:" FontSize="24" FontWeight="SemiBold" Foreground="#555" VerticalAlignment="Center" Margin="0,0,45,0"/>
                                 <!-- ComboBox for Existing Programs -->
                                 <ComboBox ItemsSource="{Binding AvailableProgramCode}"
@@ -856,6 +888,38 @@
                         </Grid.RowDefinitions>
 
                         <TextBlock Text="Product Setup" FontSize="38" FontWeight="Bold" Foreground="#333" Margin="0,0,0,40"/>
+                        <!-- Current Running Program TextBox -->
+                        <Border Background="#28A745" 
+                          CornerRadius="12" 
+                          Padding="10,10" 
+                          Margin="400,0,0,30"
+                          Height="60" 
+                          Width="Auto" 
+                          HorizontalAlignment="Left">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="20" Opacity="0.1"/>
+                            </Border.Effect>
+
+                            <!-- Changed from StackPanel (vertical) to Horizontal StackPanel -->
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="RUNNING PRODUCT : " 
+                                 Foreground="White" 
+                                 FontSize="22" 
+                                 FontWeight="Bold" 
+                                 VerticalAlignment="Center"
+                                 Margin="0,0,0,0"/>
+                                <TextBox Text="{Binding CurrentRunningProgram, Mode=OneWay}" 
+                               Foreground="White" 
+                               FontSize="22" 
+                               FontWeight="Bold" 
+                               VerticalAlignment="Center"
+                               IsReadOnly="True"
+                               Background="Transparent"
+                               BorderThickness="0"
+                               TextAlignment="Center"
+                               MinWidth="0"/>
+                            </StackPanel>
+                        </Border>
 
                         <Border Grid.Row="1" Background="White" CornerRadius="12" Padding="40" VerticalAlignment="Top">
                             <Border.Effect>
@@ -961,7 +1025,7 @@
                                             </ControlTemplate>
                                         </Button.Template>
                                     </Button>
-                                    <!-- Edit Button -->
+                                    <!-- Edit Button --><!--
                                 <Button Content="EDIT" 
                                        Command="{Binding EditProgramCommand}"
                                        Background="DarkCyan" 
@@ -984,7 +1048,7 @@
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
                                         </Button.Template>
-                                    </Button>
+                                    </Button>-->
 
 
                                  <!-- DELETE Button -->
@@ -1011,6 +1075,29 @@
                                         </ControlTemplate>
                                     </Button.Template>
                                 </Button>
+                                    <Button Content="CANCLE" 
+                                       Command="{Binding CancelProgramCommand}"
+                                       Background="DarkCyan" 
+                                       Foreground="White" 
+                                       FontSize="22" 
+                                       FontWeight="Bold"
+                                       Height="60" 
+                                       Width="120"
+                                       Margin="0,0,10,0"
+                                       Cursor="Hand">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="5">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Opacity" Value="0.8"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
 
 
 
