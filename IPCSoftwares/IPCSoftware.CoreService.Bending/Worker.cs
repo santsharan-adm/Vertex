@@ -14,7 +14,7 @@ namespace IPCSoftware.CoreService.Bending
     public class Worker : BackgroundService
     {
         private readonly IAppLogger _logger;
-        private readonly ILogManagerService _logManager;      
+        private readonly ILogManagerService _logManager;
         private readonly IDeviceConfigurationService _deviceService;
         private readonly ConfigSettings _configuration;
         private readonly CCDTriggerServiceBending _ccdTrigger;
@@ -27,7 +27,7 @@ namespace IPCSoftware.CoreService.Bending
         // Removed _plcManager and _dashboard fields; they will be local or managed by DashboardInitializer
 
         public Worker(IAppLogger logger,
-            ILogManagerService logManager,          
+            ILogManagerService logManager,
             AlgorithmAnalysisService algo,
             DashboardInitializerBending dashboard,
             CCDTriggerServiceBending ccdTrigger,
@@ -38,7 +38,7 @@ namespace IPCSoftware.CoreService.Bending
             UiListener uiListener)
         {
             _logManager = logManager;
-            _deviceService = deviceService;          
+            _deviceService = deviceService;
             _logger = logger;
             _algo = algo;
             _plcManager = plcManger;

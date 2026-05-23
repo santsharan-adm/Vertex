@@ -42,8 +42,8 @@ namespace IPCSoftware.Services.ConfigServices
 
         public DeviceConfigurationService(
             IOptions<ConfigSettings> configSettings,
-            ConfigLoaderService configLoaderService ,                           // Added by Rishabh - Date 18/04/2026
-           // TagConfigLoader tagConfigLoader,                                    //Added by Rishabh - Date 27/04/2026
+            ConfigLoaderService configLoaderService,                           // Added by Rishabh - Date 18/04/2026
+                                                                               // TagConfigLoader tagConfigLoader,                                    //Added by Rishabh - Date 27/04/2026
             IAppLogger logger) : base(logger)
         {
             var config = configSettings.Value;
@@ -60,19 +60,19 @@ namespace IPCSoftware.Services.ConfigServices
             _interfacesConfigPath = Path.Combine(_dataFolder, config.DeviceInterfacesFileName /* "DeviceInterfaces.csv"*/);
             _cameraInterfacesConfigPath = Path.Combine(_dataFolder, config.CameraInterfacesFileName  /* "CameraInterfaces.csv"*/);
             _tagConfigPath = Path.Combine(_dataFolder, config.PlcTagsFileName  /* Added new * "PlcTags.csv*/);
-           
+
             // Added by Rishabh - Date 27/04/2026
-            _devices = new List<DeviceModel>();                             
+            _devices = new List<DeviceModel>();
             _interfaces = new List<DeviceInterfaceModel>();
             _cameraInterfaces = new List<CameraInterfaceModel>();
             _tags = new List<PLCTagConfigurationModel>();
 
             //Added by Rishabh - Date 27/04/2026
-            _deviceLoader = configLoaderService.GetDeviceConfigLoader(_devicesConfigPath, logger);                       
-            _deviceInterfaceLoader =configLoaderService.GetDeviceInterfaceConfigLoader(_interfacesConfigPath, logger);   
-            _cameraLoader = configLoaderService.GetCameraConfigLoader(_cameraInterfacesConfigPath, logger);              
-            _tagLoader = configLoaderService.GetTagConfigLoader(_tagConfigPath, logger);                                                                                                         
-                                                                      
+            _deviceLoader = configLoaderService.GetDeviceConfigLoader(_devicesConfigPath, logger);
+            _deviceInterfaceLoader = configLoaderService.GetDeviceInterfaceConfigLoader(_interfacesConfigPath, logger);
+            _cameraLoader = configLoaderService.GetCameraConfigLoader(_cameraInterfacesConfigPath, logger);
+            _tagLoader = configLoaderService.GetTagConfigLoader(_tagConfigPath, logger);
+
 
 
         }
@@ -159,7 +159,7 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var existing = _devices.FirstOrDefault(d => d.Id == device.Id);
-                if (existing == null) 
+                if (existing == null)
                     return false;
 
                 var index = _devices.IndexOf(existing);
@@ -179,7 +179,7 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var device = _devices.FirstOrDefault(d => d.Id == id);
-                if (device == null) 
+                if (device == null)
                     return false;
 
                 // Also delete all interfaces for this device
@@ -254,7 +254,7 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var existing = _interfaces.FirstOrDefault(i => i.Id == deviceInterface.Id);
-                if (existing == null) 
+                if (existing == null)
                     return false;
 
                 var index = _interfaces.IndexOf(existing);
@@ -274,7 +274,7 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var iface = _interfaces.FirstOrDefault(i => i.Id == id);
-                if (iface == null) 
+                if (iface == null)
                     return false;
 
                 _interfaces.Remove(iface);
@@ -310,7 +310,7 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var existing = _cameraInterfaces.FirstOrDefault(i => i.Id == cameraInterface.Id);
-                if (existing == null) 
+                if (existing == null)
                     return false;
 
                 var index = _cameraInterfaces.IndexOf(existing);
@@ -330,7 +330,7 @@ namespace IPCSoftware.Services.ConfigServices
             try
             {
                 var cameraInterface = _cameraInterfaces.FirstOrDefault(i => i.Id == id);
-                if (cameraInterface == null) 
+                if (cameraInterface == null)
                     return false;
 
                 _cameraInterfaces.Remove(cameraInterface);

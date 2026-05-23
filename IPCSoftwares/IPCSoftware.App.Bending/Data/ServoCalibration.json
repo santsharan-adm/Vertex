@@ -4,7 +4,7 @@
     "Name": "Position 0",
     "SequenceIndex": 0,
     "X": 0,
-    "Y": 0,
+    "Y": 10,
     "Description": null,
     "IsEnabled": true
   },
@@ -84,6 +84,33 @@
     "PositionId": 9,
     "Name": "Position 9",
     "SequenceIndex": 9,
+    "X": 0,
+    "Y": 0,
+    "Description": null,
+    "IsEnabled": true
+  },
+  {
+    "PositionId": 10,
+    "Name": "Position 10",
+    "SequenceIndex": 10,
+    "X": 0,
+    "Y": 0,
+    "Description": null,
+    "IsEnabled": true
+  },
+  {
+    "PositionId": 11,
+    "Name": "Position 11",
+    "SequenceIndex": 11,
+    "X": 0,
+    "Y": 0,
+    "Description": null,
+    "IsEnabled": true
+  },
+  {
+    "PositionId": 12,
+    "Name": "Position 12",
+    "SequenceIndex": 12,
     "X": 0,
     "Y": 0,
     "Description": null,
