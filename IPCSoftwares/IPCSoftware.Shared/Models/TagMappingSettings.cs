@@ -165,17 +165,33 @@ namespace IPCSoftware.Shared.Models
         // public int ParamYStart { get; set; }
 
 
-            }
+    }
 
-            public class Dashboard2
-            {
-                public int ValueW { get; set; }
-                public int Heat { get; set; }
-                public int Punch { get; set; }
-                public int Clamp { get; set; }
-                public int Tearing { get; set; }
-                public int Flipping { get; set; }
-            }
+    public class Dashboard2
+    {
+        public string QRCode1 { get; set; }
 
-        }
+        public int HeaterTemp_Bend1 { get; set; }
 
+        public int HeaterTemp_Bend2 { get; set; }
+        public int HeaterTemp_Bend3 { get; set; }
+
+        public int Load_Bend1 { get; set; }
+
+        public int Load_Bend2 { get; set; }
+
+        public int Load_Bend3 { get; set; }
+
+        public int XValue { get; set; }
+
+        public int YValue { get; set; }
+
+        public int ZValue { get; set; }
+
+        public int WValue { get; set; }
+
+        public int Result1 { get; set; }
+
+    }
+
+}

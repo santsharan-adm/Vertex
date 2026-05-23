@@ -521,7 +521,7 @@ Id,Category,DM Address,Name,PLCNo,40000,ModbusAddress,AlgoNo,Length,DataType,Bit
 519,IOMonitor,D10232,PLC1_OUT_BITS_33_48,1,232,40232,0,0,In16,0,0,0,0,0,1,,None,False,False,PLC1_I/O_Output Data (NO.33~NO.48),PLC1_I/O_Output Data (NO.33~NO.48)
 520,IOMonitor,D10233,PLC1_OUT_BITS_49_64,1,233,40233,0,0,In16,0,0,0,0,0,1,,None,False,False,PLC1_I/O_Output Data (NO.49~NO.64),PLC1_I/O_Output Data (NO.49~NO.64)
 521,IOMonitor,D10234,PLC1_OUT_BITS_65_80,1,234,40234,0,0,In16,0,0,0,0,0,1,,None,False,False,PLC1_I/O_Output Data (NO.65~NO.80),PLC1_I/O_Output Data (NO.65~NO.80)
-522,IOMonitor,D10235,PLC1_OUT_BITS_81_96,1,235,40235,0,0,In16,0,0,0,0,0,1,,None,False,False,PLC1_I/O_Output Data (NO.81~NO.96),PLC1_I/O_Output Data (NO.81~NO.96)
+522,IOMonitor,D10235,PLC1_OUT_BITS_81_96,1,235,40235,0,0,Bit,0,0,0,0,0,1,,None,False,False,PLC1_I/O_Output Data (NO.81~NO.96),PLC1_I/O_Output Data (NO.81~NO.96)
 523,IOMonitor,D10236,PLC1_OUT_BITS_97_112,1,236,40236,0,0,In16,0,0,0,0,0,1,,None,False,False,PLC1_I/O_Output Data (NO.97~NO.112),PLC1_I/O_Output Data (NO.97~NO.112)
 524,IOMonitor,D10237,PLC1_OUT_BITS_113_128,1,237,40237,0,0,In16,0,0,0,0,0,1,,None,False,False,PLC1_I/O_Output Data (NO.113~NO.128),PLC1_I/O_Output Data (NO.113~NO.128)
 525,IOMonitor,D10238,PLC1_OUT_BITS_129_144,1,238,40238,0,0,In16,0,0,0,0,0,1,,None,False,False,PLC1_I/O_Output Data (NO.129~NO.144),PLC1_I/O_Output Data (NO.129~NO.144)

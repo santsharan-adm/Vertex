@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -124,6 +125,21 @@ namespace IPCSoftware.Shared.Models
         public static XYPair Servo_DeAccel = new();
         public static XYPair Servo_Pos_Start = new();
         public static XYPair Servo_Live = new();
+
+        // Dashboard2 OEE Tags
+        public static string QRCode1;
+        public static int HeaterTemp_Bend1;
+        public static int HeaterTemp_Bend2;
+        public static int HeaterTemp_Bend3;
+        public static int Load_Bend1;
+        public static int Load_Bend2;
+        public static int Load_Bend3;
+        public static int XValue;
+        public static int YValue;
+        public static int ZValue;
+        public static int WValue;
+        public static int Result1;
+
 
 
         /// <summary>
@@ -260,12 +276,18 @@ namespace IPCSoftware.Shared.Models
                 var dashboard2 = tags.Dashboard2;
                 if (dashboard2 != null)
                 {
-                    TAG_W = dashboard2.ValueW;
-                    TAG_Heat = dashboard2.Heat;
-                    TAG_Punch = dashboard2.Punch;
-                    TAG_Clamp = dashboard2.Clamp;
-                    TAG_Tearing = dashboard2.Tearing;
-                    TAG_Flipping = dashboard2.Flipping;
+                    QRCode1 = dashboard2.QRCode1;
+                    HeaterTemp_Bend1 = dashboard2.HeaterTemp_Bend1;
+                    HeaterTemp_Bend2 = dashboard2.HeaterTemp_Bend2;
+                    HeaterTemp_Bend3 = dashboard2.HeaterTemp_Bend3;
+                    Load_Bend1 = dashboard2.Load_Bend1;
+                    Load_Bend2 = dashboard2.Load_Bend2;
+                    Load_Bend3 = dashboard2.Load_Bend3;
+                    XValue = dashboard2.XValue;
+                    YValue = dashboard2.YValue;
+                    ZValue = dashboard2.ZValue;
+                    WValue = dashboard2.WValue;
+                    Result1 = dashboard2.Result1;
                 }
 
             }

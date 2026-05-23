@@ -64,6 +64,13 @@ namespace IPCSoftware.App.Bending.ViewModels
             set => SetProperty(ref _dashboardInspectionModelBatch1, value);
         }
 
+        //private DashboardInspectionLineModel _dashboardInspectionLineModel = new();
+        //public DashboardInspectionLineModel DashboardInspectionLineModel
+        //{
+        //    get => _dashboardInspectionLineModel;
+        //    set => SetProperty(ref _dashboardInspectionLineModel, value);
+        //}
+
         private DashboardInspectionModel _dashboardInspectionModelBatch2 = new();
         public DashboardInspectionModel DashboardInspectionModelBatch2  
         {
