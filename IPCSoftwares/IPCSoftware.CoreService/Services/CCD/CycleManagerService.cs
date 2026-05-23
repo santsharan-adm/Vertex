@@ -80,8 +80,10 @@ namespace IPCSoftware.CoreService.Services.CCD
             try
             {
                 // 1. Load Product Config to determine Limit
-                var prodConfig = await _productService.LoadAsync();
-                int limit = prodConfig.TotalItems;
+              //  var prodConfig = await _productService.LoadAsync();
+                var savedRecipes  = await _servoService.LoadRecipeAsync();
+                int limit = savedRecipes.LastOrDefault()?.TotalItems ?? 0;
+               // int limit = prodConfig.TotalItems;
 
                 await SyncTotalStationsToPlc(limit);
 

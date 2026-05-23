@@ -34,6 +34,7 @@ namespace IPCSoftware.App.ViewModels
         private readonly string _prodCsvFolder;
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
         private readonly IProductConfigurationService _productService; // NEW Injection
+        private readonly IServoCalibrationService _servoService; // NEW Injection for Recipe Data
 
 
         private ExternalSettings Settings => _settingsMonitor.CurrentValue;
@@ -375,6 +376,7 @@ namespace IPCSoftware.App.ViewModels
             IDialogService dialog,
             ILogConfigurationService logConfigService,
             IProductConfigurationService productService,
+            IServoCalibrationService servoService,
             IAppLogger logger) : base(logger)
         {
             var ccd = ccdSettng.Value;
@@ -383,6 +385,7 @@ namespace IPCSoftware.App.ViewModels
             _coreClient = coreClient;
             _dialog = dialog;
             _productService = productService;
+            _servoService = servoService; // NEW Assignment for Recipe Data
             SwitchDirection = configSettng.Value.SwitchConveyorDirection;
             IsMacMiniEnabled = _settingsMonitor.CurrentValue.IsMacMiniEnabled;
 
@@ -575,13 +578,18 @@ namespace IPCSoftware.App.ViewModels
             try
             {
                 // Populate the collection with 12 empty items
-                var prodConfig = await _productService.LoadAsync();
-
+               // var prodConfig = await _productService.LoadAsync();
+                var savedRecipes = await _servoService.LoadRecipeAsync();        // Now load last saved recipe content
+                var lastRecipe = savedRecipes?.LastOrDefault();
+                //====//=======//========//==//////========//========//========//========
+                int gridRows =  lastRecipe?.GridRows > 0 ? lastRecipe.GridRows : 4;
+                int gridCols = lastRecipe?.GridColumns > 0 ? lastRecipe.GridColumns : 3;
+                int activeItems = lastRecipe?.TotalItems > 0 ? lastRecipe.TotalItems : 12;
                 // 2. Set Grid Dimensions
-                DynamicRows = prodConfig.GridRows > 0 ? prodConfig.GridRows : 4;
-                DynamicColumns = prodConfig.GridColumns > 0 ? prodConfig.GridColumns : 3;
+                DynamicRows = gridRows;
+                DynamicColumns = gridCols;
                 int totalCells = DynamicRows * DynamicColumns;
-                int activeItems = prodConfig.TotalItems;
+              //  int activeItems = prodConfig.TotalItems;
                 CameraImages.Clear();
                 for (int i = 0; i < totalCells; i++)
                 {

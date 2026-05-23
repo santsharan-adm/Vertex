@@ -28,6 +28,7 @@ namespace IPCSoftware.App.ViewModels
         private readonly IProductConfigurationService _productService;
         private bool _isPositionLocked = false;
         private int _configuredTotalItems = 12;
+        private readonly IServoCalibrationService _servoService;
 
 
         // --- Tag Maps ---
@@ -79,11 +80,12 @@ namespace IPCSoftware.App.ViewModels
 
 
         public ManualOpViewModel(IAppLogger logger, CoreClient coreClient,
-               IProductConfigurationService productService, INavigationService nav) : base(logger)
+               IProductConfigurationService productService, INavigationService nav, IServoCalibrationService servoService) : base(logger)
         {
             _coreClient = coreClient;
             _nav = nav;
             _productService = productService;
+            _servoService = servoService;
 
             // 1. Initialize Modes List
       /*      Modes = new ObservableCollection<ModeItem>(
@@ -118,7 +120,9 @@ namespace IPCSoftware.App.ViewModels
             {
                 // A. Load Settings
                 var config = await _productService.LoadAsync();
-                _configuredTotalItems = config.TotalItems > 0 ? config.TotalItems : 12;
+                var savedRecipe =  await _servoService.LoadRecipeAsync();
+                int totalItems = savedRecipe.LastOrDefault().TotalItems;
+                _configuredTotalItems = totalItems > 0 ? totalItems : 12;
 
                 // B. Initialize Modes Collection
                 // We load ALL enum values first, then GridPositionModes filters them for display.

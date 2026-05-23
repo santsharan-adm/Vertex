@@ -28,6 +28,7 @@ namespace IPCSoftware.Services
         private AeLimitSettings _settings;
         private AeCycleContext _currentCycle;
 
+
         public AeLimitService(IOptions<ConfigSettings> configOptions,
                               IOptions<ExternalSettings> externalOptions,
                               IAppLogger logger) : base(logger)

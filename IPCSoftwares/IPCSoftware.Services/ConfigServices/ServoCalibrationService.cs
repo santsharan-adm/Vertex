@@ -2,6 +2,7 @@
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.App.Services;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -40,14 +41,14 @@ namespace IPCSoftware.Services.ConfigServices
 
         public async Task<List<ServoPositionModel>> LoadPositionsAsync()
         {
-            if (!File.Exists(_filePath))
+            if (!File.Exists(_RecipeFilePath))
             {
                 return await CreateDefaultPositionsAsync();
             }
 
             try
             {
-                string json = await File.ReadAllTextAsync(_filePath);
+                string json = await File.ReadAllTextAsync(_RecipeFilePath);
                 var data = JsonSerializer.Deserialize<List<ServoPositionModel>>(json);
 
                 // Integrity check: If file exists but is empty or missing sequences
@@ -163,8 +164,11 @@ namespace IPCSoftware.Services.ConfigServices
         private async Task<List<ServoPositionModel>> CreateDefaultPositionsAsync()
         {
             var list = new List<ServoPositionModel>();
-            var productSettings = await _productService.LoadAsync();
-            int totalItems = productSettings.TotalItems > 0 ? productSettings.TotalItems : 12; // Default 12 if 0
+           // var productSettings = await _productService.LoadAsync();
+            var savedRecipes = await LoadRecipeAsync();
+            int totalItem = savedRecipes.LastOrDefault()?.TotalItems ?? 0;
+            //int totalItems = productSettings.TotalItems > 0 ? productSettings.TotalItems : 12; // Default 12 if 0
+            int totalItems = totalItem > 0 ? totalItem : 12; // Default 12 if 0
 
 
             // Define Default Snake Pattern Map

@@ -78,8 +78,11 @@ namespace IPCSoftware.CoreService.Services.External
         {
             try
             {
-                var config = await _productService.LoadAsync();
-                int newCount = config.TotalItems > 0 ? config.TotalItems : 12;
+              //  var config = await _productService.LoadAsync();
+                var savedRecipe = await _servoService.LoadRecipeAsync();
+                int totalItem = savedRecipe.LastOrDefault()?.TotalItems ?? 0;
+               // int newCount = config.TotalItems > 0 ? config.TotalItems : 12;
+                int newCount = totalItem > 0 ? totalItem : 12;
 
                 if (_totalItems != newCount || _quarantineFlagsBySequence.Length != newCount)
                 {
