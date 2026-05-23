@@ -16,22 +16,89 @@ namespace IPCSoftware.Shared.Models.Bending
     }
     public class DashboardInspectionLineModel : ObservableObjectVM
     {
+        private string _qrCode1;
+        public string QRCode1
+        {
+            get => _qrCode1;
+            set => SetProperty(ref _qrCode1, value);
+        }
 
-        public string QRCode1 { get; set; }
-        public float HeaterTemp_Bend1 { get; set; }
-        public float HeaterTemp_Bend2 { get; set; }
-        public float HeaterTemp_Bend3 { get; set; }
+        private float _heaterTemp_Bend1;
+        public float HeaterTemp_Bend1
+        {
+            get => _heaterTemp_Bend1;
+            set => SetProperty(ref _heaterTemp_Bend1, value);
+        }
 
-        public int Load_Bend1 { get; set; }
-        public int Load_Bend2 { get; set; }
-        public int Load_Bend3 { get; set; }
+        private float _heaterTemp_Bend2;
+        public float HeaterTemp_Bend2
+        {
+            get => _heaterTemp_Bend2;
+            set => SetProperty(ref _heaterTemp_Bend2, value);
+        }
 
-        public float XValue { get; set; }
-        public float YValue { get; set; }
-        public float ZValue { get; set; }
-        public float WValue { get; set; }
+        private float _heaterTemp_Bend3;
+        public float HeaterTemp_Bend3
+        {
+            get => _heaterTemp_Bend3;
+            set => SetProperty(ref _heaterTemp_Bend3, value);
+        }
 
-        public bool Result1 { get; set; }
+        private float _load_Bend1;
+        public float Load_Bend1
+        {
+            get => _load_Bend1;
+            set => SetProperty(ref _load_Bend1, value);
+        }
+
+        private float _load_Bend2;
+        public float Load_Bend2
+        {
+            get => _load_Bend2;
+            set => SetProperty(ref _load_Bend2, value);
+        }
+
+        private float _load_Bend3;
+        public float Load_Bend3
+        {
+            get => _load_Bend3;
+            set => SetProperty(ref _load_Bend3, value);
+        }
+
+        private float _xValue;
+        public float XValue
+        {
+            get => _xValue;
+            set => SetProperty(ref _xValue, value);
+        }
+
+        private float _yValue;
+        public float YValue
+        {
+            get => _yValue;
+            set => SetProperty(ref _yValue, value);
+        }
+
+        private float _zValue;
+        public float ZValue
+        {
+            get => _zValue;
+            set => SetProperty(ref _zValue, value);
+        }
+
+        private float _wValue;
+        public float WValue
+        {
+            get => _wValue;
+            set => SetProperty(ref _wValue, value);
+        }
+
+        private bool _result1;
+        public bool Result1
+        {
+            get => _result1;
+            set => SetProperty(ref _result1, value);
+        }
     }
 
     public class BendingIndicator : ObservableObjectVM

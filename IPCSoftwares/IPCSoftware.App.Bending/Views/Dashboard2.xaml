@@ -117,28 +117,28 @@
 
                         <UniformGrid Grid.Row="1" Grid.Column="0" Columns="1" Background="#0B1A2E">
                             <Border BorderBrush="#1565C0" Padding="3">
-                                <TextBlock Text="{Binding InspectionTable.BatchNo, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                <TextBlock Text="{Binding DashboardInspectionModelBatch1.BatchNo, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
                             </Border>
                             <Border BorderBrush="#1565C0" Padding="3">
-                                <TextBlock Text="{Binding InspectionTable2.BatchNo, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                <TextBlock Text="{Binding DashboardInspectionModelBatch2.BatchNo, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
                             </Border>
                         </UniformGrid>
 
                         <StackPanel Grid.Row="1" Grid.Column="1" Background="#0B1A2E">
                             <StackPanel Margin="2">
-                                <TextBlock Text="{Binding InspectionTable.LineItem1.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="{Binding InspectionTable.LineItem2.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="{Binding InspectionTable.LineItem3.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="{Binding InspectionTable.LineItem4.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem1.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
                             </StackPanel>
 
                             <Border Height="1" Background="#1565C0" Opacity="0.4"/>
 
                             <StackPanel Margin="0,5,0,2">
-                                <TextBlock Text="{Binding InspectionTable2.LineItem1.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="{Binding InspectionTable2.LineItem2.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="{Binding InspectionTable2.LineItem3.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="{Binding InspectionTable2.LineItem4.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -418,7 +418,7 @@
                     </Border>
 
                     <Border Grid.Row="3" Grid.RowSpan="4" Grid.Column="0" Background="#0B1A2E" BorderThickness="0">
-                        <TextBlock Text="{Binding InspectionTable.BatchNo}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.BatchNo}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
 
                     <Border Grid.Row="3" Grid.Column="1" Background="#0B1A2E">
@@ -461,280 +461,280 @@
                     </Border>
 
                     <Border Grid.Row="4" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem2.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem2.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="3" Background="#0B1A2E" >
-                        <TextBlock Text="{Binding InspectionTable.LineItem2.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem2.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem2.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem2.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem2.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="8" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem2.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="9" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem2.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="10" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem2.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="11" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem2.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="4" Grid.Column="12" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem2.Result1, Converter={StaticResource BoolToResultText}}"
-                                   Foreground="{Binding InspectionTable.LineItem2.Result1, Converter={StaticResource BoolToResultColor}}"
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding DashboardInspectionModelBatch1.LineItem2.Result1, Converter={StaticResource BoolToResultColor}}"
                                    Style="{StaticResource DataText}" FontWeight="Bold"/>
                     </Border>
 
                     <Border Grid.Row="5" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem3.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem3.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="3" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem3.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem3.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem3.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem3.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem3.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="8" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem3.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="9" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem3.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="10" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem3.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="11" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem3.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="12" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem3.Result1, Converter={StaticResource BoolToResultText}}"
-                                   Foreground="{Binding InspectionTable.LineItem3.Result1, Converter={StaticResource BoolToResultColor}}"
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding DashboardInspectionModelBatch1.LineItem3.Result1, Converter={StaticResource BoolToResultColor}}"
                                    Style="{StaticResource DataText}" FontWeight="Bold"/>
                     </Border>
 
                     <Border Grid.Row="6" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem4.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem4.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="3" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem4.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem4.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem4.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem4.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem4.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="8" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem4.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="9" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem4.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="10" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem4.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="11" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem4.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="6" Grid.Column="12" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable.LineItem4.Result1, Converter={StaticResource BoolToResultText}}"
-                                   Foreground="{Binding InspectionTable.LineItem4.Result1, Converter={StaticResource BoolToResultColor}}"
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding DashboardInspectionModelBatch1.LineItem4.Result1, Converter={StaticResource BoolToResultColor}}"
                                    Style="{StaticResource DataText}" FontWeight="Bold"/>
                     </Border>
 
 
                     <Border Grid.Row="7" Grid.RowSpan="4" Grid.Column="0" Background="#0B1A2E" BorderThickness="0">
-                        <TextBlock Text="{Binding InspectionTable2.BatchNo}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.BatchNo}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
 
                     <Border Grid.Row="7" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem1.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem1.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="3" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem1.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem1.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem1.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem1.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem1.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="8" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem1.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="9" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem1.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="10" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem1.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="11" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem1.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="7" Grid.Column="12" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem1.Result1, Converter={StaticResource BoolToResultText}}"
-                                   Foreground="{Binding InspectionTable2.LineItem1.Result1, Converter={StaticResource BoolToResultColor}}"
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding DashboardInspectionModelBatch2.LineItem1.Result1, Converter={StaticResource BoolToResultColor}}"
                                    Style="{StaticResource DataText}" FontWeight="Bold"/>
                     </Border>
 
                     <Border Grid.Row="8" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem2.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem2.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="3" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem2.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem2.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem2.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem2.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem2.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="8" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem2.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="9" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem2.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="10" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem2.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="11" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem2.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="8" Grid.Column="12" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem2.Result1, Converter={StaticResource BoolToResultText}}"
-                                   Foreground="{Binding InspectionTable2.LineItem2.Result1, Converter={StaticResource BoolToResultColor}}"
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding DashboardInspectionModelBatch2.LineItem2.Result1, Converter={StaticResource BoolToResultColor}}"
                                    Style="{StaticResource DataText}" FontWeight="Bold"/>
                     </Border>
 
                     <Border Grid.Row="9" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem3.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem3.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="3" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem3.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem3.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem3.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem3.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem3.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="8" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem3.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="9" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem3.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="10" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem3.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="11" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem3.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="9" Grid.Column="12" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem3.Result1, Converter={StaticResource BoolToResultText}}"
-                                   Foreground="{Binding InspectionTable2.LineItem3.Result1, Converter={StaticResource BoolToResultColor}}"
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding DashboardInspectionModelBatch2.LineItem3.Result1, Converter={StaticResource BoolToResultColor}}"
                                    Style="{StaticResource DataText}" FontWeight="Bold"/>
                     </Border>
 
                     <Border Grid.Row="10" Grid.Column="1" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem4.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.QRCode1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="2" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem4.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.HeaterTemp_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="3" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem4.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.HeaterTemp_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="4" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem4.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.HeaterTemp_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="5" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem4.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.Load_Bend1}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="6" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem4.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.Load_Bend2}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="7" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem4.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.Load_Bend3}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="8" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem4.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.XValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="9" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem4.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.YValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="10" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem4.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.ZValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="11" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem4.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.WValue}" Style="{StaticResource DataText}" Foreground="White"/>
                     </Border>
                     <Border Grid.Row="10" Grid.Column="12" Background="#0B1A2E">
-                        <TextBlock Text="{Binding InspectionTable2.LineItem4.Result1, Converter={StaticResource BoolToResultText}}"
-                                   Foreground="{Binding InspectionTable2.LineItem4.Result1, Converter={StaticResource BoolToResultColor}}"
+                        <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.Result1, Converter={StaticResource BoolToResultText}}"
+                                   Foreground="{Binding DashboardInspectionModelBatch2.LineItem4.Result1, Converter={StaticResource BoolToResultColor}}"
                                    Style="{StaticResource DataText}" FontWeight="Bold"/>
                     </Border>
 

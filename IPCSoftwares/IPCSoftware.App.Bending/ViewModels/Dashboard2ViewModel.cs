@@ -455,13 +455,35 @@ namespace IPCSoftware.App.Bending.ViewModels
         {
             try
             {
+                // ── LOG POINT 3 ── ViewModel: confirm data arrived with correct key
+                _logger.LogInfo(
+                    $"[DBG-BP3] UpdateDashboardInspectionModelBatch1FromService called | " +
+                    $"data.Count={data?.Count} | " +
+                    $"ContainsKey(11)={data?.ContainsKey(11)} | " +
+                    $"Keys=[{(data != null ? string.Join(",", data.Keys) : "null")}]",
+                    LogType.Diagnostics);
+
                 if (data.TryGetValue(11, out object modelObj))
                 {
                     var model = Deserialize<DashboardInspectionModel>(modelObj);
+
+                    // ── LOG POINT 3b ── After deserialize: confirm values
+                    _logger.LogInfo(
+                        $"[DBG-BP3b] Deserialized model | " +
+                        $"model={( model == null ? "NULL" : "OK")} | " +
+                        $"LineItem1.HeaterTemp_Bend1={model?.LineItem1?.HeaterTemp_Bend1} | " +
+                        $"LineItem1.HeaterTemp_Bend2={model?.LineItem1?.HeaterTemp_Bend2} | " +
+                        $"LineItem1.QRCode1={model?.LineItem1?.QRCode1}",
+                        LogType.Diagnostics);
+
                     if (model != null)
                     {
                         DashboardInspectionModelBatch1 = model;
                     }
+                }
+                else
+                {
+                    _logger.LogInfo("[DBG-BP3] data does NOT contain key 11 — model will not update", LogType.Diagnostics);
                 }
             }
             catch (Exception ex)

@@ -76,14 +76,70 @@ namespace IPCSoftware.Devices.Camera
             _aeLimitService = aeLimitService;
             _productService = productService;
             _stateFilePath = Path.Combine(_observableCcdSettings.QrCodeImagePath, _observableCcdSettings.CurrentCycleStateFileName);
+            
             var logs =  logConfig.GetAllAsync();
             var allLogs = logConfig.GetAllAsync().GetAwaiter().GetResult();
             var config = allLogs.FirstOrDefault(c => c.LogType == LogType.Production);
-            var basePath = config.ProductionImagePath;
+            
+            // Validate configuration exists
+            if (config == null)
+            {
+                _logger.LogError("[CycleManager] Production log configuration not found. Using fallback directory.", LogType.Diagnostics);
+                var basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ProductionImages");
+                _imageBaseOutputPath = basePath;
+                _quarantinePath = Path.Combine(basePath, "Quarantine");
+            }
+            else
+            {
+                var basePath = config.ProductionImagePath;
+                
+                // Validate path is not null or empty
+                if (string.IsNullOrWhiteSpace(basePath))
+                {
+                    _logger.LogError("[CycleManager] ProductionImagePath is null or empty. Using fallback directory.", LogType.Diagnostics);
+                    basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ProductionImages");
+                }
+                
+                _imageBaseOutputPath = basePath;
+                _quarantinePath = Path.Combine(basePath, "Quarantine");
+            }
 
-            _imageBaseOutputPath = basePath;
-            _quarantinePath = Path.Combine(basePath, "Quarantine");
-            if (!Directory.Exists(_quarantinePath)) Directory.CreateDirectory(_quarantinePath);
+            // Create directories with error handling
+            try
+            {
+                if (!Directory.Exists(_imageBaseOutputPath))
+                {
+                    Directory.CreateDirectory(_imageBaseOutputPath);
+                }
+
+                if (!Directory.Exists(_quarantinePath))
+                {
+                    Directory.CreateDirectory(_quarantinePath);
+                }
+                
+                _logger.LogInfo($"[CycleManager] Production image directories initialized: {_imageBaseOutputPath}", LogType.Diagnostics);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogError($"[CycleManager] Invalid path format: {ex.Message}. BaseOutputPath={_imageBaseOutputPath}, QuarantinePath={_quarantinePath}", LogType.Diagnostics);
+                throw;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogError($"[CycleManager] Access denied creating directories: {ex.Message}. Ensure the application has write permissions.", LogType.Diagnostics);
+                throw;
+            }
+            catch (IOException ex)
+            {
+                // Catches DirectoryNotFoundException, FileNotFoundException, and other I/O errors
+                _logger.LogError($"[CycleManager] I/O error creating directories: {ex.Message}. The path may be invalid, on an unmapped drive, or the parent directory doesn't exist. BaseOutputPath={_imageBaseOutputPath}, QuarantinePath={_quarantinePath}", LogType.Diagnostics);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[CycleManager] Unexpected error during directory initialization: {ex.Message}", LogType.Diagnostics);
+                throw;
+            }
 
             _ = LoadStationMapAsync();
         }
