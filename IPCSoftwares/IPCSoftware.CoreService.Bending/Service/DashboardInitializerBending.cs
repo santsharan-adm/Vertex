@@ -46,10 +46,10 @@ namespace IPCSoftware.CoreService.Bending.Service
             // DashboardInspectionModelBatch2
             // ----------------------------------------------------------------
 
-            if (request.RequestId == 12)
-            {
-                return await DashboardInspectionModelBatch2(request);
-            }
+            //if (request.RequestId == 12)
+            //{
+            //    return await DashboardInspectionModelBatch2(request);
+            //}
             // ----------------------------------------------------------------
             // BendingIndicators
             // ----------------------------------------------------------------
@@ -192,12 +192,12 @@ namespace IPCSoftware.CoreService.Bending.Service
         private Task<ResponsePackage> DashboardInspectionModelBatch1(RequestPackage request)
         {
             // ── LOG POINT 1 ── Method entry: confirm RequestId and PLC packet state
-            _logger.LogInfo(
-                $"[DBG-BP1] DashboardInspectionModelBatch1 called | RequestId={request.RequestId} | " +
-                $"_latestPackets.Count={_latestPackets.Count} | " +
-                $"HasPLC1={_latestPackets.ContainsKey(1)} | " +
-                $"ConstantValues.HeaterTemp_Bend1={ConstantValues.HeaterTemp_Bend1}",
-                LogType.Diagnostics);
+            //_logger.LogInfo(
+            //    $"[DBG-BP1] DashboardInspectionModelBatch1 called | RequestId={request.RequestId} | " +
+            //    $"_latestPackets.Count={_latestPackets.Count} | " +
+            //    $"HasPLC1={_latestPackets.ContainsKey(1)} | " +
+            //    $"ConstantValues.HeaterTemp_Bend1={ConstantValues.HeaterTemp_Bend1}",
+            //    LogType.Diagnostics);
 
             // Helper to read a float from the latest PLC packet by tag ID
             float GetFloat(int tagId)
@@ -236,31 +236,31 @@ namespace IPCSoftware.CoreService.Bending.Service
             }
 
             // ── LOG POINT 1b ── Raw tag values directly from _latestPackets before building model
-            if (_latestPackets.TryGetValue(1, out var rawPkt))
-            {
-                rawPkt.Values.TryGetValue(ConstantValues.HeaterTemp_Bend1, out var rawHeat1);
-                rawPkt.Values.TryGetValue(ConstantValues.HeaterTemp_Bend2, out var rawHeat2);
-                rawPkt.Values.TryGetValue(ConstantValues.HeaterTemp_Bend3, out var rawHeat3);
-                rawPkt.Values.TryGetValue(ConstantValues.Load_Bend1, out var rawLoad1);
-                _logger.LogInfo(
-                    $"[DBG-BP1b] Raw PLC values | " +
-                    $"Tag[{ConstantValues.HeaterTemp_Bend1}](HeaterTemp_Bend1)={rawHeat1 ?? "NOT FOUND"} | " +
-                    $"Tag[{ConstantValues.HeaterTemp_Bend2}](HeaterTemp_Bend2)={rawHeat2 ?? "NOT FOUND"} | " +
-                    $"Tag[{ConstantValues.HeaterTemp_Bend3}](HeaterTemp_Bend3)={rawHeat3 ?? "NOT FOUND"} | " +
-                    $"Tag[{ConstantValues.Load_Bend1}](Load_Bend1)={rawLoad1 ?? "NOT FOUND"} | " +
-                    $"TotalTagsInPacket={rawPkt.Values.Count}",
-                    LogType.Diagnostics);
-            }
-            else
-            {
-                _logger.LogInfo("[DBG-BP1b] _latestPackets has NO entry for PLC#1 — data not arrived yet", LogType.Diagnostics);
-            }
+            //if (_latestPackets.TryGetValue(1, out var rawPkt))
+            //{
+            //    rawPkt.Values.TryGetValue(ConstantValues.HeaterTemp_Bend1, out var rawHeat1);
+            //    rawPkt.Values.TryGetValue(ConstantValues.HeaterTemp_Bend2, out var rawHeat2);
+            //    rawPkt.Values.TryGetValue(ConstantValues.HeaterTemp_Bend3, out var rawHeat3);
+            //    rawPkt.Values.TryGetValue(ConstantValues.Load_Bend1, out var rawLoad1);
+            //    _logger.LogInfo(
+            //        $"[DBG-BP1b] Raw PLC values | " +
+            //        $"Tag[{ConstantValues.HeaterTemp_Bend1}](HeaterTemp_Bend1)={rawHeat1 ?? "NOT FOUND"} | " +
+            //        $"Tag[{ConstantValues.HeaterTemp_Bend2}](HeaterTemp_Bend2)={rawHeat2 ?? "NOT FOUND"} | " +
+            //        $"Tag[{ConstantValues.HeaterTemp_Bend3}](HeaterTemp_Bend3)={rawHeat3 ?? "NOT FOUND"} | " +
+            //        $"Tag[{ConstantValues.Load_Bend1}](Load_Bend1)={rawLoad1 ?? "NOT FOUND"} | " +
+            //        $"TotalTagsInPacket={rawPkt.Values.Count}",
+            //        LogType.Diagnostics);
+            //}
+            //else
+            //{
+            //    _logger.LogInfo("[DBG-BP1b] _latestPackets has NO entry for PLC#1 — data not arrived yet", LogType.Diagnostics);
+            //}
 
             // Build a LineItem using the correct ConstantValues tag IDs (from appsettings Dashboard2 section)
-            DashboardInspectionLineModel BuildLineItem() => new DashboardInspectionLineModel
+            DashboardInspectionLineModel BuildLineItem1() => new DashboardInspectionLineModel
             {
                 QRCode1          = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var qrId) ? qrId : 1187 : 1187),
-                HeaterTemp_Bend1 = GetFloat(ConstantValues.HeaterTemp_Bend1),  // tag 509
+                HeaterTemp_Bend1 = GetFloat(ConstantValues.L1_HeaterTemp_Bend1),  // tag 509
                 HeaterTemp_Bend2 = GetFloat(ConstantValues.HeaterTemp_Bend2),  // tag 510
                 HeaterTemp_Bend3 = GetFloat(ConstantValues.HeaterTemp_Bend3),  // tag 511
                 Load_Bend1       = GetFloat(ConstantValues.Load_Bend1),          // tag 512
@@ -273,13 +273,63 @@ namespace IPCSoftware.CoreService.Bending.Service
                 Result1          = GetBool(ConstantValues.Result1),            // tag 1186
             };
 
+            DashboardInspectionLineModel BuildLineItem2() => new DashboardInspectionLineModel
+            {
+                QRCode1 = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var qrId) ? qrId : 1187 : 1187),
+                HeaterTemp_Bend1 = GetFloat(ConstantValues.L2_HeaterTemp_Bend1),  // tag 509
+                HeaterTemp_Bend2 = GetFloat(ConstantValues.HeaterTemp_Bend2),  // tag 510
+                HeaterTemp_Bend3 = GetFloat(ConstantValues.HeaterTemp_Bend3),  // tag 511
+                Load_Bend1 = GetFloat(ConstantValues.Load_Bend1),          // tag 512
+                Load_Bend2 = GetFloat(ConstantValues.Load_Bend2),          // tag 513
+                Load_Bend3 = GetFloat(ConstantValues.Load_Bend3),          // tag 514
+                XValue = GetFloat(ConstantValues.XValue),            // tag 515
+                YValue = GetFloat(ConstantValues.YValue),            // tag 516
+                ZValue = GetFloat(ConstantValues.ZValue),            // tag 517
+                WValue = GetFloat(ConstantValues.WValue),            // tag 518
+                Result1 = GetBool(ConstantValues.Result1),            // tag 1186
+            };
+
+            DashboardInspectionLineModel BuildLineItem3() => new DashboardInspectionLineModel
+            {
+                QRCode1 = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var qrId) ? qrId : 1187 : 1187),
+                HeaterTemp_Bend1 = GetFloat(ConstantValues.L3_HeaterTemp_Bend1),  // tag 509
+                HeaterTemp_Bend2 = GetFloat(ConstantValues.HeaterTemp_Bend2),  // tag 510
+                HeaterTemp_Bend3 = GetFloat(ConstantValues.HeaterTemp_Bend3),  // tag 511
+                Load_Bend1 = GetFloat(ConstantValues.Load_Bend1),          // tag 512
+                Load_Bend2 = GetFloat(ConstantValues.Load_Bend2),          // tag 513
+                Load_Bend3 = GetFloat(ConstantValues.Load_Bend3),          // tag 514
+                XValue = GetFloat(ConstantValues.XValue),            // tag 515
+                YValue = GetFloat(ConstantValues.YValue),            // tag 516
+                ZValue = GetFloat(ConstantValues.ZValue),            // tag 517
+                WValue = GetFloat(ConstantValues.WValue),            // tag 518
+                Result1 = GetBool(ConstantValues.Result1),            // tag 1186
+            };
+
+            DashboardInspectionLineModel BuildLineItem4() => new DashboardInspectionLineModel
+            {
+                QRCode1 = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var qrId) ? qrId : 1187 : 1187),
+                HeaterTemp_Bend1 = GetFloat(ConstantValues.L4_HeaterTemp_Bend1),  // tag 509
+                HeaterTemp_Bend2 = GetFloat(ConstantValues.HeaterTemp_Bend2),  // tag 510
+                HeaterTemp_Bend3 = GetFloat(ConstantValues.HeaterTemp_Bend3),  // tag 511
+                Load_Bend1 = GetFloat(ConstantValues.Load_Bend1),          // tag 512
+                Load_Bend2 = GetFloat(ConstantValues.Load_Bend2),          // tag 513
+                Load_Bend3 = GetFloat(ConstantValues.Load_Bend3),          // tag 514
+                XValue = GetFloat(ConstantValues.XValue),            // tag 515
+                YValue = GetFloat(ConstantValues.YValue),            // tag 516
+                ZValue = GetFloat(ConstantValues.ZValue),            // tag 517
+                WValue = GetFloat(ConstantValues.WValue),            // tag 518
+                Result1 = GetBool(ConstantValues.Result1),            // tag 1186
+            };
+
+
             DashboardInspectionModel item = new DashboardInspectionModel
             {
                 BatchNo   = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),
-                LineItem1 = BuildLineItem(),
-                LineItem2 = BuildLineItem(),
-                LineItem3 = BuildLineItem(),
-                LineItem4 = BuildLineItem(),
+                LineItem1 = BuildLineItem1(),
+                LineItem2 = BuildLineItem2(),
+                LineItem3 = BuildLineItem3(),
+                LineItem4 = BuildLineItem4(),
+
             };
 
             // ── LOG POINT 2 ── Model built: confirm values going into the response
@@ -341,29 +391,79 @@ namespace IPCSoftware.CoreService.Bending.Service
                 return "NA";
             }
 
-            DashboardInspectionLineModel BuildLineItem() => new DashboardInspectionLineModel
+            DashboardInspectionLineModel BuildLineItem1() => new DashboardInspectionLineModel
             {
-                QRCode1          = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var qrId) ? qrId : 1187 : 1187),
-                HeaterTemp_Bend1 = GetFloat(ConstantValues.HeaterTemp_Bend1),
+                QRCode1 = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var qrId) ? qrId : 1187 : 1187),
+                HeaterTemp_Bend1 = GetFloat(ConstantValues.L2_HeaterTemp_Bend1),
                 HeaterTemp_Bend2 = GetFloat(ConstantValues.HeaterTemp_Bend2),
                 HeaterTemp_Bend3 = GetFloat(ConstantValues.HeaterTemp_Bend3),
-                Load_Bend1       = GetFloat(ConstantValues.Load_Bend1),
-                Load_Bend2       = GetFloat(ConstantValues.Load_Bend2),
-                Load_Bend3       = GetFloat(ConstantValues.Load_Bend3),
-                XValue           = GetFloat(ConstantValues.XValue),
-                YValue           = GetFloat(ConstantValues.YValue),
-                ZValue           = GetFloat(ConstantValues.ZValue),
-                WValue           = GetFloat(ConstantValues.WValue),
-                Result1          = GetBool(ConstantValues.Result1),
+                Load_Bend1 = GetFloat(ConstantValues.Load_Bend1),
+                Load_Bend2 = GetFloat(ConstantValues.Load_Bend2),
+                Load_Bend3 = GetFloat(ConstantValues.Load_Bend3),
+                XValue = GetFloat(ConstantValues.XValue),
+                YValue = GetFloat(ConstantValues.YValue),
+                ZValue = GetFloat(ConstantValues.ZValue),
+                WValue = GetFloat(ConstantValues.WValue),
+                Result1 = GetBool(ConstantValues.Result1),
             };
+
+            DashboardInspectionLineModel BuildLineItem2() => new DashboardInspectionLineModel
+            {
+                QRCode1 = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var qrId) ? qrId : 1187 : 1187),
+                HeaterTemp_Bend1 = GetFloat(ConstantValues.L2_HeaterTemp_Bend1),  // tag 509
+                HeaterTemp_Bend2 = GetFloat(ConstantValues.HeaterTemp_Bend2),  // tag 510
+                HeaterTemp_Bend3 = GetFloat(ConstantValues.HeaterTemp_Bend3),  // tag 511
+                Load_Bend1 = GetFloat(ConstantValues.Load_Bend1),          // tag 512
+                Load_Bend2 = GetFloat(ConstantValues.Load_Bend2),          // tag 513
+                Load_Bend3 = GetFloat(ConstantValues.Load_Bend3),          // tag 514
+                XValue = GetFloat(ConstantValues.XValue),            // tag 515
+                YValue = GetFloat(ConstantValues.YValue),            // tag 516
+                ZValue = GetFloat(ConstantValues.ZValue),            // tag 517
+                WValue = GetFloat(ConstantValues.WValue),            // tag 518
+                Result1 = GetBool(ConstantValues.Result1),            // tag 1186
+            };
+
+            DashboardInspectionLineModel BuildLineItem3() => new DashboardInspectionLineModel
+            {
+                QRCode1 = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var qrId) ? qrId : 1187 : 1187),
+                HeaterTemp_Bend1 = GetFloat(ConstantValues.L3_HeaterTemp_Bend1),  // tag 509
+                HeaterTemp_Bend2 = GetFloat(ConstantValues.HeaterTemp_Bend2),  // tag 510
+                HeaterTemp_Bend3 = GetFloat(ConstantValues.HeaterTemp_Bend3),  // tag 511
+                Load_Bend1 = GetFloat(ConstantValues.Load_Bend1),          // tag 512
+                Load_Bend2 = GetFloat(ConstantValues.Load_Bend2),          // tag 513
+                Load_Bend3 = GetFloat(ConstantValues.Load_Bend3),          // tag 514
+                XValue = GetFloat(ConstantValues.XValue),            // tag 515
+                YValue = GetFloat(ConstantValues.YValue),            // tag 516
+                ZValue = GetFloat(ConstantValues.ZValue),            // tag 517
+                WValue = GetFloat(ConstantValues.WValue),            // tag 518
+                Result1 = GetBool(ConstantValues.Result1),            // tag 1186
+            };
+
+            DashboardInspectionLineModel BuildLineItem4() => new DashboardInspectionLineModel
+            {
+                QRCode1 = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var qrId) ? qrId : 1187 : 1187),
+                HeaterTemp_Bend1 = GetFloat(ConstantValues.L4_HeaterTemp_Bend1),  // tag 509
+                HeaterTemp_Bend2 = GetFloat(ConstantValues.HeaterTemp_Bend2),  // tag 510
+                HeaterTemp_Bend3 = GetFloat(ConstantValues.HeaterTemp_Bend3),  // tag 511
+                Load_Bend1 = GetFloat(ConstantValues.Load_Bend1),          // tag 512
+                Load_Bend2 = GetFloat(ConstantValues.Load_Bend2),          // tag 513
+                Load_Bend3 = GetFloat(ConstantValues.Load_Bend3),          // tag 514
+                XValue = GetFloat(ConstantValues.XValue),            // tag 515
+                YValue = GetFloat(ConstantValues.YValue),            // tag 516
+                ZValue = GetFloat(ConstantValues.ZValue),            // tag 517
+                WValue = GetFloat(ConstantValues.WValue),            // tag 518
+                Result1 = GetBool(ConstantValues.Result1),            // tag 1186
+            };
+
 
             DashboardInspectionModel item = new DashboardInspectionModel
             {
-                BatchNo   = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),
-                LineItem1 = BuildLineItem(),
-                LineItem2 = BuildLineItem(),
-                LineItem3 = BuildLineItem(),
-                LineItem4 = BuildLineItem(),
+                BatchNo = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),
+
+                LineItem1 = BuildLineItem1(),
+                LineItem2 = BuildLineItem2(),
+                LineItem3 = BuildLineItem3(),
+                LineItem4 = BuildLineItem4(),
             };
 
             return Task.FromResult(new ResponsePackage
@@ -413,10 +513,10 @@ namespace IPCSoftware.CoreService.Bending.Service
                 return "NA";
             }
 
-            DashboardInspectionLineModel BuildLineItem() => new DashboardInspectionLineModel
+            DashboardInspectionLineModel BuildLineItem3() => new DashboardInspectionLineModel
             {
                 QRCode1          = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var qrId) ? qrId : 1187 : 1187),
-                HeaterTemp_Bend1 = GetFloat(ConstantValues.HeaterTemp_Bend1),
+                HeaterTemp_Bend1 = GetFloat(ConstantValues.L1_HeaterTemp_Bend1),
                 HeaterTemp_Bend2 = GetFloat(ConstantValues.HeaterTemp_Bend2),
                 HeaterTemp_Bend3 = GetFloat(ConstantValues.HeaterTemp_Bend3),
                 Load_Bend1       = GetFloat(ConstantValues.Load_Bend1),
@@ -429,13 +529,14 @@ namespace IPCSoftware.CoreService.Bending.Service
                 Result1          = GetBool(ConstantValues.Result1),
             };
 
+
+
             DashboardInspectionModel item = new DashboardInspectionModel
             {
-                BatchNo   = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),
-                LineItem1 = BuildLineItem(),
-                LineItem2 = BuildLineItem(),
-                LineItem3 = BuildLineItem(),
-                LineItem4 = BuildLineItem(),
+                //BatchNo   = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),
+                
+                LineItem3 = BuildLineItem3(),
+                
             };
 
             return Task.FromResult(new ResponsePackage
@@ -485,10 +586,10 @@ namespace IPCSoftware.CoreService.Bending.Service
                 return "NA";
             }
 
-            DashboardInspectionLineModel BuildLineItem() => new DashboardInspectionLineModel
+            DashboardInspectionLineModel BuildLineItem4() => new DashboardInspectionLineModel
             {
                 QRCode1          = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var qrId) ? qrId : 1187 : 1187),
-                HeaterTemp_Bend1 = GetFloat(ConstantValues.HeaterTemp_Bend1),
+                HeaterTemp_Bend1 = GetFloat(ConstantValues.L1_HeaterTemp_Bend1),
                 HeaterTemp_Bend2 = GetFloat(ConstantValues.HeaterTemp_Bend2),
                 HeaterTemp_Bend3 = GetFloat(ConstantValues.HeaterTemp_Bend3),
                 Load_Bend1       = GetFloat(ConstantValues.Load_Bend1),
@@ -504,10 +605,8 @@ namespace IPCSoftware.CoreService.Bending.Service
             DashboardInspectionModel item = new DashboardInspectionModel
             {
                 BatchNo   = GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),
-                LineItem1 = BuildLineItem(),
-                LineItem2 = BuildLineItem(),
-                LineItem3 = BuildLineItem(),
-                LineItem4 = BuildLineItem(),
+               
+                LineItem4 = BuildLineItem4(),
             };
 
             return Task.FromResult(new ResponsePackage

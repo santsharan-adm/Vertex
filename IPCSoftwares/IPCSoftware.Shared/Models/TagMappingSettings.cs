@@ -171,7 +171,12 @@ namespace IPCSoftware.Shared.Models
     {
         public string QRCode1 { get; set; }
 
-        public int HeaterTemp_Bend1 { get; set; }
+        public int L1_HeaterTemp_Bend1 { get; set; }
+        public int L2_HeaterTemp_Bend1 { get; set; }
+        public int L3_HeaterTemp_Bend1 { get; set; }
+
+        public int L4_HeaterTemp_Bend1 { get; set; }
+
 
         public int HeaterTemp_Bend2 { get; set; }
         public int HeaterTemp_Bend3 { get; set; }

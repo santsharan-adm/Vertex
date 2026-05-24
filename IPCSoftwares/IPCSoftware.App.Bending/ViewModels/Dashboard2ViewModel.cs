@@ -425,7 +425,7 @@ namespace IPCSoftware.App.Bending.ViewModels
 
 
         // ----------------------------------------------------------------
-        // RequestId = 5  —  Bending control button states
+        // RequestId = 5  —  Bending control button statesd
         //   Reads only the 4 tags that back the Dashboard2 control buttons:
         //   AUTO RUN | DRY RUN | CYCLE START/STOP | WORK PAYOUT START
         // ----------------------------------------------------------------

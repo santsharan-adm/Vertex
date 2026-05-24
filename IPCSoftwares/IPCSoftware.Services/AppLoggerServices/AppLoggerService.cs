@@ -5,7 +5,7 @@ using IPCSoftware.Shared.Models.ConfigModels;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;                                      //Added to implement Event Viewer logging
+using System.Diagnostics;                                     
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;

@@ -128,7 +128,11 @@ namespace IPCSoftware.Shared.Models
 
         // Dashboard2 OEE Tags
         public static string QRCode1;
-        public static int HeaterTemp_Bend1;
+        public static int L1_HeaterTemp_Bend1;
+        public static int L2_HeaterTemp_Bend1;
+        public static int L3_HeaterTemp_Bend1;
+        public static int L4_HeaterTemp_Bend1;
+
         public static int HeaterTemp_Bend2;
         public static int HeaterTemp_Bend3;
         public static int Load_Bend1;
@@ -277,7 +281,11 @@ namespace IPCSoftware.Shared.Models
                 if (dashboard2 != null)
                 {
                     QRCode1 = dashboard2.QRCode1;
-                    HeaterTemp_Bend1 = dashboard2.HeaterTemp_Bend1;
+                    L1_HeaterTemp_Bend1 = dashboard2.L1_HeaterTemp_Bend1;
+                    L2_HeaterTemp_Bend1 = dashboard2.L2_HeaterTemp_Bend1;
+                    L3_HeaterTemp_Bend1 = dashboard2.L3_HeaterTemp_Bend1;
+                    L4_HeaterTemp_Bend1 = dashboard2.L4_HeaterTemp_Bend1;
+
                     HeaterTemp_Bend2 = dashboard2.HeaterTemp_Bend2;
                     HeaterTemp_Bend3 = dashboard2.HeaterTemp_Bend3;
                     Load_Bend1 = dashboard2.Load_Bend1;
