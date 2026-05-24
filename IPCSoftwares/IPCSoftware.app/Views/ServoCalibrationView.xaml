@@ -1076,6 +1076,7 @@
                                     </Button.Template>
                                 </Button>
                                     <Button Content="CANCLE" 
+                                            Visibility="{Binding IsCancelButtonVisible}"
                                        Command="{Binding CancelProgramCommand}"
                                        Background="DarkCyan" 
                                        Foreground="White" 

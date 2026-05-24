@@ -198,6 +198,8 @@ public class RibbonViewModel : BaseViewModel
     {
         try
         {
+            if (!_nav.CanNavigateFromCurrent()) return;
+
             bool confirm = _dialog.ShowYesNo("Are you sure you want to logout?", "Logout");
 
             if (confirm)

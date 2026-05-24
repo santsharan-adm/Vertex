@@ -16,6 +16,7 @@ using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
@@ -174,6 +175,14 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _currentRunningProgram, value);
         }
 
+        private Visibility _isCancelButtonVisible = Visibility.Collapsed; // Default visible
+        public Visibility IsCancelButtonVisible
+        {
+            get => _isCancelButtonVisible;
+            set => SetProperty(ref _isCancelButtonVisible, value);
+        }
+
+
         // --- Properties ---
         private double _liveX;
         public double LiveX
@@ -292,8 +301,7 @@ namespace IPCSoftware.App.ViewModels
 
             //  Product Settings Command
             //ProductSaveCommand = new RelayCommand(async () => await SaveProductSettingsAsync());
-
-
+            IsCancelButtonVisible = Visibility.Collapsed;
             InitializeParameters();
 
             _ = Task.Run(async () =>
@@ -657,6 +665,7 @@ namespace IPCSoftware.App.ViewModels
             OnPropertyChanged(nameof(SelectedProgramCode));
             OnPropertyChanged(nameof(SelectedProductName));
             HasUnsavedChanges = true;
+            IsCancelButtonVisible = Visibility.Visible;
 
         }
 
@@ -1301,7 +1310,7 @@ namespace IPCSoftware.App.ViewModels
                             CurrentRunningProgram = "*";
                         }
                     }
-
+                    IsCancelButtonVisible = HasUnsavedChanges ? Visibility.Visible : Visibility.Collapsed;
                     // 2. Update X Parameters
                     foreach (var param in XParameters)
                     {
