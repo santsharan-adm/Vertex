@@ -485,6 +485,30 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
+        private async Task<bool> WaitForPlcConfirmationAsync()
+        {
+            int timeoutMs = 5000; // 5 Seconds Timeout
+            int delayMs = 200;
+            int elapsed = 0;
+
+            while (elapsed < timeoutMs)
+            {
+                var data = await _coreClient.GetIoValuesAsync(5);
+                if (data != null && data.TryGetValue(ConstantValues.ACK_LIMIT.Read, out object val))
+                {
+                    bool isComplete = false;
+                    if (val is bool bVal) isComplete = bVal;
+                    else if (val is int iVal) isComplete = (iVal > 0);
+
+                    if (isComplete) return true;
+                }
+                await Task.Delay(delayMs);
+                elapsed += delayMs;
+            }
+            return false;
+        }
+
+
         // ===================================================================
         // PRODUCT SETTINGS LOGIC
         // ===================================================================
@@ -1007,7 +1031,7 @@ namespace IPCSoftware.App.ViewModels
                     _logger.LogWarning($"PLC did not acknowledge coordinate save for Product Code {SelectedProgramCode}", LogType.Audit);                  
                     _dialog.ShowWarning("PLC did not acknowledge coordinate save. Please check connection.");
                     dict.Add(1, false);
-                    return dict;
+                    
                 }
                 dict.Add(1,true);
 
@@ -1039,20 +1063,34 @@ namespace IPCSoftware.App.ViewModels
                     {
                         _dialog.ShowWarning("Error Writing AE Limits in Plc");
                         dict.Add(3, false); 
-                        return dict;
+                        
                     }
                     dict.Add(3, true);
-                    // Handshake (optional, based on your PLC logic)
-                    bool ackConf1 = await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1);
-                    await Task.Delay(200);
-                    bool ackConf2 = await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
+                    // ---. Handshake Logic ---
+                    // Set Transfer Start (DM10301.0) -> 1
+                    _logger.LogInfo("[AE UI] Setting Transfer Start...", LogType.Audit);
+                    await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1);
+                    // Wait for Confirmation (DM10480.0)
+                    bool transferComplete = await WaitForPlcConfirmationAsync();
 
-                    if(!(ackConf1 && ackConf2))
-                    { _logger.LogError($"Error writing ack limit TagId : {ConstantValues.ACK_LIMIT}", LogType.Error);
-                       dict.Add(4, false);
-                        return dict;
+                    // Reset Start Bit -> 0
+                    await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
+
+                    if (transferComplete)
+                    {
+                        _logger.LogInfo("[AE UI] PLC Confirmation Received.", LogType.Audit);
+                        // _dialog.ShowMessage("Limits Saved & Transferred Successfully!");
+                        dict.Add(4, true);
                     }
-                    dict.Add(4, true);
+                    else
+                    {
+                        _logger.LogWarning("[AE UI] PLC Transfer Timeout.", LogType.Diagnostics);
+                        _dialog.ShowWarning("Settings Saved, but PLC Confirmation timed out.\nPlease check PLC status.");
+                        dict.Add(4, false);
+                        
+                    }
+
+                    
                     
                 }
 
@@ -1097,10 +1135,26 @@ namespace IPCSoftware.App.ViewModels
                         await _coreClient.WriteTagAsync(AeMinZ.WriteTagId, selectedRecipe.AngleMin);
                         await _coreClient.WriteTagAsync(AeMaxZ.WriteTagId, selectedRecipe.AngleMax);
 
-                        // Handshake (optional, based on your PLC logic)
+                        // ---. Handshake Logic ---
+                        // Set Transfer Start (DM10301.0) -> 1
+                        _logger.LogInfo("[AE UI] Setting Transfer Start...", LogType.Audit);
                         await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1);
-                        await Task.Delay(200);
+                        // Wait for Confirmation (DM10480.0)
+                        bool transferComplete = await WaitForPlcConfirmationAsync();
+
+                        // Reset Start Bit -> 0
                         await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
+
+                        if (transferComplete)
+                        {
+                            _logger.LogInfo("[AE UI] PLC Confirmation Received.", LogType.Audit);
+                           // _dialog.ShowMessage("Limits Saved & Transferred Successfully!");
+                        }
+                        else
+                        {
+                            _logger.LogWarning("[AE UI] PLC Transfer Timeout.", LogType.Diagnostics);
+                            _dialog.ShowWarning("Settings Saved, but PLC Confirmation timed out.\nPlease check PLC status.");
+                        }
 
                         //Save csv after write operation
                         OnSaveProgram();
