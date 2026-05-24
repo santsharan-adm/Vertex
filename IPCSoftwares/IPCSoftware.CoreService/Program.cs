@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using IPCSoftware.CoreService.AOI.Service;
+using IPCSoftware.Shared;
 
 namespace IPCSoftware.CoreService
 {
@@ -82,7 +83,7 @@ namespace IPCSoftware.CoreService
                             services.Configure<ConfigSettings>(hostContext.Configuration.GetSection("Config"));
                             services.Configure<CcdSettings>(hostContext.Configuration.GetSection("CCD"));
                             services.Configure<ExternalSettings>(hostContext.Configuration.GetSection("External"));
-
+                            services.AddSingleton<ExternalParameters>();
                             // 1. Configuration/Logging
                             //   services.AddSingleton<IConfiguration>(hostContext.Configuration);
                             // 2. Configuration Service (Resolvable by DI)

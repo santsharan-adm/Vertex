@@ -6,6 +6,7 @@ using IPCSoftware.Devices.Camera;
 using IPCSoftware.Devices.PLC;
 using IPCSoftware.Devices.UI;
 using IPCSoftware.Services;
+using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
@@ -29,6 +30,7 @@ namespace IPCSoftware.Engine
         private readonly ShiftResetService _shiftReset;
         private readonly CCDTriggerServiceBase _ccdTrigger; // 1. Add field
         private readonly AlarmService _alarmService;
+        private readonly ExternalParameters _externalParameters;
        // private readonly IPLCTagConfigurationService _tagService;         //Added by Rishabh - date - 26/04/2026//
 
         // latest packets per PLC (unitno)
@@ -43,12 +45,14 @@ namespace IPCSoftware.Engine
             SystemMonitorService systemMonitor,
           UiListener ui,
           AlarmService alarmService,
+          ExternalParameters externalParameters,
             CCDTriggerServiceBase ccdTrigger,          
             IAppLogger logger) : base(logger)
         {
             _ui = ui;
             _shiftReset = shiftReset;
             _alarmService = alarmService;   
+            _externalParameters = externalParameters;
             _systemMonitor = systemMonitor;
             _oee = oee;
             _manager = manager;
@@ -226,7 +230,12 @@ namespace IPCSoftware.Engine
                     };
                 }
 
+                //Request id =9 
 
+                if (request.RequestId == 9)
+                {
+                    return await HandleExternalParameters(request);
+                }
 
 
                 //---------------------------------------------------------
@@ -300,6 +309,38 @@ namespace IPCSoftware.Engine
             }
         }
 
+        private async Task<ResponsePackage> HandleExternalParameters(RequestPackage request)
+        {
+            try
+            {
+                if (request.Parameters is JsonElement json)
+                {
+                    var extParams = JsonSerializer.Deserialize<ExternalParameters>(json.GetRawText());
+                    if (extParams != null)
+                    {
+                        _externalParameters.IsMacMiniEnabled = extParams.IsMacMiniEnabled;
+                        _externalParameters.MacMiniIpAddress = extParams.MacMiniIpAddress;
+                        _externalParameters.Protocol = extParams.Protocol;
+                        _externalParameters.Port = extParams.Port;
+                        _externalParameters.InspectionXUnit = extParams.InspectionXUnit;
+                        _externalParameters.InspectionYUnit = extParams.InspectionYUnit;
+                        _externalParameters.InspectionAngleUnit = extParams.InspectionAngleUnit;
+                        _externalParameters.EndPoint = extParams.EndPoint;
+                        _externalParameters.PreviousMachineCode = extParams.PreviousMachineCode;
+                        _externalParameters.AOIMachineCode = extParams.AOIMachineCode;
+
+
+                        return new ResponsePackage { ResponseId = 9, Success = true };
+                    }
+                }
+                return Error("Invalid external parameters");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+                return Error(ex.Message);
+            }
+        }
 
         private async Task<ResponsePackage> HandleAlarmRequest(RequestPackage request)
         {
@@ -385,7 +426,7 @@ namespace IPCSoftware.Engine
             }
         }
 
-
+        
         private ResponsePackage OkAlarm(int alarmNo) =>
                                 new ResponsePackage
                                 {

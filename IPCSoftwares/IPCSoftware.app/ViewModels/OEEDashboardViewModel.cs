@@ -474,20 +474,20 @@ namespace IPCSoftware.App.ViewModels
                     IsMacMiniEnabled = newState;
                     OnPropertyChanged(nameof(MacMiniStatusText));
                     OnPropertyChanged(nameof(MacMiniStatusColor));
-
+                    _coreClient.WriteSettingAsync("IsMacMiniEnabled", newState); // Write to PLC or Core Service if needed)
                     // 2. Write to appsettings.json
                     string appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
                     var json = File.ReadAllText(appSettingsPath);
                     var jsonObj = JObject.Parse(json);
 
-                    if (jsonObj["External"] != null)
-                    {
-                        jsonObj["External"]["IsMacMiniEnabled"] = newState;
-                        File.WriteAllText(appSettingsPath, jsonObj.ToString());
+                    //if (jsonObj["External"] != null)
+                    //{
+                    //    jsonObj["External"]["IsMacMiniEnabled"] = newState;
+                    //    File.WriteAllText(appSettingsPath, jsonObj.ToString());
 
-                        // Log
-                        // _logger.LogInfo($"Mac Mini Logic set to: {newState}", LogType.Audit);
-                    }
+                    //    // Log
+                    //    // _logger.LogInfo($"Mac Mini Logic set to: {newState}", LogType.Audit);
+                    //}
 
                 }
             }

@@ -147,6 +147,9 @@ namespace IPCSoftware.App.ViewModels
                     ext["InspectionXUnit"] = UnitX;
                     ext["InspectionYUnit"] = UnitY;
                     ext["InspectionAngleUnit"] = UnitAngle;
+                    await _coreClient.WriteSettingAsync("InspectionXUnit", UnitX);
+                    await _coreClient.WriteSettingAsync("InspectionYUnit", UnitY);
+                    await _coreClient.WriteSettingAsync("InspectionAngleUnit", UnitAngle);
 
                     File.WriteAllText(_appSettingsPath, jsonObj.ToString());
                     _logger.LogInfo("[AE UI] Units saved to appsettings.json.", LogType.Audit);

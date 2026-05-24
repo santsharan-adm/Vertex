@@ -3,6 +3,7 @@ using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Devices.PLC;
 using IPCSoftware.Devices.UI;
 using IPCSoftware.Engine;
+using IPCSoftware.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,10 @@ namespace IPCSoftware.CoreService.AOI.Service
             SystemMonitorService systemMonitor,
             UiListener ui,
             AlarmService alarmService,
+            ExternalParameters externalParameters,
             CCDTriggerServiceAOI ccdTrigger,
           
-            IAppLogger logger) : base(manager, algo, oee, shiftReset, systemMonitor, ui, alarmService, ccdTrigger,logger)
+            IAppLogger logger) : base(manager, algo, oee, shiftReset, systemMonitor, ui, alarmService,externalParameters ,ccdTrigger,logger)
         {
         }   
     }

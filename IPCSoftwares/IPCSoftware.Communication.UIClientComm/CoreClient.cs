@@ -190,6 +190,159 @@ namespace IPCSoftware.Common.UIClientComm
             return res.Success;
         }
 
+        public async Task<bool> WriteSettingAsync(string settingPath, object value)
+        {
+            try
+            {
+                var parameter = new Dictionary<string, object>
+                {
+                    {settingPath,value}
+                };
+
+                var request = new RequestPackage
+                {
+                    RequestId = 9,
+                    Parameters = parameter
+                };
+
+                string jsonResponse = await SendRequestAsync(request);
+
+                if(string.IsNullOrEmpty(jsonResponse))
+                {
+                    _logger?.LogWarning($"[CoreClient] WriteSetting {settingPath} - No Response", LogType.Diagnostics);
+                    return false;
+                }
+
+                var response = JsonConvert.DeserializeObject<ResponsePackage>(jsonResponse);
+                if(!response.Success)
+                {
+                    _logger?.LogError($"[CoreClient] WriteSetting failed: {response.ErrorMessage}", LogType.Error);
+                }
+                return response.Success;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Core Client]WriteSetting Exception: {ex.Message}", LogType.Error);
+                return false;
+            }
+        }
+
+
+
+        public async Task<T> ReadSettingAsync<T>(string settingPath)
+        {
+            try
+            {
+                var parameters = new Dictionary<string, object>
+        {
+            { "SettingPath", settingPath }
+        };
+
+                var request = new RequestPackage
+                {
+                    RequestId = 10, // ReadSetting
+                    Parameters = parameters
+                };
+
+                string jsonResponse = await SendRequestAsync(request);
+
+                if (string.IsNullOrEmpty(jsonResponse))
+                {
+                    _logger?.LogWarning($"[CoreClient] ReadSetting '{settingPath}' - No response", LogType.Diagnostics);
+                    return default!;
+                }
+
+                // Keep a JObject copy so we can examine the raw JSON shape (safe when the
+                // ResponsePackage.Parameters was deserialized into a CLR type).
+                JObject raw = null;
+                try
+                {
+                    raw = JObject.Parse(jsonResponse);
+                }
+                catch
+                {
+                    // ignore parse error - we'll still attempt to use the deserialized ResponsePackage
+                }
+
+                var response = JsonConvert.DeserializeObject<ResponsePackage>(jsonResponse);
+                if (response == null || !response.Success || response.Parameters == null)
+                {
+                    return default!;
+                }
+
+                // 1) If the raw JSON contained a "Parameters" object it's easiest/reliable to
+                //    inspect that JToken for a "Value" property (this handles primitives, objects, arrays).
+                if (raw != null)
+                {
+                    var paramToken = raw["Parameters"];
+                    if (paramToken != null)
+                    {
+                        // If the parameters object contains a "Value" property -> return it
+                        var valueToken = paramToken["Value"];
+                        if (valueToken != null)
+                            return valueToken.ToObject<T>();
+
+                        // If parameters is a primitive (e.g., "Parameters": 123) or string
+                        if (paramToken.Type != JTokenType.Object)
+                        {
+                            return paramToken.ToObject<T>();
+                        }
+
+                        // If parameters is an object without "Value", try return the first property value
+                        if (paramToken.Type == JTokenType.Object)
+                        {
+                            var firstProp = ((JObject)paramToken).Properties().FirstOrDefault();
+                            if (firstProp != null)
+                                return firstProp.Value.ToObject<T>();
+                        }
+                    }
+                }
+
+                // 2) Fallbacks against the CLR-deserialized shape (Dictionary<int,object> or Dictionary<string,object>)
+                //    ResponsePackage.Parameters is declared as Dictionary<int, object> in shared models.
+                try
+                {
+                    // If it's a Dictionary<string, object> with "Value" key
+                    if (response.Parameters is IDictionary<string, object> dictS)
+                    {
+                        if (dictS.TryGetValue("Value", out var valS))
+                            return (T)Convert.ChangeType(valS, typeof(T));
+                        if (dictS.Count == 1)
+                            return (T)Convert.ChangeType(dictS.Values.First(), typeof(T));
+                    }
+
+                    // If it's a Dictionary<int, object> (common for IO packets) - try key 0 or first value
+                    if (response.Parameters is IDictionary<int, object> dictI)
+                    {
+                        if (dictI.TryGetValue(0, out var val0))
+                            return (T)Convert.ChangeType(val0, typeof(T));
+                        if (dictI.Count == 1)
+                            return (T)Convert.ChangeType(dictI.Values.First(), typeof(T));
+                    }
+
+                    // Last resort: if the Parameters object itself can be converted to T
+                    if (response.Parameters is T direct)
+                        return direct;
+
+                    // Try to convert the boxed object (rare)
+                    return (T)Convert.ChangeType(response.Parameters, typeof(T));
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogWarning($"[CoreClient] ReadSetting conversion fallback failed: {ex.Message}", LogType.Diagnostics);
+                    return default!;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError($"[CoreClient] ReadSetting Exception: {ex.Message}", LogType.Diagnostics);
+                return default!;
+            }
+        }
+
+
+
         public async Task<bool> AcknowledgeAlarmAsync(int alarmNo, string userName)
         {
             try
