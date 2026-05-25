@@ -36,6 +36,7 @@
     <None Remove="Data\Shifts.csv" />
     <None Remove="Data\StartupConditions.json" />
     <None Remove="Data\Users.csv" />
+	<None Remove="Data\Recipe.csv" />
   </ItemGroup>
 
   <ItemGroup>
@@ -139,6 +140,9 @@
     <Content Include="Data\Users.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+	 <Content Include="Data\Recipe.csv">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
   </ItemGroup>
 
 </Project>

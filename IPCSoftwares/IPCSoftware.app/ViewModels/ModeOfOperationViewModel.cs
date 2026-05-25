@@ -229,8 +229,9 @@ namespace IPCSoftware.App.ViewModels
                 //RecipeItem newRecipe = SelectedRecipe;
                 //_lastConfirmedRecipe = newRecipe;
                 _logger.LogInfo($"Recipe Selected: Program {SelectedRecipe.ProgramNo} - {SelectedRecipe.ProductCode}", LogType.Audit);
-
-
+                AddAudit($"Waiting for Recipe parameters to load...");
+               // if (!_coreClient.isConnected) { _dialog.ShowWarning($"Failed to Load recipe\n Please Check PLC Connection"); AddAudit($"Failed to load {SelectedRecipe.ProductCode}\nCheck PLC Connection.");return; }
+                if (!_coreClient.isConnected) { _dialog.ShowWarning($"Failed to Load recipe\n Please Check PLC Connection"); AddAudit($"Failed to load {SelectedRecipe.ProductCode}\nCheck PLC Connection.");return; }
                 var allResults = await _recipeAppService.ApplyRecipeToPlcAsync(SelectedRecipe);
                 if (allResults.ContainsKey(1)) { bool servoResult = allResults[1]; if (!servoResult) { AddAudit($"Servo Coordinated Write Failed"); } else { AddAudit($"Servo Coordinated Write Successfully"); } }
                 if (allResults.ContainsKey(2)) { bool positionResult = allResults[2]; if (!positionResult) { AddAudit($"Position Sequence Write Failed"); } else { AddAudit($"Position Sequence Write Successfully"); } }
@@ -254,6 +255,9 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _dialog.ShowMessage($"Failed to load recipe '{SelectedRecipe.ProductCode}'. Please check the audit log for details.");
                 }
+
+                if (!_coreClient.isConnected) { _dialog.ShowWarning($"PLC Connection was lost during writing recipe params."); AddAudit($"Failed to load {SelectedRecipe.ProductCode}\nCheck PLC Connection.");  }
+
             }
             catch (Exception ex)
             {

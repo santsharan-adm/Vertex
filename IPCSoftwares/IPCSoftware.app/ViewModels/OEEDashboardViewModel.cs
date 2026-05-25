@@ -35,7 +35,7 @@ namespace IPCSoftware.App.ViewModels
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
         private readonly IProductConfigurationService _productService; // NEW Injection
         private readonly IServoCalibrationService _servoService; // NEW Injection for Recipe Data
-
+        private readonly IRecipeApplicationService _recipeAppService; // Added by Rishabh -Date 25-05-2026
 
         private ExternalSettings Settings => _settingsMonitor.CurrentValue;
 
@@ -377,6 +377,7 @@ namespace IPCSoftware.App.ViewModels
             ILogConfigurationService logConfigService,
             IProductConfigurationService productService,
             IServoCalibrationService servoService,
+            IRecipeApplicationService recipeAppService,
             IAppLogger logger) : base(logger)
         {
             var ccd = ccdSettng.Value;
@@ -386,6 +387,7 @@ namespace IPCSoftware.App.ViewModels
             _dialog = dialog;
             _productService = productService;
             _servoService = servoService; // NEW Assignment for Recipe Data
+            _recipeAppService = recipeAppService;
             SwitchDirection = configSettng.Value.SwitchConveyorDirection;
             IsMacMiniEnabled = _settingsMonitor.CurrentValue.IsMacMiniEnabled;
 
@@ -579,12 +581,15 @@ namespace IPCSoftware.App.ViewModels
             {
                 // Populate the collection with 12 empty items
                // var prodConfig = await _productService.LoadAsync();
-                var savedRecipes = await _servoService.LoadRecipeAsync();        // Now load last saved recipe content
-                var lastRecipe = savedRecipes?.LastOrDefault();
+              //  var savedRecipes = await _servoService.LoadRecipeAsync();        // Now load last saved recipe content
+             //   var lastRecipe = savedRecipes?.LastOrDefault();
+                var selectedRecipe = await _recipeAppService.GetRecipefromSelection(); // Now Loads items from Selected recipe 
+                
+
                 //====//=======//========//==//////========//========//========//========
-                int gridRows =  lastRecipe?.GridRows > 0 ? lastRecipe.GridRows : 4;
-                int gridCols = lastRecipe?.GridColumns > 0 ? lastRecipe.GridColumns : 3;
-                int activeItems = lastRecipe?.TotalItems > 0 ? lastRecipe.TotalItems : 12;
+                int gridRows = selectedRecipe?.GridRows > 0 ? selectedRecipe.GridRows : 4;
+                int gridCols = selectedRecipe?.GridColumns > 0 ? selectedRecipe.GridColumns : 3;
+                int activeItems = selectedRecipe?.TotalItems > 0 ? selectedRecipe.TotalItems : 12;
                 // 2. Set Grid Dimensions
                 DynamicRows = gridRows;
                 DynamicColumns = gridCols;

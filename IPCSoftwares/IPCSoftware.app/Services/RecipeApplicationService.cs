@@ -14,6 +14,7 @@ namespace IPCSoftware.App.Services
         private readonly IAeLimitService _aeLimitService;
         private readonly ServoCalibrationViewModel _servoViewModel;
         private readonly IAppLogger _logger;
+        private ServoRecipeModel _lastSelectedRecipe;
 
         public RecipeApplicationService(
             CoreClient coreClient,
@@ -29,12 +30,13 @@ namespace IPCSoftware.App.Services
 
         public async Task<Dictionary<int,bool>> ApplyRecipeToPlcAsync(ServoRecipeModel recipe)
         {
-            var dict = new Dictionary<int, bool>();
+            var dict = new Dictionary<int, bool>();   // here dictionary dict will have ( "1": Confirmation of Seq+X|Y Coord write to plc , "2": No_Of_Station to plc , "3" : AE Limits write to plc , "4" : Confirmation from plc that AE limits is write successfully - as bool formate) after returning from ServoCalib VM
 
             try
             {
                 dict = await _servoViewModel.WriteSelectedRecipeAsync(recipe);
                 //if (dict.ContainsKey(1)) { bool result1 = dict[1]; }
+                _lastSelectedRecipe = recipe;
                 return dict;
             }
 
@@ -45,6 +47,16 @@ namespace IPCSoftware.App.Services
                 
             }
 
+        }
+
+
+        public async Task<ServoRecipeModel> GetRecipefromSelection()
+        {
+            try
+            {
+                return _lastSelectedRecipe;
+            }
+            catch (Exception ex) { _logger.LogWarning($"Unable to get recipe {_lastSelectedRecipe}: {ex}", LogType.Error); return new ServoRecipeModel(); }
         }
 
         public async Task SaveAeLimitsAsync()
