@@ -4,6 +4,7 @@ using IPCSoftware.App.Services.UI;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.CoreService;
+using IPCSoftware.CoreService.Services.Algorithm;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.AeLimit;        //Added after
@@ -20,6 +21,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using System.Diagnostics;
 
 namespace IPCSoftware.App.ViewModels
 {
@@ -79,7 +81,7 @@ namespace IPCSoftware.App.ViewModels
         
 
         private int _gridRows;
-        public int GridRows { get => _gridRows; set => SetProperty(ref _gridRows, value); }
+        public int GridRows { get => _gridRows; set => SetProperty(ref _gridRows, value); } 
 
         private int _gridColumns;
         public int GridColumns { get => _gridColumns; set => SetProperty(ref _gridColumns, value); }
@@ -580,6 +582,9 @@ namespace IPCSoftware.App.ViewModels
         private async Task InitializeAvailableProgramNumbers()
         {
             await RefreshProgramNumbersAsync();
+            SelectedItemCount = savedRecipes.Last().TotalItems;
+            GridRows = savedRecipes.Last().GridRows;
+            GridColumns = savedRecipes.Last().GridColumns;
 
         }
 
@@ -593,7 +598,7 @@ namespace IPCSoftware.App.ViewModels
 
                 AvailableProgramCode.Clear();
                 AvailableProductName.Clear();
-
+                
                 foreach (var recipe in savedRecipes.OrderBy(r => r.ProgramNo))
                 {
                     AvailableProgramCode.Add(recipe.ProductCode);
@@ -674,137 +679,43 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
+                bool confirm = _dialog.ShowYesNo($"Do you want to Add Program {FreshProductCode}?", "Confirm Add Recipe");
+                if (!confirm) return;
 
-                bool confirm = _dialog.ShowYesNo($" Do you want to Add Program {FreshProductCode}?", "Confirm Add Recipe");
-                if (!confirm) { return; }
-                string enteredProductCode = FreshProductCode??SelectedProgramCode;// Use Selected Program Code if Fresh Code value not entered
-                string enteredProductName = FreshProductName??SelectedProductName; //Use Selected Program Name if Fresh Name value not entered
+                string enteredProductCode = FreshProductCode ?? SelectedProgramCode;
+                string enteredProductName = FreshProductName ?? SelectedProductName;
                 int enteredTotalItem = SelectedItemCount;
                 int enteredGridRow = GridRows;
                 int enteredGridCol = GridColumns;
 
-                // Validation
-                if (enteredGridRow * enteredGridCol < enteredTotalItem)
+                if (!ValidateRecipeInput(enteredProductCode, enteredProductName, enteredGridRow, enteredGridCol, enteredTotalItem))
+                    return;
+
+                // ADD-specific: duplicate check
+                if (savedRecipes.Any(r => string.Equals(r.ProductCode, enteredProductCode, StringComparison.OrdinalIgnoreCase)))
                 {
-                    _dialog.ShowWarning($"Grid Layout ({enteredGridRow}x{enteredGridCol}) is too small for {enteredTotalItem} items.");
+                    _dialog.ShowWarning($"Recipe with Product Code '{enteredProductCode}' already exists");
                     return;
                 }
-
-
-                if (string.IsNullOrWhiteSpace(enteredProductCode))
-                {
-                    _dialog.ShowWarning("Product Code cannot be empty");
-                    return;
-                }
-
-                if (string.IsNullOrEmpty(enteredProductName))
-                {
-                    _dialog.ShowWarning("Product Name cannot be empty");
-                    return;
-                }
-
-
-
-              //  var savedRecipes = await _servoService.LoadRecipeAsync();
-                bool productCodeExists = savedRecipes.Any(r =>
-                    string.Equals(r.ProductCode, enteredProductCode, StringComparison.OrdinalIgnoreCase));
-
-                bool productNameExists = savedRecipes.Any(r =>
-                    string.Equals(r.ProductName, enteredProductName, StringComparison.OrdinalIgnoreCase));
-
-                if (productCodeExists)
-                {
-                    _dialog.ShowWarning($"Recipe with Product Name '{enteredProductCode}' already exists");
-                    return;
-                }
-
-                if (productNameExists)
+                if (savedRecipes.Any(r => string.Equals(r.ProductName, enteredProductName, StringComparison.OrdinalIgnoreCase)))
                 {
                     _dialog.ShowWarning($"Recipe with Product Name '{enteredProductName}' already exists");
                     return;
                 }
 
+                // ADD-specific: assign new program number
+                var newRecipe = await BuildRecipeAsync(++_nextProgramId, enteredProductCode, enteredProductName, enteredTotalItem, enteredGridRow, enteredGridCol);
 
-                var savedPositions = Positions.ToList();
-                var aeLimitSettings = await _aeLimitService.GetSettingsAsync();
-                var firstStation = aeLimitSettings?.Stations?.FirstOrDefault();
-               // var productSetup = await _productService.LoadAsync();
-
-                var newRecipe = new ServoRecipeModel
-                {
-                    ProgramNo = ++_nextProgramId,
-
-                    // Sequence Indexes (S1-S12)
-                    S1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.SequenceIndex ?? 0,
-                    S2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.SequenceIndex ?? 0,
-                    S3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.SequenceIndex ?? 0,
-                    S4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.SequenceIndex ?? 0,
-                    S5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.SequenceIndex ?? 0,
-                    S6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.SequenceIndex ?? 0,
-                    S7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.SequenceIndex ?? 0,
-                    S8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.SequenceIndex ?? 0,
-                    S9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.SequenceIndex ?? 0,
-                    S10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.SequenceIndex ?? 0,
-                    S11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.SequenceIndex ?? 0,
-                    S12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.SequenceIndex ?? 0,
-
-                    // X Coordinates (X0-X12)
-                    X0 = savedPositions.FirstOrDefault(p => p.PositionId == 0)?.X ?? 0,
-                    X1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.X ?? 0,
-                    X2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.X ?? 0,
-                    X3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.X ?? 0,
-                    X4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.X ?? 0,
-                    X5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.X ?? 0,
-                    X6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.X ?? 0,
-                    X7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.X ?? 0,
-                    X8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.X ?? 0,
-                    X9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.X ?? 0,
-                    X10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.X ?? 0,
-                    X11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.X ?? 0,
-                    X12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.X ?? 0,
-
-                    // Y Coordinates (Y0-Y12)
-                    Y0 = savedPositions.FirstOrDefault(p => p.PositionId == 0)?.Y ?? 0,
-                    Y1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.Y ?? 0,
-                    Y2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.Y ?? 0,
-                    Y3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.Y ?? 0,
-                    Y4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.Y ?? 0,
-                    Y5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.Y ?? 0,
-                    Y6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.Y ?? 0,
-                    Y7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.Y ?? 0,
-                    Y8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.Y ?? 0,
-                    Y9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.Y ?? 0,
-                    Y10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.Y ?? 0,
-                    Y11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.Y ?? 0,
-                    Y12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.Y ?? 0,
-
-                    // AE Limits 
-                    Xmin = firstStation?.InspectionX?.Lower ?? 0,
-                    Xmax = firstStation?.InspectionX?.Upper ?? 0,
-                    Ymin = firstStation?.InspectionY?.Lower ?? 0,
-                    Ymax = firstStation?.InspectionY?.Upper ?? 0,
-                    AngleMin = firstStation?.InspectionAngle?.Lower ?? 0,
-                    AngleMax = firstStation?.InspectionAngle?.Upper ?? 0,
-
-                    // Product Setup -
-                    ProductName = enteredProductName,
-                    ProductCode = enteredProductCode,
-                    TotalItems = enteredTotalItem,
-                    GridRows = enteredGridRow,
-                    GridColumns = enteredGridCol
-                };
-                var config = new ProductSettingsModel
+                await _productService.SaveAsync(new ProductSettingsModel
                 {
                     ProductName = enteredProductName,
                     ProductCode = enteredProductCode,
                     TotalItems = enteredTotalItem,
                     GridRows = enteredGridRow,
                     GridColumns = enteredGridCol
-                };
+                });
 
-                await _productService.SaveAsync(config);
                 _lastProgramAdded = newRecipe.ProgramNo;
-
                 bool success = await _recipeManagementService.AddRecipeAsync(newRecipe);
 
                 if (success)
@@ -886,141 +797,64 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        // =------ Edit Program Command Handler  ------//
+
+        // =------ Edit/Save Program Command Handler  ------//
         private async void OnSaveProgram()
         {
             try
             {
-                // Find the recipe by ProductCode
-                //var savedRecipes = await _servoService.LoadRecipeAsync();
-                var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == (string.IsNullOrEmpty(SelectedProgramCode) ? FreshProductCode : SelectedProgramCode));
+                string enteredProductCode = SelectedProgramCode ?? FreshProductCode;
+                string enteredProductName = SelectedProductName ?? FreshProductName;
+                int enteredTotalItem = SelectedItemCount;
+                int enteredGridRow = GridRows;
+                int enteredGridCol = GridColumns;
 
-
-                string enteredProductCode =  SelectedProgramCode??FreshProductCode;// Use Selected Program Code if Fresh Code value not entered
-                string enteredProductName =  SelectedProductName??FreshProductName; //Use Selected Program Name if Fresh Name value not entered
-                int enteredTotalItem      = SelectedItemCount;
-                int enteredGridRow        = GridRows;
-                int enteredGridCol        = GridColumns;
-
-                if (!(enteredProductCode != null)) { _dialog.ShowWarning("Product Code cannot be empty"); return; }
-                if (!(enteredProductName != null)) { _dialog.ShowWarning("Product Name cannot be empty"); return; }
-                // Validation
-                if (enteredGridRow * enteredGridCol < enteredTotalItem)
-                {
-                    _dialog.ShowWarning($"Grid Layout ({enteredGridRow}x{enteredGridCol}) is too small for {enteredTotalItem} items.");
+                if (!ValidateRecipeInput(enteredProductCode, enteredProductName, enteredGridRow, enteredGridCol, enteredTotalItem))
                     return;
-                }
+
+                // SAVE-specific: must find existing recipe
+                var selectedRecipe = savedRecipes.FirstOrDefault(r =>
+                    r.ProductCode == (string.IsNullOrEmpty(SelectedProgramCode) ? FreshProductCode : SelectedProgramCode));
 
                 if (selectedRecipe == null)
                 {
                     _dialog.ShowWarning("Selected program not found.");
                     return;
                 }
-                bool confirm = _dialog.ShowYesNo($" Do you want to edit Program {SelectedProgramCode}?", "Confirm Update Recipe");
+
+                bool confirm = _dialog.ShowYesNo($"Do you want to edit Program {SelectedProgramCode}?", "Confirm Update Recipe");
                 if (!confirm) return;
-                //Collecting data from current positions 
-                var savedPositions = Positions.ToList();
 
-                //Collecting data from AE Limits
-                var aeLimitSettings = await _aeLimitService.GetSettingsAsync();
-                var firstStation = aeLimitSettings?.Stations?.FirstOrDefault();
-              //  var productSetup = await _productService.LoadAsync();
+                // SAVE-specific: keep original ProgramNo
+                var updatedRecipe = await BuildRecipeAsync(selectedRecipe.ProgramNo, enteredProductCode, enteredProductName, enteredTotalItem, enteredGridRow, enteredGridCol);
 
-                var UpdatedRecipe = new ServoRecipeModel
-                {
-                    ProgramNo = selectedRecipe.ProgramNo,
-
-                    //Sequence Indexes (S1-S12)
-
-                    S1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.SequenceIndex ?? 0,
-                    S2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.SequenceIndex ?? 0,
-                    S3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.SequenceIndex ?? 0,
-                    S4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.SequenceIndex ?? 0,
-                    S5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.SequenceIndex ?? 0,
-                    S6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.SequenceIndex ?? 0,
-                    S7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.SequenceIndex ?? 0,
-                    S8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.SequenceIndex ?? 0,
-                    S9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.SequenceIndex ?? 0,
-                    S10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.SequenceIndex ?? 0,
-                    S11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.SequenceIndex ?? 0,
-                    S12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.SequenceIndex ?? 0,
-
-                    // X Coordinate (X0-X12)
-                    X0 = savedPositions.FirstOrDefault(p => p.PositionId == 0)?.X ?? 0,
-                    X1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.X ?? 0,
-                    X2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.X ?? 0,
-                    X3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.X ?? 0,
-                    X4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.X ?? 0,
-                    X5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.X ?? 0,
-                    X6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.X ?? 0,
-                    X7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.X ?? 0,
-                    X8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.X ?? 0,
-                    X9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.X ?? 0,
-                    X10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.X ?? 0,
-                    X11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.X ?? 0,
-                    X12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.X ?? 0,
-                    // Y Coordinate (Y0-Y12)
-                    Y0 = savedPositions.FirstOrDefault(p => p.PositionId == 0)?.Y ?? 0,
-                    Y1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.Y ?? 0,
-                    Y2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.Y ?? 0,
-                    Y3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.Y ?? 0,
-                    Y4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.Y ?? 0,
-                    Y5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.Y ?? 0,
-                    Y6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.Y ?? 0,
-                    Y7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.Y ?? 0,
-                    Y8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.Y ?? 0,
-                    Y9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.Y ?? 0,
-                    Y10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.Y ?? 0,
-                    Y11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.Y ?? 0,
-                    Y12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.Y ?? 0,
-                    // AE Limits 
-
-                    Xmin = firstStation?.InspectionX?.Lower ?? 0,
-                    Xmax = firstStation?.InspectionX?.Upper ?? 0,
-                    Ymin = firstStation?.InspectionY?.Lower ?? 0,
-                    Ymax = firstStation?.InspectionY?.Upper ?? 0,
-                    AngleMin = firstStation?.InspectionAngle?.Lower ?? 0,
-                    AngleMax = firstStation?.InspectionAngle?.Upper ?? 0,
-
-
-                    // Product Setup -
-                    ProductName = enteredProductName,
-                    ProductCode = enteredProductCode,
-                    TotalItems = enteredTotalItem,
-                    GridRows = enteredGridRow,
-                    GridColumns = enteredGridCol
-                };
-                var config = new ProductSettingsModel
+                await _productService.SaveAsync(new ProductSettingsModel
                 {
                     ProductName = enteredProductName,
                     ProductCode = enteredProductCode,
                     TotalItems = enteredTotalItem,
                     GridRows = enteredGridRow,
                     GridColumns = enteredGridCol
-                };
+                });
 
-                await _productService.SaveAsync(config);
-
-                bool success = await _recipeManagementService.UpdateRecipeAsync(UpdatedRecipe);
-
+                bool success = await _recipeManagementService.UpdateRecipeAsync(updatedRecipe);
 
                 if (success)
                 {
                     _logger.LogInfo($"Recipe updated successfully: Program {SelectedProgramCode}", LogType.Audit);
                     _dialog.ShowMessage($"Program {SelectedProgramCode} updated successfully.");
-
                     await RefreshProgramNumbersAsync();
-
                 }
                 else
                 {
                     _dialog.ShowWarning($"Failed to edit program {SelectedProgramCode}");
                 }
+
                 HasUnsavedChanges = false;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to edit the program :{ex}", LogType.Error);
+                _logger.LogError($"Failed to edit the program: {ex}", LogType.Error);
             }
         }
         // Called from within ModeOfOperationViewModel (uses recipe.ProductCode)
@@ -1052,11 +886,15 @@ namespace IPCSoftware.App.ViewModels
                         GridRows = recipe.GridRows,
                         GridColumns = recipe.GridColumns
                 };
-
+               
                 await _productService.SaveAsync(config);  // need to remove dependency from json later
+
+
                 if (_coreClient.isConnected)
                 {
+                    
                     bool confirmItemwrite = await _coreClient.WriteTagAsync(ConstantValues.NO_OF_Station, recipe.TotalItems);
+              
                     
                     if (!confirmItemwrite) { _dialog.ShowWarning("Error Writing Total Item in Plc"); dict.Add(2, false); return dict; }
                     dict.Add(2, true);
@@ -1912,6 +1750,104 @@ namespace IPCSoftware.App.ViewModels
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
             }
+        }
+
+        // SHARED HELPER: Validate recipe input fields
+        // Returns true if valid, false + shows warning if not
+        // ===================================================================
+        private bool ValidateRecipeInput(string productCode, string productName, int gridRows, int gridCols, int totalItems)
+        {
+            if (string.IsNullOrWhiteSpace(productCode))
+            {
+                _dialog.ShowWarning("Product Code cannot be empty");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(productName))
+            {
+                _dialog.ShowWarning("Product Name cannot be empty");
+                return false;
+            }
+            if (gridRows * gridCols < totalItems)
+            {
+                _dialog.ShowWarning($"Grid Layout ({gridRows}x{gridCols}) is too small for {totalItems} items.");
+                return false;
+            }
+            return true;
+        }
+
+        // ===================================================================
+        // SHARED HELPER: Build a ServoRecipeModel from current UI state
+        // programNo is passed in by caller (new ID or existing ID)
+        // ===================================================================
+        private async Task<ServoRecipeModel> BuildRecipeAsync(int programNo, string productCode, string productName, int totalItems, int gridRows, int gridCols)
+        {
+            var savedPositions = Positions.ToList();
+            var aeLimitSettings = await _aeLimitService.GetSettingsAsync();
+            var firstStation = aeLimitSettings?.Stations?.FirstOrDefault();
+
+            return new ServoRecipeModel
+            {
+                ProgramNo = programNo,
+
+                // Sequence Indexes (S1-S12)
+                S1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.SequenceIndex ?? 0,
+                S2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.SequenceIndex ?? 0,
+                S3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.SequenceIndex ?? 0,
+                S4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.SequenceIndex ?? 0,
+                S5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.SequenceIndex ?? 0,
+                S6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.SequenceIndex ?? 0,
+                S7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.SequenceIndex ?? 0,
+                S8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.SequenceIndex ?? 0,
+                S9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.SequenceIndex ?? 0,
+                S10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.SequenceIndex ?? 0,
+                S11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.SequenceIndex ?? 0,
+                S12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.SequenceIndex ?? 0,
+
+                // X Coordinates (X0-X12)
+                X0 = savedPositions.FirstOrDefault(p => p.PositionId == 0)?.X ?? 0,
+                X1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.X ?? 0,
+                X2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.X ?? 0,
+                X3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.X ?? 0,
+                X4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.X ?? 0,
+                X5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.X ?? 0,
+                X6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.X ?? 0,
+                X7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.X ?? 0,
+                X8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.X ?? 0,
+                X9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.X ?? 0,
+                X10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.X ?? 0,
+                X11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.X ?? 0,
+                X12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.X ?? 0,
+
+                // Y Coordinates (Y0-Y12)
+                Y0 = savedPositions.FirstOrDefault(p => p.PositionId == 0)?.Y ?? 0,
+                Y1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.Y ?? 0,
+                Y2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.Y ?? 0,
+                Y3 = savedPositions.FirstOrDefault(p => p.PositionId == 3)?.Y ?? 0,
+                Y4 = savedPositions.FirstOrDefault(p => p.PositionId == 4)?.Y ?? 0,
+                Y5 = savedPositions.FirstOrDefault(p => p.PositionId == 5)?.Y ?? 0,
+                Y6 = savedPositions.FirstOrDefault(p => p.PositionId == 6)?.Y ?? 0,
+                Y7 = savedPositions.FirstOrDefault(p => p.PositionId == 7)?.Y ?? 0,
+                Y8 = savedPositions.FirstOrDefault(p => p.PositionId == 8)?.Y ?? 0,
+                Y9 = savedPositions.FirstOrDefault(p => p.PositionId == 9)?.Y ?? 0,
+                Y10 = savedPositions.FirstOrDefault(p => p.PositionId == 10)?.Y ?? 0,
+                Y11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.Y ?? 0,
+                Y12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.Y ?? 0,
+
+                // AE Limits
+                Xmin = firstStation?.InspectionX?.Lower ?? 0,
+                Xmax = firstStation?.InspectionX?.Upper ?? 0,
+                Ymin = firstStation?.InspectionY?.Lower ?? 0,
+                Ymax = firstStation?.InspectionY?.Upper ?? 0,
+                AngleMin = firstStation?.InspectionAngle?.Lower ?? 0,
+                AngleMax = firstStation?.InspectionAngle?.Upper ?? 0,
+
+                // Product Setup
+                ProductName = productName,
+                ProductCode = productCode,
+                TotalItems = totalItems,
+                GridRows = gridRows,
+                GridColumns = gridCols
+            };
         }
 
 

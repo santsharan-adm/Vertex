@@ -119,7 +119,7 @@ namespace IPCSoftware.App.ViewModels
             try
             {
                 // A. Load Settings
-                var config = await _productService.LoadAsync();
+              //  var config = await _productService.LoadAsync();
                 var savedRecipe =  await _servoService.LoadRecipeAsync();
                 int totalItems = savedRecipe.LastOrDefault().TotalItems;
                 _configuredTotalItems = totalItems > 0 ? totalItems : 12;
