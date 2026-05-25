@@ -876,7 +876,7 @@ namespace IPCSoftware.App.ViewModels
                     dict.Add(1, false);
                     
                 }
-                dict.Add(1,true);
+                else { dict.Add(1, true); }
 
                 var config = new ProductSettingsModel
                 {
@@ -897,7 +897,7 @@ namespace IPCSoftware.App.ViewModels
               
                     
                     if (!confirmItemwrite) { _dialog.ShowWarning("Error Writing Total Item in Plc"); dict.Add(2, false); return dict; }
-                    dict.Add(2, true);
+                    else { dict.Add(2, true); }
                     // Write Ae Limits to PLC
                     bool XminConf =  await _coreClient.WriteTagAsync(AeMinX.WriteTagId, recipe.Xmin);
                     bool XmaxConf = await _coreClient.WriteTagAsync(AeMaxX.WriteTagId, recipe.Xmax);
@@ -912,7 +912,8 @@ namespace IPCSoftware.App.ViewModels
                         dict.Add(3, false); 
                         
                     }
-                    dict.Add(3, true);
+                    else { dict.Add(3, true); }
+                        
                     // ---. Handshake Logic ---
                     // Set Transfer Start (DM10301.0) -> 1
                     _logger.LogInfo("[AE UI] Setting Transfer Start...", LogType.Audit);
@@ -947,9 +948,7 @@ namespace IPCSoftware.App.ViewModels
             catch(Exception ex)
             {
                 _logger.LogError($"Failed to load Product Code {SelectedProgramCode} : {ex}", LogType.Error);
-                dict.Add(1, false);
-                dict.Add(2, false);
-                dict.Add(3, false);
+                dict = new Dictionary<int, bool>();
                 return dict;
             }
         }

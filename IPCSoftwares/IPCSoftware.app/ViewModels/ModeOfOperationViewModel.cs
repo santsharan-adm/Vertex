@@ -247,7 +247,7 @@ namespace IPCSoftware.App.ViewModels
                 {
                     SelectedRecipe = _lastConfirmedRecipe;
                 }
-                if (bResult && allResults.Values.All(r => r == true))
+                if (bResult && allResults.Values.All(r => r == true) && allResults.Count!=0)
                 {
                     _dialog.ShowMessage($"Recipe '{SelectedRecipe.ProductCode}' loaded successfully.");
                 }
