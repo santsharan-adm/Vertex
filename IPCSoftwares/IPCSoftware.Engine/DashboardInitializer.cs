@@ -32,7 +32,7 @@ namespace IPCSoftware.Engine
        // private readonly IPLCTagConfigurationService _tagService;         //Added by Rishabh - date - 26/04/2026//
 
         // latest packets per PLC (unitno)
-        protected readonly Dictionary<int, PlcPacket> _latestPackets = new();
+        //protected readonly Dictionary<int, PlcPacket> _latestPackets = new();
         protected Dictionary<int, object> latestValueNew = new Dictionary<int, object>();
 
         //protected Dictionary<int, object>? _lastValues = null;
@@ -129,18 +129,18 @@ namespace IPCSoftware.Engine
             }
         }
 
-        private void HandlePlcPacket(int plcNo, Dictionary<int, object> values)
-        {
-            // Store latest packet
-            _latestPackets[plcNo] = new PlcPacket
-            {
-                PlcNo = plcNo,
-                Values = values,
-                Timestamp = DateTime.Now
-            };
+        //private void HandlePlcPacket(int plcNo, Dictionary<int, object> values)
+        //{
+        //    // Store latest packet
+        //    _latestPackets[plcNo] = new PlcPacket
+        //    {
+        //        PlcNo = plcNo,
+        //        Values = values,
+        //        Timestamp = DateTime.Now
+        //    };
 
-            Console.WriteLine($"Dashboard: Received {values.Count} tags from PLC {plcNo}");
-        }
+        //    Console.WriteLine($"Dashboard: Received {values.Count} tags from PLC {plcNo}");
+        //}
 
         private PLCTagConfigurationModel? GetTagConfig(int tagId)
         {
@@ -187,20 +187,17 @@ namespace IPCSoftware.Engine
                 //---------------------------------------------------------
                 if (request.RequestId == 5)
                 {
-                    if (!_latestPackets.TryGetValue(1, out var packet))
-                    {
-                        return new ResponsePackage
-                        {
-                            ResponseId = 5,
-                            Parameters = latestValueNew
-                        };
-                    }
-
                     return new ResponsePackage
                     {
                         ResponseId = 5,
-                        Parameters = packet.Values // Dictionary<uint, object>
+                        Parameters = latestValueNew
                     };
+
+                   // return new ResponsePackage;
+                    //{
+                    //    ResponseId = 5,
+                    //    Parameters = packet // Dictionary<uint, object>
+                    //};
                 }
 
                 //---------------------------------------------------------
@@ -208,27 +205,27 @@ namespace IPCSoftware.Engine
                 //---------------------------------------------------------
                 if (request.RequestId == 4)
                 {
-                    if (!_latestPackets.TryGetValue(1, out var packet))
-                    {
+                    
                         return new ResponsePackage
                         {
                             ResponseId = 4,
                             Parameters = new Dictionary<int, object>()
                         };
-                    }
-                //    _oee.ProcessCycleTimeLogic(packet.Values);
-                    return new ResponsePackage
-                    {
-                        ResponseId = 4,
-                        Parameters =_oee.Calculate( packet.Values)
-                    };
+                    
+
+                    // _oee.ProcessCycleTimeLogic(packet);
+
+                    //return new ResponsePackage
+                    //{
+                    //    ResponseId = 4,
+                    //    Parameters = _oee.Calculate(packet)
+                    //};
                 }
 
                 //-----------------------
 
                 if (request.RequestId == 1)
                 {
-                    if (!_latestPackets.TryGetValue(1, out var packet))
                     {
                         return new ResponsePackage
                         {
@@ -237,11 +234,11 @@ namespace IPCSoftware.Engine
                         };
                     }
                 //    _oee.ProcessCycleTimeLogic(packet.Values);
-                    return new ResponsePackage
-                    {   
-                        ResponseId = 1,
-                        Parameters = _systemMonitor.Process(packet.Values)
-                    };
+                    //return new ResponsePackage
+                    //{   
+                    //    ResponseId = 1,
+                    //    Parameters = _systemMonitor.Process(packet.Values)
+                    //};
                 }
 
 
@@ -417,11 +414,8 @@ namespace IPCSoftware.Engine
 
         private void SetCachedValue(int tagId, object value)
         {
-            // for PLC No = 1 (or use cfg.PLCNo)
-            if (_latestPackets.TryGetValue(1, out var packet))
-            {
-                packet.Values[tagId] = value;
-            }
+            // Now the dictionary will be updated directly using tagId as the key
+            latestValueNew[tagId] = value;
         }
 
         private ResponsePackage Ok() =>
