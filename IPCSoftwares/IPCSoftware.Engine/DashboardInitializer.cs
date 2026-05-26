@@ -33,8 +33,9 @@ namespace IPCSoftware.Engine
 
         // latest packets per PLC (unitno)
         protected readonly Dictionary<int, PlcPacket> _latestPackets = new();
+        protected Dictionary<int, object> latestValueNew = new Dictionary<int, object>();
 
-        protected Dictionary<int, object>? _lastValues = null;
+        //protected Dictionary<int, object>? _lastValues = null;
 
         public DashboardInitializerBase(PLCClientManager manager,
             AlgorithmAnalysisService algo,
@@ -54,7 +55,13 @@ namespace IPCSoftware.Engine
             _manager = manager;
             _algo =algo;
             _ccdTrigger = ccdTrigger;
-           
+
+            _algo.OnPlcDataProcessed += (tagId, value) =>
+            {
+                latestValueNew[tagId] = value;
+            };
+
+
         }
 
       
@@ -65,45 +72,55 @@ namespace IPCSoftware.Engine
             {
                 _ui.OnRequestReceived = HandleUiRequest;
 
-                // Start UI
-               // var uiTask = _ui.StartAsync();
-                // Start PLC read loops
+                // Start PLC read loops and collect tasks
                 var plcTasks = _manager.Clients.Select(client =>
                 {
                     client.OnPlcDataReceived += async (plcNo, values) =>
                     {
-                        
-                      
-                        
                         // A. Process Raw Data -> Typed Values (Int/Bool/String)
                         // processedData is Dictionary<int, object> where int is Tag ID
-                        var processedData = _algo.Apply(plcNo, values);
+                        _algo.Apply(plcNo, values);
+                        
 
                      
-                        await _ccdTrigger.ProcessTriggers(processedData, _manager);
-                        _oee.ProcessCycleTimeLogic(processedData);
-                        _oee.Calculate(processedData);
-                        _systemMonitor.Process(processedData);
-                        _alarmService.ProcessTagData(processedData);
-                        _shiftReset.Process(processedData);
+                        
 
                         // C. Prepare for UI (Convert int Key to uint Key for compatibility)
-                        var final = processedData.ToDictionary(k => (int)k.Key, v => v.Value);
+                        //var final = processedData.ToDictionary(k => (int)k.Key, v => v.Value);
 
                         // D. Update Cache
-                        _latestPackets[plcNo] = new PlcPacket
-                        {
-                            PlcNo = plcNo,
-                            Values = final,
-                            Timestamp = DateTime.Now
-                        };
+                        //_latestPackets[plcNo] = new PlcPacket
+                        //{
+                        //    PlcNo = plcNo,
+                        //    Values = final,
+                        //    Timestamp = DateTime.Now
+                        //};
 
-                        _lastValues = final;
+                       // _lastValues = final;
                     };
                     return client.StartAsync();
-                });
+                }).ToList();
 
-                // Await everything
+                // Wait loop: exit when any plc task have completed (RanToCompletion, Faulted or Canceled)
+                while (plcTasks.All(t => !t.IsCompleted))
+                {
+                    var processedData = latestValueNew;
+                    await _ccdTrigger.ProcessTriggers(processedData, _manager);
+                    _oee.ProcessCycleTimeLogic(processedData);
+                    _oee.Calculate(processedData);
+                    _systemMonitor.Process(processedData);
+                    _alarmService.ProcessTagData(processedData);
+                    _shiftReset.Process(processedData);
+                    // short delay to avoid tight loop; adjust interval as needed
+                    await Task.Delay(500);
+                }
+
+                _logger.LogError("Terminated process logic as one or more PLC task terminated.", LogType.Diagnostics);
+                // -- BMK-23-05-2026
+                //Todo : Implement graceful shutdown logic if needed (e.g., cancel remaining tasks, dispose resources, etc.) 
+                //Todo : Raise alert/notification to UI to notify operator.
+
+                // Ensure exceptions (if any) are observed/propagated
                 await Task.WhenAll(plcTasks);
             }
             catch (Exception ex)
@@ -175,7 +192,7 @@ namespace IPCSoftware.Engine
                         return new ResponsePackage
                         {
                             ResponseId = 5,
-                            Parameters = _lastValues
+                            Parameters = latestValueNew
                         };
                     }
 

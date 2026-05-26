@@ -59,14 +59,15 @@ namespace IPCSoftware.Devices.PLC
             // Thread-safe replacement of the internal list
             Interlocked.Exchange(ref _tags, newTags);
         }
-
+        
+        public event Action<int, object>? OnPlcDataProcessed;
         /// <summary>
         /// Applies data conversion (Word/FP/String) and configured algorithm (Raw/Scale).
         /// </summary>
         /// <param name="rawModbusData">Dictionary keyed by Modbus start address, containing raw ushort[] registers.</param>
-        public Dictionary<int, object> Apply(int plcNo, Dictionary<uint, object> rawModbusData)
+        public void Apply(int plcNo, Dictionary<uint, object> rawModbusData)
         {
-            var result = new Dictionary<int, object>();
+            
 
             var plcTags = _tags.Where(t => t.PLCNo == plcNo);
 
@@ -104,11 +105,13 @@ namespace IPCSoftware.Devices.PLC
                     // --- END TRACE LOGGING ---
 
                     // Add using Tag Id (for Dashboard cache)
-                    result[tag.Id] = finalValue;
+
+                    // Raise event for real-time updates (e.g., Dashboard)
+                    OnPlcDataProcessed?.Invoke(tag.Id, finalValue);
                 }
             }
 
-            return result;
+           // return result;
         }
 
         // --- Data Type Conversion and Extraction ---

@@ -1404,7 +1404,7 @@ namespace IPCSoftware.CoreService.Bending.Service
                 return new ResponsePackage
                 {
                     ResponseId = request.RequestId,
-                    Parameters = _lastValues ?? new Dictionary<int, object>()
+                    Parameters = latestValueNew ?? new Dictionary<int, object>()
                 };
             }
 
