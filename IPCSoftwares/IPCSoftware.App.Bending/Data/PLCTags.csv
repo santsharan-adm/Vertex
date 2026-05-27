@@ -1,3 +1,4 @@
+version = 2.0
 Id,Category,DM Address,Name,PLCNo,40000,ModbusAddress,AlgoNo,Length,DataType,BitNo,UseEngUnit,Offset,Span,Monitor,Control,Direction,IOType,EnableTraceLog,Description,Remark,,,,,,,,
 1,System Data,D10000.0,CD_COM_PULSE_PLC1,1,0,40000,0,1,Bit,0,0,0,0,0,1,PLC->IPC,None,,"PLC?IPC Heartbeat Signal. Every 1 second, send a signal of 0?1/1?0","Received by polling every 1 second / If there is no change for 3 seconds, it is considered an abnormality",,,,,,,,
 2,System Data,D10004,System Data A1,1,4,40004,0,1,UInt16,0,0,0,0,0,1,PLC->IPC,None,,"PLC_ data. Store year data in UINT format (e.g., 2025,2026)",Receive by polling every 5 seconds and store each data,,,,,,,,
