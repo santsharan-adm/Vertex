@@ -285,7 +285,6 @@ namespace IPCSoftware.Shared.Models
                     L2_HeaterTemp_Bend1 = dashboard2.L2_HeaterTemp_Bend1;
                     L3_HeaterTemp_Bend1 = dashboard2.L3_HeaterTemp_Bend1;
                     L4_HeaterTemp_Bend1 = dashboard2.L4_HeaterTemp_Bend1;
-
                     HeaterTemp_Bend2 = dashboard2.HeaterTemp_Bend2;
                     HeaterTemp_Bend3 = dashboard2.HeaterTemp_Bend3;
                     Load_Bend1 = dashboard2.Load_Bend1;

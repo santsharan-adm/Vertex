@@ -46,10 +46,10 @@ namespace IPCSoftware.CoreService.Bending.Service
             // DashboardInspectionModelBatch2
             // ----------------------------------------------------------------
 
-            //if (request.RequestId == 12)
-            //{
-            //    return await DashboardInspectionModelBatch2(request);
-            //}
+            if (request.RequestId == 12)
+            {
+                return await DashboardInspectionModelBatch2(request);
+            }
             // ----------------------------------------------------------------
             // BendingIndicators
             // ----------------------------------------------------------------

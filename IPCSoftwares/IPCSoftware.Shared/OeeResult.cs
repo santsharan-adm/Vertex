@@ -22,6 +22,8 @@ namespace IPCSoftware.Shared
         public int NGParts { get; set; }
         public int CycleTime { get; set; }
         public int TotalParts { get; set; }
+
+        public int OEEDetails { get; set; }
        
     }
     public class OeeResultAOI : OeeResult
