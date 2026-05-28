@@ -144,6 +144,94 @@ namespace IPCSoftware.Shared.Models
         public static int WValue;
         public static int Result1;
 
+        // Bending Process Tags
+        // Trigger signals
+        public static int BP_RobotPickDone;
+        public static int BP_TT1IndexComplete;
+        public static int BP_TransferDone;
+        public static int BP_TransferActive;
+        public static int BP_TT2Start;
+        public static int BP_Robo2Done;
+        public static int BP_CameraInspectionComplete;
+        public static int BP_InspectionStartWrite;
+
+        // Bending completion signals
+        public static int BP_CD_B1_AllDataReadComp;
+        public static int BP_CD_B2_AllDataReadComp;
+        public static int BP_CD_B3_AllDataReadComp;
+        public static int BP_TearingComplete;
+        public static int BP_FlippingComplete;
+
+        // QR code tags (4 parts)
+        public static int BP_QrCode1;
+        public static int BP_QrCode2;
+        public static int BP_QrCode3;
+        public static int BP_QrCode4;
+
+        // Bending-1 process data (4 temps, 4 loads)
+        public static int BP_B1_Temp1;
+        public static int BP_B1_Temp2;
+        public static int BP_B1_Temp3;
+        public static int BP_B1_Temp4;
+        public static int BP_B1_Load1;
+        public static int BP_B1_Load2;
+        public static int BP_B1_Load3;
+        public static int BP_B1_Load4;
+
+        // Bending-2 process data (4 temps, 4 loads)
+        public static int BP_B2_Temp1;
+        public static int BP_B2_Temp2;
+        public static int BP_B2_Temp3;
+        public static int BP_B2_Temp4;
+        public static int BP_B2_Load1;
+        public static int BP_B2_Load2;
+        public static int BP_B2_Load3;
+        public static int BP_B2_Load4;
+
+        // Bending-3 process data (4 temps, 4 loads, 4 X, 4 Y, 4 Z, 4 W)
+        public static int BP_B3_Temp1;
+        public static int BP_B3_Temp2;
+        public static int BP_B3_Temp3;
+        public static int BP_B3_Temp4;
+        public static int BP_B3_Load1;
+        public static int BP_B3_Load2;
+        public static int BP_B3_Load3;
+        public static int BP_B3_Load4;
+        public static int BP_B3_X1;
+        public static int BP_B3_X2;
+        public static int BP_B3_X3;
+        public static int BP_B3_X4;
+        public static int BP_B3_Y1;
+        public static int BP_B3_Y2;
+        public static int BP_B3_Y3;
+        public static int BP_B3_Y4;
+        public static int BP_B3_Z1;
+        public static int BP_B3_Z2;
+        public static int BP_B3_Z3;
+        public static int BP_B3_Z4;
+        public static int BP_B3_W1;
+        public static int BP_B3_W2;
+        public static int BP_B3_W3;
+        public static int BP_B3_W4;
+
+        // Tearing data (4 temps)
+        public static int BP_Tear_Temp1;
+        public static int BP_Tear_Temp2;
+        public static int BP_Tear_Temp3;
+        public static int BP_Tear_Temp4;
+
+        // Flipping data (4 forces)
+        public static int BP_Flip_Force1;
+        public static int BP_Flip_Force2;
+        public static int BP_Flip_Force3;
+        public static int BP_Flip_Force4;
+
+        // Inspection results (4 parts)
+        public static int BP_InspResult1;
+        public static int BP_InspResult2;
+        public static int BP_InspResult3;
+        public static int BP_InspResult4;
+
 
 
         /// <summary>
@@ -296,6 +384,98 @@ namespace IPCSoftware.Shared.Models
                     ZValue = dashboard2.ZValue;
                     WValue = dashboard2.WValue;
                     Result1 = dashboard2.Result1;
+                }
+
+                // Bending Process Tags
+                var bp = tags.BendingProcess;
+                if (bp != null)
+                {
+                    // Trigger signals
+                    BP_RobotPickDone = bp.RobotPickDone;
+                    BP_TT1IndexComplete = bp.TT1IndexComplete;
+                    BP_TransferDone = bp.TransferDone;
+                    BP_TransferActive = bp.TransferActive;
+                    BP_TT2Start = bp.TT2Start;
+                    BP_Robo2Done = bp.Robo2Done;
+                    BP_CameraInspectionComplete = bp.CameraInspectionComplete;
+                    BP_InspectionStartWrite = bp.InspectionStartWrite;
+
+                    // Bending completion signals
+                    BP_CD_B1_AllDataReadComp = bp.CD_B1_AllDataReadComp;
+                    BP_CD_B2_AllDataReadComp = bp.CD_B2_AllDataReadComp;
+                    BP_CD_B3_AllDataReadComp = bp.CD_B3_AllDataReadComp;
+                    BP_TearingComplete = bp.TearingComplete;
+                    BP_FlippingComplete = bp.FlippingComplete;
+
+                    // QR code tags
+                    BP_QrCode1 = bp.QrCode1;
+                    BP_QrCode2 = bp.QrCode2;
+                    BP_QrCode3 = bp.QrCode3;
+                    BP_QrCode4 = bp.QrCode4;
+
+                    // Bending-1 process data
+                    BP_B1_Temp1 = bp.B1_Temp1;
+                    BP_B1_Temp2 = bp.B1_Temp2;
+                    BP_B1_Temp3 = bp.B1_Temp3;
+                    BP_B1_Temp4 = bp.B1_Temp4;
+                    BP_B1_Load1 = bp.B1_Load1;
+                    BP_B1_Load2 = bp.B1_Load2;
+                    BP_B1_Load3 = bp.B1_Load3;
+                    BP_B1_Load4 = bp.B1_Load4;
+
+                    // Bending-2 process data
+                    BP_B2_Temp1 = bp.B2_Temp1;
+                    BP_B2_Temp2 = bp.B2_Temp2;
+                    BP_B2_Temp3 = bp.B2_Temp3;
+                    BP_B2_Temp4 = bp.B2_Temp4;
+                    BP_B2_Load1 = bp.B2_Load1;
+                    BP_B2_Load2 = bp.B2_Load2;
+                    BP_B2_Load3 = bp.B2_Load3;
+                    BP_B2_Load4 = bp.B2_Load4;
+
+                    // Bending-3 process data
+                    BP_B3_Temp1 = bp.B3_Temp1;
+                    BP_B3_Temp2 = bp.B3_Temp2;
+                    BP_B3_Temp3 = bp.B3_Temp3;
+                    BP_B3_Temp4 = bp.B3_Temp4;
+                    BP_B3_Load1 = bp.B3_Load1;
+                    BP_B3_Load2 = bp.B3_Load2;
+                    BP_B3_Load3 = bp.B3_Load3;
+                    BP_B3_Load4 = bp.B3_Load4;
+                    BP_B3_X1 = bp.B3_X1;
+                    BP_B3_X2 = bp.B3_X2;
+                    BP_B3_X3 = bp.B3_X3;
+                    BP_B3_X4 = bp.B3_X4;
+                    BP_B3_Y1 = bp.B3_Y1;
+                    BP_B3_Y2 = bp.B3_Y2;
+                    BP_B3_Y3 = bp.B3_Y3;
+                    BP_B3_Y4 = bp.B3_Y4;
+                    BP_B3_Z1 = bp.B3_Z1;
+                    BP_B3_Z2 = bp.B3_Z2;
+                    BP_B3_Z3 = bp.B3_Z3;
+                    BP_B3_Z4 = bp.B3_Z4;
+                    BP_B3_W1 = bp.B3_W1;
+                    BP_B3_W2 = bp.B3_W2;
+                    BP_B3_W3 = bp.B3_W3;
+                    BP_B3_W4 = bp.B3_W4;
+
+                    // Tearing data
+                    BP_Tear_Temp1 = bp.Tear_Temp1;
+                    BP_Tear_Temp2 = bp.Tear_Temp2;
+                    BP_Tear_Temp3 = bp.Tear_Temp3;
+                    BP_Tear_Temp4 = bp.Tear_Temp4;
+
+                    // Flipping data
+                    BP_Flip_Force1 = bp.Flip_Force1;
+                    BP_Flip_Force2 = bp.Flip_Force2;
+                    BP_Flip_Force3 = bp.Flip_Force3;
+                    BP_Flip_Force4 = bp.Flip_Force4;
+
+                    // Inspection results
+                    BP_InspResult1 = bp.InspResult1;
+                    BP_InspResult2 = bp.InspResult2;
+                    BP_InspResult3 = bp.InspResult3;
+                    BP_InspResult4 = bp.InspResult4;
                 }
 
             }

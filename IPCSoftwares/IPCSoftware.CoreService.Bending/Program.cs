@@ -99,6 +99,7 @@ namespace IPCSoftware.CoreService.Bending
                             services.AddSingleton<DashboardInitializerBending>();
                             services.AddSingleton<OeeEngineBending>();
                             services.AddSingleton<AlarmService>();
+                            services.AddSingleton<BendingProcessService>();
                             //services.AddTransient<TagConfigLoader>();
                             services.AddTransient<BackupService>();
                             services.AddSingleton<ShiftResetService>();

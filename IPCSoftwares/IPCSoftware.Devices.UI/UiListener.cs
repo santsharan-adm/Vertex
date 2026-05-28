@@ -116,7 +116,17 @@ namespace IPCSoftware.Devices.UI
                             response = new ResponsePackage { ResponseId = -1 };
                         }
 
-                        string outJson = MessageSerializer.Serialize(response) + "\n";
+                        string outJson;
+                        try
+                        {
+                            outJson = MessageSerializer.Serialize(response) + "\n";
+                        }
+                        catch (Exception serEx)
+                        {
+                            Console.WriteLine($"[UI] Serialize error for RequestId={request?.RequestId}: {serEx.Message}");
+                            // Send error response instead of crashing
+                            outJson = MessageSerializer.Serialize(new ResponsePackage { ResponseId = request?.RequestId ?? -1, Success = false, ErrorMessage = serEx.Message }) + "\n";
+                        }
 
                         // CRITICAL FIX: Check if still connected before writing
                         if (connection.Client.Connected)

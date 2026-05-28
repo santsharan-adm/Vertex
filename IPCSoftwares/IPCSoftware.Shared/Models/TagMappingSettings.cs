@@ -15,6 +15,7 @@ namespace IPCSoftware.Shared.Models
         public ServoTags Servo { get; set; } = new();
         public External ExternalTags { get; set; } = new();
         public Dashboard2 Dashboard2 { get; set; } = new();
+        public BendingProcessTags BendingProcess { get; set; } = new();
     }
 
     public class TagPair
@@ -197,6 +198,96 @@ namespace IPCSoftware.Shared.Models
 
         public int Result1 { get; set; }
 
+    }
+
+    public class BendingProcessTags
+    {
+        // Trigger signals
+        public int RobotPickDone { get; set; }
+        public int TT1IndexComplete { get; set; }
+        public int TransferDone { get; set; }
+        public int TransferActive { get; set; }
+        public int TT2Start { get; set; }
+        public int Robo2Done { get; set; }
+        public int CameraInspectionComplete { get; set; }
+        public int InspectionStartWrite { get; set; }
+
+        // Bending completion signals
+        public int CD_B1_AllDataReadComp { get; set; }
+        public int CD_B2_AllDataReadComp { get; set; }
+        public int CD_B3_AllDataReadComp { get; set; }
+        public int TearingComplete { get; set; }
+        public int FlippingComplete { get; set; }
+
+        // QR code tags (4 parts)
+        public int QrCode1 { get; set; }
+        public int QrCode2 { get; set; }
+        public int QrCode3 { get; set; }
+        public int QrCode4 { get; set; }
+
+        // Bending-1 process data (4 temps, 4 loads)
+        public int B1_Temp1 { get; set; }
+        public int B1_Temp2 { get; set; }
+        public int B1_Temp3 { get; set; }
+        public int B1_Temp4 { get; set; }
+        public int B1_Load1 { get; set; }
+        public int B1_Load2 { get; set; }
+        public int B1_Load3 { get; set; }
+        public int B1_Load4 { get; set; }
+
+        // Bending-2 process data (4 temps, 4 loads)
+        public int B2_Temp1 { get; set; }
+        public int B2_Temp2 { get; set; }
+        public int B2_Temp3 { get; set; }
+        public int B2_Temp4 { get; set; }
+        public int B2_Load1 { get; set; }
+        public int B2_Load2 { get; set; }
+        public int B2_Load3 { get; set; }
+        public int B2_Load4 { get; set; }
+
+        // Bending-3 process data (4 temps, 4 loads, 4 X, 4 Y, 4 Z, 4 W)
+        public int B3_Temp1 { get; set; }
+        public int B3_Temp2 { get; set; }
+        public int B3_Temp3 { get; set; }
+        public int B3_Temp4 { get; set; }
+        public int B3_Load1 { get; set; }
+        public int B3_Load2 { get; set; }
+        public int B3_Load3 { get; set; }
+        public int B3_Load4 { get; set; }
+        public int B3_X1 { get; set; }
+        public int B3_X2 { get; set; }
+        public int B3_X3 { get; set; }
+        public int B3_X4 { get; set; }
+        public int B3_Y1 { get; set; }
+        public int B3_Y2 { get; set; }
+        public int B3_Y3 { get; set; }
+        public int B3_Y4 { get; set; }
+        public int B3_Z1 { get; set; }
+        public int B3_Z2 { get; set; }
+        public int B3_Z3 { get; set; }
+        public int B3_Z4 { get; set; }
+        public int B3_W1 { get; set; }
+        public int B3_W2 { get; set; }
+        public int B3_W3 { get; set; }
+        public int B3_W4 { get; set; }
+
+        // Tearing data (4 temps)
+        public int Tear_Temp1 { get; set; }
+        public int Tear_Temp2 { get; set; }
+        public int Tear_Temp3 { get; set; }
+        public int Tear_Temp4 { get; set; }
+
+        // Flipping data (4 forces)
+        public int Flip_Force1 { get; set; }
+        public int Flip_Force2 { get; set; }
+        public int Flip_Force3 { get; set; }
+        public int Flip_Force4 { get; set; }
+
+        // Inspection results (4 parts)
+        public int InspResult1 { get; set; }
+        public int InspResult2 { get; set; }
+        public int InspResult3 { get; set; }
+        public int InspResult4 { get; set; }
     }
 
 }
