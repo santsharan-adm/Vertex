@@ -1,4 +1,3 @@
-using IPCSoftware.App.ViewModels;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
@@ -6,26 +5,24 @@ using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.App.Services
+namespace IPCSoftware.Services.ConfigServices
 {
     public class RecipeApplicationService : IRecipeApplicationService
-    {
-        private readonly CoreClient _coreClient;
+    {       
         private readonly IAeLimitService _aeLimitService;
-        private readonly ServoCalibrationViewModel _servoViewModel;
+        private readonly IPlcRecipeWriter _plcRecipeWriter;
         private readonly IAppLogger _logger;
         private ServoRecipeModel _lastSelectedRecipe;
 
-        public RecipeApplicationService(
-            CoreClient coreClient,
+        public RecipeApplicationService(            
             IAeLimitService aeLimitService,
             IAppLogger logger,
-            ServoCalibrationViewModel servoViewModel)
+            IPlcRecipeWriter plcRecipeWriter)
         {
-            _coreClient = coreClient;
+           
             _aeLimitService = aeLimitService;
             _logger = logger;
-            _servoViewModel = servoViewModel;
+            _plcRecipeWriter = plcRecipeWriter;
         }
 
         public async Task<Dictionary<int,bool>> ApplyRecipeToPlcAsync(ServoRecipeModel recipe)
@@ -34,7 +31,7 @@ namespace IPCSoftware.App.Services
 
             try
             {
-                dict = await _servoViewModel.WriteSelectedRecipeAsync(recipe);
+                dict = await _plcRecipeWriter.WriteSelectedRecipeAsync(recipe);
                 //if (dict.ContainsKey(1)) { bool result1 = dict[1]; }
                 _lastSelectedRecipe = recipe;
                 return dict;
@@ -65,14 +62,14 @@ namespace IPCSoftware.App.Services
          
         }
 
-        public async Task PulseBitAsync(int tagId, string description)
-        {
-            _logger.LogInfo($"Pulsing bit {tagId}: {description}", LogType.Audit);
+        //public async Task PulseBitAsync(int tagId, string description)
+        //{
+        //    _logger.LogInfo($"Pulsing bit {tagId}: {description}", LogType.Audit);
             
-            await _coreClient.WriteTagAsync(tagId, 1);
-            await Task.Delay(200);
-            await _coreClient.WriteTagAsync(tagId, 0);
-        }
+        //    await _coreClient.WriteTagAsync(tagId, 1);
+        //    await Task.Delay(200);
+        //    await _coreClient.WriteTagAsync(tagId, 0);
+        //}
 
         //private async Task WriteSequenceIndexesToPlc()
         //{

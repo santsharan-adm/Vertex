@@ -1,7 +1,7 @@
 using IPCSoftware.Shared.Models;
 using System.Threading.Tasks;
 
-namespace IPCSoftware.App.Services
+namespace IPCSoftware.Core.Interfaces
 {
     public interface IRecipeApplicationService
     {
@@ -9,6 +9,6 @@ namespace IPCSoftware.App.Services
 
         Task<ServoRecipeModel> GetRecipefromSelection();
         Task SaveAeLimitsAsync();
-        Task PulseBitAsync(int tagId, string description);
+        //Task PulseBitAsync(int tagId, string description);
     }
 }

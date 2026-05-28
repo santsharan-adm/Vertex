@@ -71,9 +71,68 @@ namespace IPCSoftware.Shared.Models
 
         public int GridColumns { get; set; }
 
+        public int Position_0 { get; set; }
+
+        public int Position_1 { get; set; }
+        public int Position_2 { get; set; }
+        public int Position_3 { get; set; }
+        public int Position_4 { get; set; }
+        public int Position_5 { get; set; }
+        public int Position_6 { get; set; }
+        public int Position_7 { get; set; }
+        public int Position_8 { get; set; }
+        public int Position_9 { get; set; }
+        public int Position_10 { get; set; }
+        public int Position_11 { get; set; }
+        public int Position_12 { get; set; }
+
+        public string Name_0 { get; set; } = "Position Home(0)";
+        public string Name_1 { get; set; } = "Position 1";
+        public string Name_2 { get; set; } = "Position 2";
+        public string Name_3 { get; set; } = "Position 3";
+        public string Name_4 { get; set; } = "Position 4";
+        public string Name_5 { get; set; } = "Position 5";
+        public string Name_6 { get; set; } = "Position 6";
+        public string Name_7 { get; set; } = "Position 7";
+        public string Name_8 { get; set; } = "Position 8";
+        public string Name_9 { get; set; } = "Position 9";
+        public string Name_10 { get; set; } = "Position 10";
+        public string Name_11 { get; set; } = "Position 11";
+        public string Name_12 { get; set; } = "Position 12";
+
+        public string Discription_0 { get; set; } = "null";
+
+        public string Discription_1 { get; set; } = "null";
+        public string Discription_2 { get; set; } = "null";
+        public string Discription_3 { get; set; } = "null";
+        public string Discription_4 { get; set; } = "null";
+        public string Discription_5 { get; set; } = "null";
+        public string Discription_6 { get; set; } = "null";
+        public string Discription_7 { get; set; } = "null";
+        public string Discription_8 { get; set; } = "null";
+        public string Discription_9 { get; set; } = "null";
+        public string Discription_10 { get; set; } = "null";
+        public string Discription_11 { get; set; } = "null";
+        public string Discription_12 { get; set; } = "null";
+
+        public bool Is_Enabled_0 { get; set; } = true;
+        public bool Is_Enabled_1 { get; set;} = true;
+        public bool Is_Enabled_2 { get; set; } = true;
+
+        public bool Is_Enabled_3 { get; set; } = true;
+        public bool Is_Enabled_4 { get; set; } = true;
+        public bool Is_Enabled_5 { get; set; } = true;
+        public bool Is_Enabled_6 { get; set; } = true;
+        public bool Is_Enabled_7 { get; set; } = true;
+        public bool Is_Enabled_8 { get; set; } = true;
+        public bool Is_Enabled_9 { get; set; } = true;
+        public bool Is_Enabled_10 { get; set; } = true;
+        public bool Is_Enabled_11 { get; set; } = true;
+        public bool Is_Enabled_12 { get; set; } = true;
+        
 
 
-       };
+    };
 
 }
 

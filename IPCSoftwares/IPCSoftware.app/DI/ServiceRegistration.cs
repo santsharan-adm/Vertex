@@ -34,6 +34,7 @@ namespace IPCSoftware.App.DI
             // In ConfigureServices method:
             // In ConfigureServices() method:
             //services.AddSingleton<IActiveRecipeProvider, ActiveRecipeProvider>();
+            
             services.AddSingleton<IRecipeApplicationService, RecipeApplicationService>();
             services.AddSingleton<IRecipeManagementService, RecipeManagementService>();
             services.AddSingleton<IAppLogger, AppLoggerService>();
@@ -153,7 +154,7 @@ namespace IPCSoftware.App.DI
 
             // ===== Produciton Image ViewModel =====
             services.AddTransient<ProductSettingsView>();
-            services.AddTransient<ProductSettingsViewModel>();
+            services.AddTransient<ProductSettingsViewModel>();           // Will be removed after recipe work test successfully - comment by rishabh
 
             services.AddTransient<AlarmLogView>();
             services.AddTransient<AlarmLogViewModel>();
@@ -184,6 +185,7 @@ namespace IPCSoftware.App.DI
             // ========== PLC TAG CONFIGURATION VIEWMODELS (Transient) ========== 
             services.AddTransient<ServoCalibrationView>();
             services.AddTransient<ServoCalibrationViewModel>();
+            services.AddSingleton<IPlcRecipeWriter>(sp => sp.GetRequiredService<ServoCalibrationViewModel>());
 
             services.AddSingleton<IServoCalibrationService, ServoCalibrationService>();
 

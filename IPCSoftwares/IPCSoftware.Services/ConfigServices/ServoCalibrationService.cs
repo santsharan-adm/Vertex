@@ -1,16 +1,18 @@
-﻿using IPCSoftware.Core.Interfaces;
+﻿using IPCSoftware.App.Services;
+using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
-using IPCSoftware.App.Services;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Numerics;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+
 
 namespace IPCSoftware.Services.ConfigServices
 {
@@ -19,13 +21,14 @@ namespace IPCSoftware.Services.ConfigServices
         private readonly string _filePath;  
         private readonly string _dataFolder;
         private readonly IProductConfigurationService _productService;
+        //private readonly IRecipeApplicationService _recipeApplicationService;
         private readonly IAppLogger _logger;
 
         private readonly string _RecipeFilePath;
 
 
         public ServoCalibrationService(IOptions<ConfigSettings> configSettings,
-              IProductConfigurationService productService , IAppLogger logger)
+              IProductConfigurationService productService ,/*IRecipeApplicationService recipeApplicationService,*/ IAppLogger logger)
         {
             //string folder = configSettings.Value.DataFolder ?? AppContext.BaseDirectory;
             _logger = logger;
@@ -36,19 +39,107 @@ namespace IPCSoftware.Services.ConfigServices
           //  _filePath = Path.Combine(folder, "ServoCalibration.json");
             _filePath =  Path.Combine(_dataFolder, config.ServoCalibrationFileName );
             _RecipeFilePath = Path.Combine(_dataFolder, config.ServoRecipeFileName);
+            //_recipeApplicationService = recipeApplicationService;
 
         }
 
+        //New load from csv recipe file -
+        //public async Task<List<ServoPositionModel>> LoadPositionsAsync()
+        //{
+        //    if (!File.Exists(_RecipeFilePath))
+        //    {
+        //        return await CreateDefaultPositionsAsync();
+        //    }
+
+        //    try
+        //    {
+        //        // Get the currently selected recipe (replaces ServoCalibration.json)
+        //        var selectedRecipe = await _recipeApplicationService.GetRecipefromSelection();
+
+        //        if (selectedRecipe == null)
+        //        {
+        //            _logger.LogWarning("No recipe selected. Falling back to last recipe in CSV.", LogType.Diagnostics);
+
+        //            // Fallback: use last recipe from CSV
+        //            var allRecipes = await LoadRecipeAsync();
+        //            selectedRecipe = allRecipes.LastOrDefault();
+        //        }
+
+        //        if (selectedRecipe == null)
+        //        {
+        //            _logger.LogWarning("No recipes found in CSV. Creating default positions.", LogType.Diagnostics);
+        //            return await CreateDefaultPositionsAsync();
+        //        }
+
+        //        int totalItems = selectedRecipe.TotalItems > 0 ? selectedRecipe.TotalItems : 12;
+
+        //        var positions = new List<ServoPositionModel>
+        //        {
+        //            // Position 0 = Home (always present)
+        //            new ServoPositionModel
+        //            {
+        //                PositionId    = 0,
+        //                Name          = "Position 0 (Home)",
+        //                SequenceIndex = 0,
+        //                X             = selectedRecipe.X0,
+        //                Y             = selectedRecipe.Y0,
+        //                IsEnabled     = true
+        //            }
+        //        };
+
+        //        // Coordinate lookup map for positions 1-12
+        //        var coordMap = new Dictionary<int, (double X, double Y, int Seq)>
+        //        {
+        //            { 1,  (selectedRecipe.X1,  selectedRecipe.Y1,  selectedRecipe.S1)  },
+        //            { 2,  (selectedRecipe.X2,  selectedRecipe.Y2,  selectedRecipe.S2)  },
+        //            { 3,  (selectedRecipe.X3,  selectedRecipe.Y3,  selectedRecipe.S3)  },
+        //            { 4,  (selectedRecipe.X4,  selectedRecipe.Y4,  selectedRecipe.S4)  },
+        //            { 5,  (selectedRecipe.X5,  selectedRecipe.Y5,  selectedRecipe.S5)  },
+        //            { 6,  (selectedRecipe.X6,  selectedRecipe.Y6,  selectedRecipe.S6)  },
+        //            { 7,  (selectedRecipe.X7,  selectedRecipe.Y7,  selectedRecipe.S7)  },
+        //            { 8,  (selectedRecipe.X8,  selectedRecipe.Y8,  selectedRecipe.S8)  },
+        //            { 9,  (selectedRecipe.X9,  selectedRecipe.Y9,  selectedRecipe.S9)  },
+        //            { 10, (selectedRecipe.X10, selectedRecipe.Y10, selectedRecipe.S10) },
+        //            { 11, (selectedRecipe.X11, selectedRecipe.Y11, selectedRecipe.S11) },
+        //            { 12, (selectedRecipe.X12, selectedRecipe.Y12, selectedRecipe.S12) },
+        //        };
+
+        //        for (int i = 1; i <= totalItems; i++)
+        //        {
+        //            if (coordMap.TryGetValue(i, out var data))
+        //            {
+        //                positions.Add(new ServoPositionModel
+        //                {
+        //                    PositionId = i,
+        //                    Name = $"Position {i}",
+        //                    SequenceIndex = data.Seq,
+        //                    X = data.X,
+        //                    Y = data.Y,
+        //                    IsEnabled = true
+        //                });
+        //            }
+        //        }
+
+        //        _logger.LogInfo($"LoadPositionsAsync: Loaded {positions.Count} positions from recipe '{selectedRecipe.ProductCode}'.", LogType.Diagnostics);
+        //        return positions;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"LoadPositionsAsync failed: {ex.Message}", LogType.Error);
+        //        return await CreateDefaultPositionsAsync();
+        //    }
+        //}
+        //Old 
         public async Task<List<ServoPositionModel>> LoadPositionsAsync()
         {
-            if (!File.Exists(_RecipeFilePath))
+            if (!File.Exists(_filePath))
             {
                 return await CreateDefaultPositionsAsync();
             }
 
             try
             {
-                string json = await File.ReadAllTextAsync(_RecipeFilePath);
+                string json = await File.ReadAllTextAsync(_filePath);
                 var data = JsonSerializer.Deserialize<List<ServoPositionModel>>(json);
 
                 // Integrity check: If file exists but is empty or missing sequences
@@ -207,5 +298,77 @@ namespace IPCSoftware.Services.ConfigServices
             }
             return list;
         }
+
+
+
+        private ServoPositionModel ParseRecipeCsvLine(string line)
+        {
+            try
+            {
+                var values = SplitCsvLine(line);
+                if (values.Count < 50) // Expecting at least 50 columns based on the model
+                    return null;
+                var model = new ServoPositionModel
+                {
+                    PositionId = int.TryParse(values[0], out int posId) ? posId : 0,
+                    Name = values[1],
+                    SequenceIndex = int.TryParse(values[2], out int seq) ? seq : 0,
+                    X = double.TryParse(values[3], out double x) ? x : 0,
+                    Y = double.TryParse(values[4], out double y) ? y : 0
+                };
+                return model;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"Failed to parse recipe CSV line: {ex.Message}", LogType.Error);
+                return null; // Return null if parsing fails
+            }
+
+        }
+
+
+
+        // ==================== HELPERS ====================
+
+        private List<string> SplitCsvLine(string line)
+        {
+            var values = new List<string>();
+            var currentValue = new StringBuilder();
+            bool inQuotes = false;
+
+            for (int i = 0; i < line.Length; i++)
+            {
+                char c = line[i];
+
+                if (c == '"')
+                {
+                    if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
+                    {
+                        currentValue.Append('"');
+                        i++;
+                    }
+                    else
+                    {
+                        inQuotes = !inQuotes;
+                    }
+                }
+                else if (c == ',' && !inQuotes)
+                {
+                    values.Add(currentValue.ToString());
+                    currentValue.Clear();
+                }
+                else
+                {
+                    currentValue.Append(c);
+                }
+            }
+
+            values.Add(currentValue.ToString());
+            return values;
+        }
+
+
+
+
     }
 }

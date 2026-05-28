@@ -10,22 +10,25 @@ using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.AeLimit;        //Added after
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;            //Added after
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
-using System.Diagnostics;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public class ServoCalibrationViewModel : BaseViewModel, IDisposable, INavigationalAware
+    public class ServoCalibrationViewModel : BaseViewModel, IDisposable, INavigationalAware , IPlcRecipeWriter
     {
         private readonly IRecipeManagementService _recipeManagementService;
         private readonly IAeLimitService _aeLimitService;
@@ -40,6 +43,7 @@ namespace IPCSoftware.App.ViewModels
         private bool _initialPlcLoadDone = false;
         private ProductSettingsModel _productSettings;
         private AeLimitSettings _aeLimitSettings;             //Added after
+        private readonly string _appSettingsPath; // For saving units
 
         int _lastProgramAdded;
 
@@ -262,6 +266,7 @@ namespace IPCSoftware.App.ViewModels
              IRecipeManagementService recipeManagementService,
              IAeLimitService aeLimitService,
              IOptionsMonitor<ExternalSettings> settingMonitor,  //Added after
+            // IPlcRecipeWriter plcRecipeWriter,   //Added after
 
             IAppLogger logger)
              : base(logger)
@@ -272,7 +277,8 @@ namespace IPCSoftware.App.ViewModels
             _productService = productService;
             _recipeManagementService = recipeManagementService;
             _aeLimitService = aeLimitService;
-            _settingsMonitor = settingMonitor;     
+            _settingsMonitor = settingMonitor;
+            _appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
 
             TeachCommand = new RelayCommand<ServoPositionModel>(OnTeachPosition);
             WritePositionCommand = new RelayCommand<ServoPositionModel>(OnWritePositionManual);
@@ -519,62 +525,64 @@ namespace IPCSoftware.App.ViewModels
         }
 
 
-        // ===================================================================
-        // PRODUCT SETTINGS LOGIC
-        // ===================================================================
-        private async Task LoadProductSettingsAsync()
-        {
-            try
-            {
-                var config = await _productService.LoadAsync();
-                ProductName = config.ProductName;
-                ProductCode = config.ProductCode;
-                SelectedItemCount = config.TotalItems;
-                GridRows = config.GridRows > 0 ? config.GridRows : 4;
-                GridColumns = config.GridColumns > 0 ? config.GridColumns : 3;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"[Product Settings] Load failed: {ex.Message}", LogType.Diagnostics);
-            }
-        }
+        //// ===================================================================
+        //// PRODUCT SETTINGS LOGIC                   // Now removed for recipe work - commnt by rishabh
+        //// ===================================================================
+        //private async Task LoadProductSettingsAsync()
+        //{
+        //    try
+        //    {
+        //        var config = await _productService.LoadAsync();
+        //        ProductName = config.ProductName;
+        //        ProductCode = config.ProductCode;
+        //        SelectedItemCount = config.TotalItems;
+        //        GridRows = config.GridRows > 0 ? config.GridRows : 4;
+        //        GridColumns = config.GridColumns > 0 ? config.GridColumns : 3;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"[Product Settings] Load failed: {ex.Message}", LogType.Diagnostics);
+        //    }
+        //}
 
-        private async Task SaveProductSettingsAsync()
-        {
-            try
-            {
-                // Validation
-                if (GridRows * GridColumns < SelectedItemCount)
-                {
-                    _dialog.ShowWarning($"Grid Layout ({GridRows}x{GridColumns}) is too small for {SelectedItemCount} items.");
-                    return;
-                }
+        // ** Below function is now removed for recipe work - commnt by rishbh
 
-                var config = new ProductSettingsModel
-                {
-                    ProductName = ProductName,
-                    ProductCode = ProductCode,
-                    TotalItems = SelectedItemCount,
-                    GridRows = GridRows,
-                    GridColumns = GridColumns
-                };
+        //private async Task SaveProductSettingsAsync()
+        //{
+        //    try
+        //    {
+        //        // Validation
+        //        if (GridRows * GridColumns < SelectedItemCount)
+        //        {
+        //            _dialog.ShowWarning($"Grid Layout ({GridRows}x{GridColumns}) is too small for {SelectedItemCount} items.");
+        //            return;
+        //        }
 
-                await _productService.SaveAsync(config);
+        //        var config = new ProductSettingsModel
+        //        {
+        //            ProductName = ProductName,
+        //            ProductCode = ProductCode,
+        //            TotalItems = SelectedItemCount,
+        //            GridRows = GridRows,
+        //            GridColumns = GridColumns
+        //        };
 
-                // Write to PLC
-                if (_coreClient.isConnected)
-                {
-                    await _coreClient.WriteTagAsync(ConstantValues.NO_OF_Station, SelectedItemCount);
-                }
+        //        await _productService.SaveAsync(config);
 
-                _dialog.ShowMessage("Product Settings Saved Successfully!");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"[Product Settings] Save failed: {ex.Message}", LogType.Diagnostics);
-                _dialog.ShowWarning("Failed to save Product Settings.");
-            }
-        }
+        //        // Write to PLC
+        //        if (_coreClient.isConnected)
+        //        {
+        //            await _coreClient.WriteTagAsync(ConstantValues.NO_OF_Station, SelectedItemCount);
+        //        }
+
+        //        _dialog.ShowMessage("Product Settings Saved Successfully!");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"[Product Settings] Save failed: {ex.Message}", LogType.Diagnostics);
+        //        _dialog.ShowWarning("Failed to save Product Settings.");
+        //    }
+        //}
 
 
 
@@ -706,14 +714,14 @@ namespace IPCSoftware.App.ViewModels
                 // ADD-specific: assign new program number
                 var newRecipe = await BuildRecipeAsync(++_nextProgramId, enteredProductCode, enteredProductName, enteredTotalItem, enteredGridRow, enteredGridCol);
 
-                await _productService.SaveAsync(new ProductSettingsModel
-                {
-                    ProductName = enteredProductName,
-                    ProductCode = enteredProductCode,
-                    TotalItems = enteredTotalItem,
-                    GridRows = enteredGridRow,
-                    GridColumns = enteredGridCol
-                });
+                //await _productService.SaveAsync(new ProductSettingsModel // Now removed as it is no longer needed
+                //{
+                //    ProductName = enteredProductName,
+                //    ProductCode = enteredProductCode,
+                //    TotalItems = enteredTotalItem,
+                //    GridRows = enteredGridRow,
+                //    GridColumns = enteredGridCol
+                //});
 
                 _lastProgramAdded = newRecipe.ProgramNo;
                 bool success = await _recipeManagementService.AddRecipeAsync(newRecipe);
@@ -828,14 +836,14 @@ namespace IPCSoftware.App.ViewModels
                 // SAVE-specific: keep original ProgramNo
                 var updatedRecipe = await BuildRecipeAsync(selectedRecipe.ProgramNo, enteredProductCode, enteredProductName, enteredTotalItem, enteredGridRow, enteredGridCol);
 
-                await _productService.SaveAsync(new ProductSettingsModel
-                {
-                    ProductName = enteredProductName,
-                    ProductCode = enteredProductCode,
-                    TotalItems = enteredTotalItem,
-                    GridRows = enteredGridRow,
-                    GridColumns = enteredGridCol
-                });
+                //await _productService.SaveAsync(new ProductSettingsModel      // Now removed as it is no longer needed
+                //{
+                //    ProductName = enteredProductName,
+                //    ProductCode = enteredProductCode,
+                //    TotalItems = enteredTotalItem,
+                //    GridRows = enteredGridRow,
+                //    GridColumns = enteredGridCol
+                //});
 
                 bool success = await _recipeManagementService.UpdateRecipeAsync(updatedRecipe);
 
@@ -878,16 +886,17 @@ namespace IPCSoftware.App.ViewModels
                 }
                 else { dict.Add(1, true); }
 
-                var config = new ProductSettingsModel
-                {
-                        ProductName = recipe.ProductName,
-                        ProductCode = recipe.ProductCode,
-                        TotalItems = recipe.TotalItems,
-                        GridRows = recipe.GridRows,
-                        GridColumns = recipe.GridColumns
-                };
+                //var config = new ProductSettingsModel
+                //{
+                //        ProductName = recipe.ProductName,
+                //        ProductCode = recipe.ProductCode,
+                //        TotalItems = recipe.TotalItems,
+                //        GridRows = recipe.GridRows,
+                //        GridColumns = recipe.GridColumns
+                //};
                
-                await _productService.SaveAsync(config);  // need to remove dependency from json later
+                //await _productService.SaveAsync(config);  // need to remove dependency from json later
+                /// Now removed as it is no longer needed
 
 
                 if (_coreClient.isConnected)
@@ -1783,6 +1792,20 @@ namespace IPCSoftware.App.ViewModels
             var savedPositions = Positions.ToList();
             var aeLimitSettings = await _aeLimitService.GetSettingsAsync();
             var firstStation = aeLimitSettings?.Stations?.FirstOrDefault();
+            // --- 1. Save Unit Settings to appsettings.json ---
+
+
+            var json = File.ReadAllText(_appSettingsPath);
+            var jsonObj = JObject.Parse(json);
+            if (jsonObj["External"] == null) jsonObj["External"] = new JObject();
+
+            var ext = jsonObj["External"];
+            ext["InspectionXUnit"] = AeUnitX;
+            ext["InspectionYUnit"] = AeUnitY;
+            ext["InspectionAngleUnit"] = AeUnitAngle;
+
+            File.WriteAllText(_appSettingsPath, jsonObj.ToString());
+            _logger.LogInfo("[AE UI] Units saved to appsettings.json.", LogType.Audit);
 
             return new ServoRecipeModel
             {
@@ -1833,12 +1856,47 @@ namespace IPCSoftware.App.ViewModels
                 Y12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.Y ?? 0,
 
                 // AE Limits
-                Xmin = firstStation?.InspectionX?.Lower ?? 0,
-                Xmax = firstStation?.InspectionX?.Upper ?? 0,
-                Ymin = firstStation?.InspectionY?.Lower ?? 0,
-                Ymax = firstStation?.InspectionY?.Upper ?? 0,
-                AngleMin = firstStation?.InspectionAngle?.Lower ?? 0,
-                AngleMax = firstStation?.InspectionAngle?.Upper ?? 0,
+                //Xmin = firstStation?.InspectionX?.Lower ?? 0,
+                //Xmax = firstStation?.InspectionX?.Upper ?? 0,
+                //Ymin = firstStation?.InspectionY?.Lower ?? 0,
+                //Ymax = firstStation?.InspectionY?.Upper ?? 0,
+                //AngleMin = firstStation?.InspectionAngle?.Lower ?? 0,
+                //AngleMax = firstStation?.InspectionAngle?.Upper ?? 0,
+
+                Xmin = AeMinX.NewValue,
+                Xmax = AeMaxX.NewValue,
+                Ymin = AeMinY.NewValue,
+                Ymax = AeMaxY.NewValue,
+                AngleMin = AeMinZ.NewValue,
+                AngleMax = AeMaxZ.NewValue,
+
+
+
+
+                //    // --- 2. Save Limits to AELimit.json ---
+                //    _settings = await _aeLimitService.GetSettingsAsync();
+                //    if (_settings == null) _settings = new AeLimitSettings();
+
+                //// Sync UI Limit values into JSON model (global update for all stations)
+                //if (_settings.Stations != null)
+                //{
+                //    foreach (var station in _settings.Stations)
+                //    {
+                //        station.InspectionX.Lower = MinX.NewValue;
+                //        station.InspectionX.Upper = MaxX.NewValue;
+                //        station.InspectionX.Unit = UnitX; // Also sync unit to internal JSON
+
+                //        station.InspectionY.Lower = MinY.NewValue;
+                //        station.InspectionY.Upper = MaxY.NewValue;
+                //        station.InspectionY.Unit = UnitY;
+
+                //        station.InspectionAngle.Lower = MinZ.NewValue;
+                //        station.InspectionAngle.Upper = MaxZ.NewValue;
+                //        station.InspectionAngle.Unit = UnitAngle;
+                //    }
+                //}
+
+                //await _aeLimitService.SaveSettingsAsync(_settings);
 
                 // Product Setup
                 ProductName = productName,
@@ -1847,6 +1905,18 @@ namespace IPCSoftware.App.ViewModels
                 GridRows = gridRows,
                 GridColumns = gridCols
             };
+
+
+
+                
+                //catch (Exception ex)
+                //{
+                //    _logger.LogError($"[AE UI] Failed to save Units: {ex.Message}", LogType.Diagnostics);
+                //}
+
+
+
+
         }
 
 
