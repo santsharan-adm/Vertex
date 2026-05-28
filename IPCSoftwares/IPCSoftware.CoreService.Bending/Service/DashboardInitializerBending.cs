@@ -226,21 +226,100 @@ namespace IPCSoftware.CoreService.Bending.Service
             }
 
             // ----------------------------------------------------------------
-            // BendingProcessDashboard (FIFO queue state) - disabled for now
+            // BendingProcessDashboard (FIFO queue state)
             // ----------------------------------------------------------------
-            //if (request.RequestId == 30)
-            //{
-            //    return await BendingProcessDashboard(request);
-            //}
+            if (request.RequestId == 30)
+            {
+                return await BendingProcessDashboard(request);
+            }
 
             return await base.HandleUiRequest(request);
         }
 
         private Task<ResponsePackage> DashboardInspectionModelBatch1(RequestPackage request)
         {
-            // FIFO integration temporarily disabled for debugging
-            // var activeBatches = _bendingProcess.GetActiveBatches();
-            // if (activeBatches.Count > 0) { ... }
+            // If FIFO queue has batches with valid QR codes, return FIFO data
+            var activeBatches = _bendingProcess.GetActiveBatches();
+            if (activeBatches.Count > 0)
+            {
+                var batch = activeBatches.OrderByDescending(b => b.Stage).First();
+                if (!string.IsNullOrEmpty(batch.QrCode1) && batch.QrCode1 != "0")
+                {
+                    var fifoItem = new DashboardInspectionModel
+                    {
+                        BatchNo = batch.BatchNumber,
+                        LineItem1 = new DashboardInspectionLineModel
+                        {
+                            QRCode1 = batch.QrCode1,
+                            HeaterTemp_Bend1 = batch.Bending1Temperatures[0],
+                            HeaterTemp_Bend2 = batch.Bending2Temperatures[0],
+                            HeaterTemp_Bend3 = batch.Bending3Temperatures[0],
+                            Load_Bend1 = batch.Bending1Loads[0],
+                            Load_Bend2 = batch.Bending2Loads[0],
+                            Load_Bend3 = batch.Bending3Loads[0],
+                            XValue = batch.Bending3X[0],
+                            YValue = batch.Bending3Y[0],
+                            ZValue = batch.Bending3Z[0],
+                            WValue = batch.Bending3W[0],
+                            Result1 = batch.InspectionResults[0],
+                        },
+                        LineItem2 = new DashboardInspectionLineModel
+                        {
+                            QRCode1 = batch.QrCode2,
+                            HeaterTemp_Bend1 = batch.Bending1Temperatures[1],
+                            HeaterTemp_Bend2 = batch.Bending2Temperatures[1],
+                            HeaterTemp_Bend3 = batch.Bending3Temperatures[1],
+                            Load_Bend1 = batch.Bending1Loads[1],
+                            Load_Bend2 = batch.Bending2Loads[1],
+                            Load_Bend3 = batch.Bending3Loads[1],
+                            XValue = batch.Bending3X[1],
+                            YValue = batch.Bending3Y[1],
+                            ZValue = batch.Bending3Z[1],
+                            WValue = batch.Bending3W[1],
+                            Result1 = batch.InspectionResults[1],
+                        },
+                        LineItem3 = new DashboardInspectionLineModel
+                        {
+                            QRCode1 = batch.QrCode3,
+                            HeaterTemp_Bend1 = batch.Bending1Temperatures[2],
+                            HeaterTemp_Bend2 = batch.Bending2Temperatures[2],
+                            HeaterTemp_Bend3 = batch.Bending3Temperatures[2],
+                            Load_Bend1 = batch.Bending1Loads[2],
+                            Load_Bend2 = batch.Bending2Loads[2],
+                            Load_Bend3 = batch.Bending3Loads[2],
+                            XValue = batch.Bending3X[2],
+                            YValue = batch.Bending3Y[2],
+                            ZValue = batch.Bending3Z[2],
+                            WValue = batch.Bending3W[2],
+                            Result1 = batch.InspectionResults[2],
+                        },
+                        LineItem4 = new DashboardInspectionLineModel
+                        {
+                            QRCode1 = batch.QrCode4,
+                            HeaterTemp_Bend1 = batch.Bending1Temperatures[3],
+                            HeaterTemp_Bend2 = batch.Bending2Temperatures[3],
+                            HeaterTemp_Bend3 = batch.Bending3Temperatures[3],
+                            Load_Bend1 = batch.Bending1Loads[3],
+                            Load_Bend2 = batch.Bending2Loads[3],
+                            Load_Bend3 = batch.Bending3Loads[3],
+                            XValue = batch.Bending3X[3],
+                            YValue = batch.Bending3Y[3],
+                            ZValue = batch.Bending3Z[3],
+                            WValue = batch.Bending3W[3],
+                            Result1 = batch.InspectionResults[3],
+                        },
+                    };
+
+                    return Task.FromResult(new ResponsePackage
+                    {
+                        ResponseId = request.RequestId,
+                        Parameters = new Dictionary<int, object>()
+                        {
+                            { request.RequestId, fifoItem }
+                        }
+                    });
+                }
+            }
 
             // ── LOG POINT 1 ── Method entry: confirm RequestId and PLC packet state
             //_logger.LogInfo(
