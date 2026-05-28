@@ -4,6 +4,7 @@ using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -25,136 +26,130 @@ namespace IPCSoftware.Services.ConfigServices
         private readonly IAppLogger _logger;
 
         private readonly string _RecipeFilePath;
+        private readonly int _currentRunningProgram;
+        private readonly string _appSettingsPath; // For current program number
 
 
         public ServoCalibrationService(IOptions<ConfigSettings> configSettings,
-              IProductConfigurationService productService ,/*IRecipeApplicationService recipeApplicationService,*/ IAppLogger logger)
+              IProductConfigurationService productService, /*IOptions<ConfigSettings> configSettings*/ IAppLogger logger)
         {
             //string folder = configSettings.Value.DataFolder ?? AppContext.BaseDirectory;
             _logger = logger;
             var config = configSettings.Value;
+            var sharedConfigDir = Environment.GetEnvironmentVariable("CONFIG_DIR");
+            var baseDir = !string.IsNullOrWhiteSpace(sharedConfigDir) && Directory.Exists(sharedConfigDir)
+                          ? sharedConfigDir
+                          : AppContext.BaseDirectory;
+
+            _appSettingsPath = Path.Combine(baseDir, "appsettings.json");
+          
             string dataFolderPath = config.DataFolder;
             _productService = productService;
             _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
           //  _filePath = Path.Combine(folder, "ServoCalibration.json");
-            _filePath =  Path.Combine(_dataFolder, config.ServoCalibrationFileName );
+            //_filePath =  Path.Combine(_dataFolder, config.ServoCalibrationFileName );
             _RecipeFilePath = Path.Combine(_dataFolder, config.ServoRecipeFileName);
             //_recipeApplicationService = recipeApplicationService;
+            _currentRunningProgram = config.CurrentRunningProgram;
 
         }
 
-        //New load from csv recipe file -
+        //Old read json
         //public async Task<List<ServoPositionModel>> LoadPositionsAsync()
         //{
-        //    if (!File.Exists(_RecipeFilePath))
+        //    if (!File.Exists(_filePath))
         //    {
         //        return await CreateDefaultPositionsAsync();
         //    }
 
         //    try
         //    {
-        //        // Get the currently selected recipe (replaces ServoCalibration.json)
-        //        var selectedRecipe = await _recipeApplicationService.GetRecipefromSelection();
+        //        string json = await File.ReadAllTextAsync(_filePath);
+        //        var data = JsonSerializer.Deserialize<List<ServoPositionModel>>(json);
 
-        //        if (selectedRecipe == null)
+        //        // Integrity check: If file exists but is empty or missing sequences
+        //        if (data == null || data.Count == 0)
         //        {
-        //            _logger.LogWarning("No recipe selected. Falling back to last recipe in CSV.", LogType.Diagnostics);
-
-        //            // Fallback: use last recipe from CSV
-        //            var allRecipes = await LoadRecipeAsync();
-        //            selectedRecipe = allRecipes.LastOrDefault();
-        //        }
-
-        //        if (selectedRecipe == null)
-        //        {
-        //            _logger.LogWarning("No recipes found in CSV. Creating default positions.", LogType.Diagnostics);
         //            return await CreateDefaultPositionsAsync();
         //        }
-
-        //        int totalItems = selectedRecipe.TotalItems > 0 ? selectedRecipe.TotalItems : 12;
-
-        //        var positions = new List<ServoPositionModel>
-        //        {
-        //            // Position 0 = Home (always present)
-        //            new ServoPositionModel
-        //            {
-        //                PositionId    = 0,
-        //                Name          = "Position 0 (Home)",
-        //                SequenceIndex = 0,
-        //                X             = selectedRecipe.X0,
-        //                Y             = selectedRecipe.Y0,
-        //                IsEnabled     = true
-        //            }
-        //        };
-
-        //        // Coordinate lookup map for positions 1-12
-        //        var coordMap = new Dictionary<int, (double X, double Y, int Seq)>
-        //        {
-        //            { 1,  (selectedRecipe.X1,  selectedRecipe.Y1,  selectedRecipe.S1)  },
-        //            { 2,  (selectedRecipe.X2,  selectedRecipe.Y2,  selectedRecipe.S2)  },
-        //            { 3,  (selectedRecipe.X3,  selectedRecipe.Y3,  selectedRecipe.S3)  },
-        //            { 4,  (selectedRecipe.X4,  selectedRecipe.Y4,  selectedRecipe.S4)  },
-        //            { 5,  (selectedRecipe.X5,  selectedRecipe.Y5,  selectedRecipe.S5)  },
-        //            { 6,  (selectedRecipe.X6,  selectedRecipe.Y6,  selectedRecipe.S6)  },
-        //            { 7,  (selectedRecipe.X7,  selectedRecipe.Y7,  selectedRecipe.S7)  },
-        //            { 8,  (selectedRecipe.X8,  selectedRecipe.Y8,  selectedRecipe.S8)  },
-        //            { 9,  (selectedRecipe.X9,  selectedRecipe.Y9,  selectedRecipe.S9)  },
-        //            { 10, (selectedRecipe.X10, selectedRecipe.Y10, selectedRecipe.S10) },
-        //            { 11, (selectedRecipe.X11, selectedRecipe.Y11, selectedRecipe.S11) },
-        //            { 12, (selectedRecipe.X12, selectedRecipe.Y12, selectedRecipe.S12) },
-        //        };
-
-        //        for (int i = 1; i <= totalItems; i++)
-        //        {
-        //            if (coordMap.TryGetValue(i, out var data))
-        //            {
-        //                positions.Add(new ServoPositionModel
-        //                {
-        //                    PositionId = i,
-        //                    Name = $"Position {i}",
-        //                    SequenceIndex = data.Seq,
-        //                    X = data.X,
-        //                    Y = data.Y,
-        //                    IsEnabled = true
-        //                });
-        //            }
-        //        }
-
-        //        _logger.LogInfo($"LoadPositionsAsync: Loaded {positions.Count} positions from recipe '{selectedRecipe.ProductCode}'.", LogType.Diagnostics);
-        //        return positions;
+        //        return data;
         //    }
-        //    catch (Exception ex)
+        //    catch
         //    {
-        //        _logger.LogError($"LoadPositionsAsync failed: {ex.Message}", LogType.Error);
         //        return await CreateDefaultPositionsAsync();
         //    }
         //}
-        //Old 
+
+
         public async Task<List<ServoPositionModel>> LoadPositionsAsync()
         {
-            if (!File.Exists(_filePath))
-            {
-                return await CreateDefaultPositionsAsync();
-            }
-
             try
             {
-                string json = await File.ReadAllTextAsync(_filePath);
-                var data = JsonSerializer.Deserialize<List<ServoPositionModel>>(json);
-
-                // Integrity check: If file exists but is empty or missing sequences
-                if (data == null || data.Count == 0)
+                var recipe = await GetRecipeByProgramNumberAsync(0);
+                if (recipe == null) 
                 {
+                    _logger.LogWarning("[ServoCalibrationService] LoadPositionAsync :No recipe found , falling back to default ", LogType.Diagnostics);
                     return await CreateDefaultPositionsAsync();
                 }
-                return data;
+                int totalItems = recipe.TotalItems > 0 ? recipe.TotalItems : 12;
+                var positions = new List<ServoPositionModel>
+                {
+                    new ServoPositionModel
+                    {
+                        PositionId = 0,
+                        Name       = "Position 0 (Home)",
+                        SequenceIndex = 0,
+                        X = recipe.X0,
+                        Y = recipe.Y0,
+                        IsEnabled = true
+
+                    }
+                };
+
+                // Map PositionId -> (X, Y, SequenceIndex) from recipe fields
+                var coordMap = new Dictionary<int, (double X, double Y, int Seq)>
+                {
+                    { 1,  (recipe.X1,  recipe.Y1,  recipe.S1)  },
+                    { 2,  (recipe.X2,  recipe.Y2,  recipe.S2)  },
+                    { 3,  (recipe.X3,  recipe.Y3,  recipe.S3)  },
+                    { 4,  (recipe.X4,  recipe.Y4,  recipe.S4)  },
+                    { 5,  (recipe.X5,  recipe.Y5,  recipe.S5)  },
+                    { 6,  (recipe.X6,  recipe.Y6,  recipe.S6)  },
+                    { 7,  (recipe.X7,  recipe.Y7,  recipe.S7)  },
+                    { 8,  (recipe.X8,  recipe.Y8,  recipe.S8)  },
+                    { 9,  (recipe.X9,  recipe.Y9,  recipe.S9)  },
+                    { 10, (recipe.X10, recipe.Y10, recipe.S10) },
+                    { 11, (recipe.X11, recipe.Y11, recipe.S11) },
+                    { 12, (recipe.X12, recipe.Y12, recipe.S12) },
+                };
+
+
+                for (int i = 1; i <= totalItems; i++)
+                {
+                    if (coordMap.TryGetValue(i, out var data))
+                    {
+                        positions.Add(new ServoPositionModel
+                        {
+                            PositionId = i,
+                            Name = $"Position {i}",
+                            SequenceIndex = data.Seq,
+                            X = data.X,
+                            Y = data.Y,
+                            IsEnabled = true
+                        });
+                    }
+                }
+
+                _logger.LogInfo($"[ServoCalibrationService] LoadPositionsAsync: Loaded {positions.Count} positions from recipe '{recipe.ProductCode}' (ProgramNo={recipe.ProgramNo}).", LogType.Diagnostics);
+                return positions;
             }
-            catch
+
+            catch (Exception ex)
             {
+                _logger.LogError($"[ServoCalibrationService] LoadPositionsAsync failed: {ex.Message}", LogType.Error);
                 return await CreateDefaultPositionsAsync();
             }
         }
-
         public async Task<List<ServoRecipeModel>> LoadRecipeAsync()                          //Modifed by Rishabh -Date 11/05/2026
         {
             var recipes = new List<ServoRecipeModel>();
@@ -245,12 +240,12 @@ namespace IPCSoftware.Services.ConfigServices
         }
 
 
-        public async Task SavePositionsAsync(List<ServoPositionModel> positions)
-        {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            string json = JsonSerializer.Serialize(positions, options);
-            await File.WriteAllTextAsync(_filePath, json);
-        }
+        //public async Task SavePositionsAsync(List<ServoPositionModel> positions)          // No longer needed now removed by Rishabh - Date 28/05/2026
+        //{
+        //    var options = new JsonSerializerOptions { WriteIndented = true };
+        //    string json = JsonSerializer.Serialize(positions, options);
+        //    await File.WriteAllTextAsync(_filePath, json);
+        //}
 
         private async Task<List<ServoPositionModel>> CreateDefaultPositionsAsync()
         {
@@ -298,8 +293,60 @@ namespace IPCSoftware.Services.ConfigServices
             }
             return list;
         }
+        //New method to get recipe by program number
+        public async Task<ServoRecipeModel> GetRecipeByProgramNumberAsync(int programNo)
+        {
+            try
+            {
+                int targetProgramNo = programNo;
 
+                // --- Scenario B: CoreService startup — UI hasn't provided a selection yet ---
+                // If caller passes 0 or negative, fall back to appsettings.json
+                if (targetProgramNo <= 0)
+                {
+                    try
+                    {
+                        var json = File.ReadAllText(_appSettingsPath);
+                        var jsonObj = JObject.Parse(json);
 
+                        // Read from Config.CurrentRunningProgram (persisted by ModeOfOperationVM on last run)
+                        var configSection = jsonObj["Config"];
+                        if (configSection != null && configSection["CurrentRunningProgram"] != null)
+                        {
+                            targetProgramNo = configSection["CurrentRunningProgram"].Value<int>();
+                            _logger.LogInfo($"[ServoCalibrationService] No UI selection — using CurrentRunningProgram={targetProgramNo} from appsettings.json.", LogType.Diagnostics);
+                        }
+                        else
+                        {
+                            _logger.LogWarning($"[ServoCalibrationService] appsettings.json Config.CurrentRunningProgram not found. Using startup default: {targetProgramNo}.", LogType.Diagnostics);
+                        }
+                    }
+                    catch (Exception jsonEx)
+                    {
+                       
+                        _logger.LogWarning($"[ServoCalibrationService] Failed to read appsettings.json, using startup default {targetProgramNo}: {jsonEx.Message}", LogType.Diagnostics);
+                    }
+                }
+
+                // --- Scenario A: UI selected a recipe — programNo was passed directly ---
+                // Both paths now have a valid targetProgramNo, find recipe from CSV
+                var recipes = await LoadRecipeAsync();
+                var matched = recipes.FirstOrDefault(r => r.ProgramNo == targetProgramNo);
+
+                if (matched == null)
+                {
+                    _logger.LogWarning($"[ServoCalibrationService] No recipe found for ProgramNo={targetProgramNo}. Falling back to last recipe.", LogType.Diagnostics);
+                    matched = recipes.LastOrDefault(); // Safe fallback
+                }
+
+                return matched;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[ServoCalibrationService] GetRecipeByProgramNumberAsync failed for ProgramNo={programNo}: {ex.Message}", LogType.Error);
+                return null;
+            }
+        }
 
         private ServoPositionModel ParseRecipeCsvLine(string line)
         {

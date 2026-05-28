@@ -12,6 +12,7 @@ namespace IPCSoftware.Core.Interfaces
         Task<List<ServoPositionModel>> LoadPositionsAsync();
 
         Task<List<ServoRecipeModel>> LoadRecipeAsync();
-        Task SavePositionsAsync(List<ServoPositionModel> positions);
+        //Task SavePositionsAsync(List<ServoPositionModel> positions);
+        Task<ServoRecipeModel> GetRecipeByProgramNumberAsync(int programNo);
     }
 }

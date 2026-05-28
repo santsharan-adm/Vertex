@@ -10,14 +10,14 @@ namespace IPCSoftware.Services.ConfigServices
     public class RecipeApplicationService : IRecipeApplicationService
     {       
         private readonly IAeLimitService _aeLimitService;
-        private readonly IPlcRecipeWriter _plcRecipeWriter;
+        private readonly IMachineDataHandler _plcRecipeWriter;
         private readonly IAppLogger _logger;
         private ServoRecipeModel _lastSelectedRecipe;
 
         public RecipeApplicationService(            
             IAeLimitService aeLimitService,
             IAppLogger logger,
-            IPlcRecipeWriter plcRecipeWriter)
+            IMachineDataHandler plcRecipeWriter)
         {
            
             _aeLimitService = aeLimitService;

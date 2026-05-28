@@ -28,7 +28,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public class ServoCalibrationViewModel : BaseViewModel, IDisposable, INavigationalAware , IPlcRecipeWriter
+    public class ServoCalibrationViewModel : BaseViewModel, IDisposable, INavigationalAware , IMachineDataHandler
     {
         private readonly IRecipeManagementService _recipeManagementService;
         private readonly IAeLimitService _aeLimitService;
@@ -1445,7 +1445,7 @@ namespace IPCSoftware.App.ViewModels
 
                 await _coreClient.WriteTagAsync(tagId, 0);
 
-                await _servoService.SavePositionsAsync(Positions.ToList());
+              //  await _servoService.SavePositionsAsync(Positions.ToList());
                 HasUnsavedChanges = false;
 
                 _logger.LogInfo($"{description} Confirmed.", LogType.Audit);

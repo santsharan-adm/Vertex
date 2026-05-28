@@ -19,6 +19,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         private readonly IPLCTagConfigurationService _tagService;
         private readonly PLCClientManager _plcManager;
         private readonly IProductionDataLogger _prodLogger;
+        private readonly IServoCalibrationService _servoCalibrationservice;
 
         // Triggers
         private bool _lastCycleTimeTriggerState = false;  // For A1 (Cycle Complete)
@@ -26,7 +27,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         private bool _lastCcdTriggerState = false;        // For CCD Trigger
 
         private int _lastCycleTime = 1;
-        private readonly string _servoCalibrationPath;
+        //private readonly string _servoCalibrationPath;
 
         // Holds all data for the current 2D code / part
         private ProductionDataRecord? _currentCycleRecord;
@@ -43,21 +44,23 @@ namespace IPCSoftware.CoreService.Services.Dashboard
             PLCClientManager plcManager,
             IAppLogger logger,
             IProductionDataLogger prodLogger,
+            IServoCalibrationService servoCalibrationService,
             IConfiguration configuration) : base(logger)
         {
             _tagService = tagService;
             _plcManager = plcManager;
             _prodLogger = prodLogger;
+            _servoCalibrationservice = servoCalibrationService;
 
             var dataFolder = configuration["Config:DataFolder"];
-            var servoFileName = configuration["Config:ServoCalibrationFileName"] ?? "ServoCalibration.json";
+            //var servoFileName = configuration["Config:ServoCalibrationFileName"] ?? "ServoCalibration.json";
 
             if (string.IsNullOrWhiteSpace(dataFolder))
             {
                 dataFolder = AppContext.BaseDirectory;
             }
 
-            _servoCalibrationPath = Path.Combine(dataFolder, servoFileName);
+            //_servoCalibrationPath = Path.Combine(dataFolder, servoFileName);
             
             // Load the station map once at startup
             LoadStationMap();
@@ -66,31 +69,73 @@ namespace IPCSoftware.CoreService.Services.Dashboard
         private void LoadStationMap()
         {
             try
-            {
-                var jsonPath = _servoCalibrationPath;
-                if (!File.Exists(jsonPath))
+            {                
+              //  var jsonPath = _servoCalibrationPath;
+                //if ()
+                //{
+                //    _logger.LogError($"[OEE] Station positions JSON not found at: {jsonPath}", LogType.Diagnostics);
+                //    return;
+                //}
+                ////string json = File.ReadAllText(jsonPath);
+                //var positions = JsonSerializer.Deserialize<List<ServoPositionModel>>(json);
+
+                var lastSelectedRecipe =  _servoCalibrationservice.GetRecipeByProgramNumberAsync(0).GetAwaiter().GetResult();
+                if (lastSelectedRecipe == null)
                 {
-                    _logger.LogError($"[OEE] Station positions JSON not found at: {jsonPath}", LogType.Diagnostics);
+                    _logger.LogError($"[OEE] No Recipe Found not found", LogType.Diagnostics);
                     return;
-                }
-                string json = File.ReadAllText(jsonPath);
-                var positions = JsonSerializer.Deserialize<List<ServoPositionModel>>(json);
-                if (positions == null || positions.Count == 0)
-                {
-                    _logger.LogError("[OEE] Station positions JSON is empty or could not be deserialized.", LogType.Diagnostics);
-                    return;
-                }
-                _sequenceToPositionId.Clear();
-                foreach (var entry in positions.Where(p => p.SequenceIndex >= 0 && p.PositionId >= 0))
-                {
-                    _sequenceToPositionId[entry.SequenceIndex] = entry.PositionId;
                 }
 
-                _logger.LogInfo("[OEE] Loaded station map successfully.", LogType.Diagnostics);
+
+                var recipeSequenceMap = new Dictionary<int, int>
+                {
+                    {lastSelectedRecipe.S1 , 1 },
+                    {lastSelectedRecipe.S2 , 2 },
+                    {lastSelectedRecipe.S3 , 3 },
+                    {lastSelectedRecipe.S4 , 4 },
+                    {lastSelectedRecipe.S5 , 5 },
+                    {lastSelectedRecipe.S6 , 6 },
+                    {lastSelectedRecipe.S7 , 7 },
+                    {lastSelectedRecipe.S8 , 8 },
+                    {lastSelectedRecipe.S9 , 9 },
+                    {lastSelectedRecipe.S10 , 10 },
+                    {lastSelectedRecipe.S11 , 11 },
+                    {lastSelectedRecipe.S12 , 12 }
+                };
+
+
+
+                //if (positions == null || positions.Count == 0)
+                //{
+                //    _logger.LogError("[OEE] Station positions JSON is empty or could not be deserialized.", LogType.Diagnostics);
+                //    return;
+                //}
+                _sequenceToPositionId.Clear();
+                int activeItems = lastSelectedRecipe.TotalItems > 0 ? lastSelectedRecipe.TotalItems : 12;
+
+                foreach(var kvp in recipeSequenceMap)
+                {
+                    int seqIndex = kvp.Key;
+                    int positionId = kvp.Value;
+                    //Only include active position within ToatalItems
+                    if(seqIndex > 0 && positionId > 0 && positionId <= activeItems)
+                    {
+                        _sequenceToPositionId[seqIndex] = positionId;
+                    }
+
+                }
+
+
+                //foreach (var entry in positions.Where(p => p.SequenceIndex >= 0 && p.PositionId >= 0))
+                //{
+                //    _sequenceToPositionId[entry.SequenceIndex] = entry.PositionId;
+                //}
+
+                _logger.LogInfo($"[OEE] Loaded station map successfully from recipe '{lastSelectedRecipe.ProductCode}' ({_sequenceToPositionId.Count} stations)", LogType.Diagnostics);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[OEE] Failed to load station positions JSON: {ex.Message}", LogType.Diagnostics);
+                _logger.LogError($"[OEE] Failed to load station positions from recipe: {ex.Message}", LogType.Diagnostics);
             }
         }
 

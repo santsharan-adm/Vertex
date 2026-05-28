@@ -2,17 +2,19 @@
 using IPCSoftware.App.NavServices;
 using IPCSoftware.App.Services;
 using IPCSoftware.App.Services.UI;
-using IPCSoftware.App.Views;
 using IPCSoftware.App.ViewModels;
+using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
-using System;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -76,7 +78,7 @@ namespace IPCSoftware.App.ViewModels
         private readonly Dictionary<OperationMode, int> _writeTags = new();
         private readonly Dictionary<OperationMode, int> _statusTags = new();
         private readonly Dictionary<OperationMode, int> _enableTags = new();
-
+        private readonly string _appSettingsPath; // For saving current program number
 
 
         public ObservableCollection<ModeButtonItem> ModeButtons { get; } = new ObservableCollection<ModeButtonItem>();
@@ -97,7 +99,7 @@ namespace IPCSoftware.App.ViewModels
             get => _selectedRecipe;
             set => SetProperty(ref _selectedRecipe, value);
         }
-        
+
 
         public bool IsRecipeSelectionEnabled => !GetBtn(OperationMode.Auto).IsEnabled;
 
@@ -112,12 +114,15 @@ namespace IPCSoftware.App.ViewModels
 
         private bool _isInitialized = false;               //Added by Rishabh -Date -13-05-2026
 
-        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService, IRecipeApplicationService recipeAppService, IDialogService dialog) : base(logger)
+        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService, IRecipeApplicationService recipeAppService, IOptions<ConfigSettings> configSettings, IDialogService dialog) : base(logger)
         {
             _coreClient = coreClient;
             _navService = navService;
             _servoService = servoService; // Added by rishabh - Date 06-05-2026       
             _recipeAppService = recipeAppService;
+            _appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+
+            //var config = configSettings.Value;
             _dialog = dialog;
             InitializeTags();
             InitializeButtons();
@@ -129,7 +134,7 @@ namespace IPCSoftware.App.ViewModels
 
             _feedbackTimer = new SafePoller(TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
             _feedbackTimer.Start();
-
+          
 
         }
 
@@ -226,11 +231,10 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                //RecipeItem newRecipe = SelectedRecipe;
-                //_lastConfirmedRecipe = newRecipe;
+
                 _logger.LogInfo($"Recipe Selected: Program {SelectedRecipe.ProgramNo} - {SelectedRecipe.ProductCode}", LogType.Audit);
                 AddAudit($"Waiting for Recipe parameters to load...");
-               // if (!_coreClient.isConnected) { _dialog.ShowWarning($"Failed to Load recipe\n Please Check PLC Connection"); AddAudit($"Failed to load {SelectedRecipe.ProductCode}\nCheck PLC Connection.");return; }
+               
                 if (!_coreClient.isConnected) { _dialog.ShowWarning($"Failed to Load recipe\n Please Check PLC Connection"); AddAudit($"Failed to load {SelectedRecipe.ProductCode}\nCheck PLC Connection.");return; }
                 var allResults = await _recipeAppService.ApplyRecipeToPlcAsync(SelectedRecipe);
                 if (allResults.ContainsKey(1)) { bool servoResult = allResults[1]; if (!servoResult) { AddAudit($"Servo Coordinated Write Failed"); } else { AddAudit($"Servo Coordinated Write Successfully"); } }
@@ -242,6 +246,27 @@ namespace IPCSoftware.App.ViewModels
                 if (bResult)
                 {
                     _lastConfirmedRecipe = SelectedRecipe;
+
+                    // Persist CurrentRunningProgram into Config section of appsettings.json
+                    try
+                    {
+                        var json = File.ReadAllText(_appSettingsPath);
+                        var jsonObj = JObject.Parse(json);
+
+                        // Navigate to Config section (where CurrentRunningProgram lives)
+                        if (jsonObj["Config"] == null)
+                            jsonObj["Config"] = new JObject();
+
+                        jsonObj["Config"]["CurrentRunningProgram"] = SelectedRecipe.ProgramNo;
+
+                        File.WriteAllText(_appSettingsPath, jsonObj.ToString());
+                        _logger.LogInfo($"[ModeOfOperation] CurrentRunningProgram updated to {SelectedRecipe.ProgramNo} in appsettings.json.", LogType.Audit);
+                    }
+                    catch (Exception jsonEx)
+                    {
+                        // Non-critical: log but don't block the user
+                        _logger.LogError($"[ModeOfOperation] Failed to persist CurrentRunningProgram: {jsonEx.Message}", LogType.Diagnostics);
+                    }
                 }
                 else
                 {

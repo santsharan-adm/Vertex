@@ -35,6 +35,8 @@ namespace IPCSoftware.Shared.Models
         public bool SwapStringBytes { get; set; } = true;
         public int DefaultModBusAddress { get; set; }
 
+        public int CurrentRunningProgram { get; set; }
+
         public TagMappingSettings TagMapping { get; set; } = new TagMappingSettings();
 
     }

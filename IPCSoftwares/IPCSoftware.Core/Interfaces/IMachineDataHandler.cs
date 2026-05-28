@@ -11,8 +11,9 @@ namespace IPCSoftware.Core.Interfaces
     /// Abstraction over ServoCalibrationViewModel's PLC write capability.
     /// Defined in Core so both App and Services can reference it without circular dependency.
  
-    public interface IPlcRecipeWriter
+    public interface IMachineDataHandler
     {
         Task<Dictionary<int, bool>> WriteSelectedRecipeAsync(ServoRecipeModel recipe);
+
     }
 }
