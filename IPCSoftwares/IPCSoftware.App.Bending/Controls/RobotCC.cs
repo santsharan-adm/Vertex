@@ -9,17 +9,17 @@ namespace IPCSoftware.App.Bending.Controls
     /// <summary>
     /// Robot arm with animation support - reusable for both robots
     /// </summary>
-    public class RobotArmCC : Control
+    public class Robot1CC : Control
     {
-        static RobotArmCC()
+        static Robot1CC()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(RobotArmCC), new FrameworkPropertyMetadata(typeof(RobotArmCC)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(Robot1CC), new FrameworkPropertyMetadata(typeof(Robot1CC)));
         }
 
         private Line armLower;
 
         public static readonly DependencyProperty IsRightSideProperty =
-            DependencyProperty.Register(nameof(IsRightSide), typeof(bool), typeof(RobotArmCC), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(IsRightSide), typeof(bool), typeof(Robot1CC), new PropertyMetadata(false));
 
         public bool IsRightSide
         {
@@ -62,5 +62,18 @@ namespace IPCSoftware.App.Bending.Controls
             armLower.BeginAnimation(Line.Y2Property, animY);
             armLower.BeginAnimation(Line.StrokeThicknessProperty, animThickness);
         }
+
+        #region Dependency Property
+        #region RobotNumber
+        public static readonly DependencyProperty RobotNumberProperty =
+            DependencyProperty.Register(nameof(RobotNumber), typeof(int), typeof(Robot1CC), new PropertyMetadata(1));
+
+        public int RobotNumber
+        {
+            get => (int)GetValue(RobotNumberProperty);
+            set => SetValue(RobotNumberProperty, value);
+        }
+        #endregion RobotNumber
+        #endregion Dependency Property
     }
 }

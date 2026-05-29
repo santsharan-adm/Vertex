@@ -19,6 +19,13 @@ namespace IPCSoftware.App.Bending.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(PidTableCC), new FrameworkPropertyMetadata(typeof(PidTableCC)));
         }
 
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+        }
+
+        #region Dependency Property
+        #region TableType
         public static readonly DependencyProperty TableTypeProperty =
             DependencyProperty.Register(nameof(TableType), typeof(PidTableType), typeof(PidTableCC), 
                 new PropertyMetadata(PidTableType.Heater));
@@ -28,10 +35,9 @@ namespace IPCSoftware.App.Bending.Controls
             get => (PidTableType)GetValue(TableTypeProperty);
             set => SetValue(TableTypeProperty, value);
         }
+        #endregion TableType
+        #endregion Dependency Property
 
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-        }
+
     }
 }

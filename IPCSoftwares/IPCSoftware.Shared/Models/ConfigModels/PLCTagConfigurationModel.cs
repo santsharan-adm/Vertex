@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Media3D;
 
 namespace IPCSoftware.Shared.Models.ConfigModels
 {
@@ -28,6 +29,10 @@ namespace IPCSoftware.Shared.Models.ConfigModels
 
         public bool CanWrite { get; set; }
         public string IOType { get; set; } // NEW: Input/Output
+
+        public string Control { get; set; }
+
+        public string Direction { get; set; }
         public bool EnableTraceLog { get; set; } // NEW: Enable trace log for this tag krishna add this property
 
         public PLCTagConfigurationModel()
@@ -67,7 +72,9 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 CanWrite = this.CanWrite,
                 UseEngMinMax = this.UseEngMinMax,
                 IOType = this.IOType, // Clone new field
-                EnableTraceLog = this.EnableTraceLog
+                EnableTraceLog = this.EnableTraceLog,
+                Control = this.Control,
+                Direction = this.Direction
             };
         }
     }
