@@ -502,9 +502,9 @@ public class MainWindowViewModel : BaseViewModel
                     _nav.NavigateMain<UserListView>();
                     break;
 
-                case "Product Settings":
-                    _nav.NavigateMain<ProductSettingsView>();
-                    break;
+                //case "Product Settings":
+                //    _nav.NavigateMain<ProductSettingsView>();
+                //    break;
 
                 case "Manual Operation":
                     //_nav.NavigateMain<ManualOperation>();
@@ -568,9 +568,9 @@ public class MainWindowViewModel : BaseViewModel
                     _nav.NavigateMain<ApiTestView>();
                     break;
 
-                case "AE Limit":
-                    _nav.NavigateMain<AeLimitView>();
-                    break;
+                //case "AE Limit":
+                //    _nav.NavigateMain<AeLimitView>();
+                //    break;
                 case "About":
                     _nav.NavigateMain<AboutView>();
                     break;

@@ -51,6 +51,7 @@ namespace IPCSoftware.Services.ConfigServices
         {
             try
             {
+                if (_lastSelectedRecipe == null) { return new ServoRecipeModel(); }
                 return _lastSelectedRecipe;
             }
             catch (Exception ex) { _logger.LogWarning($"Unable to get recipe {_lastSelectedRecipe}: {ex}", LogType.Error); return new ServoRecipeModel(); }

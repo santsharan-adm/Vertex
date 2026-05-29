@@ -37,11 +37,11 @@ namespace IPCSoftware.App.ViewModels
         private readonly SafePoller _liveDataTimer;
         private readonly IServoCalibrationService _servoService; // Injected Service
         private readonly IDialogService _dialog; // Injected Service
-        private readonly IProductConfigurationService _productService;
+        //private readonly IProductConfigurationService _productService;
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;       //added after
 
         private bool _initialPlcLoadDone = false;
-        private ProductSettingsModel _productSettings;
+        //private ProductSettingsModel _productSettings;
         private AeLimitSettings _aeLimitSettings;             //Added after
         private readonly string _appSettingsPath; // For saving units
 
@@ -262,7 +262,7 @@ namespace IPCSoftware.App.ViewModels
         public ServoCalibrationViewModel(CoreClient coreClient,
             IServoCalibrationService servoService,
             IDialogService dialog,
-             IProductConfigurationService productService,
+             //IProductConfigurationService productService,
              IRecipeManagementService recipeManagementService,
              IAeLimitService aeLimitService,
              IOptionsMonitor<ExternalSettings> settingMonitor,  //Added after
@@ -274,7 +274,7 @@ namespace IPCSoftware.App.ViewModels
             _dialog = dialog;
             _coreClient = coreClient;
             _servoService = servoService; 
-            _productService = productService;
+            //_productService = productService;
             _recipeManagementService = recipeManagementService;
             _aeLimitService = aeLimitService;
             _settingsMonitor = settingMonitor;

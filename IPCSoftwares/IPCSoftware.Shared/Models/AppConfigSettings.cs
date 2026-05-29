@@ -25,7 +25,8 @@ namespace IPCSoftware.Shared.Models
         public string LogConfigFileName { get; set; }
         public string AeLimitFileName { get; set; }
         public string AeLimitOutputFolderName { get; set; }
-        public string ServoCalibrationFileName { get; set; }
+
+       // public string ServoCalibrationFileName { get; set; }
 
         public string ServoRecipeFileName { get; set; }
         public string UserFileName { get; set; }

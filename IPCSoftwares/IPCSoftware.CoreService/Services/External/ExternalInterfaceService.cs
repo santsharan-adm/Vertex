@@ -24,7 +24,7 @@ namespace IPCSoftware.CoreService.Services.External
 
         private readonly IPLCTagConfigurationService _tagService;
         private readonly IAppLogger _logger;
-        private readonly IProductConfigurationService _productService; // NEW Injection
+        //private readonly IProductConfigurationService _productService; // NEW Injection
         private readonly IServoCalibrationService _servoService;
         private readonly HttpClient _httpClient;
         private readonly ITcpTrafficLogger _trafficLogger;
@@ -50,14 +50,14 @@ namespace IPCSoftware.CoreService.Services.External
             IPLCTagConfigurationService tagService,
             IServoCalibrationService servoService,
             MacMiniTcpClient tcpClient,
-            IProductConfigurationService productService, // Inject Product Service
+            //IProductConfigurationService productService, // Inject Product Service
             IAppLogger logger,ITcpTrafficLogger trafficLogger,
             IOptionsMonitor<ExternalSettings> settingsMonitor)
         {
             _plcManager = plcManager;
             _tagService = tagService;
             _servoService = servoService;
-            _productService = productService;
+            //_productService = productService;
             _logger = logger;
             _settingsMonitor = settingsMonitor;
             _trafficLogger = trafficLogger;

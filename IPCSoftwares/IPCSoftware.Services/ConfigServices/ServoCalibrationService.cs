@@ -21,7 +21,7 @@ namespace IPCSoftware.Services.ConfigServices
     {
         private readonly string _filePath;  
         private readonly string _dataFolder;
-        private readonly IProductConfigurationService _productService;
+        //private readonly IProductConfigurationService _productService;
         //private readonly IRecipeApplicationService _recipeApplicationService;
         private readonly IAppLogger _logger;
 
@@ -31,7 +31,7 @@ namespace IPCSoftware.Services.ConfigServices
 
 
         public ServoCalibrationService(IOptions<ConfigSettings> configSettings,
-              IProductConfigurationService productService, /*IOptions<ConfigSettings> configSettings*/ IAppLogger logger)
+         /*     IProductConfigurationService productService, *//*IOptions<ConfigSettings> configSettings*/ IAppLogger logger)
         {
             //string folder = configSettings.Value.DataFolder ?? AppContext.BaseDirectory;
             _logger = logger;
@@ -44,7 +44,7 @@ namespace IPCSoftware.Services.ConfigServices
             _appSettingsPath = Path.Combine(baseDir, "appsettings.json");
           
             string dataFolderPath = config.DataFolder;
-            _productService = productService;
+            //_productService = productService;
             _dataFolder = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
           //  _filePath = Path.Combine(folder, "ServoCalibration.json");
             //_filePath =  Path.Combine(_dataFolder, config.ServoCalibrationFileName );

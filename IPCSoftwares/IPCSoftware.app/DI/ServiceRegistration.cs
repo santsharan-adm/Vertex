@@ -98,7 +98,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<ILogConfigurationService, LogConfigurationService>();
             services.AddSingleton<IAlarmConfigurationService, AlarmConfigurationService>();
             services.AddSingleton<IUserManagementService, UserManagementService>();
-            services.AddSingleton<IProductConfigurationService, ProductConfigurationService>();
+            //services.AddSingleton<IProductConfigurationService, ProductConfigurationService>();
 
 
             // CCD Serive
@@ -152,9 +152,9 @@ namespace IPCSoftware.App.DI
             services.AddTransient<ProductionImageView>();
             services.AddTransient<ProductionImageViewModel>();
 
-            // ===== Produciton Image ViewModel =====
-            services.AddTransient<ProductSettingsView>();
-            services.AddTransient<ProductSettingsViewModel>();           // Will be removed after recipe work test successfully - comment by rishabh
+            //// ===== Produciton Image ViewModel =====
+            //services.AddTransient<ProductSettingsView>();
+            //services.AddTransient<ProductSettingsViewModel>();           // Will be removed after recipe work test successfully - comment by rishabh
 
             services.AddTransient<AlarmLogView>();
             services.AddTransient<AlarmLogViewModel>();

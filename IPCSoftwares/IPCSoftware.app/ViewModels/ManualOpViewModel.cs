@@ -25,7 +25,7 @@ namespace IPCSoftware.App.ViewModels
         private readonly CoreClient _coreClient;
         private readonly SafePoller _feedbackTimer;
         private readonly INavigationService _nav;
-        private readonly IProductConfigurationService _productService;
+        //private readonly IProductConfigurationService _productService;
         private bool _isPositionLocked = false;
         private int _configuredTotalItems = 12;
         private readonly IServoCalibrationService _servoService;
@@ -79,12 +79,12 @@ namespace IPCSoftware.App.ViewModels
         private bool GetState(ManualOperationMode mode) => Modes.FirstOrDefault(x => x.Mode == mode)?.IsActive ?? false;
 
 
-        public ManualOpViewModel(IAppLogger logger, CoreClient coreClient,
-               IProductConfigurationService productService, INavigationService nav, IServoCalibrationService servoService) : base(logger)
+        public ManualOpViewModel(IAppLogger logger, CoreClient coreClient
+              /* IProductConfigurationService productService*/, INavigationService nav, IServoCalibrationService servoService) : base(logger)
         {
             _coreClient = coreClient;
             _nav = nav;
-            _productService = productService;
+            //_productService = productService;
             _servoService = servoService;
 
             // 1. Initialize Modes List

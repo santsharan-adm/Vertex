@@ -28,7 +28,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         private readonly IServoCalibrationService _servoService;
         private readonly ExternalInterfaceService _extService;
         private readonly IAeLimitService _aeLimitService;
-        private readonly IProductConfigurationService _productService;
+        //private readonly IProductConfigurationService _productService;
 
         private string _activeBatchId = string.Empty;
         private int _currentSequenceStep = 0;
@@ -50,7 +50,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             ProductionImageService imageService,
             ExternalInterfaceService extService,
             IAeLimitService aeLimitService,
-             IProductConfigurationService productService,
+             //IProductConfigurationService productService,
             IAppLogger logger) : base(logger)
         {
             var ccd = appSettings.Value;
@@ -61,7 +61,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             _servoService = servoService;
             _extService = extService;
             _aeLimitService = aeLimitService;
-            _productService = productService;
+            //_productService = productService;
             _stateFilePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
             var logs =  logConfig.GetAllAsync();
             var allLogs = logConfig.GetAllAsync().GetAwaiter().GetResult();
@@ -79,9 +79,21 @@ namespace IPCSoftware.CoreService.Services.CCD
         {
             try
             {
-                // 1. Load Product Config to determine Limit
-                var prodConfig = await _productService.LoadAsync();
-                int limit = prodConfig.TotalItems;
+                var recipe = await _servoService.GetRecipeByProgramNumberAsync(0);
+                int limit = recipe?.TotalItems ?? 12; // Default to 12 if recipe or limit is not available
+                                                      //// 1. Load Product Config to determine Limit
+                                                      //var prodConfig = await _productService.LoadAsync();
+                                                      //int limit = prodConfig.TotalItems;
+
+
+                if (recipe == null)
+                {
+                    _logger.LogWarning("[CycleManager] No recipe found for current program. Using default limit of 12.", LogType.Diagnostics);
+                }
+                else
+                {
+                    _logger.LogInfo($"[CycleManager] Loaded TotalItems={limit} from recipe '{recipe.ProductCode}' (ProgramNo={recipe.ProgramNo}).", LogType.Diagnostics);
+                }
 
                 await SyncTotalStationsToPlc(limit);
 

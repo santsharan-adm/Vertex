@@ -33,7 +33,7 @@ namespace IPCSoftware.App.ViewModels
         private readonly IDialogService _dialog;
         private readonly string _prodCsvFolder;
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
-        private readonly IProductConfigurationService _productService; // NEW Injection
+        //private readonly IProductConfigurationService _productService; // NEW Injection
         private readonly IServoCalibrationService _servoService; // NEW Injection for Recipe Data
         private readonly IRecipeApplicationService _recipeAppService; // Added by Rishabh -Date 25-05-2026
 
@@ -375,7 +375,7 @@ namespace IPCSoftware.App.ViewModels
             CoreClient coreClient,
             IDialogService dialog,
             ILogConfigurationService logConfigService,
-            IProductConfigurationService productService,
+            //IProductConfigurationService productService,
             IServoCalibrationService servoService,
             IRecipeApplicationService recipeAppService,
             IAppLogger logger) : base(logger)
@@ -385,7 +385,7 @@ namespace IPCSoftware.App.ViewModels
             _tagService = tagService;
             _coreClient = coreClient;
             _dialog = dialog;
-            _productService = productService;
+            //_productService = productService;
             _servoService = servoService; // NEW Assignment for Recipe Data
             _recipeAppService = recipeAppService;
             SwitchDirection = configSettng.Value.SwitchConveyorDirection;
