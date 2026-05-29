@@ -169,33 +169,71 @@ namespace IPCSoftware.Shared.Models
 
     public class Dashboard2
     {
-        public string QRCode1 { get; set; }
+        public int l1_QRCode { get; set; }
+        public int l2_QRCode { get; set; }
 
-        public int L1_HeaterTemp_Bend1 { get; set; }
-        public int L2_HeaterTemp_Bend1 { get; set; }
-        public int L3_HeaterTemp_Bend1 { get; set; }
+        public int l3_QRCode { get; set; }
 
-        public int L4_HeaterTemp_Bend1 { get; set; }
+        public int l4_QRCode { get; set; }
 
+        public  int l1_HeaterTemp_Bend1 { get; set; }
+        public  int l2_HeaterTemp_Bend1 { get; set; }
+        public  int l3_HeaterTemp_Bend1 { get; set; }
+        public  int l4_HeaterTemp_Bend1 { get; set; }
 
-        public int HeaterTemp_Bend2 { get; set; }
-        public int HeaterTemp_Bend3 { get; set; }
+        public  int l1_HeaterTemp_Bend2 { get; set; }
+        public  int l2_HeaterTemp_Bend2 { get; set; }
+        public  int l3_HeaterTemp_Bend2 { get; set; }
+        public  int l4_HeaterTemp_Bend2 { get; set; }
 
-        public int Load_Bend1 { get; set; }
+        public  int l1_HeaterTemp_Bend3 { get; set; }
+        public  int l2_HeaterTemp_Bend3 { get; set; }
+        public  int l3_HeaterTemp_Bend3 { get; set; }
+        public  int l4_HeaterTemp_Bend3 { get; set; }
 
-        public int Load_Bend2 { get; set; }
+        public  int l1_Load_Bend1 { get; set; }
+        public  int l2_Load_Bend1 { get; set; }
+        public  int l3_Load_Bend1 { get; set; }
+        public  int l4_Load_Bend1 { get; set; }
 
-        public int Load_Bend3 { get; set; }
+        public  int l1_Load_Bend2 { get; set; }
+        public  int l2_Load_Bend2 { get; set; }
+        public  int l3_Load_Bend2 { get; set; }
+        public  int l4_Load_Bend2 { get; set; }
 
-        public int XValue { get; set; }
+        public  int l1_Load_Bend3 { get; set; }
+        public  int l2_Load_Bend3 { get; set; }
+        public  int l3_Load_Bend3 { get; set; }
+        public  int l4_Load_Bend3 { get; set; }
 
-        public int YValue { get; set; }
+        public  int l1_XValue { get; set; }
+        public  int l2_XValue { get; set; }
+        public  int l3_XValue { get; set; }
+        public  int l4_XValue { get; set; }
 
-        public int ZValue { get; set; }
+        public  int l1_YValue { get; set; }
+        public  int l2_YValue { get; set; }
 
-        public int WValue { get; set; }
+        public  int l3_YValue { get; set; }
 
-        public int Result1 { get; set; }
+        public  int l4_YValue { get; set; }
+
+        public  int l1_ZValue { get; set; }
+        public  int l2_ZValue { get; set; }
+        public  int l3_ZValue { get; set; }
+        public  int l4_ZValue { get; set; }
+
+        public  int l1_WValue { get; set; }
+        public  int l2_WValue { get; set; }
+        public  int l3_WValue { get; set; }
+        public  int l4_WValue { get; set; }
+
+        public  int l1_Result { get; set; }
+
+        public  int l2_Result { get; set; }
+        public  int l3_Result { get; set; }
+        public  int l4_Result { get; set; }
+
 
     }
 

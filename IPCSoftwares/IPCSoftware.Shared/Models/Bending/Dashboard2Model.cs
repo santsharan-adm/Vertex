@@ -16,11 +16,11 @@ namespace IPCSoftware.Shared.Models.Bending
     }
     public class DashboardInspectionLineModel : ObservableObjectVM
     {
-        private string _qrCode1;
-        public string QRCode1
+        private string _qrCode;
+        public string QRCode
         {
-            get => _qrCode1;
-            set => SetProperty(ref _qrCode1, value);
+            get => _qrCode;
+            set => SetProperty(ref _qrCode, value);
         }
 
         private float _heaterTemp_Bend1;
@@ -100,6 +100,16 @@ namespace IPCSoftware.Shared.Models.Bending
             set => SetProperty(ref _result1, value);
         }
     }
+
+    //public class BatchBuildQRModel : ObservableObjectVM                      // Name taken by Rishabh , and this model name will chnage when UI holds any Table Title Name accordingly- Date 29/05/26
+    //{
+    //    public string BatchNo { get; set; }
+    //    public string QRCode1 { get; set; }
+    //    public string QRCode2 { get; set; }
+    //    public string QRCode3 { get; set; }
+    //    public string QRCode4 { get; set; }
+
+    //}
 
     public class BendingIndicator : ObservableObjectVM
     {
