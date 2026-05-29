@@ -30,7 +30,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="180" MinWidth="180"/>
+            <ColumnDefinition Width="280" MinWidth="180"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
@@ -87,7 +87,7 @@
             </StackPanel>
         </Border>-->
 
-        <cc:ControlsPanelCC Grid.Row="0" Grid.Column="0"/>
+        <cc:ControlsPanelCC Grid.Row="0" Grid.Column="0" BorderBrush="#1565C0" BorderThickness="2" Background="#0B1A2E"/>
 
         <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2">
             <Grid.RowDefinitions>
@@ -294,7 +294,7 @@
                     </StackPanel>
                 </Border>-->
 
-                <cc:EfficiencyBreakdownCC />
+                <cc:EfficiencyBreakdownCC Background="#1E293B" />
             </StackPanel>
 
             
@@ -750,7 +750,8 @@
 
         </Border>-->
 
-        <cc:BendingDataTableCC Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" />
+        <cc:BendingDataTableCC Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" 
+                               Background="#0B1A2E"  Padding="2" BorderBrush="#1565C0" BorderThickness="1"/>
 
         
         <!--Bending Operation-->
@@ -1177,7 +1178,8 @@
                     </StackPanel>
                 </Border>-->
 
-                <cc:BendStatusIndicatorsCC Canvas.Left="60" Canvas.Top="5"/>
+                <cc:BendStatusIndicatorsCC Canvas.Left="60" Canvas.Top="5"
+                                           BorderBrush="Black" BorderThickness="1.5"/>
                 <!-- BENDINDICATORS2- Tearing + Flipping Section -->
                 <!--<Border CornerRadius="5" Canvas.Left="807" BorderBrush="Black" BorderThickness="1.5" Height="Auto" VerticalAlignment="Top" HorizontalAlignment="Center" Canvas.Top="5">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Height="45" >
@@ -1237,7 +1239,7 @@
                     </StackPanel>
                 </Border>-->
 
-                <cc:TearingFlippingStatusCC Canvas.Left="807" Canvas.Top="5"/>
+                <cc:TearingFlippingStatusCC Canvas.Left="807" Canvas.Top="5" BorderBrush="Black" BorderThickness="1.5"/>
                 <!--<Canvas Canvas.Left="110" Canvas.Top="170">-->
 
                 <!--Transfer Module-->
@@ -1408,7 +1410,8 @@
                     </Grid>
                 </Border>-->
 
-                <cc:InspectionUnitInputCC Canvas.Left="343" Canvas.Top="305" Width="215" Height="55" />
+                <cc:InspectionUnitInputCC Canvas.Left="343" Canvas.Top="305" Width="215" Height="55" 
+                                          Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3"/>
                 <!--INPUT TRAY-->
                 <!--<Border Canvas.Left="367" Canvas.Top="370" Width="160" Height="40" 
                         Background="#F1F5F9" BorderBrush="#475569" BorderThickness="3" 
@@ -1432,7 +1435,8 @@
                     </Grid>
                 </Border>-->
 
-                <cc:InputTrayCC Canvas.Left="367" Canvas.Top="370" Width="160" Height="40" />
+                <cc:InputTrayCC Canvas.Left="367" Canvas.Top="370" Width="160" Height="40"
+                                Background="#F1F5F9" BorderBrush="#475569" BorderThickness="3"/>
 
                 <!--</Canvas>-->
 
@@ -1479,7 +1483,8 @@
                     </Grid>
                 </Border>-->
 
-                <cc:OutputTrayCC Canvas.Left="651" Canvas.Top="370" Width="160" Height="40" />
+                <cc:OutputTrayCC Canvas.Left="651" Canvas.Top="370" Width="160" Height="40" 
+                                 Background="White" BorderBrush="#475569" BorderThickness="3"/>
 
 
                 <!--</Canvas>-->
@@ -1500,7 +1505,8 @@
                     </StackPanel>
                 </Border>-->
 
-                <cc:NgBinCC Canvas.Left="138" Canvas.Top="200" Width="85" Height="95" BinNumber="1" />
+                <cc:NgBinCC Canvas.Left="138" Canvas.Top="200" Width="85" Height="95" BinNumber="1" 
+                            BorderBrush="Black" BorderThickness="3" Background="Gray"/>
 
                
 
@@ -1603,7 +1609,8 @@
                     </Grid>
                 </Border>-->
 
-                <cc:PidTableCC Canvas.Left="970" Canvas.Top="52"   TableType="Heater"/>
+                <cc:PidTableCC Canvas.Left="970" Canvas.Top="52"   TableType="Heater" BorderBrush="{StaticResource AccentBlue}" 
+                            BorderThickness="1" Background="#1565C0"/>
 
                 <!--PID FORCE-->
 
@@ -1718,7 +1725,8 @@ BorderBrush="{StaticResource AccentBlue}" BorderThickness="1" Background="#1565C
                     </StackPanel>
                 </Border>-->
 
-                <cc:NgBinCC Canvas.Left="882" Canvas.Top="200" Width="85" Height="95" BinNumber="2" />
+                <cc:NgBinCC Canvas.Left="882" Canvas.Top="200" Width="85" Height="95" BinNumber="2" 
+                            BorderBrush="Black" BorderThickness="3"  Background="Gray"/>
             </Canvas>
         </Viewbox>
         

@@ -91,55 +91,59 @@
                             </BeginStoryboard>
                         </EventTrigger>
                     </ControlTemplate.Triggers>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="1" Text="TURN TABLE 1" FontWeight="Bold" FontSize="15" 
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="1" Text="TURN TABLE 1" FontWeight="Bold" FontSize="15" 
                                Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
-                        <Border Width="160" Height="160" CornerRadius="80" Background="White"
-                            BorderBrush="{StaticResource PanelBorder}" BorderThickness="3.5"
-                            HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Grid RenderTransformOrigin="0.5,0.5" Margin="2">
-                                <Grid.RenderTransform>
-                                    <RotateTransform x:Name="Part_TT1RotateTransform" Angle="0"/>
-                                </Grid.RenderTransform>
+                            <Border Width="160" Height="160" CornerRadius="80" Background="White"
+                                    BorderBrush="{StaticResource PanelBorder}" BorderThickness="3.5"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Grid RenderTransformOrigin="0.5,0.5" Margin="2">
+                                    <Grid.RenderTransform>
+                                        <RotateTransform x:Name="Part_TT1RotateTransform" Angle="0"/>
+                                    </Grid.RenderTransform>
 
-                                <!-- Top row -->
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0">
-                                    <Ellipse x:Name="Part_TT1_TopRow1" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse x:Name="Part_TT1_TopRow2" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse x:Name="Part_TT1_TopRow3" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse x:Name="Part_TT1_TopRow4" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                </StackPanel>
+                                    <!-- Top row -->
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0">
+                                        <Ellipse x:Name="Part_TT1_TopRow1" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                        <Ellipse x:Name="Part_TT1_TopRow2" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                        <Ellipse x:Name="Part_TT1_TopRow3" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                        <Ellipse x:Name="Part_TT1_TopRow4" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    </StackPanel>
 
-                                <!-- Bottom row -->
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,129,0,0">
-                                    <Ellipse x:Name="Part_TT1_BottomRow1" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse x:Name="Part_TT1_BottomRow2" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse x:Name="Part_TT1_BottomRow3" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse x:Name="Part_TT1_BottomRow4" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                </StackPanel>
+                                    <!-- Bottom row -->
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,129,0,0">
+                                        <Ellipse x:Name="Part_TT1_BottomRow1" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                        <Ellipse x:Name="Part_TT1_BottomRow2" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                        <Ellipse x:Name="Part_TT1_BottomRow3" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                        <Ellipse x:Name="Part_TT1_BottomRow4" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    </StackPanel>
 
-                                <!-- Left column -->
-                                <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,0,0,0">
-                                    <Ellipse x:Name="Part_TT1_LeftCol1" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse x:Name="Part_TT1_LeftCol2" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse x:Name="Part_TT1_LeftCol3" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse x:Name="Part_TT1_LeftCol4" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                </StackPanel>
+                                    <!-- Left column -->
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,0,0,0">
+                                        <Ellipse x:Name="Part_TT1_LeftCol1" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                        <Ellipse x:Name="Part_TT1_LeftCol2" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                        <Ellipse x:Name="Part_TT1_LeftCol3" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                        <Ellipse x:Name="Part_TT1_LeftCol4" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    </StackPanel>
 
-                                <!-- Right column -->
-                                <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="129,0,0,0">
-                                    <Ellipse x:Name="Part_TT1_RightCol1" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse x:Name="Part_TT1_RightCol2" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse x:Name="Part_TT1_RightCol3" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse x:Name="Part_TT1_RightCol4" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </Grid>
+                                    <!-- Right column -->
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="129,0,0,0">
+                                        <Ellipse x:Name="Part_TT1_RightCol1" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                        <Ellipse x:Name="Part_TT1_RightCol2" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                        <Ellipse x:Name="Part_TT1_RightCol3" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                        <Ellipse x:Name="Part_TT1_RightCol4" Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -243,55 +247,56 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:ControlsPanelCC}">
-                    <Border CornerRadius="8" HorizontalAlignment="Stretch"
-                            BorderBrush="#1565C0" BorderThickness="2" Background="#0B1A2E">
-                        <StackPanel>
-                            <Border Background="#1565C0" CornerRadius="6,6,0,0" Padding="3">
-                                <TextBlock Text="CONTROLS" FontWeight="Bold" FontSize="11" Foreground="White" HorizontalAlignment="Center"/>
-                            </Border>
-                            <StackPanel Margin="3">
-                                <Button Margin="3" Padding="3,6" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
-                                    <Button.Resources>
-                                        <Style TargetType="Border">
-                                            <Setter Property="CornerRadius" Value="4"/>
-                                        </Style>
-                                    </Button.Resources>
-                                    <TextBlock Text="AUTO RUN" TextAlignment="Center"/>
-                                </Button>
-                                <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
-                                    <Button.Resources>
-                                        <Style TargetType="Border">
-                                            <Setter Property="CornerRadius" Value="4"/>
-                                        </Style>
-                                    </Button.Resources>
-                                    <TextBlock Text="DRY RUN" TextAlignment="Center"/>
-                                </Button>
-                                <Button Margin="3" Padding="3,6" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
-                                    <Button.Resources>
-                                        <Style TargetType="Border">
-                                            <Setter Property="CornerRadius" Value="4"/>
-                                        </Style>
-                                    </Button.Resources>
-                                    <TextBlock Text="CYCLE START/STOP" TextAlignment="Center"/>
-                                </Button>
-                                <Button Margin="3" Padding="3,6" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
-                                    <Button.Resources>
-                                        <Style TargetType="Border">
-                                            <Setter Property="CornerRadius" Value="4"/>
-                                        </Style>
-                                    </Button.Resources>
-                                    <TextBlock Text="WORK PAYOUT START" TextAlignment="Center"/>
-                                </Button>
-                                <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
-                                    <Button.Resources>
-                                        <Style TargetType="Border">
-                                            <Setter Property="CornerRadius" Value="4"/>
-                                        </Style>
-                                    </Button.Resources>
-                                    <TextBlock Text="Go To Menu" TextAlignment="Center"/>
-                                </Button>
-                            </StackPanel>
-                        </StackPanel>
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">                        
+                            <StackPanel>
+                                <Border Background="#1565C0" CornerRadius="6,6,0,0" Padding="3">
+                                    <TextBlock Text="CONTROLS" FontWeight="Bold" FontSize="11" Foreground="White" HorizontalAlignment="Center"/>
+                                </Border>
+                                <StackPanel Margin="3">
+                                    <Button Margin="3" Padding="3,6" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="4"/>
+                                            </Style>
+                                        </Button.Resources>
+                                        <TextBlock Text="AUTO RUN" TextAlignment="Center"/>
+                                    </Button>
+                                    <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="4"/>
+                                            </Style>
+                                        </Button.Resources>
+                                        <TextBlock Text="DRY RUN" TextAlignment="Center"/>
+                                    </Button>
+                                    <Button Margin="3" Padding="3,6" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="4"/>
+                                            </Style>
+                                        </Button.Resources>
+                                        <TextBlock Text="CYCLE START/STOP" TextAlignment="Center"/>
+                                    </Button>
+                                    <Button Margin="3" Padding="3,6" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="4"/>
+                                            </Style>
+                                        </Button.Resources>
+                                        <TextBlock Text="WORK PAYOUT START" TextAlignment="Center"/>
+                                    </Button>
+                                    <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="4"/>
+                                            </Style>
+                                        </Button.Resources>
+                                        <TextBlock Text="Go To Menu" TextAlignment="Center"/>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>                        
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -303,60 +308,64 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:BatchQRCodePanelCC}">
-                    <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                        <Border BorderBrush="#1565C0" BorderThickness="1" Background="White" CornerRadius="8,8,0,0" Margin="0,3,0,0">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                            <Border BorderBrush="#1565C0" BorderThickness="1" Background="White" CornerRadius="8,8,0,0" Margin="0,3,0,0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2" CornerRadius="5,0,0,0">
-                                    <TextBlock Text="Batch No." FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
-                                </Border>
-                                <Border Grid.Row="0" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                    <TextBlock Text="QR Code" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9" TextWrapping="Wrap"/>
-                                </Border>
-
-                                <UniformGrid Grid.Row="1" Grid.Column="0" Columns="1" Background="#0B1A2E">
-                                    <Border BorderBrush="#1565C0" Padding="3">
-                                        <TextBlock Text="BFBL03" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                    <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2" CornerRadius="5,0,0,0">
+                                        <TextBlock Text="Batch No." FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
                                     </Border>
-                                    <Border BorderBrush="#1565C0" Padding="3">
-                                        <TextBlock Text="BFBL04" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                    <Border Grid.Row="0" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                        <TextBlock Text="QR Code" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9" TextWrapping="Wrap"/>
                                     </Border>
-                                </UniformGrid>
 
-                                <StackPanel Grid.Row="1" Grid.Column="1" Background="#0B1A2E">
-                                    <StackPanel Margin="2">
-                                        <TextBlock Text="ABCD12345A009" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                        <TextBlock Text="ABCD12345A010" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                        <TextBlock Text="ABCD12345A011" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                        <TextBlock Text="ABCD12345A012" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                    <UniformGrid Grid.Row="1" Grid.Column="0" Columns="1" Background="#0B1A2E">
+                                        <Border BorderBrush="#1565C0" Padding="3">
+                                            <TextBlock Text="BFBL03" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                        </Border>
+                                        <Border BorderBrush="#1565C0" Padding="3">
+                                            <TextBlock Text="BFBL04" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                        </Border>
+                                    </UniformGrid>
+
+                                    <StackPanel Grid.Row="1" Grid.Column="1" Background="#0B1A2E">
+                                        <StackPanel Margin="2">
+                                            <TextBlock Text="ABCD12345A009" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A010" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A011" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A012" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                        </StackPanel>
+                                        <Border Height="1" Background="#1565C0" Opacity="0.4"/>
+                                        <StackPanel Margin="0,5,0,2">
+                                            <TextBlock Text="ABCD12345A013" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A014" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A015" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A016" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                        </StackPanel>
                                     </StackPanel>
-                                    <Border Height="1" Background="#1565C0" Opacity="0.4"/>
-                                    <StackPanel Margin="0,5,0,2">
-                                        <TextBlock Text="ABCD12345A013" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                        <TextBlock Text="ABCD12345A014" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                        <TextBlock Text="ABCD12345A015" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                        <TextBlock Text="ABCD12345A016" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                        <Border BorderBrush="#1565C0" BorderThickness="1" Background="White" CornerRadius="0,0,8,8">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                            </Grid>
-                        </Border>
-                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            <Border BorderBrush="#1565C0" BorderThickness="1" Background="White" CornerRadius="0,0,8,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -367,8 +376,11 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:EfficiencyBreakdownCC}">
-                    <Border Background="#1E293B" CornerRadius="8" Padding="4,3" VerticalAlignment="Top" Margin="3">
-                        <StackPanel>
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                        <!--<Border Background="#1E293B" CornerRadius="8" Padding="4,3" VerticalAlignment="Top" Margin="3">-->
+                        <StackPanel Margin="3">
                             <TextBlock Text="EFFICIENCY BREAKDOWN" Foreground="White" FontWeight="Bold" FontSize="10" Padding="0,0,0,3"/>
 
                             <Grid Height="15" Margin="0,1">
@@ -504,61 +516,65 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:TransferModuleCC}">
-                    <Canvas >
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                        <Canvas >
 
-                        <TextBlock Text="TRANSFER MODULE 1" FontWeight="Black" FontSize="10"  Canvas.Top="0" Canvas.Left="0"
+                            <TextBlock Text="TRANSFER MODULE 1" FontWeight="Black" FontSize="10"  Canvas.Top="0" Canvas.Left="0"
                                    Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Center" />
-                        <Border  Width="85" Height="85" Background="White"  Canvas.Top="30" Canvas.Left="55"
+                            <Border  Width="85" Height="85" Background="White"  Canvas.Top="30" Canvas.Left="55"
                                 BorderBrush="{StaticResource PanelBorder}" BorderThickness="3" CornerRadius="42.5">
-                            <Border BorderBrush="#F59E0B" BorderThickness="1.5" CornerRadius="4" Width="40" Height="40">
-                                <TextBlock Text="🔄" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Foreground="#F59E0B"/>
+                                <Border BorderBrush="#F59E0B" BorderThickness="1.5" CornerRadius="4" Width="40" Height="40">
+                                    <TextBlock Text="🔄" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Foreground="#F59E0B"/>
+                                </Border>
                             </Border>
-                        </Border>
 
-                        <!-- Rail connector: TT1 right edge to Transfer Module left edge -->
-                        <!-- Top rail -->
-                        <Line X1="15" Y1="63" X2="55" Y2="63"
+                            <!-- Rail connector: TT1 right edge to Transfer Module left edge -->
+                            <!-- Top rail -->
+                            <Line X1="15" Y1="63" X2="55" Y2="63"
                               Stroke="#1E293B" StrokeThickness="3"
                               StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" />
-                        <!-- Bottom rail -->
-                        <Line X1="15" Y1="79" X2="55" Y2="79"
+                            <!-- Bottom rail -->
+                            <Line X1="15" Y1="79" X2="55" Y2="79"
                               Stroke="#1E293B" StrokeThickness="3"
                               StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" />
-                        <!-- Left cap (circle side) -->
-                        <Line X1="15" Y1="60" X2="15" Y2="80"
+                            <!-- Left cap (circle side) -->
+                            <Line X1="15" Y1="60" X2="15" Y2="80"
                               Stroke="#1E293B" StrokeThickness="2"
                               StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
-                        <!-- Right cap (Transfer Module side) -->
-                        <Line X1="55" Y1="60" X2="55" Y2="80"
+                            <!-- Right cap (Transfer Module side) -->
+                            <Line X1="55" Y1="60" X2="55" Y2="80"
                               Stroke="#1E293B" StrokeThickness="2"
                               StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
 
 
-                        <!-- Slot 1 -->
-                        <Rectangle Canvas.Left="5" Canvas.Top="65" Width="12" Height="12"
+                            <!-- Slot 1 -->
+                            <Rectangle Canvas.Left="5" Canvas.Top="65" Width="12" Height="12"
                             Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                        <!-- Slot 2 -->
-                        <Rectangle Canvas.Left="20" Canvas.Top="65" Width="12" Height="12"
+                            <!-- Slot 2 -->
+                            <Rectangle Canvas.Left="20" Canvas.Top="65" Width="12" Height="12"
                             Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
-                        <!-- Vertical Slot 1 -->
-                        <Border Canvas.Left="0" Canvas.Top="45" 
+                            <!-- Vertical Slot 1 -->
+                            <Border Canvas.Left="0" Canvas.Top="45" 
                             BorderBrush="black" BorderThickness="2" Padding="1" CornerRadius="2" HorizontalAlignment="Center" VerticalAlignment="Top">
-                            <StackPanel Orientation="Vertical">
-                                <Rectangle Width="12" Height="12" 
+                                <StackPanel Orientation="Vertical">
+                                    <Rectangle Width="12" Height="12" 
                                     Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
-                                <Rectangle Height="1"/>
-                                <Rectangle Width="12" Height="12" 
+                                    <Rectangle Height="1"/>
+                                    <Rectangle Width="12" Height="12" 
                              Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
-                                <Rectangle Height="1"/>
-                                <Rectangle Width="12" Height="12" 
+                                    <Rectangle Height="1"/>
+                                    <Rectangle Width="12" Height="12" 
                                             Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
-                                <Rectangle Height="1"/>
-                                <Rectangle Width="12" Height="12" 
+                                    <Rectangle Height="1"/>
+                                    <Rectangle Width="12" Height="12" 
                                             Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
-                            </StackPanel>
-                        </Border>
-                    </Canvas>
+                                </StackPanel>
+                            </Border>
+                        </Canvas>
+                    </Border>
 
                 </ControlTemplate>
             </Setter.Value>
@@ -570,7 +586,10 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:InspectionUnitInputCC}">
-                    <Border Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3" CornerRadius="4">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                        <!--<Border Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3" CornerRadius="4">-->
                         <Grid Margin="3">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -606,7 +625,10 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:InputTrayCC}">
-                    <Border Background="#F1F5F9" BorderBrush="#475569" BorderThickness="3" CornerRadius="2">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">           
+                        <!--<Border Background="#F1F5F9" BorderBrush="#475569" BorderThickness="3" CornerRadius="2">-->
                         <StackPanel VerticalAlignment="Center">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock Text="INPUT TRAY" FontSize="15" FontWeight="Bold" Foreground="#1E293B"/>
@@ -624,7 +646,10 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:OutputTrayCC}">
-                    <Border Background="White" BorderBrush="#475569" BorderThickness="3" CornerRadius="2">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                        <!--<Border Background="White" BorderBrush="#475569" BorderThickness="3" CornerRadius="2">-->
                         <Grid Margin="3">
                             <StackPanel VerticalAlignment="Center">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -646,7 +671,10 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:NgBinCC}">
-                    <Border BorderBrush="Black" BorderThickness="3" CornerRadius="8" Background="Gray">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                    <!--<Border BorderBrush="Black" BorderThickness="3" CornerRadius="8" Background="Gray">-->
                         <StackPanel VerticalAlignment="Center" Margin="2">
                             <TextBlock FontSize="15" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" Margin="2">
                                 <Run Text="NG BIN "/>
@@ -671,8 +699,8 @@
                        
                     </ControlTemplate.Triggers>
                     <Border Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}">
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
 
                         <Canvas x:Name="RobotHand" Width="16" Height="22" IsHitTestVisible="False">
                             <Border Canvas.Left="0" Canvas.Top="0" Width="95" Height="55" 
@@ -785,8 +813,11 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:PidTableCC}">
-                    <Border CornerRadius="8" Padding="2" BorderBrush="{StaticResource AccentBlue}" 
-                            BorderThickness="1" Background="#1565C0">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                    <!--<Border CornerRadius="8" Padding="2" BorderBrush="{StaticResource AccentBlue}" 
+                            BorderThickness="1" Background="#1565C0">-->
                         <Grid Background="White">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -893,160 +924,19 @@
         </Setter>
     </Style>
 
-    <!-- Rail Connector -->
-    <Style TargetType="{x:Type local:RailConnectorCC}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:RailConnectorCC}">
-                    <Canvas>
-                        <!--Transfer Module-->
-                        <!-- Rail connector: TT1 right edge to Transfer Module left edge -->
-                        <!-- Top rail -->
-                        <Line X1="385" Y1="196" X2="425" Y2="196"
-                  Stroke="#1E293B" StrokeThickness="3"
-                  StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" HorizontalAlignment="Center" Canvas.Left="152" VerticalAlignment="Top" Canvas.Top="-55"/>
-                        <!-- Bottom rail -->
-                        <Line X1="385" Y1="212" X2="425" Y2="212"
-                  Stroke="#1E293B" StrokeThickness="3"
-                  StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" HorizontalAlignment="Center" Canvas.Left="152" VerticalAlignment="Top" Canvas.Top="-53"/>
-                        <!-- Left cap (circle side) -->
-                        <Line X1="385" Y1="193" X2="385" Y2="213"
-                  Stroke="#1E293B" StrokeThickness="2"
-                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" Canvas.Left="151" VerticalAlignment="Top" Canvas.Top="-55"/>
-                        <!-- Right cap (Transfer Module side) -->
-                        <Line X1="451" Y1="193" X2="451" Y2="213"
-                  Stroke="#1E293B" StrokeThickness="2"
-                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" Canvas.Left="127" VerticalAlignment="Top" Canvas.Top="-53"/>
+   
 
-
-                        <!-- Slot 1 -->
-                        <Rectangle Canvas.Left="543" Canvas.Top="145" Width="12" Height="12"
-                       Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                        <!-- Slot 2 -->
-                        <Rectangle Canvas.Left="559" Canvas.Top="145" Width="12" Height="12"
-                       Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-
-                        <!-- Vertical Slot 1 -->
-                        <Border Canvas.Left="517" Canvas.Top="117" 
-BorderBrush="black" BorderThickness="2" Padding="1" CornerRadius="2" HorizontalAlignment="Center" VerticalAlignment="Top">
-                            <StackPanel Orientation="Vertical">
-                                <Rectangle Width="12" Height="12" 
-           Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
-                                <Rectangle Height="1"/>
-                                <Rectangle Width="12" Height="12" 
-                             Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
-                                <Rectangle Height="1"/>
-                                <Rectangle Width="12" Height="12" 
-           Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
-                                <Rectangle Height="1"/>
-                                <Rectangle Width="12" Height="12" 
-           Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
-                            </StackPanel>
-                        </Border>
-                        <!--TT-1-->
-                        <TextBlock Canvas.Left="364" Canvas.Top="230" Text="TURN TABLE 1" FontWeight="Bold" FontSize="15" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        <Border Canvas.Left="334" Canvas.Top="58" Width="160" Height="160"
-                    CornerRadius="80"
-                    Background="White"
-                    BorderBrush="{StaticResource PanelBorder}"
-                    BorderThickness="3.5"
-                    
-                    HorizontalAlignment="Left" VerticalAlignment="Center">
-
-                            <!-- Single Grid rotated as one unit ? all 16 ellipses orbit clockwise -->
-                            <Grid RenderTransformOrigin="0.5,0.5" Margin="2">
-                                <Grid.RenderTransform>
-                                    <RotateTransform x:Name="TT1RotateTransform" Angle="0"/>
-                                </Grid.RenderTransform>
-
-                                <!-- Top row -->
-                                <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Top"
-                                Margin="0,6,0,0">
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                </StackPanel>
-
-                                <!-- Bottom row -->
-                                <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Top"
-                                Margin="0,129,0,0">
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                </StackPanel>
-
-                                <!-- Left column -->
-                                <StackPanel Orientation="Vertical"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Margin="6,0,0,0">
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                </StackPanel>
-
-                                <!-- Right column -->
-                                <StackPanel Orientation="Vertical"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Margin="129,0,0,0">
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBlue}" Margin="2"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </Canvas>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!-- Slot Display -->
-    <Style TargetType="{x:Type local:SlotDisplayCC}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:SlotDisplayCC}">
-                    <Grid>
-                        <!-- Horizontal slots by default -->
-                        <StackPanel Orientation="Horizontal" Visibility="{Binding IsVertical, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse, RelativeSource={RelativeSource TemplatedParent}}">
-                            <Rectangle Width="12" Height="12" Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
-                            <Rectangle Width="12" Height="12" Fill="#F59E0B" RadiusX="1" RadiusY="1" Margin="4,0,0,0"/>
-                        </StackPanel>
-
-                        <!-- Vertical slots -->
-                        <Border BorderBrush="black" BorderThickness="2" Padding="1" CornerRadius="2" 
-                                Visibility="{Binding IsVertical, Converter={StaticResource BoolToVisibilityConverter}, RelativeSource={RelativeSource TemplatedParent}}">
-                            <StackPanel Orientation="Vertical">
-                                <Rectangle Width="12" Height="12" Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
-                                <Rectangle Height="1"/>
-                                <Rectangle Width="12" Height="12" Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
-                                <Rectangle Height="1"/>
-                                <Rectangle Width="12" Height="12" Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
-                                <Rectangle Height="1"/>
-                                <Rectangle Width="12" Height="12" Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+   
 
     <!-- Bend Status Indicators -->
     <Style TargetType="{x:Type local:BendStatusIndicatorsCC}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:BendStatusIndicatorsCC}">
-                    <Border CornerRadius="5" BorderBrush="Black" BorderThickness="1.5">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                    <!--<Border CornerRadius="5" BorderBrush="Black" BorderThickness="1.5">-->
                         <StackPanel Orientation="Horizontal" Margin="0">
                             <!-- Labels column -->
                             <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
@@ -1180,7 +1070,10 @@ BorderBrush="black" BorderThickness="2" Padding="1" CornerRadius="2" HorizontalA
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:TearingFlippingStatusCC}">
-                    <Border CornerRadius="5" BorderBrush="Black" BorderThickness="1.5">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                    <!--<Border CornerRadius="5" BorderBrush="Black" BorderThickness="1.5">-->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Height="45">
                             <!-- Tearing -->
                             <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
@@ -1245,8 +1138,10 @@ BorderBrush="black" BorderThickness="2" Padding="1" CornerRadius="2" HorizontalA
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:BendingDataTableCC}">
-
-                    <Border Background="#0B1A2E" CornerRadius="4" Padding="2" BorderBrush="#1565C0" BorderThickness="1">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">    
+                        <!--<Border Background="#0B1A2E" CornerRadius="4" Padding="2" BorderBrush="#1565C0" BorderThickness="1">-->
 
 
                         <Border BorderThickness="1" BorderBrush="#1565C0" HorizontalAlignment="Stretch">
