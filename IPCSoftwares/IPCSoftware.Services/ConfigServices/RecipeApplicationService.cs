@@ -13,16 +13,19 @@ namespace IPCSoftware.Services.ConfigServices
         private readonly IMachineDataHandler _plcRecipeWriter;
         private readonly IAppLogger _logger;
         private ServoRecipeModel _lastSelectedRecipe;
+        private IServoCalibrationService _servoService;
 
         public RecipeApplicationService(            
             IAeLimitService aeLimitService,
             IAppLogger logger,
-            IMachineDataHandler plcRecipeWriter)
+            IMachineDataHandler plcRecipeWriter,
+            IServoCalibrationService servoService)
         {
            
             _aeLimitService = aeLimitService;
             _logger = logger;
             _plcRecipeWriter = plcRecipeWriter;
+            _servoService = servoService;
         }
 
         public async Task<Dictionary<int,bool>> ApplyRecipeToPlcAsync(ServoRecipeModel recipe)
@@ -51,8 +54,8 @@ namespace IPCSoftware.Services.ConfigServices
         {
             try
             {
-                if (_lastSelectedRecipe == null) { return new ServoRecipeModel(); }
-                return _lastSelectedRecipe;
+                if (_lastSelectedRecipe == null) {  var lastrecipe = await _servoService.GetRecipeByProgramNumberAsync(0); return lastrecipe; }
+               else { return _lastSelectedRecipe; }
             }
             catch (Exception ex) { _logger.LogWarning($"Unable to get recipe {_lastSelectedRecipe}: {ex}", LogType.Error); return new ServoRecipeModel(); }
         }
