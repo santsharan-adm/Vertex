@@ -251,11 +251,11 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">                        
                             <StackPanel>
-                                <Border Background="#1565C0" CornerRadius="6,6,0,0" Padding="3">
+                                <Border Background="#1565C0" CornerRadius="6,6,0,0" Padding="5">
                                     <TextBlock Text="CONTROLS" FontWeight="Bold" FontSize="11" Foreground="White" HorizontalAlignment="Center"/>
                                 </Border>
                                 <StackPanel Margin="3">
-                                    <Button Margin="3" Padding="3,6" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                    <Button Margin="3" Padding="3,10" Background="#3B82F6" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="20">
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="4"/>
@@ -263,7 +263,7 @@
                                         </Button.Resources>
                                         <TextBlock Text="AUTO RUN" TextAlignment="Center"/>
                                     </Button>
-                                    <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                    <Button Margin="3" Padding="5,10" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="20">
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="4"/>
@@ -271,7 +271,7 @@
                                         </Button.Resources>
                                         <TextBlock Text="DRY RUN" TextAlignment="Center"/>
                                     </Button>
-                                    <Button Margin="3" Padding="3,6" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                    <Button Margin="3" Padding="5,10" Background="#10B981" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="20">
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="4"/>
@@ -279,7 +279,7 @@
                                         </Button.Resources>
                                         <TextBlock Text="CYCLE START/STOP" TextAlignment="Center"/>
                                     </Button>
-                                    <Button Margin="3" Padding="3,6" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                    <Button Margin="3" Padding="5,10" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="20">
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="4"/>
@@ -287,13 +287,13 @@
                                         </Button.Resources>
                                         <TextBlock Text="WORK PAYOUT START" TextAlignment="Center"/>
                                     </Button>
-                                    <Button Margin="3" Padding="3,6" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="10">
+                                    <Button Margin="3" Padding="3,10" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="20">
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="4"/>
                                             </Style>
                                         </Button.Resources>
-                                        <TextBlock Text="Go To Menu" TextAlignment="Center"/>
+                                        <TextBlock Text="Go To Menu" TextAlignment="Center" FontSize="20"/>
                                     </Button>
                                 </StackPanel>
                             </StackPanel>                        
@@ -324,34 +324,34 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2" CornerRadius="5,0,0,0">
-                                        <TextBlock Text="Batch No." FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                        <TextBlock Text="Batch No." FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12"/>
                                     </Border>
                                     <Border Grid.Row="0" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                        <TextBlock Text="QR Code" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9" TextWrapping="Wrap"/>
+                                        <TextBlock Text="QR Code" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12" TextWrapping="Wrap"/>
                                     </Border>
 
                                     <UniformGrid Grid.Row="1" Grid.Column="0" Columns="1" Background="#0B1A2E">
                                         <Border BorderBrush="#1565C0" Padding="3">
-                                            <TextBlock Text="BFBL03" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                            <TextBlock Text="BFBL03" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12"/>
                                         </Border>
                                         <Border BorderBrush="#1565C0" Padding="3">
-                                            <TextBlock Text="BFBL04" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                            <TextBlock Text="BFBL04" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12"/>
                                         </Border>
                                     </UniformGrid>
 
                                     <StackPanel Grid.Row="1" Grid.Column="1" Background="#0B1A2E">
                                         <StackPanel Margin="2">
-                                            <TextBlock Text="ABCD12345A009" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                            <TextBlock Text="ABCD12345A010" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                            <TextBlock Text="ABCD12345A011" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                            <TextBlock Text="ABCD12345A012" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A009" HorizontalAlignment="Center" Foreground="White" FontSize="10" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A010" HorizontalAlignment="Center" Foreground="White" FontSize="10" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A011" HorizontalAlignment="Center" Foreground="White" FontSize="10" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A012" HorizontalAlignment="Center" Foreground="White" FontSize="10" Margin="2"/>
                                         </StackPanel>
                                         <Border Height="1" Background="#1565C0" Opacity="0.4"/>
                                         <StackPanel Margin="0,5,0,2">
-                                            <TextBlock Text="ABCD12345A013" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                            <TextBlock Text="ABCD12345A014" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                            <TextBlock Text="ABCD12345A015" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                            <TextBlock Text="ABCD12345A016" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A013" HorizontalAlignment="Center" Foreground="White" FontSize="10" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A014" HorizontalAlignment="Center" Foreground="White" FontSize="10" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A015" HorizontalAlignment="Center" Foreground="White" FontSize="10" Margin="2"/>
+                                            <TextBlock Text="ABCD12345A016" HorizontalAlignment="Center" Foreground="White" FontSize="10" Margin="2"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </Grid>

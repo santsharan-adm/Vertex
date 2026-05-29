@@ -294,7 +294,7 @@
                     </StackPanel>
                 </Border>-->
 
-                <cc:EfficiencyBreakdownCC Background="#1E293B" />
+                <cc:EfficiencyBreakdownCC Background="#1E293B" Margin="3" Padding="3"/>
             </StackPanel>
 
             
