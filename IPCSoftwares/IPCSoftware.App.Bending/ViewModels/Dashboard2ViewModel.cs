@@ -473,7 +473,7 @@ namespace IPCSoftware.App.Bending.ViewModels
                         $"model={( model == null ? "NULL" : "OK")} | " +
                         $"LineItem1.HeaterTemp_Bend1={model?.LineItem1?.HeaterTemp_Bend1} | " +
                         $"LineItem1.HeaterTemp_Bend2={model?.LineItem1?.HeaterTemp_Bend2} | " +
-                        $"LineItem1.QRCode1={model?.LineItem1?.QRCode1}",
+                        $"LineItem1.QRCode1={model?.LineItem1?.QRCode}",
                         LogType.Diagnostics);
 
                     if (model != null)
