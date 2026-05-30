@@ -1,4 +1,4 @@
-using IPCSoftware.Core.Interfaces;
+﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.AeLimit;
@@ -24,18 +24,18 @@ namespace IPCSoftware.Services
         private readonly IOptions<ExternalSettings> _externalOptions;
         private readonly SemaphoreSlim _fileLock = new(1, 1);
         private readonly object _stateLock = new();
-
+        private readonly IRecipeApplicationService _recipeService;
         private AeLimitSettings _settings;
         private AeCycleContext _currentCycle;
 
-
         public AeLimitService(IOptions<ConfigSettings> configOptions,
                               IOptions<ExternalSettings> externalOptions,
+                              IRecipeApplicationService recipeService,
                               IAppLogger logger) : base(logger)
         {
             var config = configOptions.Value ?? new ConfigSettings();
             _externalOptions = externalOptions;
-
+            _recipeService = recipeService;
             _dataFolder = config.DataFolder ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
             Directory.CreateDirectory(_dataFolder);
 
@@ -122,32 +122,32 @@ namespace IPCSoftware.Services
 
             try
             {
-                // 1. Generate Content (Combines all processed items into one list)
-                var contentLines = BuildCycleContent(context);
+                // Load the currently active recipe from Recipe.csv
+                var recipe = await _recipeService.GetRecipefromSelection();
 
-                // 2. Generate TCP Payload (Plain Text)
-                // Format: _{ ...data... }
+                // 1. Build station configs from recipe + settings
+                var stations = BuildStationsFromRecipe(recipe, _settings);
+
+                // 2. Generate content lines
+                var contentLines = BuildCycleContent(context, stations);
+
+                // 3. Generate TCP Payload — Format: _{ ...data... }
                 var tcpSb = new StringBuilder();
                 tcpSb.AppendLine("_{");
                 foreach (var line in contentLines)
-                {
                     tcpSb.AppendLine(line);
-                }
                 tcpSb.Append("}");
                 string tcpPayload = tcpSb.ToString();
 
-                // 3. Generate File Payload (With Headers)
-                // Format: [Time] :_{ ...data... }
+                // 4. Generate File Payload — Format: [Time] :_{ ...data... }
                 var fileLines = new List<string>();
                 var stamp = DateTime.Now.ToString("HH:mm:ss:fff");
-
-                fileLines.Add(""); // Empty line separator
-                //fileLines.Add($"[{stamp}] :ok@{(success ? "true" : "false")}@");
+                fileLines.Add("");
                 fileLines.Add($"[{stamp}] :_{{");
                 fileLines.AddRange(contentLines);
                 fileLines.Add("}");
 
-                // 4. Append to Daily File
+                // 5. Append to daily file
                 var filePath = await WritePayloadAsync(context, fileLines);
 
                 return (filePath, tcpPayload);
@@ -164,28 +164,64 @@ namespace IPCSoftware.Services
             lock (_stateLock) { _currentCycle = null; }
         }
 
-        // --- Helper Methods ---
+        // --- Station Config Builder (from Recipe.csv via IRecipeApplicationService) ---
 
-        private List<string> BuildCycleContent(AeCycleContext context)
+
+        private List<AeStationRecipeConfig> BuildStationsFromRecipe(ServoRecipeModel recipe, AeLimitSettings settings)
+        {
+            var result = new List<AeStationRecipeConfig>();
+
+            if (recipe == null || settings == null)
+                return result;
+
+            for (int i = 0; i <= 12; i++)
+            {
+                bool isEnabled = GetIsEnabled(recipe, i);
+                if (!isEnabled) continue;
+
+                result.Add(new AeStationRecipeConfig
+                {
+                    StationIndex = i,
+                    StationId = GetPositionId(recipe, i),     // PositionID_N → maps StationId
+                    Cavity = GetCavity(recipe, i),         // S0..S12 → Cavity
+                    InspectionXLower = recipe.Xmin,
+                    InspectionXUpper = recipe.Xmax,
+                    InspectionYLower = recipe.Ymin,
+                    InspectionYUpper = recipe.Ymax,
+                    InspectionAngleLower = recipe.AngleMin,
+                    InspectionAngleUpper = recipe.AngleMax,
+                    Name = GetName(recipe, i),
+                    IsEnabled = true,
+                    MachineModeOverride = settings.MachineModeOverride
+                });
+            }
+
+            return result;
+        }
+
+        // --- Cycle Content Builder ---
+
+        private List<string> BuildCycleContent( AeCycleContext context, List<AeStationRecipeConfig> stations)
         {
             var lines = new List<string>();
             var settings = _settings ?? AeLimitSettings.CreateDefault();
-            var stations = settings.Stations?.OrderBy(s => s.SequenceIndex).ToList() ?? new List<AeLimitStationConfig>();
             var machineId = _externalOptions?.Value?.AOIMachineCode ?? settings.MachineId;
 
             foreach (var station in stations)
             {
-                // FILTER: Only include stations that actually have data
-                // This ensures if Product Setting is 6, we only log 6 items (+ QR station 0)
+                // Only include stations that have actual measurement data for this cycle
                 var record = context.GetRecord(station.StationId);
                 if (record == null) continue;
 
                 var serial = record.SerialNumber ?? context.SerialNumber ?? "NA";
                 var carrier = record.CarrierSerial ?? context.CarrierSerial ?? serial;
 
-                var startLabel = string.IsNullOrWhiteSpace(station.StartLabel) ? settings.StartLabelDefault : station.StartLabel;
-                lines.Add($"{serial}@start----> {startLabel}");
+                // StartLabel: use global default from AELimit.json
+                var startLabel = string.IsNullOrWhiteSpace(settings.StartLabel)
+                    ? settings.StartLabelDefault
+                    : settings.StartLabel;
 
+                lines.Add($"{serial}@start----> {startLabel}");
                 lines.Add($"{serial}@dut_pos@{carrier}@{station.Cavity}");
                 lines.Add($"{serial}@attr@MLB_AP_SN@{serial}");
                 lines.Add($"{serial}@attr@Carrier_SN@{carrier}");
@@ -193,27 +229,48 @@ namespace IPCSoftware.Services
                 lines.Add($"{serial}@pdata@ae_vendor@{settings.VendorCode}");
                 lines.Add($"{serial}@pdata@Tossing@{settings.TossingDefault}");
 
-                AddRangeLine(lines, serial, "Inspection_X", record.ValueX, station.InspectionX);
-                AddRangeLine(lines, serial, "Inspection_Y", record.ValueY, station.InspectionY);
-                AddRangeLine(lines, serial, "Inspection_A", record.Angle, station.InspectionAngle, "degree");
-                AddRangeLine(lines, serial, "Cycle_Time", record.CycleTime, station.CycleTime ?? RangeSetting.Create(0, 0, "s", false), "s");
+                // Inspection X — limits from Recipe.csv, unit/hasLimits from AELimit.json
+                var rangeX = RangeSetting.Create(
+                    station.InspectionXLower, station.InspectionXUpper,
+                    settings.InspectionXUnit, settings.InspectionXHasLimits);
+
+                var rangeY = RangeSetting.Create(
+                    station.InspectionYLower, station.InspectionYUpper,
+                    settings.InspectionYUnit, settings.InspectionYHasLimits);
+
+                var rangeAngle = RangeSetting.Create(
+                    station.InspectionAngleLower, station.InspectionAngleUpper,
+                    settings.InspectionAngleUnit, settings.InspectionAngleHasLimits);
+
+                AddRangeLine(lines, serial, "Inspection_X", record.ValueX, rangeX);
+                AddRangeLine(lines, serial, "Inspection_Y", record.ValueY, rangeY);
+                AddRangeLine(lines, serial, "Inspection_A", record.Angle, rangeAngle);
+                AddRangeLine(lines, serial, "Cycle_Time", record.CycleTime, settings.CycleTime);
 
                 lines.Add($"{serial}@attr@machine_ID@{machineId}");
                 lines.Add($"{serial}@pdata@Operator_ID@{settings.OperatorIdDefault}");
-                var modeValue = !string.IsNullOrWhiteSpace(station.MachineModeOverride) ? station.MachineModeOverride : settings.ModeDefault;
+
+                var modeValue = !string.IsNullOrWhiteSpace(station.MachineModeOverride)
+                    ? station.MachineModeOverride
+                    : settings.ModeDefault;
+
                 lines.Add($"{serial}@pdata@Mode@{modeValue}");
                 lines.Add($"{serial}@pdata@TestSeriesID@{settings.TestSeriesIdDefault}");
                 lines.Add($"{serial}@pdata@Priority@{settings.PriorityDefault}");
                 lines.Add($"{serial}@pdata@online@{settings.OnlineFlagDefault}");
                 lines.Add($"{serial}@submit@{settings.SubmitId}");
             }
+
             return lines;
         }
 
-        private static void AddRangeLine(List<string> lines, string serial, string label, double? value, RangeSetting range, string overrideUnit = null)
+        private static void AddRangeLine(List<string> lines, string serial, string label,
+            double? value, RangeSetting range, string overrideUnit = null)
         {
             var unit = overrideUnit ?? range?.Unit ?? "mm";
-            var formattedValue = value.HasValue ? value.Value.ToString("0.000", CultureInfo.InvariantCulture) : "0.000";
+            var formattedValue = value.HasValue
+                ? value.Value.ToString("0.000", CultureInfo.InvariantCulture)
+                : "0.000";
             var lower = range?.FormatLower() ?? "NA";
             var upper = range?.FormatUpper() ?? "NA";
             lines.Add($"{serial}@pdata@{label}@{formattedValue}@{lower}@{upper}@{unit}");
@@ -223,23 +280,21 @@ namespace IPCSoftware.Services
         {
             var settings = _settings ?? AeLimitSettings.CreateDefault();
             var folderName = settings.OutputFolderName;
-            string outputFolder = string.IsNullOrWhiteSpace(folderName) ? _defaultOutputFolder :
-                                  (Path.IsPathRooted(folderName) ? folderName : Path.Combine(_dataFolder, folderName));
+            string outputFolder = string.IsNullOrWhiteSpace(folderName)
+                ? _defaultOutputFolder
+                : (Path.IsPathRooted(folderName) ? folderName : Path.Combine(_dataFolder, folderName));
 
             if (!Directory.Exists(outputFolder)) Directory.CreateDirectory(outputFolder);
 
             var prefix = string.IsNullOrWhiteSpace(settings.FilePrefix) ? "AE" : settings.FilePrefix;
-
-            // LOGIC: One file per day (Append Mode)
-            // Filename: AE_Log_20260215.txt
             var fileName = $"{prefix}_Log_{DateTime.Now:yyyyMMdd}.txt";
             var path = Path.Combine(outputFolder, fileName);
 
-            // AppendAllLines creates the file if it doesn't exist, or appends if it does.
             await File.AppendAllLinesAsync(path, lines, Encoding.UTF8);
-
             return path;
         }
+
+        // --- Settings Load Helpers ---
 
         private async Task EnsureSettingsLoadedAsync()
         {
@@ -262,15 +317,98 @@ namespace IPCSoftware.Services
                 if (File.Exists(_configFilePath))
                 {
                     var json = File.ReadAllText(_configFilePath, Encoding.UTF8);
-                    return JsonConvert.DeserializeObject<AeLimitSettings>(json) ?? AeLimitSettings.CreateDefault();
+                    return JsonConvert.DeserializeObject<AeLimitSettings>(json)
+                           ?? AeLimitSettings.CreateDefault();
                 }
             }
-            catch (Exception ex) { _logger.LogError($"[AE] Config Load Error: {ex.Message}", LogType.Diagnostics); }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[AE] Config Load Error: {ex.Message}", LogType.Diagnostics);
+            }
 
             var defaults = AeLimitSettings.CreateDefault();
-            try { File.WriteAllText(_configFilePath, JsonConvert.SerializeObject(defaults, Formatting.Indented), Encoding.UTF8); } catch { }
+            try { File.WriteAllText(_configFilePath, JsonConvert.SerializeObject(defaults, Formatting.Indented), Encoding.UTF8); }
+            catch { /* best-effort write */ }
             return defaults;
         }
+
+        // --- Recipe.csv field accessors (index 0..12) ---
+
+        /// <summary>Cavity = S0..S12. S0 is implicitly 0; S1..S12 come from recipe.</summary>
+        private static int GetCavity(IPCSoftware.Shared.Models.ServoRecipeModel r, int i) => i switch
+        {
+            0 => 0,
+            1 => r.S1,
+            2 => r.S2,
+            3 => r.S3,
+            4 => r.S4,
+            5 => r.S5,
+            6 => r.S6,
+            7 => r.S7,
+            8 => r.S8,
+            9 => r.S9,
+            10 => r.S10,
+            11 => r.S11,
+            12 => r.S12,
+            _ => 0
+        };
+
+        /// <summary>StationId = PositionID_N (Position_N property in model).</summary>
+        private static int GetPositionId(IPCSoftware.Shared.Models.ServoRecipeModel r, int i) => i switch
+        {
+            0 => r.Position_0,
+            1 => r.Position_1,
+            2 => r.Position_2,
+            3 => r.Position_3,
+            4 => r.Position_4,
+            5 => r.Position_5,
+            6 => r.Position_6,
+            7 => r.Position_7,
+            8 => r.Position_8,
+            9 => r.Position_9,
+            10 => r.Position_10,
+            11 => r.Position_11,
+            12 => r.Position_12,
+            _ => i
+        };
+
+        private static string GetName(IPCSoftware.Shared.Models.ServoRecipeModel r, int i) => i switch
+        {
+            0 => r.Name_0,
+            1 => r.Name_1,
+            2 => r.Name_2,
+            3 => r.Name_3,
+            4 => r.Name_4,
+            5 => r.Name_5,
+            6 => r.Name_6,
+            7 => r.Name_7,
+            8 => r.Name_8,
+            9 => r.Name_9,
+            10 => r.Name_10,
+            11 => r.Name_11,
+            12 => r.Name_12,
+            _ => $"Station {i}"
+        };
+
+        private static bool GetIsEnabled(IPCSoftware.Shared.Models.ServoRecipeModel r, int i) => i switch
+        {
+            0 => r.Is_Enabled_0,
+            1 => r.Is_Enabled_1,
+            2 => r.Is_Enabled_2,
+            3 => r.Is_Enabled_3,
+            4 => r.Is_Enabled_4,
+            5 => r.Is_Enabled_5,
+            6 => r.Is_Enabled_6,
+            7 => r.Is_Enabled_7,
+            8 => r.Is_Enabled_8,
+            9 => r.Is_Enabled_9,
+            10 => r.Is_Enabled_10,
+            11 => r.Is_Enabled_11,
+            12 => r.Is_Enabled_12,
+            _ => false
+        };
+
+        // --- Cycle Context ---
 
         private class AeCycleContext
         {
@@ -279,8 +417,13 @@ namespace IPCSoftware.Services
             public string CarrierSerial { get; set; }
             public DateTime StartedOn { get; set; }
 
-            public void SetRecord(int stationId, AeStationUpdate update) { if (update != null) _records[stationId] = update; }
-            public AeStationUpdate GetRecord(int stationId) => _records.TryGetValue(stationId, out var record) ? record : null;
+            public void SetRecord(int stationId, AeStationUpdate update)
+            {
+                if (update != null) _records[stationId] = update;
+            }
+
+            public AeStationUpdate GetRecord(int stationId) =>
+                _records.TryGetValue(stationId, out var record) ? record : null;
         }
     }
 }

@@ -31,13 +31,13 @@ namespace IPCSoftware.App.ViewModels
     public class ServoCalibrationViewModel : BaseViewModel, IDisposable, INavigationalAware , IMachineDataHandler
     {
         private readonly IRecipeManagementService _recipeManagementService;
-        private readonly IAeLimitService _aeLimitService;
+        //private readonly IAeLimitService _aeLimitService;
         private readonly CoreClient _coreClient;
        // private readonly DispatcherTimer _liveDataTimer;
         private readonly SafePoller _liveDataTimer;
         private readonly IServoCalibrationService _servoService; // Injected Service
         private readonly IDialogService _dialog; // Injected Service
-        //private readonly IProductConfigurationService _productService;
+        private readonly IRecipeApplicationService _recipeService;
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;       //added after
 
         private bool _initialPlcLoadDone = false;
@@ -262,9 +262,9 @@ namespace IPCSoftware.App.ViewModels
         public ServoCalibrationViewModel(CoreClient coreClient,
             IServoCalibrationService servoService,
             IDialogService dialog,
-             //IProductConfigurationService productService,
+             IRecipeApplicationService recipeService,
              IRecipeManagementService recipeManagementService,
-             IAeLimitService aeLimitService,
+             //IAeLimitService aeLimitService,
              IOptionsMonitor<ExternalSettings> settingMonitor,  //Added after
             // IPlcRecipeWriter plcRecipeWriter,   //Added after
 
@@ -273,10 +273,10 @@ namespace IPCSoftware.App.ViewModels
         {
             _dialog = dialog;
             _coreClient = coreClient;
-            _servoService = servoService; 
-            //_productService = productService;
+            _servoService = servoService;
+            _recipeService = recipeService;
             _recipeManagementService = recipeManagementService;
-            _aeLimitService = aeLimitService;
+            //_aeLimitService = aeLimitService;
             _settingsMonitor = settingMonitor;
             _appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
 
@@ -439,19 +439,18 @@ namespace IPCSoftware.App.ViewModels
                 AeUnitY = !string.IsNullOrEmpty(extConfig.InspectionYUnit) ? extConfig.InspectionYUnit : "mm";
                 AeUnitAngle = !string.IsNullOrEmpty(extConfig.InspectionAngleUnit) ? extConfig.InspectionAngleUnit : "deg";
 
-                // Load Limits from JSON
-                _aeLimitSettings = await _aeLimitService.GetSettingsAsync();
-
-                if (_aeLimitSettings?.Stations != null && _aeLimitSettings.Stations.Count > 0)
-                {
-                    var refStation = _aeLimitSettings.Stations[0];
-                    AeMinX.NewValue = refStation.InspectionX.Lower;
-                    AeMaxX.NewValue = refStation.InspectionX.Upper;
-                    AeMinY.NewValue = refStation.InspectionY.Lower;
-                    AeMaxY.NewValue = refStation.InspectionY.Upper;
-                    AeMinZ.NewValue = refStation.InspectionAngle.Lower;
-                    AeMaxZ.NewValue = refStation.InspectionAngle.Upper;
-                }
+                var lastRecipeSelected =  _recipeService.GetRecipefromSelection();
+                var refStation = lastRecipeSelected.GetAwaiter().GetResult();
+                
+               
+                    //var refStation = _aeLimitSettings.Stations[0];
+                    AeMinX.NewValue = refStation.Xmin;
+                    AeMaxX.NewValue = refStation.Xmax;
+                    AeMinY.NewValue = refStation.Ymin;
+                    AeMaxY.NewValue = refStation.Ymax;
+                    AeMinZ.NewValue = refStation.AngleMin;
+                    AeMaxZ.NewValue = refStation.AngleMin;
+                
             }
             catch (Exception ex)
             {
@@ -459,47 +458,7 @@ namespace IPCSoftware.App.ViewModels
             }
         }
 
-        public async Task SaveAeLimitsAsync()
-        {
-            try
-            {
-                // Save to JSON
-                _aeLimitSettings = await _aeLimitService.GetSettingsAsync();
-                if (_aeLimitSettings?.Stations != null)
-                {
-                    foreach (var station in _aeLimitSettings.Stations)
-                    {
-                        station.InspectionX.Lower = AeMinX.NewValue;
-                        station.InspectionX.Upper = AeMaxX.NewValue;
-                        station.InspectionY.Lower = AeMinY.NewValue;
-                        station.InspectionY.Upper = AeMaxY.NewValue;
-                        station.InspectionAngle.Lower = AeMinZ.NewValue;
-                        station.InspectionAngle.Upper = AeMaxZ.NewValue;
-                    }
-                }
-                await _aeLimitService.SaveSettingsAsync(_aeLimitSettings);
-
-                // Write to PLC
-                await _coreClient.WriteTagAsync(AeMinX.WriteTagId, AeMinX.NewValue);
-                await _coreClient.WriteTagAsync(AeMaxX.WriteTagId, AeMaxX.NewValue);
-                await _coreClient.WriteTagAsync(AeMinY.WriteTagId, AeMinY.NewValue);
-                await _coreClient.WriteTagAsync(AeMaxY.WriteTagId, AeMaxY.NewValue);
-                await _coreClient.WriteTagAsync(AeMinZ.WriteTagId, AeMinZ.NewValue);
-                await _coreClient.WriteTagAsync(AeMaxZ.WriteTagId, AeMaxZ.NewValue);
-
-                // Handshake (optional, based on your PLC logic)
-                await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 1);
-                await Task.Delay(200);
-                await _coreClient.WriteTagAsync(ConstantValues.ACK_LIMIT.Write, 0);
-
-                _dialog.ShowMessage("AE Limits Saved Successfully!");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"[AE Limit] Save failed: {ex.Message}", LogType.Diagnostics);
-                _dialog.ShowWarning("Failed to save AE Limits.");
-            }
-        }
+      
 
         private async Task<bool> WaitForPlcConfirmationAsync()
         {
@@ -1790,8 +1749,6 @@ namespace IPCSoftware.App.ViewModels
         private async Task<ServoRecipeModel> BuildRecipeAsync(int programNo, string productCode, string productName, int totalItems, int gridRows, int gridCols)
         {
             var savedPositions = Positions.ToList();
-            var aeLimitSettings = await _aeLimitService.GetSettingsAsync();
-            var firstStation = aeLimitSettings?.Stations?.FirstOrDefault();
             // --- 1. Save Unit Settings to appsettings.json ---
 
 
@@ -1855,48 +1812,13 @@ namespace IPCSoftware.App.ViewModels
                 Y11 = savedPositions.FirstOrDefault(p => p.PositionId == 11)?.Y ?? 0,
                 Y12 = savedPositions.FirstOrDefault(p => p.PositionId == 12)?.Y ?? 0,
 
-                // AE Limits
-                //Xmin = firstStation?.InspectionX?.Lower ?? 0,
-                //Xmax = firstStation?.InspectionX?.Upper ?? 0,
-                //Ymin = firstStation?.InspectionY?.Lower ?? 0,
-                //Ymax = firstStation?.InspectionY?.Upper ?? 0,
-                //AngleMin = firstStation?.InspectionAngle?.Lower ?? 0,
-                //AngleMax = firstStation?.InspectionAngle?.Upper ?? 0,
-
+            
                 Xmin = AeMinX.NewValue,
                 Xmax = AeMaxX.NewValue,
                 Ymin = AeMinY.NewValue,
                 Ymax = AeMaxY.NewValue,
                 AngleMin = AeMinZ.NewValue,
                 AngleMax = AeMaxZ.NewValue,
-
-
-
-
-                //    // --- 2. Save Limits to AELimit.json ---
-                //    _settings = await _aeLimitService.GetSettingsAsync();
-                //    if (_settings == null) _settings = new AeLimitSettings();
-
-                //// Sync UI Limit values into JSON model (global update for all stations)
-                //if (_settings.Stations != null)
-                //{
-                //    foreach (var station in _settings.Stations)
-                //    {
-                //        station.InspectionX.Lower = MinX.NewValue;
-                //        station.InspectionX.Upper = MaxX.NewValue;
-                //        station.InspectionX.Unit = UnitX; // Also sync unit to internal JSON
-
-                //        station.InspectionY.Lower = MinY.NewValue;
-                //        station.InspectionY.Upper = MaxY.NewValue;
-                //        station.InspectionY.Unit = UnitY;
-
-                //        station.InspectionAngle.Lower = MinZ.NewValue;
-                //        station.InspectionAngle.Upper = MaxZ.NewValue;
-                //        station.InspectionAngle.Unit = UnitAngle;
-                //    }
-                //}
-
-                //await _aeLimitService.SaveSettingsAsync(_settings);
 
                 // Product Setup
                 ProductName = productName,
@@ -1906,16 +1828,7 @@ namespace IPCSoftware.App.ViewModels
                 GridColumns = gridCols
             };
 
-
-
-                
-                //catch (Exception ex)
-                //{
-                //    _logger.LogError($"[AE UI] Failed to save Units: {ex.Message}", LogType.Diagnostics);
-                //}
-
-
-
+                           
 
         }
 

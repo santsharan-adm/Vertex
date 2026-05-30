@@ -9,20 +9,20 @@ namespace IPCSoftware.Services.ConfigServices
 {
     public class RecipeApplicationService : IRecipeApplicationService
     {       
-        private readonly IAeLimitService _aeLimitService;
+        //private readonly IAeLimitService _aeLimitService;
         private readonly IMachineDataHandler _plcRecipeWriter;
         private readonly IAppLogger _logger;
         private ServoRecipeModel _lastSelectedRecipe;
         private IServoCalibrationService _servoService;
 
         public RecipeApplicationService(            
-            IAeLimitService aeLimitService,
+            //IAeLimitService aeLimitService,
             IAppLogger logger,
             IMachineDataHandler plcRecipeWriter,
             IServoCalibrationService servoService)
         {
            
-            _aeLimitService = aeLimitService;
+            //_aeLimitService = aeLimitService;
             _logger = logger;
             _plcRecipeWriter = plcRecipeWriter;
             _servoService = servoService;
@@ -60,11 +60,11 @@ namespace IPCSoftware.Services.ConfigServices
             catch (Exception ex) { _logger.LogWarning($"Unable to get recipe {_lastSelectedRecipe}: {ex}", LogType.Error); return new ServoRecipeModel(); }
         }
 
-        public async Task SaveAeLimitsAsync()
-        {
-            var settings = await _aeLimitService.GetSettingsAsync();
+        //public async Task SaveAeLimitsAsync()
+        //{
+        //    var settings = await _aeLimitService.GetSettingsAsync();
          
-        }
+        //}
 
         //public async Task PulseBitAsync(int tagId, string description)
         //{

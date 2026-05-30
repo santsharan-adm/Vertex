@@ -24,23 +24,21 @@ namespace IPCSoftware.App.ViewModels
     public class ApiTestViewModel : BaseViewModel, IDisposable
     {
         private readonly HttpClient _httpClient;
-        private readonly MacMiniTcpClient _tcpClient ;
+        private readonly MacMiniTcpClient _tcpClient;
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
         private readonly IDialogService _dialog;
         private readonly string _appSettingsPath;
-
-        // NEW Dependency
         private readonly IAeLimitService _aeLimitService;
 
         private bool _isPingBusy;
         private bool _isBusy;
 
-        // Settings Cache for PDCA Tab
+        // Settings cache for PDCA Tab (backed by AELimit.json, no Stations list)
         private AeLimitSettings _pdcaSettings;
 
         public ObservableCollection<string> ProtocolOptions { get; } = new() { "TCP", "HTTP", "HTTPS" };
 
-        // --- EXTERNAL INTERFACE PROPERTIES (Existing) ---
+        // --- EXTERNAL INTERFACE PROPERTIES ---
         private string _selectedProtocol;
         public string SelectedProtocol
         {
@@ -72,7 +70,8 @@ namespace IPCSoftware.App.ViewModels
         public string PingResult { get => _pingResult; set => SetProperty(ref _pingResult, value); }
         public bool IsBusy { get => _isBusy; set { if (SetProperty(ref _isBusy, value)) { CommandManager.InvalidateRequerySuggested(); } } }
 
-        // --- PDCA DATA PROPERTIES (NEW) ---
+        // --- PDCA DATA PROPERTIES ---
+        // All backed directly by AeLimitSettings flat properties (no Stations list)
         public string MachineId { get => _pdcaSettings?.MachineId; set { if (_pdcaSettings != null) { _pdcaSettings.MachineId = value; OnPropertyChanged(); } } }
         public string SubmitId { get => _pdcaSettings?.SubmitId; set { if (_pdcaSettings != null) { _pdcaSettings.SubmitId = value; OnPropertyChanged(); } } }
         public string VendorCode { get => _pdcaSettings?.VendorCode; set { if (_pdcaSettings != null) { _pdcaSettings.VendorCode = value; OnPropertyChanged(); } } }
@@ -83,24 +82,36 @@ namespace IPCSoftware.App.ViewModels
         public string PriorityDefault { get => _pdcaSettings?.PriorityDefault; set { if (_pdcaSettings != null) { _pdcaSettings.PriorityDefault = value; OnPropertyChanged(); } } }
         public string OnlineFlag { get => _pdcaSettings?.OnlineFlagDefault; set { if (_pdcaSettings != null) { _pdcaSettings.OnlineFlagDefault = value; OnPropertyChanged(); } } }
 
-        public string DutPositionLabel => _pdcaSettings?.Stations?.FirstOrDefault()?.DutPositionLabel;
-        public int? Cavity => _pdcaSettings?.Stations?.FirstOrDefault()?.Cavity;
+        // DutPositionLabel and StartLabel are now global (flat on AeLimitSettings)
+        public string DutPositionLabel
+        {
+            get => _pdcaSettings?.DutPositionLabel;
+            set { if (_pdcaSettings != null) { _pdcaSettings.DutPositionLabel = value; OnPropertyChanged(); } }
+        }
 
+        public string StartLabel
+        {
+            get => _pdcaSettings?.StartLabel;
+            set { if (_pdcaSettings != null) { _pdcaSettings.StartLabel = value; OnPropertyChanged(); } }
+        }
+
+        // CycleTime is now a single shared RangeSetting on AeLimitSettings
         public double CycleTimeMin
         {
-            get => _pdcaSettings?.Stations?.FirstOrDefault()?.CycleTime.Lower ?? 0;
-            set { if (_pdcaSettings?.Stations?.FirstOrDefault() != null) { _pdcaSettings.Stations[0].CycleTime.Lower = value; OnPropertyChanged(); } }
+            get => _pdcaSettings?.CycleTime?.Lower ?? 0;
+            set { if (_pdcaSettings?.CycleTime != null) { _pdcaSettings.CycleTime.Lower = value; OnPropertyChanged(); } }
         }
+
         public double CycleTimeMax
         {
-            get => _pdcaSettings?.Stations?.FirstOrDefault()?.CycleTime.Upper ?? 0;
-            set { if (_pdcaSettings?.Stations?.FirstOrDefault() != null) { _pdcaSettings.Stations[0].CycleTime.Upper = value; OnPropertyChanged(); } }
+            get => _pdcaSettings?.CycleTime?.Upper ?? 0;
+            set { if (_pdcaSettings?.CycleTime != null) { _pdcaSettings.CycleTime.Upper = value; OnPropertyChanged(); } }
         }
 
         // --- Commands ---
         public ICommand TestApiCommand { get; }
         public ICommand SaveSettingsCommand { get; }
-        public ICommand SavePdcaCommand { get; } // NEW
+        public ICommand SavePdcaCommand { get; }
         public ICommand PingTestCommand { get; }
         public ICommand CloseTcpCommand { get; }
 
@@ -108,7 +119,7 @@ namespace IPCSoftware.App.ViewModels
             IAppLogger logger,
             MacMiniTcpClient tcpClient,
             IOptionsMonitor<ExternalSettings> settingsMonitor,
-            IAeLimitService aeLimitService, // Inject
+            IAeLimitService aeLimitService,
             IDialogService dialog) : base(logger)
         {
             _settingsMonitor = settingsMonitor;
@@ -127,7 +138,7 @@ namespace IPCSoftware.App.ViewModels
             CloseTcpCommand = new RelayCommand(() => { _tcpClient.Disconnect(); ResultText += "\n[TCP] Connection closed by user."; });
 
             LoadSettingsFromConfig();
-            _ = LoadPdcaSettingsAsync(); // Load PDCA Data
+            _ = LoadPdcaSettingsAsync();
             UpdatePreview();
         }
 
@@ -140,7 +151,7 @@ namespace IPCSoftware.App.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to load PDCA settings: {ex.Message}", Shared.Models.ConfigModels.LogType.Diagnostics);
+                _logger.LogError($"Failed to load PDCA settings: {ex.Message}", LogType.Diagnostics);
             }
         }
 
@@ -150,28 +161,17 @@ namespace IPCSoftware.App.ViewModels
             {
                 if (_pdcaSettings != null)
                 {
-                    // Propagate global cycle time to all stations if needed, or just 0
-                    if (_pdcaSettings.Stations != null)
-                    {
-                        foreach (var st in _pdcaSettings.Stations)
-                        {
-                            st.CycleTime.Lower = CycleTimeMin;
-                            st.CycleTime.Upper = CycleTimeMax;
-                        }
-                    }
-
+                    // CycleTime is now a single shared setting — already updated via binding
                     await _aeLimitService.SaveSettingsAsync(_pdcaSettings);
                     _dialog.ShowMessage("PDCA Data settings saved successfully.");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to save PDCA settings: {ex.Message}", Shared.Models.ConfigModels.LogType.Diagnostics);
+                _logger.LogError($"Failed to save PDCA settings: {ex.Message}", LogType.Diagnostics);
                 _dialog.ShowWarning("Failed to save PDCA settings.");
             }
         }
-
-        // ... (UpdateDefaultPort, LoadSettingsFromConfig, SaveSettings, ExecuteTestAsync, etc. - UNCHANGED) ...
 
         private void UpdateDefaultPort(string protocol)
         {
@@ -212,6 +212,7 @@ namespace IPCSoftware.App.ViewModels
             }
             catch (Exception ex) { _dialog.ShowWarning(ex.Message); }
         }
+
         private bool CanExecuteTest() => !IsBusy && !string.IsNullOrWhiteSpace(SelectedProtocol) && !string.IsNullOrWhiteSpace(Host);
         private async Task ExecuteTestAsync() { if (!CanExecuteTest()) return; IsBusy = true; try { if ((SelectedProtocol ?? "").ToUpper() == "TCP") await ExecuteTcpTestAsync(); else await ExecuteHttpTestAsync(); } catch (Exception ex) { ResultText = ex.Message; } finally { IsBusy = false; } }
         private async Task ExecuteTcpTestAsync()

@@ -4,13 +4,22 @@ using System.Globalization;
 
 namespace IPCSoftware.Shared.Models.AeLimit
 {
+    /// <summary>
+    /// Maps 1:1 to AELimit.json.
+    /// Station-specific data (Cavity, StationId, X/Y/Angle ranges) is now sourced from Recipe.csv.
+    /// </summary>
     public class AeLimitSettings
     {
+        // --- File / Output ---
         public string FilePrefix { get; set; } = "AE";
         public string OutputFolderName { get; set; } = "AeLimitLogs";
+
+        // --- Submit / Machine Identity ---
         public string SubmitId { get; set; } = "BZ_UAT-AOI_V53_338_SV2.1.0.4_V2.1.0.4";
         public string MachineId { get; set; } = "BZ-2006-010627";
         public string VendorCode { get; set; } = "0";
+
+        // --- Payload Defaults ---
         public string TossingDefault { get; set; } = "0";
         public string OperatorIdDefault { get; set; } = "0";
         public string ModeDefault { get; set; } = "0";
@@ -18,72 +27,73 @@ namespace IPCSoftware.Shared.Models.AeLimit
         public string PriorityDefault { get; set; } = "0";
         public string OnlineFlagDefault { get; set; } = "1";
         public string StartLabelDefault { get; set; } = "NA";
-        public List<AeLimitStationConfig> Stations { get; set; } = new();
 
-        public static AeLimitSettings CreateDefault()
-        {
-            var settings = new AeLimitSettings();
-            for (int i = 0; i <= 12; i++)
-            {
-                settings.Stations.Add(AeLimitStationConfig.CreateDefault(i));
-            }
-            return settings;
-        }
+        // --- Common Inspection Units (previously per-station, now shared) ---
+        public string InspectionXUnit { get; set; } = "mm";
+        public string InspectionYUnit { get; set; } = "mm";
+        public string InspectionAngleUnit { get; set; } = "degree";
+
+        // --- Common Inspection Limit Flags ---
+        public bool InspectionXHasLimits { get; set; } = true;
+        public bool InspectionYHasLimits { get; set; } = true;
+        public bool InspectionAngleHasLimits { get; set; } = true;
+
+        // --- Common Station Defaults (previously per-station, now shared) ---
+        public string StartLabel { get; set; } = "start";
+        public string DutPositionLabel { get; set; } = "POS00";
+        public string MachineModeOverride { get; set; } = null;
+
+        // --- Common Cycle Time (shared across all stations) ---
+        public RangeSetting CycleTime { get; set; } = RangeSetting.Create(5.0, 25.0, "s", allowLimits: false);
 
         public AeLimitSettings Clone()
         {
             var copy = (AeLimitSettings)MemberwiseClone();
-            copy.Stations = new List<AeLimitStationConfig>();
-            foreach (var station in Stations)
-            {
-                copy.Stations.Add(station.Clone());
-            }
+            copy.CycleTime = CycleTime?.Clone();
             return copy;
         }
+
+        public static AeLimitSettings CreateDefault() => new();
     }
 
-    public class AeLimitStationConfig
+    /// <summary>
+    /// Runtime station configuration built from Recipe.csv.
+    /// NOT serialized to AELimit.json.
+    /// </summary>
+    public class AeStationRecipeConfig
     {
+        /// <summary>0-based index (column position in Recipe.csv: S0, S1, ...S12)</summary>
+        public int StationIndex { get; set; }
+
+        /// <summary>From PositionID_N column in Recipe.csv.</summary>
         public int StationId { get; set; }
-        public int SequenceIndex { get; set; }
-        public int Cavity { get; set; } = 0;
-        public string StartLabel { get; set; } = "NA";
-        public string DutPositionLabel { get; set; } = "NA";
+
+        /// <summary>From S0..S12 columns in Recipe.csv.</summary>
+        public int Cavity { get; set; }
+
+        /// <summary>From Xmin / Xmax columns in Recipe.csv (shared per recipe row).</summary>
+        public double InspectionXLower { get; set; }
+        public double InspectionXUpper { get; set; }
+
+        /// <summary>From Ymin / Ymax columns in Recipe.csv.</summary>
+        public double InspectionYLower { get; set; }
+        public double InspectionYUpper { get; set; }
+
+        /// <summary>From AngleMin / AngleMax columns in Recipe.csv.</summary>
+        public double InspectionAngleLower { get; set; }
+        public double InspectionAngleUpper { get; set; }
+
+        /// <summary>From Name_N column in Recipe.csv.</summary>
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>From Description_N column in Recipe.csv.</summary>
+        public string Description { get; set; } = string.Empty;
+
+        /// <summary>From IsEnabled_N column in Recipe.csv.</summary>
+        public bool IsEnabled { get; set; } = true;
+
+        // --- Resolved at runtime from AeLimitSettings (not from CSV) ---
         public string MachineModeOverride { get; set; }
-
-        public RangeSetting InspectionX { get; set; } = RangeSetting.Create(-0.130, 0.130, "mm");
-        public RangeSetting InspectionY { get; set; } = RangeSetting.Create(-0.130, 0.130, "mm");
-        public RangeSetting InspectionAngle { get; set; } = RangeSetting.Create(-0.800, 0.800, "degree");
-        public RangeSetting CycleTime { get; set; } = RangeSetting.Create(0, 0, "s", allowLimits: false);
-
-        public static AeLimitStationConfig CreateDefault(int stationId)
-        {
-            return new AeLimitStationConfig
-            {
-                StationId = stationId,
-                SequenceIndex = stationId,
-                Cavity = stationId,
-                StartLabel = stationId == 0 ? "start" : "audit",
-                DutPositionLabel = $"POS{stationId:00}"
-            };
-        }
-
-        public AeLimitStationConfig Clone()
-        {
-            return new AeLimitStationConfig
-            {
-                StationId = StationId,
-                SequenceIndex = SequenceIndex,
-                Cavity = Cavity,
-                StartLabel = StartLabel,
-                DutPositionLabel = DutPositionLabel,
-                MachineModeOverride = MachineModeOverride,
-                InspectionX = InspectionX?.Clone(),
-                InspectionY = InspectionY?.Clone(),
-                InspectionAngle = InspectionAngle?.Clone(),
-                CycleTime = CycleTime?.Clone()
-            };
-        }
     }
 
     public class RangeSetting
@@ -115,15 +125,11 @@ namespace IPCSoftware.Shared.Models.AeLimit
             };
         }
 
-        public string FormatLower()
-        {
-            return HasLimits ? Lower.ToString("0.000", CultureInfo.InvariantCulture) : "NA";
-        }
+        public string FormatLower() =>
+            HasLimits ? Lower.ToString("0.000", CultureInfo.InvariantCulture) : "NA";
 
-        public string FormatUpper()
-        {
-            return HasLimits ? Upper.ToString("0.000", CultureInfo.InvariantCulture) : "NA";
-        }
+        public string FormatUpper() =>
+            HasLimits ? Upper.ToString("0.000", CultureInfo.InvariantCulture) : "NA";
     }
 
     public class AeStationUpdate

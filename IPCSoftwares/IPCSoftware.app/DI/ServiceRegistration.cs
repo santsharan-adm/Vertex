@@ -140,9 +140,9 @@ namespace IPCSoftware.App.DI
             services.AddTransient<DeviceInterfaceConfigurationViewModel>();
             services.AddTransient<CameraDetailViewModel>();
             services.AddTransient<CameraInterfaceConfigurationViewModel>();
-            
-            services.AddTransient<AeLimitView>();
-            services.AddTransient<AeLimitViewModel>();
+
+            //services.AddTransient<AeLimitView>();
+            //services.AddTransient<AeLimitViewModel>();   // Now Removed no Loger use , already shift to ServoCalibrationViewModel in Tab3 - comment by rishabh
 
             services.AddTransient<AboutView>();
             services.AddTransient<AboutViewModel>();

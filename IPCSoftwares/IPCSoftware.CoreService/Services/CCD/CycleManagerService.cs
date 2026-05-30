@@ -29,6 +29,7 @@ namespace IPCSoftware.CoreService.Services.CCD
         private readonly ExternalInterfaceService _extService;
         private readonly IAeLimitService _aeLimitService;
         //private readonly IProductConfigurationService _productService;
+        private readonly IRecipeApplicationService _recipeApplicationService;
 
         private string _activeBatchId = string.Empty;
         private int _currentSequenceStep = 0;
@@ -50,6 +51,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             ProductionImageService imageService,
             ExternalInterfaceService extService,
             IAeLimitService aeLimitService,
+            IRecipeApplicationService recipeApplicationService,
              //IProductConfigurationService productService,
             IAppLogger logger) : base(logger)
         {
@@ -61,6 +63,7 @@ namespace IPCSoftware.CoreService.Services.CCD
             _servoService = servoService;
             _extService = extService;
             _aeLimitService = aeLimitService;
+            _recipeApplicationService = recipeApplicationService;
             //_productService = productService;
             _stateFilePath = Path.Combine(ccd.QrCodeImagePath, ccd.CurrentCycleStateFileName);
             var logs =  logConfig.GetAllAsync();
@@ -79,7 +82,8 @@ namespace IPCSoftware.CoreService.Services.CCD
         {
             try
             {
-                var recipe = await _servoService.GetRecipeByProgramNumberAsync(0);
+                var recipe = await _recipeApplicationService.GetRecipefromSelection();
+               // var recipe = await _servoService.GetRecipeByProgramNumberAsync(0);
                 int limit = recipe?.TotalItems ?? 12; // Default to 12 if recipe or limit is not available
                                                       //// 1. Load Product Config to determine Limit
                                                       //var prodConfig = await _productService.LoadAsync();

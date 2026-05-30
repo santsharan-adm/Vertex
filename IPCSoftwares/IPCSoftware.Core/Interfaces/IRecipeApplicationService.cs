@@ -8,7 +8,7 @@ namespace IPCSoftware.Core.Interfaces
         Task<Dictionary<int, bool>> ApplyRecipeToPlcAsync(ServoRecipeModel recipe);
 
         Task<ServoRecipeModel> GetRecipefromSelection();
-        Task SaveAeLimitsAsync();
+        //Task SaveAeLimitsAsync();
         //Task PulseBitAsync(int tagId, string description);
     }
 }
