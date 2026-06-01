@@ -1,3 +1,4 @@
+using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.AeLimit;
 using System.Threading.Tasks;
 
@@ -12,9 +13,10 @@ namespace IPCSoftware.Core.Interfaces
         void BeginCycle(string serialNumber, string carrierSerial);
         void UpdateStation(AeStationUpdate update);
        // Task<string> CompleteCycleAsync(bool success = true);
-        Task<(string FilePath, string TcpPayload)> CompleteCycleAsync(bool success = true);
+        Task<(string FilePath, string TcpPayload)> CompleteCycleAsync(ServoRecipeModel recipe, bool success = true);
         void AbortCycle();
     }
 
 
 }
+

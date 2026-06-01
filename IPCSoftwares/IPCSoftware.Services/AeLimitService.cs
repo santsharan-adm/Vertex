@@ -24,18 +24,19 @@ namespace IPCSoftware.Services
         private readonly IOptions<ExternalSettings> _externalOptions;
         private readonly SemaphoreSlim _fileLock = new(1, 1);
         private readonly object _stateLock = new();
-        private readonly IRecipeApplicationService _recipeService;
         private AeLimitSettings _settings;
         private AeCycleContext _currentCycle;
 
-        public AeLimitService(IOptions<ConfigSettings> configOptions,
-                              IOptions<ExternalSettings> externalOptions,
-                              IRecipeApplicationService recipeService,
-                              IAppLogger logger) : base(logger)
+        // IRecipeApplicationService is no longer injected here.
+        // The active recipe is passed in at CompleteCycleAsync call-time by the caller.
+        public AeLimitService(
+            IOptions<ConfigSettings> configOptions,
+            IOptions<ExternalSettings> externalOptions,
+            IAppLogger logger) : base(logger)
         {
             var config = configOptions.Value ?? new ConfigSettings();
             _externalOptions = externalOptions;
-            _recipeService = recipeService;
+
             _dataFolder = config.DataFolder ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
             Directory.CreateDirectory(_dataFolder);
 
@@ -109,7 +110,13 @@ namespace IPCSoftware.Services
             }
         }
 
-        public async Task<(string FilePath, string TcpPayload)> CompleteCycleAsync(bool success = true)
+        /// <summary>
+        /// Caller must supply the active <see cref="ServoRecipeModel"/> (from Recipe.csv).
+        /// This removes the need for IRecipeApplicationService in the constructor,
+        /// making AeLimitService registerable in both CoreService and the WPF app.
+        /// </summary>
+        public async Task<(string FilePath, string TcpPayload)> CompleteCycleAsync(
+            ServoRecipeModel recipe, bool success = true)
         {
             AeCycleContext context;
             lock (_stateLock)
@@ -122,16 +129,13 @@ namespace IPCSoftware.Services
 
             try
             {
-                // Load the currently active recipe from Recipe.csv
-                var recipe = await _recipeService.GetRecipefromSelection();
-
-                // 1. Build station configs from recipe + settings
+                // 1. Build station configs by merging recipe (CSV) + settings (JSON)
                 var stations = BuildStationsFromRecipe(recipe, _settings);
 
                 // 2. Generate content lines
                 var contentLines = BuildCycleContent(context, stations);
 
-                // 3. Generate TCP Payload — Format: _{ ...data... }
+                // 3. TCP Payload — Format: _{ ...data... }
                 var tcpSb = new StringBuilder();
                 tcpSb.AppendLine("_{");
                 foreach (var line in contentLines)
@@ -139,7 +143,7 @@ namespace IPCSoftware.Services
                 tcpSb.Append("}");
                 string tcpPayload = tcpSb.ToString();
 
-                // 4. Generate File Payload — Format: [Time] :_{ ...data... }
+                // 4. File Payload — Format: [Time] :_{ ...data... }
                 var fileLines = new List<string>();
                 var stamp = DateTime.Now.ToString("HH:mm:ss:fff");
                 fileLines.Add("");
@@ -164,26 +168,23 @@ namespace IPCSoftware.Services
             lock (_stateLock) { _currentCycle = null; }
         }
 
-        // --- Station Config Builder (from Recipe.csv via IRecipeApplicationService) ---
+        // --- Station Config Builder ---
 
-
-        private List<AeStationRecipeConfig> BuildStationsFromRecipe(ServoRecipeModel recipe, AeLimitSettings settings)
+        private List<AeStationRecipeConfig> BuildStationsFromRecipe(
+            ServoRecipeModel recipe, AeLimitSettings settings)
         {
             var result = new List<AeStationRecipeConfig>();
-
-            if (recipe == null || settings == null)
-                return result;
+            if (recipe == null || settings == null) return result;
 
             for (int i = 0; i <= 12; i++)
             {
-                bool isEnabled = GetIsEnabled(recipe, i);
-                if (!isEnabled) continue;
+                if (!GetIsEnabled(recipe, i)) continue;
 
                 result.Add(new AeStationRecipeConfig
                 {
                     StationIndex = i,
-                    StationId = GetPositionId(recipe, i),     // PositionID_N → maps StationId
-                    Cavity = GetCavity(recipe, i),         // S0..S12 → Cavity
+                    StationId = GetPositionId(recipe, i),
+                    Cavity = GetCavity(recipe, i),
                     InspectionXLower = recipe.Xmin,
                     InspectionXUpper = recipe.Xmax,
                     InspectionYLower = recipe.Ymin,
@@ -195,13 +196,13 @@ namespace IPCSoftware.Services
                     MachineModeOverride = settings.MachineModeOverride
                 });
             }
-
             return result;
         }
 
         // --- Cycle Content Builder ---
 
-        private List<string> BuildCycleContent( AeCycleContext context, List<AeStationRecipeConfig> stations)
+        private List<string> BuildCycleContent(
+            AeCycleContext context, List<AeStationRecipeConfig> stations)
         {
             var lines = new List<string>();
             var settings = _settings ?? AeLimitSettings.CreateDefault();
@@ -209,14 +210,12 @@ namespace IPCSoftware.Services
 
             foreach (var station in stations)
             {
-                // Only include stations that have actual measurement data for this cycle
                 var record = context.GetRecord(station.StationId);
                 if (record == null) continue;
 
                 var serial = record.SerialNumber ?? context.SerialNumber ?? "NA";
                 var carrier = record.CarrierSerial ?? context.CarrierSerial ?? serial;
 
-                // StartLabel: use global default from AELimit.json
                 var startLabel = string.IsNullOrWhiteSpace(settings.StartLabel)
                     ? settings.StartLabelDefault
                     : settings.StartLabel;
@@ -229,15 +228,12 @@ namespace IPCSoftware.Services
                 lines.Add($"{serial}@pdata@ae_vendor@{settings.VendorCode}");
                 lines.Add($"{serial}@pdata@Tossing@{settings.TossingDefault}");
 
-                // Inspection X — limits from Recipe.csv, unit/hasLimits from AELimit.json
                 var rangeX = RangeSetting.Create(
                     station.InspectionXLower, station.InspectionXUpper,
                     settings.InspectionXUnit, settings.InspectionXHasLimits);
-
                 var rangeY = RangeSetting.Create(
                     station.InspectionYLower, station.InspectionYUpper,
                     settings.InspectionYUnit, settings.InspectionYHasLimits);
-
                 var rangeAngle = RangeSetting.Create(
                     station.InspectionAngleLower, station.InspectionAngleUpper,
                     settings.InspectionAngleUnit, settings.InspectionAngleHasLimits);
@@ -251,8 +247,7 @@ namespace IPCSoftware.Services
                 lines.Add($"{serial}@pdata@Operator_ID@{settings.OperatorIdDefault}");
 
                 var modeValue = !string.IsNullOrWhiteSpace(station.MachineModeOverride)
-                    ? station.MachineModeOverride
-                    : settings.ModeDefault;
+                    ? station.MachineModeOverride : settings.ModeDefault;
 
                 lines.Add($"{serial}@pdata@Mode@{modeValue}");
                 lines.Add($"{serial}@pdata@TestSeriesID@{settings.TestSeriesIdDefault}");
@@ -260,7 +255,6 @@ namespace IPCSoftware.Services
                 lines.Add($"{serial}@pdata@online@{settings.OnlineFlagDefault}");
                 lines.Add($"{serial}@submit@{settings.SubmitId}");
             }
-
             return lines;
         }
 
@@ -269,8 +263,7 @@ namespace IPCSoftware.Services
         {
             var unit = overrideUnit ?? range?.Unit ?? "mm";
             var formattedValue = value.HasValue
-                ? value.Value.ToString("0.000", CultureInfo.InvariantCulture)
-                : "0.000";
+                ? value.Value.ToString("0.000", CultureInfo.InvariantCulture) : "0.000";
             var lower = range?.FormatLower() ?? "NA";
             var upper = range?.FormatUpper() ?? "NA";
             lines.Add($"{serial}@pdata@{label}@{formattedValue}@{lower}@{upper}@{unit}");
@@ -328,14 +321,13 @@ namespace IPCSoftware.Services
 
             var defaults = AeLimitSettings.CreateDefault();
             try { File.WriteAllText(_configFilePath, JsonConvert.SerializeObject(defaults, Formatting.Indented), Encoding.UTF8); }
-            catch { /* best-effort write */ }
+            catch { /* best-effort */ }
             return defaults;
         }
 
-        // --- Recipe.csv field accessors (index 0..12) ---
+        // --- Recipe field accessors (index 0..12) ---
 
-        /// <summary>Cavity = S0..S12. S0 is implicitly 0; S1..S12 come from recipe.</summary>
-        private static int GetCavity(IPCSoftware.Shared.Models.ServoRecipeModel r, int i) => i switch
+        private static int GetCavity(ServoRecipeModel r, int i) => i switch
         {
             0 => 0,
             1 => r.S1,
@@ -353,8 +345,7 @@ namespace IPCSoftware.Services
             _ => 0
         };
 
-        /// <summary>StationId = PositionID_N (Position_N property in model).</summary>
-        private static int GetPositionId(IPCSoftware.Shared.Models.ServoRecipeModel r, int i) => i switch
+        private static int GetPositionId(ServoRecipeModel r, int i) => i switch
         {
             0 => r.Position_0,
             1 => r.Position_1,
@@ -372,7 +363,7 @@ namespace IPCSoftware.Services
             _ => i
         };
 
-        private static string GetName(IPCSoftware.Shared.Models.ServoRecipeModel r, int i) => i switch
+        private static string GetName(ServoRecipeModel r, int i) => i switch
         {
             0 => r.Name_0,
             1 => r.Name_1,
@@ -390,7 +381,7 @@ namespace IPCSoftware.Services
             _ => $"Station {i}"
         };
 
-        private static bool GetIsEnabled(IPCSoftware.Shared.Models.ServoRecipeModel r, int i) => i switch
+        private static bool GetIsEnabled(ServoRecipeModel r, int i) => i switch
         {
             0 => r.Is_Enabled_0,
             1 => r.Is_Enabled_1,
@@ -421,7 +412,6 @@ namespace IPCSoftware.Services
             {
                 if (update != null) _records[stationId] = update;
             }
-
             public AeStationUpdate GetRecord(int stationId) =>
                 _records.TryGetValue(stationId, out var record) ? record : null;
         }

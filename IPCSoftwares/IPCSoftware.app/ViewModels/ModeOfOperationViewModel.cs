@@ -114,7 +114,10 @@ namespace IPCSoftware.App.ViewModels
 
         private bool _isInitialized = false;               //Added by Rishabh -Date -13-05-2026
 
-        public ModeOfOperationViewModel(IAppLogger logger, CoreClient coreClient, INavigationService navService, IServoCalibrationService servoService, IRecipeApplicationService recipeAppService, IOptions<ConfigSettings> configSettings, IDialogService dialog) : base(logger)
+        public ModeOfOperationViewModel(IAppLogger logger,
+            CoreClient coreClient, INavigationService navService, 
+            IServoCalibrationService servoService, IRecipeApplicationService recipeAppService,
+            /*IOptions<ConfigSettings> configSettings,*/ IDialogService dialog) : base(logger)
         {
             _coreClient = coreClient;
             _navService = navService;

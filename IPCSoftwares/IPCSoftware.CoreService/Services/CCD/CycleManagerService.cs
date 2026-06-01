@@ -373,8 +373,13 @@ namespace IPCSoftware.CoreService.Services.CCD
                     _logger.LogInfo("[CycleManager] Reset skipped - already completed.", LogType.Diagnostics);
                     if (_extService.Settings.IsMacMiniEnabled)
                     {
-                        // 1. Generate the Payload (Tuple: FilePath, TcpPayload)
-                        var result = await _aeLimitService.CompleteCycleAsync();
+
+                        // Fetch active recipe from RecipeApplicationService and pass it to CompleteCycleAsync
+                        var activeRecipe = await _recipeApplicationService.GetRecipefromSelection();
+
+                        var result = await _aeLimitService.CompleteCycleAsync(activeRecipe);
+
+
 
                         // 2. Send via TCP to Mac Mini
                         // The SendPdcaDataAsync method handles:

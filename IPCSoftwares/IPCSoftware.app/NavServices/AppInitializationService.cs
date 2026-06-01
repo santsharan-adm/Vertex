@@ -53,7 +53,7 @@ namespace IPCSoftware.App.NavServices
 
             if (plcTagConfigService != null)
             {
-                plcTagConfigService.InitializeAsync();
+                await plcTagConfigService.InitializeAsync();
             }
        
         }

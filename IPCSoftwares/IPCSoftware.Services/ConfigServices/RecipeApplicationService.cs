@@ -13,20 +13,21 @@ namespace IPCSoftware.Services.ConfigServices
         private readonly IMachineDataHandler _plcRecipeWriter;
         private readonly IAppLogger _logger;
         private ServoRecipeModel _lastSelectedRecipe;
-        private IServoCalibrationService _servoService;
+        private readonly IServoCalibrationService _servoService;
 
         public RecipeApplicationService(            
             //IAeLimitService aeLimitService,
             IAppLogger logger,
-            IMachineDataHandler plcRecipeWriter,
-            IServoCalibrationService servoService)
+            IServoCalibrationService servoService,
+            IMachineDataHandler plcRecipeWriter )
         {
            
             //_aeLimitService = aeLimitService;
-            _logger = logger;
-            _plcRecipeWriter = plcRecipeWriter;
+            _logger = logger;            
             _servoService = servoService;
+            _plcRecipeWriter = plcRecipeWriter;
         }
+
 
         public async Task<Dictionary<int,bool>> ApplyRecipeToPlcAsync(ServoRecipeModel recipe)
         {
@@ -34,6 +35,11 @@ namespace IPCSoftware.Services.ConfigServices
 
             try
             {
+                if (_plcRecipeWriter == null)
+                {
+                    _logger.LogWarning("[RecipeService] ApplyRecipeToPlcAsync not available in CoreService context.", LogType.Diagnostics);
+                    return dict;
+                }
                 dict = await _plcRecipeWriter.WriteSelectedRecipeAsync(recipe);
                 //if (dict.ContainsKey(1)) { bool result1 = dict[1]; }
                 _lastSelectedRecipe = recipe;

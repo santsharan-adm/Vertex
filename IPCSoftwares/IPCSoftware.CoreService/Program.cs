@@ -85,6 +85,13 @@ namespace IPCSoftware.CoreService
                             // 1. Configuration/Logging
                             //   services.AddSingleton<IConfiguration>(hostContext.Configuration);
                             // 2. Configuration Service (Resolvable by DI)
+                            // WITH this factory — explicitly bypasses IMachineDataHandler:
+                            services.AddSingleton<IRecipeApplicationService>(sp =>
+                                new RecipeApplicationService(
+                                    sp.GetRequiredService<IAppLogger>(),
+                                   
+                                    sp.GetRequiredService<IServoCalibrationService>(),null
+                                ));
                             services.AddSingleton<IRecipeManagementService, RecipeManagementService>();
                             services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
                             services.AddSingleton<IAppLogger, AppLoggerService>();
