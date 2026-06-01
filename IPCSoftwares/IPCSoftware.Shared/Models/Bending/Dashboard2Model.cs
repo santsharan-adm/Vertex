@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.Shared;
 using System;
+using System.Collections.ObjectModel;
 
 namespace IPCSoftware.Shared.Models.Bending
 {
@@ -7,7 +8,24 @@ namespace IPCSoftware.Shared.Models.Bending
     public class DashboardInspectionModel : ObservableObjectVM
     {
 
-        public string BatchNo { get; set; }
+        public Int32 BatchNo { get; set; }
+        public Int32 PositionIndex { get; set; }
+        public ObservableCollection<DashboardInspectionLineModel> LineItems { get; set; } = new ObservableCollection<DashboardInspectionLineModel>()
+        {
+            new DashboardInspectionLineModel()
+            {
+                QRCode="AAA",
+
+
+            },
+            new DashboardInspectionLineModel()
+            {
+                QRCode="BBB",
+                HeaterTemp_Bend1=200
+
+            },
+           
+        };
         public DashboardInspectionLineModel LineItem1 { get; set; }
         public DashboardInspectionLineModel LineItem2 { get; set; }
         public DashboardInspectionLineModel LineItem3 { get; set; }

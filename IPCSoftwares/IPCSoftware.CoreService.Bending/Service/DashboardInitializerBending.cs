@@ -255,7 +255,7 @@ namespace IPCSoftware.CoreService.Bending.Service
 
             DashboardInspectionModel item = new DashboardInspectionModel
             {
-                BatchNo =   "ABCDTrail",/* GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),*/
+                BatchNo =   1,/* GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),*/
                 LineItem1 = BuildLineItem1(),
                 LineItem2 = BuildLineItem2(),
                 LineItem3 = BuildLineItem3(),
@@ -346,7 +346,7 @@ namespace IPCSoftware.CoreService.Bending.Service
 
             DashboardInspectionModel item = new DashboardInspectionModel
             {
-                BatchNo = "ABCDTrail",/* GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),*/
+                BatchNo = 2,/* GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),*/
                 LineItem1 = BuildLineItem1(),
                 LineItem2 = BuildLineItem2(),
                 LineItem3 = BuildLineItem3(),
@@ -371,7 +371,7 @@ namespace IPCSoftware.CoreService.Bending.Service
 
             DashboardInspectionModel BuiltedBatch = new DashboardInspectionModel
             {
-                BatchNo = "TrailBatch001",
+                BatchNo = 3,
                 LineItem1 = new DashboardInspectionLineModel { QRCode = GetString(ConstantValues.L1_QRCode) },
                 LineItem2 = new DashboardInspectionLineModel { QRCode = GetString(ConstantValues.L2_QRCode) },
                 LineItem3 = new DashboardInspectionLineModel { QRCode = GetString(ConstantValues.L3_QRCode) },
@@ -398,7 +398,7 @@ namespace IPCSoftware.CoreService.Bending.Service
 
             DashboardInspectionModel BuiltedBatch = new DashboardInspectionModel
             {
-                BatchNo = "TrailBatch002",
+                BatchNo = 4,
                 LineItem1 = new DashboardInspectionLineModel { QRCode = GetString(ConstantValues.L1_QRCode) },
                 LineItem2 = new DashboardInspectionLineModel { QRCode = GetString(ConstantValues.L2_QRCode) },
                 LineItem3 = new DashboardInspectionLineModel { QRCode = GetString(ConstantValues.L3_QRCode) },
@@ -797,7 +797,7 @@ namespace IPCSoftware.CoreService.Bending.Service
         {
             BendingMonitorModel item = new BendingMonitorModel
             {
-                BatchNo = latestValueNew.TryGetValue(26, out var batchNo) ? batchNo.ToString() : "NA",
+                BatchNo = latestValueNew.TryGetValue(26, out var batchNo) ? int.TryParse(batchNo.ToString(), out var batchNoResult) ? batchNoResult : 0 : int.MinValue,
                 Product1 = new BendingMonitorProductModel
                 {
                     QRCode = latestValueNew.TryGetValue(26, out var p1QR) ? p1QR.ToString() : "NA",
@@ -886,7 +886,7 @@ namespace IPCSoftware.CoreService.Bending.Service
         {
             BendingMonitorModel item = new BendingMonitorModel
             {
-                BatchNo = latestValueNew.TryGetValue(27, out var batchNo) ? batchNo.ToString() : "NA",
+                BatchNo = latestValueNew.TryGetValue(27, out var batchNo) ? int.TryParse(batchNo.ToString(), out var batchNoResult) ? batchNoResult : 0 : int.MinValue,
                 Product1 = new BendingMonitorProductModel
                 {
                     QRCode = latestValueNew.TryGetValue(27, out var p1QR) ? p1QR.ToString() : "NA",
@@ -975,7 +975,7 @@ namespace IPCSoftware.CoreService.Bending.Service
         {
             BendingMonitorModel item = new BendingMonitorModel
             {
-                BatchNo = latestValueNew.TryGetValue(28, out var batchNo) ? batchNo.ToString() : "NA",
+                BatchNo = latestValueNew.TryGetValue(28, out var batchNo) ? int.TryParse(batchNo.ToString(), out var batchNoResult) ? batchNoResult : 0 : int.MinValue,
                 Product1 = new BendingMonitorProductModel
                 {
                     QRCode = latestValueNew.TryGetValue(28, out var p1QR) ? p1QR.ToString() : "NA",

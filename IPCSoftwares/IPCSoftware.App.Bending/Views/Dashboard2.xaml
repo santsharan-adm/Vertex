@@ -79,16 +79,28 @@
 
         
         <!--Bending Operation-->
-        <Viewbox Grid.Row="2" Grid.Column="1" Stretch="Uniform" Margin="3">
+        <Viewbox Grid.Row="2" Grid.Column="1" Stretch="Uniform" Margin="3" HorizontalAlignment="Left">
             <Canvas Width="1186" Height="450" RenderOptions.CachingHint="Cache" RenderOptions.CacheInvalidationThresholdMinimum="0.5" RenderOptions.CacheInvalidationThresholdMaximum="2.0">
+
+
+                <!--INPUT TRAY-->
+                <cc:InputTrayCC Canvas.Left="403" Canvas.Top="570" Width="160" Height="40"
+                 Background="#F1F5F9" BorderBrush="#475569" BorderThickness="3"
+                 StationIndex="0" BatchNo="{Binding BendingStationTrace.Station0BatchNo}"/>
+                
+                
+                <!--INSPECTION UNIT - 1-->
+                <cc:InspectionUnitInputCC Canvas.Left="403" Canvas.Top="405" Width="215"                                           
+                           Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3"
+                                          StationIndex="1" BatchNo="{Binding BendingStationTrace.Station1BatchNo}"/>
                
 
                 <!--Robot1-->
-                <cc:Robot1CC RobotNumber="1" Canvas.Top="337" Canvas.Left="130"/>
+                <cc:Robot1CC RobotNumber="1" Canvas.Top="437" Canvas.Left="130"/>
 
 
                 <!--Robot2-->
-                <cc:Robot2CC Canvas.Left="940" Canvas.Top="347"/>
+                <cc:Robot2CC Canvas.Left="1140" Canvas.Top="447"/>
 
                 <!-- BENDINDICATORS - Clamp, Heat, Punch, Tear, Flip -->
                 <cc:BendStatusIndicatorsCC Canvas.Left="60" Canvas.Top="5"
@@ -156,44 +168,46 @@
                 <cc:TearingFlippingStatusCC Canvas.Left="807" Canvas.Top="5" BorderBrush="Black" BorderThickness="1.5"/>
                 
 
-                <!--Transfer Module-->
-                <cc:TransferModuleCC Canvas.Left="503" Canvas.Top="66" />
+               
                 
+                <!--TT-1-->
+                <cc:TurnTable1CC Canvas.Left="334" Canvas.Top="148" />
 
-                <cc:TurnTable1CC Canvas.Left="334" Canvas.Top="58" />
+                <cc:StationIndexCC Canvas.Left="334" Canvas.Top="348"
+                    StationIndex="2" BatchNo="{Binding BendingStationTrace.Station1BatchNo}"/>
+                <cc:StationIndexCC Canvas.Left="174" Canvas.Top="228"
+                    StationIndex="3" BatchNo="{Binding BendingStationTrace.Station2BatchNo}"/>
 
 
-                <!--INSPECTION UNIT - 1-->
-                <cc:InspectionUnitInputCC Canvas.Left="343" Canvas.Top="305" Width="215" Height="55" 
-                                          Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3"/>
-                <!--INPUT TRAY-->
-                <cc:InputTrayCC Canvas.Left="367" Canvas.Top="370" Width="160" Height="40"
-                                Background="#F1F5F9" BorderBrush="#475569" BorderThickness="3"/>               
+                <!--Transfer Module-->
+                <cc:TransferModuleCC Canvas.Left="503" Canvas.Top="148" />
+
 
                 <!-- Turn Table 2 rotating disc: circle + triangle + ellipses -->
                 <cc:TurnTable2CC x:Name="TurnTable2Control"
                                  Canvas.Left="664"
-                                 Canvas.Top="60"
+                                 Canvas.Top="148"
                                  Width="220"
                                  Height="230"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Top" />
                 <!--INSPECTION UNIT-->
-                <cc:InspectionUnitOutputCC Canvas.Left="620" Canvas.Top="305" Width="215" Height="55"
+                <cc:InspectionUnitOutputCC Canvas.Left="820" Canvas.Top="405" Width="215" 
                                      Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3" 
+                                           StationIndex="10" BatchNo="1"
                                      />
                 <!--OUTPUT TRAY-->
-                <cc:OutputTrayCC Canvas.Left="651" Canvas.Top="370" Width="160" Height="40" 
+                <cc:OutputTrayCC Canvas.Left="820" Canvas.Top="570" Width="160" Height="40" 
                                  Background="White" BorderBrush="#475569" BorderThickness="3"/>
                 <!--NG BIN 2-->
                 <cc:NgBinCC Canvas.Left="138" Canvas.Top="200" Width="85" Height="95" BinNumber="1" 
                             BorderBrush="Black" BorderThickness="3" Background="Gray"/>
                 <!--PID  HETER-->           
-                <cc:PidTableCC Canvas.Left="970" Canvas.Top="52"   TableType="Heater" BorderBrush="{StaticResource AccentBlue}" 
+                <cc:PidTableCC Canvas.Left="1120" Canvas.Top="5"   TableType="Heater" BorderBrush="{StaticResource AccentBlue}" 
                             BorderThickness="1" Background="#1565C0"/>
 
                 <!--PID FORCE-->               
-                <cc:PidTableCC Canvas.Left="968" Canvas.Top="175"   TableType="Force"/>
+                <cc:PidTableCC Canvas.Left="1120" Canvas.Top="120"   TableType="Force"/>
 
                 <!--NG BIN 2-->              
                 <cc:NgBinCC Canvas.Left="882" Canvas.Top="200" Width="85" Height="95" BinNumber="2" 

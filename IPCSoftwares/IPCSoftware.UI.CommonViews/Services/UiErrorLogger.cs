@@ -75,11 +75,11 @@ namespace IPCSoftware.UI.CommonViews.Services
             if (!sent)
             {
                 WriteToEventViewer(message, level);
-                if (!_hasWarnedUser && level == "ERROR")
-                {
-                    _hasWarnedUser = true;
-                    _dialog.ShowWarning("Logging service unavailable. Error logged to Event Viewer.");
-                }
+                //if (!_hasWarnedUser && level == "ERROR")
+                //{
+                //    _hasWarnedUser = true;
+                //    _dialog.ShowWarning("Logging service unavailable. Error logged to Event Viewer.");
+                //}
             }
         }
 

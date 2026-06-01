@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
 using IPCSoftware.Common.CommonExtensions;
 using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces;
@@ -56,6 +57,24 @@ namespace IPCSoftware.App.Bending.ViewModels
         #region Properties
 
         // --- Inspection Tables (Lot 1 & Lot 2) ---
+
+        public ObservableCollection<DashboardInspectionModel> DashboardInspectionModelBatches 
+        {
+            get => new ObservableCollection<DashboardInspectionModel>{
+            DashboardInspectionModelBatch1,
+            DashboardInspectionModelBatch2,
+            DashboardInspectionModelBatch3,
+            DashboardInspectionModelBatch4
+                };
+        }
+
+        private BendingStationTrace _bendingStationTrace = new();
+        public BendingStationTrace BendingStationTrace
+        {
+            get => _bendingStationTrace;
+            set => SetProperty(ref _bendingStationTrace, value);
+        }
+
 
         private DashboardInspectionModel _dashboardInspectionModelBatch1 = new();
         public DashboardInspectionModel DashboardInspectionModelBatch1
@@ -396,6 +415,8 @@ namespace IPCSoftware.App.Bending.ViewModels
             _outputTrayPoller.Start();
             _ngBinPoller.Start();
             //_efficiencyBreakdownPoller.Start();
+
+           
         }
 
         // ----------------------------------------------------------------

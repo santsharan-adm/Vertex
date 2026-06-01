@@ -93,14 +93,14 @@ namespace IPCSoftware.Common.UIClientComm
 
                 _logger?.LogError($"[TCP_CONNECT_ERROR] {ex.Message}", LogType.Diagnostics);
 
-                if (!_hasShownError)
-                {
-                    _hasShownError = true;
-                    Application.Current?.Dispatcher.InvokeAsync(() =>
-                    {
-                        _dialog.ShowWarning("Core Service unavailable. Retrying in background...");
-                    });
-                }
+                //if (!_hasShownError)
+                //{
+                //    _hasShownError = true;
+                //    Application.Current?.Dispatcher.InvokeAsync(() =>
+                //    {
+                //        _dialog.ShowWarning("Core Service unavailable. Retrying in background...");
+                //    });
+                //}
 
                 return false;
             }
