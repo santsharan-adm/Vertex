@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.Shared.Models.Bending
 {
-    internal class ManualOperationPageModel
+    public class ManualOperationPageModel : ObservableObjectVM
     {
-        string _title;
+       public string _title;
         public string Title
         {
             get

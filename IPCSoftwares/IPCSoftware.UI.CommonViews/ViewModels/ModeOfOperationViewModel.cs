@@ -151,8 +151,9 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                     var btn = GetBtn(OperationMode.Manual);
                     if (isPressed && btn.IsEnabled)
                     {
-                        _navService.NavigateToManualOperation();
-                    }
+                        //_navService.NavigateToManualOperation();
+                        _navService.NavigateToManualOperationBending();
+                            }
                     return;
                 }
 
@@ -166,40 +167,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                     if (isPressed) AddAudit($"Operator Pressed: {mode}");
                 }
 
-                /* if ((buttonItem.IsEnabled || _activePulseModes.Contains(mode))
-             && _writeTags.TryGetValue(mode, out int tagId))
-                 {
-                     if (isPressed)
-                     {
-                         // --- LOCK: Prevent Feedback loop from disabling this button ---
-                         if (!_activePulseModes.Contains(mode))
-                         {
-                             _activePulseModes.Add(mode);
-                         }
-
-                         try
-                         {
-                             // A. Send 1
-                             await _coreClient.WriteTagAsync(tagId, 1);
-                             AddAudit($"Operator Pressed: {mode}");
-
-                             // B. Wait (Pulse Duration)
-                             await Task.Delay(250);
-
-                             // C. Send 0 (Crucial Step)
-                             await _coreClient.WriteTagAsync(tagId, 0);
-                         }
-                         finally
-                         {
-                             // --- UNLOCK: Allow Feedback loop to take over again ---
-                             if (_activePulseModes.Contains(mode))
-                             {
-                                 _activePulseModes.Remove(mode);
-                             }
-                         }
-                     }
-                 }*/
-
+   
 
             }
             catch (Exception ex)

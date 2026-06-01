@@ -531,6 +531,8 @@ namespace IPCSoftware.Common.CommonFunctions
         }
 
         public void NavigateToManualOperation() => NavigateMainByTypeName("ManualOperationView");
+
+        public void NavigateToManualOperationBending() => NavigateMainByTypeName("ManualOperationBendingView");
         public void NavigateToOEEDashboard() => NavigateMainByTypeName("OEEDashboard");
 
         public void NavigateToDashboard1() => NavigateMainByTypeName("Bending1MonitorView");
