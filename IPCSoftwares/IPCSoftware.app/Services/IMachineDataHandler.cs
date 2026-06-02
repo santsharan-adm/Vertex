@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IPCSoftware.Shared.Models;
 
-namespace IPCSoftware.Core.Interfaces
+namespace IPCSoftware.App.Services
 {
     
     /// Abstraction over ServoCalibrationViewModel's PLC write capability.
@@ -13,7 +13,8 @@ namespace IPCSoftware.Core.Interfaces
  
     public interface IMachineDataHandler
     {
-        Task<Dictionary<int, bool>> WriteSelectedRecipeAsync(ServoRecipeModel recipe);
+        //Task<Dictionary<int, bool>> WriteSelectedRecipeAsync(ServoRecipeModel recipe);
+        Task<Dictionary<int, bool>> ApplyRecipeToPlcAsync(ServoRecipeModel recipe);
 
     }
 }

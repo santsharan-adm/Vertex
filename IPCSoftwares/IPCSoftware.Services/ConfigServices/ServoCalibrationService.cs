@@ -30,18 +30,17 @@ namespace IPCSoftware.Services.ConfigServices
         private readonly string _appSettingsPath; // For current program number
 
 
-        public ServoCalibrationService(IOptions<ConfigSettings> configSettings,
-         /*     IProductConfigurationService productService, *//*IOptions<ConfigSettings> configSettings*/ IAppLogger logger)
+        public ServoCalibrationService(IOptions<ConfigSettings> configSettings,IAppLogger logger)
         {
             //string folder = configSettings.Value.DataFolder ?? AppContext.BaseDirectory;
             _logger = logger;
             var config = configSettings.Value;
-            var sharedConfigDir = Environment.GetEnvironmentVariable("CONFIG_DIR");
-            var baseDir = !string.IsNullOrWhiteSpace(sharedConfigDir) && Directory.Exists(sharedConfigDir)
-                          ? sharedConfigDir
-                          : AppContext.BaseDirectory;
+            //var sharedConfigDir = Environment.GetEnvironmentVariable("CONFIG_DIR");
+            //var baseDir = !string.IsNullOrWhiteSpace(sharedConfigDir) && Directory.Exists(sharedConfigDir)
+            //              ? sharedConfigDir
+            //              : AppContext.BaseDirectory;
 
-            _appSettingsPath = Path.Combine(baseDir, "appsettings.json");
+            _appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
           
             string dataFolderPath = config.DataFolder;
             //_productService = productService;
@@ -53,39 +52,13 @@ namespace IPCSoftware.Services.ConfigServices
             _currentRunningProgram = config.CurrentRunningProgram;
 
         }
-
-        //Old read json
-        //public async Task<List<ServoPositionModel>> LoadPositionsAsync()
-        //{
-        //    if (!File.Exists(_filePath))
-        //    {
-        //        return await CreateDefaultPositionsAsync();
-        //    }
-
-        //    try
-        //    {
-        //        string json = await File.ReadAllTextAsync(_filePath);
-        //        var data = JsonSerializer.Deserialize<List<ServoPositionModel>>(json);
-
-        //        // Integrity check: If file exists but is empty or missing sequences
-        //        if (data == null || data.Count == 0)
-        //        {
-        //            return await CreateDefaultPositionsAsync();
-        //        }
-        //        return data;
-        //    }
-        //    catch
-        //    {
-        //        return await CreateDefaultPositionsAsync();
-        //    }
-        //}
-
+           
 
         public async Task<List<ServoPositionModel>> LoadPositionsAsync()
         {
             try
             {
-                var recipe = await GetRecipeByProgramNumberAsync(0);
+                var recipe = await GetRecipeByProgramNumberAsync();
                 if (recipe == null) 
                 {
                     _logger.LogWarning("[ServoCalibrationService] LoadPositionAsync :No recipe found , falling back to default ", LogType.Diagnostics);
@@ -239,14 +212,6 @@ namespace IPCSoftware.Services.ConfigServices
             return recipes;
         }
 
-
-        //public async Task SavePositionsAsync(List<ServoPositionModel> positions)          // No longer needed now removed by Rishabh - Date 28/05/2026
-        //{
-        //    var options = new JsonSerializerOptions { WriteIndented = true };
-        //    string json = JsonSerializer.Serialize(positions, options);
-        //    await File.WriteAllTextAsync(_filePath, json);
-        //}
-
         private async Task<List<ServoPositionModel>> CreateDefaultPositionsAsync()
         {
             var list = new List<ServoPositionModel>();
@@ -294,17 +259,18 @@ namespace IPCSoftware.Services.ConfigServices
             return list;
         }
         //New method to get recipe by program number
-        public async Task<ServoRecipeModel> GetRecipeByProgramNumberAsync(int programNo)
+
+        int targetProgramNo;
+        public async Task<ServoRecipeModel> GetRecipeByProgramNumberAsync()
         {
             try
-            {
-                int targetProgramNo = programNo;
+            {               
 
                 // --- Scenario B: CoreService startup — UI hasn't provided a selection yet ---
                 // If caller passes 0 or negative, fall back to appsettings.json
-                if (targetProgramNo <= 0)
-                {
-                    try
+                //if (targetProgramNo <= 0)
+                //{
+                try
                     {
                         var json = File.ReadAllText(_appSettingsPath);
                         var jsonObj = JObject.Parse(json);
@@ -326,7 +292,7 @@ namespace IPCSoftware.Services.ConfigServices
                        
                         _logger.LogWarning($"[ServoCalibrationService] Failed to read appsettings.json, using startup default {targetProgramNo}: {jsonEx.Message}", LogType.Diagnostics);
                     }
-                }
+                //}
 
                 // --- Scenario A: UI selected a recipe — programNo was passed directly ---
                 // Both paths now have a valid targetProgramNo, find recipe from CSV
@@ -343,75 +309,9 @@ namespace IPCSoftware.Services.ConfigServices
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[ServoCalibrationService] GetRecipeByProgramNumberAsync failed for ProgramNo={programNo}: {ex.Message}", LogType.Error);
+                _logger.LogError($"[ServoCalibrationService] GetRecipeByProgramNumberAsync failed for ProgramNo={targetProgramNo}: {ex.Message}", LogType.Error);
                 return null;
             }
-        }
-
-        private ServoPositionModel ParseRecipeCsvLine(string line)
-        {
-            try
-            {
-                var values = SplitCsvLine(line);
-                if (values.Count < 50) // Expecting at least 50 columns based on the model
-                    return null;
-                var model = new ServoPositionModel
-                {
-                    PositionId = int.TryParse(values[0], out int posId) ? posId : 0,
-                    Name = values[1],
-                    SequenceIndex = int.TryParse(values[2], out int seq) ? seq : 0,
-                    X = double.TryParse(values[3], out double x) ? x : 0,
-                    Y = double.TryParse(values[4], out double y) ? y : 0
-                };
-                return model;
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError($"Failed to parse recipe CSV line: {ex.Message}", LogType.Error);
-                return null; // Return null if parsing fails
-            }
-
-        }
-
-
-
-        // ==================== HELPERS ====================
-
-        private List<string> SplitCsvLine(string line)
-        {
-            var values = new List<string>();
-            var currentValue = new StringBuilder();
-            bool inQuotes = false;
-
-            for (int i = 0; i < line.Length; i++)
-            {
-                char c = line[i];
-
-                if (c == '"')
-                {
-                    if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
-                    {
-                        currentValue.Append('"');
-                        i++;
-                    }
-                    else
-                    {
-                        inQuotes = !inQuotes;
-                    }
-                }
-                else if (c == ',' && !inQuotes)
-                {
-                    values.Add(currentValue.ToString());
-                    currentValue.Clear();
-                }
-                else
-                {
-                    currentValue.Append(c);
-                }
-            }
-
-            values.Add(currentValue.ToString());
-            return values;
         }
 
 

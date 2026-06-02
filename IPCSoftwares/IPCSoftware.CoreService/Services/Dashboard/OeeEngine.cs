@@ -79,7 +79,7 @@ namespace IPCSoftware.CoreService.Services.Dashboard
                 ////string json = File.ReadAllText(jsonPath);
                 //var positions = JsonSerializer.Deserialize<List<ServoPositionModel>>(json);
 
-                var lastSelectedRecipe =  _servoCalibrationservice.GetRecipeByProgramNumberAsync(0).GetAwaiter().GetResult();
+                var lastSelectedRecipe =  _servoCalibrationservice.GetRecipeByProgramNumberAsync().GetAwaiter().GetResult();
                 if (lastSelectedRecipe == null)
                 {
                     _logger.LogError($"[OEE] No Recipe Found not found", LogType.Diagnostics);

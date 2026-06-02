@@ -28,7 +28,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace IPCSoftware.App.ViewModels
 {
-    public class ServoCalibrationViewModel : BaseViewModel, IDisposable, INavigationalAware , IMachineDataHandler
+    public class ServoCalibrationViewModel : BaseViewModel, IDisposable, INavigationalAware
     {
         private readonly IRecipeManagementService _recipeManagementService;
         //private readonly IAeLimitService _aeLimitService;
@@ -293,7 +293,7 @@ namespace IPCSoftware.App.ViewModels
 
             AddProgramCommand = new RelayCommand(OnNewProgram);
 
-            EditProgramCommand = new RelayCommand(OnSaveProgram);
+            EditProgramCommand = new RelayCommand(async () => await  OnSaveProgram());
 
             CancelProgramCommand = new RelayCommand(OnCancelProgram);
 
@@ -305,7 +305,8 @@ namespace IPCSoftware.App.ViewModels
 
             //  AE Limit Commands
            // AeLimitRefreshCommand = new RelayCommand(async () =>  LoadAeLimitsFromRecipe());
-            AeLimitSaveCommand = new RelayCommand(OnSaveProgram);//async () => await SaveAeLimitsAsync());
+           // AeLimitSaveCommand = new RelayCommand(OnSaveProgram);//async () => await SaveAeLimitsAsync());
+            AeLimitSaveCommand = new RelayCommand(async () => WriteSelectedRecipeAsync());
 
             //  Product Settings Command
             //ProductSaveCommand = new RelayCommand(async () => await SaveProductSettingsAsync());
@@ -484,66 +485,6 @@ namespace IPCSoftware.App.ViewModels
         }
 
 
-        //// ===================================================================
-        //// PRODUCT SETTINGS LOGIC                   // Now removed for recipe work - commnt by rishabh
-        //// ===================================================================
-        //private async Task LoadProductSettingsAsync()
-        //{
-        //    try
-        //    {
-        //        var config = await _productService.LoadAsync();
-        //        ProductName = config.ProductName;
-        //        ProductCode = config.ProductCode;
-        //        SelectedItemCount = config.TotalItems;
-        //        GridRows = config.GridRows > 0 ? config.GridRows : 4;
-        //        GridColumns = config.GridColumns > 0 ? config.GridColumns : 3;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"[Product Settings] Load failed: {ex.Message}", LogType.Diagnostics);
-        //    }
-        //}
-
-        // ** Below function is now removed for recipe work - commnt by rishbh
-
-        //private async Task SaveProductSettingsAsync()
-        //{
-        //    try
-        //    {
-        //        // Validation
-        //        if (GridRows * GridColumns < SelectedItemCount)
-        //        {
-        //            _dialog.ShowWarning($"Grid Layout ({GridRows}x{GridColumns}) is too small for {SelectedItemCount} items.");
-        //            return;
-        //        }
-
-        //        var config = new ProductSettingsModel
-        //        {
-        //            ProductName = ProductName,
-        //            ProductCode = ProductCode,
-        //            TotalItems = SelectedItemCount,
-        //            GridRows = GridRows,
-        //            GridColumns = GridColumns
-        //        };
-
-        //        await _productService.SaveAsync(config);
-
-        //        // Write to PLC
-        //        if (_coreClient.isConnected)
-        //        {
-        //            await _coreClient.WriteTagAsync(ConstantValues.NO_OF_Station, SelectedItemCount);
-        //        }
-
-        //        _dialog.ShowMessage("Product Settings Saved Successfully!");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"[Product Settings] Save failed: {ex.Message}", LogType.Diagnostics);
-        //        _dialog.ShowWarning("Failed to save Product Settings.");
-        //    }
-        //}
-
-
 
         // ---  Initialize Available Program Numbers  ---
         private async Task InitializeAvailableProgramNumbers()
@@ -576,16 +517,16 @@ namespace IPCSoftware.App.ViewModels
                 {
                     //Availabe Product Code List Initialize
 
-                    SelectedProgramCode = AvailableProgramCode.Last();
-                    FreshProductCode = AvailableProgramCode.Last();
+                    SelectedProgramCode = AvailableProgramCode.First();
+                    FreshProductCode = AvailableProgramCode.First();
                     OnPropertyChanged(nameof(SelectedProgramCode));
                     OnPropertyChanged(nameof(SelectedProgramCode));
                     _nextProgramId = savedRecipes.Max(r => r.ProgramNo);
 
                     //Availabe Product Name List Initialize
 
-                    SelectedProductName = AvailableProductName.Last();
-                    FreshProductName    = AvailableProductName.Last();
+                    SelectedProductName = AvailableProductName.First();
+                    FreshProductName    = AvailableProductName.First();
                     OnPropertyChanged(nameof(SelectedProductName));
                     OnPropertyChanged(nameof(FreshProductName));
 
@@ -673,14 +614,6 @@ namespace IPCSoftware.App.ViewModels
                 // ADD-specific: assign new program number
                 var newRecipe = await BuildRecipeAsync(++_nextProgramId, enteredProductCode, enteredProductName, enteredTotalItem, enteredGridRow, enteredGridCol);
 
-                //await _productService.SaveAsync(new ProductSettingsModel // Now removed as it is no longer needed
-                //{
-                //    ProductName = enteredProductName,
-                //    ProductCode = enteredProductCode,
-                //    TotalItems = enteredTotalItem,
-                //    GridRows = enteredGridRow,
-                //    GridColumns = enteredGridCol
-                //});
 
                 _lastProgramAdded = newRecipe.ProgramNo;
                 bool success = await _recipeManagementService.AddRecipeAsync(newRecipe);
@@ -766,7 +699,7 @@ namespace IPCSoftware.App.ViewModels
 
 
         // =------ Edit/Save Program Command Handler  ------//
-        private async void OnSaveProgram()
+        private async Task OnSaveProgram()
         {
             try
             {
@@ -795,22 +728,13 @@ namespace IPCSoftware.App.ViewModels
                 // SAVE-specific: keep original ProgramNo
                 var updatedRecipe = await BuildRecipeAsync(selectedRecipe.ProgramNo, enteredProductCode, enteredProductName, enteredTotalItem, enteredGridRow, enteredGridCol);
 
-                //await _productService.SaveAsync(new ProductSettingsModel      // Now removed as it is no longer needed
-                //{
-                //    ProductName = enteredProductName,
-                //    ProductCode = enteredProductCode,
-                //    TotalItems = enteredTotalItem,
-                //    GridRows = enteredGridRow,
-                //    GridColumns = enteredGridCol
-                //});
-
                 bool success = await _recipeManagementService.UpdateRecipeAsync(updatedRecipe);
 
                 if (success)
                 {
                     _logger.LogInfo($"Recipe updated successfully: Program {SelectedProgramCode}", LogType.Audit);
                     _dialog.ShowMessage($"Program {SelectedProgramCode} updated successfully.");
-                    await RefreshProgramNumbersAsync();
+                    
                 }
                 else
                 {
@@ -844,18 +768,6 @@ namespace IPCSoftware.App.ViewModels
                     
                 }
                 else { dict.Add(1, true); }
-
-                //var config = new ProductSettingsModel
-                //{
-                //        ProductName = recipe.ProductName,
-                //        ProductCode = recipe.ProductCode,
-                //        TotalItems = recipe.TotalItems,
-                //        GridRows = recipe.GridRows,
-                //        GridColumns = recipe.GridColumns
-                //};
-               
-                //await _productService.SaveAsync(config);  // need to remove dependency from json later
-                /// Now removed as it is no longer needed
 
 
                 if (_coreClient.isConnected)
@@ -909,9 +821,9 @@ namespace IPCSoftware.App.ViewModels
                     
                     
                 }
-
+              
                 return dict;
-                //HasUnsavedChanges = false;
+ 
             }
             catch(Exception ex)
             {
@@ -926,8 +838,10 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-               // var savedRecipe = await _servoService.LoadRecipeAsync();
-                var selectedRecipe = savedRecipes.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
+                await  OnSaveProgram();
+                // var savedRecipe = await _servoService.LoadRecipeAsync();
+                var savedRecipe = await _servoService.LoadRecipeAsync();
+                var selectedRecipe = savedRecipe.FirstOrDefault(r => r.ProductCode == SelectedProgramCode);
 
                 if (selectedRecipe == null)
                 {
@@ -936,6 +850,8 @@ namespace IPCSoftware.App.ViewModels
                 }
                 if (selectedRecipe.ProductCode == CurrentRunningProgram)
                 {
+                    //Save csv before write operation
+                    
                     bool seqconfirm = await PulseBitFromRecipe(selectedRecipe, ConstantValues.Servo_CoordSave, "X Coordinates");
                     if (_coreClient.isConnected)
                     {
@@ -970,25 +886,17 @@ namespace IPCSoftware.App.ViewModels
                             _dialog.ShowWarning("Settings Saved, but PLC Confirmation timed out.\nPlease check PLC status.");
                         }
 
-                        //Save csv after write operation
-                        OnSaveProgram();
+ 
                     }
                 }
 
-                else
-                {
-                    OnSaveProgram();
-                }
-
-                // Call the overloaded version with the recipe
-              //  WriteSelectedRecipeAsync(selectedRecipe);
+                await RefreshProgramNumbersAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to load Product Code {SelectedProgramCode} : {ex}", LogType.Error);
             }
         }
-
 
         private async Task OnJogAsync(object args)
         {
@@ -1076,8 +984,6 @@ namespace IPCSoftware.App.ViewModels
             YParameters.Add(Create(pair.Y));
         }
 
-
-
         private async Task OnLiveDataTick()
         {
          
@@ -1163,8 +1069,6 @@ namespace IPCSoftware.App.ViewModels
           
         }
         
-
-
         private async void OnTeachPosition(ServoPositionModel position)
         {
             if (position == null) return;
@@ -1539,8 +1443,7 @@ namespace IPCSoftware.App.ViewModels
                  return false;
             }
         }
-
-        
+                
         private async Task OnProgramSelectionChangedAsync()
         {
             try

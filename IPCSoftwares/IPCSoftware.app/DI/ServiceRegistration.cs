@@ -185,7 +185,7 @@ namespace IPCSoftware.App.DI
             // ========== PLC TAG CONFIGURATION VIEWMODELS (Transient) ========== 
             services.AddTransient<ServoCalibrationView>();
             services.AddTransient<ServoCalibrationViewModel>();
-            services.AddSingleton<IMachineDataHandler>(sp => sp.GetRequiredService<ServoCalibrationViewModel>());
+            services.AddSingleton<IMachineDataHandler, MachineDataHandler>();
 
             services.AddSingleton<IServoCalibrationService, ServoCalibrationService>();
 

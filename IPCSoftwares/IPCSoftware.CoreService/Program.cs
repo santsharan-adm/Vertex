@@ -90,7 +90,7 @@ namespace IPCSoftware.CoreService
                                 new RecipeApplicationService(
                                     sp.GetRequiredService<IAppLogger>(),
                                    
-                                    sp.GetRequiredService<IServoCalibrationService>(),null
+                                    sp.GetRequiredService<IServoCalibrationService>()
                                 ));
                             services.AddSingleton<IRecipeManagementService, RecipeManagementService>();
                             services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();

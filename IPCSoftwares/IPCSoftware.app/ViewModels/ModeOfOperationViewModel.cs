@@ -6,6 +6,7 @@ using IPCSoftware.App.ViewModels;
 using IPCSoftware.App.Views;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Services.ConfigServices;
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.ConfigModels;
@@ -74,11 +75,13 @@ namespace IPCSoftware.App.ViewModels
         private readonly IServoCalibrationService _servoService; // Added by Rishabh -Date 06-05-2026
         private readonly IDialogService _dialog;
         private readonly IRecipeApplicationService _recipeAppService; // Added by Rishabh -Date 18-05-2026
+        private readonly IMachineDataHandler _machineDataHandler;
+
 
         private readonly Dictionary<OperationMode, int> _writeTags = new();
         private readonly Dictionary<OperationMode, int> _statusTags = new();
         private readonly Dictionary<OperationMode, int> _enableTags = new();
-        private readonly string _appSettingsPath; // For saving current program number
+
 
 
         public ObservableCollection<ModeButtonItem> ModeButtons { get; } = new ObservableCollection<ModeButtonItem>();
@@ -117,13 +120,13 @@ namespace IPCSoftware.App.ViewModels
         public ModeOfOperationViewModel(IAppLogger logger,
             CoreClient coreClient, INavigationService navService, 
             IServoCalibrationService servoService, IRecipeApplicationService recipeAppService,
-            /*IOptions<ConfigSettings> configSettings,*/ IDialogService dialog) : base(logger)
+            IMachineDataHandler machineDataHandler, IDialogService dialog) : base(logger)
         {
             _coreClient = coreClient;
             _navService = navService;
             _servoService = servoService; // Added by rishabh - Date 06-05-2026       
             _recipeAppService = recipeAppService;
-            _appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+            _machineDataHandler = machineDataHandler;
 
             //var config = configSettings.Value;
             _dialog = dialog;
@@ -155,6 +158,7 @@ namespace IPCSoftware.App.ViewModels
                 _isProcessingSelection = true;
                 if (confirm)
                 {
+                    
                     ApplyRecipeSelection();
                 }
                 else
@@ -162,11 +166,13 @@ namespace IPCSoftware.App.ViewModels
                     // Revert selection to last confirmed recipe             
                     SelectedRecipe = _lastConfirmedRecipe;
                     //OnPropertyChanged(nameof(SelectedRecipe));
+              
                 }
             }
             finally
             {
                 _isProcessingSelection = false;
+               
             }
         }
 
@@ -237,9 +243,11 @@ namespace IPCSoftware.App.ViewModels
 
                 _logger.LogInfo($"Recipe Selected: Program {SelectedRecipe.ProgramNo} - {SelectedRecipe.ProductCode}", LogType.Audit);
                 AddAudit($"Waiting for Recipe parameters to load...");
-               
+                Mouse.OverrideCursor = Cursors.Wait;
                 if (!_coreClient.isConnected) { _dialog.ShowWarning($"Failed to Load recipe\n Please Check PLC Connection"); AddAudit($"Failed to load {SelectedRecipe.ProductCode}\nCheck PLC Connection.");return; }
-                var allResults = await _recipeAppService.ApplyRecipeToPlcAsync(SelectedRecipe);
+
+                var allResults = await _machineDataHandler.ApplyRecipeToPlcAsync(SelectedRecipe);
+               // var allResults = await _recipeAppService.ApplyRecipeToPlcAsync(SelectedRecipe);
                 if (allResults.ContainsKey(1)) { bool servoResult = allResults[1]; if (!servoResult) { AddAudit($"Servo Coordinated Write Failed"); } else { AddAudit($"Servo Coordinated Write Successfully"); } }
                 if (allResults.ContainsKey(2)) { bool positionResult = allResults[2]; if (!positionResult) { AddAudit($"Position Sequence Write Failed"); } else { AddAudit($"Position Sequence Write Successfully"); } }
                 if (allResults.ContainsKey(3)) { bool aeLimitsResult = allResults[3]; if (!aeLimitsResult) { AddAudit($"AE Limits Parameters Write Failed"); } else { AddAudit($"AE Limits Parameters Write Successfully"); } }
@@ -250,26 +258,7 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _lastConfirmedRecipe = SelectedRecipe;
 
-                    // Persist CurrentRunningProgram into Config section of appsettings.json
-                    try
-                    {
-                        var json = File.ReadAllText(_appSettingsPath);
-                        var jsonObj = JObject.Parse(json);
 
-                        // Navigate to Config section (where CurrentRunningProgram lives)
-                        if (jsonObj["Config"] == null)
-                            jsonObj["Config"] = new JObject();
-
-                        jsonObj["Config"]["CurrentRunningProgram"] = SelectedRecipe.ProgramNo;
-
-                        File.WriteAllText(_appSettingsPath, jsonObj.ToString());
-                        _logger.LogInfo($"[ModeOfOperation] CurrentRunningProgram updated to {SelectedRecipe.ProgramNo} in appsettings.json.", LogType.Audit);
-                    }
-                    catch (Exception jsonEx)
-                    {
-                        // Non-critical: log but don't block the user
-                        _logger.LogError($"[ModeOfOperation] Failed to persist CurrentRunningProgram: {jsonEx.Message}", LogType.Diagnostics);
-                    }
                 }
                 else
                 {
@@ -277,19 +266,27 @@ namespace IPCSoftware.App.ViewModels
                 }
                 if (bResult && allResults.Values.All(r => r == true) && allResults.Count!=0)
                 {
+                    Mouse.OverrideCursor = Cursors.Arrow;
                     _dialog.ShowMessage($"Recipe '{SelectedRecipe.ProductCode}' loaded successfully.");
                 }
                 else
                 {
+                    Mouse.OverrideCursor = Cursors.Arrow;
                     _dialog.ShowMessage($"Failed to load recipe '{SelectedRecipe.ProductCode}'. Please check the audit log for details.");
                 }
 
-                if (!_coreClient.isConnected) { _dialog.ShowWarning($"PLC Connection was lost during writing recipe params."); AddAudit($"Failed to load {SelectedRecipe.ProductCode}\nCheck PLC Connection.");  }
+               
 
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Recipe Selection Error: {ex.Message}", LogType.Diagnostics);
+                Mouse.OverrideCursor = Cursors.Arrow;
+            }
+
+            finally
+            {
+                Mouse.OverrideCursor = Cursors.Arrow;
             }
         }
 
