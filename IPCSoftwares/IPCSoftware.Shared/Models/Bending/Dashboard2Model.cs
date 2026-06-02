@@ -24,7 +24,19 @@ namespace IPCSoftware.Shared.Models.Bending
                 HeaterTemp_Bend1=200
 
             },
-           
+            new DashboardInspectionLineModel()
+            {
+                QRCode="CCC",
+                HeaterTemp_Bend1=200
+
+            },
+            new DashboardInspectionLineModel()
+            {
+                QRCode="DDD",
+                HeaterTemp_Bend1=200
+
+            },
+
         };
         public DashboardInspectionLineModel LineItem1 { get; set; }
         public DashboardInspectionLineModel LineItem2 { get; set; }

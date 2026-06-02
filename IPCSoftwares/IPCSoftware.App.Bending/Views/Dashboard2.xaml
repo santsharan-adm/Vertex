@@ -23,20 +23,21 @@
 
     <Grid Margin="3">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="6" />   <!-- splitter column -->
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto" MinHeight="0"/>
-            <RowDefinition/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="280" MinWidth="180"/>
+            <ColumnDefinition Width="6"/>     <!-- splitter column -->
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <!-- Vertical GridSplitter between Column 0 and Column 1 (after column1) -->
         <GridSplitter Grid.Row="0"
-              Grid.RowSpan="5"
+              Grid.RowSpan="6"
               Grid.Column="1"
               Width="6"
               HorizontalAlignment="Left"
@@ -67,36 +68,39 @@
         <cc:ControlsPanelCC Grid.Row="0" Grid.Column="0" BorderBrush="#1565C0" BorderThickness="2" Background="#0B1A2E"/>       
 
         <!--Batch No. & QR Code-->
-        <cc:BatchQRCodePanelCC  Grid.Row="1"  Grid.Column="0" Grid.RowSpan="2"  
+        <cc:BatchQRCodePanelCC  Grid.Row="2"  Grid.Column="0" Grid.RowSpan="1"  
                                 BorderBrush="#1565C0" BorderThickness="1" Background="White" />
+
+        <cc:BatchQRCodePanelCC  Grid.Row="3"  Grid.Column="0" Grid.RowSpan="1"  
+                        BorderBrush="#1565C0" BorderThickness="1" Background="White" />
         <!--EFFICIENCY BREAKDOWN-->
-        <cc:EfficiencyBreakdownCC Grid.Row="3"  Grid.Column="0"  Background="#1E293B" Margin="3" Padding="3"/>
+        <cc:EfficiencyBreakdownCC Grid.Row="4"  Grid.Column="0" Grid.RowSpan="2"  Background="#1E293B" Margin="3" Padding="3"/>
        
 
         <!--Bending 1,2,3,4-->
-        <cc:BendingDataTableCC Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" 
+        <cc:BendingDataTableCC Grid.Row="0" Grid.Column="2" 
                                Background="#0B1A2E"  Padding="2" BorderBrush="#1565C0" BorderThickness="1"/>
 
         
         <!--Bending Operation-->
-        <Viewbox Grid.Row="2" Grid.Column="1" Stretch="Uniform" Margin="3" HorizontalAlignment="Left">
-            <Canvas Width="1186" Height="450" RenderOptions.CachingHint="Cache" RenderOptions.CacheInvalidationThresholdMinimum="0.5" RenderOptions.CacheInvalidationThresholdMaximum="2.0">
+        <Viewbox Grid.Row="2" Grid.Column="2" Grid.RowSpan="4" Stretch="None" Margin="3" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Canvas Width="1186" Height="450" >
 
 
                 <!--INPUT TRAY-->
-                <cc:InputTrayCC Canvas.Left="403" Canvas.Top="570" Width="160" Height="40"
+                <cc:InputTrayCC Canvas.Left="333" Canvas.Top="520" Width="160" Height="40"
                  Background="#F1F5F9" BorderBrush="#475569" BorderThickness="3"
                  StationIndex="0" BatchNo="{Binding BendingStationTrace.Station0BatchNo}"/>
                 
                 
                 <!--INSPECTION UNIT - 1-->
-                <cc:InspectionUnitInputCC Canvas.Left="403" Canvas.Top="405" Width="215"                                           
+                <cc:InspectionUnitInputCC Canvas.Left="303" Canvas.Top="405" Width="215"                                           
                            Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3"
                                           StationIndex="1" BatchNo="{Binding BendingStationTrace.Station1BatchNo}"/>
                
 
                 <!--Robot1-->
-                <cc:Robot1CC RobotNumber="1" Canvas.Top="437" Canvas.Left="130"/>
+                <cc:Robot1CC RobotNumber="1" Canvas.Top="437" Canvas.Left="50"/>
 
 
                 <!--Robot2-->
@@ -105,67 +109,9 @@
                 <!-- BENDINDICATORS - Clamp, Heat, Punch, Tear, Flip -->
                 <cc:BendStatusIndicatorsCC Canvas.Left="60" Canvas.Top="5"
                                            BorderBrush="Black" BorderThickness="1.5"/>
-                <!-- BENDINDICATORS2- Tearing + Flipping Section -->
-                <!--<Border CornerRadius="5" Canvas.Left="807" BorderBrush="Black" BorderThickness="1.5" Height="Auto" VerticalAlignment="Top" HorizontalAlignment="Center" Canvas.Top="5">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Height="45" >
-
-                        <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
-                            <StackPanel>
-                                <Border Background="{StaticResource AccentBlue}" Padding="6,3">
-                                    <TextBlock Text="Tearing" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
-                                </Border>
-                                <Grid Margin="1">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="0"/>
-                                        <RowDefinition Height="15"/>
-                                        <RowDefinition Height="0"/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex1.Tearing, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat1"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex2.Tearing, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat2"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex3.Tearing, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat3"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex4.Tearing, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat4"/>
-                                </Grid>
-                            </StackPanel>
-                        </Border>
-
-                        <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
-                            <StackPanel>
-                                <Border Background="{StaticResource AccentBlue}" Padding="6,3">
-                                    <TextBlock Text="Flipping" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
-                                </Border>
-                                <Grid Margin="1">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="0"/>
-                                        <RowDefinition Height="15"/>
-                                        <RowDefinition Height="0"/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex1.Flipping, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat1"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex2.Flipping, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat2"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex3.Flipping, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat3"/>
-                                    <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{Binding BendingIndicators.Bending1.Flex4.Flipping, Converter={StaticResource BoolToColor}}"  VerticalAlignment="Center" Margin="3" ToolTip="TearHeat4"/>
-                                </Grid>
-                            </StackPanel>
-                        </Border>
-
-                    </StackPanel>
-                </Border>-->
 
                 <!--Tearing & Flipping-->
-                <cc:TearingFlippingStatusCC Canvas.Left="807" Canvas.Top="5" BorderBrush="Black" BorderThickness="1.5"/>
+                <cc:TearingFlippingStatusCC Canvas.Left="1117" Canvas.Top="5" BorderBrush="Black" BorderThickness="1.5"/>
                 
 
                
@@ -173,44 +119,72 @@
                 <!--TT-1-->
                 <cc:TurnTable1CC Canvas.Left="334" Canvas.Top="148" />
 
-                <cc:StationIndexCC Canvas.Left="334" Canvas.Top="348"
-                    StationIndex="2" BatchNo="{Binding BendingStationTrace.Station1BatchNo}"/>
-                <cc:StationIndexCC Canvas.Left="174" Canvas.Top="228"
-                    StationIndex="3" BatchNo="{Binding BendingStationTrace.Station2BatchNo}"/>
+                <cc:StationIndexCC Canvas.Left="334" Canvas.Top="348" Width="150"
+                    StationIndex="2" BatchNo="{Binding BendingStationTrace.Station2BatchNo}"
+                                   BorderBrush="Brown" BorderThickness="1" Padding="3"/>
+                <cc:StationIndexCC Canvas.Left="229" Canvas.Top="228" Width="100"
+                                   BorderBrush="Brown" BorderThickness="1" Padding="3"
+                    StationIndex="3" BatchNo="{Binding BendingStationTrace.Station3BatchNo}"/>
+
+                <cc:StationIndexCC Canvas.Left="334" Canvas.Top="118" Width="150"
+                        StationIndex="4" BatchNo="{Binding BendingStationTrace.Station4BatchNo}"
+                                       BorderBrush="Brown" BorderThickness="1" Padding="3"/>
+                <!--<cc:StationIndexCC Canvas.Left="334" Canvas.Top="118" Width="150"
+                        StationIndex="5" BatchNo="{Binding BendingStationTrace.Station5BatchNo}"
+                                       BorderBrush="Brown" BorderThickness="1" Padding="3"/>-->
+                <cc:StationIndexCC Canvas.Left="494" Canvas.Top="268" Width="150"
+                     StationIndex="5" BatchNo="{Binding BendingStationTrace.Station6BatchNo}"
+                                    BorderBrush="Brown" BorderThickness="1" Padding="3"/>
+
 
 
                 <!--Transfer Module-->
-                <cc:TransferModuleCC Canvas.Left="503" Canvas.Top="148" />
+                <cc:TransferModuleCC Canvas.Left="603" Canvas.Top="148" />
 
 
                 <!-- Turn Table 2 rotating disc: circle + triangle + ellipses -->
                 <cc:TurnTable2CC x:Name="TurnTable2Control"
-                                 Canvas.Left="664"
+                                 Canvas.Left="804"
                                  Canvas.Top="148"
                                  Width="220"
                                  Height="230"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Top" />
+                <cc:StationIndexCC Canvas.Left="594" Canvas.Top="108" Width="150"
+                     StationIndex="6" BatchNo="{Binding BendingStationTrace.Station7BatchNo}"
+                                    BorderBrush="Brown" BorderThickness="1" Padding="3"/>
+
+                <cc:StationIndexCC Canvas.Left="844" Canvas.Top="108" Width="150"
+                     StationIndex="7" BatchNo="{Binding BendingStationTrace.Station8BatchNo}"
+                                    BorderBrush="Brown" BorderThickness="1" Padding="3"/>
+
+                <cc:StationIndexCC Canvas.Left="844" Canvas.Top="298" Width="150"
+                         StationIndex="8" BatchNo="{Binding BendingStationTrace.Station9BatchNo}"
+                                        BorderBrush="Brown" BorderThickness="1" Padding="3"/>
+                
                 <!--INSPECTION UNIT-->
                 <cc:InspectionUnitOutputCC Canvas.Left="820" Canvas.Top="405" Width="215" 
                                      Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3" 
-                                           StationIndex="10" BatchNo="1"
+                                           StationIndex="10" BatchNo="1"                                           
                                      />
+
+               
+                
                 <!--OUTPUT TRAY-->
-                <cc:OutputTrayCC Canvas.Left="820" Canvas.Top="570" Width="160" Height="40" 
+                <cc:OutputTrayCC Canvas.Left="850" Canvas.Top="520" Width="160" Height="40" 
                                  Background="White" BorderBrush="#475569" BorderThickness="3"/>
                 <!--NG BIN 2-->
-                <cc:NgBinCC Canvas.Left="138" Canvas.Top="200" Width="85" Height="95" BinNumber="1" 
+                <cc:NgBinCC Canvas.Left="108" Canvas.Top="200" Width="85" Height="95" BinNumber="1" 
                             BorderBrush="Black" BorderThickness="3" Background="Gray"/>
                 <!--PID  HETER-->           
-                <cc:PidTableCC Canvas.Left="1120" Canvas.Top="5"   TableType="Heater" BorderBrush="{StaticResource AccentBlue}" 
+                <cc:PidTableCC Canvas.Left="1320" Canvas.Top="5"   TableType="Heater" BorderBrush="{StaticResource AccentBlue}" 
                             BorderThickness="1" Background="#1565C0"/>
 
                 <!--PID FORCE-->               
-                <cc:PidTableCC Canvas.Left="1120" Canvas.Top="120"   TableType="Force"/>
+                <cc:PidTableCC Canvas.Left="1320" Canvas.Top="120"   TableType="Force"/>
 
                 <!--NG BIN 2-->              
-                <cc:NgBinCC Canvas.Left="882" Canvas.Top="200" Width="85" Height="95" BinNumber="2" 
+                <cc:NgBinCC Canvas.Left="1102" Canvas.Top="200" Width="85" Height="95" BinNumber="2" 
                             BorderBrush="Black" BorderThickness="3"  Background="Gray"/>
             </Canvas>
         </Viewbox>

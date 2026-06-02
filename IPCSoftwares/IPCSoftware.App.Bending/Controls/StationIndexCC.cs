@@ -49,6 +49,7 @@ namespace IPCSoftware.App.Bending.Controls
         static StationIndexCC()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(StationIndexCC), new FrameworkPropertyMetadata(typeof(StationIndexCC)));
+           
         }
 
         #region Dependency Propety

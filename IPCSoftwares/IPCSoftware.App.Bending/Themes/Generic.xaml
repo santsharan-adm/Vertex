@@ -163,7 +163,7 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="1" Text="TURN TABLE 2" FontWeight="Bold" FontSize="15" Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            <Canvas Grid.Row="0" Width="100" Height="100" Background="Transparent" HorizontalAlignment="Left" Margin="9" VerticalAlignment="Top">
+                            <Canvas Grid.Row="0" Width="200" Height="200" Background="Transparent" HorizontalAlignment="Left" Margin="9" VerticalAlignment="Top">
                                 <Canvas.RenderTransform>
                                     <!-- Named rotate transform so code-behind can animate it -->
                                     <RotateTransform x:Name="Part_TriangleRotate" Angle="0" CenterX="100" CenterY="77.3" />
@@ -172,7 +172,15 @@
                                 <!-- Equilateral Triangle -->
                                 <!-- Side length = 100 -->
                                 <!-- Height = 100 * √3 / 2 ≈ 86.6 -->
-                                <Polygon Points="100,20 50,106.6 150,106.6" Fill="White" Stroke="Black" StrokeThickness="2" />
+                                <!--<Polygon Points="100,20 50,106.6 150,106.6" Fill="White" Stroke="Black" StrokeThickness="2" />-->
+                                <!--<Polygon Points="100,-37.73 0,135.47 200,135.47"
+                                     Fill="White"
+                                     Stroke="Black"
+                                     StrokeThickness="2" />-->
+                                <Polygon Points="100,-8.87 25,121.03 175,121.03"
+                                     Fill="White"
+                                     Stroke="Black"
+                                     StrokeThickness="2" />
 
                                 <!-- 4 markers along left side (A=(100,20) -> B=(50,106.6))
                     centered along the side and moved slightly inward toward centroid -->
@@ -219,7 +227,7 @@
                             </Grid.RowDefinitions>
 
                             <Border BorderBrush="Brown" BorderThickness="1">
-                                <TextBlock Text="{Binding BatchNo, RelativeSource={RelativeSource TemplatedParent}, StringFormat='{}Station 0 - {0}'}" Foreground="#0F172A" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding BatchNo, RelativeSource={RelativeSource TemplatedParent}, StringFormat='{}Station 9 - {0}'}" Foreground="#0F172A" HorizontalAlignment="Center"/>
                             </Border>
                             <TextBlock Grid.Row="1" Text="INSPECTION UNIT OUTPUT" 
                                 FontSize="15" 
@@ -287,17 +295,17 @@
                                         <Setter Property="CornerRadius" Value="4"/>
                                     </Style>
                                 </Button.Resources>
-                                <TextBlock Text="CYCLE START/STOP" TextAlignment="Center"/>
+                                <TextBlock Text="CYCLE STOP" TextAlignment="Center"/>
                             </Button>
-                            <Button Grid.Row="3" Margin="3" Padding="5,10" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="20">
+                            <Button Grid.Row="4" Margin="3" Padding="5,10" Background="#6366F1" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="20">
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="4"/>
                                     </Style>
                                 </Button.Resources>
-                                <TextBlock Text="WORK PAYOUT START" TextAlignment="Center"/>
+                                <TextBlock Text="WORK PAYOUT STOP" TextAlignment="Center"/>
                             </Button>
-                            <Button Grid.Row="4" Margin="3" Padding="3,10" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="20">
+                            <Button Grid.Row="5" Margin="3" Padding="3,10" Background="#64748B" Foreground="White" FontWeight="Bold" BorderThickness="0" FontSize="20">
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="4"/>
@@ -317,13 +325,16 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:BatchQRCodePanelCC}">
+                    <ControlTemplate.Resources>
+                        
+                    </ControlTemplate.Resources>
                     <Border Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
                         <Grid >
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -332,11 +343,11 @@
 
                                 <Grid>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="60"/>
@@ -353,52 +364,12 @@
                                     <Border Grid.Row="1" Grid.Column="0" Grid.RowSpan="4" Background="#0B1A2E" BorderBrush="#1565C0" Padding="3">
                                         <TextBlock Text="BFBL03" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12"/>
                                     </Border>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="ABCD12345A009" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="2"/>
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="ABCD12345A010" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="2"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="ABCD12345A011" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="2"/>
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="ABCD12345A012" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="2"/>
-
-
-
-
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="ABCD12345A009" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="ABCD12345A010" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="ABCD12345A011" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="ABCD12345A012" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
                                 </Grid>
                             </Border>
-                            <Border Grid.Row="1" BorderBrush="#1565C0" BorderThickness="1" Background="Black" CornerRadius="8" Margin="3">
-
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="60"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2" CornerRadius="5,0,0,0">
-                                        <TextBlock Text="Batch No." FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12"/>
-                                    </Border>
-                                    <Border Grid.Row="0" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                        <TextBlock Text="QR Code" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12" TextWrapping="Wrap"/>
-                                    </Border>
-
-
-                                    <Border Grid.Row="1" Grid.Column="0" Grid.RowSpan="4"  Background="#0B1A2E" BorderBrush="#1565C0" Padding="3">
-                                        <TextBlock Text="BFBL04" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12"/>
-                                    </Border>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="ABCD12345A013" HorizontalAlignment="Center" Foreground="White" FontSize="10" Margin="2"/>
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="ABCD12345A014" HorizontalAlignment="Center" Foreground="White" FontSize="10" Margin="2"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="ABCD12345A015" HorizontalAlignment="Center" Foreground="White" FontSize="10" Margin="2"/>
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="ABCD12345A016" HorizontalAlignment="Center" Foreground="White" FontSize="10" Margin="2"/>
-
-
-                                </Grid>
-                            </Border>
-
-
                         </Grid>
                     </Border>
                 </ControlTemplate>
@@ -411,114 +382,151 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:EfficiencyBreakdownCC}">
+                    <ControlTemplate.Resources>
+                        <Style x:Key="OEEHeaderStyle" TargetType="{x:Type TextBlock}">
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="FontSize" Value="14"/>
+                            <Setter Property="Padding" Value="3"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+                        <Style x:Key="OEETextBlockStyle" TargetType="{x:Type TextBlock}">
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="FontSize" Value="12"/>
+                            <Setter Property="Padding" Value="3"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                        <Style x:Key="OEETextBlock2Style" TargetType="{x:Type TextBlock}">
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="FontSize" Value="12"/>
+                            <Setter Property="Padding" Value="3"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                        </Style>
+                    </ControlTemplate.Resources>
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4" Padding="3,10">
                         <!--<Border Background="#1E293B" CornerRadius="8" Padding="4,3" VerticalAlignment="Top" Margin="3">-->
-                        <StackPanel Margin="3">
-                            <TextBlock Text="EFFICIENCY BREAKDOWN" Foreground="White" FontWeight="Bold" FontSize="10" Padding="0,0,0,3"/>
+                        <Grid Margin="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="EFFICIENCY BREAKDOWN" Style="{StaticResource OEEHeaderStyle}"/>
 
-                            <Grid Height="15" Margin="0,1">
+                            <Grid Grid.Row="1" Height="15" Margin="3,5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="75"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="30"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Availability" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <TextBlock Text="Availability" Style="{StaticResource OEETextBlockStyle}"/>
                                 <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
                                     <Border CornerRadius="3" Background="#334155"/>
                                     <Border CornerRadius="3" Background="#10B981" HorizontalAlignment="Left" Width="96"/>
                                 </Grid>
-                                <TextBlock Grid.Column="2" Text="96%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="2" Text="96%" Style="{StaticResource OEETextBlock2Style}"/>
                             </Grid>
 
-                            <Grid Height="15" Margin="0,1">
+                            <Grid Grid.Row="2" Height="15" Margin="3,5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="75"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="30"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Performance" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <TextBlock Text="Performance" Style="{StaticResource OEETextBlockStyle}"/>
                                 <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
                                     <Border CornerRadius="3" Background="#334155"/>
                                     <Border CornerRadius="3" Background="#3B82F6" HorizontalAlignment="Left" Width="91"/>
                                 </Grid>
-                                <TextBlock Grid.Column="2" Text="91%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="2" Text="91%" Style="{StaticResource OEETextBlock2Style}"/>
                             </Grid>
 
-                            <Grid Height="15" Margin="0,1">
+                            <Grid Grid.Row="3" Height="15" Margin="3,5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="75"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="30"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Quality" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <TextBlock Text="Quality" Style="{StaticResource OEETextBlockStyle}"/>
                                 <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
                                     <Border CornerRadius="3" Background="#334155"/>
                                     <Border CornerRadius="3" Background="#F59E0B" HorizontalAlignment="Left" Width="97"/>
                                 </Grid>
-                                <TextBlock Grid.Column="2" Text="97%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="2" Text="97%" Style="{StaticResource OEETextBlock2Style}"/>
                             </Grid>
 
-                            <Grid Height="15" Margin="0,1">
+                            <Grid Grid.Row="4" Height="15" Margin="3,5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="75"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="30"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="OEE Details" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <TextBlock Text="OEE Details" Style="{StaticResource OEETextBlockStyle}"/>
                                 <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
                                     <Border CornerRadius="3" Background="#334155"/>
                                     <Border CornerRadius="3" Background="#3B82F6" HorizontalAlignment="Left" Width="91"/>
                                 </Grid>
-                                <TextBlock Grid.Column="2" Text="91%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="2" Text="91%" Style="{StaticResource OEETextBlock2Style}"/>
                             </Grid>
 
-                            <Grid Height="15" Margin="0,1">
+                            <Grid Grid.Row="5" Height="15" Margin="3,5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="75"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="30"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Operating Time" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <TextBlock Text="Operating Time" Style="{StaticResource OEETextBlockStyle}"/>
                                 <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
                                     <Border CornerRadius="3" Background="#334155"/>
                                     <Border CornerRadius="3" Background="#10B981" HorizontalAlignment="Left" Width="88"/>
                                 </Grid>
-                                <TextBlock Grid.Column="2" Text="88%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="2" Text="88%" Style="{StaticResource OEETextBlock2Style}"/>
                             </Grid>
 
-                            <Grid Height="15" Margin="0,1">
+                            <Grid Grid.Row="6" Height="15" Margin="3,5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="75"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="30"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Downtime" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <TextBlock Text="Downtime" Style="{StaticResource OEETextBlockStyle}"/>
                                 <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
                                     <Border CornerRadius="3" Background="#334155"/>
                                     <Border CornerRadius="3" Background="#EF4444" HorizontalAlignment="Left" Width="12"/>
                                 </Grid>
-                                <TextBlock Grid.Column="2" Text="12%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="2" Text="12%" Style="{StaticResource OEETextBlock2Style}"/>
                             </Grid>
 
-                            <Grid Height="15" Margin="0,1">
+                            <Grid Grid.Row="7" Height="15" Margin="3,5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="75"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="30"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Cycle Time" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <TextBlock Text="Cycle Time" Style="{StaticResource OEETextBlockStyle}"/>
                                 <Grid Grid.Column="1" Height="7" VerticalAlignment="Center" Margin="3,0">
                                     <Border CornerRadius="3" Background="#334155"/>
                                     <Border CornerRadius="3" Background="#3B82F6" HorizontalAlignment="Left" Width="85"/>
                                 </Grid>
-                                <TextBlock Grid.Column="2" Text="85%" Foreground="White" FontSize="9.5" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="2" Text="85%" Style="{StaticResource OEETextBlock2Style}"/>
                             </Grid>
 
-                            <Border Height="1" Background="#475569" Margin="3"/>
+                            <Border Grid.Row="8" Height="1" Background="#475569" Margin="3"/>
 
-                            <Grid Height="20">
+                            <Grid Grid.Row="9" Height="20" Margin="3,5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="2"/>
@@ -527,17 +535,17 @@
                                 <Border CornerRadius="3" Background="#064E3B" Padding="5,3">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <Ellipse Width="6" Height="6" Fill="#10B981" VerticalAlignment="Center"/>
-                                        <TextBlock Text=" OK : 156" Foreground="#10B981" FontSize="9" FontWeight="Bold" VerticalAlignment="Center" Margin="2"/>
+                                        <TextBlock Text=" OK : 156" Style="{StaticResource OEETextBlockStyle}"/>
                                     </StackPanel>
                                 </Border>
                                 <Border Grid.Column="2" CornerRadius="3" Background="#450A0A" Padding="5,3">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <Ellipse Width="6" Height="6" Fill="#EF4444" VerticalAlignment="Center"/>
-                                        <TextBlock Text=" NG : 4" Foreground="#EF4444" FontSize="9" FontWeight="Bold" VerticalAlignment="Center" Margin="2"/>
+                                        <TextBlock Text=" NG : 4" Style="{StaticResource OEETextBlockStyle}"/>
                                     </StackPanel>
                                 </Border>
                             </Grid>
-                        </StackPanel>
+                        </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -739,12 +747,19 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:StationIndexCC}">
                     <Border Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
-                        <!--<Border BorderBrush="Black" BorderThickness="3" CornerRadius="8" Background="Gray">-->
-                        <Border BorderBrush="Brown" BorderThickness="1" Width="200" >
-                            <TextBlock Text="{Binding BatchNo, RelativeSource={RelativeSource TemplatedParent}, StringFormat='{}Station 2 - {0}'}" Foreground="#0F172A" HorizontalAlignment="Center"/>
-                        </Border>
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4" HorizontalAlignment="Stretch">
+                        <TextBlock Foreground="#0F172A" HorizontalAlignment="Center" Margin="3,1">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}Station - {1} - {0}">
+                                    <!-- {0} = BatchNo from the templated parent -->
+                                    <Binding Path="BatchNo" RelativeSource="{RelativeSource TemplatedParent}" />
+                                    <!-- {1} = fixed station label -->
+                                    <Binding Path="StationIndex" RelativeSource="{RelativeSource TemplatedParent}" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -1212,11 +1227,12 @@
 
                                 <Style x:Key="HeaderBorder" TargetType="Border" >
                                     <Setter Property="Background" Value="#1565C0"/>
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
                                 </Style>
 
                                 <Style x:Key="HeaderText" TargetType="TextBlock" >
                                     <Setter Property="FontWeight" Value="SemiBold"/>
-                                    <Setter Property="FontSize" Value="10"/>
+                                    <Setter Property="FontSize" Value="14"/>
                                     <Setter Property="HorizontalAlignment" Value="Center"/>
                                     <Setter Property="VerticalAlignment" Value="Center"/>
                                     <Setter Property="TextAlignment" Value="Center"/>
@@ -1431,23 +1447,31 @@
 
                                 <Style x:Key="HeaderBorder" TargetType="Border" >
                                     <Setter Property="Background" Value="#1565C0"/>
-                                    <Setter Property="Width" Value="120"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="BorderBrush" Value="PaleTurquoise"/>
                                 </Style>
 
                                 <Style x:Key="HeaderText" TargetType="TextBlock" >
-                                    <Setter Property="FontWeight" Value="SemiBold"/>
-                                    <Setter Property="FontSize" Value="10"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="FontSize" Value="16"/>
                                     <Setter Property="HorizontalAlignment" Value="Center"/>
                                     <Setter Property="VerticalAlignment" Value="Center"/>
                                     <Setter Property="TextAlignment" Value="Center"/>
-                                    <Setter Property="FontSize" Value="11"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Style>
+                                <Style x:Key="HeaderText2" TargetType="TextBlock" >
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
                                     <Setter Property="Foreground" Value="White"/>
                                 </Style>
 
                                 <Style x:Key="DataText" TargetType="TextBlock" >
                                     <Setter Property="HorizontalAlignment" Value="Center"/>
                                     <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="FontSize" Value="11"/>
+                                    <Setter Property="FontSize" Value="18"/>
                                     <Setter Property="Foreground" Value="White"/>
                                 </Style>
 
@@ -1506,7 +1530,7 @@
                                 <TextBlock Text="QR code" Style="{StaticResource HeaderText}" />
                             </Border>
 
-                            <Border Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource HeaderBorder}" >
+                            <Border Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Style="{StaticResource HeaderBorder}" >
                                 <TextBlock Text="Heater Temp (50 - 60)" Style="{StaticResource HeaderText}"  />
                             </Border>
 
@@ -1531,32 +1555,33 @@
                                 <TextBlock Text="Result" Style="{StaticResource HeaderText}" />
                             </Border>
                             <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Bend 1" Style="{StaticResource HeaderText}" />
+                                <TextBlock Text="Bend 1" Style="{StaticResource HeaderText2}" />
                             </Border>
                             <Border Grid.Row="1" Grid.Column="3" Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Bend 2" Style="{StaticResource HeaderText}" />
+                                <TextBlock Text="Bend 2" Style="{StaticResource HeaderText2}" />
                             </Border>
                             <Border Grid.Row="1" Grid.Column="4" Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Bend 3" Style="{StaticResource HeaderText}" />
+                                <TextBlock Text="Bend 3" Style="{StaticResource HeaderText2}" />
                             </Border>
 
                             <Border Grid.Row="1" Grid.Column="5" Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Bend 1" Style="{StaticResource HeaderText}" />
+                                <TextBlock Text="Bend 1" Style="{StaticResource HeaderText2}" />
                             </Border>
                             <Border Grid.Row="1" Grid.Column="6" Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Bend 2" Style="{StaticResource HeaderText}" />
+                                <TextBlock Text="Bend 2" Style="{StaticResource HeaderText2}" />
                             </Border>
                             <Border Grid.Row="1" Grid.Column="7" Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Bend 3" Style="{StaticResource HeaderText}" />
+                                <TextBlock Text="Bend 3" Style="{StaticResource HeaderText2}" />
                             </Border>
                             <!--</Grid>-->
 
-                            <ScrollViewer Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="13" Width="{TemplateBinding ActualWidth}">
-                                <ListView x:Name="Part_BendingListView" 
+                            <!--<ScrollViewer Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="13" Width="{TemplateBinding ActualWidth}">-->
+                            <ListView x:Name="Part_BendingListView" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="13" Width="{TemplateBinding ActualWidth}"
+                                      Height="250"
                                   ItemsSource="{Binding DashboardInspectionModelBatches}"
                                   ItemContainerStyle="{StaticResource ListViewItemNoChrome}"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                                      ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
                                      
                                   Margin="0">
 
@@ -1573,7 +1598,7 @@
                                                 </Grid.ColumnDefinitions>
 
                                                 <!--Bind each column to expected properties on the item-->
-                                                <TextBlock Grid.Column="0" Text="{Binding BatchNo}"  Style="{StaticResource DataText}" />
+                                                <TextBlock Grid.Column="0" Text="{Binding BatchNo}" Style="{StaticResource DataText}" />
 
                                                 <!--Nested rows-->
                                                 <ItemsControl ItemsSource="{Binding LineItems}" Grid.Column="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" >
@@ -1597,7 +1622,7 @@
                                                                 </Grid.ColumnDefinitions>
 
 
-                                                                <TextBlock Grid.Column="0" Text="{Binding QRCode}" Style="{StaticResource DataText}" />
+                                                                    <TextBlock Grid.Column="0" Text="{Binding QRCode}" Style="{StaticResource DataText}" />
                                                                 <TextBlock Grid.Column="1" Text="{Binding HeaterTemp_Bend1}" Style="{StaticResource DataText}" />
                                                                 <TextBlock Grid.Column="2" Text="{Binding HeaterTemp_Bend2}" Style="{StaticResource DataText}" />
                                                                 <TextBlock Grid.Column="3" Text="{Binding HeaterTemp_Bend3}" Style="{StaticResource DataText}" />
@@ -1621,7 +1646,7 @@
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
-                            </ScrollViewer>
+                            <!--</ScrollViewer>-->
                             <!--</Grid>-->
                         </Grid>
                     </Border>
@@ -1630,284 +1655,6 @@
         </Setter>
     </Style>
 
-    <!--<Style TargetType="{x:Type local:BendingDataTableCC}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:BendingDataTableCC}">
-                    <Border Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}">
-
-                      
-                            
-
-                            --><!-- Use a shared-size scope so header columns and item columns align --><!--
-                            <Grid Margin="0" >
-                                <Grid.Resources>
-
-                                    <Style x:Key="DataBorder" TargetType="Border" >
-                                        <Setter Property="Background" Value="#0B1A2E"/>
-                                        <Setter Property="BorderThickness" Value="0"/>
-                                    </Style>
-
-                                    <Style x:Key="HeaderBorder" TargetType="Border" >
-                                        <Setter Property="Background" Value="#1565C0"/>
-                                    </Style>
-
-                                    <Style x:Key="HeaderText" TargetType="TextBlock" >
-                                        <Setter Property="FontWeight" Value="SemiBold"/>
-                                        <Setter Property="FontSize" Value="10"/>
-                                        <Setter Property="HorizontalAlignment" Value="Center"/>
-                                        <Setter Property="VerticalAlignment" Value="Center"/>
-                                        <Setter Property="TextAlignment" Value="Center"/>
-                                        <Setter Property="FontSize" Value="11"/>
-                                        <Setter Property="Foreground" Value="White"/>
-                                    </Style>
-
-                                    <Style x:Key="DataText" TargetType="TextBlock" >
-                                        <Setter Property="HorizontalAlignment" Value="Center"/>
-                                        <Setter Property="VerticalAlignment" Value="Center"/>
-                                        <Setter Property="FontSize" Value="11"/>
-                                        <Setter Property="Foreground" Value="White"/>
-                                    </Style>
-
-                                    --><!-- Remove default selection visuals to keep rows looking like original DataBorder --><!--
-                                    <Style x:Key="ListViewItemNoChrome" TargetType="ListViewItem">
-                                        <Setter Property="Background" Value="Transparent"/>
-                                        <Setter Property="Padding" Value="0"/>
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="ListViewItem">
-                                                    <Border Background="Transparent"
-                                                            SnapsToDevicePixels="True">
-                                                        <ContentPresenter />
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-
-                                </Grid.Resources>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition SharedSizeGroup="c0" Width="*"/>
-                                        <ColumnDefinition SharedSizeGroup="c1" Width="*"/>
-                                        <ColumnDefinition SharedSizeGroup="c2" Width="*"/>
-                                        <ColumnDefinition SharedSizeGroup="c3" Width="*"/>
-                                        <ColumnDefinition SharedSizeGroup="c4" Width="*"/>
-                                        <ColumnDefinition SharedSizeGroup="c5" Width="*"/>
-                                        <ColumnDefinition SharedSizeGroup="c6" Width="*"/>
-                                        <ColumnDefinition SharedSizeGroup="c7" Width="*"/>
-                                        <ColumnDefinition SharedSizeGroup="c8" Width="*"/>
-                                        <ColumnDefinition SharedSizeGroup="c9" Width="*"/>
-                                        <ColumnDefinition SharedSizeGroup="c10" Width="*"/>
-                                        <ColumnDefinition SharedSizeGroup="c11" Width="*"/>
-                                        <ColumnDefinition SharedSizeGroup="c12" Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-
-                                    <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"   Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="Batch No." Style="{StaticResource HeaderText}"  />
-                                    </Border>
-                                    <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"     Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="QR code" Style="{StaticResource HeaderText}" />
-                                    </Border>
-
-                                    <Border Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="Heater Temp (50 - 60)" Style="{StaticResource HeaderText}" />
-                                    </Border>
-
-                                    <Border Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="3" Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="Load (5 - 10)" Style="{StaticResource HeaderText}" />
-                                    </Border>
-
-                                    <Border Grid.Row="0" Grid.Column="8" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="X (&gt;1 - &lt;2)" Style="{StaticResource HeaderText}" />
-                                    </Border>
-                                    <Border Grid.Row="0" Grid.Column="9" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="Y &gt;3 - &lt;4" Style="{StaticResource HeaderText}" />
-                                    </Border>
-                                    <Border Grid.Row="0" Grid.Column="10" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="Z (&gt;5 - &lt;6)" Style="{StaticResource HeaderText}" />
-                                    </Border>
-                                    <Border Grid.Row="0" Grid.Column="11" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="? (&gt;7 - &lt;8)" Style="{StaticResource HeaderText}" />
-                                    </Border>
-
-                                    <Border Grid.Row="0"  Grid.Column="12" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="Result" Style="{StaticResource HeaderText}" />
-                                    </Border>
-                                    <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="Bend 1" Style="{StaticResource HeaderText}" />
-                                    </Border>
-                                    <Border Grid.Row="1" Grid.Column="3" Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="Bend 2" Style="{StaticResource HeaderText}" />
-                                    </Border>
-                                    <Border Grid.Row="1" Grid.Column="4" Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="Bend 3" Style="{StaticResource HeaderText}" />
-                                    </Border>
-
-                                    <Border Grid.Row="1" Grid.Column="5" Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="Bend 1" Style="{StaticResource HeaderText}" />
-                                    </Border>
-                                    <Border Grid.Row="1" Grid.Column="6" Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="Bend 2" Style="{StaticResource HeaderText}" />
-                                    </Border>
-                                    <Border Grid.Row="1" Grid.Column="7" Style="{StaticResource HeaderBorder}">
-                                        <TextBlock Text="Bend 3" Style="{StaticResource HeaderText}" />
-                                    </Border>
-                                </Grid>
-
-                                <ListView Grid.Row="1"
-                                  Name="Part_BendingListView"
-                                  ItemsSource="{Binding DashboardInspectionModelBatches}"
-                                 ItemContainerStyle="{StaticResource ListViewItemNoChrome}"
-                                  HorizontalContentAlignment="Stretch"
-                                  Margin="0">
-
-                                    <ListView.View>
-                                        <GridView>
-                                            <GridViewColumn Header="Batch No" DisplayMemberBinding="{Binding BatchNo}" />
-                                            <GridViewColumn  Width="1200" >
-                                                <GridViewColumn.HeaderTemplate>
-                                                    <DataTemplate>
-                                                        <Grid Margin="0" >
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                        </Grid.RowDefinitions>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="QR code" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-
-                                                            <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="Heater Temp (50 - 60)" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-
-                                                            <Border Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="3" Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="Load (5 - 10)" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-
-                                                            <Border Grid.Row="0" Grid.Column="7" Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="X (&gt;1 - &lt;2)" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-                                                            <Border Grid.Row="0" Grid.Column="8" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="Y &gt;3 - &lt;4" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-                                                            <Border Grid.Row="0" Grid.Column="9" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="Z (&gt;5 - &lt;6)" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-                                                            <Border Grid.Row="0" Grid.Column="10" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="? (&gt;7 - &lt;8)" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-
-                                                            <Border Grid.Row="0"  Grid.Column="11" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="Result" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-                                                            <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="Bend 1" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-                                                            <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="Bend 2" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-                                                            <Border Grid.Row="1" Grid.Column="3" Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="Bend 3" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-
-                                                            <Border Grid.Row="1" Grid.Column="4" Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="Bend 1" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-                                                            <Border Grid.Row="1" Grid.Column="5" Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="Bend 2" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-                                                            <Border Grid.Row="1" Grid.Column="6" Style="{StaticResource HeaderBorder}">
-                                                                <TextBlock Text="Bend 3" Style="{StaticResource HeaderText}" />
-                                                            </Border>
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </GridViewColumn.HeaderTemplate>
-                                                <GridViewColumn.CellTemplate>
-                                                    <DataTemplate >
-                                                        <Grid Margin="0" DataContext="{Binding LineItem1}">
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                            </Grid.RowDefinitions>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <TextBlock Grid.Row="0"  Grid.Column="0" Text="{Binding QRCode}" Style="{StaticResource DataText}" />
-                                                        <TextBlock Grid.Row="0"  Grid.Column="1" Text="{Binding HeaterTemp_Bend1}" Style="{StaticResource DataText}" />
-                                                        <TextBlock Grid.Row="0"  Grid.Column="2" Text="{Binding HeaterTemp_Bend2}" Style="{StaticResource DataText}" />
-                                                        <TextBlock Grid.Row="0"  Grid.Column="3" Text="{Binding HeaterTemp_Bend3}" Style="{StaticResource DataText}" />
-                                                        <TextBlock Grid.Row="0"  Grid.Column="4" Text="{Binding Load_Bend1}" Style="{StaticResource DataText}" />
-                                                        <TextBlock Grid.Row="0"  Grid.Column="5" Text="{Binding Load_Bend2}" Style="{StaticResource DataText}" />
-                                                        <TextBlock Grid.Row="0"  Grid.Column="6" Text="{Binding Load_Bend3}" Style="{StaticResource DataText}" />
-                                                        <TextBlock Grid.Row="0"  Grid.Column="7" Text="{Binding XValue}" Style="{StaticResource DataText}" />
-                                                        <TextBlock Grid.Row="0"  Grid.Column="8" Text="{Binding YValue}" Style="{StaticResource DataText}" />
-                                                        <TextBlock Grid.Row="0"  Grid.Column="9" Text="{Binding ZValue}" Style="{StaticResource DataText}" />
-                                                        <TextBlock Grid.Row="0"  Grid.Column="10" Text="{Binding WValue}" Style="{StaticResource DataText}" />
-                                                        <TextBlock Grid.Row="0"  Grid.Column="11" 
-                                                                   Text="{Binding Result1, Converter={StaticResource BoolToResultText}}"
-                                                                   Foreground="{Binding Result1, Converter={StaticResource BoolToResultColor}}"
-                                                                   Style="{StaticResource DataText}" FontWeight="Bold"/>
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </GridViewColumn.CellTemplate>
-                                            </GridViewColumn>                                            
-                                        </GridView>
-                                    </ListView.View>
-
-
-                                   
-                                </ListView>
-                            </Grid>
-                     
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>-->
+   
 
 </ResourceDictionary>

@@ -11,9 +11,9 @@
         Title="IPC HMI Software" 
         Height="1080" Width="1920"
         WindowState="Maximized" 
-       WindowStyle="SingleBorderWindow"
+       WindowStyle="None"
         Background="#F3F3F3" 
-        ResizeMode="CanResize">
+        ResizeMode="NoResize">
 
 
 
