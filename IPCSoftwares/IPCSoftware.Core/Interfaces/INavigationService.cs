@@ -64,6 +64,8 @@ namespace IPCSoftware.Core.Interfaces
         void NavigateToDashboardControl1();
         void NavigateToDashboardControl2();
 
+        void NavigateToBendingDash();
+
         void NavigateToPostBendingMonitor();
         public void NavigateToBendingLandingPage();
 

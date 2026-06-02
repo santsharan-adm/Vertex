@@ -19,7 +19,7 @@ namespace IPCSoftware.Devices.UI
         private readonly int _port;
         private TcpListener _listener;
 
-        // 🚨 CRITICAL ADDITION: Thread-safe storage for all active streams
+        
       //  private readonly ConcurrentDictionary<Guid, NetworkStream> _activeStreams = new ConcurrentDictionary<Guid, NetworkStream>();
         private readonly ConcurrentDictionary<Guid, ClientConnection> _activeClients = new();
 
@@ -38,6 +38,7 @@ namespace IPCSoftware.Devices.UI
             {
                 _listener = new TcpListener(IPAddress.Any, _port);
                 _listener.Start();
+                Console.WriteLine($"UI Listener started on port {_port}");
 
                 _logger.LogInfo($"UI Listener started on port {_port}",LogType.Diagnostics);
 
@@ -66,6 +67,7 @@ namespace IPCSoftware.Devices.UI
             catch (Exception ex)
             {
                 _logger.LogError($"ERROR IN UILISTENER:{ ex.Message}", LogType.Diagnostics);
+                Console.WriteLine($"ERROR IN UILISTENER: {ex.Message}");
             }
         }
 

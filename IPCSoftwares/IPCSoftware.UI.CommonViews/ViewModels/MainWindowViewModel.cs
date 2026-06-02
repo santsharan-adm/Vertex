@@ -495,6 +495,10 @@ public class MainWindowViewModelBase : BaseViewModel
                     _nav.NavigateToDashboardControl2();
                     break;
 
+                case "Bending Dash":
+                    _nav.NavigateToBendingDash();
+                    break;
+
                 case "Post Bend Monitor":
                     _nav.NavigateToPostBendingMonitor();
                     break;

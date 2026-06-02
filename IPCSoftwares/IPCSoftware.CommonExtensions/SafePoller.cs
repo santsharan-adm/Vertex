@@ -28,6 +28,8 @@ namespace IPCSoftware.Common.CommonExtensions
 
         internal virtual async Task LiveDataTickAsync()
         {
+            if (_asyncAction != null)
+                await _asyncAction(new Dictionary<int, object>());
         }
 
         private async void Timer_Tick(object? sender, EventArgs e)

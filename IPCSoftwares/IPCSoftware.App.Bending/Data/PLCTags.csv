@@ -1350,54 +1350,54 @@ Id,Category,DM Address,Name,PLCNo,40000,ModbusAddress,AlgoNo,Length,DataType,Bit
 1348,BendingProcess,D11223,BP_QR_CODE_2,1,1223,41223,0,10,String,0,0,0,0,0,1,,None,False,True,QR Code 2,QR Code 2
 1349,BendingProcess,D11233,BP_QR_CODE_3,1,1233,41233,0,10,String,0,0,0,0,0,1,,None,False,True,QR Code 3,QR Code 3
 1350,BendingProcess,D11243,BP_QR_CODE_4,1,1243,41243,0,10,String,0,0,0,0,0,1,,None,False,True,QR Code 4,QR Code 4
-1351,BendingProcess,D11253,BP_B1_TEMP1,1,1253,41253,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending1 Temperature 1,Bending1 Temperature 1
-1352,BendingProcess,D11255,BP_B1_TEMP2,1,1255,41255,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending1 Temperature 2,Bending1 Temperature 2
-1353,BendingProcess,D11257,BP_B1_TEMP3,1,1257,41257,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending1 Temperature 3,Bending1 Temperature 3
-1354,BendingProcess,D11259,BP_B1_TEMP4,1,1259,41259,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending1 Temperature 4,Bending1 Temperature 4
-1355,BendingProcess,D11261,BP_B1_LOAD1,1,1261,41261,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending1 Load 1,Bending1 Load 1
-1356,BendingProcess,D11263,BP_B1_LOAD2,1,1263,41263,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending1 Load 2,Bending1 Load 2
-1357,BendingProcess,D11265,BP_B1_LOAD3,1,1265,41265,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending1 Load 3,Bending1 Load 3
-1358,BendingProcess,D11267,BP_B1_LOAD4,1,1267,41267,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending1 Load 4,Bending1 Load 4
-1359,BendingProcess,D11269,BP_B2_TEMP1,1,1269,41269,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending2 Temperature 1,Bending2 Temperature 1
-1360,BendingProcess,D11271,BP_B2_TEMP2,1,1271,41271,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending2 Temperature 2,Bending2 Temperature 2
-1361,BendingProcess,D11273,BP_B2_TEMP3,1,1273,41273,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending2 Temperature 3,Bending2 Temperature 3
-1362,BendingProcess,D11275,BP_B2_TEMP4,1,1275,41275,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending2 Temperature 4,Bending2 Temperature 4
-1363,BendingProcess,D11277,BP_B2_LOAD1,1,1277,41277,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending2 Load 1,Bending2 Load 1
-1364,BendingProcess,D11279,BP_B2_LOAD2,1,1279,41279,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending2 Load 2,Bending2 Load 2
-1365,BendingProcess,D11281,BP_B2_LOAD3,1,1281,41281,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending2 Load 3,Bending2 Load 3
-1366,BendingProcess,D11283,BP_B2_LOAD4,1,1283,41283,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending2 Load 4,Bending2 Load 4
-1367,BendingProcess,D11285,BP_B3_TEMP1,1,1285,41285,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Temperature 1,Bending3 Temperature 1
-1368,BendingProcess,D11287,BP_B3_TEMP2,1,1287,41287,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Temperature 2,Bending3 Temperature 2
-1369,BendingProcess,D11289,BP_B3_TEMP3,1,1289,41289,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Temperature 3,Bending3 Temperature 3
-1370,BendingProcess,D11291,BP_B3_TEMP4,1,1291,41291,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Temperature 4,Bending3 Temperature 4
-1371,BendingProcess,D11293,BP_B3_LOAD1,1,1293,41293,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Load 1,Bending3 Load 1
-1372,BendingProcess,D11295,BP_B3_LOAD2,1,1295,41295,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Load 2,Bending3 Load 2
-1373,BendingProcess,D11297,BP_B3_LOAD3,1,1297,41297,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Load 3,Bending3 Load 3
-1374,BendingProcess,D11299,BP_B3_LOAD4,1,1299,41299,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Load 4,Bending3 Load 4
-1375,BendingProcess,D11301,BP_B3_X1,1,1301,41301,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 X1,Bending3 X1
-1376,BendingProcess,D11303,BP_B3_X2,1,1303,41303,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 X2,Bending3 X2
-1377,BendingProcess,D11305,BP_B3_X3,1,1305,41305,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 X3,Bending3 X3
-1378,BendingProcess,D11307,BP_B3_X4,1,1307,41307,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 X4,Bending3 X4
-1379,BendingProcess,D11309,BP_B3_Y1,1,1309,41309,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Y1,Bending3 Y1
-1380,BendingProcess,D11311,BP_B3_Y2,1,1311,41311,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Y2,Bending3 Y2
-1381,BendingProcess,D11313,BP_B3_Y3,1,1313,41313,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Y3,Bending3 Y3
-1382,BendingProcess,D11315,BP_B3_Y4,1,1315,41315,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Y4,Bending3 Y4
-1383,BendingProcess,D11317,BP_B3_Z1,1,1317,41317,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Z1,Bending3 Z1
-1384,BendingProcess,D11319,BP_B3_Z2,1,1319,41319,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Z2,Bending3 Z2
-1385,BendingProcess,D11321,BP_B3_Z3,1,1321,41321,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Z3,Bending3 Z3
-1386,BendingProcess,D11323,BP_B3_Z4,1,1323,41323,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 Z4,Bending3 Z4
-1387,BendingProcess,D11325,BP_B3_W1,1,1325,41325,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 W1,Bending3 W1
-1388,BendingProcess,D11327,BP_B3_W2,1,1327,41327,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 W2,Bending3 W2
-1389,BendingProcess,D11329,BP_B3_W3,1,1329,41329,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 W3,Bending3 W3
-1390,BendingProcess,D11331,BP_B3_W4,1,1331,41331,0,0,Float,0,0,0,0,0,1,,None,False,False,Bending3 W4,Bending3 W4
-1391,BendingProcess,D11333,BP_TEAR_TEMP1,1,1333,41333,0,0,Float,0,0,0,0,0,1,,None,False,False,Tearing Temperature 1,Tearing Temperature 1
-1392,BendingProcess,D11335,BP_TEAR_TEMP2,1,1335,41335,0,0,Float,0,0,0,0,0,1,,None,False,False,Tearing Temperature 2,Tearing Temperature 2
-1393,BendingProcess,D11337,BP_TEAR_TEMP3,1,1337,41337,0,0,Float,0,0,0,0,0,1,,None,False,False,Tearing Temperature 3,Tearing Temperature 3
-1394,BendingProcess,D11339,BP_TEAR_TEMP4,1,1339,41339,0,0,Float,0,0,0,0,0,1,,None,False,False,Tearing Temperature 4,Tearing Temperature 4
-1395,BendingProcess,D11341,BP_FLIP_FORCE1,1,1341,41341,0,0,Float,0,0,0,0,0,1,,None,False,False,Flipping Force 1,Flipping Force 1
-1396,BendingProcess,D11343,BP_FLIP_FORCE2,1,1343,41343,0,0,Float,0,0,0,0,0,1,,None,False,False,Flipping Force 2,Flipping Force 2
-1397,BendingProcess,D11345,BP_FLIP_FORCE3,1,1345,41345,0,0,Float,0,0,0,0,0,1,,None,False,False,Flipping Force 3,Flipping Force 3
-1398,BendingProcess,D11347,BP_FLIP_FORCE4,1,1347,41347,0,0,Float,0,0,0,0,0,1,,None,False,False,Flipping Force 4,Flipping Force 4
+1351,BendingProcess,D11253,BP_B1_TEMP1,1,1253,41253,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending1 Temperature 1,Bending1 Temperature 1
+1352,BendingProcess,D11255,BP_B1_TEMP2,1,1255,41255,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending1 Temperature 2,Bending1 Temperature 2
+1353,BendingProcess,D11257,BP_B1_TEMP3,1,1257,41257,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending1 Temperature 3,Bending1 Temperature 3
+1354,BendingProcess,D11259,BP_B1_TEMP4,1,1259,41259,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending1 Temperature 4,Bending1 Temperature 4
+1355,BendingProcess,D11261,BP_B1_LOAD1,1,1261,41261,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending1 Load 1,Bending1 Load 1
+1356,BendingProcess,D11263,BP_B1_LOAD2,1,1263,41263,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending1 Load 2,Bending1 Load 2
+1357,BendingProcess,D11265,BP_B1_LOAD3,1,1265,41265,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending1 Load 3,Bending1 Load 3
+1358,BendingProcess,D11267,BP_B1_LOAD4,1,1267,41267,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending1 Load 4,Bending1 Load 4
+1359,BendingProcess,D11269,BP_B2_TEMP1,1,1269,41269,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending2 Temperature 1,Bending2 Temperature 1
+1360,BendingProcess,D11271,BP_B2_TEMP2,1,1271,41271,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending2 Temperature 2,Bending2 Temperature 2
+1361,BendingProcess,D11273,BP_B2_TEMP3,1,1273,41273,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending2 Temperature 3,Bending2 Temperature 3
+1362,BendingProcess,D11275,BP_B2_TEMP4,1,1275,41275,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending2 Temperature 4,Bending2 Temperature 4
+1363,BendingProcess,D11277,BP_B2_LOAD1,1,1277,41277,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending2 Load 1,Bending2 Load 1
+1364,BendingProcess,D11279,BP_B2_LOAD2,1,1279,41279,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending2 Load 2,Bending2 Load 2
+1365,BendingProcess,D11281,BP_B2_LOAD3,1,1281,41281,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending2 Load 3,Bending2 Load 3
+1366,BendingProcess,D11283,BP_B2_LOAD4,1,1283,41283,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending2 Load 4,Bending2 Load 4
+1367,BendingProcess,D11285,BP_B3_TEMP1,1,1285,41285,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Temperature 1,Bending3 Temperature 1
+1368,BendingProcess,D11287,BP_B3_TEMP2,1,1287,41287,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Temperature 2,Bending3 Temperature 2
+1369,BendingProcess,D11289,BP_B3_TEMP3,1,1289,41289,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Temperature 3,Bending3 Temperature 3
+1370,BendingProcess,D11291,BP_B3_TEMP4,1,1291,41291,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Temperature 4,Bending3 Temperature 4
+1371,BendingProcess,D11293,BP_B3_LOAD1,1,1293,41293,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Load 1,Bending3 Load 1
+1372,BendingProcess,D11295,BP_B3_LOAD2,1,1295,41295,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Load 2,Bending3 Load 2
+1373,BendingProcess,D11297,BP_B3_LOAD3,1,1297,41297,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Load 3,Bending3 Load 3
+1374,BendingProcess,D11299,BP_B3_LOAD4,1,1299,41299,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Load 4,Bending3 Load 4
+1375,BendingProcess,D11301,BP_B3_X1,1,1301,41301,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 X1,Bending3 X1
+1376,BendingProcess,D11303,BP_B3_X2,1,1303,41303,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 X2,Bending3 X2
+1377,BendingProcess,D11305,BP_B3_X3,1,1305,41305,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 X3,Bending3 X3
+1378,BendingProcess,D11307,BP_B3_X4,1,1307,41307,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 X4,Bending3 X4
+1379,BendingProcess,D11309,BP_B3_Y1,1,1309,41309,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Y1,Bending3 Y1
+1380,BendingProcess,D11311,BP_B3_Y2,1,1311,41311,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Y2,Bending3 Y2
+1381,BendingProcess,D11313,BP_B3_Y3,1,1313,41313,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Y3,Bending3 Y3
+1382,BendingProcess,D11315,BP_B3_Y4,1,1315,41315,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Y4,Bending3 Y4
+1383,BendingProcess,D11317,BP_B3_Z1,1,1317,41317,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Z1,Bending3 Z1
+1384,BendingProcess,D11319,BP_B3_Z2,1,1319,41319,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Z2,Bending3 Z2
+1385,BendingProcess,D11321,BP_B3_Z3,1,1321,41321,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Z3,Bending3 Z3
+1386,BendingProcess,D11323,BP_B3_Z4,1,1323,41323,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 Z4,Bending3 Z4
+1387,BendingProcess,D11325,BP_B3_W1,1,1325,41325,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 W1,Bending3 W1
+1388,BendingProcess,D11327,BP_B3_W2,1,1327,41327,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 W2,Bending3 W2
+1389,BendingProcess,D11329,BP_B3_W3,1,1329,41329,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 W3,Bending3 W3
+1390,BendingProcess,D11331,BP_B3_W4,1,1331,41331,0,2,Float,0,0,0,0,0,1,,None,False,False,Bending3 W4,Bending3 W4
+1391,BendingProcess,D11333,BP_TEAR_TEMP1,1,1333,41333,0,2,Float,0,0,0,0,0,1,,None,False,False,Tearing Temperature 1,Tearing Temperature 1
+1392,BendingProcess,D11335,BP_TEAR_TEMP2,1,1335,41335,0,2,Float,0,0,0,0,0,1,,None,False,False,Tearing Temperature 2,Tearing Temperature 2
+1393,BendingProcess,D11337,BP_TEAR_TEMP3,1,1337,41337,0,2,Float,0,0,0,0,0,1,,None,False,False,Tearing Temperature 3,Tearing Temperature 3
+1394,BendingProcess,D11339,BP_TEAR_TEMP4,1,1339,41339,0,2,Float,0,0,0,0,0,1,,None,False,False,Tearing Temperature 4,Tearing Temperature 4
+1395,BendingProcess,D11341,BP_FLIP_FORCE1,1,1341,41341,0,2,Float,0,0,0,0,0,1,,None,False,False,Flipping Force 1,Flipping Force 1
+1396,BendingProcess,D11343,BP_FLIP_FORCE2,1,1343,41343,0,2,Float,0,0,0,0,0,1,,None,False,False,Flipping Force 2,Flipping Force 2
+1397,BendingProcess,D11345,BP_FLIP_FORCE3,1,1345,41345,0,2,Float,0,0,0,0,0,1,,None,False,False,Flipping Force 3,Flipping Force 3
+1398,BendingProcess,D11347,BP_FLIP_FORCE4,1,1347,41347,0,2,Float,0,0,0,0,0,1,,None,False,False,Flipping Force 4,Flipping Force 4
 1399,BendingProcess,D11349,BP_INSP_RESULT1,1,1349,41349,0,0,Int16,0,0,0,0,0,1,,None,False,False,Inspection Result 1,Inspection Result 1
 1400,BendingProcess,D11350,BP_INSP_RESULT2,1,1350,41350,0,0,Int16,0,0,0,0,0,1,,None,False,False,Inspection Result 2,Inspection Result 2
 1401,BendingProcess,D11351,BP_INSP_RESULT3,1,1351,41351,0,0,Int16,0,0,0,0,0,1,,None,False,False,Inspection Result 3,Inspection Result 3

@@ -60,43 +60,168 @@ namespace IPCSoftware.CoreService.Bending.Service
 
         /// <summary>
         /// Main entry point — called every 500ms from the processing loop.
+        /// Single-trigger conveyor logic: RobotPickDone advances ALL batches + creates new one.
         /// </summary>
         public void Process(Dictionary<int, object> latestValues)
         {
-            // 1. Detect rising edges on all trigger signals
+            // Debug: confirm method is called
+            if (latestValues.Count > 0 && _fifoQueue.Count == 0)
+            {
+                // Only print once when we have data but no batches yet
+                Console.WriteLine($"[FIFO] Process() running. Tags={latestValues.Count}. Waiting for trigger (Tag 1334)...");
+            }
+
+            // 1. Detect rising edges on trigger signal
             var risingEdges = DetectRisingEdges(latestValues);
 
-            if (risingEdges.Count > 0)
+            // Debug: show tag 1334 value
+            if (latestValues.TryGetValue(1334, out var triggerVal))
             {
-                Console.WriteLine($"[FIFO] *** RISING EDGES: {string.Join(", ", risingEdges)} ***");
-                _logger.LogInfo($"[BendingProcess] Rising edges detected: {string.Join(", ", risingEdges)}", LogType.Diagnostics);
+                // Only log when value changes or first time
             }
+            else if (latestValues.Count > 0 && _cycleCount % 20 == 0)
+            {
+                Console.WriteLine($"[FIFO] WARNING: Tag 1334 (RobotPickDone) NOT in latestValues! Dict has {latestValues.Count} keys.");
+            }
+            _cycleCount++;
 
-            // 2. Handle batch creation on RobotPickDone rising edge
+            // 2. On RobotPickDone rising edge: advance all + create new batch
             if (risingEdges.Contains("RobotPickDone"))
             {
-                Console.WriteLine("[FIFO] RobotPickDone detected — attempting batch creation...");
+                Console.WriteLine("[FIFO] *** TRIGGER: RobotPickDone — advancing all batches ***");
+
+                // Step A: If batch at Stage 9 has inspection complete, dequeue it
+                var batchAt9 = GetBatchAtStage(9);
+                if (batchAt9 != null && batchAt9.InspectionComplete)
+                {
+                    _fifoQueue.Remove(batchAt9);
+                    Console.WriteLine($"[FIFO] {batchAt9.BatchNumber} EXIT from Stage 9 (inspection complete)");
+                }
+
+                // Step B: Advance ALL existing batches by one stage (highest first)
+                // SHIFT REGISTER: only advance if next stage is unoccupied
+                var batchesSorted = _fifoQueue.OrderByDescending(b => b.Stage).ToList();
+                foreach (var batch in batchesSorted)
+                {
+                    if (batch.Stage < 9)
+                    {
+                        int nextStage = batch.Stage + 1;
+                        // Only advance if next stage is empty (shift register — no collisions)
+                        if (!_fifoQueue.Any(b => b != batch && b.Stage == nextStage))
+                        {
+                            int oldStage = batch.Stage;
+                            batch.Stage = nextStage;
+
+                            // Step C: Record data on arrival at specific stages
+                            RecordDataOnArrival(batch, batch.Stage, latestValues);
+
+                            Console.WriteLine($"[FIFO] {batch.BatchNumber} Stage {oldStage}→{batch.Stage}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"[FIFO] {batch.BatchNumber} BLOCKED at Stage {batch.Stage} (Stage {nextStage} occupied)");
+                        }
+                    }
+                }
+
+                // Step D: Create new batch at Stage 1
                 TryCreateBatch(latestValues);
+
+                // Print queue status
+                Console.WriteLine($"[FIFO] Queue={_fifoQueue.Count} | {string.Join(", ", _fifoQueue.Select(b => $"{b.BatchNumber}@S{b.Stage}"))}");
             }
 
-            // 3. Execute stage transitions (highest stage first to prevent conflicts)
-            ProcessStageTransitions(risingEdges, latestValues);
-
-            // 4. Record process data at relevant stages
-            RecordProcessData(risingEdges, latestValues);
-
-            // 5. Handle Stage 9 completion (inspection + persistence + dequeue)
-            ProcessStage9Completion(risingEdges, latestValues);
-
-            // Print queue status every 5 seconds (every 10th call)
-            _cycleCount++;
-            if (_cycleCount % 10 == 0 && _fifoQueue.Count > 0)
+            // 3. Handle Stage 9 inspection (CameraInspectionComplete signal — separate from main trigger)
+            if (risingEdges.Contains("CameraInspectionComplete"))
             {
-                Console.WriteLine($"[FIFO] Queue={_fifoQueue.Count} | Batches: {string.Join(", ", _fifoQueue.Select(b => $"{b.BatchNumber}@Stage{b.Stage}"))}");
+                var batchAt9 = GetBatchAtStage(9);
+                if (batchAt9 != null && !batchAt9.InspectionComplete)
+                {
+                    batchAt9.InspectionResults[0] = ReadBool(latestValues, ConstantValues.BP_InspResult1, "InspResult1");
+                    batchAt9.InspectionResults[1] = ReadBool(latestValues, ConstantValues.BP_InspResult2, "InspResult2");
+                    batchAt9.InspectionResults[2] = ReadBool(latestValues, ConstantValues.BP_InspResult3, "InspResult3");
+                    batchAt9.InspectionResults[3] = ReadBool(latestValues, ConstantValues.BP_InspResult4, "InspResult4");
+                    batchAt9.InspectionComplete = true;
+                    Console.WriteLine($"[FIFO] {batchAt9.BatchNumber} Inspection complete: [{batchAt9.InspectionResults[0]},{batchAt9.InspectionResults[1]},{batchAt9.InspectionResults[2]},{batchAt9.InspectionResults[3]}]");
+                }
             }
 
-            // Update dashboard model with current queue state
+            // Update dashboard model
             _dashboardModel.UpdateFrom(_fifoQueue);
+        }
+
+        /// <summary>
+        /// Records/snapshots process data when a batch arrives at a data-recording stage.
+        /// </summary>
+        private void RecordDataOnArrival(BatchModel batch, int newStage, Dictionary<int, object> latestValues)
+        {
+            switch (newStage)
+            {
+                case 3: // Bending-1 & 2 — snapshot temps and loads
+                    batch.Bending1Temperatures[0] = ReadFloat(latestValues, ConstantValues.BP_B1_Temp1, "B1_Temp1");
+                    batch.Bending1Temperatures[1] = ReadFloat(latestValues, ConstantValues.BP_B1_Temp2, "B1_Temp2");
+                    batch.Bending1Temperatures[2] = ReadFloat(latestValues, ConstantValues.BP_B1_Temp3, "B1_Temp3");
+                    batch.Bending1Temperatures[3] = ReadFloat(latestValues, ConstantValues.BP_B1_Temp4, "B1_Temp4");
+                    batch.Bending1Loads[0] = ReadFloat(latestValues, ConstantValues.BP_B1_Load1, "B1_Load1");
+                    batch.Bending1Loads[1] = ReadFloat(latestValues, ConstantValues.BP_B1_Load2, "B1_Load2");
+                    batch.Bending1Loads[2] = ReadFloat(latestValues, ConstantValues.BP_B1_Load3, "B1_Load3");
+                    batch.Bending1Loads[3] = ReadFloat(latestValues, ConstantValues.BP_B1_Load4, "B1_Load4");
+                    batch.Bending2Temperatures[0] = ReadFloat(latestValues, ConstantValues.BP_B2_Temp1, "B2_Temp1");
+                    batch.Bending2Temperatures[1] = ReadFloat(latestValues, ConstantValues.BP_B2_Temp2, "B2_Temp2");
+                    batch.Bending2Temperatures[2] = ReadFloat(latestValues, ConstantValues.BP_B2_Temp3, "B2_Temp3");
+                    batch.Bending2Temperatures[3] = ReadFloat(latestValues, ConstantValues.BP_B2_Temp4, "B2_Temp4");
+                    batch.Bending2Loads[0] = ReadFloat(latestValues, ConstantValues.BP_B2_Load1, "B2_Load1");
+                    batch.Bending2Loads[1] = ReadFloat(latestValues, ConstantValues.BP_B2_Load2, "B2_Load2");
+                    batch.Bending2Loads[2] = ReadFloat(latestValues, ConstantValues.BP_B2_Load3, "B2_Load3");
+                    batch.Bending2Loads[3] = ReadFloat(latestValues, ConstantValues.BP_B2_Load4, "B2_Load4");
+                    break;
+
+                case 4: // Bending-3 — snapshot temps, loads, X, Y, Z, W
+                    batch.Bending3Temperatures[0] = ReadFloat(latestValues, ConstantValues.BP_B3_Temp1, "B3_Temp1");
+                    batch.Bending3Temperatures[1] = ReadFloat(latestValues, ConstantValues.BP_B3_Temp2, "B3_Temp2");
+                    batch.Bending3Temperatures[2] = ReadFloat(latestValues, ConstantValues.BP_B3_Temp3, "B3_Temp3");
+                    batch.Bending3Temperatures[3] = ReadFloat(latestValues, ConstantValues.BP_B3_Temp4, "B3_Temp4");
+                    batch.Bending3Loads[0] = ReadFloat(latestValues, ConstantValues.BP_B3_Load1, "B3_Load1");
+                    batch.Bending3Loads[1] = ReadFloat(latestValues, ConstantValues.BP_B3_Load2, "B3_Load2");
+                    batch.Bending3Loads[2] = ReadFloat(latestValues, ConstantValues.BP_B3_Load3, "B3_Load3");
+                    batch.Bending3Loads[3] = ReadFloat(latestValues, ConstantValues.BP_B3_Load4, "B3_Load4");
+                    batch.Bending3X[0] = ReadFloat(latestValues, ConstantValues.BP_B3_X1, "B3_X1");
+                    batch.Bending3X[1] = ReadFloat(latestValues, ConstantValues.BP_B3_X2, "B3_X2");
+                    batch.Bending3X[2] = ReadFloat(latestValues, ConstantValues.BP_B3_X3, "B3_X3");
+                    batch.Bending3X[3] = ReadFloat(latestValues, ConstantValues.BP_B3_X4, "B3_X4");
+                    batch.Bending3Y[0] = ReadFloat(latestValues, ConstantValues.BP_B3_Y1, "B3_Y1");
+                    batch.Bending3Y[1] = ReadFloat(latestValues, ConstantValues.BP_B3_Y2, "B3_Y2");
+                    batch.Bending3Y[2] = ReadFloat(latestValues, ConstantValues.BP_B3_Y3, "B3_Y3");
+                    batch.Bending3Y[3] = ReadFloat(latestValues, ConstantValues.BP_B3_Y4, "B3_Y4");
+                    batch.Bending3Z[0] = ReadFloat(latestValues, ConstantValues.BP_B3_Z1, "B3_Z1");
+                    batch.Bending3Z[1] = ReadFloat(latestValues, ConstantValues.BP_B3_Z2, "B3_Z2");
+                    batch.Bending3Z[2] = ReadFloat(latestValues, ConstantValues.BP_B3_Z3, "B3_Z3");
+                    batch.Bending3Z[3] = ReadFloat(latestValues, ConstantValues.BP_B3_Z4, "B3_Z4");
+                    batch.Bending3W[0] = ReadFloat(latestValues, ConstantValues.BP_B3_W1, "B3_W1");
+                    batch.Bending3W[1] = ReadFloat(latestValues, ConstantValues.BP_B3_W2, "B3_W2");
+                    batch.Bending3W[2] = ReadFloat(latestValues, ConstantValues.BP_B3_W3, "B3_W3");
+                    batch.Bending3W[3] = ReadFloat(latestValues, ConstantValues.BP_B3_W4, "B3_W4");
+                    break;
+
+                case 6: // Tearing — record status
+                    batch.TearingStatus[0] = ReadBool(latestValues, ConstantValues.BP_Tear_Temp1, "Tear_Status1");
+                    batch.TearingStatus[1] = ReadBool(latestValues, ConstantValues.BP_Tear_Temp2, "Tear_Status2");
+                    batch.TearingStatus[2] = ReadBool(latestValues, ConstantValues.BP_Tear_Temp3, "Tear_Status3");
+                    batch.TearingStatus[3] = ReadBool(latestValues, ConstantValues.BP_Tear_Temp4, "Tear_Status4");
+                    break;
+
+                case 7: // Flipping — record status
+                    batch.FlippingStatus[0] = ReadBool(latestValues, ConstantValues.BP_Flip_Force1, "Flip_Status1");
+                    batch.FlippingStatus[1] = ReadBool(latestValues, ConstantValues.BP_Flip_Force2, "Flip_Status2");
+                    batch.FlippingStatus[2] = ReadBool(latestValues, ConstantValues.BP_Flip_Force3, "Flip_Status3");
+                    batch.FlippingStatus[3] = ReadBool(latestValues, ConstantValues.BP_Flip_Force4, "Flip_Status4");
+                    break;
+
+                case 9: // Inspection position — write start signal
+                    batch.ArrivedAtStage9 = DateTime.Now;
+                    WriteInspectionStartSignal();
+                    break;
+            }
         }
 
         /// <summary>
@@ -681,7 +806,7 @@ namespace IPCSoftware.CoreService.Bending.Service
         }
 
         /// <summary>
-        /// On TearingComplete rising edge while batch at Stage 6: read 4 temperature values.
+        /// On TearingComplete rising edge while batch at Stage 6: read 4 status values (OK/NG).
         /// Does NOT block Stage 6→7 advancement.
         /// </summary>
         private void RecordTearingData(HashSet<string> risingEdges, Dictionary<int, object> latestValues)
@@ -691,16 +816,16 @@ namespace IPCSoftware.CoreService.Bending.Service
             var batch = GetBatchAtStage(6);
             if (batch == null) return;
 
-            batch.TearingTemperatures[0] = ReadFloat(latestValues, ConstantValues.BP_Tear_Temp1, "Tear_Temp1");
-            batch.TearingTemperatures[1] = ReadFloat(latestValues, ConstantValues.BP_Tear_Temp2, "Tear_Temp2");
-            batch.TearingTemperatures[2] = ReadFloat(latestValues, ConstantValues.BP_Tear_Temp3, "Tear_Temp3");
-            batch.TearingTemperatures[3] = ReadFloat(latestValues, ConstantValues.BP_Tear_Temp4, "Tear_Temp4");
+            batch.TearingStatus[0] = ReadBool(latestValues, ConstantValues.BP_Tear_Temp1, "Tear_Status1");
+            batch.TearingStatus[1] = ReadBool(latestValues, ConstantValues.BP_Tear_Temp2, "Tear_Status2");
+            batch.TearingStatus[2] = ReadBool(latestValues, ConstantValues.BP_Tear_Temp3, "Tear_Status3");
+            batch.TearingStatus[3] = ReadBool(latestValues, ConstantValues.BP_Tear_Temp4, "Tear_Status4");
 
-            _logger.LogInfo($"[BendingProcess] {batch.BatchNumber} Tearing data recorded at Stage 6", LogType.Diagnostics);
+            _logger.LogInfo($"[BendingProcess] {batch.BatchNumber} Tearing status recorded at Stage 6: [{batch.TearingStatus[0]},{batch.TearingStatus[1]},{batch.TearingStatus[2]},{batch.TearingStatus[3]}]", LogType.Diagnostics);
         }
 
         /// <summary>
-        /// On FlippingComplete rising edge while batch at Stage 7: read 4 force values.
+        /// On FlippingComplete rising edge while batch at Stage 7: read 4 status values (OK/NG).
         /// Does NOT block Stage 7→8 advancement.
         /// </summary>
         private void RecordFlippingData(HashSet<string> risingEdges, Dictionary<int, object> latestValues)
@@ -710,12 +835,12 @@ namespace IPCSoftware.CoreService.Bending.Service
             var batch = GetBatchAtStage(7);
             if (batch == null) return;
 
-            batch.FlippingForces[0] = ReadFloat(latestValues, ConstantValues.BP_Flip_Force1, "Flip_Force1");
-            batch.FlippingForces[1] = ReadFloat(latestValues, ConstantValues.BP_Flip_Force2, "Flip_Force2");
-            batch.FlippingForces[2] = ReadFloat(latestValues, ConstantValues.BP_Flip_Force3, "Flip_Force3");
-            batch.FlippingForces[3] = ReadFloat(latestValues, ConstantValues.BP_Flip_Force4, "Flip_Force4");
+            batch.FlippingStatus[0] = ReadBool(latestValues, ConstantValues.BP_Flip_Force1, "Flip_Status1");
+            batch.FlippingStatus[1] = ReadBool(latestValues, ConstantValues.BP_Flip_Force2, "Flip_Status2");
+            batch.FlippingStatus[2] = ReadBool(latestValues, ConstantValues.BP_Flip_Force3, "Flip_Status3");
+            batch.FlippingStatus[3] = ReadBool(latestValues, ConstantValues.BP_Flip_Force4, "Flip_Status4");
 
-            _logger.LogInfo($"[BendingProcess] {batch.BatchNumber} Flipping data recorded at Stage 7", LogType.Diagnostics);
+            _logger.LogInfo($"[BendingProcess] {batch.BatchNumber} Flipping status recorded at Stage 7: [{batch.FlippingStatus[0]},{batch.FlippingStatus[1]},{batch.FlippingStatus[2]},{batch.FlippingStatus[3]}]", LogType.Diagnostics);
         }
 
         #endregion
@@ -909,8 +1034,7 @@ namespace IPCSoftware.CoreService.Bending.Service
 
             _dailyCounter++;
 
-            var batchNumber = $"BN-{today:yyyyMMdd}-{_dailyCounter:D3}";
-            _logger.LogInfo($"[BendingProcess] Generated batch number: {batchNumber}", LogType.Diagnostics);
+            var batchNumber = $"BN-{_dailyCounter:D2}";
             return batchNumber;
         }
 

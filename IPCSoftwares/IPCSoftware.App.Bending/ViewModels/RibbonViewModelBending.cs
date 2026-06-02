@@ -39,7 +39,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             {
 
                         "Dashboard1",
-                        "Dashboard2",
+                        "Bending Dash",
                         "Bending1 Monitor",
                         "Bending2 Monitor",
                         "Bending3 Monitor",

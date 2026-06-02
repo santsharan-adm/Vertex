@@ -117,28 +117,22 @@
 
                         <UniformGrid Grid.Row="1" Grid.Column="0" Columns="1" Background="#0B1A2E">
                             <Border BorderBrush="#1565C0" Padding="3">
-                                <TextBlock Text="{Binding DashboardInspectionModelBatch1.BatchNo, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                <TextBlock Text="{Binding LeftBatch1No}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
                             </Border>
                             <Border BorderBrush="#1565C0" Padding="3">
-                                <TextBlock Text="{Binding DashboardInspectionModelBatch2.BatchNo, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
+                                <TextBlock Text="{Binding LeftBatch2No}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="9"/>
                             </Border>
                         </UniformGrid>
 
                         <StackPanel Grid.Row="1" Grid.Column="1" Background="#0B1A2E">
                             <StackPanel Margin="2">
-                                <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem1.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem2.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem3.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="{Binding DashboardInspectionModelBatch1.LineItem4.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding LeftBatch1Qr}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
                             </StackPanel>
 
                             <Border Height="1" Background="#1565C0" Opacity="0.4"/>
 
                             <StackPanel Margin="0,5,0,2">
-                                <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem1.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem2.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem3.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
-                                <TextBlock Text="{Binding DashboardInspectionModelBatch2.LineItem4.QRCode1, Converter={StaticResource EmptyOrZeroToString}}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
+                                <TextBlock Text="{Binding LeftBatch2Qr}" HorizontalAlignment="Center" Foreground="White" FontSize="8.5" Margin="2"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>

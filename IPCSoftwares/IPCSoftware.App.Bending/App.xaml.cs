@@ -1,4 +1,6 @@
 ﻿using IPCSoftware.App.Bending.DI;
+using IPCSoftware.App.Bending.ViewModels;
+using IPCSoftware.App.Bending.Views;
 using IPCSoftware.Common.CommonFunctions;
 using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces;
@@ -214,6 +216,8 @@ namespace IPCSoftware.App.Bending
 
             // Show the main window only after ServiceProvider is fully initialized
             new MainWindow().Show();
+
+            // FIFO Monitor window will open after login via navigation
         }
 
         /// <summary>

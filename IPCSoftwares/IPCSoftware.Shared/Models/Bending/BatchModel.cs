@@ -65,11 +65,11 @@ namespace IPCSoftware.Shared.Models.Bending
         public float[] Bending3Z { get; set; } = new float[4];
         public float[] Bending3W { get; set; } = new float[4];
 
-        // Tearing data (Stage 6): 4 Temperatures
-        public float[] TearingTemperatures { get; set; } = new float[4];
+        // Tearing status (Stage 6): 4 booleans (OK/NG per part)
+        public bool[] TearingStatus { get; set; } = new bool[4];
 
-        // Flipping data (Stage 7): 4 Forces
-        public float[] FlippingForces { get; set; } = new float[4];
+        // Flipping status (Stage 7): 4 booleans (OK/NG per part)
+        public bool[] FlippingStatus { get; set; } = new bool[4];
 
         // Inspection results (Stage 9): 4 booleans
         public bool[] InspectionResults { get; set; } = new bool[4];
