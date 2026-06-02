@@ -255,7 +255,7 @@ namespace IPCSoftware.CoreService.Bending.Service
 
             DashboardInspectionModel item = new DashboardInspectionModel
             {
-                BatchNo =   "ABCDTrail",/* GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),*/
+                BatchNo = "2026/06/01_001",/* GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),*/
                 LineItem1 = BuildLineItem1(),
                 LineItem2 = BuildLineItem2(),
                 LineItem3 = BuildLineItem3(),
@@ -282,7 +282,7 @@ namespace IPCSoftware.CoreService.Bending.Service
             DashboardInspectionLineModel BuildLineItem1() => new DashboardInspectionLineModel
             {
                 QRCode = GetString(ConstantValues.L1_QRCode),//GetString(ConstantValues.L1_QRCode != null ? int.TryParse(ConstantValues.L1_QRCode, out var qrId) ? qrId : 1187 : 1187),
-                HeaterTemp_Bend1 = GetFloat(ConstantValues.L1_HeaterTemp_Bend1),
+                HeaterTemp_Bend1 = GetFloat(ConstantValues.L1_HeaterTemp_Bend1)+10.0f,
                 HeaterTemp_Bend2 = GetFloat(ConstantValues.L2_HeaterTemp_Bend2),
                 HeaterTemp_Bend3 = GetFloat(ConstantValues.L3_HeaterTemp_Bend3),
                 Load_Bend1 = GetFloat(ConstantValues.L1_Load_Bend1),
@@ -346,7 +346,7 @@ namespace IPCSoftware.CoreService.Bending.Service
 
             DashboardInspectionModel item = new DashboardInspectionModel
             {
-                BatchNo = "ABCDTrail",/* GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),*/
+                BatchNo = "2026/06/01_002",/* GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),*/
                 LineItem1 = BuildLineItem1(),
                 LineItem2 = BuildLineItem2(),
                 LineItem3 = BuildLineItem3(),
@@ -371,7 +371,7 @@ namespace IPCSoftware.CoreService.Bending.Service
 
             DashboardInspectionModel BuiltedBatch = new DashboardInspectionModel
             {
-                BatchNo = "TrailBatch001",
+                BatchNo = "2026/06/01_003",
                 LineItem1 = new DashboardInspectionLineModel { QRCode = GetString(ConstantValues.L1_QRCode) },
                 LineItem2 = new DashboardInspectionLineModel { QRCode = GetString(ConstantValues.L2_QRCode) },
                 LineItem3 = new DashboardInspectionLineModel { QRCode = GetString(ConstantValues.L3_QRCode) },
@@ -398,7 +398,7 @@ namespace IPCSoftware.CoreService.Bending.Service
 
             DashboardInspectionModel BuiltedBatch = new DashboardInspectionModel
             {
-                BatchNo = "TrailBatch002",
+                BatchNo = "2026/06/01_004",
                 LineItem1 = new DashboardInspectionLineModel { QRCode = GetString(ConstantValues.L1_QRCode) },
                 LineItem2 = new DashboardInspectionLineModel { QRCode = GetString(ConstantValues.L2_QRCode) },
                 LineItem3 = new DashboardInspectionLineModel { QRCode = GetString(ConstantValues.L3_QRCode) },
@@ -429,32 +429,32 @@ namespace IPCSoftware.CoreService.Bending.Service
                         Clamp = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b1f1Cv) ? (bool.TryParse(b1f1Cv.ToString(), out var b1f1Cr) ? b1f1Cr : false) : false,
                         Punch = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Punch, out var b1f1Pv) ? (bool.TryParse(b1f1Pv.ToString(), out var b1f1Pr) ? b1f1Pr : false) : false,
                         Heat = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Heat, out var b1f1Hv) ? (bool.TryParse(b1f1Hv.ToString(), out var b1f1Hr) ? b1f1Hr : false) : false,
-                        Temperature = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b1f1Tv) ? (float.TryParse(b1f1Tv.ToString(), out var b1f1Tr) ? b1f1Tr : 0f) : 0f,
-                        Force = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Punch, out var b1f1Fv) ? (float.TryParse(b1f1Fv.ToString(), out var b1f1Fr) ? b1f1Fr : 0f) : 0f
+                        Temperature = latestValueNew.TryGetValue(ConstantValues.L1Bending1Temperature, out var b1f1Tv) ? (float.TryParse(b1f1Tv.ToString(), out var b1f1Tr) ? b1f1Tr : 0f) : 0f,
+                        Force = latestValueNew.TryGetValue(ConstantValues.L1Bending1Force, out var b1f1Fv) ? (float.TryParse(b1f1Fv.ToString(), out var b1f1Fr) ? b1f1Fr : 0f) : 0f
                     },
                     Flex2 = new BendingIndicator
                     {
                         Clamp = latestValueNew.TryGetValue(ConstantValues.Bending1Flex2Clamp, out var b1f2Cv) ? (bool.TryParse(b1f2Cv.ToString(), out var b1f2Cr) ? b1f2Cr : false) : false,
                         Punch = latestValueNew.TryGetValue(ConstantValues.Bending1Flex2Punch, out var b1f2Pv) ? (bool.TryParse(b1f2Pv.ToString(), out var b1f2Pr) ? b1f2Pr : false) : false,
                         Heat = latestValueNew.TryGetValue(ConstantValues.Bending1Flex2Heat, out var b1f2Hv) ? (bool.TryParse(b1f2Hv.ToString(), out var b1f2Hr) ? b1f2Hr : false) : false,
-                        Temperature = latestValueNew.TryGetValue(ConstantValues.Bending1Flex2Clamp, out var b1f2Tv) ? (float.TryParse(b1f2Tv.ToString(), out var b1f2Tr) ? b1f2Tr : 0f) : 0f,
-                        Force = latestValueNew.TryGetValue(ConstantValues.Bending1Flex2Clamp, out var b1f2Fv) ? (float.TryParse(b1f2Fv.ToString(), out var b1f2Fr) ? b1f2Fr : 0f) : 0f
+                        Temperature = latestValueNew.TryGetValue(ConstantValues.L2Bending1Temperature, out var b1f2Tv) ? (float.TryParse(b1f2Tv.ToString(), out var b1f2Tr) ? b1f2Tr : 0f) : 0f,
+                        Force = latestValueNew.TryGetValue(ConstantValues.L2Bending1Force, out var b1f2Fv) ? (float.TryParse(b1f2Fv.ToString(), out var b1f2Fr) ? b1f2Fr : 0f) : 0f
                     },
                     Flex3 = new BendingIndicator
                     {
                         Clamp = latestValueNew.TryGetValue(ConstantValues.Bending1Flex3Clamp, out var b1f3Cv) ? (bool.TryParse(b1f3Cv.ToString(), out var b1f3Cr) ? b1f3Cr : false) : false,
                         Punch = latestValueNew.TryGetValue(ConstantValues.Bending1Flex3Punch, out var b1f3Pv) ? (bool.TryParse(b1f3Pv.ToString(), out var b1f3Pr) ? b1f3Pr : false) : false,
                         Heat = latestValueNew.TryGetValue(ConstantValues.Bending1Flex3Heat, out var b1f3Hv) ? (bool.TryParse(b1f3Hv.ToString(), out var b1f3Hr) ? b1f3Hr : false) : false,
-                        Temperature = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b1f3Tv) ? (float.TryParse(b1f3Tv.ToString(), out var b1f3Tr) ? b1f3Tr : 0f) : 0f,
-                        Force = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b1f3Fv) ? (float.TryParse(b1f3Fv.ToString(), out var b1f3Fr) ? b1f3Fr : 0f) : 0f
+                        Temperature = latestValueNew.TryGetValue(ConstantValues.L3Bending1Temperature, out var b1f3Tv) ? (float.TryParse(b1f3Tv.ToString(), out var b1f3Tr) ? b1f3Tr : 0f) : 0f,
+                        Force = latestValueNew.TryGetValue(ConstantValues.L3Bending1Force, out var b1f3Fv) ? (float.TryParse(b1f3Fv.ToString(), out var b1f3Fr) ? b1f3Fr : 0f) : 0f
                     },
                     Flex4 = new BendingIndicator
                     {
                         Clamp = latestValueNew.TryGetValue(ConstantValues.Bending1Flex4Clamp, out var b1f4Cv) ? (bool.TryParse(b1f4Cv.ToString(), out var b1f4Cr) ? b1f4Cr : false) : false,
                         Punch = latestValueNew.TryGetValue(ConstantValues.Bending1Flex4Clamp, out var b1f4Pv) ? (bool.TryParse(b1f4Pv.ToString(), out var b1f4Pr) ? b1f4Pr : false) : false,
                         Heat = latestValueNew.TryGetValue(ConstantValues.Bending1Flex4Heat, out var b1f4Hv) ? (bool.TryParse(b1f4Hv.ToString(), out var b1f4Hr) ? b1f4Hr : false) : false,
-                        Temperature = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b1f4Tv) ? (float.TryParse(b1f4Tv.ToString(), out var b1f4Tr) ? b1f4Tr : 0f) : 0f,
-                        Force = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b1f4Fv) ? (float.TryParse(b1f4Fv.ToString(), out var b1f4Fr) ? b1f4Fr : 0f) : 0f
+                        Temperature = latestValueNew.TryGetValue(ConstantValues.L4Bending1Temperature, out var b1f4Tv) ? (float.TryParse(b1f4Tv.ToString(), out var b1f4Tr) ? b1f4Tr : 0f) : 0f,
+                        Force = latestValueNew.TryGetValue(ConstantValues.L4Bending1Force, out var b1f4Fv) ? (float.TryParse(b1f4Fv.ToString(), out var b1f4Fr) ? b1f4Fr : 0f) : 0f
                     }
                 },
                 Bending2 = new FlexBendingIndicator
@@ -464,32 +464,32 @@ namespace IPCSoftware.CoreService.Bending.Service
                         Clamp = latestValueNew.TryGetValue(ConstantValues.Bending2Flex1Clamp, out var b2f1Cv) ? (bool.TryParse(b2f1Cv.ToString(), out var b2f1Cr) ? b2f1Cr : false) : false,
                         Punch = latestValueNew.TryGetValue(ConstantValues.Bending2Flex1Punch, out var b2f1Pv) ? (bool.TryParse(b2f1Pv.ToString(), out var b2f1Pr) ? b2f1Pr : false) : false,
                         Heat = latestValueNew.TryGetValue(ConstantValues.Bending2Flex1Heat, out var b2f1Hv) ? (bool.TryParse(b2f1Hv.ToString(), out var b2f1Hr) ? b2f1Hr : false) : false,
-                        Temperature = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b2f1Tv) ? (float.TryParse(b2f1Tv.ToString(), out var b2f1Tr) ? b2f1Tr : 0f) : 0f,
-                        Force = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b2f1Fv) ? (float.TryParse(b2f1Fv.ToString(), out var b2f1Fr) ? b2f1Fr : 0f) : 0f
+                        Temperature = latestValueNew.TryGetValue(ConstantValues.L1Bending2Temperature, out var b2f1Tv) ? (float.TryParse(b2f1Tv.ToString(), out var b2f1Tr) ? b2f1Tr : 0f) : 0f,
+                        Force = latestValueNew.TryGetValue(ConstantValues.L1Bending2Force, out var b2f1Fv) ? (float.TryParse(b2f1Fv.ToString(), out var b2f1Fr) ? b2f1Fr : 0f) : 0f
                     },
                     Flex2 = new BendingIndicator
                     {
                         Clamp = latestValueNew.TryGetValue(ConstantValues.Bending2Flex1Clamp, out var b2f2Cv) ? (bool.TryParse(b2f2Cv.ToString(), out var b2f2Cr) ? b2f2Cr : false) : false,
                         Punch = latestValueNew.TryGetValue(ConstantValues.Bending2Flex1Punch, out var b2f2Pp) ? (bool.TryParse(b2f1Pv.ToString(), out var b2f2Pr) ? b2f2Pr : false) : false,
                         Heat = latestValueNew.TryGetValue(ConstantValues.Bending2Flex1Heat, out var b2f2Hv) ? (bool.TryParse(b2f2Hv.ToString(), out var b2f2Hr) ? b2f2Hr : false) : false,
-                        Temperature = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b2f2Tv) ? (float.TryParse(b2f2Tv.ToString(), out var b2f2Tr) ? b2f2Tr : 0f) : 0f,
-                        Force = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b2f2Fv) ? (float.TryParse(b2f2Fv.ToString(), out var b2f2Fr) ? b2f2Fr : 0f) : 0f
+                        Temperature = latestValueNew.TryGetValue(ConstantValues.L2Bending2Temperature, out var b2f2Tv) ? (float.TryParse(b2f2Tv.ToString(), out var b2f2Tr) ? b2f2Tr : 0f) : 0f,
+                        Force = latestValueNew.TryGetValue(ConstantValues.L2Bending2Force, out var b2f2Fv) ? (float.TryParse(b2f2Fv.ToString(), out var b2f2Fr) ? b2f2Fr : 0f) : 0f
                     },
                     Flex3 = new BendingIndicator
                     {
                         Clamp = latestValueNew.TryGetValue(ConstantValues.Bending2Flex3Clamp, out var b2f3Cv) ? (bool.TryParse(b2f3Cv.ToString(), out var b2f3Cr) ? b2f3Cr : false) : false,
                         Punch = latestValueNew.TryGetValue(ConstantValues.Bending2Flex3Punch, out var b2f3Pv) ? (bool.TryParse(b2f3Pv.ToString(), out var b2f3Pr) ? b2f3Pr : false) : false,
                         Heat = latestValueNew.TryGetValue(ConstantValues.Bending2Flex3Heat, out var b2f3Hv) ? (bool.TryParse(b2f3Hv.ToString(), out var b2f3Hr) ? b2f3Hr : false) : false,
-                        Temperature = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b2f3Tv) ? (float.TryParse(b2f3Tv.ToString(), out var b2f3Tr) ? b2f3Tr : 0f) : 0f,
-                        Force = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b2f3Fv) ? (float.TryParse(b2f3Fv.ToString(), out var b2f3Fr) ? b2f3Fr : 0f) : 0f
+                        Temperature = latestValueNew.TryGetValue(ConstantValues.L3Bending2Temperature, out var b2f3Tv) ? (float.TryParse(b2f3Tv.ToString(), out var b2f3Tr) ? b2f3Tr : 0f) : 0f,
+                        Force = latestValueNew.TryGetValue(ConstantValues.L3Bending2Force, out var b2f3Fv) ? (float.TryParse(b2f3Fv.ToString(), out var b2f3Fr) ? b2f3Fr : 0f) : 0f
                     },
                     Flex4 = new BendingIndicator
                     {
                         Clamp = latestValueNew.TryGetValue(ConstantValues.Bending2Flex4Clamp, out var b2f4Cv) ? (bool.TryParse(b2f4Cv.ToString(), out var b2f4Cr) ? b2f4Cr : false) : false,
                         Punch = latestValueNew.TryGetValue(ConstantValues.Bending2Flex4Punch, out var b2f4Pv) ? (bool.TryParse(b2f4Pv.ToString(), out var b2f4Pr) ? b2f4Pr : false) : false,
                         Heat = latestValueNew.TryGetValue(ConstantValues.Bending2Flex4Heat, out var b2f4Hv) ? (bool.TryParse(b2f4Hv.ToString(), out var b2f4Hr) ? b2f4Hr : false) : false,
-                        Temperature = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b2f4Tv) ? (float.TryParse(b2f4Tv.ToString(), out var b2f4Tr) ? b2f4Tr : 0f) : 0f,
-                        Force = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b2f4Fv) ? (float.TryParse(b2f4Fv.ToString(), out var b2f4Fr) ? b2f4Fr : 0f) : 0f
+                        Temperature = latestValueNew.TryGetValue(ConstantValues.L4Bending2Temperature, out var b2f4Tv) ? (float.TryParse(b2f4Tv.ToString(), out var b2f4Tr) ? b2f4Tr : 0f) : 0f,
+                        Force = latestValueNew.TryGetValue(ConstantValues.L4Bending2Force, out var b2f4Fv) ? (float.TryParse(b2f4Fv.ToString(), out var b2f4Fr) ? b2f4Fr : 0f) : 0f
                     }
                 },
                 Bending3 = new FlexBendingIndicator
@@ -499,24 +499,24 @@ namespace IPCSoftware.CoreService.Bending.Service
                         Clamp = latestValueNew.TryGetValue(ConstantValues.Bending3Flex1Clamp, out var b3f1Cv) ? (bool.TryParse(b3f1Cv.ToString(), out var b3f1Cr) ? b3f1Cr : false) : false,
                         Punch = latestValueNew.TryGetValue(ConstantValues.Bending3Flex1Punch, out var b3f1Pv) ? (bool.TryParse(b3f1Pv.ToString(), out var b3f1Pr) ? b3f1Pr : false) : false,
                         Heat = latestValueNew.TryGetValue(ConstantValues.Bending3Flex1Heat, out var b3f1Hv) ? (bool.TryParse(b3f1Hv.ToString(), out var b3f1Hr) ? b3f1Hr : false) : false,
-                        Temperature = latestValueNew.TryGetValue(ConstantValues.Bending3Flex1Clamp, out var b3f1Tv) ? (float.TryParse(b3f1Tv.ToString(), out var b3f1Tr) ? b3f1Tr : 0f) : 0f,
-                        Force = latestValueNew.TryGetValue(ConstantValues.Bending3Flex1Clamp, out var b3f1Fv) ? (float.TryParse(b3f1Fv.ToString(), out var b3f1Fr) ? b3f1Fr : 0f) : 0f
+                        Temperature = latestValueNew.TryGetValue(ConstantValues.L1Bending3Temperature, out var b3f1Tv) ? (float.TryParse(b3f1Tv.ToString(), out var b3f1Tr) ? b3f1Tr : 0f) : 0f,
+                        Force = latestValueNew.TryGetValue(ConstantValues.L1Bending3Force, out var b3f1Fv) ? (float.TryParse(b3f1Fv.ToString(), out var b3f1Fr) ? b3f1Fr : 0f) : 0f
                     },
                     Flex2 = new BendingIndicator
                     {
                         Clamp = latestValueNew.TryGetValue(ConstantValues.Bending3Flex2Clamp, out var b3f2Cv) ? (bool.TryParse(b3f2Cv.ToString(), out var b3f2Cr) ? b3f2Cr : false) : false,
                         Punch = latestValueNew.TryGetValue(ConstantValues.Bending3Flex2Punch, out var b3f2Pv) ? (bool.TryParse(b3f2Pv.ToString(), out var b3f2Pr) ? b3f2Pr : false) : false,
                         Heat = latestValueNew.TryGetValue(ConstantValues.Bending3Flex2Heat, out var b3f2Hv) ? (bool.TryParse(b3f2Hv.ToString(), out var b3f2Hr) ? b3f2Hr : false) : false,
-                        Temperature = latestValueNew.TryGetValue(ConstantValues.Bending3Flex1Clamp, out var b3f2Tv) ? (float.TryParse(b3f2Tv.ToString(), out var b3f2Tr) ? b3f2Tr : 0f) : 0f,
-                        Force = latestValueNew.TryGetValue(ConstantValues.Bending3Flex1Clamp, out var b3f2Fv) ? (float.TryParse(b3f2Fv.ToString(), out var b3f2Fr) ? b3f2Fr : 0f) : 0f
+                        Temperature = latestValueNew.TryGetValue(ConstantValues.L2Bending3Temperature, out var b3f2Tv) ? (float.TryParse(b3f2Tv.ToString(), out var b3f2Tr) ? b3f2Tr : 0f) : 0f,
+                        Force = latestValueNew.TryGetValue(ConstantValues.L2Bending3Force, out var b3f2Fv) ? (float.TryParse(b3f2Fv.ToString(), out var b3f2Fr) ? b3f2Fr : 0f) : 0f
                     },
                     Flex3 = new BendingIndicator
                     {
                         Clamp = latestValueNew.TryGetValue(ConstantValues.Bending3Flex3Clamp, out var b3f3Cv) ? (bool.TryParse(b3f3Cv.ToString(), out var b3f3Cr) ? b3f3Cr : false) : false,
                         Punch = latestValueNew.TryGetValue(ConstantValues.Bending3Flex3Punch, out var b3f3Pv) ? (bool.TryParse(b3f3Pv.ToString(), out var b3f3Pr) ? b3f3Pr : false) : false,
                         Heat = latestValueNew.TryGetValue(ConstantValues.Bending3Flex3Heat, out var b3f3Hv) ? (bool.TryParse(b3f3Hv.ToString(), out var b3f3Hr) ? b3f3Hr : false) : false,
-                        Temperature = latestValueNew.TryGetValue(ConstantValues.Bending3Flex1Clamp, out var b3f3Tv) ? (float.TryParse(b3f3Tv.ToString(), out var b3f3Tr) ? b3f3Tr : 0f) : 0f,
-                        Force = latestValueNew.TryGetValue(ConstantValues.Bending3Flex1Clamp, out var b3f3Fv) ? (float.TryParse(b3f3Fv.ToString(), out var b3f3Fr) ? b3f3Fr : 0f) : 0f
+                        Temperature = latestValueNew.TryGetValue(ConstantValues.L3Bending3Temperature, out var b3f3Tv) ? (float.TryParse(b3f3Tv.ToString(), out var b3f3Tr) ? b3f3Tr : 0f) : 0f,
+                        Force = latestValueNew.TryGetValue(ConstantValues.L3Bending3Force, out var b3f3Fv) ? (float.TryParse(b3f3Fv.ToString(), out var b3f3Fr) ? b3f3Fr : 0f) : 0f
                     },
 
                     Flex4 = new BendingIndicator
@@ -524,8 +524,8 @@ namespace IPCSoftware.CoreService.Bending.Service
                         Clamp = latestValueNew.TryGetValue(ConstantValues.Bending3Flex4Clamp, out var b3f4Cv) ? (bool.TryParse(b3f4Cv.ToString(), out var b3f4Cr) ? b3f4Cr : false) : false,
                         Punch = latestValueNew.TryGetValue(ConstantValues.Bending3Flex4Punch, out var b3f4Pv) ? (bool.TryParse(b3f4Pv.ToString(), out var b3f4Pr) ? b3f4Pr : false) : false,
                         Heat = latestValueNew.TryGetValue(ConstantValues.Bending3Flex4Heat, out var b3f4Hv) ? (bool.TryParse(b3f4Hv.ToString(), out var b3f4Hr) ? b3f4Hr : false) : false,
-                        Temperature = latestValueNew.TryGetValue(ConstantValues.Bending3Flex1Clamp, out var b3f4Tv) ? (float.TryParse(b3f4Tv.ToString(), out var b3f4Tr) ? b3f4Tr : 0f) : 0f,
-                        Force = latestValueNew.TryGetValue(ConstantValues.Bending3Flex1Clamp, out var b3f4Fv) ? (float.TryParse(b3f4Fv.ToString(), out var b3f4Fr) ? b3f4Fr : 0f) : 0f
+                        Temperature = latestValueNew.TryGetValue(ConstantValues.L4Bending3Temperature, out var b3f4Tv) ? (float.TryParse(b3f4Tv.ToString(), out var b3f4Tr) ? b3f4Tr : 0f) : 0f,
+                        Force = latestValueNew.TryGetValue(ConstantValues.L4Bending3Force, out var b3f4Fv) ? (float.TryParse(b3f4Fv.ToString(), out var b3f4Fr) ? b3f4Fr : 0f) : 0f
                     }
 
 

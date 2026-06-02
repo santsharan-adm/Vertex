@@ -243,35 +243,35 @@ namespace IPCSoftware.Shared.Models
         public static int FlippingFlex3;
         public static int FlippingFlex4;
 
-        public static float L1Bending1Temperature;
-        public static float L2Bending1Temperature;
-        public static float L3Bending1Temperature;
-        public static float L4Bending1Temperature;
+        public static int L1Bending1Temperature;
+        public static int L2Bending1Temperature;
+        public static int L3Bending1Temperature;
+        public static int L4Bending1Temperature;
 
-        public static float L1Bending2Temperature;
-        public static float L2Bending2Temperature;
-        public static float L3Bending2Temperature;
-        public static float L4Bending2Temperature;
+        public static int L1Bending2Temperature;
+        public static int L2Bending2Temperature;
+        public static int L3Bending2Temperature;
+        public static int L4Bending2Temperature;
 
-        public static float L1Bending3Temperature;
-        public static float L2Bending3Temperature;
-        public static float L3Bending3Temperature;
-        public static float L4Bending3Temperature;
+        public static int L1Bending3Temperature;
+        public static int L2Bending3Temperature;
+        public static int L3Bending3Temperature;
+        public static int L4Bending3Temperature;
 
-        public static float L1Bending1Force;
-        public static float L2Bending1Force;
-        public static float L3Bending1Force;
-        public static float L4Bending1Force;
+        public static int L1Bending1Force;
+        public static int L2Bending1Force;
+        public static int L3Bending1Force;
+        public static int L4Bending1Force;
 
-        public static float L1Bending2Force;
-        public static float L2Bending2Force;
-        public static float L3Bending2Force;
-        public static float L4Bending2Force;
+        public static int L1Bending2Force;
+        public static int L2Bending2Force;
+        public static int L3Bending2Force;
+        public static int L4Bending2Force;
 
-        public static float L1Bending3Force;
-        public static float L2Bending3Force;
-        public static float L3Bending3Force;
-        public static float L4Bending3Force;
+        public static int L1Bending3Force;
+        public static int L2Bending3Force;
+        public static int L3Bending3Force;
+        public static int L4Bending3Force;
 
 
 
