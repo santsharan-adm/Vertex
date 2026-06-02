@@ -188,6 +188,91 @@ namespace IPCSoftware.Shared.Models
         public static int L3_Result;
         public static int L4_Result;
 
+        public static int Bending1Flex1Clamp;
+        public static int Bending1Flex2Clamp;
+        public static int Bending1Flex3Clamp;
+        public static int Bending1Flex4Clamp;
+
+        public static int Bending1Flex1Punch;
+        public static int Bending1Flex2Punch;
+        public static int Bending1Flex3Punch;
+        public static int Bending1Flex4Punch;
+
+        public static int Bending1Flex1Heat;
+        public static int Bending1Flex2Heat;
+        public static int Bending1Flex3Heat;
+        public static int Bending1Flex4Heat;
+
+        public static int Bending2Flex1Clamp;
+        public static int Bending2Flex2Clamp;
+        public static int Bending2Flex3Clamp;
+        public static int Bending2Flex4Clamp;
+
+        public static int Bending2Flex1Punch;
+        public static int Bending2Flex2Punch;
+        public static int Bending2Flex3Punch;
+        public static int Bending2Flex4Punch;
+
+        public static int Bending2Flex1Heat;
+        public static int Bending2Flex2Heat;
+        public static int Bending2Flex3Heat;
+        public static int Bending2Flex4Heat;
+
+        public static int Bending3Flex1Clamp;
+        public static int Bending3Flex2Clamp;
+        public static int Bending3Flex3Clamp;
+        public static int Bending3Flex4Clamp;
+
+        public static int Bending3Flex1Punch;
+        public static int Bending3Flex2Punch;
+        public static int Bending3Flex3Punch;
+        public static int Bending3Flex4Punch;
+
+        public static int Bending3Flex1Heat;
+        public static int Bending3Flex2Heat;
+        public static int Bending3Flex3Heat;
+        public static int Bending3Flex4Heat;
+
+        public static int TearingFlex1;
+        public static int TearingFlex2;
+        public static int TearingFlex3;
+        public static int TearingFlex4;
+
+        public static int FlippingFlex1;
+        public static int FlippingFlex2;
+        public static int FlippingFlex3;
+        public static int FlippingFlex4;
+
+        public static int L1Bending1Temperature;
+        public static int L2Bending1Temperature;
+        public static int L3Bending1Temperature;
+        public static int L4Bending1Temperature;
+
+        public static int L1Bending2Temperature;
+        public static int L2Bending2Temperature;
+        public static int L3Bending2Temperature;
+        public static int L4Bending2Temperature;
+
+        public static int L1Bending3Temperature;
+        public static int L2Bending3Temperature;
+        public static int L3Bending3Temperature;
+        public static int L4Bending3Temperature;
+
+        public static int L1Bending1Force;
+        public static int L2Bending1Force;
+        public static int L3Bending1Force;
+        public static int L4Bending1Force;
+
+        public static int L1Bending2Force;
+        public static int L2Bending2Force;
+        public static int L3Bending2Force;
+        public static int L4Bending2Force;
+
+        public static int L1Bending3Force;
+        public static int L2Bending3Force;
+        public static int L3Bending3Force;
+        public static int L4Bending3Force;
+
 
 
         /// <summary>
@@ -383,6 +468,91 @@ namespace IPCSoftware.Shared.Models
                     L2_Result = dashboard2.l2_Result;
                     L3_Result = dashboard2.l3_Result;
                     L4_Result = dashboard2.l4_Result;
+
+                    Bending1Flex1Clamp = dashboard2.bending1Flex1Clamp;
+                    Bending1Flex2Clamp = dashboard2.bending1Flex2Clamp;
+                    Bending1Flex3Clamp = dashboard2.bending1Flex3Clamp;
+                    Bending1Flex4Clamp = dashboard2.bending1Flex4Clamp;
+
+                    Bending1Flex1Punch = dashboard2.bending1Flex1Punch;
+                    Bending1Flex2Punch = dashboard2.bending1Flex2Punch;
+                    Bending1Flex3Punch = dashboard2.bending1Flex3Punch;
+                    Bending1Flex4Punch = dashboard2.bending1Flex4Punch;
+
+                    Bending1Flex1Heat = dashboard2.bending1Flex1Heat;
+                    Bending1Flex2Heat = dashboard2.bending1Flex2Heat;
+                    Bending1Flex3Heat = dashboard2.bending1Flex3Heat;
+                    Bending1Flex4Heat = dashboard2.bending1Flex4Heat;
+
+                    Bending2Flex1Clamp = dashboard2.bending2Flex1Clamp;
+                    Bending2Flex2Clamp = dashboard2.bending2Flex2Clamp;
+                    Bending2Flex3Clamp = dashboard2.bending2Flex3Clamp;
+                    Bending2Flex4Clamp = dashboard2.bending2Flex4Clamp;
+
+                    Bending2Flex1Punch = dashboard2.bending2Flex1Punch;
+                    Bending2Flex2Punch = dashboard2.bending2Flex2Punch;
+                    Bending2Flex3Punch = dashboard2.bending2Flex3Punch;
+                    Bending2Flex4Punch = dashboard2.bending2Flex4Punch;
+
+                    Bending2Flex1Heat = dashboard2.bending2Flex1Heat;
+                    Bending2Flex2Heat = dashboard2.bending2Flex2Heat;
+                    Bending2Flex3Heat = dashboard2.bending2Flex3Heat;
+                    Bending2Flex4Heat = dashboard2.bending2Flex4Heat;
+
+                    Bending3Flex1Clamp = dashboard2.bending3Flex1Clamp;
+                    Bending3Flex2Clamp = dashboard2.bending3Flex2Clamp;
+                    Bending3Flex3Clamp = dashboard2.bending3Flex3Clamp;
+                    Bending3Flex4Clamp = dashboard2.bending3Flex4Clamp;
+
+                    Bending3Flex1Punch = dashboard2.bending3Flex1Punch;
+                    Bending3Flex2Punch = dashboard2.bending3Flex2Punch;
+                    Bending3Flex3Punch = dashboard2.bending3Flex3Punch;
+                    Bending3Flex4Punch = dashboard2.bending3Flex4Punch;
+
+                    Bending3Flex1Heat = dashboard2.bending3Flex1Heat;
+                    Bending3Flex2Heat = dashboard2.bending3Flex2Heat;
+                    Bending3Flex3Heat = dashboard2.bending3Flex3Heat;
+                    Bending3Flex4Heat = dashboard2.bending3Flex4Heat;
+
+                    TearingFlex1 = dashboard2.tearingFlex1;
+                    TearingFlex2 = dashboard2.tearingFlex2;
+                    TearingFlex3 = dashboard2.tearingFlex3;
+                    TearingFlex4 = dashboard2.tearingFlex4;
+
+                    FlippingFlex1 = dashboard2.flippingFlex1;
+                    FlippingFlex2 = dashboard2.flippingFlex2;
+                    FlippingFlex3 = dashboard2.flippingFlex3;
+                    FlippingFlex4 = dashboard2.flippingFlex4;
+
+                    L1Bending1Temperature = dashboard2.l1Bending1Temperature;
+                    L2Bending1Temperature = dashboard2.l2Bending1Temperature;
+                    L3Bending1Temperature = dashboard2.l3Bending1Temperature;
+                    L4Bending1Temperature = dashboard2.l4Bending1Temperature;
+
+                    L1Bending2Temperature = dashboard2.l1Bending2Temperature;
+                    L2Bending2Temperature = dashboard2.l2Bending2Temperature;
+                    L3Bending2Temperature = dashboard2.l3Bending2Temperature;
+                    L4Bending2Temperature = dashboard2.l4Bending2Temperature;
+
+                    L1Bending3Temperature = dashboard2.l1Bending3Temperature;
+                    L2Bending3Temperature = dashboard2.l2Bending3Temperature;
+                    L3Bending3Temperature = dashboard2.l3Bending3Temperature;
+                    L4Bending3Temperature = dashboard2.l4Bending3Temperature;
+
+                    L1Bending1Force = dashboard2.l1Bending1Force;
+                    L2Bending1Force = dashboard2.l2Bending1Force;
+                    L3Bending1Force = dashboard2.l3Bending1Force;
+                    L4Bending1Force = dashboard2.l4Bending1Force;
+
+                    L1Bending2Force = dashboard2.l1Bending2Force;
+                    L2Bending2Force = dashboard2.l2Bending2Force;
+                    L3Bending2Force = dashboard2.l3Bending2Force;
+                    L4Bending2Force = dashboard2.l4Bending2Force;
+
+                    L1Bending3Force = dashboard2.l1Bending3Force;
+                    L2Bending3Force = dashboard2.l2Bending3Force;
+                    L3Bending3Force = dashboard2.l3Bending3Force;
+                    L4Bending3Force = dashboard2.l4Bending3Force;
 
 
                 }

@@ -205,21 +205,21 @@ namespace IPCSoftware.Engine
                 //---------------------------------------------------------
                 if (request.RequestId == 4)
                 {
-                    
+                    if(!latestValueNew.Any())
                         return new ResponsePackage
                         {
                             ResponseId = 4,
                             Parameters = new Dictionary<int, object>()
                         };
-                    
 
-                    // _oee.ProcessCycleTimeLogic(packet);
 
-                    //return new ResponsePackage
-                    //{
-                    //    ResponseId = 4,
-                    //    Parameters = _oee.Calculate(packet)
-                    //};
+                        _oee.ProcessCycleTimeLogic(latestValueNew);
+
+                        return new ResponsePackage
+                        {
+                            ResponseId = 4,
+                            Parameters = _oee.Calculate(latestValueNew)
+                        };
                 }
 
                 //-----------------------

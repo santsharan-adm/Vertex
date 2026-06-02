@@ -592,6 +592,9 @@ namespace IPCSoftware.App.Bending.ViewModels
                     if (model != null)
                     {
                         BendingIndicators = model;
+
+                        bool clampstateB1F1 = BendingIndicators.Bending1.Flex1.Clamp;
+                        string color = GetIndicatorColor(clampstateB1F1);
                     }
                 }
             }
@@ -917,6 +920,37 @@ namespace IPCSoftware.App.Bending.ViewModels
                 if (bool.TryParse(val?.ToString(), out bool parsed)) return parsed;
             }
             return false;
+        }
+
+
+        private string GetIndicatorColor(bool isActive)
+        {
+            // Active position: Green (#10B981)
+            if (isActive)
+            {
+                return "#10B981";
+            }
+            // Inactive position: Blue (#3B82F6)
+            else
+            {
+                return "#3B82F6";
+            }
+        }
+
+        private System.Windows.Media.SolidColorBrush GetIndicatorBrush(bool isActive)
+        {
+            // Active position: Green with glow (#10B981)
+            if (isActive)
+            {
+                return new System.Windows.Media.SolidColorBrush(
+                    System.Windows.Media.Color.FromArgb(255, 16, 185, 129));
+            }
+            // Inactive position: Blue (#3B82F6)
+            else
+            {
+                return new System.Windows.Media.SolidColorBrush(
+                    System.Windows.Media.Color.FromArgb(255, 59, 130, 246));
+            }
         }
 
         private static T Deserialize<T>(object raw) where T : class

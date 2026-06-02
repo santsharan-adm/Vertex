@@ -10,34 +10,17 @@ namespace IPCSoftware.Shared.Models.Bending
 
         public Int32 BatchNo { get; set; }
         public Int32 PositionIndex { get; set; }
-        public ObservableCollection<DashboardInspectionLineModel> LineItems { get; set; } = new ObservableCollection<DashboardInspectionLineModel>()
+        public ObservableCollection<DashboardInspectionLineModel> LineItems
         {
-            new DashboardInspectionLineModel()
+            get => new ObservableCollection<DashboardInspectionLineModel>()
             {
-                QRCode="AAA",
+                LineItem1,
+                LineItem2,
+                LineItem3,
+                LineItem4,
 
-
-            },
-            new DashboardInspectionLineModel()
-            {
-                QRCode="BBB",
-                HeaterTemp_Bend1=200
-
-            },
-            new DashboardInspectionLineModel()
-            {
-                QRCode="CCC",
-                HeaterTemp_Bend1=200
-
-            },
-            new DashboardInspectionLineModel()
-            {
-                QRCode="DDD",
-                HeaterTemp_Bend1=200
-
-            },
-
-        };
+            };
+        }
         public DashboardInspectionLineModel LineItem1 { get; set; }
         public DashboardInspectionLineModel LineItem2 { get; set; }
         public DashboardInspectionLineModel LineItem3 { get; set; }
