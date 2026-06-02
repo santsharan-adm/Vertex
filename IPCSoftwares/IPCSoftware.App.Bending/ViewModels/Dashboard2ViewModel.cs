@@ -500,6 +500,7 @@ namespace IPCSoftware.App.Bending.ViewModels
                     if (model != null)
                     {
                         DashboardInspectionModelBatch1 = model;
+                        OnPropertyChanged("DashboardInspectionModelBatches");
                     }
                 }
                 else

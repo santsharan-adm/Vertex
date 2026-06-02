@@ -8,6 +8,7 @@
     </ResourceDictionary.MergedDictionaries>
     <conv:BoolToResultTextConverter x:Key="BoolToResultText"/>
     <conv:BoolToResultColorConverter x:Key="BoolToResultColor"/>
+    <conv:BoolToColorConverter x:Key="BoolToColor"/>
 
     <!-- Turn Table 1 -->
     <Style TargetType="{x:Type local:TurnTable1CC}">
@@ -364,10 +365,10 @@
                                     <Border Grid.Row="1" Grid.Column="0" Grid.RowSpan="4" Background="#0B1A2E" BorderBrush="#1565C0" Padding="3">
                                         <TextBlock Text="BFBL03" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12"/>
                                     </Border>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="ABCD12345A009" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="ABCD12345A010" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="ABCD12345A011" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="ABCD12345A012" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
                                 </Grid>
                             </Border>
                         </Grid>
@@ -887,11 +888,11 @@
         </Setter>
     </Style>
 
-    <!-- PID Table -->
-    <Style TargetType="{x:Type local:PidTableCC}">
+    <!-- PID Table Temperature-->
+    <Style TargetType="{x:Type local:PidTableTemperatureCC}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:PidTableCC}">
+                <ControlTemplate TargetType="{x:Type local:PidTableTemperatureCC}">
                     <Border Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}">
@@ -959,42 +960,158 @@
                             </Border>
 
                             <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending1.Flex1.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending1.Flex2.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending1. Flex3.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending1. Flex4.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
 
                             <Border Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending2.Flex1.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="3" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending2.Flex2.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="4" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending2.Flex3.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="5" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending2.Flex4.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
 
                             <Border Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending3.Flex1.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="3" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending3.Flex2.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="4" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending3.Flex3.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="5" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="99.99" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending3.Flex4.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- PID Table Force-->
+    <Style TargetType="{x:Type local:PidTableForceCC}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:PidTableForceCC}">
+                    <Border Background="{TemplateBinding Background}"
+                     BorderBrush="{TemplateBinding BorderBrush}"
+                     BorderThickness="{TemplateBinding BorderThickness}">
+                        <!--<Border CornerRadius="8" Padding="2" BorderBrush="{StaticResource AccentBlue}" 
+                         BorderThickness="1" Background="#1565C0">-->
+                        <Grid Background="White">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" MinWidth="38"/>
+                                <ColumnDefinition Width="Auto" MinWidth="58"/>
+                                <ColumnDefinition Width="Auto" MinWidth="58"/>
+                                <ColumnDefinition Width="Auto" MinWidth="58"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                <TextBlock Text="PID" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                <TextBlock FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="Heater"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TableType, RelativeSource={RelativeSource TemplatedParent}}" Value="Force">
+                                                    <Setter Property="Text" Value="Force"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                <TextBlock Text="S.No." FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                <TextBlock Text="Bend 1" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="2" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                <TextBlock Text="Bend 2" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                                <TextBlock Text="Bend 3" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <!-- Data rows -->
+                            <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="1" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="2" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="3" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="4" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+
+                            <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="{Binding Bending1.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="{Binding Bending2.Flex2.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="{Binding Bending3.Flex3.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="{Binding Bending3.Flex4.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+
+                            <Border Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="{Binding Bending1.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="{Binding Bending2.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+
+                            <Border Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="{Binding Bending1.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="{Binding Bending2.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
+                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                         </Grid>
                     </Border>
@@ -1050,18 +1167,18 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{Binding Bending1.Flex1.Clamp, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{Binding Bending1.Flex2.Clamp, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{Binding Bending1.Flex3.Clamp, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{Binding Bending1.Flex4.Clamp, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{Binding Bending1.Flex1.Punch, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{Binding Bending1.Flex2.Punch, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{Binding Bending1.Flex3.Punch, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{Binding Bending1.Flex4.Punch, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{Binding Bending1.Flex1.Heat, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{Binding Bending1.Flex2.Heat, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{Binding Bending1.Flex3.Heat, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{Binding Bending1.Flex4.Heat, Converter={StaticResource BoolToColor}}" Margin="3"/>
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -1084,18 +1201,18 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{Binding Bending2.Flex1.Clamp, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{Binding Bending2.Flex2.Clamp, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{Binding Bending2.Flex3.Clamp, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{Binding Bending2.Flex4.Clamp, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{Binding Bending2.Flex1.Punch, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{Binding Bending2.Flex2.Punch, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{Binding Bending2.Flex3.Punch, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{Binding Bending2.Flex4.Punch, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{Binding Bending2.Flex1.Heat, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{Binding Bending2.Flex2.Heat, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{Binding Bending2.Flex3.Heat, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{Binding Bending2.Flex4.Heat, Converter={StaticResource BoolToColor}}" Margin="3"/>
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -1118,18 +1235,18 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource NgRed}" Margin="3"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
-                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="0" Width="9" Height="9"  Fill="{Binding Bending3.Flex1.Clamp, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="1" Width="9" Height="9"  Fill="{Binding Bending3.Flex2.Clamp, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="2" Width="9" Height="9" Fill="{Binding Bending3.Flex3.Clamp, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="0" Grid.Column="3" Width="9" Height="9" Fill="{Binding Bending3.Flex4.Clamp, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{Binding Bending3.Flex1.Punch, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{Binding Bending3.Flex2.Punch, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{Binding Bending3.Flex3.Punch, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{Binding Bending3.Flex4.Punch, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="0" Width="9" Height="9" Fill="{Binding Bending3.Flex1.Heat, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="1" Width="9" Height="9" Fill="{Binding Bending3.Flex2.Heat, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="2" Width="9" Height="9" Fill="{Binding Bending3.Flex3.Heat, Converter={StaticResource BoolToColor}}" Margin="3"/>
+                                        <Ellipse Grid.Row="2" Grid.Column="3" Width="9" Height="9" Fill="{Binding Bending3.Flex4.Heat, Converter={StaticResource BoolToColor}}" Margin="3"/>
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -1168,10 +1285,10 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource NgRed}" VerticalAlignment="Center" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{Binding Tearing.Flex1.Tearing, Converter={StaticResource BoolToColor}}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{Binding Tearing.Flex2.Tearing, Converter={StaticResource BoolToColor}}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{Binding Tearing.Flex3.Tearing, Converter={StaticResource BoolToColor}}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{Binding Tearing.Flex4.Tearing, Converter={StaticResource BoolToColor}}" VerticalAlignment="Center" Margin="3"/>
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -1194,10 +1311,10 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
-                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{StaticResource OkGreen}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="0" Width="9" Height="9" Fill="{Binding Flipping.Flex1.Flipping, Converter={StaticResource BoolToColor}}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="1" Width="9" Height="9" Fill="{Binding Flipping.Flex2.Flipping, Converter={StaticResource BoolToColor}}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="2" Width="9" Height="9" Fill="{Binding Flipping.Flex3.Flipping, Converter={StaticResource BoolToColor}}" VerticalAlignment="Center" Margin="3"/>
+                                        <Ellipse Grid.Row="1" Grid.Column="3" Width="9" Height="9" Fill="{Binding Flipping.Flex4.Flipping, Converter={StaticResource BoolToColor}}" VerticalAlignment="Center" Margin="3"/>
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -1208,227 +1325,7 @@
         </Setter>
     </Style>
 
-    <!-- Bending Data Table - Note: This is a complex table that will be data-bound in actual implementation -->
-    <Style TargetType="{x:Type local:BendingDataTableCC2}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:BendingDataTableCC2}">
-                    <Border Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
-
-                        <Grid Margin="0" HorizontalAlignment="Stretch" Background="Red">
-                            <Grid.Resources>
-
-                                <Style x:Key="DataBorder" TargetType="Border" >
-                                    <Setter Property="Background" Value="#0B1A2E"/>
-                                    <Setter Property="BorderThickness" Value="0"/>
-                                </Style>
-
-                                <Style x:Key="HeaderBorder" TargetType="Border" >
-                                    <Setter Property="Background" Value="#1565C0"/>
-                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                                </Style>
-
-                                <Style x:Key="HeaderText" TargetType="TextBlock" >
-                                    <Setter Property="FontWeight" Value="SemiBold"/>
-                                    <Setter Property="FontSize" Value="14"/>
-                                    <Setter Property="HorizontalAlignment" Value="Center"/>
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="TextAlignment" Value="Center"/>
-                                    <Setter Property="FontSize" Value="11"/>
-                                    <Setter Property="Foreground" Value="White"/>
-                                </Style>
-
-                                <Style x:Key="DataText" TargetType="TextBlock" >
-                                    <Setter Property="HorizontalAlignment" Value="Center"/>
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="FontSize" Value="11"/>
-                                    <Setter Property="Foreground" Value="White"/>
-                                </Style>
-
-                                <!--Remove default selection visuals to keep rows looking like original DataBorder-->
-                                <Style x:Key="ListViewItemNoChrome" TargetType="ListViewItem">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="Padding" Value="0"/>
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="ListViewItem">
-                                                <Border Background="Transparent"
-                                                        SnapsToDevicePixels="True" >
-                                                    <ContentPresenter />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-
-                            </Grid.Resources>
-
-                            <!--Use a shared-size scope so header columns and item columns align-->
-                            <!--<Grid >-->
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <!--<Grid>-->
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition  Width="*"/>
-                                <ColumnDefinition  Width="*"/>
-                                <ColumnDefinition  Width="*"/>
-                                <ColumnDefinition  Width="*"/>
-                                <ColumnDefinition  Width="*"/>
-                                <ColumnDefinition  Width="*"/>
-                                <ColumnDefinition  Width="*"/>
-                                <ColumnDefinition  Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition  Width="*"/>
-                                <ColumnDefinition  Width="*"/>
-                                <ColumnDefinition  Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <!--<Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>-->
-
-                            <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"   Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Batch No." Style="{StaticResource HeaderText}"  />
-                            </Border>
-                            <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"     Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="QR code" Style="{StaticResource HeaderText}" />
-                            </Border>
-
-                            <Border Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource HeaderBorder}" >
-                                <TextBlock Text="Heater Temp (50 - 60)" Style="{StaticResource HeaderText}" />
-                            </Border>
-
-                            <Border Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="3" Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Load (5 - 10)" Style="{StaticResource HeaderText}" />
-                            </Border>
-
-                            <Border Grid.Row="0" Grid.Column="8" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="X (&gt;1 - &lt;2)" Style="{StaticResource HeaderText}" />
-                            </Border>
-                            <Border Grid.Row="0" Grid.Column="9" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Y &gt;3 - &lt;4" Style="{StaticResource HeaderText}" />
-                            </Border>
-                            <Border Grid.Row="0" Grid.Column="10" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Z (&gt;5 - &lt;6)" Style="{StaticResource HeaderText}" />
-                            </Border>
-                            <Border Grid.Row="0" Grid.Column="11" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="? (&gt;7 - &lt;8)" Style="{StaticResource HeaderText}" />
-                            </Border>
-
-                            <Border Grid.Row="0"  Grid.Column="12" Grid.RowSpan="2"  Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Result" Style="{StaticResource HeaderText}" />
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Bend 1" Style="{StaticResource HeaderText}" />
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="3" Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Bend 2" Style="{StaticResource HeaderText}" />
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="4" Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Bend 3" Style="{StaticResource HeaderText}" />
-                            </Border>
-
-                            <Border Grid.Row="1" Grid.Column="5" Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Bend 1" Style="{StaticResource HeaderText}" />
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="6" Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Bend 2" Style="{StaticResource HeaderText}" />
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="7" Style="{StaticResource HeaderBorder}">
-                                <TextBlock Text="Bend 3" Style="{StaticResource HeaderText}" />
-                            </Border>
-                            <!--</Grid>-->
-
-                            <ScrollViewer Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="13" Width="{TemplateBinding ActualWidth}">
-                                <ListView x:Name="Part_BendingListView" 
-                                  ItemsSource="{Binding DashboardInspectionModelBatches}"
-                                  ItemContainerStyle="{StaticResource ListViewItemNoChrome}"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                                      ScrollViewer.VerticalScrollBarVisibility="Visible"
-                                     
-                                  Margin="0">
-
-                                    <!--HeaderTemplate: reproduces the header grid with shared-size groups-->
-
-
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Border Style="{StaticResource DataBorder}" Padding="2,4" HorizontalAlignment="Stretch" BorderThickness="1" >
-                                                <Grid >
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition SharedSizeGroup="c0" Width="*"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-
-                                                    <!--Bind each column to expected properties on the item-->
-                                                    <TextBlock Grid.Column="0" Text="{Binding BatchNo}"  Style="{StaticResource DataText}" />
-
-                                                    <!--Nested rows-->
-                                                    <ItemsControl ItemsSource="{Binding LineItems}" Grid.Column="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" >
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate>
-
-                                                                <Grid Margin="2" Background="Brown">
-                                                                    <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                    </Grid.ColumnDefinitions>
-
-
-                                                                    <TextBlock Grid.Column="0" Text="{Binding QRCode}" Style="{StaticResource DataText}" />
-                                                                    <TextBlock Grid.Column="1" Text="{Binding HeaterTemp_Bend1}" Style="{StaticResource DataText}" />
-                                                                    <TextBlock Grid.Column="2" Text="{Binding HeaterTemp_Bend2}" Style="{StaticResource DataText}" />
-                                                                    <TextBlock Grid.Column="3" Text="{Binding HeaterTemp_Bend3}" Style="{StaticResource DataText}" />
-                                                                    <TextBlock Grid.Column="4" Text="{Binding Load_Bend1}" Style="{StaticResource DataText}" />
-                                                                    <TextBlock Grid.Column="5" Text="{Binding Load_Bend2}" Style="{StaticResource DataText}" />
-                                                                    <TextBlock Grid.Column="6" Text="{Binding Load_Bend3}" Style="{StaticResource DataText}" />
-                                                                    <TextBlock Grid.Column="7" Text="{Binding XValue}" Style="{StaticResource DataText}" />
-                                                                    <TextBlock Grid.Column="8" Text="{Binding YValue}" Style="{StaticResource DataText}" />
-                                                                    <TextBlock Grid.Column="9" Text="{Binding ZValue}" Style="{StaticResource DataText}" />
-                                                                    <TextBlock Grid.Column="10" Text="{Binding WValue}" Style="{StaticResource DataText}" />
-                                                                    <TextBlock Grid.Column="11" 
-                                           Text="{Binding Result1, Converter={StaticResource BoolToResultText}}"
-                                           Foreground="{Binding Result1, Converter={StaticResource BoolToResultColor}}"
-                                           Style="{StaticResource DataText}" FontWeight="Bold"/>
-                                                                </Grid>
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                    </ItemsControl>
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </ScrollViewer>
-                            <!--</Grid>-->
-
-
-                            <!--</Grid>-->
-                        </Grid>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
+  
     <Style TargetType="{x:Type local:BendingDataTableCC}">
         <Setter Property="Template">
             <Setter.Value>
@@ -1578,7 +1475,7 @@
                             <!--<ScrollViewer Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="13" Width="{TemplateBinding ActualWidth}">-->
                             <ListView x:Name="Part_BendingListView" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="13" Width="{TemplateBinding ActualWidth}"
                                       Height="250"
-                                  ItemsSource="{Binding DashboardInspectionModelBatches}"
+                                  ItemsSource="{Binding }"
                                   ItemContainerStyle="{StaticResource ListViewItemNoChrome}"
                                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                       ScrollViewer.VerticalScrollBarVisibility="Disabled"
@@ -1622,7 +1519,7 @@
                                                                 </Grid.ColumnDefinitions>
 
 
-                                                                    <TextBlock Grid.Column="0" Text="{Binding QRCode}" Style="{StaticResource DataText}" />
+                                                                <TextBlock Grid.Column="0" Text="{Binding QRCode}" Style="{StaticResource DataText}" />
                                                                 <TextBlock Grid.Column="1" Text="{Binding HeaterTemp_Bend1}" Style="{StaticResource DataText}" />
                                                                 <TextBlock Grid.Column="2" Text="{Binding HeaterTemp_Bend2}" Style="{StaticResource DataText}" />
                                                                 <TextBlock Grid.Column="3" Text="{Binding HeaterTemp_Bend3}" Style="{StaticResource DataText}" />
