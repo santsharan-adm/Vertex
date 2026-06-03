@@ -283,7 +283,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _inspectionTable1Poller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateDashboardInspectionModelBatch1FromService,
+                UpdateDashboardInspectionModelBatchesFromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] InspectionTable1 poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 11);
@@ -488,7 +488,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         // ----------------------------------------------------------------
 
         // RequestId = 11 — InspectionTable (Lot 1)
-        private async Task UpdateDashboardInspectionModelBatch1FromService(Dictionary<int, object> data)
+        private async Task UpdateDashboardInspectionModelBatchesFromService(Dictionary<int, object> data)
         {
             try
             {
