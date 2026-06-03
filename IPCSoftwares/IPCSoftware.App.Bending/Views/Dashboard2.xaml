@@ -186,7 +186,7 @@
                                DataContext="{Binding BendingIndicators}"/>
 
                 <!--PID FORCE-->               
-                <cc:PidTableForceCC Canvas.Left="1320" Canvas.Top="120"
+                <cc:PidTableForceCC Canvas.Left="1320" Canvas.Top="180"
                                     DataContext="{Binding BendingIndicators}"/>
 
                 <!--NG BIN 2-->              

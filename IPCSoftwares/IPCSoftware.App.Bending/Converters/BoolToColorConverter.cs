@@ -17,12 +17,12 @@ namespace IPCSoftware.App.Bending.Converters
                 // Active position: Green with glow
                 if (isActive)
                 {
-                    return new SolidColorBrush(Color.FromArgb(255, 16, 185, 129)); // #10B981
+                    return new SolidColorBrush(Color.FromArgb(255, 0, 255, 0)); // #10B981
                 }
                 // Inactive position: Blue
                 else
                 {
-                    return new SolidColorBrush(Color.FromArgb(255, 59, 130, 246)); // #3B82F6
+                    return new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)); // #3B82F6
                 }
             }
 
