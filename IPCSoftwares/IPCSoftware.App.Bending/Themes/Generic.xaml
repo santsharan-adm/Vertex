@@ -376,12 +376,12 @@
                                         <TextBlock Text="QR Code" Style="{DynamicResource HeaderTextStyle}"/>
                                     </Border>
                                     <Border Grid.Row="1" Grid.Column="0" Grid.RowSpan="4" Background="#0B1A2E" BorderBrush="#1565C0" Padding="3">
-                                        <TextBlock Text="BFBL03" Style="{DynamicResource HeaderTextStyle}"/>
+                                        <TextBlock Text="{Binding BatchNo}" Style="{DynamicResource HeaderTextStyle}"/>
                                     </Border>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="1234" Style="{DynamicResource QRCodeTextStyle}"/>
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="5678" Style="{DynamicResource QRCodeTextStyle}"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="9876" Style="{DynamicResource QRCodeTextStyle}"/>
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="4567" Style="{DynamicResource QRCodeTextStyle}"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LineItem1.QRCode}" Style="{DynamicResource QRCodeTextStyle}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LineItem2.QRCode}" Style="{DynamicResource QRCodeTextStyle}"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding LineItem3.QRCode}" Style="{DynamicResource QRCodeTextStyle}"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding LineItem4.QRCode}" Style="{DynamicResource QRCodeTextStyle}"/>
                                 </Grid>
                             </Border>
                         </Grid>

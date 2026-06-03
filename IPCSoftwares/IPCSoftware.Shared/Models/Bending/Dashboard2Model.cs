@@ -9,6 +9,7 @@ namespace IPCSoftware.Shared.Models.Bending
     {
 
         public Int32 BatchNo { get; set; }
+        public Int32 StationIndex { get; set; }
         public Int32 PositionIndex { get; set; }
         public ObservableCollection<DashboardInspectionLineModel> LineItems
         {
