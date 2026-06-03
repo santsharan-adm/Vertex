@@ -70,11 +70,11 @@
         <!--Batch No. & QR Code-->
         <cc:BatchQRCodePanelCC  Grid.Row="2"  Grid.Column="0" Grid.RowSpan="1"  
                                 BorderBrush="#1565C0" BorderThickness="1" Background="White" 
-                                DataContext="{Binding DashboardInspectionModelBatch1}"/>
+                                DataContext="{Binding DashboardInspectionModelBatches[0]}"/>
 
         <cc:BatchQRCodePanelCC  Grid.Row="3"  Grid.Column="0" Grid.RowSpan="1"  
                         BorderBrush="#1565C0" BorderThickness="1" Background="White" 
-                        DataContext="{Binding DashboardInspectionModelBatch2}"/>
+                        DataContext="{Binding DashboardInspectionModelBatches[1]}"/>
         <!--EFFICIENCY BREAKDOWN-->
         <cc:EfficiencyBreakdownCC Grid.Row="4"  Grid.Column="0" Grid.RowSpan="2"  Background="#1E293B" Margin="3" Padding="3"
                                   DataContext=""/>
