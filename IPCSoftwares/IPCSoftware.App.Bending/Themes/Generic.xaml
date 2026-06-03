@@ -363,12 +363,12 @@
                                         <TextBlock Text="QR Code" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12" />
                                     </Border>
                                     <Border Grid.Row="1" Grid.Column="0" Grid.RowSpan="4" Background="#0B1A2E" BorderBrush="#1565C0" Padding="3">
-                                        <TextBlock Text="BFBL03" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12"/>
+                                        <TextBlock Text="{Binding BatchNo}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12"/>
                                     </Border>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LineItem1.QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LineItem2.QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding LineItem3.QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding LineItem4.QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
                                 </Grid>
                             </Border>
                         </Grid>
@@ -1079,33 +1079,33 @@
                                 <TextBlock Text="{Binding Bending1.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending2.Flex2.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending1.Flex2.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending3.Flex3.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending1.Flex3.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending3.Flex4.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending1.Flex4.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
 
                             <Border Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending1.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending2.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="3" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
                                 <TextBlock Text="{Binding Bending2.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="4" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending2.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="5" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending2.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
 
                             <Border Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending1.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="3" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending2.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
                             </Border>
                             <Border Grid.Row="4" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
                                 <TextBlock Text="{Binding Bending3.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>

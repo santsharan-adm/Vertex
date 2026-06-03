@@ -122,7 +122,7 @@ namespace IPCSoftware.Services
                                 Span = double.Parse(r[13]),
                                 Direction = r[16],
                                 IOType = r[17],
-                                Control = r[18],
+                                CanWrite = ParseBoolean(r[15]),
 
                                 // NEW: Read UseEngMinMax and EnableTraceLog (columns 18 and 19 in Bending CSV)
                                 UseEngMinMax = r.Length > 11 ? ParseBoolean(r[11]) : false,
