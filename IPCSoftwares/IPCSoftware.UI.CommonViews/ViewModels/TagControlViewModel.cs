@@ -23,7 +23,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     {
         private readonly IDeviceConfigurationService _deviceService;
         // private readonly DispatcherTimer _timer;
-        private readonly SafePoller _timer;
+        private readonly SafePollerEx _timer;
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
 
@@ -61,16 +61,13 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             // Load tags on startup
             InitializeAsync();
 
-            _timer = new SafePoller(TimeSpan.FromMilliseconds(100),
-                                     TimerTick  // Pass the method directly
-                                   );
+            _timer = new SafePollerEx(_coreClient, TimeSpan.FromMilliseconds(100), UpdateDataFromService, logger,
+                ex => _logger.LogError($"[Dashboard2] OEE poller error: {ex.Message}", LogType.Diagnostics), 5);
             _timer.Start();
 
 
         }
-
-
-        private async Task TimerTick(Dictionary<int, object> data)
+        private async Task UpdateDataFromService(Dictionary<int, object> data)
         {
             try
             {
@@ -82,6 +79,11 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             {
                 _logger.LogError(ex.Message, LogType.Diagnostics);
             }
+        }
+
+        private async Task TimerTick(Dictionary<int, object> data)
+        {
+           
         }
 
 

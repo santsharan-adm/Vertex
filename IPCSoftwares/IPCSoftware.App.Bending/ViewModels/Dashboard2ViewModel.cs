@@ -444,10 +444,10 @@ namespace IPCSoftware.App.Bending.ViewModels
             {
                 if (data.TryGetValue(4, out object d2Obj))
                 {
-                    var d2Result = Deserialize<OeeResult>(d2Obj);
-                    if (d2Result != null)
+                    var OeeResult = Deserialize<OeeResult>(d2Obj);
+                    if (OeeResult != null)
                     {
-                        OeeResult = d2Result;
+                        this.OeeResult = OeeResult;
                     }
                 }
             }
