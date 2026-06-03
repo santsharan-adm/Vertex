@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:local="clr-namespace:IPCSoftware.App.Bending.Views"
              mc:Ignorable="d"
              d:DesignHeight="768"
@@ -104,11 +105,11 @@
 
             <GroupBox Header="{Binding CurrentPage.Title}" 
                       BorderThickness="0" 
-                      FontSize="18" 
+                      FontSize="25" 
                       FontWeight="Bold" 
                       Foreground="#4A5568">
 
-                <UniformGrid Rows="4" Columns="5" Margin="0,10,0,0">
+                <UniformGrid Rows="4" Columns="5" Margin="0,10,0,0" >
                     <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[0].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[0].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[0].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[0].IsEnabled}" Tag="1"/>
                     <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[1].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[1].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[1].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[1].IsEnabled}" Tag="2"/>
                     <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[2].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[2].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[2].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[2].IsEnabled}" Tag="3"/>
@@ -145,9 +146,13 @@
             <ComboBox Width="150" Height="48" Margin="5" 
                       VerticalContentAlignment="Center" HorizontalContentAlignment="Center" 
                       FontSize="16" FontWeight="SemiBold" Background="White" 
-                      ItemsSource="{Binding ManualPageList}" SelectedItem="{Binding SelectedPage, Mode=OneWay}">
-                
-             
+                      ItemsSource="{Binding ManualPageList}" SelectedItem="{Binding SelectedPage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+
             </ComboBox>
 
             <Button Style="{StaticResource AlphaNavButtonStyle}" Content="Next" Command="{Binding NextCommand}"/>

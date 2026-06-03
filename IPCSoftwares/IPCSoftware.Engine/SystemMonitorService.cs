@@ -27,9 +27,9 @@ namespace IPCSoftware.Engine
 
         // --- CONFIGURATION ---
         // Description says: "abnormal if no change for 3 s"
-        private const double HEARTBEAT_TIMEOUT_SECONDS = 3.0;
+        private const double HEARTBEAT_TIMESECONDS = 3.0;
         private const double IPC_TOGGLE_INTERVAL_SECONDS = 1.0;
-        private const double READ_TIMEOUT_SECONDS = 3.0;
+        private const double READ_TIMESECONDS = 3.0;
 
         public SystemMonitorService(
             PLCClientManager plcManager,
@@ -87,14 +87,14 @@ namespace IPCSoftware.Engine
                     double timeSinceLastChange = (DateTime.Now - _lastPlcChangeTime).TotalSeconds;
                     double timeSinceLastRead = (DateTime.Now - _lastSuccessfulRead).TotalSeconds;
 
-                    isPlcConnected = (timeSinceLastRead < READ_TIMEOUT_SECONDS) &&
-                                     (timeSinceLastChange < HEARTBEAT_TIMEOUT_SECONDS);
+                    isPlcConnected = (timeSinceLastRead < READ_TIMESECONDS) &&
+                                     (timeSinceLastChange < HEARTBEAT_TIMESECONDS);
                 }
                 else
                 {
                     // No data received
                     double timeSinceLastRead = (DateTime.Now - _lastSuccessfulRead).TotalSeconds;
-                    isPlcConnected = timeSinceLastRead < READ_TIMEOUT_SECONDS;
+                    isPlcConnected = timeSinceLastRead < READ_TIMESECONDS;
                 }
 
                 // =========================================================

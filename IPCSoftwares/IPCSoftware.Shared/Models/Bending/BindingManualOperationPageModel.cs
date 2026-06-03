@@ -11,14 +11,8 @@ namespace IPCSoftware.Shared.Models.Bending
        public string _title;
         public string Title
         {
-            get
-            {
-                return _title;
-            }
-            set
-            {
-                _title = value;
-            }
+            get => _title;
+            set => SetProperty(ref _title, value);
         }
         List<ManualOperationItemModel> _selectedButtons;
         public List<ManualOperationItemModel> SelectedButtons

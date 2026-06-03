@@ -6,12 +6,42 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.Shared.Models.Bending
 {
-    public class ManualOperationItemModel
+    public class ManualOperationItemModel : ObservableObjectVM
     {
-        public string Content;
-        public Int32 CommandParameter;
-        public bool IsEnabled;
-        public bool IsVisible;
-        public bool IsChecked;
+        private string _content;
+        public string Content
+        {
+            get => _content;
+            set => SetProperty(ref _content, value);
+        }
+
+
+        private int _commandParameter;
+        public int CommandParameter
+        {
+            get => _commandParameter;
+            set => SetProperty(ref _commandParameter, value);
+        }
+
+        private bool _isEnabled;
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            set => SetProperty(ref _isEnabled, value);
+        }
+
+        private bool _isVisible;
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set => SetProperty(ref _isVisible, value);
+        }
+
+        private bool _isChecked;
+        public bool IsChecked
+        {
+            get => _isChecked;
+            set => SetProperty(ref _isChecked, value);
+        }   
     }
 }
