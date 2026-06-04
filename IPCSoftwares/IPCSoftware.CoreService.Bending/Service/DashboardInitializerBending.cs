@@ -255,10 +255,10 @@ namespace IPCSoftware.CoreService.Bending.Service
             {
                 item = new DashboardInspectionModel
                 {
-                    BatchNo = topBatch.BatchNumber,
+                    BatchNo = int.TryParse(topBatch.BatchNumber, out var topBatchNo) ? topBatchNo : 0,
                     LineItem1 = new DashboardInspectionLineModel
                     {
-                        QRCode1 = topBatch.QrCode1,
+                        QRCode = topBatch.QrCode1,
                         HeaterTemp_Bend1 = topBatch.Bending1Temperatures[0],
                         HeaterTemp_Bend2 = topBatch.Bending2Temperatures[0],
                         HeaterTemp_Bend3 = topBatch.Bending3Temperatures[0],
@@ -273,7 +273,7 @@ namespace IPCSoftware.CoreService.Bending.Service
                     },
                     LineItem2 = new DashboardInspectionLineModel
                     {
-                        QRCode1 = topBatch.QrCode2,
+                        QRCode = topBatch.QrCode2,
                         HeaterTemp_Bend1 = topBatch.Bending1Temperatures[1],
                         HeaterTemp_Bend2 = topBatch.Bending2Temperatures[1],
                         HeaterTemp_Bend3 = topBatch.Bending3Temperatures[1],
@@ -288,7 +288,7 @@ namespace IPCSoftware.CoreService.Bending.Service
                     },
                     LineItem3 = new DashboardInspectionLineModel
                     {
-                        QRCode1 = topBatch.QrCode3,
+                        QRCode = topBatch.QrCode3,
                         HeaterTemp_Bend1 = topBatch.Bending1Temperatures[2],
                         HeaterTemp_Bend2 = topBatch.Bending2Temperatures[2],
                         HeaterTemp_Bend3 = topBatch.Bending3Temperatures[2],
@@ -303,7 +303,7 @@ namespace IPCSoftware.CoreService.Bending.Service
                     },
                     LineItem4 = new DashboardInspectionLineModel
                     {
-                        QRCode1 = topBatch.QrCode4,
+                        QRCode = topBatch.QrCode4,
                         HeaterTemp_Bend1 = topBatch.Bending1Temperatures[3],
                         HeaterTemp_Bend2 = topBatch.Bending2Temperatures[3],
                         HeaterTemp_Bend3 = topBatch.Bending3Temperatures[3],
@@ -323,7 +323,7 @@ namespace IPCSoftware.CoreService.Bending.Service
                 // No FIFO batch — return empty model
                 item = new DashboardInspectionModel
                 {
-                    BatchNo = "",
+                    BatchNo = 0,
                     LineItem1 = new DashboardInspectionLineModel(),
                     LineItem2 = new DashboardInspectionLineModel(),
                     LineItem3 = new DashboardInspectionLineModel(),
@@ -1348,10 +1348,10 @@ namespace IPCSoftware.CoreService.Bending.Service
             {
                 item = new DashboardInspectionModel
                 {
-                    BatchNo = batch.BatchNumber,
+                    BatchNo = int.TryParse(batch.BatchNumber, out var batchNo) ? batchNo : 0,
                     LineItem1 = new DashboardInspectionLineModel
                     {
-                        QRCode1 = batch.QrCode1,
+                        QRCode = batch.QrCode1,
                         HeaterTemp_Bend1 = batch.Bending1Temperatures[0],
                         HeaterTemp_Bend2 = batch.Bending2Temperatures[0],
                         HeaterTemp_Bend3 = batch.Bending3Temperatures[0],
@@ -1366,7 +1366,7 @@ namespace IPCSoftware.CoreService.Bending.Service
                     },
                     LineItem2 = new DashboardInspectionLineModel
                     {
-                        QRCode1 = batch.QrCode2,
+                        QRCode = batch.QrCode2,
                         HeaterTemp_Bend1 = batch.Bending1Temperatures[1],
                         HeaterTemp_Bend2 = batch.Bending2Temperatures[1],
                         HeaterTemp_Bend3 = batch.Bending3Temperatures[1],
@@ -1381,7 +1381,7 @@ namespace IPCSoftware.CoreService.Bending.Service
                     },
                     LineItem3 = new DashboardInspectionLineModel
                     {
-                        QRCode1 = batch.QrCode3,
+                        QRCode = batch.QrCode3,
                         HeaterTemp_Bend1 = batch.Bending1Temperatures[2],
                         HeaterTemp_Bend2 = batch.Bending2Temperatures[2],
                         HeaterTemp_Bend3 = batch.Bending3Temperatures[2],
@@ -1396,7 +1396,7 @@ namespace IPCSoftware.CoreService.Bending.Service
                     },
                     LineItem4 = new DashboardInspectionLineModel
                     {
-                        QRCode1 = batch.QrCode4,
+                        QRCode = batch.QrCode4,
                         HeaterTemp_Bend1 = batch.Bending1Temperatures[3],
                         HeaterTemp_Bend2 = batch.Bending2Temperatures[3],
                         HeaterTemp_Bend3 = batch.Bending3Temperatures[3],
@@ -1415,7 +1415,7 @@ namespace IPCSoftware.CoreService.Bending.Service
             {
                 item = new DashboardInspectionModel
                 {
-                    BatchNo = "",
+                    BatchNo = 0,
                     LineItem1 = new DashboardInspectionLineModel(),
                     LineItem2 = new DashboardInspectionLineModel(),
                     LineItem3 = new DashboardInspectionLineModel(),
@@ -1432,6 +1432,37 @@ namespace IPCSoftware.CoreService.Bending.Service
                 }
             });
         }
+
+        #region PLC Data Helpers
+
+        private string GetString(int tagId)
+        {
+            if (latestValueNew != null && latestValueNew.TryGetValue(tagId, out object val) && val != null)
+                return val.ToString() ?? string.Empty;
+            return string.Empty;
+        }
+
+        private float GetFloat(int tagId)
+        {
+            if (latestValueNew != null && latestValueNew.TryGetValue(tagId, out object val) && val != null)
+            {
+                if (val is float f) return f;
+                if (float.TryParse(val.ToString(), out float parsed)) return parsed;
+            }
+            return 0f;
+        }
+
+        private bool GetBool(int tagId)
+        {
+            if (latestValueNew != null && latestValueNew.TryGetValue(tagId, out object val) && val != null)
+            {
+                if (val is bool b) return b;
+                if (bool.TryParse(val.ToString(), out bool parsed)) return parsed;
+            }
+            return false;
+        }
+
+        #endregion
 
     }
 }

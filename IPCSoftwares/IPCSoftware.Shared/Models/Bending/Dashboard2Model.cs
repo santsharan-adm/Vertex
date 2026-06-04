@@ -1,6 +1,7 @@
 ﻿using IPCSoftware.Shared;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace IPCSoftware.Shared.Models.Bending
 {
