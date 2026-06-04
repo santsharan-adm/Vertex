@@ -218,7 +218,7 @@ namespace IPCSoftware.App.Services.UI
                         
                         _client.Dispose();
                     }
-                    catch { }
+                    catch(Exception ex) { _logger.LogError($"Client Connection Error: {ex}", LogType.Error); }
                     _client = null;
                 }
 

@@ -186,7 +186,7 @@ namespace IPCSoftware.App.ViewModels
                 _isInitialized = true;
                 var savedRecipes = await _servoService.LoadRecipeAsync();
 
-                RecipeList = new ObservableCollection<ServoRecipeModel>(savedRecipes);              
+                RecipeList = new ObservableCollection<ServoRecipeModel>(savedRecipes.Where(a => a.IsChecked));              
 
                 // Read current program number from PLC
                 var Data = await _coreClient.GetIoValuesAsync(5);

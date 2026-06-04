@@ -50,12 +50,12 @@ namespace IPCSoftware.App.ViewModels
         // ===================================================================
         // TAB 3: AE LIMIT PROPERTIES (from AeLimitViewModel)
         // ===================================================================
-        public AeLimitParameterItem AeMinX { get; private set; }
-        public AeLimitParameterItem AeMaxX { get; private set; }
-        public AeLimitParameterItem AeMinY { get; private set; }
-        public AeLimitParameterItem AeMaxY { get; private set; }
-        public AeLimitParameterItem AeMinZ { get; private set; }
-        public AeLimitParameterItem AeMaxZ { get; private set; }
+        public AeLimitParameterItem AeMinX { get; set; }
+        public AeLimitParameterItem AeMaxX { get; set; }
+        public AeLimitParameterItem AeMinY { get; set; }
+        public AeLimitParameterItem AeMaxY { get; set; }
+        public AeLimitParameterItem AeMinZ { get; set; }
+        public AeLimitParameterItem AeMaxZ { get; set; }
 
         private string _aeUnitX;
         public string AeUnitX { get => _aeUnitX; set => SetProperty(ref _aeUnitX, value); }
@@ -124,7 +124,7 @@ namespace IPCSoftware.App.ViewModels
 
         int _nextProgramId;
 
-        
+
         // Available Program Code for ComboBox
         private ObservableCollection<string> _availableProgramCode = new ObservableCollection<string>();
         public ObservableCollection<string> AvailableProgramCode
@@ -163,6 +163,23 @@ namespace IPCSoftware.App.ViewModels
         {   get => _selectedProgramName;
             set => SetProperty(ref _selectedProgramName, value);
         }
+
+        //CheckBox - for Recipe Enabled
+        private bool _isChecked;
+        public bool IsChecked
+        {
+            get => _isChecked;
+            set => SetProperty(ref _isChecked, value);
+        }
+
+        //Save button Name Change property
+        private string _buttonName;
+        public string SaveButtonName
+        {
+            get => _buttonName;
+            set => SetProperty(ref _buttonName, value);
+        }
+
 
         // Available Program Name
 
@@ -225,6 +242,7 @@ namespace IPCSoftware.App.ViewModels
                 SetProperty(ref _selectedTabIndex, value);
             }
         }
+
 
         public ObservableCollection<ServoPositionModel> Positions { get; } = new();
 
@@ -293,7 +311,7 @@ namespace IPCSoftware.App.ViewModels
 
             AddProgramCommand = new RelayCommand(OnNewProgram);
 
-            EditProgramCommand = new RelayCommand(async () => await  OnSaveProgram());
+            //EditProgramCommand = new RelayCommand(async () => await  OnSaveProgram());
 
             CancelProgramCommand = new RelayCommand(OnCancelProgram);
 
@@ -312,14 +330,13 @@ namespace IPCSoftware.App.ViewModels
             //ProductSaveCommand = new RelayCommand(async () => await SaveProductSettingsAsync());
             IsCancelButtonVisible = Visibility.Collapsed;
             InitializeParameters();
-
             _ = Task.Run(async () =>
             {
                 await InitializeAvailableProgramNumbers();
-                await InitializePositionsAsync();                
+                await InitializePositionsAsync();
                 InitializeAeLimitParameters();
                 await LoadAeLimitsAsync();
-               // await LoadProductSettingsAsync();
+                // await LoadProductSettingsAsync();
             });
 
             //InitializePositions();
@@ -349,7 +366,7 @@ namespace IPCSoftware.App.ViewModels
                 }
 
                 //==============///=======================//
-                var lastSavedRecipe = savedRecipes.Last();
+                var lastSavedRecipe = savedRecipes.First();  
                 int totalItems = lastSavedRecipe.TotalItems;
 
                 //var prodConfig = await _productService.LoadAsync();
@@ -490,9 +507,10 @@ namespace IPCSoftware.App.ViewModels
         private async Task InitializeAvailableProgramNumbers()
         {
             await RefreshProgramNumbersAsync();
-            SelectedItemCount = savedRecipes.Last().TotalItems;
-            GridRows = savedRecipes.Last().GridRows;
-            GridColumns = savedRecipes.Last().GridColumns;
+            SelectedItemCount = savedRecipes.First().TotalItems;
+            GridRows = savedRecipes.First().GridRows;
+            GridColumns = savedRecipes.First().GridColumns;
+            IsChecked = savedRecipes.First().IsChecked;
 
         }
 
@@ -501,41 +519,35 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                //Reload savedRecipes from file ( in case of modification by another)
                 await LoadRecipesAsync();
 
-                AvailableProgramCode.Clear();
-                AvailableProductName.Clear();
-                
-                foreach (var recipe in savedRecipes.OrderBy(r => r.ProgramNo))
-                {
-                    AvailableProgramCode.Add(recipe.ProductCode);
-                    AvailableProductName.Add(recipe.ProductName);
-                }
+                    AvailableProgramCode.Clear();
+                    AvailableProductName.Clear();
 
-                if (AvailableProgramCode.Any())
-                {
-                    //Availabe Product Code List Initialize
+                    foreach (var recipe in savedRecipes.OrderBy(r => r.ProgramNo))
+                    {
+                        AvailableProgramCode.Add(recipe.ProductCode);
+                        AvailableProductName.Add(recipe.ProductName);
+                    }
 
-                    SelectedProgramCode = AvailableProgramCode.First();
-                    FreshProductCode = AvailableProgramCode.First();
-                    OnPropertyChanged(nameof(SelectedProgramCode));
-                    OnPropertyChanged(nameof(SelectedProgramCode));
-                    _nextProgramId = savedRecipes.Max(r => r.ProgramNo);
-
-                    //Availabe Product Name List Initialize
-
-                    SelectedProductName = AvailableProductName.First();
-                    FreshProductName    = AvailableProductName.First();
-                    OnPropertyChanged(nameof(SelectedProductName));
-                    OnPropertyChanged(nameof(FreshProductName));
-
-
-                }
+                    if (AvailableProgramCode.Any())
+                    {
+                        SelectedProgramCode = AvailableProgramCode.First();
+                        FreshProductCode = AvailableProgramCode.First();
+                        //OnPropertyChanged(nameof(SelectedProgramCode));
+                        _nextProgramId = savedRecipes.Max(r => r.ProgramNo);
+                        SaveButtonName = "Edit";
+                     
+                        SelectedProductName = AvailableProductName.First();
+                        FreshProductName = AvailableProductName.First();
+                        //OnPropertyChanged(nameof(SelectedProductName));
+                        //OnPropertyChanged(nameof(FreshProductName));
+                    }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to refresh program numbers: {ex.Message}", LogType.Diagnostics);
+                _dialog.ShowWarning($"Failed to load recipe list:{ex}");
             }
         }
 
@@ -579,6 +591,7 @@ namespace IPCSoftware.App.ViewModels
             OnPropertyChanged(nameof(SelectedProductName));
             HasUnsavedChanges = true;
             IsCancelButtonVisible = Visibility.Visible;
+            SaveButtonName = "Save";
 
         }
 
@@ -587,6 +600,8 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
+                if(!(IsCancelButtonVisible == Visibility.Visible)) { await OnSaveProgram(); return; }
+
                 bool confirm = _dialog.ShowYesNo($"Do you want to Add Program {FreshProductCode}?", "Confirm Add Recipe");
                 if (!confirm) return;
 
@@ -595,6 +610,7 @@ namespace IPCSoftware.App.ViewModels
                 int enteredTotalItem = SelectedItemCount;
                 int enteredGridRow = GridRows;
                 int enteredGridCol = GridColumns;
+                bool isChecked = IsChecked;
 
                 if (!ValidateRecipeInput(enteredProductCode, enteredProductName, enteredGridRow, enteredGridCol, enteredTotalItem))
                     return;
@@ -623,6 +639,13 @@ namespace IPCSoftware.App.ViewModels
                     _logger.LogInfo($"Recipe Added: Program {_lastProgramAdded} - {enteredProductCode}", LogType.Audit);
                     _dialog.ShowMessage($"Program {_lastProgramAdded} with Product Code '{enteredProductCode}' added successfully.");
                     await RefreshProgramNumbersAsync();
+                    FreshProductCode = enteredProductCode;
+                    FreshProductName = enteredProductName;
+                    SelectedItemCount = enteredTotalItem;
+                    GridRows = enteredGridRow;
+                    GridColumns = enteredGridCol;
+                    IsChecked = isChecked;
+
                 }
                 else
                 {
@@ -630,6 +653,7 @@ namespace IPCSoftware.App.ViewModels
                 }
 
                 HasUnsavedChanges = false;
+                SaveButtonName = "Edit";
             }
             catch (Exception ex)
             {
@@ -647,7 +671,7 @@ namespace IPCSoftware.App.ViewModels
             OnPropertyChanged(nameof(SelectedProgramCode));
             OnPropertyChanged(nameof(SelectedProgramCode));
             _nextProgramId = savedRecipes.Max(r => r.ProgramNo);
-
+            SaveButtonName = "Edit";
             //Availabe Product Name List Initialize
 
             SelectedProductName = AvailableProductName.Last();
@@ -734,7 +758,15 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _logger.LogInfo($"Recipe updated successfully: Program {SelectedProgramCode}", LogType.Audit);
                     _dialog.ShowMessage($"Program {SelectedProgramCode} updated successfully.");
-                    
+                    await RefreshProgramNumbersAsync();
+                    SelectedProgramCode = enteredProductCode;
+                    SelectedProductName = enteredProductName;
+                    SelectedItemCount = enteredTotalItem;
+                    GridRows = enteredGridRow;
+                    GridColumns = enteredGridCol;
+
+
+
                 }
                 else
                 {
@@ -890,7 +922,7 @@ namespace IPCSoftware.App.ViewModels
                     }
                 }
 
-                await RefreshProgramNumbersAsync();
+               //await RefreshProgramNumbersAsync();
             }
             catch (Exception ex)
             {
@@ -1533,7 +1565,7 @@ namespace IPCSoftware.App.ViewModels
                         SequenceIndex = homeData.Seq,
                         X = homeData.X,
                         Y = homeData.Y,
-                        IsEnabled = true
+                       
                     });
 
                 }
@@ -1600,6 +1632,9 @@ namespace IPCSoftware.App.ViewModels
                 // Update FreshProduct fields as well (for edit mode)
                 FreshProductName = recipe.ProductName;
                 FreshProductCode = recipe.ProductCode;
+
+                IsChecked = recipe.IsChecked;
+                OnPropertyChanged(nameof(IsChecked));
 
                 _logger.LogInfo($"Product settings loaded: {ProductName} ({ProductCode})", LogType.Diagnostics);
             }
@@ -1670,7 +1705,7 @@ namespace IPCSoftware.App.ViewModels
             return new ServoRecipeModel
             {
                 ProgramNo = programNo,
-
+                IsChecked = _isChecked,
                 // Sequence Indexes (S1-S12)
                 S1 = savedPositions.FirstOrDefault(p => p.PositionId == 1)?.SequenceIndex ?? 0,
                 S2 = savedPositions.FirstOrDefault(p => p.PositionId == 2)?.SequenceIndex ?? 0,

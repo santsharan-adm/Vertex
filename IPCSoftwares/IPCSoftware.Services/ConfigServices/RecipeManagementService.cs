@@ -46,10 +46,14 @@ namespace IPCSoftware.Services.ConfigServices
         {
             try
             {
-                var header = "ProgramNo,S1,S2,S3,S4,S5,S6,S7,S8,S9,S10,S11,S12," +
-                            "X0,X1,X2,X3,X4,X5,X6,X7,X8,X9,X10,X11,X12," +
-                            "Y0,Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12," +
-                            "Xmin,Xmax,Ymin,Ymax,AngleMin,AngleMax";
+                var header = "ProgramNo,IsChecked,S1,S2,S3,S4,S5,S6,S7,S8,S9,S10,S11,S12," +
+                         "X0,X1,X2,X3,X4,X5,X6,X7,X8,X9,X10,X11,X12," +
+                         "Y0,Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12," +
+                         "Xmin,Xmax,Ymin,Ymax,AngleMin,AngleMax,ProductName,ProductCode,TotalItems,GridRows,GridColumns," +
+                         "PositionID_0,PositionID_1,PositionID_2,PositionID_3,PositionID_4,PositionID_5,PositionID_6,PositionID_7,PositionID_8,PositionID_9,PositionID_10,PositionID_11,PositionID_12," +
+                         "Name_0,Name_1,Name_2,Name_3,Name_4,Name_5,Name_6,Name_7,Name_8,Name_9,Name_10,Name_11,Name_12," +
+                         "Description_0,Description_1,Description_2,Description_3,Description_4,Description_5,Description_6,Description_7,Description_8,Description_9,Description_10,Description_11,Description_12," +
+                         "IsEnabled_0,IsEnabled_1,IsEnabled_2,IsEnabled_3,IsEnabled_4,IsEnabled_5,IsEnabled_6,IsEnabled_7,IsEnabled_8,IsEnabled_9,IsEnabled_10,IsEnabled_11,IsEnabled_12";
 
                 File.WriteAllText(_recipeFilePath, header + Environment.NewLine);
                 _logger.LogInfo("Recipe file created with default header.", LogType.Audit);
@@ -146,7 +150,7 @@ namespace IPCSoftware.Services.ConfigServices
             var sb = new StringBuilder();
 
             // Header
-            sb.AppendLine("ProgramNo,S1,S2,S3,S4,S5,S6,S7,S8,S9,S10,S11,S12," +
+            sb.AppendLine("ProgramNo,IsChecked,S1,S2,S3,S4,S5,S6,S7,S8,S9,S10,S11,S12," +
                          "X0,X1,X2,X3,X4,X5,X6,X7,X8,X9,X10,X11,X12," +
                          "Y0,Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12," +
                          "Xmin,Xmax,Ymin,Ymax,AngleMin,AngleMax,ProductName,ProductCode,TotalItems,GridRows,GridColumns,"+
@@ -166,7 +170,7 @@ namespace IPCSoftware.Services.ConfigServices
 
         private string BuildCsvLine(ServoRecipeModel recipe)
         {
-            return $"{recipe.ProgramNo}," +
+            return $"{recipe.ProgramNo},{recipe.IsChecked}," +
                    $"{recipe.S1},{recipe.S2},{recipe.S3},{recipe.S4},{recipe.S5},{recipe.S6}," +
                    $"{recipe.S7},{recipe.S8},{recipe.S9},{recipe.S10},{recipe.S11},{recipe.S12}," +
                    $"{FormatDouble(recipe.X0)},{FormatDouble(recipe.X1)},{FormatDouble(recipe.X2)},{FormatDouble(recipe.X3)}," +

@@ -926,7 +926,7 @@
                                 <DropShadowEffect Color="Black" BlurRadius="20" Opacity="0.1"/>
                             </Border.Effect>
 
-                            <StackPanel Width="600" HorizontalAlignment="Left">
+                            <StackPanel Width="700" HorizontalAlignment="Left">
                                 <!-- ComboBox for Existing Programs -->
                                 
                                 <TextBlock Text="Select Product Code" FontSize="20" Foreground="#555" Margin="0,0,0,10"/>
@@ -974,7 +974,13 @@
                                                   Width="120" FontSize="24" Padding="10"/>
                                     </StackPanel>
 
-                                    
+                                    <!-- Recipe Enabled Check Box -->
+                                    <CheckBox Content="Product Enabled" 
+                                          IsChecked="{Binding IsChecked ,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                              IsEnabled="True"
+                                          Style="{StaticResource HmiCheckBoxStyle}"
+                                          Margin="80,10,0,0"/>
+
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,0" >
                                   <!-- ADD Button -->
@@ -1002,7 +1008,7 @@
                                     </Button.Template>
                                 </Button>
                                     <!-- SAVE Button -->
-                                    <Button Content="SAVE" 
+                                    <Button Content="{Binding SaveButtonName , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                         Command="{Binding SaveProgramCommand}"
                                         Background="#E67E22" 
                                         Foreground="White" 
@@ -1025,8 +1031,8 @@
                                             </ControlTemplate>
                                         </Button.Template>
                                     </Button>
-                                    <!-- Edit Button --><!--
-                                <Button Content="EDIT" 
+                                    <!-- Edit Button -->
+                                <!--<Button Content="EDIT" 
                                        Command="{Binding EditProgramCommand}"
                                        Background="DarkCyan" 
                                        Foreground="White" 
@@ -1052,7 +1058,7 @@
 
 
                                  <!-- DELETE Button -->
-                                <Button Content="DELETE" 
+                                <!--<Button Content="DELETE" 
                                         Command="{Binding DeleteProgramCommand}"
                                         Background="#1E4FA8" 
                                         Foreground="White" 
@@ -1074,7 +1080,7 @@
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
                                     </Button.Template>
-                                </Button>
+                                </Button>-->
                                     <Button Content="CANCLE" 
                                             Visibility="{Binding IsCancelButtonVisible}"
                                        Command="{Binding CancelProgramCommand}"
