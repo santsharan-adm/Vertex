@@ -221,7 +221,7 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _liveY, value);
         }
 
-        private int _selectedTabIndex;
+        private int _selectedTabIndex ;
         public int SelectedTabIndex
         {
             get => _selectedTabIndex;
@@ -297,7 +297,7 @@ namespace IPCSoftware.App.ViewModels
             //_aeLimitService = aeLimitService;
             _settingsMonitor = settingMonitor;
             _appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
-
+            _selectedTabIndex = 0;
             TeachCommand = new RelayCommand<ServoPositionModel>(OnTeachPosition);
             WritePositionCommand = new RelayCommand<ServoPositionModel>(OnWritePositionManual);
             WriteParamCommand = new RelayCommand<ServoParameterItem>(OnWriteParameter);
@@ -653,6 +653,8 @@ namespace IPCSoftware.App.ViewModels
                 }
 
                 HasUnsavedChanges = false;
+                SelectedTabIndex = 1;
+                _dialog.ShowMessage($" Now set Coordinate for total item : {enteredTotalItem}", "Set Coordinates");
                 SaveButtonName = "Edit";
             }
             catch (Exception ex)
@@ -727,6 +729,7 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
+                                
                 string enteredProductCode = SelectedProgramCode ?? FreshProductCode;
                 string enteredProductName = SelectedProductName ?? FreshProductName;
                 int enteredTotalItem = SelectedItemCount;
