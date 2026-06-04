@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace IPCSoftware.Shared.Models.Bending
 {
@@ -30,8 +31,8 @@ namespace IPCSoftware.Shared.Models.Bending
             set => SetProperty(ref _isEnabled, value);
         }
 
-        private bool _isVisible;
-        public bool IsVisible
+        private Visibility _isVisible;
+        public Visibility IsVisible
         {
             get => _isVisible;
             set => SetProperty(ref _isVisible, value);
