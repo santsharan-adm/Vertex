@@ -1,4 +1,4 @@
-using IPCSoftware.Core.Interfaces;
+﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Devices.PLC;
 using IPCSoftware.Devices.UI;
@@ -10,12 +10,15 @@ using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Bending.Service
 {
     public class DashboardInitializerBending : DashboardInitializerBase
     {
+        private readonly BendingProcessService _bendingProcess;
+
         public DashboardInitializerBending(
             PLCClientManager manager,
             AlgorithmAnalysisService algo,
@@ -25,13 +28,49 @@ namespace IPCSoftware.CoreService.Bending.Service
             UiListener ui,
             AlarmService alarmService,
             CCDTriggerServiceBending ccdTrigger,
+            BendingProcessService bendingProcess,
             IAppLogger logger)
             : base(manager, algo, oee, shiftReset, systemMonitor, ui, alarmService, ccdTrigger, logger)
         {
+            _bendingProcess = bendingProcess;
+
+            // Hook into PLC data processing to call BendingProcess every cycle
+            algo.OnPlcDataProcessed += (tagId, value) =>
+            {
+                // Process on every tag update — but we only need it once per cycle
+                // The Process() method is lightweight and idempotent within a cycle
+            };
+        }
+
+        /// <summary>
+        /// Override StartAsync to add BendingProcess call in the processing loop.
+        /// </summary>
+        public new async Task StartAsync()
+        {
+            // Start a background task that calls BendingProcess every 500ms
+            _ = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    try
+                    {
+                        _bendingProcess.Process(latestValueNew);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[BendingProcess] Error: {ex.Message}");
+                    }
+                    await Task.Delay(500);
+                }
+            });
+
+            // Call base StartAsync (the original processing loop)
+            await base.StartAsync();
         }
 
         public override async Task<ResponsePackage> HandleUiRequest(RequestPackage request)
         {
+            Console.WriteLine($"[UI-REQ] RequestId={request.RequestId}");
             Debug.WriteLine($"[Bending] HandleUiRequest called → RequestId={request.RequestId}");
 
             // ----------------------------------------------------------------
@@ -46,9 +85,10 @@ namespace IPCSoftware.CoreService.Bending.Service
             // DashboardInspectionModelBatch2
             // ----------------------------------------------------------------
 
+            // RequestId 12 — TOP table row 2 (2nd highest Stage 3+ batch)
             if (request.RequestId == 12)
             {
-                return await DashboardInspectionModelBatch2(request);
+                return await TopTableBatchByRank(request, 1); // rank 1 = 2nd highest (0-indexed skip)
             }
             // ----------------------------------------------------------------
             // BendingIndicators
@@ -181,97 +221,122 @@ namespace IPCSoftware.CoreService.Bending.Service
                 return await PostBendingMonitor(request);
             }
 
+            // ----------------------------------------------------------------
+            // BendingProcessDashboard (FIFO queue state)
+            // ----------------------------------------------------------------
+            if (request.RequestId == 30 || request.RequestId == 32)
+            {
+                return await BendingProcessDashboard(request);
+            }
+
+            // ----------------------------------------------------------------
+            // BendingProcess LEFT table (Stage 1-2 entries)
+            // ----------------------------------------------------------------
+            if (request.RequestId == 31)
+            {
+                return await BendingProcessLeftTable(request);
+            }
+
             return await base.HandleUiRequest(request);
         }
 
         private Task<ResponsePackage> DashboardInspectionModelBatch1(RequestPackage request)
         {
-  
-            // Build a LineItem using the correct ConstantValues tag IDs (from appsettings Dashboard2 section)
-            DashboardInspectionLineModel BuildLineItem1() => new DashboardInspectionLineModel
+            // RequestId 11: TOP table — Stage 3-9 batches ONLY
+            // Per PROCESS_LOGIC.md: TOP table shows Stage 3-9 only
+            var topBatch = _bendingProcess.GetActiveBatches()
+                .Where(b => b.Stage >= 3)
+                .OrderByDescending(b => b.Stage)
+                .FirstOrDefault();
+
+            DashboardInspectionModel item;
+
+            if (topBatch != null && !string.IsNullOrEmpty(topBatch.QrCode1))
             {
-                QRCode = GetString(ConstantValues.L1_QRCode),    //GetString(ConstantValues.L1_QRCode != null ? int.TryParse(ConstantValues.L1_QRCode, out var qrId) ? qrId : 1187 : 1187),
-                HeaterTemp_Bend1 = GetFloat(ConstantValues.L1_HeaterTemp_Bend1),  
-                HeaterTemp_Bend2 = GetFloat(ConstantValues.L2_HeaterTemp_Bend2),  
-                HeaterTemp_Bend3 = GetFloat(ConstantValues.L3_HeaterTemp_Bend3),  
-                Load_Bend1 = GetFloat(ConstantValues.L1_Load_Bend1),          
-                Load_Bend2 = GetFloat(ConstantValues.L1_Load_Bend2),          
-                Load_Bend3 = GetFloat(ConstantValues.L1_Load_Bend3),          
-                XValue = GetFloat(ConstantValues.L1_XValue),            
-                YValue = GetFloat(ConstantValues.L1_YValue),            
-                ZValue = GetFloat(ConstantValues.L1_ZValue),            
-                WValue = GetFloat(ConstantValues.L1_WValue),            
-                Result1 = GetBool(ConstantValues.L1_Result),            
-            }; 
-
-            DashboardInspectionLineModel BuildLineItem2() => new DashboardInspectionLineModel
+                item = new DashboardInspectionModel
+                {
+                    BatchNo = topBatch.BatchNumber,
+                    LineItem1 = new DashboardInspectionLineModel
+                    {
+                        QRCode1 = topBatch.QrCode1,
+                        HeaterTemp_Bend1 = topBatch.Bending1Temperatures[0],
+                        HeaterTemp_Bend2 = topBatch.Bending2Temperatures[0],
+                        HeaterTemp_Bend3 = topBatch.Bending3Temperatures[0],
+                        Load_Bend1 = topBatch.Bending1Loads[0],
+                        Load_Bend2 = topBatch.Bending2Loads[0],
+                        Load_Bend3 = topBatch.Bending3Loads[0],
+                        XValue = topBatch.Bending3X[0],
+                        YValue = topBatch.Bending3Y[0],
+                        ZValue = topBatch.Bending3Z[0],
+                        WValue = topBatch.Bending3W[0],
+                        Result1 = topBatch.InspectionResults[0],
+                    },
+                    LineItem2 = new DashboardInspectionLineModel
+                    {
+                        QRCode1 = topBatch.QrCode2,
+                        HeaterTemp_Bend1 = topBatch.Bending1Temperatures[1],
+                        HeaterTemp_Bend2 = topBatch.Bending2Temperatures[1],
+                        HeaterTemp_Bend3 = topBatch.Bending3Temperatures[1],
+                        Load_Bend1 = topBatch.Bending1Loads[1],
+                        Load_Bend2 = topBatch.Bending2Loads[1],
+                        Load_Bend3 = topBatch.Bending3Loads[1],
+                        XValue = topBatch.Bending3X[1],
+                        YValue = topBatch.Bending3Y[1],
+                        ZValue = topBatch.Bending3Z[1],
+                        WValue = topBatch.Bending3W[1],
+                        Result1 = topBatch.InspectionResults[1],
+                    },
+                    LineItem3 = new DashboardInspectionLineModel
+                    {
+                        QRCode1 = topBatch.QrCode3,
+                        HeaterTemp_Bend1 = topBatch.Bending1Temperatures[2],
+                        HeaterTemp_Bend2 = topBatch.Bending2Temperatures[2],
+                        HeaterTemp_Bend3 = topBatch.Bending3Temperatures[2],
+                        Load_Bend1 = topBatch.Bending1Loads[2],
+                        Load_Bend2 = topBatch.Bending2Loads[2],
+                        Load_Bend3 = topBatch.Bending3Loads[2],
+                        XValue = topBatch.Bending3X[2],
+                        YValue = topBatch.Bending3Y[2],
+                        ZValue = topBatch.Bending3Z[2],
+                        WValue = topBatch.Bending3W[2],
+                        Result1 = topBatch.InspectionResults[2],
+                    },
+                    LineItem4 = new DashboardInspectionLineModel
+                    {
+                        QRCode1 = topBatch.QrCode4,
+                        HeaterTemp_Bend1 = topBatch.Bending1Temperatures[3],
+                        HeaterTemp_Bend2 = topBatch.Bending2Temperatures[3],
+                        HeaterTemp_Bend3 = topBatch.Bending3Temperatures[3],
+                        Load_Bend1 = topBatch.Bending1Loads[3],
+                        Load_Bend2 = topBatch.Bending2Loads[3],
+                        Load_Bend3 = topBatch.Bending3Loads[3],
+                        XValue = topBatch.Bending3X[3],
+                        YValue = topBatch.Bending3Y[3],
+                        ZValue = topBatch.Bending3Z[3],
+                        WValue = topBatch.Bending3W[3],
+                        Result1 = topBatch.InspectionResults[3],
+                    },
+                };
+            }
+            else
             {
-                QRCode = GetString(ConstantValues.L2_QRCode),                //GetString(ConstantValues.L2_QRCode != null ? int.TryParse(ConstantValues.L2_QRCode, out var qrId) ? qrId : 1187 : 1187),
-                HeaterTemp_Bend1 = GetFloat(ConstantValues.L2_HeaterTemp_Bend1),  
-                HeaterTemp_Bend2 = GetFloat(ConstantValues.L2_HeaterTemp_Bend2),  
-                HeaterTemp_Bend3 = GetFloat(ConstantValues.L2_HeaterTemp_Bend3),  
-                Load_Bend1 = GetFloat(ConstantValues.L2_Load_Bend1),          
-                Load_Bend2 = GetFloat(ConstantValues.L2_Load_Bend2),          
-                Load_Bend3 = GetFloat(ConstantValues.L2_Load_Bend3),          
-                XValue = GetFloat(ConstantValues.L2_XValue),            
-                YValue = GetFloat(ConstantValues.L2_YValue),            
-                ZValue = GetFloat(ConstantValues.L2_ZValue),            
-                WValue = GetFloat(ConstantValues.L2_WValue),            
-                Result1 = GetBool(ConstantValues.L2_Result),            
-            };
+                // No FIFO batch — return empty model
+                item = new DashboardInspectionModel
+                {
+                    BatchNo = "",
+                    LineItem1 = new DashboardInspectionLineModel(),
+                    LineItem2 = new DashboardInspectionLineModel(),
+                    LineItem3 = new DashboardInspectionLineModel(),
+                    LineItem4 = new DashboardInspectionLineModel(),
+                };
+            }
 
-            DashboardInspectionLineModel BuildLineItem3() => new DashboardInspectionLineModel
-            {
-                QRCode = GetString(ConstantValues.L3_QRCode),                    //GetString(ConstantValues.L3_QRCode != null ? int.TryParse(ConstantValues.L3_QRCode, out var qrId) ? qrId : 1187 : 1187),
-                HeaterTemp_Bend1 = GetFloat(ConstantValues.L3_HeaterTemp_Bend1),  
-                HeaterTemp_Bend2 = GetFloat(ConstantValues.L3_HeaterTemp_Bend2),  
-                HeaterTemp_Bend3 = GetFloat(ConstantValues.L3_HeaterTemp_Bend3),  
-                Load_Bend1 = GetFloat(ConstantValues.L3_Load_Bend1),          
-                Load_Bend2 = GetFloat(ConstantValues.L3_Load_Bend2),          
-                Load_Bend3 = GetFloat(ConstantValues.L3_Load_Bend3),          
-                XValue = GetFloat(ConstantValues.L3_XValue),            
-                YValue = GetFloat(ConstantValues.L3_YValue),            
-                ZValue = GetFloat(ConstantValues.L3_ZValue),            
-                WValue = GetFloat(ConstantValues.L3_WValue),            
-                Result1 = GetBool(ConstantValues.L3_Result),            
-            };
-
-            DashboardInspectionLineModel BuildLineItem4() => new DashboardInspectionLineModel
-            {
-                QRCode = GetString(ConstantValues.L4_QRCode),             //GetString(ConstantValues.L4_QRCode != null ? int.TryParse(ConstantValues.L4_QRCode, out var qrId) ? qrId : 1187 : 1187),
-                HeaterTemp_Bend1 = GetFloat(ConstantValues.L4_HeaterTemp_Bend1),  
-                HeaterTemp_Bend2 = GetFloat(ConstantValues.L4_HeaterTemp_Bend2),  
-                HeaterTemp_Bend3 = GetFloat(ConstantValues.L4_HeaterTemp_Bend3),  
-                Load_Bend1 = GetFloat(ConstantValues.L4_Load_Bend1),          
-                Load_Bend2 = GetFloat(ConstantValues.L4_Load_Bend2),          
-                Load_Bend3 = GetFloat(ConstantValues.L4_Load_Bend3),          
-                XValue = GetFloat(ConstantValues.L4_XValue),           
-                YValue = GetFloat(ConstantValues.L4_YValue),           
-                ZValue = GetFloat(ConstantValues.L4_ZValue),           
-                WValue = GetFloat(ConstantValues.L4_WValue),           
-                Result1 = GetBool(ConstantValues.L4_Result),           
-            };
-
-
-            DashboardInspectionModel item = new DashboardInspectionModel
-            {
-                BatchNo =   1,/* GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),*/
-                StationIndex=1,
-                LineItem1 = BuildLineItem1(),
-                LineItem2 = BuildLineItem2(),
-                LineItem3 = BuildLineItem3(),
-                LineItem4 = BuildLineItem4(),
-
-            };
-
-
-            // ResponseId must match the RequestId (11) so the ViewModel's TryGetValue(11) succeeds
             return Task.FromResult(new ResponsePackage
             {
                 ResponseId = request.RequestId,
                 Parameters = new Dictionary<int, object>()
                 {
-                    { request.RequestId, item }  // key = 11, matching ViewModel's TryGetValue(11)
+                    { request.RequestId, item }
                 }
             });
         }
@@ -1215,39 +1280,158 @@ namespace IPCSoftware.CoreService.Bending.Service
             //};
         }
 
-        // Helper to read a float from the latest PLC packet by tag ID
-        private float GetFloat(int tagId)
+        private Task<ResponsePackage> BendingProcessDashboard(RequestPackage request)
         {
-            if (latestValueNew.TryGetValue(tagId, out var val) &&
-                float.TryParse(val.ToString(), out var result))
-                return result;
-            return 0f;  // NaN is not valid JSON — use 0 as safe default
+            var dashboardModel = _bendingProcess.GetDashboardModel();
+
+            return Task.FromResult(new ResponsePackage
+            {
+                ResponseId = request.RequestId,
+                Parameters = new Dictionary<int, object>()
+                {
+                    { request.RequestId, dashboardModel }
+                }
+            });
         }
 
-        private int GetInt(int tagId)
+        /// <summary>
+        /// LEFT table: Returns exactly 2 entries for Stage 1-2 batches.
+        /// Entries[0] = top row (Stage 2 batch, or empty)
+        /// Entries[1] = bottom row (Stage 1 batch, or empty)
+        /// Per PROCESS_LOGIC.md: newest batch always at bottom
+        /// </summary>
+        private Task<ResponsePackage> BendingProcessLeftTable(RequestPackage request)
         {
+            var stage2Batch = _bendingProcess.GetActiveBatches().FirstOrDefault(b => b.Stage == 2);
+            var stage1Batch = _bendingProcess.GetActiveBatches().FirstOrDefault(b => b.Stage == 1);
 
-            if (latestValueNew.TryGetValue(tagId, out var val) &&
-                int.TryParse(val.ToString(), out var result))
-                return result;
-            return 0;
+            var leftTable = new BendingProcessLeftTableModel();
+
+            // Entries[0] = top row = Stage 2 batch (older)
+            leftTable.Entries.Add(new BatchEntryModel
+            {
+                BatchNo = stage2Batch?.BatchNumber ?? "",
+                QrCode = stage2Batch?.QrCode1 ?? ""
+            });
+
+            // Entries[1] = bottom row = Stage 1 batch (newest)
+            leftTable.Entries.Add(new BatchEntryModel
+            {
+                BatchNo = stage1Batch?.BatchNumber ?? "",
+                QrCode = stage1Batch?.QrCode1 ?? ""
+            });
+
+            return Task.FromResult(new ResponsePackage
+            {
+                ResponseId = request.RequestId,
+                Parameters = new Dictionary<int, object>()
+                {
+                    { request.RequestId, leftTable }
+                }
+            });
         }
 
-        private bool GetBool(int tagId)
+        /// <summary>
+        /// Returns the Nth highest Stage 3+ batch for TOP table rows.
+        /// rank=0 → highest (RequestId 11), rank=1 → 2nd highest (RequestId 12), etc.
+        /// </summary>
+        private Task<ResponsePackage> TopTableBatchByRank(RequestPackage request, int rank)
         {
-            if (latestValueNew.TryGetValue(tagId, out var val) &&
-                bool.TryParse(val.ToString(), out var result))
-                return result;
-            return false;
-        }
+            var batch = _bendingProcess.GetActiveBatches()
+                .Where(b => b.Stage >= 3)
+                .OrderByDescending(b => b.Stage)
+                .Skip(rank)
+                .FirstOrDefault();
 
-        private string GetString(int tagId)
-        {
-            if (latestValueNew.TryGetValue(tagId, out var val))
-                return val?.ToString() ?? "NA";
-            return "NA";
-        }
+            DashboardInspectionModel item;
+            if (batch != null)
+            {
+                item = new DashboardInspectionModel
+                {
+                    BatchNo = batch.BatchNumber,
+                    LineItem1 = new DashboardInspectionLineModel
+                    {
+                        QRCode1 = batch.QrCode1,
+                        HeaterTemp_Bend1 = batch.Bending1Temperatures[0],
+                        HeaterTemp_Bend2 = batch.Bending2Temperatures[0],
+                        HeaterTemp_Bend3 = batch.Bending3Temperatures[0],
+                        Load_Bend1 = batch.Bending1Loads[0],
+                        Load_Bend2 = batch.Bending2Loads[0],
+                        Load_Bend3 = batch.Bending3Loads[0],
+                        XValue = batch.Bending3X[0],
+                        YValue = batch.Bending3Y[0],
+                        ZValue = batch.Bending3Z[0],
+                        WValue = batch.Bending3W[0],
+                        Result1 = batch.InspectionResults[0],
+                    },
+                    LineItem2 = new DashboardInspectionLineModel
+                    {
+                        QRCode1 = batch.QrCode2,
+                        HeaterTemp_Bend1 = batch.Bending1Temperatures[1],
+                        HeaterTemp_Bend2 = batch.Bending2Temperatures[1],
+                        HeaterTemp_Bend3 = batch.Bending3Temperatures[1],
+                        Load_Bend1 = batch.Bending1Loads[1],
+                        Load_Bend2 = batch.Bending2Loads[1],
+                        Load_Bend3 = batch.Bending3Loads[1],
+                        XValue = batch.Bending3X[1],
+                        YValue = batch.Bending3Y[1],
+                        ZValue = batch.Bending3Z[1],
+                        WValue = batch.Bending3W[1],
+                        Result1 = batch.InspectionResults[1],
+                    },
+                    LineItem3 = new DashboardInspectionLineModel
+                    {
+                        QRCode1 = batch.QrCode3,
+                        HeaterTemp_Bend1 = batch.Bending1Temperatures[2],
+                        HeaterTemp_Bend2 = batch.Bending2Temperatures[2],
+                        HeaterTemp_Bend3 = batch.Bending3Temperatures[2],
+                        Load_Bend1 = batch.Bending1Loads[2],
+                        Load_Bend2 = batch.Bending2Loads[2],
+                        Load_Bend3 = batch.Bending3Loads[2],
+                        XValue = batch.Bending3X[2],
+                        YValue = batch.Bending3Y[2],
+                        ZValue = batch.Bending3Z[2],
+                        WValue = batch.Bending3W[2],
+                        Result1 = batch.InspectionResults[2],
+                    },
+                    LineItem4 = new DashboardInspectionLineModel
+                    {
+                        QRCode1 = batch.QrCode4,
+                        HeaterTemp_Bend1 = batch.Bending1Temperatures[3],
+                        HeaterTemp_Bend2 = batch.Bending2Temperatures[3],
+                        HeaterTemp_Bend3 = batch.Bending3Temperatures[3],
+                        Load_Bend1 = batch.Bending1Loads[3],
+                        Load_Bend2 = batch.Bending2Loads[3],
+                        Load_Bend3 = batch.Bending3Loads[3],
+                        XValue = batch.Bending3X[3],
+                        YValue = batch.Bending3Y[3],
+                        ZValue = batch.Bending3Z[3],
+                        WValue = batch.Bending3W[3],
+                        Result1 = batch.InspectionResults[3],
+                    },
+                };
+            }
+            else
+            {
+                item = new DashboardInspectionModel
+                {
+                    BatchNo = "",
+                    LineItem1 = new DashboardInspectionLineModel(),
+                    LineItem2 = new DashboardInspectionLineModel(),
+                    LineItem3 = new DashboardInspectionLineModel(),
+                    LineItem4 = new DashboardInspectionLineModel(),
+                };
+            }
 
+            return Task.FromResult(new ResponsePackage
+            {
+                ResponseId = request.RequestId,
+                Parameters = new Dictionary<int, object>()
+                {
+                    { request.RequestId, item }
+                }
+            });
+        }
 
     }
 }

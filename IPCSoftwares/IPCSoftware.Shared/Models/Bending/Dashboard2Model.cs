@@ -1,9 +1,31 @@
 ﻿using IPCSoftware.Shared;
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace IPCSoftware.Shared.Models.Bending
 {
+    /// <summary>
+    /// TOP table model — up to 7 batch rows (Stage 3-9), sorted by stage descending.
+    /// Each row contains the stored/processed data for that batch.
+    /// </summary>
+    public class BendingProcessTopTableModel : ObservableObjectVM
+    {
+        public List<DashboardInspectionModel> Batches { get; set; } = new();
+    }
+
+    /// <summary>
+    /// LEFT table model — up to 2 batch entries (Stage 1-2), just Batch No + QR.
+    /// </summary>
+    public class BendingProcessLeftTableModel : ObservableObjectVM
+    {
+        public List<BatchEntryModel> Entries { get; set; } = new();
+    }
+
+    public class BatchEntryModel : ObservableObjectVM
+    {
+        public string BatchNo { get; set; } = string.Empty;
+        public string QrCode { get; set; } = string.Empty;
+    }
 
     public class DashboardInspectionModel : ObservableObjectVM
     {

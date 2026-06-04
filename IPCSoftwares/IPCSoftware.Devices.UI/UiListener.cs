@@ -19,7 +19,7 @@ namespace IPCSoftware.Devices.UI
         private readonly int _port;
         private TcpListener _listener;
 
-        // 🚨 CRITICAL ADDITION: Thread-safe storage for all active streams
+        
       //  private readonly ConcurrentDictionary<Guid, NetworkStream> _activeStreams = new ConcurrentDictionary<Guid, NetworkStream>();
         private readonly ConcurrentDictionary<Guid, ClientConnection> _activeClients = new();
 
@@ -38,6 +38,7 @@ namespace IPCSoftware.Devices.UI
             {
                 _listener = new TcpListener(IPAddress.Any, _port);
                 _listener.Start();
+                Console.WriteLine($"UI Listener started on port {_port}");
 
                 _logger.LogInfo($"UI Listener started on port {_port}",LogType.Diagnostics);
 
@@ -66,6 +67,7 @@ namespace IPCSoftware.Devices.UI
             catch (Exception ex)
             {
                 _logger.LogError($"ERROR IN UILISTENER:{ ex.Message}", LogType.Diagnostics);
+                Console.WriteLine($"ERROR IN UILISTENER: {ex.Message}");
             }
         }
 
@@ -116,7 +118,17 @@ namespace IPCSoftware.Devices.UI
                             response = new ResponsePackage { ResponseId = -1 };
                         }
 
-                        string outJson = MessageSerializer.Serialize(response) + "\n";
+                        string outJson;
+                        try
+                        {
+                            outJson = MessageSerializer.Serialize(response) + "\n";
+                        }
+                        catch (Exception serEx)
+                        {
+                            Console.WriteLine($"[UI] Serialize error for RequestId={request?.RequestId}: {serEx.Message}");
+                            // Send error response instead of crashing
+                            outJson = MessageSerializer.Serialize(new ResponsePackage { ResponseId = request?.RequestId ?? -1, Success = false, ErrorMessage = serEx.Message }) + "\n";
+                        }
 
                         // CRITICAL FIX: Check if still connected before writing
                         if (connection.Client.Connected)

@@ -66,6 +66,7 @@ namespace IPCSoftware.CoreService.Bending
                 _ = Task.Run(async () =>
                 {
                     try { await _uiListener.StartAsync(); }
+                    
                     catch (Exception ex)
                     {
                         _logger.LogError($"UI Listener Startup Error: {ex.Message}", LogType.Diagnostics);

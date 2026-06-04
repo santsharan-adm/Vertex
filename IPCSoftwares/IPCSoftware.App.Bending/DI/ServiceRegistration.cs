@@ -276,6 +276,8 @@ namespace IPCSoftware.App.Bending.DI
             //services.AddTransient<PostBendingMonitor>();
             services.AddTransient<WelcomePageViewModel>();
             services.AddTransient<WelcomePageView>();
+            services.AddTransient<FifoMonitorViewModel>();
+            services.AddTransient<Views.BendingDash>();
 
         }
     }

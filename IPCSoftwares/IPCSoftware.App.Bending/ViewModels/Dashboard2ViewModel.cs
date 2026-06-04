@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+using System.Linq;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 using IPCSoftware.Common.CommonExtensions;
 using IPCSoftware.Common.UIClientComm;
@@ -41,6 +42,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         private SafePollerEx _outputTrayPoller;
         private SafePollerEx _ngBinPoller;
         private SafePollerEx _efficiencyBreakdownPoller;
+        private SafePollerEx _leftTablePoller;
 
         private bool _disposed;
 
@@ -55,6 +57,26 @@ namespace IPCSoftware.App.Bending.ViewModels
         public ICommand AcknowledgeAlarmCommand { get; }
 
         #region Properties
+
+        // --- LEFT Table (Stage 1-2 batches) ---
+        private string _leftBatch1No = "";
+        public string LeftBatch1No { get => _leftBatch1No; set => SetProperty(ref _leftBatch1No, value); }
+
+        private string _leftBatch1Qr = "";
+        public string LeftBatch1Qr { get => _leftBatch1Qr; set => SetProperty(ref _leftBatch1Qr, value); }
+
+        private string _leftBatch2No = "";
+        public string LeftBatch2No { get => _leftBatch2No; set => SetProperty(ref _leftBatch2No, value); }
+
+        private string _leftBatch2Qr = "";
+        public string LeftBatch2Qr { get => _leftBatch2Qr; set => SetProperty(ref _leftBatch2Qr, value); }
+
+        private BendingProcessLeftTableModel _leftTableModel = new();
+        public BendingProcessLeftTableModel LeftTableModel
+        {
+            get => _leftTableModel;
+            set => SetProperty(ref _leftTableModel, value);
+        }
 
         // --- Inspection Tables (Lot 1 & Lot 2) ---
 
@@ -297,6 +319,15 @@ namespace IPCSoftware.App.Bending.ViewModels
             //    ex => _logger.LogError($"[Dashboard2] InspectionTable2 poller error: {ex.Message}", LogType.Diagnostics),
             //    requestId: 12);
 
+            // RequestId = 32 — LEFT table (FIFO data copy for Dashboard2)
+            _leftTablePoller = new SafePollerEx(
+                _coreClient,
+                TimeSpan.FromMilliseconds(500),
+                UpdateLeftTableFromService,
+                _logger,
+                ex => _logger.LogError($"[Dashboard2] LeftTable poller error: {ex.Message}", LogType.Diagnostics),
+                requestId: 30);
+
             // RequestId = 23 — DashboardInspectionModelBatch3 (Lot 3)
             //_inspectionTable3Poller = new SafePollerEx(
             //    _coreClient,
@@ -430,6 +461,7 @@ namespace IPCSoftware.App.Bending.ViewModels
             _inputTrayPoller.Start();
             _outputTrayPoller.Start();
             _ngBinPoller.Start();
+            _leftTablePoller.Start();
             //_efficiencyBreakdownPoller.Start();
 
            
@@ -555,6 +587,51 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         //    await Task.CompletedTask;
         //}
+
+        // RequestId = 31 — LEFT table (Stage 1-2 batches)
+        // Use RequestId 30 (same as FifoMonitor) to get full FIFO data and extract LEFT batches
+        private async Task UpdateLeftTableFromService(Dictionary<int, object> data)
+        {
+            try
+            {
+                if (data.TryGetValue(32, out object modelObj))
+                {
+                    var model = Deserialize<BendingProcessDashboardModel>(modelObj);
+                    if (model?.ActiveBatches != null)
+                    {
+                        var leftBatches = model.ActiveBatches.Where(b => b.Stage <= 2).ToList();
+                        var s2 = leftBatches.FirstOrDefault(b => b.Stage == 2);
+                        var s1 = leftBatches.FirstOrDefault(b => b.Stage == 1);
+
+                        var newModel = new BendingProcessLeftTableModel();
+                        newModel.Entries.Add(new BatchEntryModel
+                        {
+                            BatchNo = s2?.BatchNumber ?? "",
+                            QrCode = s2?.QrCode1 ?? ""
+                        });
+                        newModel.Entries.Add(new BatchEntryModel
+                        {
+                            BatchNo = s1?.BatchNumber ?? "",
+                            QrCode = s1?.QrCode1 ?? ""
+                        });
+
+                        LeftTableModel = newModel;
+
+                        // Also set direct properties for XAML binding
+                        LeftBatch1No = s2?.BatchNumber ?? "";
+                        LeftBatch1Qr = s2?.QrCode1 ?? "";
+                        LeftBatch2No = s1?.BatchNumber ?? "";
+                        LeftBatch2Qr = s1?.QrCode1 ?? "";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Dashboard2] UpdateLeftTableFromService error: {ex.Message}", LogType.Diagnostics);
+            }
+
+            await Task.CompletedTask;
+        }
 
         // RequestId = 23 — InspectionTable3 (Lot 3)
         //private async Task UpdateDashboardInspectionModelBatch3FromService(Dictionary<int, object> data)
