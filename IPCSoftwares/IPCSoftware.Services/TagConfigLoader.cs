@@ -120,14 +120,16 @@ namespace IPCSoftware.Services
                                 BitNo = bitNo,
                                 Offset = double.Parse(r[12]),
                                 Span = double.Parse(r[13]),
+                                Direction = r[16],
                                 IOType = r[17],
+                                CanWrite = ParseBoolean(r[15]),
 
                                 // NEW: Read UseEngMinMax and EnableTraceLog (columns 18 and 19 in Bending CSV)
-                                UseEngMinMax = r.Length > 18 ? ParseBoolean(r[18]) : false,
-                                EnableTraceLog = r.Length > 19 ? ParseBoolean(r[19]) : false,
+                                UseEngMinMax = r.Length > 11 ? ParseBoolean(r[11]) : false,
+                                EnableTraceLog = r.Length > 18 ? ParseBoolean(r[18]) : false,
 
-                                Description = r.Length > 20 ? r[20] : "",
-                                Remark = r.Length > 21 ? r[21] : ""
+                                Description = r.Length > 19 ? r[19] : "",
+                                Remark = r.Length > 20 ? r[20] : ""
                                 //CanWrite = ParseBoolean(r[13]),
                                 //DMAddress = r[15]
 

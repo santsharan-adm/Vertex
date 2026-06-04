@@ -1,5 +1,6 @@
-﻿using System.Windows.Input;
 using System.Linq;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 using IPCSoftware.Common.CommonExtensions;
 using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Core.Interfaces;
@@ -28,9 +29,9 @@ namespace IPCSoftware.App.Bending.ViewModels
         private SafePollerEx _liveDataPoller;
         private SafePollerEx _ioPoller;
         private SafePollerEx _inspectionTable1Poller;
-        private SafePollerEx _inspectionTable2Poller;
-        private SafePollerEx _inspectionTable3Poller;
-        private SafePollerEx _inspectionTable4Poller;
+        //private SafePollerEx _inspectionTable2Poller;
+        //private SafePollerEx _inspectionTable3Poller;
+        //private SafePollerEx _inspectionTable4Poller;
         private SafePollerEx _bendingIndicatorsPoller;
         private SafePollerEx _turnTable1Poller;
         private SafePollerEx _turnTable2Poller;
@@ -79,40 +80,74 @@ namespace IPCSoftware.App.Bending.ViewModels
 
         // --- Inspection Tables (Lot 1 & Lot 2) ---
 
-        private DashboardInspectionModel _dashboardInspectionModelBatch1 = new();
-        public DashboardInspectionModel DashboardInspectionModelBatch1
-        {
-            get => _dashboardInspectionModelBatch1;
-            set => SetProperty(ref _dashboardInspectionModelBatch1, value);
-        }
-
-        //private DashboardInspectionLineModel _dashboardInspectionLineModel = new();
-        //public DashboardInspectionLineModel DashboardInspectionLineModel
+        //public ObservableCollection<DashboardInspectionModel> DashboardInspectionModelBatches 
         //{
-        //    get => _dashboardInspectionLineModel;
-        //    set => SetProperty(ref _dashboardInspectionLineModel, value);
+        //    get => new ObservableCollection<DashboardInspectionModel>{
+        //    DashboardInspectionModelBatch1,
+        //    DashboardInspectionModelBatch2,
+        //    DashboardInspectionModelBatch3,
+        //    DashboardInspectionModelBatch4
+        //        };
         //}
 
-        private DashboardInspectionModel _dashboardInspectionModelBatch2 = new();
-        public DashboardInspectionModel DashboardInspectionModelBatch2  
+        private ObservableCollection<DashboardInspectionModel> _dashboardInspectionModelBatches = new ObservableCollection<DashboardInspectionModel>()
         {
-            get => _dashboardInspectionModelBatch2;
-            set => SetProperty(ref _dashboardInspectionModelBatch2, value);
+            new DashboardInspectionModel(),
+            new DashboardInspectionModel(),
+            new DashboardInspectionModel(),
+            new DashboardInspectionModel(),
+
+            new DashboardInspectionModel(),
+            new DashboardInspectionModel(),
+            new DashboardInspectionModel(),
+            new DashboardInspectionModel(),
+
+            new DashboardInspectionModel(),
+            new DashboardInspectionModel(),
+        };
+        public ObservableCollection<DashboardInspectionModel> DashboardInspectionModelBatches
+        {
+            get => _dashboardInspectionModelBatches;
+            set => SetProperty(ref _dashboardInspectionModelBatches, value);
         }
 
-        private DashboardInspectionModel _dashboardInspectionModelBatch3 = new();
-        public DashboardInspectionModel DashboardInspectionModelBatch3
-        {
-            get => _dashboardInspectionModelBatch3;
-            set => SetProperty(ref _dashboardInspectionModelBatch3, value);
-        }
+        //private BendingStationTrace _bendingStationTrace = new();
+        //public BendingStationTrace BendingStationTrace
+        //{
+        //    get => _bendingStationTrace;
+        //    set => SetProperty(ref _bendingStationTrace, value);
+        //}
 
-        private DashboardInspectionModel _dashboardInspectionModelBatch4 = new();
-        public DashboardInspectionModel DashboardInspectionModelBatch4
-        {
-            get => _dashboardInspectionModelBatch4;   
-            set => SetProperty(ref _dashboardInspectionModelBatch4, value);
-        }
+
+        //private DashboardInspectionModel _dashboardInspectionModelBatch1 = new();
+        //public DashboardInspectionModel DashboardInspectionModelBatch1
+        //{
+        //    get => _dashboardInspectionModelBatch1;
+        //    set => SetProperty(ref _dashboardInspectionModelBatch1, value);
+        //}
+
+       
+
+        //private DashboardInspectionModel _dashboardInspectionModelBatch2 = new();
+        //public DashboardInspectionModel DashboardInspectionModelBatch2  
+        //{
+        //    get => _dashboardInspectionModelBatch2;
+        //    set => SetProperty(ref _dashboardInspectionModelBatch2, value);
+        //}
+
+        //private DashboardInspectionModel _dashboardInspectionModelBatch3 = new();
+        //public DashboardInspectionModel DashboardInspectionModelBatch3
+        //{
+        //    get => _dashboardInspectionModelBatch3;
+        //    set => SetProperty(ref _dashboardInspectionModelBatch3, value);
+        //}
+
+        //private DashboardInspectionModel _dashboardInspectionModelBatch4 = new();
+        //public DashboardInspectionModel DashboardInspectionModelBatch4
+        //{
+        //    get => _dashboardInspectionModelBatch4;   
+        //    set => SetProperty(ref _dashboardInspectionModelBatch4, value);
+        //}
 
         // --- Bending Station Indicators (Temperature, Force, Status) ---
 
@@ -270,19 +305,19 @@ namespace IPCSoftware.App.Bending.ViewModels
             _inspectionTable1Poller = new SafePollerEx(
                 _coreClient,
                 TimeSpan.FromMilliseconds(500),
-                UpdateDashboardInspectionModelBatch1FromService,
+                UpdateDashboardInspectionModelBatchesFromService,
                 _logger,
                 ex => _logger.LogError($"[Dashboard2] InspectionTable1 poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 11);
 
             // RequestId = 12 — DashboardInspectionModelBatch2 (Lot 2)
-            _inspectionTable2Poller = new SafePollerEx(
-                _coreClient,
-                TimeSpan.FromMilliseconds(500),
-                UpdateDashboardInspectionModelBatch2FromService,
-                _logger,
-                ex => _logger.LogError($"[Dashboard2] InspectionTable2 poller error: {ex.Message}", LogType.Diagnostics),
-                requestId: 12);
+            //_inspectionTable2Poller = new SafePollerEx(
+            //    _coreClient,
+            //    TimeSpan.FromMilliseconds(500),
+            //    UpdateDashboardInspectionModelBatch2FromService,
+            //    _logger,
+            //    ex => _logger.LogError($"[Dashboard2] InspectionTable2 poller error: {ex.Message}", LogType.Diagnostics),
+            //    requestId: 12);
 
             // RequestId = 32 — LEFT table (FIFO data copy for Dashboard2)
             _leftTablePoller = new SafePollerEx(
@@ -294,22 +329,22 @@ namespace IPCSoftware.App.Bending.ViewModels
                 requestId: 30);
 
             // RequestId = 23 — DashboardInspectionModelBatch3 (Lot 3)
-            _inspectionTable3Poller = new SafePollerEx(
-                _coreClient,
-                TimeSpan.FromMilliseconds(500),
-                UpdateDashboardInspectionModelBatch3FromService,
-                _logger,
-                ex => _logger.LogError($"[Dashboard2] InspectionTable3 poller error: {ex.Message}", LogType.Diagnostics),
-                requestId: 23);
+            //_inspectionTable3Poller = new SafePollerEx(
+            //    _coreClient,
+            //    TimeSpan.FromMilliseconds(500),
+            //    UpdateDashboardInspectionModelBatch3FromService,
+            //    _logger,
+            //    ex => _logger.LogError($"[Dashboard2] InspectionTable3 poller error: {ex.Message}", LogType.Diagnostics),
+            //    requestId: 23);
 
             // RequestId = 24 — DashboardInspectionModelBatch4 (Lot 4)
-            _inspectionTable4Poller = new SafePollerEx(
-                _coreClient,
-                TimeSpan.FromMilliseconds(500),
-                UpdateDashboardInspectionModelBatch4FromService,
-                _logger,
-                ex => _logger.LogError($"[Dashboard2] InspectionTable4 poller error: {ex.Message}", LogType.Diagnostics),
-                requestId: 24);
+            //_inspectionTable4Poller = new SafePollerEx(
+            //    _coreClient,
+            //    TimeSpan.FromMilliseconds(500),
+            //    UpdateDashboardInspectionModelBatch4FromService,
+            //    _logger,
+            //    ex => _logger.LogError($"[Dashboard2] InspectionTable4 poller error: {ex.Message}", LogType.Diagnostics),
+            //    requestId: 24);
 
             // RequestId = 13 — BendingIndicators
             _bendingIndicatorsPoller = new SafePollerEx(
@@ -414,9 +449,9 @@ namespace IPCSoftware.App.Bending.ViewModels
             _liveDataPoller.Start();
             _ioPoller.Start();
             _inspectionTable1Poller.Start();
-            _inspectionTable2Poller.Start();
-            _inspectionTable3Poller.Start();
-            _inspectionTable4Poller.Start();
+            //_inspectionTable2Poller.Start();
+            //_inspectionTable3Poller.Start();
+            //_inspectionTable4Poller.Start();
             _bendingIndicatorsPoller.Start();
             _turnTable1Poller.Start();
             _turnTable2Poller.Start();
@@ -428,6 +463,8 @@ namespace IPCSoftware.App.Bending.ViewModels
             _ngBinPoller.Start();
             _leftTablePoller.Start();
             //_efficiencyBreakdownPoller.Start();
+
+           
         }
 
         // ----------------------------------------------------------------
@@ -439,10 +476,10 @@ namespace IPCSoftware.App.Bending.ViewModels
             {
                 if (data.TryGetValue(4, out object d2Obj))
                 {
-                    var d2Result = Deserialize<OeeResult>(d2Obj);
-                    if (d2Result != null)
+                    var OeeResult = Deserialize<OeeResult>(d2Obj);
+                    if (OeeResult != null)
                     {
-                        OeeResult = d2Result;
+                        this.OeeResult = OeeResult;
                     }
                 }
             }
@@ -483,7 +520,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         // ----------------------------------------------------------------
 
         // RequestId = 11 — InspectionTable (Lot 1)
-        private async Task UpdateDashboardInspectionModelBatch1FromService(Dictionary<int, object> data)
+        private async Task UpdateDashboardInspectionModelBatchesFromService(Dictionary<int, object> data)
         {
             try
             {
@@ -505,12 +542,14 @@ namespace IPCSoftware.App.Bending.ViewModels
                         $"model={( model == null ? "NULL" : "OK")} | " +
                         $"LineItem1.HeaterTemp_Bend1={model?.LineItem1?.HeaterTemp_Bend1} | " +
                         $"LineItem1.HeaterTemp_Bend2={model?.LineItem1?.HeaterTemp_Bend2} | " +
-                        $"LineItem1.QRCode1={model?.LineItem1?.QRCode1}",
+                        $"LineItem1.QRCode1={model?.LineItem1?.QRCode}",
                         LogType.Diagnostics);
 
                     if (model != null)
                     {
-                        DashboardInspectionModelBatch1 = model;
+                        //DashboardInspectionModelBatch1 = model;
+                        DashboardInspectionModelBatches[model.StationIndex] = model;
+                        OnPropertyChanged("DashboardInspectionModelBatches");
                     }
                 }
                 else
@@ -527,26 +566,27 @@ namespace IPCSoftware.App.Bending.ViewModels
         }
 
         // RequestId = 12 — InspectionTable2 (Lot 2)
-        private async Task UpdateDashboardInspectionModelBatch2FromService(Dictionary<int, object> data)
-        {
-            try
-            {
-                if (data.TryGetValue(12, out object modelObj))
-                {
-                    var model = Deserialize<DashboardInspectionModel>(modelObj);
-                    if (model != null)
-                    {
-                        DashboardInspectionModelBatch2 = model;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"[Dashboard2] UpdateDashboardInspectionModelBatch2FromService error: {ex.Message}", LogType.Diagnostics);
-            }
+        //private async Task UpdateDashboardInspectionModelBatch2FromService(Dictionary<int, object> data)
+        //{
+        //    try
+        //    {
+        //        if (data.TryGetValue(12, out object modelObj))
+        //        {
+        //            var model = Deserialize<DashboardInspectionModel>(modelObj);
+        //            if (model != null)
+        //            {
+        //               // DashboardInspectionModelBatch2 = model;
+        //                DashboardInspectionModelBatches[1] = model;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"[Dashboard2] UpdateDashboardInspectionModelBatch2FromService error: {ex.Message}", LogType.Diagnostics);
+        //    }
 
-            await Task.CompletedTask;
-        }
+        //    await Task.CompletedTask;
+        //}
 
         // RequestId = 31 — LEFT table (Stage 1-2 batches)
         // Use RequestId 30 (same as FifoMonitor) to get full FIFO data and extract LEFT batches
@@ -594,48 +634,50 @@ namespace IPCSoftware.App.Bending.ViewModels
         }
 
         // RequestId = 23 — InspectionTable3 (Lot 3)
-        private async Task UpdateDashboardInspectionModelBatch3FromService(Dictionary<int, object> data)
-        {
-            try
-            {
-                if (data.TryGetValue(23, out object modelObj))
-                {
-                    var model = Deserialize<DashboardInspectionModel>(modelObj);
-                    if (model != null)
-                    {
-                        DashboardInspectionModelBatch3 = model;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"[Dashboard2] UpdateDashboardInspectionModelBatch3FromService error: {ex.Message}", LogType.Diagnostics);
-            }
+        //private async Task UpdateDashboardInspectionModelBatch3FromService(Dictionary<int, object> data)
+        //{
+        //    try
+        //    {
+        //        if (data.TryGetValue(23, out object modelObj))
+        //        {
+        //            var model = Deserialize<DashboardInspectionModel>(modelObj);
+        //            if (model != null)
+        //            {
+        //                //DashboardInspectionModelBatch3 = model;
+        //                DashboardInspectionModelBatches[2] = model;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"[Dashboard2] UpdateDashboardInspectionModelBatch3FromService error: {ex.Message}", LogType.Diagnostics);
+        //    }
 
-            await Task.CompletedTask;
-        }
+        //    await Task.CompletedTask;
+        //}
 
         // RequestId = 24 — InspectionTable4 (Lot 4)
-        private async Task UpdateDashboardInspectionModelBatch4FromService(Dictionary<int, object> data)
-        {
-            try
-            {
-                if (data.TryGetValue(24, out object modelObj))
-                {
-                    var model = Deserialize<DashboardInspectionModel>(modelObj);
-                    if (model != null)
-                    {
-                        DashboardInspectionModelBatch4 = model;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"[Dashboard2] UpdateDashboardInspectionModelBatch4FromService error: {ex.Message}", LogType.Diagnostics);
-            }
+        //private async Task UpdateDashboardInspectionModelBatch4FromService(Dictionary<int, object> data)
+        //{
+        //    try
+        //    {
+        //        if (data.TryGetValue(24, out object modelObj))
+        //        {
+        //            var model = Deserialize<DashboardInspectionModel>(modelObj);
+        //            if (model != null)
+        //            {
+        //               // DashboardInspectionModelBatch4 = model;
+        //                DashboardInspectionModelBatches[3] = model;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"[Dashboard2] UpdateDashboardInspectionModelBatch4FromService error: {ex.Message}", LogType.Diagnostics);
+        //    }
 
-            await Task.CompletedTask;
-        }
+        //    await Task.CompletedTask;
+        //}
 
         // RequestId = 13 — BendingIndicators
         private async Task UpdateBendingIndicatorsFromService(Dictionary<int, object> data)
@@ -648,6 +690,9 @@ namespace IPCSoftware.App.Bending.ViewModels
                     if (model != null)
                     {
                         BendingIndicators = model;
+
+                        bool clampstateB1F1 = BendingIndicators.Bending1.Flex1.Clamp;
+                        string color = GetIndicatorColor(clampstateB1F1);
                     }
                 }
             }
@@ -975,6 +1020,37 @@ namespace IPCSoftware.App.Bending.ViewModels
             return false;
         }
 
+
+        private string GetIndicatorColor(bool isActive)
+        {
+            // Active position: Green (#10B981)
+            if (isActive)
+            {
+                return "#10B981";
+            }
+            // Inactive position: Blue (#3B82F6)
+            else
+            {
+                return "#3B82F6";
+            }
+        }
+
+        private System.Windows.Media.SolidColorBrush GetIndicatorBrush(bool isActive)
+        {
+            // Active position: Green with glow (#10B981)
+            if (isActive)
+            {
+                return new System.Windows.Media.SolidColorBrush(
+                    System.Windows.Media.Color.FromArgb(255, 16, 185, 129));
+            }
+            // Inactive position: Blue (#3B82F6)
+            else
+            {
+                return new System.Windows.Media.SolidColorBrush(
+                    System.Windows.Media.Color.FromArgb(255, 59, 130, 246));
+            }
+        }
+
         private static T Deserialize<T>(object raw) where T : class
         {
             try
@@ -1004,12 +1080,12 @@ namespace IPCSoftware.App.Bending.ViewModels
             // Dispose Dashboard2 model pollers
             _inspectionTable1Poller?.Stop();
             _inspectionTable1Poller?.Dispose();
-            _inspectionTable2Poller?.Stop();
-            _inspectionTable2Poller?.Dispose();
-            _inspectionTable3Poller?.Stop();
-            _inspectionTable3Poller?.Dispose();
-            _inspectionTable4Poller?.Stop();
-            _inspectionTable4Poller?.Dispose();
+            //_inspectionTable2Poller?.Stop();
+            //_inspectionTable2Poller?.Dispose();
+            //_inspectionTable3Poller?.Stop();
+            //_inspectionTable3Poller?.Dispose();
+            //_inspectionTable4Poller?.Stop();
+            //_inspectionTable4Poller?.Dispose();
             _bendingIndicatorsPoller?.Stop();
             _bendingIndicatorsPoller?.Dispose();
             _turnTable1Poller?.Stop();

@@ -26,6 +26,7 @@ namespace IPCSoftware.App.Bending.Views
             InitializeComponent();
             DataContext = viewModel;
             viewModel.Initialize();
+           
         }
     }
 }

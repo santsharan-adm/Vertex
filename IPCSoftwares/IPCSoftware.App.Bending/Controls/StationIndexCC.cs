@@ -41,26 +41,21 @@ namespace IPCSoftware.App.Bending.Controls
     /// Step 2)
     /// Go ahead and use your control in the XAML file.
     ///
-    ///     <MyNamespace:InspectionUnitCC/>
+    ///     <MyNamespace:StationIndexCC/>
     ///
     /// </summary>
-    public class InspectionUnitOutputCC : Control
+    public class StationIndexCC : Control
     {
-        static InspectionUnitOutputCC()
+        static StationIndexCC()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(InspectionUnitOutputCC), new FrameworkPropertyMetadata(typeof(InspectionUnitOutputCC)));
-        }
-
-        override public void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-            
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(StationIndexCC), new FrameworkPropertyMetadata(typeof(StationIndexCC)));
+           
         }
 
         #region Dependency Propety
         #region StationIndex
         public static readonly DependencyProperty StationIndexProperty =
-            DependencyProperty.Register(nameof(StationIndex), typeof(int), typeof(InspectionUnitOutputCC), new PropertyMetadata(0));
+            DependencyProperty.Register(nameof(StationIndex), typeof(int), typeof(StationIndexCC), new PropertyMetadata(0));
 
         public int StationIndex
         {
@@ -70,7 +65,7 @@ namespace IPCSoftware.App.Bending.Controls
         #endregion StationIndex
         #region BatchNo
         public static readonly DependencyProperty BatchNoProperty =
-            DependencyProperty.Register(nameof(BatchNo), typeof(int), typeof(InspectionUnitOutputCC), new PropertyMetadata(0));
+            DependencyProperty.Register(nameof(BatchNo), typeof(int), typeof(StationIndexCC), new PropertyMetadata(0));
 
         public int BatchNo
         {
@@ -79,5 +74,6 @@ namespace IPCSoftware.App.Bending.Controls
         }
         #endregion BatchNo
         #endregion Dependency Propety
+
     }
 }

@@ -4,8 +4,8 @@ namespace IPCSoftware.Shared.Models.Bending
 {
     public class BendingMonitorModel : ObservableObjectVM
     {
-        private string _batchNo = "Loading...";
-        public string BatchNo
+        private int _batchNo ;
+        public int BatchNo
         {
             get => _batchNo;
             set => SetProperty(ref _batchNo, value);

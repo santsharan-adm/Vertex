@@ -41,43 +41,27 @@ namespace IPCSoftware.App.Bending.Controls
     /// Step 2)
     /// Go ahead and use your control in the XAML file.
     ///
-    ///     <MyNamespace:InspectionUnitCC/>
+    ///     <MyNamespace:Robot2Arm/>
     ///
     /// </summary>
-    public class InspectionUnitOutputCC : Control
+    public class Robot2CC : Control
     {
-        static InspectionUnitOutputCC()
+        static Robot2CC()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(InspectionUnitOutputCC), new FrameworkPropertyMetadata(typeof(InspectionUnitOutputCC)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(Robot2CC), new FrameworkPropertyMetadata(typeof(Robot2CC)));
         }
 
-        override public void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-            
-        }
+        #region Dependency Property
+        #region RobotNumber
+        public static readonly DependencyProperty RobotNumberProperty =
+            DependencyProperty.Register(nameof(RobotNumber), typeof(int), typeof(Robot2CC), new PropertyMetadata(1));
 
-        #region Dependency Propety
-        #region StationIndex
-        public static readonly DependencyProperty StationIndexProperty =
-            DependencyProperty.Register(nameof(StationIndex), typeof(int), typeof(InspectionUnitOutputCC), new PropertyMetadata(0));
-
-        public int StationIndex
+        public int RobotNumber
         {
-            get => (int)GetValue(StationIndexProperty);
-            set => SetValue(StationIndexProperty, value);
+            get => (int)GetValue(RobotNumberProperty);
+            set => SetValue(RobotNumberProperty, value);
         }
-        #endregion StationIndex
-        #region BatchNo
-        public static readonly DependencyProperty BatchNoProperty =
-            DependencyProperty.Register(nameof(BatchNo), typeof(int), typeof(InspectionUnitOutputCC), new PropertyMetadata(0));
-
-        public int BatchNo
-        {
-            get => (int)GetValue(BatchNoProperty);
-            set => SetValue(BatchNoProperty, value);
-        }
-        #endregion BatchNo
-        #endregion Dependency Propety
+        #endregion RobotNumber
+        #endregion Dependency Property
     }
 }

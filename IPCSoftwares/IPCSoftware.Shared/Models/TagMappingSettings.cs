@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace IPCSoftware.Shared.Models
 {
@@ -170,34 +171,154 @@ namespace IPCSoftware.Shared.Models
 
     public class Dashboard2
     {
-        public string QRCode1 { get; set; }
+        public int l1_QRCode { get; set; }
+        public int l2_QRCode { get; set; }
 
-        public int L1_HeaterTemp_Bend1 { get; set; }
-        public int L2_HeaterTemp_Bend1 { get; set; }
-        public int L3_HeaterTemp_Bend1 { get; set; }
+        public int l3_QRCode { get; set; }
 
-        public int L4_HeaterTemp_Bend1 { get; set; }
+        public int l4_QRCode { get; set; }
 
+        public int l1_HeaterTemp_Bend1 { get; set; }
+        public int l2_HeaterTemp_Bend1 { get; set; }
+        public int l3_HeaterTemp_Bend1 { get; set; }
+        public int l4_HeaterTemp_Bend1 { get; set; }
 
-        public int HeaterTemp_Bend2 { get; set; }
-        public int HeaterTemp_Bend3 { get; set; }
+        public int l1_HeaterTemp_Bend2 { get; set; }
+        public int l2_HeaterTemp_Bend2 { get; set; }
+        public int l3_HeaterTemp_Bend2 { get; set; }
+        public int l4_HeaterTemp_Bend2 { get; set; }
 
-        public int Load_Bend1 { get; set; }
+        public int l1_HeaterTemp_Bend3 { get; set; }
+        public int l2_HeaterTemp_Bend3 { get; set; }
+        public int l3_HeaterTemp_Bend3 { get; set; }
+        public int l4_HeaterTemp_Bend3 { get; set; }
 
-        public int Load_Bend2 { get; set; }
+        public int l1_Load_Bend1 { get; set; }
+        public int l2_Load_Bend1 { get; set; }
+        public int l3_Load_Bend1 { get; set; }
+        public int l4_Load_Bend1 { get; set; }
 
-        public int Load_Bend3 { get; set; }
+        public int l1_Load_Bend2 { get; set; }
+        public int l2_Load_Bend2 { get; set; }
+        public int l3_Load_Bend2 { get; set; }
+        public int l4_Load_Bend2 { get; set; }
 
-        public int XValue { get; set; }
+        public int l1_Load_Bend3 { get; set; }
+        public int l2_Load_Bend3 { get; set; }
+        public int l3_Load_Bend3 { get; set; }
+        public int l4_Load_Bend3 { get; set; }
 
-        public int YValue { get; set; }
+        public int l1_XValue { get; set; }
+        public int l2_XValue { get; set; }
+        public int l3_XValue { get; set; }
+        public int l4_XValue { get; set; }
 
-        public int ZValue { get; set; }
+        public int l1_YValue { get; set; }
+        public int l2_YValue { get; set; }
 
-        public int WValue { get; set; }
+        public int l3_YValue { get; set; }
 
-        public int Result1 { get; set; }
+        public int l4_YValue { get; set; }
 
+        public int l1_ZValue { get; set; }
+        public int l2_ZValue { get; set; }
+        public int l3_ZValue { get; set; }
+        public int l4_ZValue { get; set; }
+
+        public int l1_WValue { get; set; }
+        public int l2_WValue { get; set; }
+        public int l3_WValue { get; set; }
+        public int l4_WValue { get; set; }
+
+        public int l1_Result { get; set; }
+        public int l2_Result { get; set; }
+        public int l3_Result { get; set; }
+        public int l4_Result { get; set; }
+
+        public int bending1Flex1Clamp { get; set; }
+        public int bending1Flex2Clamp { get; set; }
+        public int bending1Flex3Clamp { get; set; }
+        public int bending1Flex4Clamp { get; set; }
+
+        public int bending1Flex1Punch { get; set; }
+        public int bending1Flex2Punch { get; set; }
+        public int bending1Flex3Punch { get; set; }
+        public int  bending1Flex4Punch { get; set; }
+
+        public int bending1Flex1Heat { get; set; }
+        public int bending1Flex2Heat { get; set; }
+        public int bending1Flex3Heat { get; set; }
+        public int bending1Flex4Heat  { get; set; }
+
+        public int bending2Flex1Clamp { get; set; }
+        public int bending2Flex2Clamp { get; set; }
+        public int bending2Flex3Clamp { get; set; }
+        public int bending2Flex4Clamp { get; set; }
+
+        public int bending2Flex1Punch { get; set; }
+        public int bending2Flex2Punch { get; set; }
+        public int bending2Flex3Punch { get; set; }
+        public int bending2Flex4Punch { get; set; }
+
+        public int bending2Flex1Heat { get; set; }
+        public int bending2Flex2Heat { get; set; }
+        public int bending2Flex3Heat { get; set; }
+        public int bending2Flex4Heat { get; set; }
+
+        public int bending3Flex1Clamp { get; set; }
+        public int bending3Flex2Clamp { get; set; }
+        public int bending3Flex3Clamp { get; set; }
+        public int bending3Flex4Clamp { get; set; }
+
+        public int bending3Flex1Punch { get; set; }
+        public int bending3Flex2Punch { get; set; }
+        public int bending3Flex3Punch { get; set; }
+        public int bending3Flex4Punch { get; set; }
+
+        public int bending3Flex1Heat { get; set; }
+        public int bending3Flex2Heat { get; set; }
+        public int bending3Flex3Heat { get; set; }
+        public int bending3Flex4Heat { get; set; }
+
+        public int tearingFlex1 { get; set; }
+        public int tearingFlex2 { get; set; }
+        public int tearingFlex3 { get; set; }
+        public int tearingFlex4 { get; set; }
+
+        public int flippingFlex1 { get; set; }
+        public int flippingFlex2 { get; set; }
+        public int flippingFlex3 { get; set; }
+        public int flippingFlex4 { get; set; }
+
+        public int l1Bending1Temperature { get; set; }
+        public int l2Bending1Temperature { get; set; }
+        public int l3Bending1Temperature { get; set; }
+        public int l4Bending1Temperature { get; set; }
+
+        public int l1Bending2Temperature { get; set; }
+        public int l2Bending2Temperature { get; set; }
+        public int l3Bending2Temperature { get; set; }
+        public int l4Bending2Temperature { get; set; }
+
+        public int l1Bending3Temperature { get; set; }
+        public int l2Bending3Temperature { get; set; }
+        public int l3Bending3Temperature { get; set; }
+        public int l4Bending3Temperature { get; set; }
+
+        public int l1Bending1Force { get; set; }
+        public int l2Bending1Force { get; set; }
+        public int l3Bending1Force { get; set; }
+        public int l4Bending1Force { get; set; }
+
+        public int l1Bending2Force { get; set; }
+        public int l2Bending2Force { get; set; }
+        public int l3Bending2Force { get; set; }
+        public int l4Bending2Force { get; set; }
+
+        public int l1Bending3Force { get; set; }
+        public int l2Bending3Force { get; set; }
+        public int l3Bending3Force { get; set; }
+        public int l4Bending3Force { get; set; }
     }
 
     public class BendingProcessTags

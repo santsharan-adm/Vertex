@@ -127,22 +127,151 @@ namespace IPCSoftware.Shared.Models
         public static XYPair Servo_Live = new();
 
         // Dashboard2 OEE Tags
-        public static string QRCode1;
+        public static int L1_QRCode;
+        public static int L2_QRCode;
+        public static int L3_QRCode;
+        public static int L4_QRCode;
+
         public static int L1_HeaterTemp_Bend1;
         public static int L2_HeaterTemp_Bend1;
         public static int L3_HeaterTemp_Bend1;
         public static int L4_HeaterTemp_Bend1;
 
-        public static int HeaterTemp_Bend2;
-        public static int HeaterTemp_Bend3;
-        public static int Load_Bend1;
-        public static int Load_Bend2;
-        public static int Load_Bend3;
-        public static int XValue;
-        public static int YValue;
-        public static int ZValue;
-        public static int WValue;
-        public static int Result1;
+        public static int L1_HeaterTemp_Bend2;
+        public static int L2_HeaterTemp_Bend2;
+        public static int L3_HeaterTemp_Bend2;
+        public static int L4_HeaterTemp_Bend2;
+
+        public static int L1_HeaterTemp_Bend3;
+        public static int L2_HeaterTemp_Bend3;
+        public static int L3_HeaterTemp_Bend3;
+        public static int L4_HeaterTemp_Bend3;
+
+
+        public static int L1_Load_Bend1;
+        public static int L2_Load_Bend1;
+        public static int L3_Load_Bend1;
+        public static int L4_Load_Bend1;
+
+        public static int L1_Load_Bend2;
+        public static int L2_Load_Bend2;
+        public static int L3_Load_Bend2;
+        public static int L4_Load_Bend2;
+
+        public static int L1_Load_Bend3;
+        public static int L2_Load_Bend3;
+        public static int L3_Load_Bend3;
+        public static int L4_Load_Bend3;
+
+        public static int L1_XValue;
+        public static int L2_XValue;
+        public static int L3_XValue;
+        public static int L4_XValue;
+
+        public static int L1_YValue;
+        public static int L2_YValue;
+        public static int L3_YValue;
+        public static int L4_YValue;
+
+        public static int L1_ZValue;
+        public static int L2_ZValue;
+        public static int L3_ZValue;
+        public static int L4_ZValue;
+
+        public static int L1_WValue;
+        public static int L2_WValue;
+        public static int L3_WValue;
+        public static int L4_WValue;
+
+        public static int L1_Result;
+        public static int L2_Result;
+        public static int L3_Result;
+        public static int L4_Result;
+
+        public static int Bending1Flex1Clamp;
+        public static int Bending1Flex2Clamp;
+        public static int Bending1Flex3Clamp;
+        public static int Bending1Flex4Clamp;
+
+        public static int Bending1Flex1Punch;
+        public static int Bending1Flex2Punch;
+        public static int Bending1Flex3Punch;
+        public static int Bending1Flex4Punch;
+
+        public static int Bending1Flex1Heat;
+        public static int Bending1Flex2Heat;
+        public static int Bending1Flex3Heat;
+        public static int Bending1Flex4Heat;
+
+        public static int Bending2Flex1Clamp;
+        public static int Bending2Flex2Clamp;
+        public static int Bending2Flex3Clamp;
+        public static int Bending2Flex4Clamp;
+
+        public static int Bending2Flex1Punch;
+        public static int Bending2Flex2Punch;
+        public static int Bending2Flex3Punch;
+        public static int Bending2Flex4Punch;
+
+        public static int Bending2Flex1Heat;
+        public static int Bending2Flex2Heat;
+        public static int Bending2Flex3Heat;
+        public static int Bending2Flex4Heat;
+
+        public static int Bending3Flex1Clamp;
+        public static int Bending3Flex2Clamp;
+        public static int Bending3Flex3Clamp;
+        public static int Bending3Flex4Clamp;
+
+        public static int Bending3Flex1Punch;
+        public static int Bending3Flex2Punch;
+        public static int Bending3Flex3Punch;
+        public static int Bending3Flex4Punch;
+
+        public static int Bending3Flex1Heat;
+        public static int Bending3Flex2Heat;
+        public static int Bending3Flex3Heat;
+        public static int Bending3Flex4Heat;
+
+        public static int TearingFlex1;
+        public static int TearingFlex2;
+        public static int TearingFlex3;
+        public static int TearingFlex4;
+
+        public static int FlippingFlex1;
+        public static int FlippingFlex2;
+        public static int FlippingFlex3;
+        public static int FlippingFlex4;
+
+        public static int L1Bending1Temperature;
+        public static int L2Bending1Temperature;
+        public static int L3Bending1Temperature;
+        public static int L4Bending1Temperature;
+
+        public static int L1Bending2Temperature;
+        public static int L2Bending2Temperature;
+        public static int L3Bending2Temperature;
+        public static int L4Bending2Temperature;
+
+        public static int L1Bending3Temperature;
+        public static int L2Bending3Temperature;
+        public static int L3Bending3Temperature;
+        public static int L4Bending3Temperature;
+
+        public static int L1Bending1Force;
+        public static int L2Bending1Force;
+        public static int L3Bending1Force;
+        public static int L4Bending1Force;
+
+        public static int L1Bending2Force;
+        public static int L2Bending2Force;
+        public static int L3Bending2Force;
+        public static int L4Bending2Force;
+
+        public static int L1Bending3Force;
+        public static int L2Bending3Force;
+        public static int L3Bending3Force;
+        public static int L4Bending3Force;
 
         // Bending Process Tags
         // Trigger signals
@@ -368,22 +497,152 @@ namespace IPCSoftware.Shared.Models
                 var dashboard2 = tags.Dashboard2;
                 if (dashboard2 != null)
                 {
-                    QRCode1 = dashboard2.QRCode1;
-                    L1_HeaterTemp_Bend1 = dashboard2.L1_HeaterTemp_Bend1;
-                    L2_HeaterTemp_Bend1 = dashboard2.L2_HeaterTemp_Bend1;
-                    L3_HeaterTemp_Bend1 = dashboard2.L3_HeaterTemp_Bend1;
-                    L4_HeaterTemp_Bend1 = dashboard2.L4_HeaterTemp_Bend1;
+                    L1_QRCode = dashboard2.l1_QRCode;
+                    L2_QRCode = dashboard2.l2_QRCode;
+                    L3_QRCode = dashboard2.l3_QRCode;
+                    L4_QRCode = dashboard2.l4_QRCode;
 
-                    HeaterTemp_Bend2 = dashboard2.HeaterTemp_Bend2;
-                    HeaterTemp_Bend3 = dashboard2.HeaterTemp_Bend3;
-                    Load_Bend1 = dashboard2.Load_Bend1;
-                    Load_Bend2 = dashboard2.Load_Bend2;
-                    Load_Bend3 = dashboard2.Load_Bend3;
-                    XValue = dashboard2.XValue;
-                    YValue = dashboard2.YValue;
-                    ZValue = dashboard2.ZValue;
-                    WValue = dashboard2.WValue;
-                    Result1 = dashboard2.Result1;
+                    L1_HeaterTemp_Bend1 = dashboard2.l1_HeaterTemp_Bend1;
+                    L2_HeaterTemp_Bend1 = dashboard2.l2_HeaterTemp_Bend1;
+                    L3_HeaterTemp_Bend1 = dashboard2.l3_HeaterTemp_Bend1;
+                    L4_HeaterTemp_Bend1 = dashboard2.l4_HeaterTemp_Bend1;
+
+                    L1_HeaterTemp_Bend2 = dashboard2.l1_HeaterTemp_Bend2;
+                    L2_HeaterTemp_Bend2 = dashboard2.l2_HeaterTemp_Bend2;
+                    L3_HeaterTemp_Bend2 = dashboard2.l3_HeaterTemp_Bend2;
+                    L4_HeaterTemp_Bend2 = dashboard2.l4_HeaterTemp_Bend2;
+
+                    L1_HeaterTemp_Bend3 = dashboard2.l1_HeaterTemp_Bend3;
+                    L2_HeaterTemp_Bend3 = dashboard2.l2_HeaterTemp_Bend3;
+                    L3_HeaterTemp_Bend3 = dashboard2.l3_HeaterTemp_Bend3;
+                    L4_HeaterTemp_Bend3 = dashboard2.l4_HeaterTemp_Bend3;
+
+                    L1_Load_Bend1 = dashboard2.l1_Load_Bend1;
+                    L2_Load_Bend1 = dashboard2.l2_Load_Bend1;
+                    L3_Load_Bend1 = dashboard2.l3_Load_Bend1;
+                    L4_Load_Bend1 = dashboard2.l4_Load_Bend1;
+
+                    L1_Load_Bend2 = dashboard2.l1_Load_Bend2;
+                    L2_Load_Bend2 = dashboard2.l2_Load_Bend2;
+                    L3_Load_Bend2 = dashboard2.l3_Load_Bend2;
+                    L4_Load_Bend2 = dashboard2.l4_Load_Bend2;
+
+                    L1_Load_Bend3 = dashboard2.l1_Load_Bend3;
+                    L2_Load_Bend3 = dashboard2.l2_Load_Bend3;
+                    L3_Load_Bend3 = dashboard2.l3_Load_Bend3;
+                    L4_Load_Bend3 = dashboard2.l4_Load_Bend3;
+
+                    L1_XValue = dashboard2.l1_XValue;
+                    L2_XValue = dashboard2.l2_XValue;
+                    L3_XValue = dashboard2.l3_XValue;
+                    L4_XValue = dashboard2.l4_XValue;
+
+                    L1_YValue = dashboard2.l1_YValue;
+                    L2_YValue = dashboard2.l2_YValue;
+                    L3_YValue = dashboard2.l3_YValue;
+                    L4_YValue = dashboard2.l4_YValue;
+
+                    L1_ZValue = dashboard2.l1_ZValue;
+                    L2_ZValue = dashboard2.l2_ZValue;
+                    L3_ZValue = dashboard2.l3_ZValue;
+                    L4_ZValue = dashboard2.l4_ZValue;
+
+                    L1_WValue = dashboard2.l1_WValue;
+                    L2_WValue = dashboard2.l2_WValue;
+                    L3_WValue = dashboard2.l3_WValue;
+                    L4_WValue = dashboard2.l4_WValue;
+
+                    L1_Result = dashboard2.l1_Result;
+                    L2_Result = dashboard2.l2_Result;
+                    L3_Result = dashboard2.l3_Result;
+                    L4_Result = dashboard2.l4_Result;
+
+                    Bending1Flex1Clamp = dashboard2.bending1Flex1Clamp;
+                    Bending1Flex2Clamp = dashboard2.bending1Flex2Clamp;
+                    Bending1Flex3Clamp = dashboard2.bending1Flex3Clamp;
+                    Bending1Flex4Clamp = dashboard2.bending1Flex4Clamp;
+
+                    Bending1Flex1Punch = dashboard2.bending1Flex1Punch;
+                    Bending1Flex2Punch = dashboard2.bending1Flex2Punch;
+                    Bending1Flex3Punch = dashboard2.bending1Flex3Punch;
+                    Bending1Flex4Punch = dashboard2.bending1Flex4Punch;
+
+                    Bending1Flex1Heat = dashboard2.bending1Flex1Heat;
+                    Bending1Flex2Heat = dashboard2.bending1Flex2Heat;
+                    Bending1Flex3Heat = dashboard2.bending1Flex3Heat;
+                    Bending1Flex4Heat = dashboard2.bending1Flex4Heat;
+
+                    Bending2Flex1Clamp = dashboard2.bending2Flex1Clamp;
+                    Bending2Flex2Clamp = dashboard2.bending2Flex2Clamp;
+                    Bending2Flex3Clamp = dashboard2.bending2Flex3Clamp;
+                    Bending2Flex4Clamp = dashboard2.bending2Flex4Clamp;
+
+                    Bending2Flex1Punch = dashboard2.bending2Flex1Punch;
+                    Bending2Flex2Punch = dashboard2.bending2Flex2Punch;
+                    Bending2Flex3Punch = dashboard2.bending2Flex3Punch;
+                    Bending2Flex4Punch = dashboard2.bending2Flex4Punch;
+
+                    Bending2Flex1Heat = dashboard2.bending2Flex1Heat;
+                    Bending2Flex2Heat = dashboard2.bending2Flex2Heat;
+                    Bending2Flex3Heat = dashboard2.bending2Flex3Heat;
+                    Bending2Flex4Heat = dashboard2.bending2Flex4Heat;
+
+                    Bending3Flex1Clamp = dashboard2.bending3Flex1Clamp;
+                    Bending3Flex2Clamp = dashboard2.bending3Flex2Clamp;
+                    Bending3Flex3Clamp = dashboard2.bending3Flex3Clamp;
+                    Bending3Flex4Clamp = dashboard2.bending3Flex4Clamp;
+
+                    Bending3Flex1Punch = dashboard2.bending3Flex1Punch;
+                    Bending3Flex2Punch = dashboard2.bending3Flex2Punch;
+                    Bending3Flex3Punch = dashboard2.bending3Flex3Punch;
+                    Bending3Flex4Punch = dashboard2.bending3Flex4Punch;
+
+                    Bending3Flex1Heat = dashboard2.bending3Flex1Heat;
+                    Bending3Flex2Heat = dashboard2.bending3Flex2Heat;
+                    Bending3Flex3Heat = dashboard2.bending3Flex3Heat;
+                    Bending3Flex4Heat = dashboard2.bending3Flex4Heat;
+
+                    TearingFlex1 = dashboard2.tearingFlex1;
+                    TearingFlex2 = dashboard2.tearingFlex2;
+                    TearingFlex3 = dashboard2.tearingFlex3;
+                    TearingFlex4 = dashboard2.tearingFlex4;
+
+                    FlippingFlex1 = dashboard2.flippingFlex1;
+                    FlippingFlex2 = dashboard2.flippingFlex2;
+                    FlippingFlex3 = dashboard2.flippingFlex3;
+                    FlippingFlex4 = dashboard2.flippingFlex4;
+
+                    L1Bending1Temperature = dashboard2.l1Bending1Temperature;
+                    L2Bending1Temperature = dashboard2.l2Bending1Temperature;
+                    L3Bending1Temperature = dashboard2.l3Bending1Temperature;
+                    L4Bending1Temperature = dashboard2.l4Bending1Temperature;
+
+                    L1Bending2Temperature = dashboard2.l1Bending2Temperature;
+                    L2Bending2Temperature = dashboard2.l2Bending2Temperature;
+                    L3Bending2Temperature = dashboard2.l3Bending2Temperature;
+                    L4Bending2Temperature = dashboard2.l4Bending2Temperature;
+
+                    L1Bending3Temperature = dashboard2.l1Bending3Temperature;
+                    L2Bending3Temperature = dashboard2.l2Bending3Temperature;
+                    L3Bending3Temperature = dashboard2.l3Bending3Temperature;
+                    L4Bending3Temperature = dashboard2.l4Bending3Temperature;
+
+                    L1Bending1Force = dashboard2.l1Bending1Force;
+                    L2Bending1Force = dashboard2.l2Bending1Force;
+                    L3Bending1Force = dashboard2.l3Bending1Force;
+                    L4Bending1Force = dashboard2.l4Bending1Force;
+
+                    L1Bending2Force = dashboard2.l1Bending2Force;
+                    L2Bending2Force = dashboard2.l2Bending2Force;
+                    L3Bending2Force = dashboard2.l3Bending2Force;
+                    L4Bending2Force = dashboard2.l4Bending2Force;
+
+                    L1Bending3Force = dashboard2.l1Bending3Force;
+                    L2Bending3Force = dashboard2.l2Bending3Force;
+                    L3Bending3Force = dashboard2.l3Bending3Force;
+                    L4Bending3Force = dashboard2.l4Bending3Force;
+
+
                 }
 
                 // Bending Process Tags
