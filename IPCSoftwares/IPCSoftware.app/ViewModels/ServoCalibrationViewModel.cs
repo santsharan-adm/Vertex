@@ -40,6 +40,8 @@ namespace IPCSoftware.App.ViewModels
         private readonly IRecipeApplicationService _recipeService;
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;       //added after
 
+        private readonly AeLimitParameterItem[] _allLiveParams;
+
         private bool _initialPlcLoadDone = false;
         //private ProductSettingsModel _productSettings;
         private AeLimitSettings _aeLimitSettings;             //Added after
@@ -172,13 +174,13 @@ namespace IPCSoftware.App.ViewModels
             set => SetProperty(ref _isChecked, value);
         }
 
-        //Save button Name Change property
-        private string _buttonName;
-        public string SaveButtonName
-        {
-            get => _buttonName;
-            set => SetProperty(ref _buttonName, value);
-        }
+        ////Save button Name Change property
+        //private string _buttonName;
+        //public string SaveButtonName
+        //{
+        //    get => _buttonName;
+        //    set => SetProperty(ref _buttonName, value);
+        //}
 
 
         // Available Program Name
@@ -234,7 +236,7 @@ namespace IPCSoftware.App.ViewModels
                 {
                     _dialog.ShowWarning("⚠️ UNSAVED CHANGES You must SAVE your changes before switching tabs.");
 
-
+             
                     // Force Tab back to original
                     OnPropertyChanged(nameof(SelectedTabIndex));
                     return;
@@ -297,7 +299,7 @@ namespace IPCSoftware.App.ViewModels
             //_aeLimitService = aeLimitService;
             _settingsMonitor = settingMonitor;
             _appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
-            _selectedTabIndex = 0;
+            
             TeachCommand = new RelayCommand<ServoPositionModel>(OnTeachPosition);
             WritePositionCommand = new RelayCommand<ServoPositionModel>(OnWritePositionManual);
             WriteParamCommand = new RelayCommand<ServoParameterItem>(OnWriteParameter);
@@ -306,6 +308,19 @@ namespace IPCSoftware.App.ViewModels
             ConfirmYParamsCommand = new RelayCommand(async () => await PulseBit(ConstantValues.Servo_ParamA2, "Y Servo Params"));
             ConfirmXCoordsCommand = new RelayCommand(async () =>       WriteSelectedRecipeAsync());                                           //async () => await PulseBit(ConstantValues.Servo_CoordSave, "X Coordinates"));
             ConfirmYCoordsCommand = new RelayCommand(async () => await PulseBit(ConstantValues.Servo_XYOrigin, "Y Coordinates"));
+
+            //Initialized AeLimitParamaterItems
+
+            AeMinX = new AeLimitParameterItem { Name = "Min X", ReadTagId = ConstantValues.MIN_X.Read, WriteTagId = ConstantValues.MIN_X.Write };
+            AeMaxX = new AeLimitParameterItem { Name = "Max X", ReadTagId = ConstantValues.MAX_X.Read, WriteTagId = ConstantValues.MAX_X.Write };
+            AeMinY = new AeLimitParameterItem { Name = "Min Y", ReadTagId = ConstantValues.MIN_Y.Read, WriteTagId = ConstantValues.MIN_Y.Write };
+            AeMaxY = new AeLimitParameterItem { Name = "Max Y", ReadTagId = ConstantValues.MAX_Y.Read, WriteTagId = ConstantValues.MAX_Y.Write };
+            AeMinZ = new AeLimitParameterItem { Name = "Min Angle", ReadTagId = ConstantValues.MIN_Z.Read, WriteTagId = ConstantValues.MIN_Z.Write };
+            AeMaxZ = new AeLimitParameterItem { Name = "Max Angle", ReadTagId = ConstantValues.MAX_Z.Read, WriteTagId = ConstantValues.MAX_Z.Write };
+
+
+
+            _allLiveParams = [AeMinX, AeMaxX, AeMinY, AeMaxY, AeMinZ, AeMaxZ];
 
             JogCommand = new RelayCommand<object>(async (args) => await OnJogAsync(args));
 
@@ -437,15 +452,6 @@ namespace IPCSoftware.App.ViewModels
         // ===================================================================
         // AE LIMIT LOGIC
         // ===================================================================
-        private void InitializeAeLimitParameters()
-        {
-            AeMinX = new AeLimitParameterItem { Name = "Min X", ReadTagId = ConstantValues.MIN_X.Read, WriteTagId = ConstantValues.MIN_X.Write };
-            AeMaxX = new AeLimitParameterItem { Name = "Max X", ReadTagId = ConstantValues.MAX_X.Read, WriteTagId = ConstantValues.MAX_X.Write };
-            AeMinY = new AeLimitParameterItem { Name = "Min Y", ReadTagId = ConstantValues.MIN_Y.Read, WriteTagId = ConstantValues.MIN_Y.Write };
-            AeMaxY = new AeLimitParameterItem { Name = "Max Y", ReadTagId = ConstantValues.MAX_Y.Read, WriteTagId = ConstantValues.MAX_Y.Write };
-            AeMinZ = new AeLimitParameterItem { Name = "Min Angle", ReadTagId = ConstantValues.MIN_Z.Read, WriteTagId = ConstantValues.MIN_Z.Write };
-            AeMaxZ = new AeLimitParameterItem { Name = "Max Angle", ReadTagId = ConstantValues.MAX_Z.Read, WriteTagId = ConstantValues.MAX_Z.Write };
-        }
 
         private async Task LoadAeLimitsAsync()
         {
@@ -536,7 +542,7 @@ namespace IPCSoftware.App.ViewModels
                         FreshProductCode = AvailableProgramCode.First();
                         //OnPropertyChanged(nameof(SelectedProgramCode));
                         _nextProgramId = savedRecipes.Max(r => r.ProgramNo);
-                        SaveButtonName = "Edit";
+                       
                      
                         SelectedProductName = AvailableProductName.First();
                         FreshProductName = AvailableProductName.First();
@@ -591,7 +597,7 @@ namespace IPCSoftware.App.ViewModels
             OnPropertyChanged(nameof(SelectedProductName));
             HasUnsavedChanges = true;
             IsCancelButtonVisible = Visibility.Visible;
-            SaveButtonName = "Save";
+        
 
         }
 
@@ -653,9 +659,9 @@ namespace IPCSoftware.App.ViewModels
                 }
 
                 HasUnsavedChanges = false;
-                SelectedTabIndex = 1;
+                //SelectedTabIndex = 1;
                 _dialog.ShowMessage($" Now set Coordinate for total item : {enteredTotalItem}", "Set Coordinates");
-                SaveButtonName = "Edit";
+           
             }
             catch (Exception ex)
             {
@@ -673,7 +679,7 @@ namespace IPCSoftware.App.ViewModels
             OnPropertyChanged(nameof(SelectedProgramCode));
             OnPropertyChanged(nameof(SelectedProgramCode));
             _nextProgramId = savedRecipes.Max(r => r.ProgramNo);
-            SaveButtonName = "Edit";
+          
             //Availabe Product Name List Initialize
 
             SelectedProductName = AvailableProductName.Last();
@@ -1095,6 +1101,17 @@ namespace IPCSoftware.App.ViewModels
                         // Only mark as done if we actually got some data (connection is valid)
                         if (anyDataRead) _initialPlcLoadDone = true;
                     }
+
+                    foreach (var param in _allLiveParams)
+                    {
+                        if (data.TryGetValue(param.ReadTagId, out object val))
+                        {
+                            param.CurrentValue = Convert.ToDouble(val);
+                        }
+                    }
+
+
+
                 }
             }
             catch (Exception ex)
