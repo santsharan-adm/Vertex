@@ -107,7 +107,7 @@ namespace IPCSoftware.Services
                             var tag = new PLCTagConfigurationModel
                             {
                                 Id = int.Parse(r[0]),
-                                //TagNo = int.Parse(r[1]),
+                                TagNo = int.Parse(r[0]), // Use Id as TagNo for UI display
                                 Name = r[3],
                                 PLCNo = int.Parse(r[4]),
                                 ModbusAddress = int.Parse(r[6]),
