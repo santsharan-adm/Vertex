@@ -14,8 +14,10 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Bending.Service
 {
+    
     public class DashboardInitializerBending : DashboardInitializerBase
     {
+        
         public DashboardInitializerBending(
             PLCClientManager manager,
             AlgorithmAnalysisService algo,
@@ -25,9 +27,13 @@ namespace IPCSoftware.CoreService.Bending.Service
             UiListener ui,
             AlarmService alarmService,
             CCDTriggerServiceBending ccdTrigger,
+            BendingProcessService bendingProcess,
             IAppLogger logger)
-            : base(manager, algo, oee, shiftReset, systemMonitor, ui, alarmService, ccdTrigger, logger)
+            : base(manager, algo, oee, shiftReset, systemMonitor, ui, alarmService, ccdTrigger, bendingProcess, logger)
         {
+            
+
+           
         }
 
         public override async Task<ResponsePackage> HandleUiRequest(RequestPackage request)
@@ -184,6 +190,94 @@ namespace IPCSoftware.CoreService.Bending.Service
             return await base.HandleUiRequest(request);
         }
 
+        private Task<ResponsePackage> GetActiveBatches(RequestPackage request)
+        {
+            ResponsePackage response = new ResponsePackage
+            {
+                ResponseId = request.RequestId,
+                Parameters = new Dictionary<int, object>()
+            };
+            var batches = processLogicEngine.GetActiveBatches();
+            int i = 0;
+            foreach(var batch in batches)
+            {
+                Debug.WriteLine($"[Bending] Active Batch → BatchNumber={batch.BatchNumber}, Stage={batch.Stage}");
+                if (batch != null)
+                {
+                    var item = new DashboardInspectionModel
+                    {
+                        BatchNo = batch.BatchNumber,
+                        StationIndex = batch.Stage,
+                        LineItem1 = new DashboardInspectionLineModel
+                        {
+                            QRCode = batch.QrCode1,
+                            HeaterTemp_Bend1 = batch.Bending1Temperatures[0],
+                            HeaterTemp_Bend2 = batch.Bending2Temperatures[0],
+                            HeaterTemp_Bend3 = batch.Bending3Temperatures[0],
+                            Load_Bend1 = batch.Bending1Loads[0],
+                            Load_Bend2 = batch.Bending2Loads[0],
+                            Load_Bend3 = batch.Bending3Loads[0],
+                            XValue = batch.Bending3X[0],
+                            YValue = batch.Bending3Y[0],
+                            ZValue = batch.Bending3Z[0],
+                            WValue = batch.Bending3W[0],
+                            Result1 = batch.InspectionResults[0],
+                        },
+                        LineItem2 = new DashboardInspectionLineModel
+                        {
+                            QRCode = batch.QrCode2,
+                            HeaterTemp_Bend1 = batch.Bending1Temperatures[1],
+                            HeaterTemp_Bend2 = batch.Bending2Temperatures[1],
+                            HeaterTemp_Bend3 = batch.Bending3Temperatures[1],
+                            Load_Bend1 = batch.Bending1Loads[1],
+                            Load_Bend2 = batch.Bending2Loads[1],
+                            Load_Bend3 = batch.Bending3Loads[1],
+                            XValue = batch.Bending3X[1],
+                            YValue = batch.Bending3Y[1],
+                            ZValue = batch.Bending3Z[1],
+                            WValue = batch.Bending3W[1],
+                            Result1 = batch.InspectionResults[1],
+                        },
+                        LineItem3 = new DashboardInspectionLineModel
+                        {
+                            QRCode = batch.QrCode3,
+                            HeaterTemp_Bend1 = batch.Bending1Temperatures[2],
+                            HeaterTemp_Bend2 = batch.Bending2Temperatures[2],
+                            HeaterTemp_Bend3 = batch.Bending3Temperatures[2],
+                            Load_Bend1 = batch.Bending1Loads[2],
+                            Load_Bend2 = batch.Bending2Loads[2],
+                            Load_Bend3 = batch.Bending3Loads[2],
+                            XValue = batch.Bending3X[2],
+                            YValue = batch.Bending3Y[2],
+                            ZValue = batch.Bending3Z[2],
+                            WValue = batch.Bending3W[2],
+                            Result1 = batch.InspectionResults[2],
+                        },
+                        LineItem4 = new DashboardInspectionLineModel
+                        {
+                            QRCode = batch.QrCode4,
+                            HeaterTemp_Bend1 = batch.Bending1Temperatures[3],
+                            HeaterTemp_Bend2 = batch.Bending2Temperatures[3],
+                            HeaterTemp_Bend3 = batch.Bending3Temperatures[3],
+                            Load_Bend1 = batch.Bending1Loads[3],
+                            Load_Bend2 = batch.Bending2Loads[3],
+                            Load_Bend3 = batch.Bending3Loads[3],
+                            XValue = batch.Bending3X[3],
+                            YValue = batch.Bending3Y[3],
+                            ZValue = batch.Bending3Z[3],
+                            WValue = batch.Bending3W[3],
+                            Result1 = batch.InspectionResults[3],
+                        },
+                    };
+                    response.Parameters.Add(i, item);
+                    
+                }
+                i++;
+
+            }
+            return Task.FromResult(response);
+        }
+
         private Task<ResponsePackage> DashboardInspectionModelBatch1(RequestPackage request)
         {
   
@@ -271,7 +365,7 @@ namespace IPCSoftware.CoreService.Bending.Service
                 ResponseId = request.RequestId,
                 Parameters = new Dictionary<int, object>()
                 {
-                    { request.RequestId, item }  // key = 11, matching ViewModel's TryGetValue(11)
+                    { request.RequestId, item }
                 }
             });
         }

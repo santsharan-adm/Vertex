@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FIFO Dashboard - Correct Layout</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', sans-serif; background: #0a1628; color: #fff; padding: 10px; }
+h1 { text-align: center; color: #00d4ff; font-size: 16px; margin-bottom: 5px; }
+
+.dashboard { display: grid; grid-template-columns: 150px 1fr 200px; grid-template-rows: auto 1fr; gap: 10px; height: 95vh; }
+
+/* TOP TABLE - spans middle */
+.top-area { grid-column: 2; grid-row: 1; background: #0f1e3a; border-radius: 8px; padding: 10px; }
+.top-area h3 { color: #00d4ff; font-size: 11px; margin-bottom: 5px; }
+
+/* LEFT TABLE */
+.left-area { grid-column: 1; grid-row: 1 / 3; background: #0f1e3a; border-radius: 8px; padding: 10px; }
+.left-area h3 { color: #00d4ff; font-size: 11px; margin-bottom: 5px; }
+
+/* RIGHT LIVE TABLES */
+.right-area { grid-column: 3; grid-row: 1 / 3; background: #0f1e3a; border-radius: 8px; padding: 10px; }
+.right-area h3 { color: #ff6b6b; font-size: 11px; margin-bottom: 5px; }
+
+/* MACHINE VIEW */
+.machine-area { grid-column: 2; grid-row: 2; background: #0a1225; border-radius: 8px; padding: 10px; position: relative; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 10px; }
+th { background: #1a3055; padding: 4px 6px; text-align: center; color: #88bbff; }
+td { padding: 4px 6px; text-align: center; border-bottom: 1px solid #1a2a44; }
+tr.filled { background: #0a2a1a; }
+tr.top-row { background: #1a3a1a; border-left: 3px solid #4eff4e; }
+tr.exiting { background: #3a1a1a; animation: fadeOut 1s forwards; }
+
+/* Controls */
+.controls { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 100; background: #0a1628; padding: 8px; border-radius: 8px; border: 1px solid #1a3055; }
+.btn { background: #1a3055; color: #00d4ff; border: 1px solid #00d4ff; padding: 5px 10px; cursor: pointer; border-radius: 4px; font-size: 10px; }
+.btn:hover { background: #00d4ff; color: #000; }
+
+/* Status */
+.status { position: fixed; top: 5px; right: 10px; background: #0f1e3a; padding: 5px 10px; border-radius: 4px; font-size: 10px; color: #4eff4e; }
+
+/* Live indicator */
+.live-dot { display: inline-block; width: 8px; height: 8px; background: #ff0000; border-radius: 50%; animation: blink 1s infinite; margin-right: 5px; }
+@keyframes blink { 50% { opacity: 0.3; } }
+@keyframes fadeOut { to { opacity: 0; height: 0; } }
+
+/* Machine stages */
+.stage-box { display: inline-block; background: #1a3055; padding: 3px 8px; border-radius: 4px; font-size: 9px; margin: 2px; }
+.stage-box.occupied { background: #1a4a2a; border: 1px solid #4eff4e; }
+</style>
+</head>
+<body>
+
+<div class="status" id="status">Ready</div>
+
+<div class="dashboard">
+    <!-- LEFT: Recent entries (max 2) -->
+    <div class="left-area">
+        <h3>📋 LEFT<br>(Stage 1-2)</h3>
+        <table>
+            <thead><tr><th>Batch</th><th>QR</th></tr></thead>
+            <tbody id="leftTable">
+                <tr><td>-</td><td>-</td></tr>
+                <tr><td>-</td><td>-</td></tr>
+            </tbody>
+        </table>
+        <p style="font-size:9px; color:#666; margin-top:5px;">Max 2 rows<br>Newest entries</p>
+    </div>
+
+    <!-- TOP: Processing batches (max 7, Stage 3-9) -->
+    <div class="top-area">
+        <h3>� TOP TABLE — Processed Data (Stage 9 at top → exits when Result comes)</h3>
+        <table>
+            <thead>
+                <tr><th>Batch No</th><th>QR</th><th>B1 Temp</th><th>B2 Temp</th><th>B3 Temp</th><th>Load</th><th>X</th><th>Y</th><th>Z</th><th>W</th><th>Tear</th><th>Flip</th><th>Result</th></tr>
+            </thead>
+            <tbody id="topTable">
+                <tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- RIGHT: LIVE values -->
+    <div class="right-area">
+        <h3><span class="live-dot"></span>LIVE — Heater Temp</h3>
+        <table>
+            <thead><tr><th>S.No</th><th>Bend1</th><th>Bend2</th><th>Bend3</th></tr></thead>
+            <tbody id="liveTemp">
+                <tr><td>1</td><td id="lt1">85.2</td><td id="lt2">87.1</td><td id="lt3">90.3</td></tr>
+                <tr><td>2</td><td>84.8</td><td>86.9</td><td>89.7</td></tr>
+                <tr><td>3</td><td>85.5</td><td>87.3</td><td>90.1</td></tr>
+                <tr><td>4</td><td>85.0</td><td>87.0</td><td>89.9</td></tr>
+            </tbody>
+        </table>
+        <br>
+        <h3><span class="live-dot"></span>LIVE — Force</h3>
+        <table>
+            <thead><tr><th>S.No</th><th>Bend1</th><th>Bend2</th><th>Bend3</th></tr></thead>
+            <tbody id="liveForce">
+                <tr><td>1</td><td>12.5</td><td>13.1</td><td>14.2</td></tr>
+                <tr><td>2</td><td>12.3</td><td>12.9</td><td>14.0</td></tr>
+                <tr><td>3</td><td>12.7</td><td>13.2</td><td>14.4</td></tr>
+                <tr><td>4</td><td>12.4</td><td>13.0</td><td>14.1</td></tr>
+            </tbody>
+        </table>
+        <p style="font-size:9px; color:#ff6b6b; margin-top:10px;">Updates every 500ms<br>Not per-batch</p>
+    </div>
+
+    <!-- MACHINE VIEW -->
+    <div class="machine-area">
+        <div style="text-align:center; font-size:10px; color:#666;">
+            <b>Machine Stages:</b>
+            <span class="stage-box" id="s1">S1</span>
+            <span class="stage-box" id="s2">S2</span> |
+            <span class="stage-box" id="s3">S3</span>
+            <span class="stage-box" id="s4">S4</span>
+            <span class="stage-box" id="s5">S5</span> |
+            <span class="stage-box" id="s6">S6</span>
+            <span class="stage-box" id="s7">S7</span>
+            <span class="stage-box" id="s8">S8</span> |
+            <span class="stage-box" id="s9">S9</span>
+            <br><small>Robot1 → TT1(2-5) → Transfer → TT2(6-8) → Robot2 → Inspect(9)</small>
+        </div>
+    </div>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="triggerRobotPick()">🤖 Robot Pick</button>
+    <button class="btn" onclick="triggerTT1()">🔄 TT1 Index</button>
+    <button class="btn" onclick="triggerB1B2()">📊 B1+B2 Done</button>
+    <button class="btn" onclick="triggerB3()">📊 B3 Done</button>
+    <button class="btn" onclick="triggerTransfer()">📦 Transfer</button>
+    <button class="btn" onclick="triggerTT2()">🔄 TT2 Start</button>
+    <button class="btn" onclick="triggerRobo2()">🤖 Robo2</button>
+    <button class="btn" onclick="triggerInspect()">📷 Inspect</button>
+    <button class="btn" onclick="autoDemo()" style="background:#004400">▶ Auto</button>
+</div>
+
+<script>
+let batches = [];
+let counter = 0;
+
+function log(msg) { document.getElementById('status').textContent = msg; }
+
+function render() {
+    // LEFT: Stage 1-2 batches (max 2)
+    const leftBatches = batches.filter(b => b.stage <= 2).slice(-2);
+    const leftTb = document.getElementById('leftTable');
+    let leftHtml = '';
+    for (let i = 0; i < 2; i++) {
+        const b = leftBatches[i];
+        leftHtml += b ? `<tr class="filled"><td><b>${b.id}</b></td><td>${b.qr}</td></tr>` : `<tr><td>-</td><td>-</td></tr>`;
+    }
+    leftTb.innerHTML = leftHtml;
+
+    // TOP: Stage 3-9 batches (max 7), sorted descending
+    const topBatches = batches.filter(b => b.stage >= 3).sort((a,b) => b.stage - a.stage);
+    const topTb = document.getElementById('topTable');
+    let topHtml = '';
+    for (let i = 0; i < 7; i++) {
+        const b = topBatches[i];
+        if (b) {
+            const isTop = (i === 0 && b.stage === 9);
+            topHtml += `<tr class="${isTop ? 'top-row' : 'filled'}">
+                <td><b>${b.id}</b></td><td>${b.qr}</td>
+                <td>${b.b1t||'-'}</td><td>${b.b2t||'-'}</td><td>${b.b3t||'-'}</td>
+                <td>${b.load||'-'}</td><td>${b.x||'-'}</td><td>${b.y||'-'}</td><td>${b.z||'-'}</td><td>${b.w||'-'}</td>
+                <td>${b.tear||'-'}</td><td>${b.flip||'-'}</td>
+                <td>${b.result||'-'}</td></tr>`;
+        } else {
+            topHtml += `<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>`;
+        }
+    }
+    topTb.innerHTML = topHtml;
+
+    // Stage indicators
+    for (let i = 1; i <= 9; i++) {
+        const el = document.getElementById('s'+i);
+        const has = batches.find(b => b.stage === i);
+        el.className = 'stage-box' + (has ? ' occupied' : '');
+        el.textContent = has ? `S${i}:${has.id.slice(-3)}` : `S${i}`;
+    }
+
+    // Simulate live value fluctuation
+    document.getElementById('lt1').textContent = (85 + Math.random()*2).toFixed(1);
+    document.getElementById('lt2').textContent = (87 + Math.random()*2).toFixed(1);
+    document.getElementById('lt3').textContent = (90 + Math.random()*2).toFixed(1);
+}
+
+function triggerRobotPick() {
+    if (batches.length >= 9) { log('❌ Queue full!'); return; }
+    if (batches.find(b => b.stage === 1)) { log('⚠️ Stage 1 occupied'); return; }
+    counter++;
+    const b = { id: `BN-${String(counter).padStart(3,'0')}`, qr: `QR${counter}`, stage: 1 };
+    batches.push(b);
+    // Also advance 1→2 if possible
+    if (!batches.find(x => x.stage === 2 && x !== b)) { b.stage = 2; }
+    log(`✅ ${b.id} created → Stage ${b.stage}`);
+    render();
+}
+
+function triggerTT1() {
+    for (let s = 4; s >= 2; s--) {
+        const b = batches.find(x => x.stage === s);
+        if (!b) continue;
+        if (s === 3 && !b.b1t) { log(`⚠️ ${b.id} blocked at S3 (need B1+B2)`); continue; }
+        if (s === 4 && !b.b3t) { log(`⚠️ ${b.id} blocked at S4 (need B3)`); continue; }
+        if (!batches.find(x => x.stage === s+1)) {
+            b.stage = s+1;
+            log(`🔄 ${b.id} → Stage ${s+1}`);
+        }
+    }
+    render();
+}
+
+function triggerB1B2() {
+    const b = batches.find(x => x.stage === 3);
+    if (b) { b.b1t='85.2'; b.b2t='87.1'; b.load='12.5'; log(`📊 ${b.id} B1+B2 recorded`); }
+    else log('⚠️ No batch at Stage 3');
+    render();
+}
+
+function triggerB3() {
+    const b = batches.find(x => x.stage === 4);
+    if (b) { b.b3t='90.3'; b.x='0.12'; b.y='0.08'; b.z='0.05'; b.w='0.03'; log(`� ${b.id} B3 recorded`); }
+    else log('⚠️ No batch at Stage 4');
+    render();
+}
+
+function triggerTransfer() {
+    const b = batches.find(x => x.stage === 5);
+    if (b && !batches.find(x => x.stage === 6)) { b.stage = 6; log(`📦 ${b.id} → Stage 6`); }
+    else log('⚠️ Cannot transfer');
+    render();
+}
+
+function triggerTT2() {
+    if (batches.find(x => x.stage === 8)) { log('⚠️ TT2 blocked (S8 full)'); return; }
+    const at7 = batches.find(x => x.stage === 7);
+    if (at7) { at7.stage = 8; }
+    const at6 = batches.find(x => x.stage === 6);
+    if (at6) { at6.stage = 7; at6.tear = 'OK'; }
+    log('🔄 TT2 rotated');
+    render();
+}
+
+function triggerRobo2() {
+    const b = batches.find(x => x.stage === 8);
+    if (b && !batches.find(x => x.stage === 9)) { b.stage = 9; b.flip = 'OK'; log(`🤖 ${b.id} → Stage 9`); }
+    else log('⚠️ Cannot pick');
+    render();
+}
+
+function triggerInspect() {
+    const b = batches.find(x => x.stage === 9);
+    if (b) {
+        b.result = Math.random() > 0.2 ? '✅OK' : '❌NG';
+        log(`📷 ${b.id} = ${b.result} → EXIT`);
+        render();
+        setTimeout(() => { batches = batches.filter(x => x !== b); render(); }, 1200);
+    } else log('⚠️ No batch at Stage 9');
+}
+
+async function autoDemo() {
+    const d = ms => new Promise(r => setTimeout(r, ms));
+    for (let i = 0; i < 4; i++) { triggerRobotPick(); await d(600); triggerTT1(); await d(600); }
+    triggerB1B2(); await d(600); triggerTT1(); await d(600);
+    triggerB3(); await d(600); triggerTT1(); await d(600);
+    triggerTransfer(); await d(600); triggerTT2(); await d(600);
+    triggerTT2(); await d(600); triggerRobo2(); await d(600);
+    triggerInspect();
+}
+
+// Live value simulation
+setInterval(() => {
+    document.querySelectorAll('#liveTemp td:not(:first-child), #liveForce td:not(:first-child)').forEach(td => {
+        if (td.textContent !== '1' && td.textContent !== '2' && td.textContent !== '3' && td.textContent !== '4') {
+            const base = parseFloat(td.textContent) || 85;
+            td.textContent = (base + (Math.random()-0.5)*0.5).toFixed(1);
+        }
+    });
+}, 500);
+
+render();
+</script>
+</body>
+</html>

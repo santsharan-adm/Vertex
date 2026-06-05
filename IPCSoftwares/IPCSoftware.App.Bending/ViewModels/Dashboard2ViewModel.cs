@@ -9,6 +9,7 @@ using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
 using IPCSoftware.Shared.Models.Bending;
 using IPCSoftware.Shared.Models.ConfigModels;
+using IPCSoftware.Shared.Models.Messaging;
 using IPCSoftware.UI.CommonViews.ViewModels;
 using Newtonsoft.Json;
 
@@ -499,30 +500,34 @@ namespace IPCSoftware.App.Bending.ViewModels
                     $"ContainsKey(11)={data?.ContainsKey(11)} | " +
                     $"Keys=[{(data != null ? string.Join(",", data.Keys) : "null")}]",
                     LogType.Diagnostics);
-
-                if (data.TryGetValue(11, out object modelObj))
+                int i = 0;
+                foreach (var item in data)
                 {
-                    var model = Deserialize<DashboardInspectionModel>(modelObj);
-
-                    // ── LOG POINT 3b ── After deserialize: confirm values
-                    _logger.LogInfo(
-                        $"[DBG-BP3b] Deserialized model | " +
-                        $"model={( model == null ? "NULL" : "OK")} | " +
-                        $"LineItem1.HeaterTemp_Bend1={model?.LineItem1?.HeaterTemp_Bend1} | " +
-                        $"LineItem1.HeaterTemp_Bend2={model?.LineItem1?.HeaterTemp_Bend2} | " +
-                        $"LineItem1.QRCode1={model?.LineItem1?.QRCode}",
-                        LogType.Diagnostics);
-
-                    if (model != null)
+                    if (data.TryGetValue(i, out object modelObj))
                     {
-                        //DashboardInspectionModelBatch1 = model;
-                        DashboardInspectionModelBatches[model.StationIndex] = model;
-                        OnPropertyChanged("DashboardInspectionModelBatches");
+                        var model = Deserialize<DashboardInspectionModel>(modelObj);
+
+                        // ── LOG POINT 3b ── After deserialize: confirm values
+                        _logger.LogInfo(
+                            $"[DBG-BP3b] Deserialized model | " +
+                            $"model={(model == null ? "NULL" : "OK")} | " +
+                            $"LineItem1.HeaterTemp_Bend1={model?.LineItem1?.HeaterTemp_Bend1} | " +
+                            $"LineItem1.HeaterTemp_Bend2={model?.LineItem1?.HeaterTemp_Bend2} | " +
+                            $"LineItem1.QRCode1={model?.LineItem1?.QRCode}",
+                            LogType.Diagnostics);
+
+                        if (model != null)
+                        {
+                            //DashboardInspectionModelBatch1 = model;
+                            DashboardInspectionModelBatches[model.StationIndex] = model;
+
+                            OnPropertyChanged("DashboardInspectionModelBatches");
+                        }
                     }
-                }
-                else
-                {
-                    _logger.LogInfo("[DBG-BP3] data does NOT contain key 11 — model will not update", LogType.Diagnostics);
+                    else
+                    {
+                        _logger.LogInfo("[DBG-BP3] data does NOT contain key 11 — model will not update", LogType.Diagnostics);
+                    }
                 }
             }
             catch (Exception ex)
