@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bending Dashboard - End-to-End Data Flow Class Diagram</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            color: #00d4ff;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+
+        /* Layer sections */
+        .layer {
+            margin-bottom: 30px;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+        }
+        .layer-title {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #1a1a2e;
+            padding: 0 10px;
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        .layer-plc { border-color: #ff6b35; }
+        .layer-plc .layer-title { color: #ff6b35; }
+        .layer-engine { border-color: #ffc107; }
+        .layer-engine .layer-title { color: #ffc107; }
+        .layer-core { border-color: #4caf50; }
+        .layer-core .layer-title { color: #4caf50; }
+        .layer-comm { border-color: #9c27b0; }
+        .layer-comm .layer-title { color: #9c27b0; }
+        .layer-ui { border-color: #2196f3; }
+        .layer-ui .layer-title { color: #2196f3; }
+
+        /* Class boxes */
+        .classes-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .class-box {
+            background: #16213e;
+            border: 2px solid #444;
+            border-radius: 8px;
+            min-width: 260px;
+            max-width: 360px;
+            flex: 1;
+        }
+        .class-header {
+            padding: 10px 12px;
+            font-weight: bold;
+            font-size: 13px;
+            border-bottom: 1px solid #444;
+            border-radius: 6px 6px 0 0;
+        }
+        .class-header .stereotype {
+            font-size: 10px;
+            font-weight: normal;
+            color: #aaa;
+            display: block;
+        }
+        .class-section {
+            padding: 8px 12px;
+            border-bottom: 1px dashed #333;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+        .class-section:last-child { border-bottom: none; }
+        .class-section-title {
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .field { color: #a5d6a7; }
+        .method { color: #90caf9; }
+        .event { color: #ffcc80; }
+        .prop { color: #ce93d8; }
+
+        /* Arrows between layers */
+        .flow-arrow {
+            text-align: center;
+            padding: 12px 0;
+            font-size: 13px;
+            color: #00d4ff;
+        }
+        .flow-arrow .arrow-icon {
+            font-size: 20px;
+            display: block;
+        }
+        .flow-arrow .arrow-label {
+            font-size: 11px;
+            color: #aaa;
+            display: block;
+        }
+
+        /* Specific colors for different layers */
+        .plc-class .class-header { background: #3d1f00; color: #ff6b35; }
+        .engine-class .class-header { background: #3d3000; color: #ffc107; }
+        .core-class .class-header { background: #1b3d1b; color: #4caf50; }
+        .comm-class .class-header { background: #2d1040; color: #9c27b0; }
+        .ui-class .class-header { background: #0d2740; color: #2196f3; }
+
+        /* Sequence diagram */
+        .sequence-section {
+            margin-top: 40px;
+            border: 1px solid #444;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .sequence-section h2 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .seq-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        .seq-table th {
+            background: #16213e;
+            color: #00d4ff;
+            padding: 8px;
+            border: 1px solid #333;
+            text-align: center;
+        }
+        .seq-table td {
+            padding: 8px;
+            border: 1px solid #333;
+            vertical-align: top;
+        }
+        .seq-step {
+            background: #1e3a5f;
+            border-radius: 4px;
+            padding: 6px 8px;
+            margin: 3px 0;
+            font-size: 11px;
+        }
+        .seq-arrow {
+            color: #00d4ff;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        /* Data model section */
+        .model-section {
+            margin-top: 30px;
+            border: 1px solid #555;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .model-section h2 {
+            color: #ce93d8;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        /* Request ID table */
+        .req-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+        .req-table th {
+            background: #1e3a5f;
+            color: #90caf9;
+            padding: 8px;
+            border: 1px solid #333;
+            text-align: left;
+        }
+        .req-table td {
+            padding: 6px 8px;
+            border: 1px solid #333;
+        }
+        .req-table tr:nth-child(even) { background: #16213e; }
+
+        .highlight { color: #ffcc80; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h1>🔧 Bending Dashboard — End-to-End Data Flow (Class Diagram)</h1>
+<p class="subtitle">Modbus PLC → CoreService → TCP → WPF UI | IPCSoftware.CoreService.Bending Architecture</p>
+
+<div class="legend">
+    <div class="legend-item"><div class="legend-color" style="background:#ff6b35"></div>PLC / Hardware Layer</div>
+    <div class="legend-item"><div class="legend-color" style="background:#ffc107"></div>Engine / Processing Layer</div>
+    <div class="legend-item"><div class="legend-color" style="background:#4caf50"></div>CoreService / Business Logic</div>
+    <div class="legend-item"><div class="legend-color" style="background:#9c27b0"></div>Communication Layer (TCP)</div>
+    <div class="legend-item"><div class="legend-color" style="background:#2196f3"></div>UI / WPF Layer</div>
+</div>
+
+<!-- LAYER 1: PLC -->
+<div class="layer layer-plc">
+    <div class="layer-title">LAYER 1 — PLC / MODBUS (IPCSoftware.Devices.PLC)</div>
+    <div class="classes-row">
+        <div class="class-box plc-class">
+            <div class="class-header">
+                <span class="stereotype">«class»</span>
+                PLCClientManager
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Fields</div>
+                <div class="field">- _deviceService: IDeviceConfigurationService</div>
+                <div class="field">- _config: ConfigSettings</div>
+                <div class="prop">+ Clients: List&lt;PlcClient&gt;</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Methods</div>
+                <div class="method">- InitializeClients(): Task</div>
+                <div class="method">+ GetClient(plcNo): PlcClient</div>
+                <div class="method">+ UpdateTags(allNewTags): void</div>
+            </div>
+        </div>
+
+        <div class="class-box plc-class">
+            <div class="class-header">
+                <span class="stereotype">«class»</span>
+                PlcClient
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Fields</div>
+                <div class="field">- _master: IModbusMaster (NModbus)</div>
+                <div class="field">- _tcp: TcpClient</div>
+                <div class="field">- _tags: List&lt;PLCTagConfigurationModel&gt;</div>
+                <div class="field">- _device: DeviceInterfaceModel</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Events</div>
+                <div class="event">+ OnPlcDataReceived: Action&lt;int, Dictionary&lt;uint, object&gt;&gt;</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Methods</div>
+                <div class="method">+ StartAsync(): Task — polls every 90ms</div>
+                <div class="method">- ConnectAsync(): Task — auto-reconnect</div>
+                <div class="method">- PollAllGroups(): Dict&lt;uint, object&gt;</div>
+                <div class="method">  → ReadHoldingRegistersAsync()</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="flow-arrow">
+    <span class="arrow-icon">⬇️</span>
+    <span class="arrow-label">OnPlcDataReceived(plcNo, Dictionary&lt;uint, object&gt;) — raw ushort[] registers keyed by Modbus address</span>
+</div>
+
+<!-- LAYER 2: ENGINE -->
+<div class="layer layer-engine">
+    <div class="layer-title">LAYER 2 — ENGINE / DATA PROCESSING (IPCSoftware.Engine + IPCSoftware.Devices.PLC)</div>
+    <div class="classes-row">
+        <div class="class-box engine-class">
+            <div class="class-header">
+                <span class="stereotype">«class»</span>
+                AlgorithmAnalysisService
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Fields</div>
+                <div class="field">- _tags: List&lt;PLCTagConfigurationModel&gt;</div>
+                <div class="field">- _swapBytes: bool</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Events</div>
+                <div class="event">+ OnPlcDataProcessed: Action&lt;int, object&gt;</div>
+                <div style="font-size:10px;color:#888;">  (tagId, typedValue) — fires per tag</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Methods</div>
+                <div class="method">+ Apply(plcNo, rawModbusData): void</div>
+                <div style="font-size:10px;color:#888;">  → ConvertData() — Int16/Float/Bool/String</div>
+                <div style="font-size:10px;color:#888;">  → ApplyScaling() — Raw or LinearScale</div>
+                <div style="font-size:10px;color:#888;">  → Raises OnPlcDataProcessed per tag</div>
+            </div>
+        </div>
+
+        <div class="class-box engine-class">
+            <div class="class-header">
+                <span class="stereotype">«class»</span>
+                DashboardInitializerBase
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Fields</div>
+                <div class="field">- _manager: PLCClientManager</div>
+                <div class="field">- _algo: AlgorithmAnalysisService</div>
+                <div class="field">- _ui: UiListener</div>
+                <div class="field">- _oee: OeeEngineBase</div>
+                <div class="field">- _alarmService: AlarmService</div>
+                <div class="prop highlight">+ latestValueNew: Dict&lt;int, object&gt;</div>
+                <div style="font-size:10px;color:#ffcc80;">  ↑ THE CENTRAL DATA CACHE (tagId → value)</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Methods</div>
+                <div class="method">+ StartAsync(): Task</div>
+                <div style="font-size:10px;color:#888;">  → Hooks client.OnPlcDataReceived → _algo.Apply()</div>
+                <div style="font-size:10px;color:#888;">  → Subscribes _algo.OnPlcDataProcessed → latestValueNew[tagId]=val</div>
+                <div style="font-size:10px;color:#888;">  → Sets _ui.OnRequestReceived = HandleUiRequest</div>
+                <div style="font-size:10px;color:#888;">  → Loop (500ms): OEE, Alarms, CCD, ShiftReset</div>
+                <div class="method">+ virtual HandleUiRequest(req): ResponsePackage</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="flow-arrow">
+    <span class="arrow-icon">⬇️</span>
+    <span class="arrow-label">OnPlcDataProcessed(tagId, typedValue) → latestValueNew[tagId] = value</span>
+</div>
+
+<!-- LAYER 3: CORE SERVICE BENDING -->
+<div class="layer layer-core">
+    <div class="layer-title">LAYER 3 — BENDING CORE SERVICE (IPCSoftware.CoreService.Bending)</div>
+    <div class="classes-row">
+        <div class="class-box core-class">
+            <div class="class-header">
+                <span class="stereotype">«class» extends DashboardInitializerBase</span>
+                DashboardInitializerBending
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Fields</div>
+                <div class="field">- _bendingProcess: BendingProcessService</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Methods (override HandleUiRequest)</div>
+                <div class="method">+ HandleUiRequest(request): ResponsePackage</div>
+                <div style="font-size:10px;color:#888;">  → Dispatches by RequestId:</div>
+                <div style="font-size:10px;color:#a5d6a7;">    11 → DashboardInspectionModelBatch1 (FIFO)</div>
+                <div style="font-size:10px;color:#a5d6a7;">    12 → TopTableBatchByRank(rank=1)</div>
+                <div style="font-size:10px;color:#a5d6a7;">    13 → BendingIndicators</div>
+                <div style="font-size:10px;color:#a5d6a7;">    14-16 → TurnTable1/2, TransferModule</div>
+                <div style="font-size:10px;color:#a5d6a7;">    17-21 → Inspection, Robot, Trays, NGBin</div>
+                <div style="font-size:10px;color:#a5d6a7;">    23-24 → Batch3/Batch4 (live PLC)</div>
+                <div style="font-size:10px;color:#a5d6a7;">    30 → FIFO Dashboard Model</div>
+                <div style="font-size:10px;color:#a5d6a7;">    32 → LEFT table (Stage 1-2)</div>
+                <div class="method">- GetString(tagId): string</div>
+                <div class="method">- GetFloat(tagId): float</div>
+                <div class="method">- GetBool(tagId): bool</div>
+                <div style="font-size:10px;color:#888;">  ↑ reads from latestValueNew dict</div>
+            </div>
+        </div>
+
+        <div class="class-box core-class">
+            <div class="class-header">
+                <span class="stereotype">«class»</span>
+                BendingProcessService
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Fields</div>
+                <div class="field">- _fifoQueue: List&lt;BatchModel&gt; (max 9)</div>
+                <div class="field">- _previousTriggerStates: Dict</div>
+                <div class="field">- _dashboardModel: BendingProcessDashboardModel</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Methods</div>
+                <div class="method">+ Process(latestValues): void — every 500ms</div>
+                <div style="font-size:10px;color:#888;">  → DetectRisingEdges (RobotPickDone etc.)</div>
+                <div style="font-size:10px;color:#888;">  → Advance all batches (shift register)</div>
+                <div style="font-size:10px;color:#888;">  → Create new batch at Stage 1</div>
+                <div style="font-size:10px;color:#888;">  → RecordDataOnArrival (Stage 3: B1+B2, Stage 4: B3)</div>
+                <div class="method">+ GetActiveBatches(): List&lt;BatchModel&gt;</div>
+                <div class="method">+ GetDashboardModel(): BendingProcessDashboardModel</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="flow-arrow">
+    <span class="arrow-icon">⬇️</span>
+    <span class="arrow-label">ResponsePackage { ResponseId, Parameters: Dict&lt;int, object&gt; } — serialized as JSON over TCP</span>
+</div>
+
+<!-- LAYER 4: COMMUNICATION -->
+<div class="layer layer-comm">
+    <div class="layer-title">LAYER 4 — TCP COMMUNICATION (Server ↔ Client)</div>
+    <div class="classes-row">
+        <div class="class-box comm-class">
+            <div class="class-header">
+                <span class="stereotype">«class» SERVER-SIDE (CoreService process)</span>
+                UiListener
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Fields</div>
+                <div class="field">- _port: int (5050)</div>
+                <div class="field">- _listener: TcpListener</div>
+                <div class="field">- _activeClients: ConcurrentDict&lt;Guid, ClientConnection&gt;</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Delegate</div>
+                <div class="event">+ OnRequestReceived: Func&lt;RequestPackage, Task&lt;ResponsePackage&gt;&gt;</div>
+                <div style="font-size:10px;color:#888;">  → Set by DashboardInitializerBase to HandleUiRequest</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Methods</div>
+                <div class="method">+ StartAsync(): Task — accepts TCP clients</div>
+                <div class="method">- HandleClientAsync(conn): Task</div>
+                <div style="font-size:10px;color:#888;">  → Read JSON → Deserialize RequestPackage</div>
+                <div style="font-size:10px;color:#888;">  → Call OnRequestReceived(request)</div>
+                <div style="font-size:10px;color:#888;">  → Serialize ResponsePackage → Write JSON + \n</div>
+                <div class="method">+ PublishAsync&lt;T&gt;(msg): Task — push alarms</div>
+            </div>
+        </div>
+
+        <div class="class-box comm-class">
+            <div class="class-header">
+                <span class="stereotype">«class» CLIENT-SIDE (UI process)</span>
+                CoreClient
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Fields</div>
+                <div class="field">- _tcpClient: UiTcpClient</div>
+                <div class="field">- _requestLock: SemaphoreSlim(1,1)</div>
+                <div class="field">- _currentResponseTcs: TaskCompletionSource</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Methods</div>
+                <div class="method">+ GetIoValuesAsync(reqId): Dict&lt;int, object&gt;</div>
+                <div style="font-size:10px;color:#888;">  → Serialize RequestPackage { RequestId = reqId }</div>
+                <div style="font-size:10px;color:#888;">  → Send over TCP</div>
+                <div style="font-size:10px;color:#888;">  → Wait for response (1s timeout, 3 retries)</div>
+                <div style="font-size:10px;color:#888;">  → Deserialize ResponsePackage → return Parameters</div>
+                <div class="method">- SendRequestAsync(req): string (JSON)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="flow-arrow">
+    <span class="arrow-icon">⬇️</span>
+    <span class="arrow-label">SafePollerEx ticks every 500ms → CoreClient.GetIoValuesAsync(requestId) → Dict&lt;int, object&gt;</span>
+</div>
+
+<!-- LAYER 5: UI -->
+<div class="layer layer-ui">
+    <div class="layer-title">LAYER 5 — WPF UI (IPCSoftware.App.Bending)</div>
+    <div class="classes-row">
+        <div class="class-box ui-class">
+            <div class="class-header">
+                <span class="stereotype">«class»</span>
+                SafePollerEx
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Fields</div>
+                <div class="field">- _coreClient: CoreClient</div>
+                <div class="field">- _requestId: int</div>
+                <div class="field">- _asyncAction: Func&lt;Dict, Task&gt;</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Methods</div>
+                <div class="method">+ Start(): void — begins timer</div>
+                <div class="method">~ LiveDataTickAsync(): Task</div>
+                <div style="font-size:10px;color:#888;">  → _coreClient.GetIoValuesAsync(_requestId)</div>
+                <div style="font-size:10px;color:#888;">  → _asyncAction(data) — calls ViewModel callback</div>
+            </div>
+        </div>
+
+        <div class="class-box ui-class">
+            <div class="class-header">
+                <span class="stereotype">«class»</span>
+                Dashboard2ViewModel
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Pollers (SafePollerEx instances)</div>
+                <div class="field">- _liveDataPoller (ReqId=4) → OEE</div>
+                <div class="field">- _ioPoller (ReqId=5) → Control states</div>
+                <div class="field">- _inspectionTable1Poller (ReqId=11) → Batches</div>
+                <div class="field">- _bendingIndicatorsPoller (ReqId=13)</div>
+                <div class="field">- _turnTable1/2Poller (ReqId=14,15)</div>
+                <div class="field">- _transferModulePoller (ReqId=16)</div>
+                <div class="field">- _inspectionDataPoller (ReqId=17)</div>
+                <div class="field">- _robotStatusPoller (ReqId=18)</div>
+                <div class="field">- _inputTray/outputTrayPoller (ReqId=19,20)</div>
+                <div class="field">- _ngBinPoller (ReqId=21)</div>
+                <div class="field">- _leftTablePoller (ReqId=32)</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Properties (bind to XAML)</div>
+                <div class="prop">+ DashboardInspectionModelBatches: ObservableCollection</div>
+                <div class="prop">+ BendingIndicators: BendingIndicators</div>
+                <div class="prop">+ TurnTable1/2: TurnTable1/2DataPointModel</div>
+                <div class="prop">+ TransferModule: TransferModuleModel</div>
+                <div class="prop">+ InspectionData: InspectionDataModel</div>
+                <div class="prop">+ RobotStatus: RobotProcessStatus</div>
+                <div class="prop">+ InputTray/OutputTray: TrayModels</div>
+                <div class="prop">+ NGBin: NGBinGroupModel</div>
+                <div class="prop">+ OeeResult: OeeResult</div>
+                <div class="prop">+ ControlFromService: ControlFromService</div>
+            </div>
+        </div>
+
+        <div class="class-box ui-class">
+            <div class="class-header">
+                <span class="stereotype">«class»</span>
+                FifoMonitorViewModel
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Pollers</div>
+                <div class="field">- _fifoPoller (ReqId=30) → FIFO queue</div>
+            </div>
+            <div class="class-section">
+                <div class="class-section-title">Properties</div>
+                <div class="prop">+ LeftTableRows: ObservableCollection&lt;BatchDisplayRow&gt;</div>
+                <div class="prop">+ TopTableRows: ObservableCollection&lt;BatchDisplayRow&gt;</div>
+                <div class="prop">+ LiveHeaterB1/B2/B3: float[]</div>
+                <div class="prop">+ LiveForceB1/B2/B3: float[]</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEQUENCE / TIMING -->
+<div class="sequence-section">
+    <h2>📊 Data Flow Sequence (One Complete Cycle)</h2>
+    <table class="seq-table">
+        <tr>
+            <th>Step</th>
+            <th>Component</th>
+            <th>Action</th>
+            <th>Data Format</th>
+            <th>Timing</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td style="color:#ff6b35;">PlcClient</td>
+            <td>ReadHoldingRegistersAsync from PLC via Modbus TCP</td>
+            <td>ushort[] raw registers</td>
+            <td>~90ms loop</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td style="color:#ff6b35;">PlcClient</td>
+            <td>Fires OnPlcDataReceived(plcNo, Dict&lt;uint, object&gt;)</td>
+            <td>Dict keyed by Modbus address → ushort[]</td>
+            <td>Immediate</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td style="color:#ffc107;">DashboardInitializerBase</td>
+            <td>Calls _algo.Apply(plcNo, rawData)</td>
+            <td>Raw registers passed to algorithm</td>
+            <td>Immediate</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td style="color:#ffc107;">AlgorithmAnalysisService</td>
+            <td>ConvertData → ApplyScaling → OnPlcDataProcessed(tagId, val)</td>
+            <td>Typed: float, bool, string, int</td>
+            <td>Per tag</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td style="color:#ffc107;">DashboardInitializerBase</td>
+            <td>latestValueNew[tagId] = value (central cache updated)</td>
+            <td>Dict&lt;int, object&gt;</td>
+            <td>Continuous</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td style="color:#4caf50;">DashboardInitializerBending</td>
+            <td>_bendingProcess.Process(latestValueNew) — FIFO logic</td>
+            <td>Updates internal BatchModel queue</td>
+            <td>500ms loop</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td style="color:#2196f3;">SafePollerEx (UI)</td>
+            <td>Timer fires → CoreClient.GetIoValuesAsync(requestId)</td>
+            <td>RequestPackage { RequestId=11 }</td>
+            <td>500ms loop</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td style="color:#9c27b0;">CoreClient → UiListener</td>
+            <td>TCP send JSON request → server receives</td>
+            <td>JSON serialized RequestPackage</td>
+            <td>&lt;1ms</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td style="color:#9c27b0;">UiListener</td>
+            <td>Calls OnRequestReceived(request) → HandleUiRequest</td>
+            <td>RequestPackage → ResponsePackage</td>
+            <td>&lt;5ms</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td style="color:#4caf50;">DashboardInitializerBending</td>
+            <td>Builds model from latestValueNew / _bendingProcess</td>
+            <td>DashboardInspectionModel / BendingIndicators etc.</td>
+            <td>&lt;1ms</td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td style="color:#9c27b0;">UiListener → CoreClient</td>
+            <td>TCP send JSON response back to UI</td>
+            <td>JSON serialized ResponsePackage</td>
+            <td>&lt;1ms</td>
+        </tr>
+        <tr>
+            <td>12</td>
+            <td style="color:#2196f3;">SafePollerEx → ViewModel</td>
+            <td>Deserializes response → calls ViewModel callback</td>
+            <td>Typed model objects</td>
+            <td>Immediate</td>
+        </tr>
+        <tr>
+            <td>13</td>
+            <td style="color:#2196f3;">Dashboard2ViewModel</td>
+            <td>Updates ObservableProperties → WPF Data Binding</td>
+            <td>UI renders updated values</td>
+            <td>Dispatcher</td>
+        </tr>
+    </table>
+</div>
+
+<!-- REQUEST ID MAPPING -->
+<div class="model-section">
+    <h2>🔑 Request ID → Data Model Mapping</h2>
+    <table class="req-table">
+        <tr><th>RequestId</th><th>Handler Method</th><th>Response Model</th><th>Data Source</th></tr>
+        <tr><td>4</td><td>OEE Calculate</td><td>OeeResult</td><td>latestValueNew (live PLC)</td></tr>
+        <tr><td>5</td><td>Control States (Auto/Dry/Cycle)</td><td>ControlFromService</td><td>latestValueNew (live PLC)</td></tr>
+        <tr><td>11</td><td>DashboardInspectionModelBatch1</td><td>DashboardInspectionModel</td><td>FIFO queue (highest Stage 3+ batch)</td></tr>
+        <tr><td>12</td><td>TopTableBatchByRank(rank=1)</td><td>DashboardInspectionModel</td><td>FIFO queue (2nd highest Stage 3+)</td></tr>
+        <tr><td>13</td><td>BendingIndicators</td><td>BendingIndicators</td><td>latestValueNew (live PLC)</td></tr>
+        <tr><td>14</td><td>TurnTable1DataPointModel</td><td>TurnTable1DataPointModel</td><td>latestValueNew (live PLC)</td></tr>
+        <tr><td>15</td><td>TurnTable2DataPointModel</td><td>TurnTable2DataPointModel</td><td>latestValueNew (live PLC)</td></tr>
+        <tr><td>16</td><td>TransferModuleModel</td><td>TransferModuleModel</td><td>latestValueNew (live PLC)</td></tr>
+        <tr><td>17</td><td>InspectionDataModel</td><td>InspectionDataModel</td><td>latestValueNew (live PLC)</td></tr>
+        <tr><td>18</td><td>RobotProcessStatus</td><td>RobotProcessStatus</td><td>latestValueNew (live PLC)</td></tr>
+        <tr><td>19</td><td>InputTray</td><td>InputTrayModel</td><td>latestValueNew (live PLC)</td></tr>
+        <tr><td>20</td><td>OutputTray</td><td>OutputTrayModel</td><td>latestValueNew (live PLC)</td></tr>
+        <tr><td>21</td><td>NGBin1</td><td>NGBinGroupModel</td><td>latestValueNew (live PLC)</td></tr>
+        <tr><td>23</td><td>DashboardInspectionModelBatch3</td><td>DashboardInspectionModel</td><td>latestValueNew (live PLC tags)</td></tr>
+        <tr><td>24</td><td>DashboardInspectionModelBatch4</td><td>DashboardInspectionModel</td><td>latestValueNew (live PLC tags)</td></tr>
+        <tr><td>30</td><td>FIFO Dashboard Model</td><td>BendingProcessDashboardModel</td><td>BendingProcessService queue</td></tr>
+        <tr><td>32</td><td>LEFT Table (Stage 1-2)</td><td>BendingProcessLeftTableModel</td><td>BendingProcessService queue</td></tr>
+    </table>
+</div>
+
+<!-- DATA MODELS -->
+<div class="model-section">
+    <h2>📦 Key Data Models (IPCSoftware.Shared.Models.Bending)</h2>
+    <div class="classes-row" style="margin-top:15px;">
+        <div class="class-box" style="border-color:#ce93d8;">
+            <div class="class-header" style="background:#2d1040;color:#ce93d8;">
+                <span class="stereotype">«model»</span>
+                DashboardInspectionModel
+            </div>
+            <div class="class-section">
+                <div class="prop">+ BatchNo: Int32</div>
+                <div class="prop">+ StationIndex: Int32</div>
+                <div class="prop">+ PositionIndex: Int32</div>
+                <div class="prop">+ LineItem1: DashboardInspectionLineModel</div>
+                <div class="prop">+ LineItem2: DashboardInspectionLineModel</div>
+                <div class="prop">+ LineItem3: DashboardInspectionLineModel</div>
+                <div class="prop">+ LineItem4: DashboardInspectionLineModel</div>
+            </div>
+        </div>
+        <div class="class-box" style="border-color:#ce93d8;">
+            <div class="class-header" style="background:#2d1040;color:#ce93d8;">
+                <span class="stereotype">«model»</span>
+                DashboardInspectionLineModel
+            </div>
+            <div class="class-section">
+                <div class="prop">+ QRCode: string</div>
+                <div class="prop">+ HeaterTemp_Bend1/2/3: float</div>
+                <div class="prop">+ Load_Bend1/2/3: float</div>
+                <div class="prop">+ XValue, YValue, ZValue, WValue: float</div>
+                <div class="prop">+ Result1: bool</div>
+            </div>
+        </div>
+        <div class="class-box" style="border-color:#ce93d8;">
+            <div class="class-header" style="background:#2d1040;color:#ce93d8;">
+                <span class="stereotype">«model»</span>
+                BatchModel (FIFO internal)
+            </div>
+            <div class="class-section">
+                <div class="prop">+ BatchNumber: string</div>
+                <div class="prop">+ Stage: int (1-9)</div>
+                <div class="prop">+ QrCode1/2/3/4: string</div>
+                <div class="prop">+ Bending1Temperatures[4]: float[]</div>
+                <div class="prop">+ Bending1Loads[4]: float[]</div>
+                <div class="prop">+ Bending2/3 Temps/Loads/X/Y/Z/W</div>
+                <div class="prop">+ InspectionResults[4]: bool[]</div>
+                <div class="prop">+ InspectionComplete: bool</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MESSAGING -->
+<div class="model-section">
+    <h2>📡 Messaging Protocol (TCP JSON)</h2>
+    <div class="classes-row" style="margin-top:15px;">
+        <div class="class-box" style="border-color:#9c27b0;">
+            <div class="class-header" style="background:#2d1040;color:#9c27b0;">
+                <span class="stereotype">«model» UI → CoreService</span>
+                RequestPackage
+            </div>
+            <div class="class-section">
+                <div class="prop">+ RequestId: int</div>
+                <div class="prop">+ Parameters: object (nullable)</div>
+                <div style="font-size:10px;color:#888;">Example: { "RequestId": 11, "Parameters": null }</div>
+            </div>
+        </div>
+        <div class="class-box" style="border-color:#9c27b0;">
+            <div class="class-header" style="background:#2d1040;color:#9c27b0;">
+                <span class="stereotype">«model» CoreService → UI</span>
+                ResponsePackage
+            </div>
+            <div class="class-section">
+                <div class="prop">+ ResponseId: int</div>
+                <div class="prop">+ Parameters: Dict&lt;int, object&gt;</div>
+                <div class="prop">+ Success: bool</div>
+                <div class="prop">+ ErrorMessage: string</div>
+                <div style="font-size:10px;color:#888;">Example: { "ResponseId": 11, "Parameters": { "11": {...model...} } }</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top:30px;text-align:center;color:#666;font-size:11px;">
+    Generated for IPCSoftware Bending Machine Dashboard | Architecture Reference | June 2026
+</div>
+
+</body>
+</html>
