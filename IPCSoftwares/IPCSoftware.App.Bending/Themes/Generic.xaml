@@ -327,7 +327,21 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:BatchQRCodePanelCC}">
                     <ControlTemplate.Resources>
-                        
+                        <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="FontSize" Value="12"/>
+                        </Style>
+
+                        <Style x:Key="QRCodeTextStyle" TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="FontSize" Value="10"/>
+                            <Setter Property="Margin" Value="3"/>
+                        </Style>
                     </ControlTemplate.Resources>
                     <Border Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
@@ -341,7 +355,6 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Border BorderBrush="#1565C0" BorderThickness="1" Background="Black" CornerRadius="8" Margin="3">
-
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -355,20 +368,20 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
-
+                                    
                                     <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2" CornerRadius="5,0,0,0">
-                                        <TextBlock Text="Batch No." FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12"/>
+                                        <TextBlock Text="Batch No." Style="{DynamicResource HeaderTextStyle}"/>
                                     </Border>
                                     <Border Grid.Row="0" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                        <TextBlock Text="QR Code" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12" />
+                                        <TextBlock Text="QR Code" Style="{DynamicResource HeaderTextStyle}"/>
                                     </Border>
                                     <Border Grid.Row="1" Grid.Column="0" Grid.RowSpan="4" Background="#0B1A2E" BorderBrush="#1565C0" Padding="3">
-                                        <TextBlock Text="{Binding BatchNo}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12"/>
+                                        <TextBlock Text="{Binding BatchNo}" Style="{DynamicResource HeaderTextStyle}"/>
                                     </Border>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LineItem1.QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LineItem2.QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding LineItem3.QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding LineItem4.QRCode}" HorizontalAlignment="Center" VerticalAlignment="Center"  Foreground="White" FontSize="10" Margin="3"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LineItem1.QRCode}" Style="{DynamicResource QRCodeTextStyle}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LineItem2.QRCode}" Style="{DynamicResource QRCodeTextStyle}"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding LineItem3.QRCode}" Style="{DynamicResource QRCodeTextStyle}"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding LineItem4.QRCode}" Style="{DynamicResource QRCodeTextStyle}"/>
                                 </Grid>
                             </Border>
                         </Grid>
@@ -558,116 +571,147 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:TransferModuleCC}">
-                    <Border Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
-                        <Canvas >
+                    <ControlTemplate.Resources>
 
-                            <TextBlock Text="TRANSFER MODULE 1" FontWeight="Black" FontSize="10"  Canvas.Top="0" Canvas.Left="0"
-                                   Foreground="{StaticResource PanelBorder}" HorizontalAlignment="Center" />
-                            <Border  Width="85" Height="85" Background="White"  Canvas.Top="30" Canvas.Left="55"
-                                BorderBrush="{StaticResource PanelBorder}" BorderThickness="3" CornerRadius="42.5">
+                        <!-- Common Rail Line -->
+                        <Style x:Key="RailLineStyle" TargetType="Line">
+                            <Setter Property="Stroke" Value="#1E293B"/>
+                            <Setter Property="StrokeThickness" Value="3"/>
+                        </Style>
+
+                        <!-- Rail End Caps -->
+                        <Style x:Key="RailCapStyle" TargetType="Line">
+                            <Setter Property="Stroke" Value="#1E293B"/>
+                            <Setter Property="StrokeThickness" Value="2"/>
+                            <Setter Property="StrokeStartLineCap" Value="Round"/>
+                            <Setter Property="StrokeEndLineCap" Value="Round"/>
+                        </Style>
+
+                        <!-- Orange Slot Rectangle -->
+                        <Style x:Key="SlotRectangleStyle" TargetType="Rectangle">
+                            <Setter Property="Width" Value="12"/>
+                            <Setter Property="Height" Value="12"/>
+                            <Setter Property="Fill" Value="#F59E0B"/>
+                            <Setter Property="RadiusX" Value="1"/>
+                            <Setter Property="RadiusY" Value="1"/>
+                        </Style>
+
+                        <!-- Vertical Slot Border -->
+                        <Style x:Key="VerticalSlotBorderStyle" TargetType="Border">
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="BorderThickness" Value="2"/>
+                            <Setter Property="Padding" Value="1"/>
+                            <Setter Property="CornerRadius" Value="2"/>
+                        </Style>
+                        <!-- Title Text -->
+                        <Style x:Key="TransferTitleStyle" TargetType="TextBlock">
+                            <Setter Property="FontWeight" Value="Black"/>
+                            <Setter Property="FontSize" Value="10"/>
+                            <Setter Property="Foreground" Value="{StaticResource PanelBorder}"/>
+                        </Style>
+
+                 </ControlTemplate.Resources>
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                           CornerRadius="4">
+                        <Canvas>
+                            <TextBlock Text="TRANSFER MODULE 1" Style="{StaticResource TransferTitleStyle}" Canvas.Top="0" Canvas.Left="0"/>
+                            <Border Width="85" Height="85" Background="White" Canvas.Top="30" Canvas.Left="55"
+                                                BorderBrush="{StaticResource PanelBorder}" BorderThickness="3" CornerRadius="42.5">
                                 <Border BorderBrush="#F59E0B" BorderThickness="1.5" CornerRadius="4" Width="40" Height="40">
                                     <TextBlock Text="🔄" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Foreground="#F59E0B"/>
                                 </Border>
                             </Border>
-
-                            <!-- Rail connector: TT1 right edge to Transfer Module left edge -->
-                            <!-- Top rail -->
-                            <Line X1="15" Y1="63" X2="55" Y2="63"
-                              Stroke="#1E293B" StrokeThickness="3"
-                              StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" />
-                            <!-- Bottom rail -->
-                            <Line X1="15" Y1="79" X2="55" Y2="79"
-                              Stroke="#1E293B" StrokeThickness="3"
-                              StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" />
-                            <!-- Left cap (circle side) -->
-                            <Line X1="15" Y1="60" X2="15" Y2="80"
-                              Stroke="#1E293B" StrokeThickness="2"
-                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
-                            <!-- Right cap (Transfer Module side) -->
-                            <Line X1="55" Y1="60" X2="55" Y2="80"
-                              Stroke="#1E293B" StrokeThickness="2"
-                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
-
-
-                            <!-- Slot 1 -->
-                            <Rectangle Canvas.Left="5" Canvas.Top="65" Width="12" Height="12"
-                            Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                            <!-- Slot 2 -->
-                            <Rectangle Canvas.Left="20" Canvas.Top="65" Width="12" Height="12"
-                            Fill="#F59E0B" RadiusX="1" RadiusY="1" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-
-                            <!-- Vertical Slot 1 -->
-                            <Border Canvas.Left="0" Canvas.Top="45" 
-                            BorderBrush="black" BorderThickness="2" Padding="1" CornerRadius="2" HorizontalAlignment="Center" VerticalAlignment="Top">
-                                <StackPanel Orientation="Vertical">
-                                    <Rectangle Width="12" Height="12" 
-                                    Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
+                            <!-- Rails -->
+                            <Line X1="15" Y1="63" X2="55" Y2="63" Style="{StaticResource RailLineStyle}"/>
+                            <Line X1="15" Y1="79" X2="55" Y2="79" Style="{StaticResource RailLineStyle}"/>
+                            <Line X1="15" Y1="60" X2="15" Y2="80" Style="{StaticResource RailCapStyle}"/>
+                            <Line X1="55" Y1="60" X2="55" Y2="80" Style="{StaticResource RailCapStyle}"/>
+                            <!-- Horizontal Slots -->
+                            <Rectangle Canvas.Left="5" Canvas.Top="65" Style="{StaticResource SlotRectangleStyle}"/>
+                            <Rectangle Canvas.Left="20" Canvas.Top="65" Style="{StaticResource SlotRectangleStyle}"/>
+                            <!-- Vertical Slots -->
+                            <Border Canvas.Left="0" Canvas.Top="45" Style="{StaticResource VerticalSlotBorderStyle}">
+                                <StackPanel>
+                                    <Rectangle Style="{StaticResource SlotRectangleStyle}"/>
                                     <Rectangle Height="1"/>
-                                    <Rectangle Width="12" Height="12" 
-                             Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
+                                    <Rectangle Style="{StaticResource SlotRectangleStyle}"/>
                                     <Rectangle Height="1"/>
-                                    <Rectangle Width="12" Height="12" 
-                                            Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
+                                    <Rectangle Style="{StaticResource SlotRectangleStyle}"/>
                                     <Rectangle Height="1"/>
-                                    <Rectangle Width="12" Height="12" 
-                                            Fill="#F59E0B" RadiusX="1" RadiusY="1"/>
+                                    <Rectangle Style="{StaticResource SlotRectangleStyle}"/>
                                 </StackPanel>
                             </Border>
                         </Canvas>
                     </Border>
-
                 </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+    </Setter.Value>
+    </Setter>
+ </Style>
 
     <!-- Inspection Unit Input -->
     <Style TargetType="{x:Type local:InspectionUnitInputCC}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:InspectionUnitInputCC}">
-                    <Border Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
-                        <!--<Border Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3" CornerRadius="4">-->
-                        <Grid >
+
+                    <ControlTemplate.Resources>
+
+                        <!-- Station Label -->
+                        <Style x:Key="StationLabelStyle" TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="#0F172A"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+
+                        <!-- Inspection Header -->
+                        <Style x:Key="InspectionHeaderStyle" TargetType="TextBlock">
+                            <Setter Property="FontSize" Value="15"/>
+                            <Setter Property="FontWeight" Value="ExtraBold"/>
+                            <Setter Property="Foreground" Value="#0F172A"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+
+                        <!-- Camera Icon Container -->
+                        <Style x:Key="CameraViewboxStyle" TargetType="Viewbox">
+                            <Setter Property="Width" Value="25"/>
+                            <Setter Property="Height" Value="30"/>
+                            <Setter Property="Margin" Value="2,0"/>
+                        </Style>
+
+                        <!-- Camera Icon -->
+                        <Style x:Key="CameraPathStyle" TargetType="Path">
+                            <Setter Property="Fill" Value="#475569"/>
+                        </Style>
+
+                    </ControlTemplate.Resources>
+
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+
+                        <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <Border BorderBrush="Brown" BorderThickness="1">
-                                <TextBlock Text="{Binding BatchNo, RelativeSource={RelativeSource TemplatedParent}, StringFormat='{}Station 1 - {0}'}" Foreground="#0F172A" HorizontalAlignment="Center"/>
-                            </Border>
-                            <TextBlock Grid.Row="1" Text="INSPECTION UNIT INPUT" FontSize="15" FontWeight="ExtraBold" 
-                                    Foreground="#0F172A" HorizontalAlignment="Center"/>
 
+                            <Border BorderBrush="Brown" BorderThickness="1">
+
+                                <TextBlock
+                             Text="{Binding BatchNo, RelativeSource={RelativeSource TemplatedParent}, StringFormat='{}Station 1 - {0}'}" 
+                                    Style="{StaticResource StationLabelStyle}"/>
+                            </Border>
+                            
+                            <TextBlock Grid.Row="1" Text="INSPECTION UNIT INPUT" Style="{StaticResource InspectionHeaderStyle}"/>
                             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="3">
-                                <Viewbox Width="25" Height="30" Margin="2,0">
-                                    <Path Fill="#475569" Data="M12,20H4A2,2 0 0,1 2,18V8A2,2 0 0,1 4,6H5L7,4H11L13,6H14A2,2 0 0,1 16,8V10.5L20,8V18L16,15.5V18A2,2 0 0,1 14,20H12M4,8V18H14V8H10.83L9,6H9L8.83,6H7.17L5.34,8H4M9,17A4,4 0 0,1 5,13A4,4 0 0,1 9,9A4,4 0 0,1 13,13A4,4 0 0,1 9,17M9,11A2,2 0 0,0 7,13A2,2 0 0,0 9,15A2,2 0 0,0 11,13A2,2 0 0,0 9,11Z"/>
+
+                                <Viewbox Style="{StaticResource CameraViewboxStyle}">
+                                    <Path Style="{StaticResource CameraPathStyle}" Data="M12,20H4A2,2 0 0,1 2,18V8A2,2 0 0,1 4,6H5L7,4H11L13,6H14A2,2 0 0,1 16,8V10.5L20,8V18L16,15.5V18A2,2 0 0,1 14,20H12M4,8V18H14V8H10.83L9,6H9L8.83,6H7.17L5.34,8H4M9,17A4,4 0 0,1 5,13A4,4 0 0,1 9,9A4,4 0 0,1 13,13A4,4 0 0,1 9,17M9,11A2,2 0 0,0 7,13A2,2 0 0,0 9,15A2,2 0 0,0 11,13A2,2 0 0,0 9,11Z"/>
                                 </Viewbox>
-                                <Viewbox Width="25" Height="30" Margin="2,0">
-                                    <Path Fill="#475569" Data="M12,20H4A2,2 0 0,1 2,18V8A2,2 0 0,1 4,6H5L7,4H11L13,6H14A2,2 0 0,1 16,8V10.5L20,8V18L16,15.5V18A2,2 0 0,1 14,20H12M4,8V18H14V8H10.83L9,6H9L8.83,6H7.17L5.34,8H4M9,17A4,4 0 0,1 5,13A4,4 0 0,1 9,9A4,4 0 0,1 13,13A4,4 0 0,1 9,17M9,11A2,2 0 0,0 7,13A2,2 0 0,0 9,15A2,2 0 0,0 11,13A2,2 0 0,0 9,11Z"/>
+
+                                <Viewbox Style="{StaticResource CameraViewboxStyle}">
+                                    <Path Style="{StaticResource CameraPathStyle}" Data="M12,20H4A2,2 0 0,1 2,18V8A2,2 0 0,1 4,6H5L7,4H11L13,6H14A2,2 0 0,1 16,8V10.5L20,8V18L16,15.5V18A2,2 0 0,1 14,20H12M4,8V18H14V8H10.83L9,6H9L8.83,6H7.17L5.34,8H4M9,17A4,4 0 0,1 5,13A4,4 0 0,1 9,9A4,4 0 0,1 13,13A4,4 0 0,1 9,17M9,11A2,2 0 0,0 7,13A2,2 0 0,0 9,15A2,2 0 0,0 11,13A2,2 0 0,0 9,11Z"/>
                                 </Viewbox>
                             </StackPanel>
-
-                            <!--<StackPanel Grid.Row="1" VerticalAlignment="Center">
-                                
-                                <Border Background="#E2E8F0" CornerRadius="2" Padding="1">
-                                    <TextBlock Text="QR" FontSize="10" FontWeight="Bold" Foreground="#475569" Height="14"/>
-                                </Border>
-                                <Border Background="#E2E8F0" CornerRadius="2" Padding="1">
-                                    <TextBlock Text="QR" FontSize="10" FontWeight="Bold" Foreground="#475569" Height="14"/>
-                                </Border>
-                                <Border Background="#E2E8F0" CornerRadius="2" Padding="1">
-                                    <TextBlock Text="QR" FontSize="10" FontWeight="Bold" Foreground="#475569" Height="14"/>
-                                </Border>
-                                <Border Background="#E2E8F0" CornerRadius="2" Padding="1">
-                                    <TextBlock Text="QR" FontSize="10" FontWeight="Bold" Foreground="#475569" Height="14"/>
-                                </Border>
-                            </StackPanel>-->
                         </Grid>
                     </Border>
                 </ControlTemplate>
@@ -832,6 +876,7 @@
             </Setter.Value>
         </Setter>
     </Style>
+    
     <!-- Robot 2 -->
     <Style TargetType="{x:Type local:Robot2CC}">
         <Setter Property="Template">
@@ -913,11 +958,47 @@
                                 <ColumnDefinition Width="Auto" MinWidth="58"/>
                                 <ColumnDefinition Width="Auto" MinWidth="58"/>
                             </Grid.ColumnDefinitions>
+                            
+                            <Grid.Resources>
 
-                            <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                <TextBlock Text="PID" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <!-- Header Border -->
+                                <Style x:Key="HeaderBorderStyle" TargetType="Border">
+                                    <Setter Property="Background" Value="#1565C0"/>
+                                    <Setter Property="BorderBrush" Value="Black"/>
+                                    <Setter Property="Padding" Value="3,2"/>
+                                </Style>
+
+                                <!-- Data Border -->
+                                <Style x:Key="DataBorderStyle" TargetType="Border">
+                                    <Setter Property="Background" Value="#0B1A2E"/>
+                                    <Setter Property="BorderBrush" Value="Black"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="Padding" Value="3,2"/>
+                                </Style>
+
+                                <!-- Header Text -->
+                                <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+
+                                <!-- Data Text -->
+                                <Style x:Key="DataTextStyle" TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="16"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+
+                            </Grid.Resources>
+
+                            <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource HeaderBorderStyle}">
+                                <TextBlock Text="PID" Style="{StaticResource HeaderTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Style="{StaticResource HeaderBorderStyle}">
                                 <TextBlock FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
@@ -932,70 +1013,70 @@
                                 </TextBlock>
                             </Border>
 
-                            <Border Grid.Row="1" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                <TextBlock Text="S.No." FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource HeaderBorderStyle}">
+                                <TextBlock Text="S.No." Style="{StaticResource HeaderTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="1" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                <TextBlock Text="Bend 1" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource HeaderBorderStyle}">
+                                <TextBlock Text="Bend 1" Style="{StaticResource HeaderTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="1" Grid.Column="2" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                <TextBlock Text="Bend 2" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource HeaderBorderStyle}">
+                                <TextBlock Text="Bend 2" Style="{StaticResource HeaderTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="1" Grid.Column="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                <TextBlock Text="Bend 3" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Grid.Row="1" Grid.Column="3" Style="{StaticResource HeaderBorderStyle}">
+                                <TextBlock Text="Bend 3" Style="{StaticResource HeaderTextStyle}"/>
                             </Border>
 
                             <!-- Data rows -->
-                            <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="1" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="2" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="1" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="2" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="3" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="2" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="3" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="4" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="3" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="4" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
-                            </Border>
-
-                            <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending1.Flex1.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
-                            </Border>
-                            <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending1.Flex2.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
-                            </Border>
-                            <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending1. Flex3.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
-                            </Border>
-                            <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending1. Flex4.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="5" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="4" Style="{StaticResource DataTextStyle}"/>
                             </Border>
 
-                            <Border Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending2.Flex1.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending1.Flex1.Temperature}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="3" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending2.Flex2.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending1.Flex2.Temperature}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="4" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending2.Flex3.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="4" Grid.Column="1" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending1. Flex3.Temperature}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="5" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending2.Flex4.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="5" Grid.Column="1" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending1. Flex4.Temperature}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
 
-                            <Border Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending3.Flex1.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending2.Flex1.Temperature}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="3" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending3.Flex2.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="3" Grid.Column="2" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending2.Flex2.Temperature}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="4" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending3.Flex3.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="4" Grid.Column="2" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending2.Flex3.Temperature}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="5" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending3.Flex4.Temperature}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="5" Grid.Column="2" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending2.Flex4.Temperature}" Style="{StaticResource DataTextStyle}"/>
+                            </Border>
+
+                            <Border Grid.Row="2" Grid.Column="3" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending3.Flex1.Temperature}" Style="{StaticResource DataTextStyle}"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="3" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending3.Flex2.Temperature}" Style="{StaticResource DataTextStyle}"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="3" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending3.Flex3.Temperature}" Style="{StaticResource DataTextStyle}"/>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="3" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending3.Flex4.Temperature}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
                         </Grid>
                     </Border>
@@ -1009,6 +1090,41 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:PidTableForceCC}">
+                    <ControlTemplate.Resources>
+
+                        <!-- Header Border -->
+                        <Style x:Key="HeaderBorderStyle" TargetType="Border">
+                            <Setter Property="Background" Value="#1565C0"/>
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="Padding" Value="3,2"/>
+                        </Style>
+
+                        <!-- Data Border -->
+                        <Style x:Key="DataBorderStyle" TargetType="Border">
+                            <Setter Property="Background" Value="#0B1A2E"/>
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="Padding" Value="3,2"/>
+                        </Style>
+
+                        <!-- Header Text -->
+                        <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="FontSize" Value="14"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+
+                        <!-- Data Text -->
+                        <Style x:Key="DataTextStyle" TargetType="TextBlock">
+                            <Setter Property="FontSize" Value="16"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+
+                    </ControlTemplate.Resources>
                     <Border Background="{TemplateBinding Background}"
                      BorderBrush="{TemplateBinding BorderBrush}"
                      BorderThickness="{TemplateBinding BorderThickness}">
@@ -1030,10 +1146,10 @@
                                 <ColumnDefinition Width="Auto" MinWidth="58"/>
                             </Grid.ColumnDefinitions>
 
-                            <Border Grid.Row="0" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                <TextBlock Text="PID" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource HeaderBorderStyle}">
+                                <TextBlock Text="PID" Style="{StaticResource HeaderTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
+                            <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Style="{StaticResource HeaderBorderStyle}">
                                 <TextBlock FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
@@ -1048,70 +1164,70 @@
                                 </TextBlock>
                             </Border>
 
-                            <Border Grid.Row="1" Grid.Column="0" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                <TextBlock Text="S.No." FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource HeaderBorderStyle}">
+                                <TextBlock Text="S.No." Style="{StaticResource HeaderTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="1" Grid.Column="1" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                <TextBlock Text="Bend 1" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource HeaderBorderStyle}">
+                                <TextBlock Text="Bend 1" Style="{StaticResource HeaderTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="1" Grid.Column="2" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                <TextBlock Text="Bend 2" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource HeaderBorderStyle}">
+                                <TextBlock Text="Bend 2" Style="{StaticResource HeaderTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="1" Grid.Column="3" Background="#1565C0" BorderBrush="Black" Padding="3,2">
-                                <TextBlock Text="Bend 3" FontWeight="Bold" FontSize="10" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Grid.Row="1" Grid.Column="3" Style="{StaticResource HeaderBorderStyle}">
+                                <TextBlock Text="Bend 3" Style="{StaticResource HeaderTextStyle}"/>
                             </Border>
 
                             <!-- Data rows -->
-                            <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="1" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="1" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="2" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="2" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="3" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="4" Grid.Column="0" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="3" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="4" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
-                            </Border>
-
-                            <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending1.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
-                            </Border>
-                            <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending1.Flex2.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
-                            </Border>
-                            <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending1.Flex3.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
-                            </Border>
-                            <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending1.Flex4.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="4" Style="{StaticResource DataTextStyle}"/>
                             </Border>
 
-                            <Border Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending2.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending1.Flex1.Force}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="3" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending2.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending2.Flex2.Force}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="4" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending2.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="4" Grid.Column="1" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending3.Flex3.Force}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="5" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending2.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="5" Grid.Column="1" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending3.Flex4.Force}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
 
-                            <Border Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending1.Flex1.Force}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="3" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="3" Grid.Column="2" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending2.Flex1.Force}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="4" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="4" Grid.Column="2" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
-                            <Border Grid.Row="5" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Background="#0B1A2E" Padding="3,2">
-                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Foreground="White" HorizontalAlignment="Center" FontSize="10"/>
+                            <Border Grid.Row="5" Grid.Column="2" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Style="{StaticResource DataTextStyle}"/>
+                            </Border>
+
+                            <Border Grid.Row="2" Grid.Column="3" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending1.Flex1.Force}" Style="{StaticResource DataTextStyle}"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="3" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending2.Flex1.Force}" Style="{StaticResource DataTextStyle}"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="3" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Style="{StaticResource DataTextStyle}"/>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="3" Style="{StaticResource DataBorderStyle}">
+                                <TextBlock Text="{Binding Bending3.Flex1.Force}" Style="{StaticResource DataTextStyle}"/>
                             </Border>
                         </Grid>
                     </Border>
@@ -1389,6 +1505,8 @@
                                         </Setter.Value>
                                     </Setter>
                                 </Style>
+
+                               
 
                             </Grid.Resources>
 

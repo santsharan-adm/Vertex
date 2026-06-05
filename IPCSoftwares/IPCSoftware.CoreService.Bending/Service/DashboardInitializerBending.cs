@@ -256,6 +256,7 @@ namespace IPCSoftware.CoreService.Bending.Service
             DashboardInspectionModel item = new DashboardInspectionModel
             {
                 BatchNo =   1,/* GetString(ConstantValues.QRCode1 != null ? int.TryParse(ConstantValues.QRCode1, out var batchQrId) ? batchQrId : 1187 : 1187),*/
+                StationIndex=1,
                 LineItem1 = BuildLineItem1(),
                 LineItem2 = BuildLineItem2(),
                 LineItem3 = BuildLineItem3(),
@@ -426,7 +427,7 @@ namespace IPCSoftware.CoreService.Bending.Service
                 {
                     Flex1 = new BendingIndicator
                     {
-                        Clamp = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b1f1Cv) ? (bool.TryParse(b1f1Cv.ToString(), out var b1f1Cr) ? b1f1Cr : false) : false,
+                        Clamp =  latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Clamp, out var b1f1Cv) ? (bool.TryParse(b1f1Cv.ToString(), out var b1f1Cr) ? b1f1Cr : false) : false,
                         Punch = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Punch, out var b1f1Pv) ? (bool.TryParse(b1f1Pv.ToString(), out var b1f1Pr) ? b1f1Pr : false) : false,
                         Heat = latestValueNew.TryGetValue(ConstantValues.Bending1Flex1Heat, out var b1f1Hv) ? (bool.TryParse(b1f1Hv.ToString(), out var b1f1Hr) ? b1f1Hr : false) : false,
                         Temperature = latestValueNew.TryGetValue(ConstantValues.L1Bending1Temperature, out var b1f1Tv) ? (float.TryParse(b1f1Tv.ToString(), out var b1f1Tr) ? b1f1Tr : 0f) : 0f,
