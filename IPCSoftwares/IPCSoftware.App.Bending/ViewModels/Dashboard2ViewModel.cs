@@ -499,30 +499,40 @@ namespace IPCSoftware.App.Bending.ViewModels
                     $"ContainsKey(11)={data?.ContainsKey(11)} | " +
                     $"Keys=[{(data != null ? string.Join(",", data.Keys) : "null")}]",
                     LogType.Diagnostics);
-
-                if (data.TryGetValue(11, out object modelObj))
+                int i = 0;
+                foreach (var item in data)
                 {
-                    var model = Deserialize<DashboardInspectionModel>(modelObj);
+                    object modelObj = item.Value;
 
-                    // ── LOG POINT 3b ── After deserialize: confirm values
-                    _logger.LogInfo(
-                        $"[DBG-BP3b] Deserialized model | " +
-                        $"model={( model == null ? "NULL" : "OK")} | " +
-                        $"LineItem1.HeaterTemp_Bend1={model?.LineItem1?.HeaterTemp_Bend1} | " +
-                        $"LineItem1.HeaterTemp_Bend2={model?.LineItem1?.HeaterTemp_Bend2} | " +
-                        $"LineItem1.QRCode1={model?.LineItem1?.QRCode}",
-                        LogType.Diagnostics);
-
-                    if (model != null)
+                    //object modelObj = item.Value;
+                    if (modelObj != null)
+                    //if (data.TryGetValue(i, out object modelObj))
                     {
-                        //DashboardInspectionModelBatch1 = model;
-                        DashboardInspectionModelBatches[model.StationIndex] = model;
-                        OnPropertyChanged("DashboardInspectionModelBatches");
+                        var model = Deserialize<DashboardInspectionModel>(modelObj);
+
+                        // ── LOG POINT 3b ── After deserialize: confirm values
+                        _logger.LogInfo(
+                            $"[DBG-BP3b] Deserialized model | " +
+                            $"model={(model == null ? "NULL" : "OK")} | " +
+                            $"LineItem1.HeaterTemp_Bend1={model?.LineItem1?.HeaterTemp_Bend1} | " +
+                            $"LineItem1.HeaterTemp_Bend2={model?.LineItem1?.HeaterTemp_Bend2} | " +
+                            $"LineItem1.QRCode1={model?.LineItem1?.QRCode}",
+                            LogType.Diagnostics);
+
+                        if (model != null)
+                        {
+                            //DashboardInspectionModelBatch1 = model;
+                            DashboardInspectionModelBatches[model.StationIndex-1] = model;
+
+                            OnPropertyChanged("DashboardInspectionModelBatches");
+                        }
                     }
-                }
-                else
-                {
-                    _logger.LogInfo("[DBG-BP3] data does NOT contain key 11 — model will not update", LogType.Diagnostics);
+                    else
+                    {
+                        _logger.LogInfo("[DBG-BP3] data does NOT contain key 11 — model will not update", LogType.Diagnostics);
+                    }
+                    i++;
+
                 }
             }
             catch (Exception ex)

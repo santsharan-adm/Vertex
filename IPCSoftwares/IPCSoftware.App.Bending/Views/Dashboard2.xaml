@@ -70,11 +70,11 @@
         <!--Batch No. & QR Code-->
         <cc:BatchQRCodePanelCC  Grid.Row="2"  Grid.Column="0" Grid.RowSpan="1"  
                                 BorderBrush="#1565C0" BorderThickness="1" Background="White" 
-                                DataContext="{Binding DashboardInspectionModelBatches[0]}"/>
+                                DataContext="{Binding DashboardInspectionModelBatches[1]}"/>
 
         <cc:BatchQRCodePanelCC  Grid.Row="3"  Grid.Column="0" Grid.RowSpan="1"  
                         BorderBrush="#1565C0" BorderThickness="1" Background="White" 
-                        DataContext="{Binding DashboardInspectionModelBatches[1]}"/>
+                        DataContext="{Binding DashboardInspectionModelBatches[0]}"/>
         <!--EFFICIENCY BREAKDOWN-->
         <cc:EfficiencyBreakdownCC Grid.Row="4"  Grid.Column="0" Grid.RowSpan="2"  Background="#1E293B" Margin="3" Padding="3"
                                   DataContext=""/>
@@ -100,7 +100,7 @@
                 <!--INSPECTION UNIT - 1-->
                 <cc:InspectionUnitInputCC Canvas.Left="303" Canvas.Top="405" Width="215"                                           
                            Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3"
-                                          StationIndex="1" BatchNo="{Binding BendingStationTrace.Station1BatchNo}"/>
+                                          StationIndex="1" BatchNo="{Binding DashboardInspectionModelBatches[0].BatchNo}"/>
                
 
                 <!--Robot1-->
@@ -126,20 +126,20 @@
                 <cc:TurnTable1CC Canvas.Left="334" Canvas.Top="148" />
 
                 <cc:StationIndexCC Canvas.Left="334" Canvas.Top="348" Width="150"
-                    StationIndex="2" BatchNo="{Binding BendingStationTrace.Station2BatchNo}"
+                    StationIndex="2" BatchNo="{Binding DashboardInspectionModelBatches[1].BatchNo}"
                                    BorderBrush="Brown" BorderThickness="1" Padding="3"/>
                 <cc:StationIndexCC Canvas.Left="229" Canvas.Top="228" Width="100"
                                    BorderBrush="Brown" BorderThickness="1" Padding="3"
-                    StationIndex="3" BatchNo="{Binding BendingStationTrace.Station3BatchNo}"/>
+                    StationIndex="3" BatchNo="{Binding DashboardInspectionModelBatches[2].BatchNo}"/>
 
                 <cc:StationIndexCC Canvas.Left="334" Canvas.Top="118" Width="150"
-                        StationIndex="4" BatchNo="{Binding BendingStationTrace.Station4BatchNo}"
+                        StationIndex="4" BatchNo="{Binding DashboardInspectionModelBatches[3].BatchNo}"
                                        BorderBrush="Brown" BorderThickness="1" Padding="3"/>
                 <!--<cc:StationIndexCC Canvas.Left="334" Canvas.Top="118" Width="150"
                         StationIndex="5" BatchNo="{Binding BendingStationTrace.Station5BatchNo}"
                                        BorderBrush="Brown" BorderThickness="1" Padding="3"/>-->
                 <cc:StationIndexCC Canvas.Left="494" Canvas.Top="268" Width="150"
-                     StationIndex="5" BatchNo="{Binding BendingStationTrace.Station6BatchNo}"
+                     StationIndex="5" BatchNo="{Binding DashboardInspectionModelBatches[4].BatchNo}"
                                     BorderBrush="Brown" BorderThickness="1" Padding="3"/>
 
 
@@ -157,21 +157,21 @@
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Top" />
                 <cc:StationIndexCC Canvas.Left="594" Canvas.Top="108" Width="150"
-                     StationIndex="6" BatchNo="{Binding BendingStationTrace.Station7BatchNo}"
+                     StationIndex="6" BatchNo="{Binding DashboardInspectionModelBatches[5].BatchNo}"
                                     BorderBrush="Brown" BorderThickness="1" Padding="3"/>
 
                 <cc:StationIndexCC Canvas.Left="844" Canvas.Top="108" Width="150"
-                     StationIndex="7" BatchNo="{Binding BendingStationTrace.Station8BatchNo}"
+                     StationIndex="7" BatchNo="{Binding DashboardInspectionModelBatches[6].BatchNo}"
                                     BorderBrush="Brown" BorderThickness="1" Padding="3"/>
 
                 <cc:StationIndexCC Canvas.Left="844" Canvas.Top="298" Width="150"
-                         StationIndex="8" BatchNo="{Binding BendingStationTrace.Station9BatchNo}"
+                         StationIndex="8" BatchNo="{Binding DashboardInspectionModelBatches[7].BatchNo}"
                                         BorderBrush="Brown" BorderThickness="1" Padding="3"/>
                 
                 <!--INSPECTION UNIT-->
                 <cc:InspectionUnitOutputCC Canvas.Left="820" Canvas.Top="405" Width="215" 
                                      Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3" 
-                                           StationIndex="10" BatchNo="1"                                           
+                                           StationIndex="9" BatchNo="{Binding DashboardInspectionModelBatches[8].BatchNo}"                                           
                                      />
 
                

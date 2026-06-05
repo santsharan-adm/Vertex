@@ -34,6 +34,7 @@ namespace IPCSoftware.Engine
         // latest packets per PLC (unitno)
         //protected readonly Dictionary<int, PlcPacket> _latestPackets = new();
         protected Dictionary<int, object> latestValueNew = new Dictionary<int, object>();
+        protected IProcessLogic processLogicEngine;
 
         //protected Dictionary<int, object>? _lastValues = null;
 
@@ -44,7 +45,8 @@ namespace IPCSoftware.Engine
             SystemMonitorService systemMonitor,
           UiListener ui,
           AlarmService alarmService,
-            CCDTriggerServiceBase ccdTrigger,          
+            CCDTriggerServiceBase ccdTrigger,
+             IProcessLogic processLogic,
             IAppLogger logger) : base(logger)
         {
             _ui = ui;
@@ -60,6 +62,7 @@ namespace IPCSoftware.Engine
             {
                 latestValueNew[tagId] = value;
             };
+            processLogicEngine = processLogic;
 
 
         }
@@ -105,6 +108,7 @@ namespace IPCSoftware.Engine
                 while (plcTasks.All(t => !t.IsCompleted))
                 {
                     var processedData = latestValueNew;
+                    processLogicEngine.Process(processedData);
                     await _ccdTrigger.ProcessTriggers(processedData, _manager);
                     _oee.ProcessCycleTimeLogic(processedData);
                     _oee.Calculate(processedData);
