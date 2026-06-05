@@ -348,8 +348,7 @@ namespace IPCSoftware.App.ViewModels
             _ = Task.Run(async () =>
             {
                 await InitializeAvailableProgramNumbers();
-                await InitializePositionsAsync();
-                InitializeAeLimitParameters();
+                await InitializePositionsAsync();               
                 await LoadAeLimitsAsync();
                 // await LoadProductSettingsAsync();
             });

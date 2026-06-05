@@ -30,6 +30,8 @@ namespace IPCSoftware.App.ViewModels
         private int _configuredTotalItems = 12;
         private readonly IServoCalibrationService _servoService;
 
+        private readonly IRecipeApplicationService _recipeAppService;
+
 
         // --- Tag Maps ---
         private readonly Dictionary<ManualOperationMode, int> _writeTags = new();
@@ -79,19 +81,20 @@ namespace IPCSoftware.App.ViewModels
         private bool GetState(ManualOperationMode mode) => Modes.FirstOrDefault(x => x.Mode == mode)?.IsActive ?? false;
 
 
-        public ManualOpViewModel(IAppLogger logger, CoreClient coreClient
-              /* IProductConfigurationService productService*/, INavigationService nav, IServoCalibrationService servoService) : base(logger)
+        public ManualOpViewModel(IAppLogger logger, CoreClient coreClient , IRecipeApplicationService recipeApplication
+              , INavigationService nav, IServoCalibrationService servoService) : base(logger)
         {
             _coreClient = coreClient;
             _nav = nav;
             //_productService = productService;
             _servoService = servoService;
+            _recipeAppService = recipeApplication;
 
             // 1. Initialize Modes List
-      /*      Modes = new ObservableCollection<ModeItem>(
-                Enum.GetValues(typeof(ManualOperationMode))
-                    .Cast<ManualOperationMode>()
-                    .Select(m => new ModeItem { Mode = m, Group = GetGroupName(m) }));*/
+            /*      Modes = new ObservableCollection<ModeItem>(
+                      Enum.GetValues(typeof(ManualOperationMode))
+                          .Cast<ManualOperationMode>()
+                          .Select(m => new ModeItem { Mode = m, Group = GetGroupName(m) }));*/
 
             // 2. Map All Tags
             //InitializeTags();
@@ -118,10 +121,11 @@ namespace IPCSoftware.App.ViewModels
         {
             try
             {
-                // A. Load Settings
-              //  var config = await _productService.LoadAsync();
-                var savedRecipe =  await _servoService.LoadRecipeAsync();
-                int totalItems = savedRecipe.LastOrDefault().TotalItems;
+
+
+
+                var selectedRecipe = await _recipeAppService.GetRecipefromSelection(); // Now Loads items from Selected recipe 
+                int totalItems = selectedRecipe?.TotalItems > 0 ? selectedRecipe.TotalItems : 12;
                 _configuredTotalItems = totalItems > 0 ? totalItems : 12;
 
                 // B. Initialize Modes Collection
