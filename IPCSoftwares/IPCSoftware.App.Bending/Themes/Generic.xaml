@@ -227,8 +227,8 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <Border BorderBrush="Brown" BorderThickness="1">
-                                <TextBlock Text="{Binding BatchNo, RelativeSource={RelativeSource TemplatedParent}, StringFormat='{}Station 9 - {0}'}" Foreground="#0F172A" HorizontalAlignment="Center"/>
+                            <Border BorderBrush="Black" BorderThickness="1">
+                                <TextBlock Text="{Binding BatchNo, RelativeSource={RelativeSource TemplatedParent}, StringFormat='{}Station 9 - {0}'}" Foreground="Brown" FontWeight="Black" HorizontalAlignment="Center"/>
                             </Border>
                             <TextBlock Grid.Row="1" Text="INSPECTION UNIT OUTPUT" 
                                 FontSize="15" 
@@ -658,7 +658,8 @@
 
                         <!-- Station Label -->
                         <Style x:Key="StationLabelStyle" TargetType="TextBlock">
-                            <Setter Property="Foreground" Value="#0F172A"/>
+                            <Setter Property="Foreground" Value="Brown"/>
+                            <Setter Property="FontWeight" Value="Black"/>
                             <Setter Property="HorizontalAlignment" Value="Center"/>
                         </Style>
 
@@ -694,7 +695,7 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <Border BorderBrush="Brown" BorderThickness="1">
+                            <Border BorderBrush="Black" BorderThickness="1">
 
                                 <TextBlock
                              Text="{Binding BatchNo, RelativeSource={RelativeSource TemplatedParent}, StringFormat='{}Station 1 - {0}'}" 
@@ -794,7 +795,7 @@
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4" HorizontalAlignment="Stretch">
-                        <TextBlock Foreground="#0F172A" HorizontalAlignment="Center" Margin="3,1">
+                        <TextBlock Foreground="Brown" FontWeight="Black" HorizontalAlignment="Center" Margin="3,1">
                             <TextBlock.Text>
                                 <MultiBinding StringFormat="{}Station - {1} - {0}">
                                     <!-- {0} = BatchNo from the templated parent -->
@@ -1247,12 +1248,12 @@
                         <!--<Border CornerRadius="5" BorderBrush="Black" BorderThickness="1.5">-->
                         <StackPanel Orientation="Horizontal" Margin="0">
                             <!-- Labels column -->
-                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
+                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="1">
                                 <StackPanel>
                                     <Border Background="{StaticResource AccentBlue}" Padding="3">
                                         <TextBlock Text="BEND" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
                                     </Border>
-                                    <Grid Margin="3">
+                                    <Grid Margin="1">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="15"/>
                                             <RowDefinition Height="15"/>
@@ -1266,7 +1267,7 @@
                             </Border>
 
                             <!-- Bend 1 -->
-                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
+                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="1">
                                 <StackPanel>
                                     <Border Background="{StaticResource AccentBlue}" Padding="6,3">
                                         <TextBlock Text="BEND 1" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
@@ -1300,7 +1301,7 @@
                             </Border>
 
                             <!-- Bend 2 -->
-                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
+                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="1">
                                 <StackPanel>
                                     <Border Background="{StaticResource AccentBlue}" Padding="6,3">
                                         <TextBlock Text="BEND 2" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
@@ -1334,7 +1335,7 @@
                             </Border>
 
                             <!-- Bend 3 -->
-                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="3">
+                            <Border CornerRadius="5" Background="{StaticResource TableBg}" BorderBrush="{StaticResource AccentBlue}" BorderThickness="1.5" Margin="1">
                                 <StackPanel>
                                     <Border Background="{StaticResource AccentBlue}" Padding="6,3">
                                         <TextBlock Text="BEND 3" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>

@@ -127,20 +127,20 @@
 
                 <cc:StationIndexCC Canvas.Left="334" Canvas.Top="348" Width="150"
                     StationIndex="2" BatchNo="{Binding DashboardInspectionModelBatches[1].BatchNo}"
-                                   BorderBrush="Brown" BorderThickness="1" Padding="3"/>
+                                   BorderBrush="Black" BorderThickness="1" Padding="3"/>
                 <cc:StationIndexCC Canvas.Left="229" Canvas.Top="228" Width="100"
-                                   BorderBrush="Brown" BorderThickness="1" Padding="3"
+                                   BorderBrush="Black" BorderThickness="1" Padding="3"
                     StationIndex="3" BatchNo="{Binding DashboardInspectionModelBatches[2].BatchNo}"/>
 
                 <cc:StationIndexCC Canvas.Left="334" Canvas.Top="118" Width="150"
                         StationIndex="4" BatchNo="{Binding DashboardInspectionModelBatches[3].BatchNo}"
-                                       BorderBrush="Brown" BorderThickness="1" Padding="3"/>
+                                       BorderBrush="Black" BorderThickness="1" Padding="3"/>
                 <!--<cc:StationIndexCC Canvas.Left="334" Canvas.Top="118" Width="150"
                         StationIndex="5" BatchNo="{Binding BendingStationTrace.Station5BatchNo}"
                                        BorderBrush="Brown" BorderThickness="1" Padding="3"/>-->
                 <cc:StationIndexCC Canvas.Left="494" Canvas.Top="268" Width="150"
                      StationIndex="5" BatchNo="{Binding DashboardInspectionModelBatches[4].BatchNo}"
-                                    BorderBrush="Brown" BorderThickness="1" Padding="3"/>
+                                    BorderBrush="Black" BorderThickness="1" Padding="3"/>
 
 
 
@@ -158,15 +158,15 @@
                                  VerticalAlignment="Top" />
                 <cc:StationIndexCC Canvas.Left="594" Canvas.Top="108" Width="150"
                      StationIndex="6" BatchNo="{Binding DashboardInspectionModelBatches[5].BatchNo}"
-                                    BorderBrush="Brown" BorderThickness="1" Padding="3"/>
+                                    BorderBrush="Black" BorderThickness="1" Padding="3"/>
 
                 <cc:StationIndexCC Canvas.Left="844" Canvas.Top="108" Width="150"
                      StationIndex="7" BatchNo="{Binding DashboardInspectionModelBatches[6].BatchNo}"
-                                    BorderBrush="Brown" BorderThickness="1" Padding="3"/>
+                                    BorderBrush="Black" BorderThickness="1" Padding="3"/>
 
                 <cc:StationIndexCC Canvas.Left="844" Canvas.Top="298" Width="150"
                          StationIndex="8" BatchNo="{Binding DashboardInspectionModelBatches[7].BatchNo}"
-                                        BorderBrush="Brown" BorderThickness="1" Padding="3"/>
+                                        BorderBrush="Black" BorderThickness="1" Padding="3"/>
                 
                 <!--INSPECTION UNIT-->
                 <cc:InspectionUnitOutputCC Canvas.Left="820" Canvas.Top="405" Width="215" 
