@@ -635,6 +635,11 @@ namespace IPCSoftware.App.ViewModels
                 // ADD-specific: assign new program number
                 var newRecipe = await BuildRecipeAsync(++_nextProgramId, enteredProductCode, enteredProductName, enteredTotalItem, enteredGridRow, enteredGridCol);
 
+                if (newRecipe == null)
+                {
+                    //_dialog.ShowWarning("Failed to build recipe. Please check logs.");
+                    return;
+                }
 
                 _lastProgramAdded = newRecipe.ProgramNo;
                 bool success = await _recipeManagementService.AddRecipeAsync(newRecipe);
@@ -754,11 +759,17 @@ namespace IPCSoftware.App.ViewModels
                     return;
                 }
 
-                bool confirm = _dialog.ShowYesNo($"Do you want to edit Program {SelectedProgramCode}?", "Confirm Update Recipe");
+                bool confirm = _dialog.ShowYesNo($"Do you want to save Program {SelectedProgramCode}?", "Confirm Update Recipe");
                 if (!confirm) return;
 
                 // SAVE-specific: keep original ProgramNo
                 var updatedRecipe = await BuildRecipeAsync(selectedRecipe.ProgramNo, enteredProductCode, enteredProductName, enteredTotalItem, enteredGridRow, enteredGridCol);
+
+                if (updatedRecipe == null)
+                {
+                    //_dialog.ShowWarning("Failed to build recipe. Please check logs.");
+                    return;
+                }
 
                 bool success = await _recipeManagementService.UpdateRecipeAsync(updatedRecipe);
 
@@ -778,14 +789,14 @@ namespace IPCSoftware.App.ViewModels
                 }
                 else
                 {
-                    _dialog.ShowWarning($"Failed to edit program {SelectedProgramCode}");
+                    _dialog.ShowWarning($"Failed to save program {SelectedProgramCode}");
                 }
 
                 HasUnsavedChanges = false;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to edit the program: {ex}", LogType.Error);
+                _logger.LogError($"Failed to save the program: {ex}", LogType.Error);
             }
         }
         // Called from within ModeOfOperationViewModel (uses recipe.ProductCode)
@@ -1648,7 +1659,7 @@ namespace IPCSoftware.App.ViewModels
                 GridRows = recipe.GridRows > 0 ? recipe.GridRows : 4;
                 GridColumns = recipe.GridColumns > 0 ? recipe.GridColumns : 3;
 
-                // Update FreshProduct fields as well (for edit mode)
+                // Update FreshProduct fields as well (for save mode)
                 FreshProductName = recipe.ProductName;
                 FreshProductCode = recipe.ProductCode;
 
@@ -1706,8 +1717,52 @@ namespace IPCSoftware.App.ViewModels
         private async Task<ServoRecipeModel> BuildRecipeAsync(int programNo, string productCode, string productName, int totalItems, int gridRows, int gridCols)
         {
             var savedPositions = Positions.ToList();
-            // --- 1. Save Unit Settings to appsettings.json ---
+           
+            //Validation required while saving exisiting recipe
+           if (!(IsCancelButtonVisible == Visibility.Visible)) 
+            {
+                // Extract sequence indexes from recipe (S1-S12)
+                var sequenceMap = new Dictionary<int, int>
+                        {
+                            { 1, savedPositions.FirstOrDefault(p => p.PositionId == 1)?.SequenceIndex ?? 0 },
+                            { 2, savedPositions.FirstOrDefault(p => p.PositionId == 2)?.SequenceIndex ?? 0 },
+                            { 3, savedPositions.FirstOrDefault(p => p.PositionId == 3)?.SequenceIndex ?? 0 },
+                            { 4, savedPositions.FirstOrDefault(p => p.PositionId == 4)?.SequenceIndex ?? 0 },
+                            { 5, savedPositions.FirstOrDefault(p => p.PositionId == 5)?.SequenceIndex ?? 0 },
+                            { 6, savedPositions.FirstOrDefault(p => p.PositionId == 6)?.SequenceIndex ?? 0 },
+                            { 7, savedPositions.FirstOrDefault(p => p.PositionId == 7)?.SequenceIndex ?? 0 },
+                            { 8, savedPositions.FirstOrDefault(p => p.PositionId == 8)?.SequenceIndex ?? 0 },
+                            { 9, savedPositions.FirstOrDefault(p => p.PositionId == 9)?.SequenceIndex ?? 0 },
+                            { 10, savedPositions.FirstOrDefault(p => p.PositionId == 10)?.SequenceIndex ?? 0 },
+                            { 11, savedPositions.FirstOrDefault(p => p.PositionId == 11)?.SequenceIndex ?? 0 },
+                            { 12, savedPositions.FirstOrDefault(p => p.PositionId == 12)?.SequenceIndex ?? 0 }
+                        };
 
+                // Filter active sequences (only up to TotalItems)
+                int activeItemCount = totalItems;
+                var activeSequences = sequenceMap
+                    .Where(kvp => kvp.Key <= activeItemCount)
+                    .Select(kvp => kvp.Value)
+                    .ToList();
+
+                //  Validate sequence numbers
+                // Check for duplicates
+                if (activeSequences.Distinct().Count() != activeSequences.Count)
+                {
+                    _dialog.ShowWarning("Validation Failed: Duplicate sequence numbers detected in recipe.");
+                    return null;
+                }
+
+                // Check range (1 to TotalItems)
+                if (activeSequences.Any(s => s < 1 || s > activeItemCount))
+                {
+                    _dialog.ShowWarning($"Validation Failed: Sequence numbers must be between 1 and {activeItemCount}.");
+                    return null;
+                }
+
+            }
+
+            // --- 1. Save Unit Settings to appsettings.json ---
 
             var json = File.ReadAllText(_appSettingsPath);
             var jsonObj = JObject.Parse(json);
@@ -1785,7 +1840,6 @@ namespace IPCSoftware.App.ViewModels
                 GridColumns = gridCols
             };
 
-                           
 
         }
 
