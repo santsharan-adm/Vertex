@@ -227,9 +227,13 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <Border BorderBrush="Black" BorderThickness="1">
+                            <!--<Border BorderBrush="Black" BorderThickness="1">
                                 <TextBlock Text="{Binding BatchNo, RelativeSource={RelativeSource TemplatedParent}, StringFormat='{}Station 9 - {0}'}" Foreground="Brown" FontWeight="Black" HorizontalAlignment="Center"/>
-                            </Border>
+                            </Border>-->
+                            <local:StationIndexCC x:Name="Part_NavButtonStationIndex" 
+                                  StationIndex="9" 
+                                BatchNo="{Binding BatchNo, RelativeSource={RelativeSource TemplatedParent}}"                                            
+                                BorderBrush="Black" BorderThickness="1" Padding="3"/>
                             <TextBlock Grid.Row="1" Text="INSPECTION UNIT OUTPUT" 
                                 FontSize="15" 
                                 FontWeight="ExtraBold" 
@@ -695,12 +699,16 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <Border BorderBrush="Black" BorderThickness="1">
+                            <!--<Border BorderBrush="Black" BorderThickness="1">
 
                                 <TextBlock
                              Text="{Binding BatchNo, RelativeSource={RelativeSource TemplatedParent}, StringFormat='{}Station 1 - {0}'}" 
                                     Style="{StaticResource StationLabelStyle}"/>
-                            </Border>
+                            </Border>-->
+                                <local:StationIndexCC x:Name="Part_NavButtonStationIndex" 
+                                          StationIndex="1" 
+                                        BatchNo="{Binding BatchNo, RelativeSource={RelativeSource TemplatedParent}}"                                            
+                                        BorderBrush="Black" BorderThickness="1" Padding="3"/>
                             
                             <TextBlock Grid.Row="1" Text="INSPECTION UNIT INPUT" Style="{StaticResource InspectionHeaderStyle}"/>
                             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="3">
@@ -795,17 +803,22 @@
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4" HorizontalAlignment="Stretch">
-                        <TextBlock Foreground="Brown" FontWeight="Black" HorizontalAlignment="Center" Margin="3,1">
-                            <TextBlock.Text>
-                                <MultiBinding StringFormat="{}Station - {1} - {0}">
-                                    <!-- {0} = BatchNo from the templated parent -->
-                                    <Binding Path="BatchNo" RelativeSource="{RelativeSource TemplatedParent}" />
-                                    <!-- {1} = fixed station label -->
-                                    <Binding Path="StationIndex" RelativeSource="{RelativeSource TemplatedParent}" />
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                        
+
+                        <Button x:Name="Part_NavButton"  >
+                            <Button.Content>
+                                <TextBlock Foreground="Brown" FontWeight="Black" HorizontalAlignment="Center" Margin="3,1">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}Station - {1} - {0}">
+                                            <!--{0} = BatchNo from the templated parent--> 
+                                            <Binding Path="BatchNo" RelativeSource="{RelativeSource AncestorType={x:Type local:StationIndexCC}}" />
+                                             <!--{1} = fixed station label-->
+                                             <Binding Path="StationIndex" RelativeSource="{RelativeSource AncestorType={x:Type local:StationIndexCC}}" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Button.Content>
+                        </Button>
+
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

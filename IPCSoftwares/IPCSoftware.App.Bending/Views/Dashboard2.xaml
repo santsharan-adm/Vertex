@@ -81,8 +81,8 @@
        
 
         <!--Bending 1,2,3,4-->
-        <cc:BendingDataTableCC Grid.Row="0" Grid.Column="2" 
-                               Background="#0B1A2E"  Padding="2" BorderBrush="#1565C0" BorderThickness="1"
+        <cc:BendingDataTableCC x:Name="BatchListView"  Grid.Row="0" Grid.Column="2" 
+                               Background="#0B1A2E"  Padding="2" BorderBrush="#1565C0" BorderThickness="1"                               
                                DataContext="{Binding DashboardInspectionModelBatches}"/>
 
         
@@ -100,6 +100,7 @@
                 <!--INSPECTION UNIT - 1-->
                 <cc:InspectionUnitInputCC Canvas.Left="303" Canvas.Top="405" Width="215"                                           
                            Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3"
+                                          cc:StationIndexCC.ButtonClick="StationIndexCC_ButtonClick"
                                           StationIndex="1" BatchNo="{Binding DashboardInspectionModelBatches[0].BatchNo}"/>
                
 
@@ -126,20 +127,24 @@
                 <cc:TurnTable1CC Canvas.Left="334" Canvas.Top="148" />
 
                 <cc:StationIndexCC Canvas.Left="334" Canvas.Top="348" Width="150"
-                    StationIndex="2" BatchNo="{Binding DashboardInspectionModelBatches[1].BatchNo}"
+                    StationIndex="2" BatchNo="{Binding DashboardInspectionModelBatches[1].BatchNo}"                                   
+                                   ButtonClick="StationIndexCC_ButtonClick"
                                    BorderBrush="Black" BorderThickness="1" Padding="3"/>
                 <cc:StationIndexCC Canvas.Left="229" Canvas.Top="228" Width="100"
                                    BorderBrush="Black" BorderThickness="1" Padding="3"
+                                   ButtonClick="StationIndexCC_ButtonClick"
                     StationIndex="3" BatchNo="{Binding DashboardInspectionModelBatches[2].BatchNo}"/>
 
                 <cc:StationIndexCC Canvas.Left="334" Canvas.Top="118" Width="150"
                         StationIndex="4" BatchNo="{Binding DashboardInspectionModelBatches[3].BatchNo}"
+                                   ButtonClick="StationIndexCC_ButtonClick"
                                        BorderBrush="Black" BorderThickness="1" Padding="3"/>
                 <!--<cc:StationIndexCC Canvas.Left="334" Canvas.Top="118" Width="150"
                         StationIndex="5" BatchNo="{Binding BendingStationTrace.Station5BatchNo}"
                                        BorderBrush="Brown" BorderThickness="1" Padding="3"/>-->
                 <cc:StationIndexCC Canvas.Left="494" Canvas.Top="268" Width="150"
                      StationIndex="5" BatchNo="{Binding DashboardInspectionModelBatches[4].BatchNo}"
+                                   ButtonClick="StationIndexCC_ButtonClick"
                                     BorderBrush="Black" BorderThickness="1" Padding="3"/>
 
 
@@ -158,19 +163,23 @@
                                  VerticalAlignment="Top" />
                 <cc:StationIndexCC Canvas.Left="594" Canvas.Top="108" Width="150"
                      StationIndex="6" BatchNo="{Binding DashboardInspectionModelBatches[5].BatchNo}"
+                                   ButtonClick="StationIndexCC_ButtonClick"
                                     BorderBrush="Black" BorderThickness="1" Padding="3"/>
 
                 <cc:StationIndexCC Canvas.Left="844" Canvas.Top="108" Width="150"
                      StationIndex="7" BatchNo="{Binding DashboardInspectionModelBatches[6].BatchNo}"
+                                   ButtonClick="StationIndexCC_ButtonClick"
                                     BorderBrush="Black" BorderThickness="1" Padding="3"/>
 
                 <cc:StationIndexCC Canvas.Left="844" Canvas.Top="298" Width="150"
                          StationIndex="8" BatchNo="{Binding DashboardInspectionModelBatches[7].BatchNo}"
+                                   ButtonClick="StationIndexCC_ButtonClick"
                                         BorderBrush="Black" BorderThickness="1" Padding="3"/>
                 
                 <!--INSPECTION UNIT-->
                 <cc:InspectionUnitOutputCC Canvas.Left="820" Canvas.Top="405" Width="215" 
                                      Background="#F8FAFC" BorderBrush="#475569" BorderThickness="3" 
+                                          cc:StationIndexCC.ButtonClick="StationIndexCC_ButtonClick"
                                            StationIndex="9" BatchNo="{Binding DashboardInspectionModelBatches[8].BatchNo}"                                           
                                      />
 

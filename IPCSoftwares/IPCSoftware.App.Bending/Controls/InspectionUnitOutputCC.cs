@@ -44,18 +44,68 @@ namespace IPCSoftware.App.Bending.Controls
     ///     <MyNamespace:InspectionUnitCC/>
     ///
     /// </summary>
+    [TemplatePart(Name = "Part_NavButtonStationIndex", Type = typeof(StationIndexCC))]
     public class InspectionUnitOutputCC : Control
     {
         static InspectionUnitOutputCC()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(InspectionUnitOutputCC), new FrameworkPropertyMetadata(typeof(InspectionUnitOutputCC)));
         }
+        /// <summary>
+        /// Raises the ButtonClick routed event.
+        /// </summary>
+        //protected virtual void OnButtonClick()
+        //{
+        //    RaiseEvent(new RoutedEventArgs(ButtonClickEvent, this));
+        //}
 
-        override public void OnApplyTemplate()
+        //private StationIndexCC? _partButton;
+        public override void OnApplyTemplate()
         {
+            // Detach previous handler if present
+            //if (_partButton != null)
+            //{
+            //    _partButton.ButtonClick -= PartButton_Click;
+            //    _partButton = null;
+            //}
             base.OnApplyTemplate();
-            
+            // Find the button in the control template and attach handler
+            //_partButton = GetTemplateChild("Part_NavButtonStationIndex") as StationIndexCC;
+            //if (_partButton != null)
+            //{
+            //    _partButton.ButtonClick += PartButton_Click;
+            //}
         }
+        //private void PartButton_Click(object? sender, RoutedEventArgs e)
+        //{
+        //    // Bubble up as the control's routed event
+        //    OnButtonClick();
+        //}
+        //#region RoutedEvent
+
+        ///// <summary>
+        ///// Routed event raised when the template button is clicked.
+        ///// Consumers can subscribe to the ButtonClick CLR event or add a handler for the routed event.
+        ///// </summary>
+        //public static readonly RoutedEvent ButtonClickEvent =
+        //    EventManager.RegisterRoutedEvent(
+        //        nameof(ButtonClick),
+        //        RoutingStrategy.Bubble,
+        //        typeof(RoutedEventHandler),
+        //        typeof(InspectionUnitOutputCC));
+
+        ///// <summary>
+        ///// CLR wrapper for the ButtonClick routed event.
+        ///// </summary>
+        //public event RoutedEventHandler ButtonClick
+        //{
+        //    add => AddHandler(ButtonClickEvent, value);
+        //    remove => RemoveHandler(ButtonClickEvent, value);
+        //}
+
+
+
+        //#endregion RoutedEvent
 
         #region Dependency Propety
         #region StationIndex
