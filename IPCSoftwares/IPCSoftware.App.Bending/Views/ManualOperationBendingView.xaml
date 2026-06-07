@@ -5,11 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:local="clr-namespace:IPCSoftware.App.Bending.Views"
+             xmlns:conv="clr-namespace:IPCSoftware.App.Bending.Converters"
              mc:Ignorable="d"
              d:DesignHeight="768"
              d:DesignWidth="1024">
 
     <UserControl.Resources>
+        <conv:BindingManualPageVisibilityConverter x:Key="BindingManualPageVisibilityConverter"/> 
         <Style x:Key="AlphaOperationButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#FFFFFF"/>
             <Setter Property="Foreground" Value="#2D3748"/>
@@ -93,47 +95,530 @@
                    FontWeight="Bold" 
                    Foreground="#1A202C" 
                    HorizontalAlignment="Center" 
-                   Margin="0,5,0,15"/>
+                   Margin="3"/>
 
         <Border Grid.Row="1" 
                 Background="White" 
                 BorderBrush="#E2E8F0" 
                 BorderThickness="1" 
                 CornerRadius="12" 
-                Padding="15" 
-                Margin="0,0,0,15">
+                Padding="3" 
+                Margin="3"
+                Visibility="{Binding SelectedPageIndex,Converter={StaticResource BindingManualPageVisibilityConverter}, ConverterParameter=0}">
+            <Grid  Margin="3">
 
-            <GroupBox Header="{Binding CurrentPage.Title}" 
-                      BorderThickness="0" 
-                      FontSize="25" 
-                      FontWeight="Bold" 
-                      Foreground="#4A5568">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <!-- HEADER -->
+                <Border Grid.Row="0"
+                   Background="#1A1A1A"
+                   BorderBrush="#333333"
+                   BorderThickness="1"
+                   CornerRadius="4"
+                   Padding="3">
 
-                <UniformGrid Rows="4" Columns="5" Margin="0,10,0,0" >
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[0].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[0].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[0].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[0].IsEnabled}" FontSize="20" Tag="1"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[1].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[1].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[1].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[1].IsEnabled}" FontSize="20" Tag="2"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[2].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[2].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[2].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[2].IsEnabled}" FontSize="20" Tag="3"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[3].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[3].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[3].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[3].IsEnabled}" FontSize="20" Tag="4"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[4].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[4].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[4].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[4].IsEnabled}" FontSize="20" Tag="5"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[5].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[5].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[5].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[5].IsEnabled}" FontSize="20" Tag="6"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[6].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[6].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[6].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[6].IsEnabled}" FontSize="20" Tag="7"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[7].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[7].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[7].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[7].IsEnabled}" FontSize="20" Tag="8"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[8].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[8].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[8].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[8].IsEnabled}" FontSize="20" Tag="9"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[9].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[9].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[9].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[9].IsEnabled}" FontSize="20" Tag="10"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[10].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[10].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[10].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[10].IsEnabled}" FontSize="20" Tag="11"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[11].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[11].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[11].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[11].IsEnabled}" FontSize="20" Tag="12"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[12].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[12].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[12].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[12].IsEnabled}" FontSize="20" Tag="13"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[13].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[13].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[13].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[13].IsEnabled}" FontSize="20" Tag="14"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[14].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[14].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[14].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[14].IsEnabled}" FontSize="20" Tag="15"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[15].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[15].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[15].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[15].IsEnabled}" FontSize="20" Tag="16"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[16].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[16].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[16].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[16].IsEnabled}" FontSize="20" Tag="17"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[17].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[17].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[17].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[17].IsEnabled}" FontSize="20" Tag="18"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[18].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[18].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[18].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[18].IsEnabled}" FontSize="20" Tag="19"/>
-                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[19].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[19].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[19].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[19].IsEnabled}" FontSize="20" Tag="20"/>
-                </UniformGrid>
-            </GroupBox>
+                    <TextBlock Text="Return to Origin"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontFamily="Consolas"/>
+                </Border>
+
+                <!-- BODY -->
+                <ScrollViewer Grid.Row="1"
+                        VerticalScrollBarVisibility="Auto">
+
+                    <UniformGrid Rows="4" Columns="5" Margin="0,10,0,0" >
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[0].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[0].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[0].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[0].IsEnabled}" FontSize="20" Tag="1"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[1].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[1].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[1].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[1].IsEnabled}" FontSize="20" Tag="2"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[2].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[2].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[2].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[2].IsEnabled}" FontSize="20" Tag="3"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[3].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[3].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[3].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[3].IsEnabled}" FontSize="20" Tag="4"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[4].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[4].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[4].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[4].IsEnabled}" FontSize="20" Tag="5"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[5].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[5].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[5].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[5].IsEnabled}" FontSize="20" Tag="6"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[6].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[6].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[6].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[6].IsEnabled}" FontSize="20" Tag="7"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[7].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[7].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[7].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[7].IsEnabled}" FontSize="20" Tag="8"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[8].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[8].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[8].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[8].IsEnabled}" FontSize="20" Tag="9"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[9].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[9].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[9].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[9].IsEnabled}" FontSize="20" Tag="10"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[10].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[10].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[10].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[10].IsEnabled}" FontSize="20" Tag="11"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[11].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[11].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[11].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[11].IsEnabled}" FontSize="20" Tag="12"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[12].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[12].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[12].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[12].IsEnabled}" FontSize="20" Tag="13"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[13].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[13].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[13].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[13].IsEnabled}" FontSize="20" Tag="14"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[14].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[14].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[14].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[14].IsEnabled}" FontSize="20" Tag="15"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[15].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[15].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[15].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[15].IsEnabled}" FontSize="20" Tag="16"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[16].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[16].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[16].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[16].IsEnabled}" FontSize="20" Tag="17"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[17].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[17].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[17].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[17].IsEnabled}" FontSize="20" Tag="18"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[18].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[18].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[18].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[18].IsEnabled}" FontSize="20" Tag="19"/>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[19].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[19].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[19].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[19].IsEnabled}" FontSize="20" Tag="20"/>
+                    </UniformGrid>
+
+                </ScrollViewer>
+            </Grid>
         </Border>
 
+        <Border Grid.Row="1" 
+            Background="White" 
+            BorderBrush="#E2E8F0" 
+            BorderThickness="1" 
+            CornerRadius="12" 
+            Padding="3" 
+            Margin="3"
+                Visibility="{Binding SelectedPageIndex,Converter={StaticResource BindingManualPageVisibilityConverter}, ConverterParameter=1}">
+            <Grid  Margin="3">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- HEADER -->
+                <Border Grid.Row="0"
+                    Background="#1A1A1A"
+                    BorderBrush="#333333"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="3">
+
+                    <TextBlock Text="MANUAL MONITOR(INPUT UNIT)"
+                        FontSize="28"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="Consolas"/>
+                </Border>
+
+                <!-- BODY -->
+                <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto">
+
+                    <Grid Margin="3">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- LEFT PANEL -->
+                        <GroupBox Grid.Row="0" Grid.Column="0" Margin="5" >
+                            <GroupBox.Header>
+                                <TextBlock Text="M02: INPUT Module (SUPPY)" Foreground="Black" FontSize="18" FontWeight="Black"/>
+                            </GroupBox.Header>
+                            <Grid Margin="3">
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <GroupBox  Grid.Row="0" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="SUPPLY CONVEYOR" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <!-- Row 1 -->
+                                        <!--<Button Content="SUPPLY&#10;CONVEYOR"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#555"
+                                            Foreground="White"/>-->
+
+                                        <Button Content="STOP"
+                                                Height="60"
+                                                Margin="3"
+                                                Background="#11AA44"
+                                                Foreground="White"/>
+
+                                        <Button Content="FORWARD"
+                                                Height="60"
+                                                Margin="3"
+                                                Background="#11AA44"
+                                                Foreground="White"/>
+
+                                        <Button Content="BACKWARD"
+                                                Height="60"
+                                                Margin="3"
+                                                Background="#0066FF"
+                                                Foreground="White"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                                <GroupBox  Grid.Row="1" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="SUPPLY TRAY CHUCK (L/R)" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <!-- Row 2 -->
+                                        <!--<Button Content="SUPPLY TRAY&#10;CHUCK (L/R)"
+                                                    Height="60"
+                                                    Margin="3"
+                                                    Background="#555"
+                                                    Foreground="White"/>-->
+
+                                        <Button Content="UNCHUCK"
+                                                        Height="60"
+                                                        Margin="3"
+                                                        Background="#11AA44"
+                                                        Foreground="White"/>
+
+                                        <Button Content="CHUCK"
+                                                    Height="60"
+                                                    Margin="3"
+                                                    Background="#0066FF"
+                                                    Foreground="White"/>
+                                        <Border Background="Transparent"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                                <GroupBox Grid.Row="2" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="SUPPLY TRAY RELEASE (L/R)" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <!-- Row 3 -->
+                                        <!--<Button Content="SUPPLY TRAY&#10;RELEASE (L/R)"
+                                                Height="60"
+                                                Margin="3"
+                                                Background="#555"
+                                                Foreground="White"/>-->
+
+                                        <Button Content="DOWN"
+                                                Height="60"
+                                                Margin="3"
+                                                Background="#0066FF"
+                                                Foreground="White"/>
+
+                                        <Button Content="CENTER"
+                                                Height="60"
+                                                Margin="3"
+                                                Background="#11AA44"
+                                                Foreground="White"/>
+
+                                        <Button Content="UP"
+                                                Height="60"
+                                                Margin="3"
+                                                Background="#0066FF"
+                                                Foreground="White"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                                <GroupBox  Grid.Row="3" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="SUPPLY TRAY RELEASE (L/R)" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <!-- Row 4 -->
+                                        <!--<Button Content="SUPPLY TRAY&#10;STOPPER"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#555"
+                                            Foreground="White"/>-->
+
+                                        <Button Content="UP"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#11AA44"
+                                            Foreground="White"/>
+
+                                        <Button Content="DOWN"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#0066FF"
+                                            Foreground="White"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                            </Grid>
+
+                        </GroupBox>
+                        <!--  BOTTOM PANEL -->
+                        <GroupBox Header="M02: INPUT Module (LIFT UP/DOWN)"
+                              Grid.Row="1"
+                              Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                              Margin="5"
+                              Foreground="Black"
+                              FontSize="18">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+
+                                <GroupBox Header="LIFT CONVEYOR"
+                                    Grid.Row="0" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <!--<Button Content="LIFT CONVEYOR"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#555"
+                                            Foreground="White"/>-->
+
+                                        <Button Content="STOP"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#11AA44"
+                                            Foreground="White"/>
+
+                                        <Button Content="FORWARD"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#11AA44"
+                                            Foreground="White"/>
+
+                                        <Button Content="BACKWARD"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#0066FF"
+                                            Foreground="White"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                                <!-- Left BOTTOM PANEL -->
+                                <GroupBox Header="LIFT TRAY STOPPER"
+                                    Grid.Row="1" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
+                                    <UniformGrid Columns="3" Margin="5">
+                                        <!--<Button Content="LIFT TRAY STOPPER"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#555"
+                                            Foreground="White"/>-->
+
+                                        <Button Content="UP"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#11AA44"
+                                            Foreground="White"/>
+                                        <Button Content="DOWN"
+                                                Height="60"
+                                                Margin="3"
+                                                Background="#0066FF"
+                                                Foreground="White"/>
+
+                                    </UniformGrid>
+                                </GroupBox>
+                                <GroupBox Header="LIFT TRAY HOLDER"
+                                    Grid.Row="0" Grid.Column="1" Margin="5" Foreground="Black" FontSize="18">
+                                    <UniformGrid Columns="3" Margin="5">
+                                        <Button Content="Backward"
+                                         Height="60"
+                                         Margin="3"
+                                         Background="#0066FF"
+                                         Foreground="White"/>
+
+
+
+                                        <Button Content="Forward"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#11AA44"
+                                            Foreground="White"/>
+                                    </UniformGrid>
+
+                                </GroupBox>
+                                <GroupBox Header="LIFT UNIT"
+                                        Grid.Row="1" Grid.Column="1" Margin="5" Foreground="Black" FontSize="18">
+                                    <UniformGrid Columns="3" Margin="5">
+                                        <Button Content="Down"
+                                         Height="60"
+                                         Margin="3"
+                                         Background="#0066FF"
+                                         Foreground="White"/>
+
+
+
+                                        <Button Content="UP"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#11AA44"
+                                            Foreground="White"/>
+                                    </UniformGrid>
+
+                                </GroupBox>
+
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- RIGHT PANEL -->
+                        <GroupBox Header="M02: INPUT Module (DISCHARGE)"
+                              Grid.Row="0"
+                              Grid.Column="1"
+                              Margin="5"
+                              Foreground="Black"
+                              FontSize="18">
+                            <Grid Margin="3">
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Header="DISCHARGE CONVEYOR"
+                                      Grid.Row="0"
+                                      Grid.Column="0"
+                                      Margin="5"
+                                      Foreground="Black"
+                                      FontSize="18">
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <!--<Button Content="DISCHARGE CONVEYOR"
+                                    Height="60"
+                                    Margin="3"
+                                    Background="#555"
+                                    Foreground="White"/>-->
+
+                                        <Button Content="STOP"
+                                    Height="60"
+                                    Margin="3"
+                                    Background="#11AA44"
+                                    Foreground="White"/>
+
+                                        <Button Content="FORWARD"
+                                    Height="60"
+                                    Margin="3"
+                                    Background="#11AA44"
+                                    Foreground="White"/>
+
+                                        <Button Content="BACKWARD"
+                                    Height="60"
+                                    Margin="3"
+                                    Background="#0066FF"
+                                    Foreground="White"/>
+
+                                    </UniformGrid>
+                                </GroupBox>
+                                <GroupBox Header="DISCHARGE TRAY CHUNK (L/R)"
+                                      Grid.Row="1"
+                                      Grid.Column="0"
+                                      Margin="5"
+                                      Foreground="Black"
+                                      FontSize="18">
+                                    <UniformGrid Columns="2" Margin="5">
+
+                                        <!--<Button Content="DISCHARGE CONVEYOR"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#555"
+                                            Foreground="White"/>-->
+
+                                        <Button Content="UNCHUCK"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#11AA44"
+                                            Foreground="White"/>
+
+                                        <Button Content="CHUCK"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#11AA44"
+                                            Foreground="White"/>
+
+                                        
+
+                                    </UniformGrid>
+                                </GroupBox>
+                                <GroupBox Header="DISCHARGE TRAY Release (L/R)"
+                                          Grid.Row="2"
+                                          Grid.Column="0"
+                                          Margin="5"
+                                          Foreground="Black"
+                                          FontSize="18">
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <!--<Button Content="DISCHARGE CONVEYOR"
+                                                Height="60"
+                                                Margin="3"
+                                                Background="#555"
+                                                Foreground="White"/>-->
+
+                                        <Button Content="Down"
+                                            Height="60"
+                                            Margin="3"
+                                            Background="#11AA44"
+                                            Foreground="White"/>
+
+                                        <Button Content="Center"
+                                                Height="60"
+                                                Margin="3"
+                                                Background="#11AA44"
+                                                Foreground="White"/>
+                                        <Button Content="UP"
+                                              Height="60"
+                                              Margin="3"
+                                              Background="#11AA44"
+                                              Foreground="White"/>
+
+
+
+                                    </UniformGrid>
+                                </GroupBox>
+                                <GroupBox Header="DISCHARGE TRAY STOPPER"
+                                          Grid.Row="3"
+                                          Grid.Column="0"
+                                          Margin="5"
+                                          Foreground="Black"
+                                          FontSize="18">
+                                    <UniformGrid Columns="2" Margin="5">
+
+                                        <!--<Button Content="DISCHARGE CONVEYOR"
+                                                Height="60"
+                                                Margin="3"
+                                                Background="#555"
+                                                Foreground="White"/>-->
+
+                                        <Button Content="UP"
+                                                Height="60"
+                                                Margin="3"
+                                                Background="#11AA44"
+                                                Foreground="White"/>
+
+                                        <Button Content="DOWN"
+                                                        Height="60"
+                                                        Margin="3"
+                                                        Background="#11AA44"
+                                                        Foreground="White"/>
+
+
+
+                                    </UniformGrid>
+                                </GroupBox>
+                            </Grid>
+                        </GroupBox>
+
+                        
+
+                    </Grid>
+                            
+
+                </ScrollViewer>
+                        
+
+            </Grid>
+
+        </Border>
         <StackPanel Grid.Row="2" 
                     Orientation="Horizontal" 
                     HorizontalAlignment="Center" 
@@ -146,7 +631,11 @@
             <ComboBox Width="150" Height="48" Margin="5" 
                       VerticalContentAlignment="Center" HorizontalContentAlignment="Center" 
                       FontSize="16" FontWeight="SemiBold" Background="White" 
-                      ItemsSource="{Binding ManualPageList}" SelectedItem="{Binding SelectedPage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                      ItemsSource="{Binding ComboBoxItemsManualPage}" 
+                      SelectedIndex="{Binding SelectedPageIndex}"
+                      SelectedItem="{Binding SelectedPage}"
+                      DisplayMemberPath="DisplayName"
+                      SelectedValuePath="Value">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}" />
