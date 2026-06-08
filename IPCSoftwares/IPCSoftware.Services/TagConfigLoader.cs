@@ -273,7 +273,7 @@ namespace IPCSoftware.Services
             {
                 var sb = new StringBuilder();
                 string ver = _fileHandler.Getversion(filepath);
-                string version = string.Format($"Version - {ver}");
+                string version = string.Format($"Version = {ver}");
                 sb.AppendLine(version);
                 string header = _fileHandler.GetHeader(filepath);
                 sb.AppendLine(header);
@@ -282,23 +282,31 @@ namespace IPCSoftware.Services
                 {
                     if (ver == "2.0")
                     {
-                        sb.AppendLine($"{tag.Id}," +
-                            $"{tag.Id}," +
+                        sb.AppendLine($"{tag.Id}," +                            
+                            $"{tag.Category}," +
+                            $"{tag.DMAddress}," +
                             $"{_fileHandler.EscapeCsv(tag.Name)}," +         // <--- Was $"\"{EscapeCsv(tag.Name)}\","
                             $"{tag.PLCNo}," +
+                             $"{tag.M40000}," +
                             $"{tag.ModbusAddress}," +
-                            $"{tag.Length}," +
                             $"{tag.AlgNo}," +
+                            $"{tag.Length}," +
                             $"{GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
                             $"{tag.BitNo}," +
+                            $"{tag.UseEngMinMax}," +
                             $"{tag.Offset}," +
                             $"{tag.Span}," +
-                            $"{_fileHandler.EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
-                            $"{_fileHandler.EscapeCsv(tag.Remark)}," +       // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
+                            $"{tag.Monitor}," +
                             $"{tag.CanWrite}," +
+                            $"{tag.Direction}," +
                             $"{_fileHandler.EscapeCsv(tag.IOType)}," +
-                            $"{tag.UseEngMinMax}," +
-                            $"{tag.EnableTraceLog}");
+                            $"{tag.EnableTraceLog}" +
+                            $"{_fileHandler.EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
+                            $"{_fileHandler.EscapeCsv(tag.Remark)}");    
+                         
+                            
+                            
+                            
                     }
                     else
                     {

@@ -13,8 +13,16 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         
         [Obsolete("TagNo is deprecated. Use Id,Name as the unique identifier for tags.")]
         public int TagNo { get; set; }
+
+        public string Category {get; set;}
+
+        public string DMAddress { get; set; }
+
+
         public string Name { get; set; }
         public int PLCNo { get; set; }
+
+        public int M40000 {get; set;}
         public int ModbusAddress { get; set; }
        // public string DMAddress { get; set; } // NEW: DM Address (e.g., DM100)
         public int Length { get; set; }
@@ -24,6 +32,11 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public bool UseEngMinMax { get; set; }
         public double Offset { get; set; }
         public double Span { get; set; }
+
+        public int Monitor {  get; set; }
+
+      
+
         public string Description { get; set; }
         public string Remark { get; set; }
 
@@ -41,13 +54,19 @@ namespace IPCSoftware.Shared.Models.ConfigModels
             AlgNo = 0;
             DataType = 1;
             BitNo = 0;
-
+            Category = "System Data";
+            DMAddress = "D10000";
+            M40000 = 0;
             Offset = 0;
             Span = 0;
+            Monitor = 0;
             CanWrite = false;
             IOType = "None"; // Default
             EnableTraceLog = false; // Default to false krishna add this 
            // DMAddress = string.Empty;
+
+
+
         }
 
         public PLCTagConfigurationModel Clone()
@@ -64,9 +83,10 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 AlgNo = this.AlgNo,
                 DataType = this.DataType,
                 BitNo = this.BitNo,
-
+                Category =this.Category, DMAddress = this.DMAddress, M40000 = this.M40000,
                 Offset = this.Offset,
                 Span = this.Span,
+                Monitor = this.Monitor,
                 Description = this.Description,
                 Remark = this.Remark,
                 CanWrite = this.CanWrite,

@@ -331,27 +331,33 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             {
                 _currentTag.Id = Id;
                 //_currentTag.TagNo = TagNo;
+                _currentTag.Category = "System Data";
+                _currentTag.DMAddress = "D10000";
                 _currentTag.Name = Name;
                 _currentTag.PLCNo = PLCNo;
+                _currentTag.M40000 = 0;                
                 _currentTag.ModbusAddress = ModbusAddress;
-                // _currentTag.DMAddress = DMAddress;
-                _currentTag.Length = Length;
-
-                // Save the numeric value (1, 2, or 3)
-                _currentTag.AlgNo = SelectedAlgorithm?.Value ?? 1;
+                _currentTag.AlgNo = SelectedAlgorithm?.Value ?? 1;               
+                _currentTag.Length = Length;          
+                
                 _currentTag.DataType = DataType;
                 _currentTag.BitNo = BitNo;
-
+                _currentTag.UseEngMinMax = UseEngMinMax;
                 _currentTag.Offset = Offset;
                 _currentTag.Span = Span;
+                _currentTag.Monitor = 0;
+                _currentTag.CanWrite = CanWrite;
+                _currentTag.Direction = "PLC->IPC";
+                _currentTag.IOType = SelectedIOType;
+                _currentTag.EnableTraceLog = EnableTraceLog;
                 _currentTag.Description = Description;
                 _currentTag.Remark = Remark;
-                _currentTag.CanWrite = CanWrite;
-                _currentTag.UseEngMinMax = UseEngMinMax;
-                _currentTag.EnableTraceLog = EnableTraceLog;
+                
+             
+                
 
 
-                _currentTag.IOType = SelectedIOType;
+               
             }
             catch (Exception ex)
             {
