@@ -300,7 +300,7 @@ namespace IPCSoftware.Services
                             $"{tag.CanWrite}," +
                             $"{tag.Direction}," +
                             $"{_fileHandler.EscapeCsv(tag.IOType)}," +
-                            $"{tag.EnableTraceLog}" +
+                            $"{tag.EnableTraceLog}," +
                             $"{_fileHandler.EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
                             $"{_fileHandler.EscapeCsv(tag.Remark)}");    
                          
