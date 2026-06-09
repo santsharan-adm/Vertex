@@ -220,7 +220,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 "Output",
                 "None"
             };
-
+            //Should come from a shared place if possible to avoid mismatches between loading and analysis logic - BMK-09-06-2026 -ReviewComment
             DataTypes = new ObservableCollection<DataTypeOption>
             {
                 new DataTypeOption { Id = 1, Name = "Int16" },

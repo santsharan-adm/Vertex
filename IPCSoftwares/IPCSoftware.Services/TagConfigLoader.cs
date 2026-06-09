@@ -14,13 +14,14 @@ namespace IPCSoftware.Services
         public TagConfigLoader(IAppLogger logger , IFileHandler fileHandler) : base(logger)
         { _fileHandler = fileHandler; }
         // Constants matching definitions in AlgorithmAnalysisService/Requirements
-        private const int DataType_Int16 = 1;
-        private const int DataType_Word32 = 2;
-        private const int DataType_Bit = 3;
-        private const int DataType_FP = 4;
-        private const int DataType_String = 5;
-        private const int DataType_UInt16 = 6;
-        private const int DataType_UInt32 = 7;
+        //Should come from a shared place if possible to avoid mismatches between loading and analysis logic - BMK-09-06-2026 -ReviewComment
+        //private const int DataType_Int16 = 1;
+        //private const int DataType_Word32 = 2;
+        //private const int DataType_Bit = 3;
+        //private const int DataType_FP = 4;
+        //private const int DataType_String = 5;
+        //private const int DataType_UInt16 = 6;
+        //private const int DataType_UInt32 = 7;
 
         public List<PLCTagConfigurationModel> Load(string filePath)
         {
@@ -230,17 +231,17 @@ namespace IPCSoftware.Services
         {
             switch (dataType)
             {
-                case DataType_Int16: // 16-bit (1 register)
-                case DataType_Bit:   // 1-bit (1 register)
-                case DataType_UInt16:   // 1-bit (1 register)
+                case PLCTagTypeExtensions.DataType_Int16: // 16-bit (1 register)
+                case PLCTagTypeExtensions.DataType_Bit:   // 1-bit (1 register)
+                case PLCTagTypeExtensions.DataType_UInt16:   // 1-bit (1 register)
                     return 1;
 
-                case DataType_Word32: // 32-bit (2 registers)
-                case DataType_FP:     // Float (32-bit, 2 registers)
-                case DataType_UInt32:   // 1-bit (1 register)
+                case PLCTagTypeExtensions.DataType_Int32: // 32-bit (2 registers)
+                case PLCTagTypeExtensions.DataType_FP:     // Float (32-bit, 2 registers)
+                case PLCTagTypeExtensions.DataType_UInt32:   // 1-bit (1 register)
                     return 2;
 
-                case DataType_String:
+                case PLCTagTypeExtensions.DataType_String:
                     // String length is configurable (Max 50 registers per requirement).
                     return Math.Clamp(configuredLength, 1, 50);
 
@@ -291,7 +292,7 @@ namespace IPCSoftware.Services
                             $"{tag.ModbusAddress}," +
                             $"{tag.AlgNo}," +
                             $"{tag.Length}," +
-                            $"{GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
+                            $"{PLCTagTypeExtensions.GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
                             $"{tag.BitNo}," +
                             $"{tag.UseEngMinMax}," +
                             $"{tag.Offset}," +
@@ -317,7 +318,7 @@ namespace IPCSoftware.Services
                        $"{tag.ModbusAddress}," +
                        $"{tag.Length}," +
                        $"{tag.AlgNo}," +
-                       $"{GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
+                       $"{PLCTagTypeExtensions.GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
                        $"{tag.BitNo}," +
                        $"{tag.Offset}," +
                        $"{tag.Span}," +
@@ -341,19 +342,20 @@ namespace IPCSoftware.Services
 
 
         // You likely need this helper to save "Int16" instead of "1" back to the CSV
-        private string GetDataTypeString(int typeId)
-        {
-            return typeId switch
-            {
-                1 => "Int16",
-                2 => "Word",
-                3 => "Bit",
-                4 => "Float",
-                5 => "String",
-                6 => "UInt16",
-                7 => "UInt32",
-                _ => "Int16"
-            };
-        }
+        //Should come from a shared place if possible to avoid mismatches between loading and analysis logic - BMK-09-06-2026 -ReviewComment
+        //private string GetDataTypeString(int typeId)
+        //{
+        //    return typeId switch
+        //    {
+        //        1 => "Int16",
+        //        2 => "Word",
+        //        3 => "Bit",
+        //        4 => "Float",
+        //        5 => "String",
+        //        6 => "UInt16",
+        //        7 => "UInt32",
+        //        _ => "Int16"
+        //    };
+        //}
     }
 }

@@ -214,7 +214,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             string input = item.InputValue as string;
 
             if (string.IsNullOrWhiteSpace(input)) return false;
-
+            //Should come from a shared place if possible to avoid mismatches between loading and analysis logic - BMK-09-06-2026 -ReviewComment
             switch (item.Model.DataType)
             {
                 case 1: // Int / Int16

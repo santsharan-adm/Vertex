@@ -323,10 +323,10 @@ namespace IPCSoftware.Devices.PLC
 
             switch (tag.DataType)
             {
-                case DataType_Bit: // Bit
+                case PLCTagTypeExtensions.DataType_Bit: // Bit
                     return new ushort[] { 0 }; // Placeholder, actual logic in WriteAsync
 
-                case DataType_String: // String
+                case PLCTagTypeExtensions.DataType_String: // String
                     string s = value?.ToString() ?? "";
                     bytes = Encoding.ASCII.GetBytes(s);
                     int reqBytes = tag.Length * 2;
@@ -360,12 +360,12 @@ namespace IPCSoftware.Devices.PLC
                     for (int i = 0; i < tag.Length; i++) registers[i] = BitConverter.ToUInt16(bytes, i * 2);
                     return registers;
 
-                case DataType_Int16: // Int16
+                case PLCTagTypeExtensions.DataType_Int16: // Int16
                     return new ushort[] { BitConverter.ToUInt16(BitConverter.GetBytes(Convert.ToInt16(value)), 0) };
-                case DataType_UInt16: // UInt16
+                case PLCTagTypeExtensions.DataType_UInt16: // UInt16
                     return new ushort[] { BitConverter.ToUInt16(BitConverter.GetBytes(Convert.ToUInt16(value)), 0) };
 
-                case DataType_Word32: // Word32
+                case PLCTagTypeExtensions.DataType_Int32: // Word32
                     bytes = BitConverter.GetBytes(Convert.ToInt32(value));
                     registers = new ushort[2];
                     registers[0] = BitConverter.ToUInt16(bytes, 0);
@@ -373,7 +373,7 @@ namespace IPCSoftware.Devices.PLC
                     if (_swapBytes) Swap(registers);
                     return registers;
 
-                case DataType_UInt32: // UInt32
+                case PLCTagTypeExtensions.DataType_UInt32: // UInt32
                     bytes = BitConverter.GetBytes(Convert.ToUInt32(value));
                     registers = new ushort[2];
                     registers[0] = BitConverter.ToUInt16(bytes, 0);
@@ -381,7 +381,7 @@ namespace IPCSoftware.Devices.PLC
                     if (_swapBytes) Swap(registers);
                     return registers;
 
-                case DataType_FP: // Float
+                case PLCTagTypeExtensions.DataType_FP: // Float
                     bytes = BitConverter.GetBytes(Convert.ToSingle(value));
                     registers = new ushort[2];
                     registers[0] = BitConverter.ToUInt16(bytes, 0);
@@ -589,15 +589,15 @@ namespace IPCSoftware.Devices.PLC
 
 
         // DataType constants (add these to match your ConvertData logic)
+        //Should come from a shared place if possible to avoid mismatches between loading and analysis logic - BMK-09-06-2026 -ReviewComment
 
-
-        private const int DataType_Int16 = 1;
-        private const int DataType_Word32 = 2;
-        private const int DataType_Bit = 3;
-        private const int DataType_FP = 4;
-        private const int DataType_String = 5;
-        private const int DataType_UInt16 = 6;
-        private const int DataType_UInt32 = 7;
+        //private const int DataType_Int16 = 1;
+        //private const int DataType_Word32 = 2;
+        //private const int DataType_Bit = 3;
+        //private const int DataType_FP = 4;
+        //private const int DataType_String = 5;
+        //private const int DataType_UInt16 = 6;
+        //private const int DataType_UInt32 = 7;
 
 
         // Helper class to hold chunk info
