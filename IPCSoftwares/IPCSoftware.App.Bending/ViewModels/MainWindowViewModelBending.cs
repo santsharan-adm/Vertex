@@ -29,6 +29,8 @@ namespace IPCSoftware.App.Bending.ViewModels
             set => SetProperty(ref _plc2Connected, value);
         }
 
+
+
         public MainWindowViewModelBending(
         INavigationService nav,
         CoreClient coreClient,
@@ -62,7 +64,20 @@ namespace IPCSoftware.App.Bending.ViewModels
                 MacMiniConnected = false;
                 CurrentMachineMode = "NA";
             }
+            
             return base.UpdateTaskbarItemsFromService(data);
+        }
+
+        protected override void OnTimerNullEvent()
+        {
+            base.OnTimerNullEvent();
+            if (DateTime.Now - LastUpdateTime > TimeSpan.FromSeconds(10))
+            {
+                PLC1Connected = false;
+                PLC2Connected = false;
+                MacMiniConnected = false;
+                CurrentMachineMode = "NA";
+            }
         }
     }
 }

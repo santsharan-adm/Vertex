@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace IPCSoftware.Common.CommonExtensions
 {
@@ -9,9 +10,13 @@ namespace IPCSoftware.Common.CommonExtensions
         private readonly DispatcherTimer _timer;
         internal readonly Func<Dictionary<int, object>, Task> _asyncAction; // The work to do
         private readonly Action<Exception> _onError;
+        
 
         private bool _isBusy;
         private bool _disposed;
+
+        // Event raised when the configured async action is null at timer tick
+        public event EventHandler? NullEvent;
 
         public SafePoller(TimeSpan interval, Func<Dictionary<int, object>, Task> asyncAction, Action<Exception> onError = null)
         {
@@ -29,11 +34,15 @@ namespace IPCSoftware.Common.CommonExtensions
         internal virtual async Task LiveDataTickAsync()
         {
         }
+        
 
         private async void Timer_Tick(object? sender, EventArgs e)
         {
+            NullEvent?.Invoke(this, EventArgs.Empty);
             // 1. Safety Checks
             if (_disposed || _isBusy) return;
+
+            
 
             try
             {

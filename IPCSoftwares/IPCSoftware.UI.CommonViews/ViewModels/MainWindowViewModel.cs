@@ -132,6 +132,8 @@ public class MainWindowViewModelBase : BaseViewModel
     //public string AppVersion => $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
     public string AppVersion => _aboutMonitor.CurrentValue.ProductVersion;
 
+    protected DateTime LastUpdateTime;
+
 
     public MainWindowViewModelBase(
         INavigationService nav,
@@ -155,6 +157,7 @@ public class MainWindowViewModelBase : BaseViewModel
                 _logger,
                 ex => _logger.LogError($"[MainWindow] Taskbar status poller error: {ex.Message}", LogType.Diagnostics),
                 requestId: 1);
+        _timer.NullEvent += Timer_NullEvent;
         _timer.Start();
         // 3. Subscribe to Alarm Events
         _coreClient.OnAlarmMessageReceived += OnAlarmReceived;
@@ -189,6 +192,19 @@ public class MainWindowViewModelBase : BaseViewModel
 
         });
     }
+
+    protected virtual void OnTimerNullEvent()
+    {
+        
+    }
+
+    private void Timer_NullEvent(object? sender, EventArgs e)
+    {
+        IsServiceConnected = _coreClient.isConnected;
+        OnTimerNullEvent();
+
+    }
+
     private bool CanExecuteAcknowledgeBannerAlarm()
     {
         // Enable the button only if there is at least one UNACKNOWLEDGED alarm
@@ -276,7 +292,7 @@ public class MainWindowViewModelBase : BaseViewModel
 
     protected virtual  async Task UpdateTaskbarItemsFromService(Dictionary<int, object> data)
     {
-        IsServiceConnected = _coreClient.isConnected;
+        LastUpdateTime = DateTime.Now;
     }
 
     

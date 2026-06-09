@@ -56,5 +56,15 @@ namespace IPCSoftware.App.AOI.ViewModels
             }
             return base.UpdateTaskbarItemsFromService(data);
         }
+        protected override void OnTimerNullEvent()
+        {
+            base.OnTimerNullEvent();
+            if (DateTime.Now - LastUpdateTime > TimeSpan.FromSeconds(10))
+            {
+                PLCConnected = false;
+                MacMiniConnected = false;
+                CurrentMachineMode = "NA";
+            }
+        }
     }
 }
