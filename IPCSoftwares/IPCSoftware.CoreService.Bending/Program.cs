@@ -133,7 +133,7 @@ namespace IPCSoftware.CoreService.Bending
 
                             services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
 
-                            services.AddSingleton<SystemMonitorService>();
+                            services.AddSingleton<SystemMonitorServiceBending>();
                            // services.AddSingleton<CCDTriggerServiceBending>();
 
                             services.AddSingleton<CCDTriggerServiceBending>(sp =>    new CCDTriggerServiceBending(

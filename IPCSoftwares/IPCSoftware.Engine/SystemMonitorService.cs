@@ -12,26 +12,21 @@ using System.Threading.Tasks;
 
 namespace IPCSoftware.Engine
 {
-    public class SystemMonitorService : BaseService
+    public class SystemMonitorServiceBase : BaseService
     {
         private readonly PLCClientManager _plcManager;
         private readonly IDeviceConfigurationService _deviceService;
-        private readonly ExternalInterfaceService _extService;
+        protected readonly ExternalInterfaceService _extService;
 
-        // --- HEARTBEAT STATE ---
-        private bool? _lastPlcPulse = null;      // Nullable to detect first read
-        private DateTime _lastPlcChangeTime;     // Last time PLC pulse changed
-        private DateTime _lastSuccessfulRead;    // Last time we successfully read the tag
-        private bool _ipcPulseState = false;
-        private DateTime _lastIpcToggleTime;
+       
 
         // --- CONFIGURATION ---
         // Description says: "abnormal if no change for 3 s"
-        private const double HEARTBEAT_TIMEOUT_SECONDS = 3.0;
-        private const double IPC_TOGGLE_INTERVAL_SECONDS = 1.0;
-        private const double READ_TIMEOUT_SECONDS = 3.0;
+        protected const double HEARTBEAT_TIMEOUT_SECONDS = 3.0;
+        protected const double IPC_TOGGLE_INTERVAL_SECONDS = 1.0;
+        protected const double READ_TIMEOUT_SECONDS = 3.0;
 
-        public SystemMonitorService(
+        public SystemMonitorServiceBase(
             PLCClientManager plcManager,
             IDeviceConfigurationService deviceService,
             ExternalInterfaceService extService,
@@ -41,10 +36,7 @@ namespace IPCSoftware.Engine
             _deviceService = deviceService;
             _extService = extService;
 
-            // Initialize timestamps
-            _lastPlcChangeTime = DateTime.Now;
-            _lastSuccessfulRead = DateTime.Now;
-            _lastIpcToggleTime = DateTime.Now;
+            
         }
 
         /// <summary>
@@ -52,97 +44,12 @@ namespace IPCSoftware.Engine
         /// 1. Monitors PLC Pulse (PLC -> IPC)
         /// 2. Sends IPC Pulse (IPC -> PLC)
         /// </summary>
-        public Dictionary<int, object> Process(Dictionary<int, object> tagValues)
+        public virtual Dictionary<int, object> Process(Dictionary<int, object> tagValues)
         {
-            try
-            {
-                bool isPlcConnected = false;
-
-                // =========================================================
-                // 1. MONITOR PLC PULSE (PLC -> IPC)
-                // =========================================================
-                if (tagValues != null && tagValues.Count > 0)
-                {
-                    _lastSuccessfulRead = DateTime.Now;
-
-                    // Read current value from Tag Dictionary
-                    bool currentPlcPulse = GetBool(tagValues, ConstantValues.TAG_Heartbeat_PLC);
-
-                    // First read initialization
-                    if (_lastPlcPulse == null)
-                    {
-                        _lastPlcPulse = currentPlcPulse;
-                        _lastPlcChangeTime = DateTime.Now;
-                    }
-                    // Detect Toggle (Change in value)
-                    else if (currentPlcPulse != _lastPlcPulse.Value)
-                    {
-                        _lastPlcChangeTime = DateTime.Now;
-                        _lastPlcPulse = currentPlcPulse;
-                    }
-
-                    // Check Logic: 
-                    // 1. Data receiving (Read Timeout)
-                    // 2. Value changing (Heartbeat Timeout)
-                    double timeSinceLastChange = (DateTime.Now - _lastPlcChangeTime).TotalSeconds;
-                    double timeSinceLastRead = (DateTime.Now - _lastSuccessfulRead).TotalSeconds;
-
-                    isPlcConnected = (timeSinceLastRead < READ_TIMEOUT_SECONDS) &&
-                                     (timeSinceLastChange < HEARTBEAT_TIMEOUT_SECONDS);
-                }
-                else
-                {
-                    // No data received
-                    double timeSinceLastRead = (DateTime.Now - _lastSuccessfulRead).TotalSeconds;
-                    isPlcConnected = timeSinceLastRead < READ_TIMEOUT_SECONDS;
-                }
-
-                // =========================================================
-                // 2. SEND IPC PULSE (IPC -> PLC)
-                // =========================================================
-                double timeSinceLastToggle = (DateTime.Now - _lastIpcToggleTime).TotalSeconds;
-
-                if (timeSinceLastToggle >= IPC_TOGGLE_INTERVAL_SECONDS)
-                {
-                    // Toggle state
-                    _ipcPulseState = !_ipcPulseState;
-                    _lastIpcToggleTime = DateTime.Now;
-
-                    // Write to PLC (Fire and Forget)
-                    // We write regardless of read status to try and wake up connection
-                    _ = WriteTagAsync(ConstantValues.TAG_Heartbeat_IPC, _ipcPulseState);
-
-                    // Optional: Log toggle for debugging
-                    // Console.WriteLine($"[Heartbeat] IPC Pulse: {_ipcPulseState}");
-                }
-
-                // =========================================================
-                // 3. RETURN STATUS
-                // =========================================================
-                // Return a simple list: [PLC_Connected, Time_Synced(Dummy True)]
-                // Maintaining structure for Dashboard compatibility
-                bool isMacMiniConnected = _extService.IsConnected;
-                var statusFlags = new List<bool> { isPlcConnected, true, isMacMiniConnected };
-                /*  if (isPlcConnected)
-                  {
-                   _logger.LogInfo($"PLC Connected", LogType.Audit);
-                  }
-                  else
-                  {
-                   _logger.LogInfo($"PLC Not Connected", LogType.Audit);
-
-                  }*/
-
-                return new Dictionary<int, object> { { 1, statusFlags } };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"[SystemMonitor] Error: {ex.Message}", LogType.Diagnostics);
-                throw;
-            }
+                return new Dictionary<int, object> {  };            
         }
 
-        private bool GetBool(Dictionary<int, object> values, int tagId)
+        protected bool GetBool(Dictionary<int, object> values, int tagId)
         {
             if (values != null && values.TryGetValue(tagId, out object val))
             {
@@ -158,7 +65,7 @@ namespace IPCSoftware.Engine
             return false;
         }
 
-        private async Task WriteTagAsync(int tagNo, object value)
+        protected async Task WriteTagAsync(int tagNo, object value)
         {
             try
             {
@@ -181,14 +88,9 @@ namespace IPCSoftware.Engine
             }
         }
 
-        public void ResetHeartbeat()
+        protected virtual void ResetHeartbeat()
         {
-            _lastPlcPulse = null;
-            _lastPlcChangeTime = DateTime.Now;
-            _lastSuccessfulRead = DateTime.Now;
-            _ipcPulseState = false;
-            _lastIpcToggleTime = DateTime.Now;
-            _logger.LogInfo("[Heartbeat] State reset", LogType.Diagnostics);
+            
         }
     }
 }

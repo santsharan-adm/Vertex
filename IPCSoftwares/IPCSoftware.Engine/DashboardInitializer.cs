@@ -25,7 +25,7 @@ namespace IPCSoftware.Engine
         private readonly UiListener _ui ;
         private readonly AlgorithmAnalysisService _algo;
         private readonly OeeEngineBase _oee ;
-        private readonly SystemMonitorService _systemMonitor;
+        private readonly SystemMonitorServiceBase _systemMonitor;
         private readonly ShiftResetService _shiftReset;
         private readonly CCDTriggerServiceBase _ccdTrigger; // 1. Add field
         private readonly AlarmService _alarmService;
@@ -42,7 +42,7 @@ namespace IPCSoftware.Engine
             AlgorithmAnalysisService algo,
             OeeEngineBase oee,
             ShiftResetService shiftReset,
-            SystemMonitorService systemMonitor,
+            SystemMonitorServiceBase systemMonitor,
           UiListener ui,
           AlarmService alarmService,
             CCDTriggerServiceBase ccdTrigger,

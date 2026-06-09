@@ -21,7 +21,7 @@ namespace IPCSoftware.CoreService.Bending.Service
             AlgorithmAnalysisService algo,
             OeeEngineBending oee,
             ShiftResetService shiftReset,
-            SystemMonitorService systemMonitor,
+            SystemMonitorServiceBending systemMonitor,
             UiListener ui,
             AlarmService alarmService,
             CCDTriggerServiceBending ccdTrigger,

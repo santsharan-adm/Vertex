@@ -58,8 +58,10 @@ namespace IPCSoftware.Shared.Models
         public static int REVERSE_ACK_TAG_ID;
 
 
-        public static int TAG_Heartbeat_PLC;
-        public static int TAG_Heartbeat_IPC;
+        public static int TAG_Heartbeat_PLC1;
+        public static int TAG_Heartbeat_IPC_PLC1;
+        public static int TAG_Heartbeat_PLC2;
+        public static int TAG_Heartbeat_IPC_PLC2;
         public static int TAG_TimeSync_Req;
         public static int TAG_TimeSync_Ack;
 
@@ -379,10 +381,12 @@ namespace IPCSoftware.Shared.Models
 
                 // System 
                 var sys = tags.System;
-                TAG_Heartbeat_PLC = sys.HeartbeatPLC;
+                TAG_Heartbeat_PLC1 = sys.HeartbeatPLC1;
+                TAG_Heartbeat_PLC2 = sys.HeartbeatPLC2;
                 MACMINI_NOTCONNECTED = sys.MacMiniNotConnected;
                 NO_OF_Station = sys.NoOfStation;
-                TAG_Heartbeat_IPC = sys.HeartbeatIPC;
+                TAG_Heartbeat_IPC_PLC1 = sys.HeartbeatIPC_PLC1;
+                TAG_Heartbeat_IPC_PLC2 = sys.HeartbeatIPC_PLC2;
                 TAG_TimeSync_Req = sys.TimeSyncReq;
                 TAG_TimeSync_Ack = sys.TimeSyncAck;
 

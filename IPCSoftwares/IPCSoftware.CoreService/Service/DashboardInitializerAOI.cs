@@ -18,7 +18,7 @@ namespace IPCSoftware.CoreService.AOI.Service
             AlgorithmAnalysisService algo,
             OeeEngineAOI oee,
             ShiftResetService shiftReset,
-            SystemMonitorService systemMonitor,
+            SystemMonitorServiceAOI systemMonitor,
             UiListener ui,
             AlarmService alarmService,
             AOIProcessService aoiProcess,

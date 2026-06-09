@@ -36,8 +36,10 @@ namespace IPCSoftware.Shared.Models
     {
         public int MacMiniNotConnected { get; set; }
         public int NoOfStation { get; set; }
-        public int HeartbeatPLC { get; set; }
-        public int HeartbeatIPC { get; set; }
+        public int HeartbeatPLC1 { get; set; }
+        public int HeartbeatIPC_PLC1 { get; set; }
+        public int HeartbeatPLC2 { get; set; }
+        public int HeartbeatIPC_PLC2 { get; set; }
         public int TimeSyncReq { get; set; }
         public int TimeSyncAck { get; set; }
         public int TimeDataStart { get; set; }
