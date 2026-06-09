@@ -45,7 +45,7 @@ namespace IPCSoftware.App.Bending.ViewModels
         {
             
             //Update the taskbar items based on the data received from the service
-            if (data.TryGetValue(1, out object item))
+            if (data.TryGetValue(0, out object item))
             {
                 // Update the first taskbar item
                 var model = DeSerealiiseObjectHelper.Deserialize<TaskbarItems>(item);

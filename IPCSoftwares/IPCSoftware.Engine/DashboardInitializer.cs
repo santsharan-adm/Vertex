@@ -232,21 +232,28 @@ namespace IPCSoftware.Engine
                 {
                     TaskbarItems taskbarItems = new TaskbarItems();
                     // Safe check for keys 0, 1, 2 in sysMonData
-                    if (sysMonData != null && sysMonData.TryGetValue(0, out var plc1Val) &&
-                        bool.TryParse(plc1Val?.ToString(), out var isPLC1Connected))
+                    if (sysMonData != null && sysMonData.TryGetValue(0, out var item))
                     {
-                        taskbarItems.IsPLC1Connected = isPLC1Connected;
+                        if (item is List<bool> listStatus)
+                        {
+                            if (listStatus.Count >= 0)
+                            {
+                                if (bool.TryParse(listStatus[0].ToString(), out var result))
+                                    taskbarItems.IsPLC1Connected = result;
+                            }
+                            if (listStatus.Count >= 1)
+                            {
+                                if (bool.TryParse(listStatus[1].ToString(), out var result))
+                                    taskbarItems.IsPLC2Connected = result;
+                            }
+                            if (listStatus.Count >= 2)
+                            {
+                                if (bool.TryParse(listStatus[2].ToString(), out var result))
+                                    taskbarItems.IsMacMiniConnected = result;
+                            }
+                        }
                     }
-                    if (sysMonData != null && sysMonData.TryGetValue(1, out var plc2Val) &&
-                        bool.TryParse(plc2Val?.ToString(), out var isPLC2Connected))
-                    {
-                        taskbarItems.IsPLC2Connected = isPLC2Connected;
-                    }
-                    if (sysMonData != null && sysMonData.TryGetValue(2, out var macMiniVal) &&
-                        bool.TryParse(macMiniVal?.ToString(), out var isMacMiniConnected))
-                    {
-                        taskbarItems.IsMacMiniConnected = isMacMiniConnected;
-                    }
+                    
                     if (GetBool( ConstantValues.Mode_Auto.Read)) taskbarItems.CurrentMachineMode = "AUTO RUN";
                     else if (GetBool( ConstantValues.Mode_DryRun.Read)) taskbarItems.CurrentMachineMode = "DRY RUN";
                     else if (GetBool( ConstantValues.Mode_CycleStop.Read)) taskbarItems.CurrentMachineMode = "CYCLE STOP";

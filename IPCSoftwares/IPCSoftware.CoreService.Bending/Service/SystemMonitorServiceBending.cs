@@ -41,7 +41,7 @@ namespace IPCSoftware.CoreService.Bending.Service
             ResetHeartbeat();
         }
 
-        virtual public Dictionary<int, object> Process(Dictionary<int, object> tagValues)
+        override public Dictionary<int, object> Process(Dictionary<int, object> tagValues)
         {
             try
             {
@@ -167,7 +167,7 @@ namespace IPCSoftware.CoreService.Bending.Service
 
                   }*/
 
-                return new Dictionary<int, object> { { 1, statusFlags } };
+                return new Dictionary<int, object> { { 0, statusFlags } };
             }
             catch (Exception ex)
             {
