@@ -55,7 +55,9 @@ namespace IPCSoftware.Engine
             {
                 if (val is bool b) return b;
                 if (val is int i) return i > 0;
+                if (val is uint ui) return ui > 0;
                 if (val is short s) return s > 0;
+                if (val is ushort us) return us > 0;
                 if (val is string str)
                 {
                     if (bool.TryParse(str, out bool result)) return result;
