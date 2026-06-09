@@ -34,7 +34,7 @@ namespace IPCSoftware.CoreService.AOI.Service
             ResetHeartbeat();
         }
 
-        public override Dictionary<int, object> Process(Dictionary<int, object> tagValues)
+        public override List<bool> Process(Dictionary<int, object> tagValues)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace IPCSoftware.CoreService.AOI.Service
 
                   }*/
 
-                return new Dictionary<int, object> { { 1, statusFlags } };
+                return statusFlags;
             }
             catch (Exception ex)
             {

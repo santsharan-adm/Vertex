@@ -67,7 +67,7 @@ namespace IPCSoftware.Engine
 
         }
 
-        Dictionary<int, object> sysMonData = new Dictionary<int, object>();
+        List<bool> sysMonData = new List<bool>();
 
         public async Task StartAsync()
         {
@@ -231,29 +231,19 @@ namespace IPCSoftware.Engine
                 if (request.RequestId == 1)
                 {
                     TaskbarItems taskbarItems = new TaskbarItems();
-                    // Safe check for keys 0, 1, 2 in sysMonData
-                    if (sysMonData != null && sysMonData.TryGetValue(0, out var item))
+                    if (sysMonData.Count >= 0)
                     {
-                        if (item is List<bool> listStatus)
-                        {
-                            if (listStatus.Count >= 0)
-                            {
-                                if (bool.TryParse(listStatus[0].ToString(), out var result))
-                                    taskbarItems.IsPLC1Connected = result;
-                            }
-                            if (listStatus.Count >= 1)
-                            {
-                                if (bool.TryParse(listStatus[1].ToString(), out var result))
-                                    taskbarItems.IsPLC2Connected = result;
-                            }
-                            if (listStatus.Count >= 2)
-                            {
-                                if (bool.TryParse(listStatus[2].ToString(), out var result))
-                                    taskbarItems.IsMacMiniConnected = result;
-                            }
-                        }
+                        taskbarItems.IsPLC1Connected = sysMonData[0];
                     }
-                    
+                    if (sysMonData.Count >= 1)
+                    {
+                        taskbarItems.IsPLC2Connected = sysMonData[1];
+                    }
+                    if (sysMonData.Count >= 2)
+                    {
+                        taskbarItems.IsMacMiniConnected = sysMonData[2];
+                    }
+
                     if (GetBool( ConstantValues.Mode_Auto.Read)) taskbarItems.CurrentMachineMode = "AUTO RUN";
                     else if (GetBool( ConstantValues.Mode_DryRun.Read)) taskbarItems.CurrentMachineMode = "DRY RUN";
                     else if (GetBool( ConstantValues.Mode_CycleStop.Read)) taskbarItems.CurrentMachineMode = "CYCLE STOP";

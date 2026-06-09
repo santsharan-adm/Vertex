@@ -44,9 +44,9 @@ namespace IPCSoftware.Engine
         /// 1. Monitors PLC Pulse (PLC -> IPC)
         /// 2. Sends IPC Pulse (IPC -> PLC)
         /// </summary>
-        public virtual Dictionary<int, object> Process(Dictionary<int, object> tagValues)
+        public virtual List<bool> Process(Dictionary<int, object> tagValues)
         {
-                return new Dictionary<int, object> {  };            
+            return new List<bool> {  };
         }
 
         protected bool GetBool(Dictionary<int, object> values, int tagId)
