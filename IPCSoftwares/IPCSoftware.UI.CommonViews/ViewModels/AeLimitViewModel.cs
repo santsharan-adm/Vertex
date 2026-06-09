@@ -24,7 +24,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         private readonly IAeLimitService _aeLimitService;
         private readonly CoreClient _coreClient;
         private readonly IDialogService _dialog;
-        private readonly SafePoller _liveDataTimer;
+        private readonly SafePollerEx _liveDataTimer;
         private readonly IOptionsMonitor<ExternalSettings> _settingsMonitor;
 
         private AeLimitSettings _settings;
@@ -88,7 +88,7 @@ IAeLimitService aeLimitService,
             SaveCommand = new RelayCommand(async () => await SaveAndTransferAsync(), () => !_isBusy);
 
             // Start Live Polling (Every 200ms) for PLC Feedback values
-            _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(200), OnLiveDataTick);
+            _liveDataTimer = new SafePollerEx(_coreClient, TimeSpan.FromMilliseconds(200), OnLiveDataTick, logger, ex => _logger.LogError($"Error in live data timer: {ex.Message}", LogType.Error));
             _liveDataTimer.Start();
 
             // Initial Load

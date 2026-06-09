@@ -69,7 +69,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     {
         private readonly CoreClient _coreClient;
         private readonly INavigationService _navService;
-        private readonly SafePoller _feedbackTimer;
+        private readonly SafePollerEx _feedbackTimer;
         // Add this at the top of your class
         private readonly List<OperationMode> _activePulseModes = new List<OperationMode>();
 
@@ -99,7 +99,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
             UnifiedOperationCommand = new RelayCommand<string>(async (args) => await ExecuteOperationAsync(args));
 
-            _feedbackTimer = new SafePoller(TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
+            _feedbackTimer = new SafePollerEx(_coreClient, TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick,_logger,ex => _logger.LogError($"Error in feedback loop: {ex.Message}",LogType.Error));
             _feedbackTimer.Start();
         }
 

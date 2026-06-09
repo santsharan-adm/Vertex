@@ -23,9 +23,9 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         private readonly CoreClient _coreClient;
         private readonly ILogService _logService;
 
-        private readonly SafePoller _clockPoller;
-        private readonly SafePoller _plcPoller;
-        private readonly SafePoller _servicePoller;
+        private readonly SafePollerEx _clockPoller;
+        private readonly SafePollerEx _plcPoller;
+        private readonly SafePollerEx _servicePoller;
 
         // Use actual Windows service name
         private const string TARGET_SERVICE_NAME = "IPCSoftware.CoreService.AOI";
@@ -107,19 +107,25 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             StartServiceCommand = new RelayCommand(async () => await StartServiceAsync(), () => !IsServiceRunning);
             StopServiceCommand = new RelayCommand(async () => await StopServiceAsync(), () => IsServiceRunning);
 
-            _clockPoller = new SafePoller(TimeSpan.FromSeconds(1), UpdateIpcTimeAsync);
+            _clockPoller = new SafePollerEx(_coreClient, TimeSpan.FromSeconds(1), UpdateIpcTimeAsync, logger, ex => _logger.LogError($"Error in IPC time poller: {ex.Message}", LogType.Error));
             _clockPoller.Start();
 
-            _plcPoller = new SafePoller(
+            _plcPoller = new SafePollerEx(
+                _coreClient,
                 TimeSpan.FromMilliseconds(500),
                 PlcPollTickAsync,
-                ex => _logger.LogError($"PLC Poll Error: {ex.Message}", LogType.Diagnostics));
+                logger,
+                ex => _logger.LogError($"PLC Poll Error: {ex.Message}", LogType.Diagnostics),
+                4);
             _plcPoller.Start();
 
-            _servicePoller = new SafePoller(
+            _servicePoller = new SafePollerEx(
+                _coreClient,
                 TimeSpan.FromSeconds(2),
                 CheckServiceStatusAsync,
-                ex => _logger.LogError($"Service Poll Error: {ex.Message}", LogType.Diagnostics));
+                logger,
+                ex => _logger.LogError($"Service Poll Error: {ex.Message}", LogType.Diagnostics),
+                4);
             _servicePoller.Start();
 
             _ = UpdateIpcTimeAsync(new Dictionary<int, object>());

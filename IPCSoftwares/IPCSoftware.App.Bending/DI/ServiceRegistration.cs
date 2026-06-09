@@ -1,4 +1,6 @@
-﻿using IPCSoftware.App.Bending.ViewModels;
+﻿
+
+using IPCSoftware.App.Bending.ViewModels;
 using IPCSoftware.App.Bending.Views;
 using IPCSoftware.App.Services;
 using IPCSoftware.Common.CommonFunctions;
@@ -7,7 +9,7 @@ using IPCSoftware.Communication.External;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
 using IPCSoftware.Core.Interfaces.CCD;
-//using IPCSoftware.CoreService.Bending;
+using IPCSoftware.CoreService.Bending;
 using IPCSoftware.Datalogger;
 using IPCSoftware.Devices.Camera;
 using IPCSoftware.Devices.PLC;
@@ -45,7 +47,7 @@ namespace IPCSoftware.App.Bending.DI
     {
         public static void RegisterServices(IServiceCollection services)
         {
-           // services.AddSingleton<IAppLogger, AppLoggerService>();
+            // services.AddSingleton<IAppLogger, AppLoggerService>();
             // services.AddSingleton<IPLCTagConfigurationService, PLCTagConfigurationService>();
             services.AddSingleton<IDeviceConfigurationService, DeviceConfigurationService>();
 
@@ -127,7 +129,7 @@ namespace IPCSoftware.App.Bending.DI
             // Register base types for dependency injection
             services.AddSingleton<RibbonViewModelBase>(sp => sp.GetRequiredService<RibbonViewModelBending>());
             services.AddSingleton<RibbonViewModelBending>();
-            
+
             services.AddSingleton<MainWindowViewModelBase>(sp => sp.GetRequiredService<MainWindowViewModelBending>());
             services.AddSingleton<MainWindowViewModelBending>();
             //services.AddTransient<OEEDashboardViewModel>();
@@ -167,10 +169,11 @@ namespace IPCSoftware.App.Bending.DI
             services.AddTransient<ServiceStartupView>();                 //Added by Rishabh -date - 15-04-2026
             services.AddTransient<ServiceStartupViewModel>(sp =>         //Added by Rishabh -date - 05-05-2026
             {
+                var coreClient = sp.GetRequiredService<CoreClient>();
                 var logger = sp.GetRequiredService<IAppLogger>();
-                const string targetServiceName = "IPCSoftware.CoreService.Bending"; 
+                const string targetServiceName = "IPCSoftware.CoreService.Bending";
 
-                return new ServiceStartupViewModel(logger, targetServiceName);
+                return new ServiceStartupViewModel(coreClient, logger, targetServiceName);
             });
 
 

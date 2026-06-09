@@ -27,7 +27,7 @@ namespace IPCSoftware.App.ViewModels
     public class ManualOpViewModel : BaseViewModel, IDisposable
     {
         private readonly CoreClient _coreClient;
-        private readonly SafePoller _feedbackTimer;
+        private readonly SafePollerEx _feedbackTimer;
         private readonly INavigationService _nav;
         private readonly IProductConfigurationService _productService;
         private bool _isPositionLocked = false;
@@ -112,7 +112,7 @@ namespace IPCSoftware.App.ViewModels
             });
 
             // 5. Feedback Timer
-            _feedbackTimer = new SafePoller(TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick);
+            _feedbackTimer = new SafePollerEx(_coreClient, TimeSpan.FromMilliseconds(100), FeedbackLoop_Tick, _logger, ex => _logger.LogError($"Error in feedback timer: {ex.Message}", LogType.Error));
             _feedbackTimer.Start();
         }
 

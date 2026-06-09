@@ -52,10 +52,10 @@ namespace IPCSoftware.App.ViewModels
 
         // --- Timers ---
         // 1. For Live Data (TCP Polling) - e.g. OEE, Machine Status
-        private readonly SafePoller _liveDataTimer;
+        private readonly SafePollerEx _liveDataTimer;
         // 2. For Cycle Sync (JSON Polling) - e.g. Images, Inspection Results
-        private readonly SafePoller _uiSyncTimer;
-        private readonly SafePoller _resetLogicTimer;
+        private readonly SafePollerEx _uiSyncTimer;
+        private readonly SafePollerEx _resetLogicTimer;
         private int _resetTimerRunning = 0; // Lock for safety
 
         private int _liveDataRunning = 0;
@@ -439,14 +439,14 @@ namespace IPCSoftware.App.ViewModels
             LoadCycleTimeTrend();
             DummyData();
             // 1. Live Data Timer (1000ms) - Gets OEE, IOs, Status from Core Service via TCP
-            _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(100), LiveDataTimerTick);
+            _liveDataTimer = new SafePollerEx(_coreClient, TimeSpan.FromMilliseconds(100), LiveDataTimerTick, _logger, ex => _logger.LogError($"Error in live data timer: {ex.Message}", LogType.Error));
             _liveDataTimer.Start();
 
             // 2. UI Sync Timer (200ms) - Gets Images and Station Data from JSON (Cycle Synced)
-            _uiSyncTimer = new SafePoller(TimeSpan.FromMilliseconds(100), UiSyncTick);
+            _uiSyncTimer = new SafePollerEx(_coreClient, TimeSpan.FromMilliseconds(100), UiSyncTick, _logger, ex => _logger.LogError($"Error in UI sync timer: {ex.Message}", LogType.Error));
             _uiSyncTimer.Start();
 
-            _resetLogicTimer = new SafePoller(TimeSpan.FromMilliseconds(200), ResetSequenceTick);
+            _resetLogicTimer = new SafePollerEx(_coreClient, TimeSpan.FromMilliseconds(200), ResetSequenceTick, _logger, ex => _logger.LogError($"Error in reset logic timer: {ex.Message}", LogType.Error));
             _resetLogicTimer.Start();
 
             _settingsMonitor.OnChange(settings => {

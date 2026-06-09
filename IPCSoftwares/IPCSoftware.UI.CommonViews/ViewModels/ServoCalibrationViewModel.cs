@@ -23,7 +23,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     {
         private readonly CoreClient _coreClient;
         // private readonly DispatcherTimer _liveDataTimer;
-        private readonly SafePoller _liveDataTimer;
+        private readonly SafePollerEx _liveDataTimer;
         private readonly IServoCalibrationService _servoService; // Injected Service
         private readonly IDialogService _dialog; // Injected Service
         private readonly IProductConfigurationService _productService;
@@ -147,8 +147,11 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             _ = InitializePositionsAsync();
 
             //InitializePositions();
-            _liveDataTimer = new SafePoller(TimeSpan.FromMilliseconds(100),
-                                    OnLiveDataTick  // Pass the method directly
+            _liveDataTimer = new SafePollerEx(_coreClient, TimeSpan.FromMilliseconds(100),
+                                    OnLiveDataTick,  // Pass the method directly
+                                    logger,
+                                    ex => _logger.LogError($"Error in live data timer: {ex.Message}", LogType.Error)
+                                    
                                   );
             _liveDataTimer.Start();
 

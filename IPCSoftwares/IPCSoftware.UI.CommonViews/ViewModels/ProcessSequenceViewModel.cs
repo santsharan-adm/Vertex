@@ -20,7 +20,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     public class ProcessSequenceViewModel : BaseViewModel, IDisposable
     {
         private readonly CoreClient _coreClient;
-        private readonly SafePoller _poller;
+        private readonly SafePollerEx _poller;
 
         private readonly int _autoRunTag = ConstantValues.Mode_Auto.Read;
         private readonly int _cycleStartTag = ConstantValues.CYCLE_START_TRIGGER_TAG_ID;
@@ -48,10 +48,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             _coreClient = coreClient;
             ClearCommand = new RelayCommand(Clear);
 
-            _poller = new SafePoller(TimeSpan.FromMilliseconds(200), PollAsync, ex =>
-            {
-                _logger.LogError($"Sequence monitor error: {ex.Message}", LogType.Diagnostics);
-            });
+            _poller = new SafePollerEx(_coreClient, TimeSpan.FromMilliseconds(200), PollAsync, logger, ex => _logger.LogError($"Error in sequence monitor: {ex.Message}", LogType.Error));
             _poller.Start();
         }
 

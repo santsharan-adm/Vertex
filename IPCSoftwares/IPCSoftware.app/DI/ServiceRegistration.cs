@@ -43,14 +43,14 @@ namespace IPCSoftware.App.DI
     {
         public static void RegisterServices(IServiceCollection services)
         {
-           // services.AddSingleton<IAppLogger, AppLoggerService>();
-          //  services.AddSingleton<IAppLogger, UiErrorLogger>();                //Modify by Rishabh - date - 04/05/2026// Purpose: Use UiErrorLogger for better error visibility in the UI.
+            // services.AddSingleton<IAppLogger, AppLoggerService>();
+            //  services.AddSingleton<IAppLogger, UiErrorLogger>();                //Modify by Rishabh - date - 04/05/2026// Purpose: Use UiErrorLogger for better error visibility in the UI.
 
             services.AddSingleton<IAppLogger>(sp =>
             {
                 var coreClient = sp.GetRequiredService<CoreClient>();
                 var dialog = sp.GetRequiredService<IDialogService>();
-                const string eventSource = "AOI- UI Specific"; 
+                const string eventSource = "AOI- UI Specific";
                 const string eventLog = "Application";
 
                 return new UiErrorLogger(coreClient, dialog, eventSource, eventLog);
@@ -140,7 +140,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<MainWindowViewModelBase>(sp => sp.GetRequiredService<MainWindowViewModelAOI>());
             services.AddSingleton<MainWindowViewModelAOI>();
             services.AddTransient<OEEDashboardViewModel>();
-          //  services.AddSingleton<UiTcpClient>();
+            //  services.AddSingleton<UiTcpClient>();
             services.AddSingleton<ShiftResetService>();
 
             // ========== COMMON VIEWS & VIEWMODELS ==========
@@ -154,7 +154,7 @@ namespace IPCSoftware.App.DI
                     sp.GetRequiredService<ILogManagerService>(),
                     sp.GetRequiredService<LogConfigurationView>(),
                     sp.GetRequiredService<IAppLogger>()
-                   
+
                 )
             );
             services.AddTransient<StartupConditionView>();
@@ -169,10 +169,11 @@ namespace IPCSoftware.App.DI
             services.AddTransient<ServiceStartupViewModel>();            //Added by Rishabh -date - 15-04-2026
             services.AddTransient<ServiceStartupViewModel>(sp =>           //Added by Rishabh -date - 05-05-2026
             {
+                var coreClient = sp.GetRequiredService<CoreClient>();
                 var logger = sp.GetRequiredService<IAppLogger>();
                 const string targetServiceName = "IPCSoftware.CoreService.AOI";
 
-                return new ServiceStartupViewModel(logger, targetServiceName);
+                return new ServiceStartupViewModel(coreClient, logger, targetServiceName);
             });
 
 
@@ -254,14 +255,14 @@ namespace IPCSoftware.App.DI
             services.AddTransient<PLCTagConfigurationView>();
             services.AddTransient<LogViewerViewModel>();
             // Register LoginViewModelBase to resolve LoginViewModelAOI
-            services.AddTransient<LoginViewModelBase>(sp => sp.GetRequiredService<LoginViewModelAOI>());           
+            services.AddTransient<LoginViewModelBase>(sp => sp.GetRequiredService<LoginViewModelAOI>());
             services.AddTransient<LoginViewModelAOI>();
             services.AddTransient<LoginView>();
             services.AddTransient<TagControlView>();
             services.AddTransient<TagControlViewModel>();
             services.AddTransient<SystemSettingView>();
             services.AddTransient<SystemSettingViewModel>();
-           // services.AddTransient<ServiceStartupView>();
+            // services.AddTransient<ServiceStartupView>();
             //services.AddTransient<ServiceStartupViewModel>();
             services.AddTransient<IPLCService, PlcService>();
             services.AddSingleton<CoreClient>();

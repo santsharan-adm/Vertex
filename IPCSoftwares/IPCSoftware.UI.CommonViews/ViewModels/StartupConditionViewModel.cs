@@ -19,7 +19,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     public class StartupConditionViewModel : BaseViewModel, IDisposable
     {
         private readonly CoreClient _coreClient;
-        private readonly SafePoller _timer;
+        private readonly SafePollerEx _timer;
         private readonly IDeviceConfigurationService _deviceService;
         private readonly string _configPath;
         private readonly string _dataFolder;
@@ -49,7 +49,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             _ = InitializeAsync();
 
 
-            _timer = new SafePoller(TimeSpan.FromMilliseconds(100), OnTimerTick);
+            _timer = new SafePollerEx(_coreClient, TimeSpan.FromMilliseconds(100), OnTimerTick, logger, ex => _logger.LogError($"Error in startup condition timer: {ex.Message}", LogType.Error));
             _timer.Start();
         }
 
