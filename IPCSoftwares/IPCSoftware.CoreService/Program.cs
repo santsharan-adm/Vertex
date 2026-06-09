@@ -161,7 +161,7 @@ namespace IPCSoftware.CoreService
                             // When someone asks for IMessagePublisher, give them the EXISTING UiListener
                             services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
 
-                            services.AddSingleton<SystemMonitorService>();
+                            services.AddSingleton<SystemMonitorServiceAOI>();
 
                             //  CCDTriggerServiceAOI includes IObservableCcdSettingsService
                             services.AddSingleton<CCDTriggerServiceAOI>(sp =>

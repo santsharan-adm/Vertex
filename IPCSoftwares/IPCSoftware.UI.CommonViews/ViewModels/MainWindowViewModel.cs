@@ -1,15 +1,18 @@
-using IPCSoftware.Shared; // TODO: Review - was using IPCSoftware.App (app-level types)
+using IPCSoftware.Common.CommonExtensions;
+using IPCSoftware.Common.UIClientComm;
 using IPCSoftware.Common.WPFExtensions;
-using IPCSoftware.Services;
-using IPCSoftware.UI.CommonViews.ViewModels;
-using IPCSoftware.UI.CommonViews;
 using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.Services;
+using IPCSoftware.Shared; // TODO: Review - was using IPCSoftware.App (app-level types)
 using IPCSoftware.Shared;
 using IPCSoftware.Shared.Models;
+using IPCSoftware.Shared.Models.Bending;
 using IPCSoftware.Shared.Models.ConfigModels;
 using IPCSoftware.Shared.Models.Messaging;
 using IPCSoftware.UI.CommonViews;
+using IPCSoftware.UI.CommonViews;
+using IPCSoftware.UI.CommonViews.ViewModels;
 using IPCSoftware.UI.CommonViews.ViewModels;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -17,11 +20,8 @@ using System.Collections.ObjectModel;
 using System.Printing;
 using System.Reflection;
 using System.Windows;
-
 using System.Windows.Input;
 using System.Windows.Threading;
-using IPCSoftware.Common.UIClientComm;
-using IPCSoftware.Common.CommonExtensions;
 // AeLimitView is Not Required per refactoring spec
 
 public class MainWindowViewModelBase : BaseViewModel
@@ -74,7 +74,7 @@ public class MainWindowViewModelBase : BaseViewModel
     // ------------------------------------------
 
 
-    private readonly SafePoller _timer;
+    private readonly SafePollerEx _timer;
 
     // Live System Time Property
     private string _systemTime;
@@ -103,26 +103,13 @@ public class MainWindowViewModelBase : BaseViewModel
     }
 
 
-    public bool _macMiniConnected;
-    public bool MacMiniConnected
+    public bool _isServiceConnected;
+    public bool IsServiceConnected
     {
-        get => _macMiniConnected;
-        set => SetProperty(ref _macMiniConnected, value);
+        get => _isServiceConnected;
+        set => SetProperty(ref _isServiceConnected, value);
     }
 
-    public bool _isConnected;
-    public bool IsConnected
-    {
-        get => _isConnected;
-        set => SetProperty(ref _isConnected, value);
-    }
-
-    public bool _plcConnected;
-    public bool PLCConnected
-    {
-        get => _plcConnected;
-        set => SetProperty(ref _plcConnected, value);
-    }
 
     public bool _timeSynched;
     public bool TimeSynched
@@ -130,6 +117,15 @@ public class MainWindowViewModelBase : BaseViewModel
         get => _timeSynched;
         set => SetProperty(ref _timeSynched, value);
     }
+    public bool _macMiniConnected;
+    public bool MacMiniConnected
+    {
+        get => _macMiniConnected;
+        set => SetProperty(ref _macMiniConnected, value);
+    }
+
+
+
 
     private readonly IOptionsMonitor<AboutSettings> _aboutMonitor;
 
@@ -152,8 +148,13 @@ public class MainWindowViewModelBase : BaseViewModel
         _nav = nav;
         _alarmVM = alarmVM;
         _alarmVM.ActiveAlarms.CollectionChanged += (s, e) => RefreshAlarmBanner();
-        _timer = new SafePoller
-        (TimeSpan.FromSeconds(1), LiveDataTimerTick);
+        _timer = new SafePollerEx(
+                _coreClient,
+                TimeSpan.FromSeconds(1),
+                UpdateTaskbarItemsFromService,
+                _logger,
+                ex => _logger.LogError($"[MainWindow] Taskbar status poller error: {ex.Message}", LogType.Diagnostics),
+                requestId: 1);
         _timer.Start();
         // 3. Subscribe to Alarm Events
         _coreClient.OnAlarmMessageReceived += OnAlarmReceived;
@@ -273,73 +274,78 @@ public class MainWindowViewModelBase : BaseViewModel
         }
     }
 
-
-
-    private async Task LiveDataTimerTick(Dictionary<int, object> data)
+    protected virtual  async Task UpdateTaskbarItemsFromService(Dictionary<int, object> data)
     {
-        try
-        {
-            IsConnected = _coreClient.isConnected;
-
-            var liveData = await _coreClient.GetIoValuesAsync(5);
-
-            if (liveData != null && liveData.Count > 0)
-            {
-                // 1. Check Modes
-                if (GetBool(liveData, ConstantValues.Mode_Auto.Read)) CurrentMachineMode = "AUTO RUN";
-                else if (GetBool(liveData, ConstantValues.Mode_DryRun.Read)) CurrentMachineMode = "DRY RUN";
-                else if (GetBool(liveData, ConstantValues.Mode_CycleStop.Read)) CurrentMachineMode = "CYCLE STOP";
-                else if (GetBool(liveData, ConstantValues.Mode_MassRTO.Read)) CurrentMachineMode = "MACHINE HOME";
-                else CurrentMachineMode = "MANUAL / IDLE"; // Default if no specific mode active
-            }
-
-
-            SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
-            var boolDict = await _coreClient.GetIoValuesAsync(1);
-            if (boolDict != null && boolDict.TryGetValue(1, out object pulseObj))
-            {
-                //var json = JsonConvert.SerializeObject(pulseObj);
-                //var pulseResult = JsonConvert.DeserializeObject<List<bool>>(json);
-                //PLCConnected = pulseResult[0];
-                //TimeSynched = pulseResult[1];
-
-                var json = JsonConvert.SerializeObject(pulseObj);
-                var pulseResult = JsonConvert.DeserializeObject<List<bool>>(json);
-
-                // Index 0: PLC
-                if (pulseResult.Count > 0) PLCConnected = pulseResult[0];
-
-                // Index 1: Time Sync
-                if (pulseResult.Count > 1) TimeSynched = pulseResult[1];
-
-                // Index 2: Mac Mini (NEW)
-                if (pulseResult.Count > 2)
-                {
-                    MacMiniConnected = pulseResult[2];
-                }
-                else
-                {
-                    MacMiniConnected = false; // Fallback if backend is old version
-                }
-
-            }
-            else
-            {
-                PLCConnected = false;
-                TimeSynched = false;
-                MacMiniConnected = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message, LogType.Diagnostics);
-            PLCConnected = false;
-            TimeSynched = false;
-            MacMiniConnected = false;
-            CurrentMachineMode = "UNKNOWN";
-        }
-
+        IsServiceConnected = _coreClient.isConnected;
     }
+
+    
+
+    //private async Task LiveDataTimerTick(Dictionary<int, object> data)
+    //{
+    //    try
+    //    {
+    //        IsConnected = _coreClient.isConnected;
+
+    //        var liveData = await _coreClient.GetIoValuesAsync(5);
+
+    //        if (liveData != null && liveData.Count > 0)
+    //        {
+    //            // 1. Check Modes
+    //            if (GetBool(liveData, ConstantValues.Mode_Auto.Read)) CurrentMachineMode = "AUTO RUN";
+    //            else if (GetBool(liveData, ConstantValues.Mode_DryRun.Read)) CurrentMachineMode = "DRY RUN";
+    //            else if (GetBool(liveData, ConstantValues.Mode_CycleStop.Read)) CurrentMachineMode = "CYCLE STOP";
+    //            else if (GetBool(liveData, ConstantValues.Mode_MassRTO.Read)) CurrentMachineMode = "MACHINE HOME";
+    //            else CurrentMachineMode = "MANUAL / IDLE"; // Default if no specific mode active
+    //        }
+
+
+    //        SystemTime = DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss");
+    //        var boolDict = await _coreClient.GetIoValuesAsync(1);
+    //        if (boolDict != null && boolDict.TryGetValue(1, out object pulseObj))
+    //        {
+    //            //var json = JsonConvert.SerializeObject(pulseObj);
+    //            //var pulseResult = JsonConvert.DeserializeObject<List<bool>>(json);
+    //            //PLCConnected = pulseResult[0];
+    //            //TimeSynched = pulseResult[1];
+
+    //            var json = JsonConvert.SerializeObject(pulseObj);
+    //            var pulseResult = JsonConvert.DeserializeObject<List<bool>>(json);
+
+    //            // Index 0: PLC
+    //            if (pulseResult.Count > 0) PLCConnected = pulseResult[0];
+
+    //            // Index 1: Time Sync
+    //            if (pulseResult.Count > 1) TimeSynched = pulseResult[1];
+
+    //            // Index 2: Mac Mini (NEW)
+    //            if (pulseResult.Count > 2)
+    //            {
+    //                MacMiniConnected = pulseResult[2];
+    //            }
+    //            else
+    //            {
+    //                MacMiniConnected = false; // Fallback if backend is old version
+    //            }
+
+    //        }
+    //        else
+    //        {
+    //            PLCConnected = false;
+    //            TimeSynched = false;
+    //            MacMiniConnected = false;
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        _logger.LogError(ex.Message, LogType.Diagnostics);
+    //        PLCConnected = false;
+    //        TimeSynched = false;
+    //        MacMiniConnected = false;
+    //        CurrentMachineMode = "UNKNOWN";
+    //    }
+
+    //}
 
 
     private bool GetBool(Dictionary<int, object> data, int tagId)

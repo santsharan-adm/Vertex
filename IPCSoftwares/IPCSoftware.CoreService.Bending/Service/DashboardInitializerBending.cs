@@ -1304,38 +1304,7 @@ namespace IPCSoftware.CoreService.Bending.Service
             //};
         }
 
-        // Helper to read a float from the latest PLC packet by tag ID
-        private float GetFloat(int tagId)
-        {
-            if (latestValueNew.TryGetValue(tagId, out var val) &&
-                float.TryParse(val.ToString(), out var result))
-                return result;
-            return 0f;  // NaN is not valid JSON — use 0 as safe default
-        }
-
-        private int GetInt(int tagId)
-        {
-
-            if (latestValueNew.TryGetValue(tagId, out var val) &&
-                int.TryParse(val.ToString(), out var result))
-                return result;
-            return 0;
-        }
-
-        private bool GetBool(int tagId)
-        {
-            if (latestValueNew.TryGetValue(tagId, out var val) &&
-                bool.TryParse(val.ToString(), out var result))
-                return result;
-            return false;
-        }
-
-        private string GetString(int tagId)
-        {
-            if (latestValueNew.TryGetValue(tagId, out var val))
-                return val?.ToString() ?? "NA";
-            return "NA";
-        }
+        
 
 
     }

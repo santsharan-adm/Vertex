@@ -67,7 +67,7 @@ namespace IPCSoftware.Engine
 
         }
 
-      
+        Dictionary<int, object> sysMonData = new Dictionary<int, object>();
 
         public async Task StartAsync()
         {
@@ -112,7 +112,7 @@ namespace IPCSoftware.Engine
                     await _ccdTrigger.ProcessTriggers(processedData, _manager);
                     _oee.ProcessCycleTimeLogic(processedData);
                     _oee.Calculate(processedData);
-                    _systemMonitor.Process(processedData);
+                    sysMonData=_systemMonitor.Process(processedData);
                     _alarmService.ProcessTagData(processedData);
                     _shiftReset.Process(processedData);
                     // short delay to avoid tight loop; adjust interval as needed
@@ -230,20 +230,56 @@ namespace IPCSoftware.Engine
 
                 if (request.RequestId == 1)
                 {
+                    TaskbarItems taskbarItems = new TaskbarItems();
+                    // Safe check for keys 0, 1, 2 in sysMonData
+                    if (sysMonData != null && sysMonData.TryGetValue(0, out var plc1Val) &&
+                        bool.TryParse(plc1Val?.ToString(), out var isPLC1Connected))
                     {
+                        taskbarItems.IsPLC1Connected = isPLC1Connected;
+                    }
+                    if (sysMonData != null && sysMonData.TryGetValue(1, out var plc2Val) &&
+                        bool.TryParse(plc2Val?.ToString(), out var isPLC2Connected))
+                    {
+                        taskbarItems.IsPLC2Connected = isPLC2Connected;
+                    }
+                    if (sysMonData != null && sysMonData.TryGetValue(2, out var macMiniVal) &&
+                        bool.TryParse(macMiniVal?.ToString(), out var isMacMiniConnected))
+                    {
+                        taskbarItems.IsMacMiniConnected = isMacMiniConnected;
+                    }
+                    if (GetBool( ConstantValues.Mode_Auto.Read)) taskbarItems.CurrentMachineMode = "AUTO RUN";
+                    else if (GetBool( ConstantValues.Mode_DryRun.Read)) taskbarItems.CurrentMachineMode = "DRY RUN";
+                    else if (GetBool( ConstantValues.Mode_CycleStop.Read)) taskbarItems.CurrentMachineMode = "CYCLE STOP";
+                    else if (GetBool(ConstantValues.Mode_MassRTO.Read)) taskbarItems.CurrentMachineMode = "MACHINE HOME";
+                    else taskbarItems.CurrentMachineMode = "MANUAL / IDLE"; // Default if no specific mode active
+                   
+
+
                         return new ResponsePackage
                         {
                             ResponseId = 1,
                             Parameters = new Dictionary<int, object>()
+                            {
+                                {
+                                    0,
+                                   taskbarItems
+                                }
+                            }
                         };
                     }
+                //if (GetBool(liveData, ConstantValues.Mode_Auto.Read)) CurrentMachineMode = "AUTO RUN";
+                //            else if (GetBool(liveData, ConstantValues.Mode_DryRun.Read)) CurrentMachineMode = "DRY RUN";
+                //            else if (GetBool(liveData, ConstantValues.Mode_CycleStop.Read)) CurrentMachineMode = "CYCLE STOP";
+                //            else if (GetBool(liveData, ConstantValues.Mode_MassRTO.Read)) CurrentMachineMode = "MACHINE HOME";
+                //            else CurrentMachineMode = "MANUAL / IDLE"; // Default if no specific mode active
+
                 //    _oee.ProcessCycleTimeLogic(packet.Values);
-                    //return new ResponsePackage
-                    //{   
-                    //    ResponseId = 1,
-                    //    Parameters = _systemMonitor.Process(packet.Values)
-                    //};
-                }
+                //return new ResponsePackage
+                //{   
+                //    ResponseId = 1,
+                //    Parameters = _systemMonitor.Process(packet.Values)
+                //};
+
 
 
 
@@ -429,7 +465,38 @@ namespace IPCSoftware.Engine
             new ResponsePackage { ResponseId = 6, Success = false, ErrorMessage = msg };
 
 
-       
+        // Helper to read a float from the latest PLC packet by tag ID
+        protected float GetFloat(int tagId)
+        {
+            if (latestValueNew.TryGetValue(tagId, out var val) &&
+                float.TryParse(val.ToString(), out var result))
+                return result;
+            return 0f;  // NaN is not valid JSON — use 0 as safe default
+        }
+
+        protected int GetInt(int tagId)
+        {
+
+            if (latestValueNew.TryGetValue(tagId, out var val) &&
+                int.TryParse(val.ToString(), out var result))
+                return result;
+            return 0;
+        }
+
+        protected bool GetBool(int tagId)
+        {
+            if (latestValueNew.TryGetValue(tagId, out var val) &&
+                bool.TryParse(val.ToString(), out var result))
+                return result;
+            return false;
+        }
+
+        protected string GetString(int tagId)
+        {
+            if (latestValueNew.TryGetValue(tagId, out var val))
+                return val?.ToString() ?? "NA";
+            return "NA";
+        }
 
 
     }
