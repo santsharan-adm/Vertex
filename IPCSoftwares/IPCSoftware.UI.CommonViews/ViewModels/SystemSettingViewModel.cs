@@ -111,7 +111,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
         public ICommand SyncCommand { get; }
 
-        public ICommand SyncCommand2 { get; }
+        //public ICommand SyncCommand2 { get; }
         public ICommand StartServiceCommand { get; }
         public ICommand StopServiceCommand { get; }
 
@@ -124,7 +124,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             _logService = logService;
 
             SyncCommand = new RelayCommand(async () => await SyncTime());
-            SyncCommand2 = new RelayCommand(async () => await SyncTime2());
+            //SyncCommand2 = new RelayCommand(async () => await SyncTime2());
             StartServiceCommand = new RelayCommand(async () => await StartServiceAsync(), () => !IsServiceRunning);
             StopServiceCommand = new RelayCommand(async () => await StopServiceAsync(), () => IsServiceRunning);
 
@@ -417,12 +417,12 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 int s1 = GetInt(plcdta, ConstantValues.TAG_Time_Second.Read);
                 //PLC2 Clock Read
 
-                int y2 = GetInt(plcdta, ConstantValues.PLC2_TAG_Time_Year.Read);
-                int M2 = GetInt(plcdta, ConstantValues.PLC2_TAG_Time_Month.Read);
-                int d2 = GetInt(plcdta, ConstantValues.PLC2_TAG_Time_Day.Read);
-                int h2 = GetInt(plcdta, ConstantValues.PLC2_TAG_Time_Hour.Read);
-                int m2 = GetInt(plcdta, ConstantValues.PLC2_TAG_Time_Minute.Read);
-                int s2 = GetInt(plcdta, ConstantValues.PLC2_TAG_Time_Second.Read);
+                //int y2 = GetInt(plcdta, ConstantValues.PLC2_TAG_Time_Year.Read);
+                //int M2 = GetInt(plcdta, ConstantValues.PLC2_TAG_Time_Month.Read);
+                //int d2 = GetInt(plcdta, ConstantValues.PLC2_TAG_Time_Day.Read);
+                //int h2 = GetInt(plcdta, ConstantValues.PLC2_TAG_Time_Hour.Read);
+                //int m2 = GetInt(plcdta, ConstantValues.PLC2_TAG_Time_Minute.Read);
+                //int s2 = GetInt(plcdta, ConstantValues.PLC2_TAG_Time_Second.Read);
 
                 if (y1 > 0 && M1 > 0 && d1 > 0)
                 {
@@ -441,22 +441,22 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                     }
                 }
 
-                if (y2 > 0 && M2 > 0 && d2 > 0)
-                {
-                    if (y2 < 100) y2 += 2000;
+                //if (y2 > 0 && M2 > 0 && d2 > 0)
+                //{
+                //    if (y2 < 100) y2 += 2000;
 
-                    try
-                    {
-                        var dt = new DateTime(y2, M2, d2, h2, m2, s2);
-                        Plc2Date = dt.ToString("dd-MMM-yyyy");
-                        Plc2Time = dt.ToString("HH:mm:ss");
-                    }
-                    catch
-                    {
-                        Plc2Date = "--/--/----";
-                        Plc2Time = "--:--:--";
-                    }
-                }
+                //    try
+                //    {
+                //        var dt = new DateTime(y2, M2, d2, h2, m2, s2);
+                //        Plc2Date = dt.ToString("dd-MMM-yyyy");
+                //        Plc2Time = dt.ToString("HH:mm:ss");
+                //    }
+                //    catch
+                //    {
+                //        Plc2Date = "--/--/----";
+                //        Plc2Time = "--:--:--";
+                //    }
+                //}
 
 
             }
@@ -497,40 +497,40 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             SyncState = "Idle";
         }
 
-        private async Task SyncTime2()
-        {
-            try
-            {
-                SyncState = "Syncing";
-                AddAudit("Sync PLC 2 triggered");
+        //private async Task SyncTime2()
+        //{
+        //    try
+        //    {
+        //        SyncState = "Syncing";
+        //        AddAudit("Sync PLC 2 triggered");
 
-                DateTime targetTime = DateTime.Now;
-                _logger.LogInfo($"Syncing PLC 2 Time to: {targetTime:yyyy-MM-dd HH:mm:ss}", LogType.Audit);
+        //        DateTime targetTime = DateTime.Now;
+        //        _logger.LogInfo($"Syncing PLC 2 Time to: {targetTime:yyyy-MM-dd HH:mm:ss}", LogType.Audit);
 
-                await _coreClient.WriteTagAsync(ConstantValues.PLC2_TAG_Time_Year.Write, targetTime.Year);
-                await _coreClient.WriteTagAsync(ConstantValues.PLC2_TAG_Time_Month.Write, targetTime.Month);
-                await _coreClient.WriteTagAsync(ConstantValues.PLC2_TAG_Time_Day.Write, targetTime.Day);
-                await _coreClient.WriteTagAsync(ConstantValues.PLC2_TAG_Time_Hour.Write, targetTime.Hour);
-                await _coreClient.WriteTagAsync(ConstantValues.PLC2_TAG_Time_Minute.Write, targetTime.Minute);
-                await _coreClient.WriteTagAsync(ConstantValues.PLC2_TAG_Time_Second.Write, targetTime.Second);
+        //        await _coreClient.WriteTagAsync(ConstantValues.PLC2_TAG_Time_Year.Write, targetTime.Year);
+        //        await _coreClient.WriteTagAsync(ConstantValues.PLC2_TAG_Time_Month.Write, targetTime.Month);
+        //        await _coreClient.WriteTagAsync(ConstantValues.PLC2_TAG_Time_Day.Write, targetTime.Day);
+        //        await _coreClient.WriteTagAsync(ConstantValues.PLC2_TAG_Time_Hour.Write, targetTime.Hour);
+        //        await _coreClient.WriteTagAsync(ConstantValues.PLC2_TAG_Time_Minute.Write, targetTime.Minute);
+        //        await _coreClient.WriteTagAsync(ConstantValues.PLC2_TAG_Time_Second.Write, targetTime.Second);
 
-                await _coreClient.WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, 1);
-                await Task.Delay(200);
-                await _coreClient.WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, 0);
+        //        await _coreClient.WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, 1);
+        //        await Task.Delay(200);
+        //        await _coreClient.WriteTagAsync(ConstantValues.TAG_TimeSync_Ack, 0);
 
-                SyncState = "Synced";
-                AddAudit("PLC 2 time sync command sent.");
-            }
-            catch (Exception ex)
-            {
-                SyncState = "Error";
-                AddAudit($"Sync PLC 2 failed: {ex.Message}");
-                _logger.LogError(ex.Message, LogType.Diagnostics);
-            }
+        //        SyncState = "Synced";
+        //        AddAudit("PLC 2 time sync command sent.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        SyncState = "Error";
+        //        AddAudit($"Sync PLC 2 failed: {ex.Message}");
+        //        _logger.LogError(ex.Message, LogType.Diagnostics);
+        //    }
 
-            await Task.Delay(2000);
-            SyncState = "Idle";
-        }
+        //    await Task.Delay(2000);
+        //    SyncState = "Idle";
+        //}
         private int GetInt(Dictionary<int, object> data, int tagId)
         {
             if (data.TryGetValue(tagId, out object val))
