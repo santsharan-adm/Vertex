@@ -80,6 +80,74 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+
+        <Style x:Key="PushButtonGreenStyle" TargetType="Button">
+            <Setter Property="Height" Value="120"/>
+            <Setter Property="Width" Value="220"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="Background" Value="#11AA44"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+            
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="12" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PushButtonBlueStyle" TargetType="Button">
+            <Setter Property="Height" Value="120"/>
+            <Setter Property="Width" Value="220"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="Background" Value="#FF0066FF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="12" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ControlGroupBoxStyle" TargetType="GroupBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontSize" Value="18"/>
+        </Style>
+
+        <Style x:Key="ControlGroupBoxHeaderStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Black"/>
+        </Style>
+
+        <Style x:Key="ControlUniformGridStyle" TargetType="UniformGrid">
+            <Setter Property="Columns" Value="3"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
     </UserControl.Resources>
 
     <Grid Margin="20" Background="#F7FAFC">
@@ -132,7 +200,7 @@
                 <ScrollViewer Grid.Row="1"
                         VerticalScrollBarVisibility="Auto">
 
-                    <UniformGrid Rows="4" Columns="5" Margin="0,10,0,0" >
+                    <!--<UniformGrid Rows="4" Columns="5" Margin="0,10,0,0" >
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="IN1" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[0].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[0].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[0].IsEnabled}" FontSize="20" Tag="1"/>
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="IN2" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[1].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[1].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[1].IsEnabled}" FontSize="20" Tag="2"/>
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="IN3" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[2].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[2].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[2].IsEnabled}" FontSize="20" Tag="3"/>
@@ -149,24 +217,830 @@
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="IN14" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[13].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[13].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[13].IsEnabled}" FontSize="20" Tag="14"/>
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="IN15" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[14].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[14].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[14].IsEnabled}" FontSize="20" Tag="15"/>
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="IN16" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[15].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[15].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[15].IsEnabled}" FontSize="20" Tag="16"/>
-                        <!--<Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[16].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[16].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[16].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[16].IsEnabled}" FontSize="20" Tag="17"/>
+                        --><!--<Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[16].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[16].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[16].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[16].IsEnabled}" FontSize="20" Tag="17"/>
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[17].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[17].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[17].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[17].IsEnabled}" FontSize="20" Tag="18"/>
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[18].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[18].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[18].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[18].IsEnabled}" FontSize="20" Tag="19"/>
-                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[19].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[19].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[19].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[19].IsEnabled}" FontSize="20" Tag="20"/>-->
-                    </UniformGrid>
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[19].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[19].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[19].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[19].IsEnabled}" FontSize="20" Tag="20"/>--><!--
+                    </UniformGrid>-->
 
                 </ScrollViewer>
             </Grid>
         </Border>
 
+        
+        <!--Page M02-->
+
         <Border Grid.Row="1" 
-            Background="White" 
-            BorderBrush="#E2E8F0" 
-            BorderThickness="1" 
-            CornerRadius="12" 
-            Padding="3" 
-            Margin="3"
-                Visibility="{Binding SelectedPageIndex,Converter={StaticResource BindingManualPageVisibilityConverter}, ConverterParameter=1}">
+        Background="White" 
+        BorderBrush="#E2E8F0" 
+        BorderThickness="1" 
+        CornerRadius="12" 
+        Padding="3" 
+        Margin="3"
+        Visibility="{Binding SelectedPageIndex, Converter={StaticResource BindingManualPageVisibilityConverter}, ConverterParameter=1}">
+            <Grid Margin="3">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                Background="#1A1A1A"
+                BorderBrush="#333333"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="3">
+
+                    <TextBlock Text="MANUAL MONITOR(INPUT UNIT)"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontFamily="Consolas"/>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Grid.Row="0" Grid.Column="0" Margin="5">
+                            <GroupBox.Header>
+                                <TextBlock Text="M02: INPUT Module (SUPPLY)" Foreground="Black" FontSize="18" FontWeight="Black"/>
+                            </GroupBox.Header>
+                            <Grid Margin="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <GroupBox Grid.Row="0" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="SUPPLY CONVEYOR" Style="{StaticResource ControlGroupBoxHeaderStyle}"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="STOP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02SupplyConveyorStop"/>
+                                        <Button Content="FORWARD" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02SupplyConveyorForward"/>
+                                        <Button Content="BACKWARD" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02SupplyConveyorBackward"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Grid.Row="1" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="SUPPLY TRAY CHUCK (L/R)" Style="{StaticResource ControlGroupBoxHeaderStyle}"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="UNCHUCK" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02SupplyTrayChuckUnchuck"/>
+                                        <Button Content="CHUCK" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02SupplyTrayChuckChuck"/>
+                                        <Border Background="Transparent"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Grid.Row="2" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="SUPPLY TRAY RELEASE (L/R)" Style="{StaticResource ControlGroupBoxHeaderStyle}"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02SupplyTrayReleaseDown"/>
+                                        <Button Content="CENTER" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02SupplyTrayReleaseCenter"/>
+                                        <Button Content="UP" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02SupplyTrayReleaseUp"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Grid.Row="3" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="SUPPLY TRAY STOPPER" Style="{StaticResource ControlGroupBoxHeaderStyle}"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02SupplyTrayStopperUp"/>
+                                        <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02SupplyTrayStopperDown"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Header="M02: INPUT Module (LIFT UP/DOWN)" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" FontWeight="Bold" Foreground="Black" FontSize="18">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <GroupBox Header="LIFT CONVEYOR" Grid.Row="0" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="STOP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02LiftConveyorStop"/>
+                                        <Button Content="FORWARD" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02LiftConveyorForward"/>
+                                        <Button Content="BACKWARD" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02LiftConveyorBackward"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="LIFT TRAY STOPPER" FontSize="16" FontWeight="Bold" Foreground="Black" Grid.Row="1" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02LiftTrayStopperUp"/>
+                                        <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02LiftTrayStopperDown"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="LIFT TRAY HOLDER" Grid.Row="0" Grid.Column="1" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="Backward" Height="60" Margin="3" FontWeight="Bold" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02LiftTrayHolderBackward"/>
+                                        <Button Content="Forward" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02LiftTrayHolderForward"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="LIFT UNIT" Grid.Row="1" Grid.Column="1" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="Down" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02LiftUnitDown"/>
+                                        <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02LiftUnitUp"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Header="M02: INPUT Module (DISCHARGE)" Grid.Row="0" Grid.Column="1" Margin="5" Foreground="Black" FontWeight="Bold" FontSize="18">
+                            <Grid Margin="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <GroupBox Header="DISCHARGE CONVEYOR" Grid.Row="0" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="STOP" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02DischargeConveyorStop"/>
+                                        <Button Content="FORWARD" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02DischargeConveyorForward"/>
+                                        <Button Content="BACKWARD" Height="60" Margin="3" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02DischargeConveyorBackward"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="DISCHARGE TRAY CHUCK (L/R)" Grid.Row="1" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="UNCHUCK" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02DischargeTrayChuckUnchunk"/>
+                                        <Button Content="CHUCK" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02DischargeTrayChuckChuk"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="DISCHARGE TRAY Release (L/R)" Grid.Row="2" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="Down" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02DischargeTrayReleaseDown"/>
+                                        <Button Content="Center" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02DischargeTrayReleaseCenter"/>
+                                        <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02DischargeTrayReleaseUp"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="DISCHARGE TRAY STOPPER" Grid.Row="3" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02DischargeTrayStopperUp"/>
+                                        <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02DischargeTrayStopperDown"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+
+        <!--page M03-->
+
+
+        <Border Grid.Row="1" 
+        Background="White" 
+        BorderBrush="#E2E8F0" 
+        BorderThickness="1" 
+        CornerRadius="12" 
+        Padding="3" 
+        Margin="3"
+        Visibility="{Binding SelectedPageIndex, Converter={StaticResource BindingManualPageVisibilityConverter}, ConverterParameter=2}">
+            <Grid Margin="3">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                Background="#1A1A1A"
+                BorderBrush="#333333"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="3">
+
+                    <TextBlock Text="MANUAL MONITOR(INPUT UNIT)"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontFamily="Consolas"/>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Grid.Row="0" Grid.Column="0" Margin="5">
+                            <GroupBox.Header>
+                                <TextBlock Text="M03: INPUT Module (SUPPLY)" Foreground="Black" FontSize="18" FontWeight="Black"/>
+                            </GroupBox.Header>
+                            <Grid Margin="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <GroupBox Grid.Row="0" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="SUPPLY CONVEYOR" Style="{StaticResource ControlGroupBoxHeaderStyle}"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="STOP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03SupplyConveyorStop"/>
+                                        <Button Content="FORWARD" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03SupplyConveyorForward"/>
+                                        <Button Content="BACKWARD" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03SupplyConveyorBackward"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Grid.Row="1" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="SUPPLY TRAY CHUCK (L/R)" Style="{StaticResource ControlGroupBoxHeaderStyle}"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="UNCHUCK" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03SupplyTrayChuckUnchuck"/>
+                                        <Button Content="CHUCK" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03SupplyTrayChuckChuck"/>
+                                        <Border Background="Transparent"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Grid.Row="2" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="SUPPLY TRAY RELEASE (L/R)" Style="{StaticResource ControlGroupBoxHeaderStyle}"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03SupplyTrayReleaseDown"/>
+                                        <Button Content="CENTER" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03SupplyTrayReleaseCenter"/>
+                                        <Button Content="UP" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03SupplyTrayReleaseUp"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Grid.Row="3" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="SUPPLY TRAY STOPPER (L/R)" Style="{StaticResource ControlGroupBoxHeaderStyle}"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03SupplyTrayStopperUp"/>
+                                        <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03SupplyTrayStopperDown"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Header="M03: INPUT Module (LIFT UP/DOWN)" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Foreground="Black" FontWeight="Bold" FontSize="18">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <GroupBox Header="LIFT CONVEYOR" Grid.Row="0" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="STOP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03LiftConveyorStop"/>
+                                        <Button Content="FORWARD" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03LiftConveyorForward"/>
+                                        <Button Content="BACKWARD" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03LiftConveyorBackward"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="LIFT TRAY STOPPER" Grid.Row="1" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03LiftTrayStopperUp"/>
+                                        <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03LiftTrayStopperDown"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="LIFT TRAY HOLDER" Grid.Row="0" Grid.Column="1" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="Backward" Height="60" Margin="3" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03LiftTrayHolderBackward"/>
+                                        <Button Content="Forward" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03LiftTrayHolderForward"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="LIFT UNIT" Grid.Row="1" Grid.Column="1" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="Down" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03LiftUnitDown"/>
+                                        <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03LiftUnitUp"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Header="M03: INPUT Module (DISCHARGE)" Grid.Row="0" Grid.Column="1" Margin="5" Foreground="Black" FontWeight="Bold" FontSize="18">
+                            <Grid Margin="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <GroupBox Header="DISCHARGE CONVEYOR" Grid.Row="0" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="STOP" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03DischargeConveyorStop"/>
+                                        <Button Content="FORWARD" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03DischargeConveyorForward"/>
+                                        <Button Content="BACKWARD" Height="60" Margin="3" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03DischargeConveyorBackward"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="DISCHARGE TRAY CHUCK (L/R)" Grid.Row="1" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="UNCHUCK" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03DischargeTrayChuckUnchuck"/>
+                                        <Button Content="CHUCK" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03DischargeTrayChuckChuck"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="DISCHARGE TRAY Release (L/R)" Grid.Row="2" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="Down" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03DischargeTrayReleaseDown"/>
+                                        <Button Content="Center" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03DischargeTrayReleaseCenter"/>
+                                        <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03DischargeTrayReleaseUp"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="DISCHARGE TRAY STOPPER" Grid.Row="3" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03DischargeTrayStopperUp"/>
+                                        <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M03DischargeTrayStopperDown"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+
+
+
+        <!--PAGE M04-->
+
+        <Border Grid.Row="1" 
+        Background="White" 
+        BorderBrush="#E2E8F0" 
+        BorderThickness="1" 
+        CornerRadius="12" 
+        Padding="3" 
+        Margin="3"
+        Visibility="{Binding SelectedPageIndex, Converter={StaticResource BindingManualPageVisibilityConverter}, ConverterParameter=3}">
+            <Grid Margin="3">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                Background="#1A1A1A"
+                BorderBrush="#333333"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="3">
+
+                    <TextBlock Text="MANUAL MONITOR(INDEX1 UNIT)"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontFamily="Consolas"/>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Grid.Row="0" Grid.Column="0" Margin="5">
+                            <GroupBox.Header>
+                                <TextBlock Text="M04: INDEX 1" Foreground="Black" FontSize="18" FontWeight="Black"/>
+                            </GroupBox.Header>
+                            <Grid Margin="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <GroupBox Grid.Row="0" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="INDEX 1 COORDINATE" Style="{StaticResource ControlGroupBoxHeaderStyle}"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="STOP" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M04Index1CoordinateStop"/>
+                                        <Button Content="FORWARD" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M04Index1CoordinateForward"/>
+                                        <Button Content="BACKWARD" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M04Index1CoordinateBackward"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Grid.Row="1" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="INDEX1 ACTION" Style="{StaticResource ControlGroupBoxHeaderStyle}"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="RETURN TO 0" Height="60" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M04Index1ActionReturnTo0"/>
+                                        <Button Content="ROTATE 1 PITCH" Height="60" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M04Index1ActionRotate1Pitch"/>
+                                        <Border Background="Transparent"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Header="M02: INPUT Module (DISCHARGE)" Grid.Row="0" Grid.Column="1" Margin="5" Foreground="Black" FontWeight="Bold" FontSize="18">
+                            <Grid Margin="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <GroupBox Header="INDEX 1 ACTION" Grid.Row="0" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="OFF" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02InputModuleIndex1ActionOff"/>
+                                        <Button Content="ON" Height="60" Margin="3" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02InputModuleIndex1ActionOn"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="1ST SECTION" Grid.Row="1" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="OFF" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02InputModuleIndex1SectionOff"/>
+                                        <Button Content="ON" Height="60" Margin="3" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02InputModuleIndex1SectionOn"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="2ND SECTION" Grid.Row="2" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="OFF" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02InputModuleIndex2SectionOff"/>
+                                        <Button Content="ON" Height="60" Margin="3" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02InputModuleIndex2SectionOn"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="3RD SECTION" Grid.Row="3" Grid.Column="0" Style="{StaticResource ControlGroupBoxStyle}">
+                                    <UniformGrid Style="{StaticResource ControlUniformGridStyle}">
+                                        <Button Content="OFF" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02InputModuleIndex3SectionOff"/>
+                                        <Button Content="ON" Height="60" Margin="3" Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" CommandParameter="M02InputModuleIndex3SectionOn"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+
+
+        <!--PAGE M05-->
+
+        <Border Grid.Row="1" 
+  Background="White" 
+  BorderBrush="#E2E8F0" 
+  BorderThickness="1" 
+  CornerRadius="12" 
+  Padding="3" 
+  Margin="3"
+  Visibility="{Binding SelectedPageIndex,Converter={StaticResource BindingManualPageVisibilityConverter}, ConverterParameter=4}">
+            <Grid Margin="3">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+          Background="#1A1A1A"
+          BorderBrush="#333333"
+          BorderThickness="1"
+          CornerRadius="4"
+          Padding="3">
+                    <TextBlock Text="MANUAL MONITOR(INDEX 1 UNIT)"
+                 FontSize="28"
+                 FontWeight="Bold"
+                 Foreground="White"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 FontFamily="Consolas"/>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+
+                    <GroupBox Margin="5">
+                        <GroupBox.Header>
+                            <TextBlock Text="M05: BENDING 1,2" Foreground="Black" FontSize="18" FontWeight="Black"/>
+                        </GroupBox.Header>
+
+                        <Grid Margin="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Grid.Column="0" Margin="0,0,5,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="#1 , 2 CLAMP" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M052ClampUp"/>
+                                            <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M052ClampDown"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="#1 PUNCH" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M05PunchDown"/>
+                                            <Button Content="UP" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M05PunchUp"/>
+                                            <Border Background="Transparent"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="2" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="#1ST HEATER" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M05HeaterOff"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M05HeaterOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="3" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="#1 2ND HEATER (L/R)" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M052NdHeaterOff"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M052NdHeaterOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="4" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="#1 3RD HEATER " Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M053RdHeaterOff"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M053RdHeaterOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="5" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="#1 4TH HEATER " Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M054ThHeaterOff"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M054ThHeaterOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <Grid Grid.Column="1" Margin="5,0,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="#1 , 2 DIE" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M052DieUp"/>
+                                            <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M052DieDown"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="#2 PUNCH" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M052PunchDown"/>
+                                            <Button Content="UP" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M052PunchUp"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="2" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="#2, 1ST HEATER" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M051StHeaterOff"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M051StHeaterOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="3" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="#2, 2ND HEATER" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M052NdHeaterOff"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M052NdHeaterOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="4" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="#2, 3RD HEATER" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M053RdHeaterOff"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M053RdHeaterOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="5" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="#2, 4TH HEATER" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M054ThHeaterOff"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M054ThHeaterOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                        </Grid>
+                    </GroupBox>
+
+                </ScrollViewer>
+
+            </Grid>
+        </Border>
+
+
+
+
+        <!--PAGE M06-->
+
+        <Border Grid.Row="1" 
+Background="White" 
+BorderBrush="#E2E8F0" 
+BorderThickness="1" 
+CornerRadius="12" 
+Padding="3" 
+Margin="3"
+    Visibility="{Binding SelectedPageIndex,Converter={StaticResource BindingManualPageVisibilityConverter}, ConverterParameter=5}">
             <Grid  Margin="3">
 
                 <Grid.RowDefinitions>
@@ -174,26 +1048,24 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- HEADER -->
                 <Border Grid.Row="0"
-                    Background="#1A1A1A"
-                    BorderBrush="#333333"
-                    BorderThickness="1"
-                    CornerRadius="4"
-                    Padding="3">
+        Background="#1A1A1A"
+        BorderBrush="#333333"
+        BorderThickness="1"
+        CornerRadius="4"
+        Padding="3">
 
-                    <TextBlock Text="MANUAL MONITOR(INPUT UNIT)"
-                        FontSize="28"
-                        FontWeight="Bold"
-                        Foreground="White"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        FontFamily="Consolas"/>
+                    <TextBlock Text="MANUAL MONITOR(INDEX 1 UNIT)"
+            FontSize="28"
+            FontWeight="Bold"
+            Foreground="White"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontFamily="Consolas"/>
                 </Border>
 
-                <!-- BODY -->
                 <ScrollViewer Grid.Row="1"
-                          VerticalScrollBarVisibility="Auto">
+              VerticalScrollBarVisibility="Auto">
 
                     <Grid Margin="3">
 
@@ -207,10 +1079,9 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- LEFT PANEL -->
                         <GroupBox Grid.Row="0" Grid.Column="0" Margin="5" >
                             <GroupBox.Header>
-                                <TextBlock Text="M02: INPUT Module (SUPPY)" Foreground="Black" FontSize="18" FontWeight="Black"/>
+                                <TextBlock Text="M06: BENDING 3" Foreground="Black" FontSize="18" FontWeight="Black"/>
                             </GroupBox.Header>
                             <Grid Margin="3">
 
@@ -219,6 +1090,9 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+
                                 </Grid.RowDefinitions>
 
                                 <Grid.ColumnDefinitions>
@@ -226,244 +1100,167 @@
                                 </Grid.ColumnDefinitions>
                                 <GroupBox  Grid.Row="0" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
                                     <GroupBox.Header>
-                                        <TextBlock Text="SUPPLY CONVEYOR" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                        <TextBlock Text="#3 CLAMP" Foreground="Black" FontSize="16" FontWeight="Black"/>
                                     </GroupBox.Header>
                                     <UniformGrid Columns="3" Margin="5">
 
-                                        <!-- Row 1 -->
-                                        <!--<Button Content="SUPPLY&#10;CONVEYOR"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#555"
-                                            Foreground="White"/>-->
+                                        <Button Content="UP"
+                                    Height="60"
+                                    Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M06ClampUp"/>
 
-                                        <Button Content="STOP"
-                                                Height="60"
-                                                Margin="3"
-                                                Background="#11AA44"
-                                                Foreground="White"/>
-
-                                        <Button Content="FORWARD"
-                                                Height="60"
-                                                Margin="3"
-                                                Background="#11AA44"
-                                                Foreground="White"/>
-
-                                        <Button Content="BACKWARD"
-                                                Height="60"
-                                                Margin="3"
-                                                Background="#0066FF"
-                                                Foreground="White"/>
+                                        <Button Content="DOWN"
+                                    Height="60"
+                                    Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M06ClampDown"/>
                                     </UniformGrid>
                                 </GroupBox>
                                 <GroupBox  Grid.Row="1" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
                                     <GroupBox.Header>
-                                        <TextBlock Text="SUPPLY TRAY CHUCK (L/R)" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                        <TextBlock Text="#3 PUNCH" Foreground="Black" FontSize="16" FontWeight="Black"/>
                                     </GroupBox.Header>
                                     <UniformGrid Columns="3" Margin="5">
 
-                                        <!-- Row 2 -->
-                                        <!--<Button Content="SUPPLY TRAY&#10;CHUCK (L/R)"
-                                                    Height="60"
-                                                    Margin="3"
-                                                    Background="#555"
-                                                    Foreground="White"/>-->
+                                        <Button Content="UP"
+                                             Height="60"
+                                             Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M06PunchUp"/>
 
-                                        <Button Content="UNCHUCK"
-                                                        Height="60"
-                                                        Margin="3"
-                                                        Background="#11AA44"
-                                                        Foreground="White"/>
-
-                                        <Button Content="CHUCK"
-                                                    Height="60"
-                                                    Margin="3"
-                                                    Background="#0066FF"
-                                                    Foreground="White"/>
+                                        <Button Content="DOWN"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M06PunchDown"/>
                                         <Border Background="Transparent"/>
+
                                     </UniformGrid>
                                 </GroupBox>
                                 <GroupBox Grid.Row="2" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
                                     <GroupBox.Header>
-                                        <TextBlock Text="SUPPLY TRAY RELEASE (L/R)" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                        <TextBlock Text="#3 1ST HEATER" Foreground="Black" FontSize="16" FontWeight="Black"/>
                                     </GroupBox.Header>
                                     <UniformGrid Columns="3" Margin="5">
 
-                                        <!-- Row 3 -->
-                                        <!--<Button Content="SUPPLY TRAY&#10;RELEASE (L/R)"
-                                                Height="60"
-                                                Margin="3"
-                                                Background="#555"
-                                                Foreground="White"/>-->
+                                        <Button Content="OFF"
+                                    Height="60"
+                                    Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M061StHeaterOff"/>
 
-                                        <Button Content="DOWN"
-                                                Height="60"
-                                                Margin="3"
-                                                Background="#0066FF"
-                                                Foreground="White"/>
-
-                                        <Button Content="CENTER"
-                                                Height="60"
-                                                Margin="3"
-                                                Background="#11AA44"
-                                                Foreground="White"/>
-
-                                        <Button Content="UP"
-                                                Height="60"
-                                                Margin="3"
-                                                Background="#0066FF"
-                                                Foreground="White"/>
+                                        <Button Content="ON"
+                                    Height="60"
+                                    Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M061StHeaterOn"/>
                                     </UniformGrid>
                                 </GroupBox>
                                 <GroupBox  Grid.Row="3" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
                                     <GroupBox.Header>
-                                        <TextBlock Text="SUPPLY TRAY RELEASE (L/R)" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                        <TextBlock Text="#3 2ND HEATER" Foreground="Black" FontSize="16" FontWeight="Black"/>
                                     </GroupBox.Header>
                                     <UniformGrid Columns="3" Margin="5">
 
-                                        <!-- Row 4 -->
-                                        <!--<Button Content="SUPPLY TRAY&#10;STOPPER"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#555"
-                                            Foreground="White"/>-->
+                                        <Button Content="OFF"
+                                Height="60"
+                                Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M062NdHeaterOff"/>
 
-                                        <Button Content="UP"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#11AA44"
-                                            Foreground="White"/>
+                                        <Button Content="ON"
+                                Height="60"
+                                Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M062NdHeaterOn"/>
+                                    </UniformGrid>
+                                </GroupBox>
 
-                                        <Button Content="DOWN"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#0066FF"
-                                            Foreground="White"/>
+                                <GroupBox  Grid.Row="4" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="#3 3RD HEATER " Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <Button Content="OFF"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M063RdHeaterOff"/>
+
+                                        <Button Content="ON"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M063RdHeaterOn"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox  Grid.Row="5" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="#3 4TH HEATER " Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <Button Content="OFF"
+                                         Height="60"
+                                         Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M064ThHeaterOff"/>
+
+                                        <Button Content="ON"
+                                         Height="60"
+                                         Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M064ThHeaterOn"/>
                                     </UniformGrid>
                                 </GroupBox>
                             </Grid>
 
                         </GroupBox>
-                        <!--  BOTTOM PANEL -->
-                        <GroupBox Header="M02: INPUT Module (LIFT UP/DOWN)"
-                              Grid.Row="1"
-                              Grid.Column="0"
-                                  Grid.ColumnSpan="2"
-                              Margin="5"
-                              Foreground="Black"
-                              FontSize="18">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
+                    </Grid>
 
 
-                                <GroupBox Header="LIFT CONVEYOR"
-                                    Grid.Row="0" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
-                                    <UniformGrid Columns="3" Margin="5">
+                </ScrollViewer>
 
-                                        <!--<Button Content="LIFT CONVEYOR"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#555"
-                                            Foreground="White"/>-->
 
-                                        <Button Content="STOP"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#11AA44"
-                                            Foreground="White"/>
+            </Grid>
 
-                                        <Button Content="FORWARD"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#11AA44"
-                                            Foreground="White"/>
-
-                                        <Button Content="BACKWARD"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#0066FF"
-                                            Foreground="White"/>
-                                    </UniformGrid>
-                                </GroupBox>
-                                <!-- Left BOTTOM PANEL -->
-                                <GroupBox Header="LIFT TRAY STOPPER"
-                                    Grid.Row="1" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
-                                    <UniformGrid Columns="3" Margin="5">
-                                        <!--<Button Content="LIFT TRAY STOPPER"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#555"
-                                            Foreground="White"/>-->
-
-                                        <Button Content="UP"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#11AA44"
-                                            Foreground="White"/>
-                                        <Button Content="DOWN"
-                                                Height="60"
-                                                Margin="3"
-                                                Background="#0066FF"
-                                                Foreground="White"/>
-
-                                    </UniformGrid>
-                                </GroupBox>
-                                <GroupBox Header="LIFT TRAY HOLDER"
-                                    Grid.Row="0" Grid.Column="1" Margin="5" Foreground="Black" FontSize="18">
-                                    <UniformGrid Columns="3" Margin="5">
-                                        <Button Content="Backward"
-                                         Height="60"
-                                         Margin="3"
-                                         Background="#0066FF"
-                                         Foreground="White"/>
+        </Border>
 
 
 
-                                        <Button Content="Forward"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#11AA44"
-                                            Foreground="White"/>
-                                    </UniformGrid>
 
-                                </GroupBox>
-                                <GroupBox Header="LIFT UNIT"
-                                        Grid.Row="1" Grid.Column="1" Margin="5" Foreground="Black" FontSize="18">
-                                    <UniformGrid Columns="3" Margin="5">
-                                        <Button Content="Down"
-                                         Height="60"
-                                         Margin="3"
-                                         Background="#0066FF"
-                                         Foreground="White"/>
+        <!--PAGE M07-->
 
 
+        <Border Grid.Row="1" 
+        Background="White" 
+        BorderBrush="#E2E8F0" 
+        BorderThickness="1" 
+        CornerRadius="12" 
+        Padding="3" 
+        Margin="3"
+        Visibility="{Binding SelectedPageIndex,Converter={StaticResource BindingManualPageVisibilityConverter}, ConverterParameter=6}">
+            <Grid Margin="3">
 
-                                        <Button Content="UP"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#11AA44"
-                                            Foreground="White"/>
-                                    </UniformGrid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                                </GroupBox>
+                <Border Grid.Row="0"
+                Background="#1A1A1A"
+                BorderBrush="#333333"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="3">
 
-                            </Grid>
-                        </GroupBox>
+                    <TextBlock Text="MANUAL MONITOR(INDEX 3 UNIT)"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontFamily="Consolas"/>
+                </Border>
 
-                        <!-- RIGHT PANEL -->
-                        <GroupBox Header="M02: INPUT Module (DISCHARGE)"
-                              Grid.Row="0"
-                              Grid.Column="1"
-                              Margin="5"
-                              Foreground="Black"
-                              FontSize="18">
+                <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto">
+
+                    <Grid Margin="3">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Grid.Row="0" Grid.Column="0" Margin="5" >
+                            <GroupBox.Header>
+                                <TextBlock Text="M07: INDEX 3" Foreground="Black" FontSize="18" FontWeight="Black"/>
+                            </GroupBox.Header>
                             <Grid Margin="3">
 
                                 <Grid.RowDefinitions>
@@ -471,171 +1268,849 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <GroupBox Header="DISCHARGE CONVEYOR"
-                                      Grid.Row="0"
-                                      Grid.Column="0"
-                                      Margin="5"
-                                      Foreground="Black"
-                                      FontSize="18">
+                                <GroupBox Grid.Row="0" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="INDEX 3 COORDINATE" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                    </GroupBox.Header>
                                     <UniformGrid Columns="3" Margin="5">
 
-                                        <!--<Button Content="DISCHARGE CONVEYOR"
-                                    Height="60"
-                                    Margin="3"
-                                    Background="#555"
-                                    Foreground="White"/>-->
-
-                                        <Button Content="STOP"
-                                    Height="60"
-                                    Margin="3"
-                                    Background="#11AA44"
-                                    Foreground="White"/>
-
-                                        <Button Content="FORWARD"
-                                    Height="60"
-                                    Margin="3"
-                                    Background="#11AA44"
-                                    Foreground="White"/>
-
-                                        <Button Content="BACKWARD"
-                                    Height="60"
-                                    Margin="3"
-                                    Background="#0066FF"
-                                    Foreground="White"/>
+                                        <TextBlock Text="123" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                        <TextBlock Text="45" Foreground="Black" FontSize="16" FontWeight="Black"/>
 
                                     </UniformGrid>
                                 </GroupBox>
-                                <GroupBox Header="DISCHARGE TRAY CHUNK (L/R)"
-                                      Grid.Row="1"
-                                      Grid.Column="0"
-                                      Margin="5"
-                                      Foreground="Black"
-                                      FontSize="18">
-                                    <UniformGrid Columns="2" Margin="5">
-
-                                        <!--<Button Content="DISCHARGE CONVEYOR"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#555"
-                                            Foreground="White"/>-->
-
-                                        <Button Content="UNCHUCK"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#11AA44"
-                                            Foreground="White"/>
-
-                                        <Button Content="CHUCK"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#11AA44"
-                                            Foreground="White"/>
-
-                                        
-
-                                    </UniformGrid>
-                                </GroupBox>
-                                <GroupBox Header="DISCHARGE TRAY Release (L/R)"
-                                          Grid.Row="2"
-                                          Grid.Column="0"
-                                          Margin="5"
-                                          Foreground="Black"
-                                          FontSize="18">
+                                <GroupBox Grid.Row="1" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="INDEX 3 ACTION" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                    </GroupBox.Header>
                                     <UniformGrid Columns="3" Margin="5">
 
-                                        <!--<Button Content="DISCHARGE CONVEYOR"
-                                                Height="60"
-                                                Margin="3"
-                                                Background="#555"
-                                                Foreground="White"/>-->
+                                        <Button Content="RETURN TO 0"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M07Index3ActionRrturnTo0"/>
 
-                                        <Button Content="Down"
-                                            Height="60"
-                                            Margin="3"
-                                            Background="#11AA44"
-                                            Foreground="White"/>
-
-                                        <Button Content="Center"
-                                                Height="60"
-                                                Margin="3"
-                                                Background="#11AA44"
-                                                Foreground="White"/>
-                                        <Button Content="UP"
-                                              Height="60"
-                                              Margin="3"
-                                              Background="#11AA44"
-                                              Foreground="White"/>
-
-
+                                        <Button Content="ROTATE 1 PITCH"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M07Index3ActionRotate1Pitch"/>
+                                        <Border Background="Transparent"/>
 
                                     </UniformGrid>
                                 </GroupBox>
-                                <GroupBox Header="DISCHARGE TRAY STOPPER"
-                                          Grid.Row="3"
-                                          Grid.Column="0"
-                                          Margin="5"
-                                          Foreground="Black"
-                                          FontSize="18">
-                                    <UniformGrid Columns="2" Margin="5">
+                                <GroupBox Grid.Row="2" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="1ST SECTION" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Columns="3" Margin="5">
 
-                                        <!--<Button Content="DISCHARGE CONVEYOR"
-                                                Height="60"
-                                                Margin="3"
-                                                Background="#555"
-                                                Foreground="White"/>-->
+                                        <Button Content="OFF"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M071StSectionOff"/>
+
+                                        <Button Content="ON"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M071StSectionOn"/>
+                                    </UniformGrid>
+                                </GroupBox>
+                                <GroupBox Grid.Row="3" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="2ND SECTION" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <Button Content="OFF"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M072NdSectionOff"/>
+
+                                        <Button Content="ON"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M072NdSectionOn"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Grid.Row="4" Grid.Column="0" Margin="5" Foreground="Black" FontSize="18">
+                                    <GroupBox.Header>
+                                        <TextBlock Text="3RD SECTION" Foreground="Black" FontSize="16" FontWeight="Black"/>
+                                    </GroupBox.Header>
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <Button Content="OFF"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M073rdSectionOff"/>
+
+                                        <Button Content="ON"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M073rdSectionOn"/>
+                                    </UniformGrid>
+                                </GroupBox>
+
+                            </Grid>
+
+                        </GroupBox>
+
+
+                        <GroupBox Header="M08: LINEAR REMOVAL"
+                          Grid.Row="0"
+                          Grid.Column="1"
+                          Margin="5"
+                          Foreground="Black"
+                          FontWeight="Bold"
+                          FontSize="18">
+                            <Grid Margin="3">
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Header="CLAMP"
+                                  Grid.Row="0"
+                                  Grid.Column="0"
+                                  Margin="5"
+                                  Foreground="Black"
+                                  FontSize="18">
+                                    <UniformGrid Columns="3" Margin="5">
 
                                         <Button Content="UP"
-                                                Height="60"
-                                                Margin="3"
-                                                Background="#11AA44"
-                                                Foreground="White"/>
+                                        Height="60"
+                                        Margin="3"
+                                        Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M08ClampUp"/>
 
                                         <Button Content="DOWN"
-                                                        Height="60"
-                                                        Margin="3"
-                                                        Background="#11AA44"
-                                                        Foreground="White"/>
+                                        Height="60"
+                                        Margin="3"
+                                        Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M08ClampDown"/>
 
+                                    </UniformGrid>
+                                </GroupBox>
+                                <GroupBox Header="CHUCK UNIT"
+                                  Grid.Row="1"
+                                  Grid.Column="0"
+                                  Margin="5"
+                                  Foreground="Black"
+                                  FontSize="18">
+                                    <UniformGrid Columns="3" Margin="5">
 
+                                        <Button Content="BACKWARD"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M08ChuckUnitBackward"/>
+
+                                        <Button Content="FORWARD"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M08ChuckUnitForward"/>
+
+                                    </UniformGrid>
+                                </GroupBox>
+                                <GroupBox Header="CHUCK UNIT"
+                                  Grid.Row="2"
+                                  Grid.Column="0"
+                                  Margin="5"
+                                  Foreground="Black"
+                                  FontSize="18">
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <Button Content="UP"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M08ChuckUnitUp"/>
+
+                                        <Button Content="DOWN"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M08ChuckUnitDown"/>
+
+                                    </UniformGrid>
+                                </GroupBox>
+                                <GroupBox Header="CHUCK"
+                                  Grid.Row="3"
+                                  Grid.Column="0"
+                                  Margin="5"
+                                  Foreground="Black"
+                                  FontSize="18">
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <Button Content="UNCHUCK"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M08UnChuck"/>
+
+                                        <Button Content="CHUCK"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M08Chuck"/>
+
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="REMOVAL UNIT"
+                                  Grid.Row="4"
+                                  Grid.Column="0"
+                                  Margin="5"
+                                  Foreground="Black"
+                                  FontSize="18">
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <Button Content="DOWN"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M08RemovalUnitDown"/>
+
+                                        <Button Content="UP"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M08RemovalUnitUp"/>
+
+                                    </UniformGrid>
+                                </GroupBox>
+
+                                <GroupBox Header="WASTE SECTION"
+                                  Grid.Row="5"
+                                  Grid.Column="0"
+                                  Margin="5"
+                                  Foreground="Black"
+                                  FontSize="18">
+                                    <UniformGrid Columns="3" Margin="5">
+
+                                        <Button Content="OFF"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonGreenStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M08WasteSectionOff"/>
+
+                                        <Button Content="ON"
+                                        Height="60"
+                                        Style="{StaticResource PushButtonBlueStyle}" 
+                                        Command="{Binding ButtonCommand}" 
+                                        CommandParameter="M08WasteSectionOn"/>
 
                                     </UniformGrid>
                                 </GroupBox>
                             </Grid>
                         </GroupBox>
 
-                        
-
                     </Grid>
-                            
 
                 </ScrollViewer>
-                        
 
             </Grid>
-
         </Border>
+
+
+
+
+        <!--PAGE M09-->
+
+
+        <Border Grid.Row="1" 
+  Background="White" 
+  BorderBrush="#E2E8F0" 
+  BorderThickness="1" 
+  CornerRadius="12" 
+  Padding="3" 
+  Margin="3"
+  Visibility="{Binding SelectedPageIndex,Converter={StaticResource BindingManualPageVisibilityConverter}, ConverterParameter=7}">
+            <Grid Margin="3">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+          Background="#1A1A1A"
+          BorderBrush="#333333"
+          BorderThickness="1"
+          CornerRadius="4"
+          Padding="3">
+                    <TextBlock Text="MANUAL MONITOR(INDEX 3 UNIT)"
+                 FontSize="28"
+                 FontWeight="Bold"
+                 Foreground="White"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 FontFamily="Consolas"/>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+
+                    <GroupBox Margin="5">
+                        <GroupBox.Header>
+                            <TextBlock Text="M09: WORK FLIP" Foreground="Black" FontSize="18" FontWeight="Black"/>
+                        </GroupBox.Header>
+
+                        <Grid Margin="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Grid.Column="0" Margin="0,0,5,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="FLIP UNIT" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M09FlipUnitUp"/>
+                                            <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M09FlipUnitDown"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="FLIP UNIT" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="HOME" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M09FlipUnitHome"/>
+                                            <Button Content="ROTATE" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M09FlipUnitRotate"/>
+                                            <Border Background="Transparent"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <Grid Grid.Column="1" Margin="5,0,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="1ST SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="2" Margin="5">
+                                            <Button Content="OFF" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M091STSectionOff"/>
+                                            <Button Content="ON" Height="60" Margin="3" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M091STSectionOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="2ND SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="2" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M092NDSectionOff"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M092NDSectionOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="2" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="3RD SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="2" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M093RDSectionOff"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M093RDSectionOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="3" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="4TH SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="2" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M094THSectionOff"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M094THSectionOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                        </Grid>
+                    </GroupBox>
+
+                </ScrollViewer>
+
+            </Grid>
+        </Border>
+
+
+
+
+
+
+        <!--PAGE M10-->
+
+        <Border Grid.Row="1" 
+ Background="White" 
+ BorderBrush="#E2E8F0" 
+ BorderThickness="1" 
+ CornerRadius="12" 
+ Padding="3" 
+ Margin="3"
+ Visibility="{Binding SelectedPageIndex,Converter={StaticResource BindingManualPageVisibilityConverter}, ConverterParameter=8}">
+            <Grid Margin="3">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+          Background="#1A1A1A"
+          BorderBrush="#333333"
+          BorderThickness="1"
+          CornerRadius="4"
+          Padding="3">
+                    <TextBlock Text="MANUAL MONITOR(ROBOT UNIT)"
+                 FontSize="28"
+                 FontWeight="Bold"
+                 Foreground="White"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 FontFamily="Consolas"/>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+
+                    <GroupBox Margin="5">
+                        <GroupBox.Header>
+                            <TextBlock Text="M10: IN ROBOT" Foreground="Black" FontSize="18" FontWeight="Black"/>
+                        </GroupBox.Header>
+
+                        <Grid Margin="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Grid.Column="0" Margin="0,0,5,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="IN TRAY STOPPER" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M10InTrayStopperUP"/>
+                                            <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M10InTrayStopperDOWN"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="OUT TRAY STOPPER" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M10OutTrayStopperUP"/>
+                                            <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M10OutTrayStopperDOWN"/>
+                                            <Border Background="Transparent"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <Grid Grid.Column="1" Margin="5,0,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="1ST SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M101STSectionOFF"/>
+                                            <Button Content="ON" Height="60" Margin="3" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M101STSectionON"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="2ND SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M102NDSectionOFF"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M102NDSectionON"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="2" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="3RD SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M103RDSectionOFF"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M103RDSectionON"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="3" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="4TH SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M104THSectionOFF"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M104THSectionON"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                        </Grid>
+                    </GroupBox>
+
+                </ScrollViewer>
+
+            </Grid>
+        </Border>
+
+
+
+        <!--PAGE 12-->
+
+        <Border Grid.Row="1" 
+Background="White" 
+BorderBrush="#E2E8F0" 
+BorderThickness="1" 
+CornerRadius="12" 
+Padding="3" 
+Margin="3"
+Visibility="{Binding SelectedPageIndex,Converter={StaticResource BindingManualPageVisibilityConverter}, ConverterParameter=9}">
+            <Grid Margin="3">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+        Background="#1A1A1A"
+        BorderBrush="#333333"
+        BorderThickness="1"
+        CornerRadius="4"
+        Padding="3">
+                    <TextBlock Text="MANUAL MONITOR(ROBOT UNIT)"
+               FontSize="28"
+               FontWeight="Bold"
+               Foreground="White"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               FontFamily="Consolas"/>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+
+                    <GroupBox Margin="5">
+                        <GroupBox.Header>
+                            <TextBlock Text="M12: INDEX 2" Foreground="Black" FontSize="18" FontWeight="Black"/>
+                        </GroupBox.Header>
+
+                        <Grid Margin="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Grid.Column="0" Margin="0,0,5,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="INDEX 2 COORDINATE" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <TextBlock Text="123" FontSize="18" FontWeight="Bold" Foreground="Black"></TextBlock>
+                                            <TextBlock Text="45" FontSize="18" FontWeight="Bold" Foreground="Black"></TextBlock>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="INDEX 2 ACTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="HOME" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M12Index2ActionHome"/>
+                                            <Button Content="ROTATE" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M12Index2ActionRotate"/>
+                                            <Border Background="Transparent"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="2" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="1ST SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M121StSectionDown"/>
+                                            <Button Content="UP" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M121StSectionUp"/>
+                                            <Border Background="Transparent"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="3" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="2ND SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M122NdSectionUp"/>
+                                            <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M122NdSectionDown"/>
+                                            <Border Background="Transparent"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <Grid Grid.Column="1" Margin="5,0,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="INDEX 1 ACTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M12Index1ActionOff"/>
+                                            <Button Content="ON" Height="60" Margin="3" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M12Index1ActionOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="1ST SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M121StSectionOff"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M121StSectionOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="2" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="2ND SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M103RDSectionOFF"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M103RDSectionON"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="3" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="3RD SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M123RdSectionOff"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M123RdSectionOn"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                        </Grid>
+                    </GroupBox>
+
+                </ScrollViewer>
+
+            </Grid>
+        </Border>
+
+
+
+        <!--PAGE M15-->
+
+        <Border Grid.Row="1" 
+        Background="White" 
+        BorderBrush="#E2E8F0" 
+        BorderThickness="1" 
+        CornerRadius="12" 
+        Padding="3" 
+        Margin="3"
+        Visibility="{Binding SelectedPageIndex,Converter={StaticResource BindingManualPageVisibilityConverter}, ConverterParameter=10}">
+            <Grid Margin="3">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                Background="#1A1A1A"
+                BorderBrush="#333333"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="3">
+                    <TextBlock Text="MANUAL MONITOR(INDEX 3 UNIT)"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontFamily="Consolas"/>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+
+                    <GroupBox Margin="5">
+                        <GroupBox.Header>
+                            <TextBlock Text="M15: NG SHOOTER" Foreground="Black" FontSize="18" FontWeight="Black"/>
+                        </GroupBox.Header>
+
+                        <Grid Margin="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Grid.Column="0" Margin="0,0,5,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="IN TRAY STOPPER" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M15InTrayStopperUP"/>
+                                            <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M15InTrayStopperDOWN"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="OUT TRAY STOPPER" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="UP" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M10OutTrayStopperUP"/>
+                                            <Button Content="DOWN" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M10OutTrayStopperDOWN"/>
+                                            <Border Background="Transparent"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <Grid Grid.Column="1" Margin="5,0,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="1ST SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Margin="3" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M101STSectionOFF"/>
+                                            <Button Content="ON" Height="60" Margin="3" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M101STSectionON"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="2ND SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M102NDSectionOFF"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M102NDSectionON"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="2" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="3RD SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M103RDSectionOFF"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M103RDSectionON"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="3" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="4TH SECTION" Foreground="Black" FontSize="16" FontWeight="Black" Margin="5,2"/>
+                                        <UniformGrid Columns="3" Margin="5">
+                                            <Button Content="OFF" Height="60" Style="{StaticResource PushButtonGreenStyle}" Command="{Binding ButtonCommand}" CommandParameter="M104THSectionOFF"/>
+                                            <Button Content="ON" Height="60" Style="{StaticResource PushButtonBlueStyle}" Command="{Binding ButtonCommand}" CommandParameter="M104THSectionON"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                        </Grid>
+                    </GroupBox>
+
+                </ScrollViewer>
+
+            </Grid>
+        </Border>
+
         <StackPanel Grid.Row="2" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Center" 
-                    VerticalAlignment="Center" 
-                    Margin="0,5,0,5">
+       Orientation="Horizontal" 
+       HorizontalAlignment="Center" 
+       VerticalAlignment="Center" 
+       Margin="0,5,0,5">
 
             <Button Style="{StaticResource AlphaNavButtonStyle}" Content="First" Command="{Binding FirstCommand}"/>
             <Button Style="{StaticResource AlphaNavButtonStyle}" Content="Previous" Command="{Binding PreviousCommand}"/>
 
             <ComboBox Width="150" Height="48" Margin="5" 
-                      VerticalContentAlignment="Center" HorizontalContentAlignment="Left" 
-                      FontSize="16" FontWeight="SemiBold" Background="White" 
-                      ItemsSource="{Binding ComboBoxItemsManualPage}" 
-                      SelectedIndex="{Binding SelectedPageIndex}"
-                      SelectedItem="{Binding SelectedPage}"
-                      DisplayMemberPath="DisplayName"
-                      SelectedValuePath="Value">
+         VerticalContentAlignment="Center" HorizontalContentAlignment="Left" 
+         FontSize="16" FontWeight="SemiBold" Background="White" 
+         ItemsSource="{Binding ComboBoxItemsManualPage}" 
+         SelectedIndex="{Binding SelectedPageIndex}"
+         SelectedItem="{Binding SelectedPage}"
+         DisplayMemberPath="DisplayName"
+         SelectedValuePath="Value">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}" />
@@ -647,5 +2122,7 @@
             <Button Style="{StaticResource AlphaNavButtonStyle}" Content="Next" Command="{Binding NextCommand}"/>
             <Button Style="{StaticResource AlphaNavButtonStyle}" Content="Last" Command="{Binding LastCommand}"/>
         </StackPanel>
+
+
     </Grid>
 </UserControl>
