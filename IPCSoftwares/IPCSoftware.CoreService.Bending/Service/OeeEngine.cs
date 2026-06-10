@@ -13,6 +13,7 @@ namespace IPCSoftware.CoreService.Bending.Service
 {
     public class OeeEngineBending : OeeEngineBase
     {
+        private bool _lastCycleTimeTriggerState = false;  // For A1 (Cycle Complete)
         public OeeEngineBending(
             IDeviceConfigurationService deviceService,
             PLCClientManager plcManager,
@@ -31,5 +32,52 @@ namespace IPCSoftware.CoreService.Bending.Service
         //    // CalculateDashboard2 now returns { 4, Dashboard2Result } directly.
         //    return CalculateDashboard2(values);
         //}
+
+        public override void ProcessCycleTimeLogic(Dictionary<int, object> tagValues)
+        {
+            base.ProcessCycleTimeLogic(tagValues);
+            try
+            {
+                if (IsDryRunMode(tagValues))
+                {
+                    if (_currentCycleRecord != null)
+                    {
+                        _logger.LogInfo("[OEE] Dry Run active — clearing current production record.", LogType.Diagnostics);
+                        ResetCycleTracking();
+                    }
+                    return;
+                }
+
+                
+
+                // =========================================================
+                // 3. Handle Cycle Complete (CtlCycleTimeA1 tag 55)
+                // =========================================================
+                bool currentA1State = GetBoolState(tagValues, ConstantValues.TAG_CTL_CYCLETIME_A1);
+
+                // Rising edge Detection (0 -> 1) -> Normal Cycle End
+                if (currentA1State && !_lastCycleTimeTriggerState)
+                {
+                    _logger.LogInfo($"[CycleTime] A1 Trigger Detected (Tag {ConstantValues.TAG_CTL_CYCLETIME_A1})", LogType.Diagnostics);
+
+                    // Normal finish
+                    FinalizeAndLogCycle(tagValues, isCycleComplete: true);
+
+                    // Send Acknowledgement B1 (Tag 57)
+                    _ = WriteTagAsync(ConstantValues.TAG_CTL_CYCLETIME_B1, true);
+                }
+                else if (!currentA1State && _lastCycleTimeTriggerState)
+                {
+                    // Falling edge of A1 -> Reset B1
+                    _ = WriteTagAsync(ConstantValues.TAG_CTL_CYCLETIME_B1, false);
+                }
+                _lastCycleTimeTriggerState = currentA1State;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, LogType.Diagnostics);
+            }
+
+        }
     }
 }
