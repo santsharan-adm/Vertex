@@ -207,6 +207,12 @@
                                              Height="120" TextWrapping="Wrap" AcceptsReturn="True" 
                                              VerticalContentAlignment="Top" Padding="15"/>
                                 </StackPanel>
+                                <!-- DefaultModbusAddress -->
+                                <StackPanel Margin="0,0,0,10">
+                                    <TextBlock Text="Default Modbus Address" Style="{StaticResource HmiLabelStyle}"/>
+                                    <TextBox Text="{Binding DefaultModbusAddress, UpdateSourceTrigger=PropertyChanged}" 
+                                        Style="{StaticResource HmiTextBoxStyle}"/>
+                                </StackPanel>
 
                                 <!-- Enabled -->
                                 <CheckBox Content="Interface Enabled" 

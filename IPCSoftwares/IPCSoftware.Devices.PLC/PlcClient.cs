@@ -49,7 +49,12 @@ namespace IPCSoftware.Devices.PLC
             _tags = tags;
             _swapBytes = config.SwapBytes;
             _swapStringBytes = config.SwapStringBytes;
-            _modbusAddress = config.DefaultModBusAddress;
+            _modbusAddress = device.DefaultModbusAddress;
+            //_modbusAddress = config.DefaultModBusAddress;
+            //if (device.Id == 2)
+            //{
+            //    _modbusAddress = 45000;
+            //}
         }
 
         // --- Graceful Disconnection Logic ---

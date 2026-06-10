@@ -31,7 +31,7 @@ namespace IPCSoftware.Shared.Models
         public bool SwitchConveyorDirection { get; set; } 
         public bool SwapBytes { get; set; } = true;
         public bool SwapStringBytes { get; set; } = true;
-        public int DefaultModBusAddress { get; set; }
+        //public int DefaultModBusAddress { get; set; }
 
         public TagMappingSettings TagMapping { get; set; } = new TagMappingSettings();
 

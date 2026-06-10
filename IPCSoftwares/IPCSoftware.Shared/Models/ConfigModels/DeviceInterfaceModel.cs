@@ -20,11 +20,14 @@ namespace IPCSoftware.Shared.Models.ConfigModels
         public string Description { get; set; }
         public string Remark { get; set; }
         public bool Enabled { get; set; }
+        public int DefaultModbusAddress { get; set; }
+
 
         public DeviceInterfaceModel()
         {
             Enabled = false;
             PortNo = 502;
+            DefaultModbusAddress = 40000;
         }
 
         public DeviceInterfaceModel Clone()
@@ -42,7 +45,8 @@ namespace IPCSoftware.Shared.Models.ConfigModels
                 Gateway = this.Gateway,
                 Description = this.Description,
                 Remark = this.Remark,
-                Enabled = this.Enabled
+                Enabled = this.Enabled,
+                DefaultModbusAddress=this.DefaultModbusAddress
             };
         }
     }

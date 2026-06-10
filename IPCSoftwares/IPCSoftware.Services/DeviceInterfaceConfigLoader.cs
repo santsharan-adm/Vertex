@@ -66,7 +66,8 @@ namespace IPCSoftware.Services
                                 Gateway = Clean(r[8]),
                                 Description = Clean(r[9]),
                                 Remark = Clean(r[10]),
-                                Enabled = bool.Parse(Clean(r[11]))
+                                Enabled = bool.Parse(Clean(r[11])),
+                                DefaultModbusAddress= int.Parse(Clean(r[12])),
                             };
 
                             _deviceInterfaces.Add(device);
@@ -131,22 +132,45 @@ namespace IPCSoftware.Services
             try
             {
                 var sb = new StringBuilder();
+                string version = _fileHandler.Getversion(filepath);
                 string header = _fileHandler.GetHeader(filepath);
+                sb.AppendLine(version);
                 sb.AppendLine(header);
-
-                foreach (var iface in DeviceInterfaces ?? new List<DeviceInterfaceModel>())
+                if (version == "2.0")
                 {
-                    sb.AppendLine($"{iface.Id},{iface.DeviceNo}," +
-                        $"\"{_fileHandler.EscapeCsv(iface.DeviceName)}\"," +
-                        $"{iface.UnitNo}," +
-                        $"\"{_fileHandler.EscapeCsv(iface.Name)}\"," +
-                        $"\"{_fileHandler.EscapeCsv(iface.ComProtocol)}\"," +
-                        $"\"{_fileHandler.EscapeCsv(iface.IPAddress)}\"," +
-                        $"{iface.PortNo}," +
-                        $"\"{_fileHandler.EscapeCsv(iface.Gateway)}\"," +
-                        $"\"{_fileHandler.EscapeCsv(iface.Description)}\"," +
-                        $"\"{_fileHandler.EscapeCsv(iface.Remark)}\"," +
-                        $"{iface.Enabled}");
+
+                    foreach (var iface in DeviceInterfaces ?? new List<DeviceInterfaceModel>())
+                    {
+                        sb.AppendLine($"{iface.Id},{iface.DeviceNo}," +
+                            $"\"{_fileHandler.EscapeCsv(iface.DeviceName)}\"," +
+                            $"{iface.UnitNo}," +
+                            $"\"{_fileHandler.EscapeCsv(iface.Name)}\"," +
+                            $"\"{_fileHandler.EscapeCsv(iface.ComProtocol)}\"," +
+                            $"\"{_fileHandler.EscapeCsv(iface.IPAddress)}\"," +
+                            $"{iface.PortNo}," +
+                            $"\"{_fileHandler.EscapeCsv(iface.Gateway)}\"," +
+                            $"\"{_fileHandler.EscapeCsv(iface.Description)}\"," +
+                            $"\"{_fileHandler.EscapeCsv(iface.Remark)}\"," +
+                            $"{iface.Enabled}," +
+                             $"{iface.DefaultModbusAddress}");
+                    }
+                }
+                else
+                {
+                    foreach (var iface in DeviceInterfaces ?? new List<DeviceInterfaceModel>())
+                    {
+                        sb.AppendLine($"{iface.Id},{iface.DeviceNo}," +
+                            $"\"{_fileHandler.EscapeCsv(iface.DeviceName)}\"," +
+                            $"{iface.UnitNo}," +
+                            $"\"{_fileHandler.EscapeCsv(iface.Name)}\"," +
+                            $"\"{_fileHandler.EscapeCsv(iface.ComProtocol)}\"," +
+                            $"\"{_fileHandler.EscapeCsv(iface.IPAddress)}\"," +
+                            $"{iface.PortNo}," +
+                            $"\"{_fileHandler.EscapeCsv(iface.Gateway)}\"," +
+                            $"\"{_fileHandler.EscapeCsv(iface.Description)}\"," +
+                            $"\"{_fileHandler.EscapeCsv(iface.Remark)}\"," +
+                            $"{iface.Enabled}");
+                    }
                 }
                 await _fileHandler.WriteCsv(filepath, sb.ToString());          //Added by Rishabh - date - 25/04/2026//
                                                                                //await File.WriteAllTextAsync(filepath, sb.ToString(), Encoding.UTF8);

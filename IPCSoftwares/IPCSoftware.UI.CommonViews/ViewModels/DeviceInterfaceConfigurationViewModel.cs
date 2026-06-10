@@ -111,6 +111,13 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
             set => SetProperty(ref _enabled, value);
         }
 
+        private int _defaultmodbusAddress;
+        public int DefaultModbusAddress
+        {
+            get => _defaultmodbusAddress;
+            set => SetProperty(ref _defaultmodbusAddress, value);
+        }
+
         public ObservableCollection<string> ComProtocols { get; }
 
         public ICommand SaveCommand { get; }
@@ -181,6 +188,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 Description = deviceInterface.Description;
                 Remark = deviceInterface.Remark;
                 Enabled = deviceInterface.Enabled;
+                DefaultModbusAddress= deviceInterface.DefaultModbusAddress;
             }
             catch (Exception ex)
             {
@@ -203,6 +211,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
                 _currentInterface.Description = Description;
                 _currentInterface.Remark = Remark;
                 _currentInterface.Enabled = Enabled;
+                _currentInterface.DefaultModbusAddress = DefaultModbusAddress;
             }
             catch (Exception ex)
             {
