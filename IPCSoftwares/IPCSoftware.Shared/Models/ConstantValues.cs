@@ -72,6 +72,15 @@ namespace IPCSoftware.Shared.Models
         public static TagPair TAG_Time_Minute = new();
         public static TagPair TAG_Time_Second = new();
 
+        //Clock for Plc 2
+
+        public static TagPair PLC2_TAG_Time_Year = new();
+        public static TagPair PLC2_TAG_Time_Month = new();
+        public static TagPair PLC2_TAG_Time_Day = new();
+        public static TagPair PLC2_TAG_Time_Hour = new();
+        public static TagPair PLC2_TAG_Time_Minute = new();
+        public static TagPair PLC2_TAG_Time_Second = new();
+
 
         public static int TAG_Global_Ack;
         public static int TAG_Global_Reset;
@@ -403,6 +412,16 @@ namespace IPCSoftware.Shared.Models
                 RESET_ACK_TAG_ID = sys.ResetAckTag;
                 REVERSE_TAG_ID = sys.ReverseTag;
                 REVERSE_ACK_TAG_ID = sys.ReverseAckTag;
+
+                //System2
+
+                var sys2 = tags.System2;
+                PLC2_TAG_Time_Year = sys2.Year;
+                PLC2_TAG_Time_Month = sys2.Month;
+                PLC2_TAG_Time_Day = sys2.Day;
+                PLC2_TAG_Time_Hour = sys2.Hour;
+                PLC2_TAG_Time_Minute = sys2.Minute;
+                PLC2_TAG_Time_Second = sys2.Second;
 
                 //Oee
                 var oee = tags.OEE;

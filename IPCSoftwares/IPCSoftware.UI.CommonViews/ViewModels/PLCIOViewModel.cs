@@ -21,7 +21,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     public class PLCIOViewModel : BaseViewModel, IDisposable
     {
         private readonly IDeviceConfigurationService _deviceService;
-        private readonly SafePoller _timer;
+        private readonly SafePollerEx _timer;
         private readonly CoreClient _coreClient;
         private readonly UiTcpClient _tcpClient;
 
@@ -66,8 +66,8 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
             ToggleOutputCommand = new RelayCommand<IoTagModel>(OnToggleOutput);
 
-            _timer = new SafePoller(TimeSpan.FromMilliseconds(100),
-                TimerTick);
+            _timer = new SafePollerEx(_coreClient,TimeSpan.FromMilliseconds(100),
+                TimerTick,_logger);
 
             _timer.Start();
         }

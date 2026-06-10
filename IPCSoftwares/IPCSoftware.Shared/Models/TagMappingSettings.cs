@@ -10,6 +10,8 @@ namespace IPCSoftware.Shared.Models
     public class TagMappingSettings
     {
         public SystemTags System { get; set; } = new();
+
+        public SystemTags System2 { get; set; } = new();
         public OeeTags OEE { get; set; } = new();
         public ModeTags Modes { get; set; } = new();
         public ManualTags Manual { get; set; } = new();
@@ -49,6 +51,18 @@ namespace IPCSoftware.Shared.Models
         public int ResetAckTag { get; set; }
         public int ReverseTag { get; set; }
         public int ReverseAckTag { get; set; }
+
+        public TagPair Year { get; set; } = new();
+        public TagPair Month { get; set; } = new();
+        public TagPair Day { get; set; } = new();
+        public TagPair Hour { get; set; } = new();
+        public TagPair Minute { get; set; } = new();
+        public TagPair Second { get; set; } = new();
+
+    }
+
+    public class SystemTags2
+    {
 
         public TagPair Year { get; set; } = new();
         public TagPair Month { get; set; } = new();
