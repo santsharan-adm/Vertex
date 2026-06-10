@@ -68,6 +68,7 @@ namespace IPCSoftware.Engine
         }
 
         List<bool> sysMonData = new List<bool>();
+        Dictionary<int, object> oeeCalculate = new Dictionary<int, object>();
 
         public async Task StartAsync()
         {
@@ -111,7 +112,7 @@ namespace IPCSoftware.Engine
                     processLogicEngine.Process(processedData);
                     await _ccdTrigger.ProcessTriggers(processedData, _manager);
                     _oee.ProcessCycleTimeLogic(processedData);
-                    _oee.Calculate(processedData);
+                    oeeCalculate=_oee.Calculate(processedData);
                     sysMonData=_systemMonitor.Process(processedData);
                     _alarmService.ProcessTagData(processedData);
                     _shiftReset.Process(processedData);
@@ -209,21 +210,11 @@ namespace IPCSoftware.Engine
                 //---------------------------------------------------------
                 if (request.RequestId == 4)
                 {
-                    if(!latestValueNew.Any())
-                        return new ResponsePackage
-                        {
-                            ResponseId = 4,
-                            Parameters = new Dictionary<int, object>()
-                        };
-
-
-                        _oee.ProcessCycleTimeLogic(latestValueNew);
-
-                        return new ResponsePackage
-                        {
-                            ResponseId = 4,
-                            Parameters = _oee.Calculate(latestValueNew)
-                        };
+                    return new ResponsePackage
+                    {
+                        ResponseId = 4,
+                        Parameters = oeeCalculate
+                    };
                 }
 
                 //-----------------------
