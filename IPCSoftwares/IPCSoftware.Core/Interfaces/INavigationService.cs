@@ -53,6 +53,8 @@ namespace IPCSoftware.Core.Interfaces
 
         // App-specific view navigation (types defined in IPCSoftware.app assembly)
         void NavigateToManualOperation();
+
+        void NavigateToManualOperationBending();
         void NavigateToOEEDashboard();
 
         void NavigateToDashboard1();
