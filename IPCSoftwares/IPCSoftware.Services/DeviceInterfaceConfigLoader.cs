@@ -134,7 +134,7 @@ namespace IPCSoftware.Services
                 var sb = new StringBuilder();
                 string version = _fileHandler.Getversion(filepath);
                 string header = _fileHandler.GetHeader(filepath);
-                sb.AppendLine(version);
+                sb.AppendLine($"Version = {version}");
                 sb.AppendLine(header);
                 if (version == "2.0")
                 {
