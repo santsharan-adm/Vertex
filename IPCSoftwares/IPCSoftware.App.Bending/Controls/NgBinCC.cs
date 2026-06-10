@@ -12,7 +12,8 @@ namespace IPCSoftware.App.Bending.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NgBinCC), new FrameworkPropertyMetadata(typeof(NgBinCC)));
         }
-
+        #region Dependency Propety
+        #region BinNumber
         public static readonly DependencyProperty BinNumberProperty =
             DependencyProperty.Register(nameof(BinNumber), typeof(int), typeof(NgBinCC), new PropertyMetadata(1));
 
@@ -21,16 +22,9 @@ namespace IPCSoftware.App.Bending.Controls
             get => (int)GetValue(BinNumberProperty);
             set => SetValue(BinNumberProperty, value);
         }
-
-        public static readonly DependencyProperty RejectedCountProperty =
-            DependencyProperty.Register(nameof(RejectedCount), typeof(int), typeof(NgBinCC), new PropertyMetadata(0));
-
-        public int RejectedCount
-        {
-            get => (int)GetValue(RejectedCountProperty);
-            set => SetValue(RejectedCountProperty, value);
-        }
-
+        #endregion BinNumber
+        
+        #endregion Dependency Propety
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();

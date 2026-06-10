@@ -20,7 +20,7 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         }
 
 
-        public string DataTypeDisplay => GetDataTypeName(Model.DataType);
+        public string DataTypeDisplay => PLCTagTypeExtensions.GetDataTypeString(Model.DataType);
 
         public WritableTagItem(PLCTagConfigurationModel model)
         {
@@ -42,21 +42,21 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
 
         }
 
-
-        private string GetDataTypeName(int typeId)
-        {
-            return typeId switch
-            {
-                1 => "Int16",
-                2 => "Int32",
-                3 => "Boolean",
-                4 => "Float",
-                5 => "String",
-                6 => "UInt16",
-                7 => "UInt32",
-                _ => "Unknown"
-            };
-        }
+        //Should come from a shared place if possible to avoid mismatches between loading and analysis logic - BMK-09-06-2026 -ReviewComment
+        //private string GetDataTypeName(int typeId)
+        //{
+        //    return typeId switch
+        //    {
+        //        1 => "Int16",
+        //        2 => "Int32",
+        //        3 => "Boolean",
+        //        4 => "Float",
+        //        5 => "String",
+        //        6 => "UInt16",
+        //        7 => "UInt32",
+        //        _ => "Unknown"
+        //    };
+        //}
     }
 
 }

@@ -26,5 +26,28 @@ namespace IPCSoftware.App.Bending.Controls
         {
             base.OnApplyTemplate();
         }
+
+        #region Dependency Propety
+        #region StationIndex
+        public static readonly DependencyProperty StationIndexProperty =
+            DependencyProperty.Register(nameof(StationIndex), typeof(int), typeof(InputTrayCC), new PropertyMetadata(0));
+
+        public int StationIndex
+        {
+            get => (int)GetValue(StationIndexProperty);
+            set => SetValue(StationIndexProperty, value);
+        }
+        #endregion StationIndex
+        #region BatchNo
+        public static readonly DependencyProperty BatchNoProperty =
+            DependencyProperty.Register(nameof(BatchNo), typeof(int), typeof(InputTrayCC), new PropertyMetadata(0));
+
+        public int BatchNo
+        {
+            get => (int)GetValue(BatchNoProperty);
+            set => SetValue(BatchNoProperty, value);
+        }
+        #endregion BatchNo
+        #endregion Dependency Propety
     }
 }

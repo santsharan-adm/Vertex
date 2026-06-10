@@ -391,14 +391,14 @@
                         <!-- STATUS INDICATOR -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
 
-                            <!-- 1. The Dot (Ellipse) -->
+                            <!-- 1.PLC1 The Dot (Ellipse) -->
                             <Ellipse Width="16" Height="16" Margin="0,0,8,0">
                                 <Ellipse.Style>
                                     <Style TargetType="Ellipse">
                                         <Setter Property="Fill" Value="#2EE36B"/>
                                         <!-- Default: Connected -->
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding PLCConnected}" Value="False">
+                                            <DataTrigger Binding="{Binding PLC1Connected}" Value="False">
                                                 <Setter Property="Fill" Value="Red"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -406,15 +406,46 @@
                                 </Ellipse.Style>
                             </Ellipse>
 
-                            <!-- 2. The Text -->
+                            <!-- 2.PLC1 The Text -->
                             <TextBlock FontSize="20" FontWeight="Bold" VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
-                                        <Setter Property="Text" Value="PLC CONNECTED"/>
+                                        <Setter Property="Text" Value="PLC1 CONNECTED"/>
                                         <Setter Property="Foreground" Value="#2EE36B"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding PLCConnected}" Value="False">
-                                                <Setter Property="Text" Value="PLC DISCONNECTED"/>
+                                            <DataTrigger Binding="{Binding PLC1Connected}" Value="False">
+                                                <Setter Property="Text" Value="PLC1 DISCONNECTED"/>
+                                                <Setter Property="Foreground" Value="Red"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <!-- 1.PLC2 The Dot (Ellipse) -->
+                            <Ellipse Width="16" Height="16" Margin="0,0,8,0">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="#2EE36B"/>
+                                        <!-- Default: Connected -->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding PLC2Connected}" Value="False">
+                                                <Setter Property="Fill" Value="Red"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+
+                            <!-- 2.PLC2 The Text -->
+                            <TextBlock FontSize="20" FontWeight="Bold" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="PLC2 CONNECTED"/>
+                                        <Setter Property="Foreground" Value="#2EE36B"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding PLC2Connected}" Value="False">
+                                                <Setter Property="Text" Value="PLC2 DISCONNECTED"/>
                                                 <Setter Property="Foreground" Value="Red"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -429,7 +460,7 @@
                                         <Setter Property="Fill" Value="#2EE36B"/>
                                         <!-- Default: Connected -->
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                                            <DataTrigger Binding="{Binding IsServiceConnected}" Value="False">
                                                 <Setter Property="Fill" Value="Red"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -443,7 +474,7 @@
                                         <Setter Property="Text" Value="SERVICE CONNECTED"/>
                                         <Setter Property="Foreground" Value="#2EE36B"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                                            <DataTrigger Binding="{Binding IsServiceConnected}" Value="False">
                                                 <Setter Property="Text" Value="SERVICE DISCONNECTED"/>
                                                 <Setter Property="Foreground" Value="Red"/>
                                             </DataTrigger>

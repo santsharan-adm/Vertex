@@ -41,76 +41,83 @@ namespace IPCSoftware.App.Bending.Controls
     /// Step 2)
     /// Go ahead and use your control in the XAML file.
     ///
-    ///     <MyNamespace:InspectionUnitCC/>
+    ///     <MyNamespace:StationIndexCC/>
     ///
     /// </summary>
-    [TemplatePart(Name = "Part_NavButtonStationIndex", Type = typeof(StationIndexCC))]
-    public class InspectionUnitOutputCC : Control
+    [TemplatePart(Name = "Part_NavButton", Type = typeof(Button))]
+    public class StationIndexCC : Control
     {
-        static InspectionUnitOutputCC()
+        static StationIndexCC()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(InspectionUnitOutputCC), new FrameworkPropertyMetadata(typeof(InspectionUnitOutputCC)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(StationIndexCC), new FrameworkPropertyMetadata(typeof(StationIndexCC)));
+           
         }
+
         /// <summary>
         /// Raises the ButtonClick routed event.
         /// </summary>
-        //protected virtual void OnButtonClick()
-        //{
-        //    RaiseEvent(new RoutedEventArgs(ButtonClickEvent, this));
-        //}
+        protected virtual void OnButtonClick()
+        {
+            RaiseEvent(new RoutedEventArgs(ButtonClickEvent, this));
+        }
 
-        //private StationIndexCC? _partButton;
+        private Button? _partButton;
+
         public override void OnApplyTemplate()
         {
             // Detach previous handler if present
-            //if (_partButton != null)
-            //{
-            //    _partButton.ButtonClick -= PartButton_Click;
-            //    _partButton = null;
-            //}
+            if (_partButton != null)
+            {
+                _partButton.Click -= PartButton_Click;
+                _partButton = null;
+            }
+
             base.OnApplyTemplate();
+
             // Find the button in the control template and attach handler
-            //_partButton = GetTemplateChild("Part_NavButtonStationIndex") as StationIndexCC;
-            //if (_partButton != null)
-            //{
-            //    _partButton.ButtonClick += PartButton_Click;
-            //}
+            _partButton = GetTemplateChild("Part_NavButton") as Button;
+            if (_partButton != null)
+            {
+                _partButton.Click += PartButton_Click;
+            }
         }
-        //private void PartButton_Click(object? sender, RoutedEventArgs e)
-        //{
-        //    // Bubble up as the control's routed event
-        //    OnButtonClick();
-        //}
-        //#region RoutedEvent
 
-        ///// <summary>
-        ///// Routed event raised when the template button is clicked.
-        ///// Consumers can subscribe to the ButtonClick CLR event or add a handler for the routed event.
-        ///// </summary>
-        //public static readonly RoutedEvent ButtonClickEvent =
-        //    EventManager.RegisterRoutedEvent(
-        //        nameof(ButtonClick),
-        //        RoutingStrategy.Bubble,
-        //        typeof(RoutedEventHandler),
-        //        typeof(InspectionUnitOutputCC));
+        private void PartButton_Click(object? sender, RoutedEventArgs e)
+        {
+            // Bubble up as the control's routed event
+            OnButtonClick();
+        }
 
-        ///// <summary>
-        ///// CLR wrapper for the ButtonClick routed event.
-        ///// </summary>
-        //public event RoutedEventHandler ButtonClick
-        //{
-        //    add => AddHandler(ButtonClickEvent, value);
-        //    remove => RemoveHandler(ButtonClickEvent, value);
-        //}
+        #region RoutedEvent
 
+        /// <summary>
+        /// Routed event raised when the template button is clicked.
+        /// Consumers can subscribe to the ButtonClick CLR event or add a handler for the routed event.
+        /// </summary>
+        public static readonly RoutedEvent ButtonClickEvent =
+            EventManager.RegisterRoutedEvent(
+                nameof(ButtonClick),
+                RoutingStrategy.Bubble,
+                typeof(RoutedEventHandler),
+                typeof(StationIndexCC));
 
+        /// <summary>
+        /// CLR wrapper for the ButtonClick routed event.
+        /// </summary>
+        public event RoutedEventHandler ButtonClick
+        {
+            add => AddHandler(ButtonClickEvent, value);
+            remove => RemoveHandler(ButtonClickEvent, value);
+        }
 
-        //#endregion RoutedEvent
+       
+
+        #endregion RoutedEvent
 
         #region Dependency Propety
         #region StationIndex
         public static readonly DependencyProperty StationIndexProperty =
-            DependencyProperty.Register(nameof(StationIndex), typeof(int), typeof(InspectionUnitOutputCC), new PropertyMetadata(0));
+            DependencyProperty.Register(nameof(StationIndex), typeof(int), typeof(StationIndexCC), new PropertyMetadata(0));
 
         public int StationIndex
         {
@@ -120,7 +127,7 @@ namespace IPCSoftware.App.Bending.Controls
         #endregion StationIndex
         #region BatchNo
         public static readonly DependencyProperty BatchNoProperty =
-            DependencyProperty.Register(nameof(BatchNo), typeof(int), typeof(InspectionUnitOutputCC), new PropertyMetadata(0));
+            DependencyProperty.Register(nameof(BatchNo), typeof(int), typeof(StationIndexCC), new PropertyMetadata(0));
 
         public int BatchNo
         {
@@ -129,5 +136,6 @@ namespace IPCSoftware.App.Bending.Controls
         }
         #endregion BatchNo
         #endregion Dependency Propety
+
     }
 }

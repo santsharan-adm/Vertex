@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using IPCSoftware.CoreService.AOI.Service;
+using IPCSoftware.CoreService.Bending.Service;
 
 namespace IPCSoftware.CoreService
 {
@@ -121,6 +122,7 @@ namespace IPCSoftware.CoreService
                             services.AddSingleton<DashboardInitializerAOI>();
                             services.AddSingleton<OeeEngineAOI>();
                             services.AddSingleton<AlarmService>();
+                            services.AddSingleton<AOIProcessService>();
                             //services.AddTransient<TagConfigLoader>();
                             services.AddTransient<BackupService>();
                             services.AddSingleton<ShiftResetService>();
@@ -159,7 +161,7 @@ namespace IPCSoftware.CoreService
                             // When someone asks for IMessagePublisher, give them the EXISTING UiListener
                             services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
 
-                            services.AddSingleton<SystemMonitorService>();
+                            services.AddSingleton<SystemMonitorServiceAOI>();
 
                             //  CCDTriggerServiceAOI includes IObservableCcdSettingsService
                             services.AddSingleton<CCDTriggerServiceAOI>(sp =>

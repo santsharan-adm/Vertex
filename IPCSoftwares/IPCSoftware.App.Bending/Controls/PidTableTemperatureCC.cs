@@ -12,15 +12,22 @@ namespace IPCSoftware.App.Bending.Controls
     /// <summary>
     /// PID table display - reusable for both Heater and Force tables
     /// </summary>
-    public class PidTableCC : Control
+    public class PidTableTemperatureCC : Control
     {
-        static PidTableCC()
+        static PidTableTemperatureCC()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(PidTableCC), new FrameworkPropertyMetadata(typeof(PidTableCC)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(PidTableTemperatureCC), new FrameworkPropertyMetadata(typeof(PidTableTemperatureCC)));
         }
 
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+        }
+
+        #region Dependency Property
+        #region TableType
         public static readonly DependencyProperty TableTypeProperty =
-            DependencyProperty.Register(nameof(TableType), typeof(PidTableType), typeof(PidTableCC), 
+            DependencyProperty.Register(nameof(TableType), typeof(PidTableType), typeof(PidTableTemperatureCC), 
                 new PropertyMetadata(PidTableType.Heater));
 
         public PidTableType TableType
@@ -28,10 +35,9 @@ namespace IPCSoftware.App.Bending.Controls
             get => (PidTableType)GetValue(TableTypeProperty);
             set => SetValue(TableTypeProperty, value);
         }
+        #endregion TableType
+        #endregion Dependency Property
 
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-        }
+
     }
 }

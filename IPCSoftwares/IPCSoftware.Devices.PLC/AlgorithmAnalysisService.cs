@@ -23,16 +23,16 @@ namespace IPCSoftware.Devices.PLC
         private readonly bool _swapStringBytes;
 
         // Constants matching definitions in TagConfigLoader (after necessary mapping)
-        private const int AlgoNo_Raw = 0;
-        private const int AlgoNo_LinearScale = 1;
-        private const int DataType_Int16 = 1;
-        private const int DataType_Word32 = 2; // DWord, Int32, Word
-        private const int DataType_Bit = 3;
-        private const int DataType_FP = 4; // Real, Float
-        private const int DataType_String = 5;
+        //private const int AlgoNo_Raw = 0;
+        //private const int AlgoNo_LinearScale = 1;
+        //private const int DataType_Int16 = 1;
+        //private const int DataType_Word32 = 2; // DWord, Int32, Word
+        //private const int DataType_Bit = 3;
+        //private const int DataType_FP = 4; // Real, Float
+        //private const int DataType_String = 5;
 
-        private const int DataType_UInt16 = 6;
-        private const int DataType_UInt32 = 7;
+        //private const int DataType_UInt16 = 6;
+        //private const int DataType_UInt32 = 7;
 
 
 
@@ -130,7 +130,7 @@ namespace IPCSoftware.Devices.PLC
                 // --- CRITICAL FIX: WORD SWAPPING ---
                 // This is required for Big Endian Modbus slaves transmitting 32-bit values.
                 //  bool requiresSwap = (tag.DataType == DataType_Word32 || tag.DataType == DataType_FP) && registers.Length >= 2;
-                bool is32BitType = tag.DataType == DataType_Word32 || tag.DataType == DataType_UInt32 || tag.DataType == DataType_FP;
+                bool is32BitType = tag.DataType == PLCTagTypeExtensions.DataType_Int32 || tag.DataType == PLCTagTypeExtensions.DataType_UInt32 || tag.DataType == PLCTagTypeExtensions.DataType_FP;
                 //bool requiresSwap = (tag.DataType == DataType_Word32) && registers.Length >= 2;
 
                 if (_swapBytes && is32BitType && registers.Length >= 2)
@@ -164,12 +164,12 @@ namespace IPCSoftware.Devices.PLC
 
                 switch (tag.DataType)
                 {
-                    case DataType_Bit:
+                    case PLCTagTypeExtensions.DataType_Bit:
                         if (tag.BitNo >= 0 && tag.BitNo <= 15)
                             return ((registers[0] >> tag.BitNo) & 0x01) == 1;
                         return false;
 
-                    case DataType_String:
+                    case PLCTagTypeExtensions.DataType_String:
                         byte[] bytesToDecode = byteArray;
                         // --- CONFIGURABLE BYTE SWAP (String) ---
                         if (_swapStringBytes)
@@ -179,21 +179,21 @@ namespace IPCSoftware.Devices.PLC
                         // ---------------------------------------
                         // Replace ALL null characters (not just trailing) to handle embedded \0 from 2-byte Modbus string encoding
                         return Encoding.ASCII.GetString(bytesToDecode, 0, bytesToDecode.Length).Replace("\0", string.Empty).Trim();
-                    case DataType_Int16:
+                    case PLCTagTypeExtensions.DataType_Int16:
                         return BitConverter.ToInt16(byteArray, 0);
-                    case DataType_UInt16:
+                    case PLCTagTypeExtensions.DataType_UInt16:
                         return BitConverter.ToUInt16(byteArray, 0);
 
-                    case DataType_Word32:
+                    case PLCTagTypeExtensions.DataType_Int32:
                         // This now receives the correctly ordered byte array
                         if (byteArray.Length < 4) return 0; // throw new InvalidOperationException("Insufficient bytes for 32-bit Word.");
                         return BitConverter.ToInt32(byteArray, 0);
 
-                    case DataType_UInt32:
+                    case PLCTagTypeExtensions.DataType_UInt32:
                         if (byteArray.Length < 4) return 0u;
                         return BitConverter.ToUInt32(byteArray, 0);
 
-                    case DataType_FP:
+                    case PLCTagTypeExtensions.DataType_FP:
                         if (byteArray.Length < 4) return 0.0f;
                         return BitConverter.ToSingle(byteArray, 0);
 
@@ -217,15 +217,15 @@ namespace IPCSoftware.Devices.PLC
         {
             try
             {
-                if (tag.AlgNo == AlgoNo_Raw)
+                if (tag.AlgNo == PLCTagTypeExtensions.AlgoNo_Raw)
                 {
                     return rawTypedValue;
                 }
 
-                if (tag.AlgNo == AlgoNo_LinearScale)
+                if (tag.AlgNo == PLCTagTypeExtensions.AlgoNo_LinearScale)
                 {
                     // Rule: Linear Scale only applies to Int16 (1) and Word32 (2)
-                    if (tag.DataType == DataType_Int16 || tag.DataType == DataType_UInt32 || tag.DataType == DataType_UInt16 || tag.DataType == DataType_Word32)
+                    if (tag.DataType == PLCTagTypeExtensions.DataType_Int16 || tag.DataType == PLCTagTypeExtensions.DataType_UInt32 || tag.DataType == PLCTagTypeExtensions.DataType_UInt16 || tag.DataType == PLCTagTypeExtensions.DataType_Int32)
                     {
                         double rawNumericValue = Convert.ToDouble(rawTypedValue);
                         if (tag.UseEngMinMax)
@@ -296,70 +296,5 @@ namespace IPCSoftware.Devices.PLC
             return dst;
         }
     }
-
-
-    public static class GetMinMax
-    {
-        public static double GetMaxValue(this int type)
-        {
-            switch (type)
-            {
-                case DataType_Int16:     // short
-                    return short.MaxValue;          // 32767
-
-                case DataType_Word32:    // DWord / Int32 / Word
-                                         // Choose ONE depending on your protocol meaning:
-                    return uint.MaxValue;           // 4294967295 (DWord)
-                                                    // return int.MaxValue;         // 2147483647 (Int32)
-
-                case DataType_FP:        // float / real
-                    return float.MaxValue;          // 3.4028235E38
-
-                case DataType_UInt16:    // ushort
-                    return ushort.MaxValue;         // 65535
-
-                case DataType_UInt32:    // uint
-                    return uint.MaxValue;           // 4294967295
-
-                default:
-                    return short.MaxValue;
-            }
-        }
-
-        public static double GetMinValue(this int type)
-        {
-            switch (type)
-            {
-                case DataType_Int16:     // short
-                    return short.MinValue;          // 32767
-
-                case DataType_Word32:    // DWord / Int32 / Word
-                                         // Choose ONE depending on your protocol meaning:
-                    return uint.MinValue;           // 4294967295 (DWord)
-                                                    // return int.MaxValue;         // 2147483647 (Int32)
-
-                case DataType_FP:        // float / real
-                    return float.MinValue;          // 3.4028235E38
-
-                case DataType_UInt16:    // ushort
-                    return ushort.MinValue;         // 65535
-
-                case DataType_UInt32:    // uint
-                    return uint.MinValue;           // 4294967295
-
-                default:
-                    return short.MinValue;
-            }
-        }
-
-        private const int DataType_Int16 = 1;
-        private const int DataType_Word32 = 2; // DWord, Int32, Word
-        private const int DataType_Bit = 3;
-        private const int DataType_FP = 4; // Real, Float
-        private const int DataType_String = 5;
-
-        private const int DataType_UInt16 = 6;
-        private const int DataType_UInt32 = 7;
-
-    }
+    
 }

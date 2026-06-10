@@ -99,6 +99,7 @@ namespace IPCSoftware.CoreService.Bending
                             services.AddSingleton<DashboardInitializerBending>();
                             services.AddSingleton<OeeEngineBending>();
                             services.AddSingleton<AlarmService>();
+                            services.AddSingleton<BendingProcessService>();
                             //services.AddTransient<TagConfigLoader>();
                             services.AddTransient<BackupService>();
                             services.AddSingleton<ShiftResetService>();
@@ -132,7 +133,7 @@ namespace IPCSoftware.CoreService.Bending
 
                             services.AddSingleton<IMessagePublisher>(sp => sp.GetRequiredService<UiListener>());
 
-                            services.AddSingleton<SystemMonitorService>();
+                            services.AddSingleton<SystemMonitorServiceBending>();
                            // services.AddSingleton<CCDTriggerServiceBending>();
 
                             services.AddSingleton<CCDTriggerServiceBending>(sp =>    new CCDTriggerServiceBending(

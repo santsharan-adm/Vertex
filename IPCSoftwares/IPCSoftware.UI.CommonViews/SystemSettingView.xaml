@@ -144,11 +144,19 @@
                         </StackPanel>
                     </Grid>
                 </Border>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                <!-- Sync Button 1 -->
+                <Button Grid.Row="0" x:Name="SyncBtn" Command="{Binding SyncCommand}" Content="SYNC PLC 1" Width="250" Height="100" Style="{StaticResource SyncButtonStyle}" Cursor="Hand" VerticalAlignment="Center" Margin="10,0" />
 
-                <!-- Sync Button -->
-                <Button Grid.Column="1" x:Name="SyncBtn" Command="{Binding SyncCommand}" Content="SYNC" Width="200" Height="100" Style="{StaticResource SyncButtonStyle}" Cursor="Hand" VerticalAlignment="Center" Margin="10,0"/>
-
-                <!-- PLC Time -->
+                <!-- Sync Button 2 -->
+                <Button Grid.Row="1" x:Name="SyncBtn2" Command="{Binding SyncCommand2}" Content="SYNC PLC 2" Width="250" Height="100" Style="{StaticResource SyncButtonStyle}" Cursor="Hand" VerticalAlignment="Center" Margin="10,0" />
+                </Grid>
+                    
+                    <!-- PLC 1 Time  -->
                 <Border Grid.Column="2" Style="{StaticResource SystemCardStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -156,7 +164,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Border Background="#F0F0F0" CornerRadius="12" Width="140" Height="140" VerticalAlignment="Center">
-                            <TextBlock Text="PLC" FontSize="48" FontWeight="Bold" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="PLC 1" FontSize="48" FontWeight="Bold" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="40,0,0,0">
                             <TextBlock Text="{Binding PlcDate, TargetNullValue='--/--/----'}" FontSize="48" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,10"/>
@@ -165,35 +173,25 @@
                     </Grid>
                 </Border>
 
-                <!-- NEW: Service Control Card -->
-                <!--<Border Grid.Column="3" Style="{StaticResource SystemCardStyle}">
+                <!-- PLC 2 Time  -->
+                <Border Grid.Column="3" Style="{StaticResource SystemCardStyle}">
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Text="Core Service" FontSize="28" FontWeight="Bold" Foreground="#555"/>
-                        <TextBlock Text="{Binding ServiceStatus}" FontSize="24" FontWeight="SemiBold" Foreground="{Binding ServiceStatusColor}" HorizontalAlignment="Right"/>
-
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                            <Button Content="START" Command="{Binding StartServiceCommand}" Width="160" Height="70" Background="#28A745" Foreground="White" FontSize="24" FontWeight="Bold" Margin="0,0,20,0" BorderThickness="0">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="10"/>
-                                    </Style>
-                                </Button.Resources>
-                            </Button>
-                            <Button Content="STOP" Command="{Binding StopServiceCommand}" Width="160" Height="70" Background="#DC3545" Foreground="White" FontSize="24" FontWeight="Bold" BorderThickness="0">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="10"/>
-                                    </Style>
-                                </Button.Resources>
-                            </Button>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Background="#F0F0F0" CornerRadius="12" Width="140" Height="140" VerticalAlignment="Center">
+                            <TextBlock Text="PLC 2" FontSize="48" FontWeight="Bold" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="40,0,0,0">
+                            <TextBlock Text="{Binding Plc2Date, TargetNullValue='--/--/----'}" FontSize="48" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding Plc2Time, TargetNullValue='--:--:--'}" FontSize="48" FontWeight="Bold" Foreground="#007ACC"/>
                         </StackPanel>
                     </Grid>
-                </Border>-->
+                </Border>
+
+
+
             </Grid>
 
             <!-- BOTTOM ROW: Audit Logs -->

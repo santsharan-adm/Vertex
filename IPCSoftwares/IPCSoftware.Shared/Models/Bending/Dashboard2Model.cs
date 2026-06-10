@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.Shared;
 using System;
+using System.Collections.ObjectModel;
 
 namespace IPCSoftware.Shared.Models.Bending
 {
@@ -7,7 +8,20 @@ namespace IPCSoftware.Shared.Models.Bending
     public class DashboardInspectionModel : ObservableObjectVM
     {
 
-        public string BatchNo { get; set; }
+        public Int32 BatchNo { get; set; }
+        public Int32 StationIndex { get; set; }
+        public Int32 PositionIndex { get; set; }
+        public ObservableCollection<DashboardInspectionLineModel> LineItems
+        {
+            get => new ObservableCollection<DashboardInspectionLineModel>()
+            {
+                LineItem1,
+                LineItem2,
+                LineItem3,
+                LineItem4,
+
+            };
+        }
         public DashboardInspectionLineModel LineItem1 { get; set; }
         public DashboardInspectionLineModel LineItem2 { get; set; }
         public DashboardInspectionLineModel LineItem3 { get; set; }
@@ -16,11 +30,11 @@ namespace IPCSoftware.Shared.Models.Bending
     }
     public class DashboardInspectionLineModel : ObservableObjectVM
     {
-        private string _qrCode1;
-        public string QRCode1
+        private string _qrCode;
+        public string QRCode
         {
-            get => _qrCode1;
-            set => SetProperty(ref _qrCode1, value);
+            get => _qrCode;
+            set => SetProperty(ref _qrCode, value);
         }
 
         private float _heaterTemp_Bend1;
@@ -100,6 +114,16 @@ namespace IPCSoftware.Shared.Models.Bending
             set => SetProperty(ref _result1, value);
         }
     }
+
+    //public class BatchBuildQRModel : ObservableObjectVM                      // Name taken by Rishabh , and this model name will chnage when UI holds any Table Title Name accordingly- Date 29/05/26
+    //{
+    //    public string BatchNo { get; set; }
+    //    public string QRCode1 { get; set; }
+    //    public string QRCode2 { get; set; }
+    //    public string QRCode3 { get; set; }
+    //    public string QRCode4 { get; set; }
+
+    //}
 
     public class BendingIndicator : ObservableObjectVM
     {

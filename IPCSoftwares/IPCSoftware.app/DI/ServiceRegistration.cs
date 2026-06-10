@@ -81,7 +81,7 @@ namespace IPCSoftware.App.DI
             services.AddSingleton<AlgorithmAnalysisService>();
             services.AddSingleton<DashboardInitializerAOI>();
             services.AddSingleton<OeeEngineAOI>();
-            services.AddSingleton<SystemMonitorService>();
+            //services.AddSingleton<SystemMonitorServiceAOI>();
             services.AddSingleton<IAlarmHistoryService, AlarmHistoryService>();
             services.AddSingleton<ITcpTrafficLogger, TcpTrafficLogger>();
             services.AddSingleton<IProductionDataLogger>(sp =>

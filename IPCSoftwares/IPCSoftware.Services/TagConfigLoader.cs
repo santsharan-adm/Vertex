@@ -14,13 +14,14 @@ namespace IPCSoftware.Services
         public TagConfigLoader(IAppLogger logger , IFileHandler fileHandler) : base(logger)
         { _fileHandler = fileHandler; }
         // Constants matching definitions in AlgorithmAnalysisService/Requirements
-        private const int DataType_Int16 = 1;
-        private const int DataType_Word32 = 2;
-        private const int DataType_Bit = 3;
-        private const int DataType_FP = 4;
-        private const int DataType_String = 5;
-        private const int DataType_UInt16 = 6;
-        private const int DataType_UInt32 = 7;
+        //Should come from a shared place if possible to avoid mismatches between loading and analysis logic - BMK-09-06-2026 -ReviewComment
+        //private const int DataType_Int16 = 1;
+        //private const int DataType_Word32 = 2;
+        //private const int DataType_Bit = 3;
+        //private const int DataType_FP = 4;
+        //private const int DataType_String = 5;
+        //private const int DataType_UInt16 = 6;
+        //private const int DataType_UInt32 = 7;
 
         public List<PLCTagConfigurationModel> Load(string filePath)
         {
@@ -107,7 +108,7 @@ namespace IPCSoftware.Services
                             var tag = new PLCTagConfigurationModel
                             {
                                 Id = int.Parse(r[0]),
-                                //TagNo = int.Parse(r[1]),
+                                TagNo = int.Parse(r[0]), // Use Id as TagNo for UI display
                                 Name = r[3],
                                 PLCNo = int.Parse(r[4]),
                                 ModbusAddress = int.Parse(r[6]),
@@ -120,14 +121,16 @@ namespace IPCSoftware.Services
                                 BitNo = bitNo,
                                 Offset = double.Parse(r[12]),
                                 Span = double.Parse(r[13]),
+                                Direction = r[16],
                                 IOType = r[17],
+                                CanWrite = ParseBoolean(r[15]),
 
                                 // NEW: Read UseEngMinMax and EnableTraceLog (columns 18 and 19 in Bending CSV)
-                                UseEngMinMax = r.Length > 18 ? ParseBoolean(r[18]) : false,
-                                EnableTraceLog = r.Length > 19 ? ParseBoolean(r[19]) : false,
+                                UseEngMinMax = r.Length > 11 ? ParseBoolean(r[11]) : false,
+                                EnableTraceLog = r.Length > 18 ? ParseBoolean(r[18]) : false,
 
-                                Description = r.Length > 20 ? r[20] : "",
-                                Remark = r.Length > 21 ? r[21] : ""
+                                Description = r.Length > 19 ? r[19] : "",
+                                Remark = r.Length > 20 ? r[20] : ""
                                 //CanWrite = ParseBoolean(r[13]),
                                 //DMAddress = r[15]
 
@@ -228,17 +231,17 @@ namespace IPCSoftware.Services
         {
             switch (dataType)
             {
-                case DataType_Int16: // 16-bit (1 register)
-                case DataType_Bit:   // 1-bit (1 register)
-                case DataType_UInt16:   // 1-bit (1 register)
+                case PLCTagTypeExtensions.DataType_Int16: // 16-bit (1 register)
+                case PLCTagTypeExtensions.DataType_Bit:   // 1-bit (1 register)
+                case PLCTagTypeExtensions.DataType_UInt16:   // 1-bit (1 register)
                     return 1;
 
-                case DataType_Word32: // 32-bit (2 registers)
-                case DataType_FP:     // Float (32-bit, 2 registers)
-                case DataType_UInt32:   // 1-bit (1 register)
+                case PLCTagTypeExtensions.DataType_Int32: // 32-bit (2 registers)
+                case PLCTagTypeExtensions.DataType_FP:     // Float (32-bit, 2 registers)
+                case PLCTagTypeExtensions.DataType_UInt32:   // 1-bit (1 register)
                     return 2;
 
-                case DataType_String:
+                case PLCTagTypeExtensions.DataType_String:
                     // String length is configurable (Max 50 registers per requirement).
                     return Math.Clamp(configuredLength, 1, 50);
 
@@ -271,7 +274,7 @@ namespace IPCSoftware.Services
             {
                 var sb = new StringBuilder();
                 string ver = _fileHandler.Getversion(filepath);
-                string version = string.Format($"Version - {ver}");
+                string version = string.Format($"Version = {ver}");
                 sb.AppendLine(version);
                 string header = _fileHandler.GetHeader(filepath);
                 sb.AppendLine(header);
@@ -280,23 +283,31 @@ namespace IPCSoftware.Services
                 {
                     if (ver == "2.0")
                     {
-                        sb.AppendLine($"{tag.Id}," +
-                            $"{tag.Id}," +
+                        sb.AppendLine($"{tag.Id}," +                            
+                            $"{tag.Category}," +
+                            $"{tag.DMAddress}," +
                             $"{_fileHandler.EscapeCsv(tag.Name)}," +         // <--- Was $"\"{EscapeCsv(tag.Name)}\","
                             $"{tag.PLCNo}," +
+                             $"{tag.M40000}," +
                             $"{tag.ModbusAddress}," +
-                            $"{tag.Length}," +
                             $"{tag.AlgNo}," +
-                            $"{GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
+                            $"{tag.Length}," +
+                            $"{PLCTagTypeExtensions.GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
                             $"{tag.BitNo}," +
+                            $"{tag.UseEngMinMax}," +
                             $"{tag.Offset}," +
                             $"{tag.Span}," +
-                            $"{_fileHandler.EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
-                            $"{_fileHandler.EscapeCsv(tag.Remark)}," +       // <--- Was $"\"{EscapeCsv(tag.Remark)}\","
+                            $"{tag.Monitor}," +
                             $"{tag.CanWrite}," +
+                            $"{tag.Direction}," +
                             $"{_fileHandler.EscapeCsv(tag.IOType)}," +
-                            $"{tag.UseEngMinMax}," +
-                            $"{tag.EnableTraceLog}");
+                            $"{tag.EnableTraceLog}," +
+                            $"{_fileHandler.EscapeCsv(tag.Description)}," +  // <--- Was $"\"{EscapeCsv(tag.Description)}\","
+                            $"{_fileHandler.EscapeCsv(tag.Remark)}");    
+                         
+                            
+                            
+                            
                     }
                     else
                     {
@@ -307,7 +318,7 @@ namespace IPCSoftware.Services
                        $"{tag.ModbusAddress}," +
                        $"{tag.Length}," +
                        $"{tag.AlgNo}," +
-                       $"{GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
+                       $"{PLCTagTypeExtensions.GetDataTypeString(tag.DataType)}," + // Helper to convert int back to string (e.g. 1 -> Int16)
                        $"{tag.BitNo}," +
                        $"{tag.Offset}," +
                        $"{tag.Span}," +
@@ -331,19 +342,20 @@ namespace IPCSoftware.Services
 
 
         // You likely need this helper to save "Int16" instead of "1" back to the CSV
-        private string GetDataTypeString(int typeId)
-        {
-            return typeId switch
-            {
-                1 => "Int16",
-                2 => "Word",
-                3 => "Bit",
-                4 => "Float",
-                5 => "String",
-                6 => "UInt16",
-                7 => "UInt32",
-                _ => "Int16"
-            };
-        }
+        //Should come from a shared place if possible to avoid mismatches between loading and analysis logic - BMK-09-06-2026 -ReviewComment
+        //private string GetDataTypeString(int typeId)
+        //{
+        //    return typeId switch
+        //    {
+        //        1 => "Int16",
+        //        2 => "Word",
+        //        3 => "Bit",
+        //        4 => "Float",
+        //        5 => "String",
+        //        6 => "UInt16",
+        //        7 => "UInt32",
+        //        _ => "Int16"
+        //    };
+        //}
     }
 }

@@ -25,7 +25,7 @@ namespace IPCSoftware.Engine
         private readonly UiListener _ui ;
         private readonly AlgorithmAnalysisService _algo;
         private readonly OeeEngineBase _oee ;
-        private readonly SystemMonitorService _systemMonitor;
+        private readonly SystemMonitorServiceBase _systemMonitor;
         private readonly ShiftResetService _shiftReset;
         private readonly CCDTriggerServiceBase _ccdTrigger; // 1. Add field
         private readonly AlarmService _alarmService;
@@ -34,6 +34,7 @@ namespace IPCSoftware.Engine
         // latest packets per PLC (unitno)
         //protected readonly Dictionary<int, PlcPacket> _latestPackets = new();
         protected Dictionary<int, object> latestValueNew = new Dictionary<int, object>();
+        protected IProcessLogic processLogicEngine;
 
         //protected Dictionary<int, object>? _lastValues = null;
 
@@ -41,10 +42,11 @@ namespace IPCSoftware.Engine
             AlgorithmAnalysisService algo,
             OeeEngineBase oee,
             ShiftResetService shiftReset,
-            SystemMonitorService systemMonitor,
+            SystemMonitorServiceBase systemMonitor,
           UiListener ui,
           AlarmService alarmService,
-            CCDTriggerServiceBase ccdTrigger,          
+            CCDTriggerServiceBase ccdTrigger,
+             IProcessLogic processLogic,
             IAppLogger logger) : base(logger)
         {
             _ui = ui;
@@ -60,11 +62,12 @@ namespace IPCSoftware.Engine
             {
                 latestValueNew[tagId] = value;
             };
+            processLogicEngine = processLogic;
 
 
         }
 
-      
+        List<bool> sysMonData = new List<bool>();
 
         public async Task StartAsync()
         {
@@ -105,10 +108,11 @@ namespace IPCSoftware.Engine
                 while (plcTasks.All(t => !t.IsCompleted))
                 {
                     var processedData = latestValueNew;
+                    processLogicEngine.Process(processedData);
                     await _ccdTrigger.ProcessTriggers(processedData, _manager);
                     _oee.ProcessCycleTimeLogic(processedData);
                     _oee.Calculate(processedData);
-                    _systemMonitor.Process(processedData);
+                    sysMonData=_systemMonitor.Process(processedData);
                     _alarmService.ProcessTagData(processedData);
                     _shiftReset.Process(processedData);
                     // short delay to avoid tight loop; adjust interval as needed
@@ -205,41 +209,74 @@ namespace IPCSoftware.Engine
                 //---------------------------------------------------------
                 if (request.RequestId == 4)
                 {
-                    
+                    if(!latestValueNew.Any())
                         return new ResponsePackage
                         {
                             ResponseId = 4,
                             Parameters = new Dictionary<int, object>()
                         };
-                    
 
-                    // _oee.ProcessCycleTimeLogic(packet);
 
-                    //return new ResponsePackage
-                    //{
-                    //    ResponseId = 4,
-                    //    Parameters = _oee.Calculate(packet)
-                    //};
+                        _oee.ProcessCycleTimeLogic(latestValueNew);
+
+                        return new ResponsePackage
+                        {
+                            ResponseId = 4,
+                            Parameters = _oee.Calculate(latestValueNew)
+                        };
                 }
 
                 //-----------------------
 
                 if (request.RequestId == 1)
                 {
+                    TaskbarItems taskbarItems = new TaskbarItems();
+                    if (sysMonData.Count >= 0)
                     {
+                        taskbarItems.IsPLC1Connected = sysMonData[0];
+                    }
+                    if (sysMonData.Count >= 1)
+                    {
+                        taskbarItems.IsPLC2Connected = sysMonData[1];
+                    }
+                    if (sysMonData.Count >= 2)
+                    {
+                        taskbarItems.IsMacMiniConnected = sysMonData[2];
+                    }
+
+                    if (GetBool( ConstantValues.Mode_Auto.Read)) taskbarItems.CurrentMachineMode = "AUTO RUN";
+                    else if (GetBool( ConstantValues.Mode_DryRun.Read)) taskbarItems.CurrentMachineMode = "DRY RUN";
+                    else if (GetBool( ConstantValues.Mode_CycleStop.Read)) taskbarItems.CurrentMachineMode = "CYCLE STOP";
+                    else if (GetBool(ConstantValues.Mode_MassRTO.Read)) taskbarItems.CurrentMachineMode = "MACHINE HOME";
+                    else taskbarItems.CurrentMachineMode = "MANUAL / IDLE"; // Default if no specific mode active
+                   
+
+
                         return new ResponsePackage
                         {
                             ResponseId = 1,
                             Parameters = new Dictionary<int, object>()
+                            {
+                                {
+                                    0,
+                                   taskbarItems
+                                }
+                            }
                         };
                     }
+                //if (GetBool(liveData, ConstantValues.Mode_Auto.Read)) CurrentMachineMode = "AUTO RUN";
+                //            else if (GetBool(liveData, ConstantValues.Mode_DryRun.Read)) CurrentMachineMode = "DRY RUN";
+                //            else if (GetBool(liveData, ConstantValues.Mode_CycleStop.Read)) CurrentMachineMode = "CYCLE STOP";
+                //            else if (GetBool(liveData, ConstantValues.Mode_MassRTO.Read)) CurrentMachineMode = "MACHINE HOME";
+                //            else CurrentMachineMode = "MANUAL / IDLE"; // Default if no specific mode active
+
                 //    _oee.ProcessCycleTimeLogic(packet.Values);
-                    //return new ResponsePackage
-                    //{   
-                    //    ResponseId = 1,
-                    //    Parameters = _systemMonitor.Process(packet.Values)
-                    //};
-                }
+                //return new ResponsePackage
+                //{   
+                //    ResponseId = 1,
+                //    Parameters = _systemMonitor.Process(packet.Values)
+                //};
+
 
 
 
@@ -425,7 +462,38 @@ namespace IPCSoftware.Engine
             new ResponsePackage { ResponseId = 6, Success = false, ErrorMessage = msg };
 
 
-       
+        // Helper to read a float from the latest PLC packet by tag ID
+        protected float GetFloat(int tagId)
+        {
+            if (latestValueNew.TryGetValue(tagId, out var val) &&
+                float.TryParse(val.ToString(), out var result))
+                return result;
+            return 0f;  // NaN is not valid JSON — use 0 as safe default
+        }
+
+        protected int GetInt(int tagId)
+        {
+
+            if (latestValueNew.TryGetValue(tagId, out var val) &&
+                int.TryParse(val.ToString(), out var result))
+                return result;
+            return 0;
+        }
+
+        protected bool GetBool(int tagId)
+        {
+            if (latestValueNew.TryGetValue(tagId, out var val) &&
+                bool.TryParse(val.ToString(), out var result))
+                return result;
+            return false;
+        }
+
+        protected string GetString(int tagId)
+        {
+            if (latestValueNew.TryGetValue(tagId, out var val))
+                return val?.ToString() ?? "NA";
+            return "NA";
+        }
 
 
     }

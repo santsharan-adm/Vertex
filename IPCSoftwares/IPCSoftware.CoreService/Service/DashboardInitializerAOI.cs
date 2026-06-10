@@ -1,5 +1,6 @@
 ﻿using IPCSoftware.Core.Interfaces;
 using IPCSoftware.Core.Interfaces.AppLoggerInterface;
+using IPCSoftware.CoreService.Bending.Service;
 using IPCSoftware.Devices.PLC;
 using IPCSoftware.Devices.UI;
 using IPCSoftware.Engine;
@@ -17,12 +18,13 @@ namespace IPCSoftware.CoreService.AOI.Service
             AlgorithmAnalysisService algo,
             OeeEngineAOI oee,
             ShiftResetService shiftReset,
-            SystemMonitorService systemMonitor,
+            SystemMonitorServiceAOI systemMonitor,
             UiListener ui,
             AlarmService alarmService,
+            AOIProcessService aoiProcess,
             CCDTriggerServiceAOI ccdTrigger,
           
-            IAppLogger logger) : base(manager, algo, oee, shiftReset, systemMonitor, ui, alarmService, ccdTrigger,logger)
+            IAppLogger logger) : base(manager, algo, oee, shiftReset, systemMonitor, ui, alarmService, ccdTrigger, aoiProcess , logger)
         {
         }   
     }
