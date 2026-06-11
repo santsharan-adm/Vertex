@@ -187,6 +187,18 @@ namespace IPCSoftware.Shared.Models
 
     public class Dashboard2
     {
+        public int TR_Robot1Intake1 { get; set; }
+        public int TR_InputInspectionDone { get; set; }
+        public int TR_Robot1Intake2 { get; set; }
+        public int TR_TT1Rotate { get; set; }
+        public int TR_TransferUnitRun { get; set; }
+        public int TR_TT2Rotate { get; set; }
+        public int TR_Robot2Intake1 { get; set; }
+        public int TR_Robot2Intake2 { get; set; }
+        public int TAG_InputQRCode1 { get; set; }
+        public int TAG_InputQRCode2 { get; set; }
+        public int TAG_InputQRCode3 { get; set; }
+        public int TAG_InputQRCode4 { get; set; }
         public int l1_QRCode { get; set; }
         public int l2_QRCode { get; set; }
 
@@ -259,12 +271,12 @@ namespace IPCSoftware.Shared.Models
         public int bending1Flex1Punch { get; set; }
         public int bending1Flex2Punch { get; set; }
         public int bending1Flex3Punch { get; set; }
-        public int  bending1Flex4Punch { get; set; }
+        public int bending1Flex4Punch { get; set; }
 
         public int bending1Flex1Heat { get; set; }
         public int bending1Flex2Heat { get; set; }
         public int bending1Flex3Heat { get; set; }
-        public int bending1Flex4Heat  { get; set; }
+        public int bending1Flex4Heat { get; set; }
 
         public int bending2Flex1Clamp { get; set; }
         public int bending2Flex2Clamp { get; set; }

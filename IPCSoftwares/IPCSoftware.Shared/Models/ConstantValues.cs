@@ -138,6 +138,18 @@ namespace IPCSoftware.Shared.Models
         public static XYPair Servo_Live = new();
 
         // Dashboard2 OEE Tags
+        public static int TR_Robot1Intake1;
+        public static int TR_InputInspectionDone;
+        public static int TR_Robot1Intake2;
+        public static int TR_TT1Rotate;
+        public static int TR_TransferUnitRun;
+        public static int TR_TT2Rotate;
+        public static int TR_Robot2Intake1;
+        public static int TR_Robot2Intake2;
+        public static int TAG_InputQRCode1;
+        public static int TAG_InputQRCode2;
+        public static int TAG_InputQRCode3;
+        public static int TAG_InputQRCode4;
         public static int L1_QRCode;
         public static int L2_QRCode;
         public static int L3_QRCode;
@@ -520,6 +532,19 @@ namespace IPCSoftware.Shared.Models
                 var dashboard2 = tags.Dashboard2;
                 if (dashboard2 != null)
                 {
+                    TR_Robot1Intake1 = dashboard2.TR_Robot1Intake1;
+                    TR_InputInspectionDone = dashboard2.TR_InputInspectionDone;
+                    TR_Robot1Intake2 = dashboard2.TR_Robot2Intake2;
+                    TR_TT1Rotate = dashboard2.TR_TT1Rotate;
+                    TR_TransferUnitRun = dashboard2.TR_TransferUnitRun;
+                    TR_TT2Rotate = dashboard2.TR_TT2Rotate;
+                    TR_Robot2Intake1 = dashboard2.TR_Robot2Intake1;
+                    TR_Robot2Intake2 = dashboard2.TR_Robot2Intake2;
+                    TAG_InputQRCode1 = dashboard2.TAG_InputQRCode1;
+                    TAG_InputQRCode2 = dashboard2.TAG_InputQRCode2;
+                    TAG_InputQRCode3 = dashboard2.TAG_InputQRCode3;
+                    TAG_InputQRCode4 = dashboard2.TAG_InputQRCode4;
+
                     L1_QRCode = dashboard2.l1_QRCode;
                     L2_QRCode = dashboard2.l2_QRCode;
                     L3_QRCode = dashboard2.l3_QRCode;
