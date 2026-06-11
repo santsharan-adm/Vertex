@@ -84,6 +84,11 @@ namespace IPCSoftware.CoreService.Bending.Service
         {
             try
             {
+                //Tobe emoved -BMK
+                _currentCycleRecord = new ProductionDataRecord
+                {
+                    TwoDCode = "Test"
+                };
                 // 1. Ensure record exists
                 if (_currentCycleRecord == null)
                 {
