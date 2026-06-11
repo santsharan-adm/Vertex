@@ -172,7 +172,9 @@ namespace IPCSoftware.App.Bending.DI
 
                 return new ServiceStartupViewModel(logger, targetServiceName);
             });
-
+            //For bending Manual op view - aadded by sanjeev
+            services.AddTransient<ManualOperationBendingView>();
+            services.AddTransient<ManualOperationViewModel>();
 
 
             //  UPDATED: CcdSettingsViewModel now includes IObservableCcdSettingsService
