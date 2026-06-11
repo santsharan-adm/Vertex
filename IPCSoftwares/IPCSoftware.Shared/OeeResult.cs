@@ -10,20 +10,20 @@ namespace IPCSoftware.Shared
 {
     public class OeeResult
     {
-        public double Availability { get; set; }
-        public double Performance { get; set; }
-        public double Quality { get; set; }
-        public double OverallOEE { get; set; }
+        public double? Availability { get; set; }
+        public double? Performance { get; set; }
+        public double? Quality { get; set; }
+        public double? OverallOEE { get; set; }
 
-        public int OperatingTime { get; set; }
-        public int Downtime { get; set; }
+        public double? OperatingTime { get; set; }
+        public double? Downtime { get; set; }
 
-        public int OKParts { get; set; }
-        public int NGParts { get; set; }
-        public int CycleTime { get; set; }
-        public int TotalParts { get; set; }
+        public int? OKParts { get; set; }
+        public int? NGParts { get; set; }
+        public double? CycleTime { get; set; }
+        public int? TotalParts { get; set; }
 
-        public int OEEDetails { get; set; }
+        public int? OEEDetails { get; set; }
        
     }
     public class OeeResultAOI : OeeResult

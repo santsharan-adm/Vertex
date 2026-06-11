@@ -25,6 +25,7 @@ namespace IPCSoftware.Engine
 
         // Holds all data for the current 2D code / part
         protected ProductionDataRecord? _currentCycleRecord;
+        public OeeResult OeeResult = new OeeResult();
 
         public OeeEngineBase(
             IDeviceConfigurationService deviceService,

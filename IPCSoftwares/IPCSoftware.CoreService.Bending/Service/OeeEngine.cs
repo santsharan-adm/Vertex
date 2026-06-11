@@ -82,8 +82,10 @@ namespace IPCSoftware.CoreService.Bending.Service
 
         protected override void FinalizeAndLogCycle(Dictionary<int, object> tagValues, bool isCycleComplete)
         {
+            base.FinalizeAndLogCycle(tagValues, isCycleComplete);
             try
             {
+                
                 //Tobe emoved -BMK
                 _currentCycleRecord = new ProductionDataRecord
                 {
@@ -135,19 +137,19 @@ namespace IPCSoftware.CoreService.Bending.Service
                 oee = availability * performance * quality;
 
                 // 4. Fill Record
-                _currentCycleRecord.OEE = oee;
-                _currentCycleRecord.Availability = availability;
-                _currentCycleRecord.Performance = performance;
-                _currentCycleRecord.Quality = quality;
+                OeeResult.OverallOEE= _currentCycleRecord.OEE = oee;
+                OeeResult.Availability = _currentCycleRecord.Availability = availability;
+                OeeResult.Performance = _currentCycleRecord.Performance = performance;
+                OeeResult.Quality = _currentCycleRecord.Quality = quality;
 
-                _currentCycleRecord.Total_IN = totalParts;
-                _currentCycleRecord.OK = okParts;
-                _currentCycleRecord.NG = ngParts;
+                OeeResult.TotalParts = _currentCycleRecord.Total_IN = totalParts;
+                OeeResult.OKParts = _currentCycleRecord.OK = okParts;
+                OeeResult.NGParts = _currentCycleRecord.NG = ngParts;
 
-                _currentCycleRecord.Uptime = operatingMin;
-                _currentCycleRecord.Downtime = downTimeMin;
-                _currentCycleRecord.TotalTime = totalTimeMin;
-                _currentCycleRecord.CT = actualCycleTime;
+                OeeResult.OperatingTime = _currentCycleRecord.Uptime = operatingMin;
+                OeeResult.Downtime = _currentCycleRecord.Downtime = downTimeMin;
+                 _currentCycleRecord.TotalTime = totalTimeMin;
+                OeeResult.CycleTime = _currentCycleRecord.CT = actualCycleTime;
 
                 // Mark as Aborted if reset
                 if (!isCycleComplete)
@@ -158,6 +160,8 @@ namespace IPCSoftware.CoreService.Bending.Service
                 // 5. Append Record
                 _prodLogger.AppendRecord(_currentCycleRecord);
 
+                
+
                 // 6. Cleanup Memory
                 _currentCycleRecord = null;
             }
@@ -165,7 +169,7 @@ namespace IPCSoftware.CoreService.Bending.Service
             {
                 _logger.LogError($"[OEE] Finalize Log failed: {exLog.Message}", LogType.Diagnostics);
             }
-            base.FinalizeAndLogCycle(tagValues, isCycleComplete);
+            
         }
     }
 }
