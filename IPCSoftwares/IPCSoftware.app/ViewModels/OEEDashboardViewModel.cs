@@ -719,16 +719,16 @@ namespace IPCSoftware.App.ViewModels
                         var oeeResult = JsonConvert.DeserializeObject<OeeResultAOI>(json);
                         if (oeeResult != null)
                         {
-                            Availability = Math.Round(oeeResult.Availability * 100, 1);
-                            Performance = Math.Round(oeeResult.Performance * 100, 1);
-                            Quality = Math.Round(oeeResult.Quality * 100, 1);
-                            OverallOEE = Math.Round(oeeResult.OverallOEE * 100, 1);
-                            OperatingTime = FormatDuration(oeeResult.OperatingTime);
-                            Downtime = FormatDuration(oeeResult.Downtime);
-                            GoodUnits = oeeResult.OKParts;
-                            RejectedUnits = oeeResult.NGParts;
-                            CycleTime = oeeResult.CycleTime;
-                            InFlow = oeeResult.TotalParts;
+                            Availability = Math.Round(oeeResult.Availability??0 * 100, 1);
+                            Performance = Math.Round(oeeResult.Performance??0 * 100, 1);
+                            Quality = Math.Round(oeeResult.Quality??0 * 100, 1);
+                            OverallOEE = Math.Round(oeeResult.OverallOEE??0 * 100, 1);
+                            OperatingTime = FormatDuration(oeeResult.OperatingTime??0);
+                            Downtime = FormatDuration(oeeResult.Downtime??0);
+                            GoodUnits = oeeResult.OKParts??0;
+                            RejectedUnits = oeeResult.NGParts??0;
+                            CycleTime = (int)(oeeResult.CycleTime??0);
+                            InFlow = oeeResult.TotalParts??0;
                             LatestX = oeeResult.XValue;
                             LatestY = oeeResult.YValue;
                             LatestTheta = oeeResult.AngleValue; // Assuming Z maps to Theta
