@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IPCSoftware.CoreService.Bending.Service
@@ -27,6 +28,9 @@ namespace IPCSoftware.CoreService.Bending.Service
 
         // Store previous trigger states to detect rising edges
         private readonly Dictionary<int, bool> _prevTriggerState = new();
+
+        // Thread-safe counter for assigning sequential batch numbers
+        private int _nextBatchNumber = 0;
 
         /// <summary>
         /// Returns the current list of active batches (read-only).
@@ -269,8 +273,13 @@ namespace IPCSoftware.CoreService.Bending.Service
         {
             // Rely on project's BatchModel having parameterless ctor
             var batch = Activator.CreateInstance(typeof(BatchModel)) as BatchModel;
+            if (batch == null) return null;
+            batch.BatchNumber = GetNextBatchNumber();           
+
             return batch;
         }
+
+        private int GetNextBatchNumber() => Interlocked.Increment(ref _nextBatchNumber);
 
         private void MoveIfPresent(int fromIndex, int toIndex, string reason)
         {
@@ -320,72 +329,7 @@ namespace IPCSoftware.CoreService.Bending.Service
             {
                 // fallback to reflection below
             }
-
-            //// Reflection fallback: try properties named QrCode1..4 (case-insensitive), then fields
-            //var t = batch.GetType();
-            //for (int i = 1; i <= 4; i++)
-            //{
-            //    string value = i switch
-            //    {
-            //        1 => qr1,
-            //        2 => qr2,
-            //        3 => qr3,
-            //        4 => qr4,
-            //        _ => null
-            //    };
-            //    if (string.IsNullOrEmpty(value)) continue;
-
-            //    var prop = t.GetProperty($"QrCode{i}", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-            //    if (prop != null && prop.CanWrite && prop.PropertyType == typeof(string))
-            //    {
-            //        prop.SetValue(batch, value);
-            //        continue;
-            //    }
-
-            //    var fld = t.GetField($"QrCode{i}", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-            //    if (fld != null && fld.FieldType == typeof(string))
-            //    {
-            //        fld.SetValue(batch, value);
-            //        continue;
-            //    }
-            //}
         }
-
-        //private void SetBatchQrCode(BatchModel batch, string qr)
-        //{
-        //    if (batch == null) return;
-        //    var t = batch.GetType();
-        //    // Try common property names
-        //    var candidates = new[] { "TwoDCode", "QRCode", "Code", "TwoD", "TwoD_CODE" };
-        //    foreach (var name in candidates)
-        //    {
-        //        var prop = t.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-        //        if (prop != null && prop.CanWrite && prop.PropertyType == typeof(string))
-        //        {
-        //            prop.SetValue(batch, qr);
-        //            return;
-        //        }
-        //    }
-
-        //    // If no property found, try field
-        //    foreach (var name in candidates)
-        //    {
-        //        var fld = t.GetField(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-        //        if (fld != null && fld.FieldType == typeof(string))
-        //        {
-        //            fld.SetValue(batch, qr);
-        //            return;
-        //        }
-        //    }
-
-        //    // As fallback, try to find any string property that is currently null/empty and set it (best effort)
-        //    var stringProp = t.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-        //                      .FirstOrDefault(p => p.CanWrite && p.PropertyType == typeof(string));
-        //    if (stringProp != null)
-        //    {
-        //        stringProp.SetValue(batch, qr);
-        //    }
-        //}
 
         private string GetBatchId(BatchModel batch)
         {
@@ -393,6 +337,15 @@ namespace IPCSoftware.CoreService.Bending.Service
             try
             {
                 var t = batch.GetType();
+
+                // Prefer BatchNumber if present
+                var batchNumProp = t.GetProperty("BatchNumber", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                if (batchNumProp != null)
+                {
+                    var val = batchNumProp.GetValue(batch);
+                    if (val != null) return $"Batch#{val}";
+                }
+
                 var idProp = t.GetProperty("Id", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
                 if (idProp != null) return idProp.GetValue(batch)?.ToString() ?? "<no-id>";
                 var nameProp = t.GetProperty("Name", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
