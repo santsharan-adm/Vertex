@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:cc="clr-namespace:IPCSoftware.App.Bending.Controls"
-             xmlns:conv="clr-namespace:IPCSoftware.App.Bending.Converters"
+             xmlns:conv="clr-namespace:IPCSoftware.App.Bending.Converters" xmlns:viewmodels="clr-namespace:IPCSoftware.App.Bending.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:Dashboard2ViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="900" d:DesignWidth="1672" Background="#F1F5F9"
              UseLayoutRounding="True" SnapsToDevicePixels="True">
@@ -77,7 +77,7 @@
                         DataContext="{Binding DashboardInspectionModelBatches[0]}"/>
         <!--EFFICIENCY BREAKDOWN-->
         <cc:EfficiencyBreakdownCC Grid.Row="4"  Grid.Column="0" Grid.RowSpan="2"  Background="#1E293B" Margin="3" Padding="3"
-                                  DataContext=""/>
+                                  DataContext="{Binding OeeResult}"/>
        
 
         <!--Bending 1,2,3,4-->

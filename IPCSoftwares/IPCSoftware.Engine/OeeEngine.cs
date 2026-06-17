@@ -346,7 +346,7 @@ namespace IPCSoftware.Engine
                 r.Availability = 0.0;
                 if (totalTimeMin > 0)
                 {
-                    r.Availability = (double)operatingMin / totalTimeMin;
+                    r.Availability = ((double)operatingMin / totalTimeMin)*100;
                 }
 
                 // 3. Quality (Q) Calculation

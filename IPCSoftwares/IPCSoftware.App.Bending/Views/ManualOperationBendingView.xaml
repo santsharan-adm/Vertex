@@ -200,7 +200,7 @@
                 <ScrollViewer Grid.Row="1"
                         VerticalScrollBarVisibility="Auto">
 
-                    <!--<UniformGrid Rows="4" Columns="5" Margin="0,10,0,0" >
+                    <UniformGrid Rows="4" Columns="5" Margin="0,10,0,0" >
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="IN1" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[0].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[0].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[0].IsEnabled}" FontSize="20" Tag="1"/>
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="IN2" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[1].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[1].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[1].IsEnabled}" FontSize="20" Tag="2"/>
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="IN3" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[2].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[2].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[2].IsEnabled}" FontSize="20" Tag="3"/>
@@ -217,13 +217,13 @@
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="IN14" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[13].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[13].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[13].IsEnabled}" FontSize="20" Tag="14"/>
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="IN15" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[14].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[14].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[14].IsEnabled}" FontSize="20" Tag="15"/>
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="IN16" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[15].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[15].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[15].IsEnabled}" FontSize="20" Tag="16"/>
-                        -->
-                    <!--<Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[16].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[16].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[16].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[16].IsEnabled}" FontSize="20" Tag="17"/>
+                        
+                    <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[16].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[16].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[16].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[16].IsEnabled}" FontSize="20" Tag="17"/>
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[17].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[17].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[17].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[17].IsEnabled}" FontSize="20" Tag="18"/>
                         <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[18].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[18].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[18].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[18].IsEnabled}" FontSize="20" Tag="19"/>
-                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[19].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[19].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[19].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[19].IsEnabled}" FontSize="20" Tag="20"/>-->
-                    <!--
-                    </UniformGrid>-->
+                        <Button Style="{StaticResource AlphaOperationButtonStyle}" Content="{Binding CurrentPage.SelectedButtons[19].Content}" Command="{Binding ButtonCommand}" CommandParameter="{Binding CurrentPage.SelectedButtons[19].CommandParameter}" Visibility="{Binding CurrentPage.SelectedButtons[19].IsVisible}" IsEnabled="{Binding CurrentPage.SelectedButtons[19].IsEnabled}" FontSize="20" Tag="20"/>
+                    
+                    </UniformGrid>
 
                 </ScrollViewer>
             </Grid>
