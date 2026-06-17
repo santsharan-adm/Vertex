@@ -275,7 +275,7 @@ namespace IPCSoftware.App.Bending.DI
             services.AddTransient<Dashboard2ViewModel>();
             services.AddTransient<IPCSoftware.App.Bending.Views.Dashboard2>();
             services.AddTransient<PostBendingMonitorViewModel>();
-            //services.AddTransient<PostBendingMonitor>();
+            services.AddTransient<IPCSoftware.App.Bending.Views.PostBendingMonitor>();
             services.AddTransient<WelcomePageViewModel>();
             services.AddTransient<WelcomePageView>();
 

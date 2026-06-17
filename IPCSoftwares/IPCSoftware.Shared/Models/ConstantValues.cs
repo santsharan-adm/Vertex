@@ -384,7 +384,228 @@ namespace IPCSoftware.Shared.Models
         public static int BP_InspResult3;
         public static int BP_InspResult4;
 
+        // Bending1 Monitor Tags
+        public static int Bending1_BatchNo;
 
+        // Bending1 Monitor - Product 1 (Work1)
+        public static int Bending1_Product1_QRCode;
+        public static int Bending1_Product1_Load_Present;
+        public static int Bending1_Product1_Load_Upper;
+        public static int Bending1_Product1_Load_Lower;
+        public static int Bending1_Product1_Temp_Present;
+        public static int Bending1_Product1_Temp_Upper;
+        public static int Bending1_Product1_Temp_Lower;
+        public static int Bending1_Product1_BendingTime;
+        public static int Bending1_Product1_Result;
+
+        // Bending1 Monitor - Product 2 (Work2)
+        public static int Bending1_Product2_QRCode;
+        public static int Bending1_Product2_Load_Present;
+        public static int Bending1_Product2_Load_Upper;
+        public static int Bending1_Product2_Load_Lower;
+        public static int Bending1_Product2_Temp_Present;
+        public static int Bending1_Product2_Temp_Upper;
+        public static int Bending1_Product2_Temp_Lower;
+        public static int Bending1_Product2_BendingTime;
+        public static int Bending1_Product2_Result;
+
+        // Bending1 Monitor - Product 3 (Work3)
+        public static int Bending1_Product3_QRCode;
+        public static int Bending1_Product3_Load_Present;
+        public static int Bending1_Product3_Load_Upper;
+        public static int Bending1_Product3_Load_Lower;
+        public static int Bending1_Product3_Temp_Present;
+        public static int Bending1_Product3_Temp_Upper;
+        public static int Bending1_Product3_Temp_Lower;
+        public static int Bending1_Product3_BendingTime;
+        public static int Bending1_Product3_Result;
+
+        // Bending1 Monitor - Product 4 (Work4)
+        public static int Bending1_Product4_QRCode;
+        public static int Bending1_Product4_Load_Present;
+        public static int Bending1_Product4_Load_Upper;
+        public static int Bending1_Product4_Load_Lower;
+        public static int Bending1_Product4_Temp_Present;
+        public static int Bending1_Product4_Temp_Upper;
+        public static int Bending1_Product4_Temp_Lower;
+        public static int Bending1_Product4_BendingTime;
+        public static int Bending1_Product4_Result;
+
+        // Bending1 Control Signals
+        public static int Bending1_DataReadCommand;
+        public static int Bending1_DataReadComplete;
+
+
+        // Bending2Monitor
+        public static int Bending2_BatchNo;
+
+        // Bending2 Monitor - Product 1 (Work1)
+        public static int Bending2_Product1_QRCode;
+        public static int Bending2_Product1_Load_Present;
+        public static int Bending2_Product1_Load_Upper;
+        public static int Bending2_Product1_Load_Lower;
+        public static int Bending2_Product1_Temp_Present;
+        public static int Bending2_Product1_Temp_Upper;
+        public static int Bending2_Product1_Temp_Lower;
+        public static int Bending2_Product1_BendingTime;
+        public static int Bending2_Product1_Result;
+
+        // Bending2 Monitor - Product 2 (Work2)
+        public static int Bending2_Product2_QRCode;
+        public static int Bending2_Product2_Load_Present;
+        public static int Bending2_Product2_Load_Upper;
+        public static int Bending2_Product2_Load_Lower;
+        public static int Bending2_Product2_Temp_Present;
+        public static int Bending2_Product2_Temp_Upper;
+        public static int Bending2_Product2_Temp_Lower;
+        public static int Bending2_Product2_BendingTime;
+        public static int Bending2_Product2_Result;
+
+        // Bending2 Monitor - Product 3 (Work3)
+        public static int Bending2_Product3_QRCode;
+        public static int Bending2_Product3_Load_Present;
+        public static int Bending2_Product3_Load_Upper;
+        public static int Bending2_Product3_Load_Lower;
+        public static int Bending2_Product3_Temp_Present;
+        public static int Bending2_Product3_Temp_Upper;
+        public static int Bending2_Product3_Temp_Lower;
+        public static int Bending2_Product3_BendingTime;
+        public static int Bending2_Product3_Result;
+
+        // Bending2 Monitor - Product 4 (Work4)
+        public static int Bending2_Product4_QRCode;
+        public static int Bending2_Product4_Load_Present;
+        public static int Bending2_Product4_Load_Upper;
+        public static int Bending2_Product4_Load_Lower;
+        public static int Bending2_Product4_Temp_Present;
+        public static int Bending2_Product4_Temp_Upper;
+        public static int Bending2_Product4_Temp_Lower;
+        public static int Bending2_Product4_BendingTime;
+        public static int Bending2_Product4_Result;
+
+        // Bending2 Control Signals
+        public static int Bending2_DataReadCommand;
+        public static int Bending2_DataReadComplete;
+
+
+        // Bending3 Monitor
+
+        public static int Bending3_BatchNo;
+
+        // Bending3 Monitor - Product 1 (Work1)
+        public static int Bending3_Product1_QRCode;
+        public static int Bending3_Product1_Load_Present;
+        public static int Bending3_Product1_Load_Upper;
+        public static int Bending3_Product1_Load_Lower;
+        public static int Bending3_Product1_Temp_Present;
+        public static int Bending3_Product1_Temp_Upper;
+        public static int Bending3_Product1_Temp_Lower;
+        public static int Bending3_Product1_BendingTime;
+        public static int Bending3_Product1_Result;
+
+        // Bending3 Monitor - Product 2 (Work2)
+        public static int Bending3_Product2_QRCode;
+        public static int Bending3_Product2_Load_Present;
+        public static int Bending3_Product2_Load_Upper;
+        public static int Bending3_Product2_Load_Lower;
+        public static int Bending3_Product2_Temp_Present;
+        public static int Bending3_Product2_Temp_Upper;
+        public static int Bending3_Product2_Temp_Lower;
+        public static int Bending3_Product2_BendingTime;
+        public static int Bending3_Product2_Result;
+
+        // Bending3 Monitor - Product 3 (Work3)
+        public static int Bending3_Product3_QRCode;
+        public static int Bending3_Product3_Load_Present;
+        public static int Bending3_Product3_Load_Upper;
+        public static int Bending3_Product3_Load_Lower;
+        public static int Bending3_Product3_Temp_Present;
+        public static int Bending3_Product3_Temp_Upper;
+        public static int Bending3_Product3_Temp_Lower;
+        public static int Bending3_Product3_BendingTime;
+        public static int Bending3_Product3_Result;
+
+        // Bending3 Monitor - Product 4 (Work4)
+        public static int Bending3_Product4_QRCode;
+        public static int Bending3_Product4_Load_Present;
+        public static int Bending3_Product4_Load_Upper;
+        public static int Bending3_Product4_Load_Lower;
+        public static int Bending3_Product4_Temp_Present;
+        public static int Bending3_Product4_Temp_Upper;
+        public static int Bending3_Product4_Temp_Lower;
+        public static int Bending3_Product4_BendingTime;
+        public static int Bending3_Product4_Result;
+
+        // Bending3 Control Signals
+        public static int Bending3_DataReadCommand;
+        public static int Bending3_DataReadComplete;
+
+        // PostBendingMonitor
+        public static int PostBending_BatchNo;
+
+        // PostBendingMonitor - Product 1
+        public static int PostBending_Product1_QRCode;
+        public static int PostBending_Product1_X_Present;
+        public static int PostBending_Product1_X_Upper;
+        public static int PostBending_Product1_X_Lower;
+        public static int PostBending_Product1_Y_Present;
+        public static int PostBending_Product1_Y_Upper;
+        public static int PostBending_Product1_Y_Lower;
+        public static int PostBending_Product1_Z_Present;
+        public static int PostBending_Product1_Z_Upper;
+        public static int PostBending_Product1_Z_Lower;
+        public static int PostBending_Product1_W_Present;
+        public static int PostBending_Product1_W_Upper;
+        public static int PostBending_Product1_W_Lower;
+        public static int PostBending_Product1_Result;
+
+        // PostBendingMonitor - Product 2
+        public static int PostBending_Product2_QRCode;
+        public static int PostBending_Product2_X_Present;
+        public static int PostBending_Product2_X_Upper;
+        public static int PostBending_Product2_X_Lower;
+        public static int PostBending_Product2_Y_Present;
+        public static int PostBending_Product2_Y_Upper;
+        public static int PostBending_Product2_Y_Lower;
+        public static int PostBending_Product2_Z_Present;
+        public static int PostBending_Product2_Z_Upper;
+        public static int PostBending_Product2_Z_Lower;
+        public static int PostBending_Product2_W_Present;
+        public static int PostBending_Product2_W_Upper;
+        public static int PostBending_Product2_W_Lower;
+        public static int PostBending_Product2_Result;
+
+        // PostBendingMonitor - Product 3
+        public static int PostBending_Product3_QRCode;
+        public static int PostBending_Product3_X_Present;
+        public static int PostBending_Product3_X_Upper;
+        public static int PostBending_Product3_X_Lower;
+        public static int PostBending_Product3_Y_Present;
+        public static int PostBending_Product3_Y_Upper;
+        public static int PostBending_Product3_Y_Lower;
+        public static int PostBending_Product3_Z_Present;
+        public static int PostBending_Product3_Z_Upper;
+        public static int PostBending_Product3_Z_Lower;
+        public static int PostBending_Product3_W_Present;
+        public static int PostBending_Product3_W_Upper;
+        public static int PostBending_Product3_W_Lower;
+        public static int PostBending_Product3_Result;
+
+        // PostBendingMonitor - Product 4
+        public static int PostBending_Product4_QRCode;
+        public static int PostBending_Product4_X_Present;
+        public static int PostBending_Product4_X_Upper;
+        public static int PostBending_Product4_X_Lower;
+        public static int PostBending_Product4_Y_Present;
+        public static int PostBending_Product4_Y_Upper;
+        public static int PostBending_Product4_Y_Lower;
+        public static int PostBending_Product4_Z_Present;
+        public static int PostBending_Product4_Z_Upper;
+        public static int PostBending_Product4_Z_Lower;
+        public static int PostBending_Product4_W_Present;
+        public static int PostBending_Product4_W_Upper;
+        public static int PostBending_Product4_W_Lower;
+        public static int PostBending_Product4_Result;
 
         /// <summary>
         /// Populates static fields from the root AppConfigSettings.
@@ -783,12 +1004,243 @@ namespace IPCSoftware.Shared.Models
                     BP_InspResult2 = bp.InspResult2;
                     BP_InspResult3 = bp.InspResult3;
                     BP_InspResult4 = bp.InspResult4;
+
+
                 }
 
+                // Bending1Monitor Tag
+                var Bending1Monitor = tags.Bending1Monitor;
+                if (Bending1Monitor != null)
+                {
+                    Bending1_BatchNo = Bending1Monitor.Bending1_BatchNo;
+
+                    // Bending1 Monitor - Product 1 (Work1)
+                    Bending1_Product1_QRCode = Bending1Monitor.Bending1_Product1_QRCode;
+                    Bending1_Product1_Load_Present = Bending1Monitor.Bending1_Product1_Load_Present;
+                    Bending1_Product1_Load_Upper = Bending1Monitor.Bending1_Product1_Load_Upper;
+                    Bending1_Product1_Load_Lower = Bending1Monitor.Bending1_Product1_Load_Lower;
+                    Bending1_Product1_Temp_Present = Bending1Monitor.Bending1_Product1_Temp_Present;
+                    Bending1_Product1_Temp_Upper = Bending1Monitor.Bending1_Product1_Temp_Upper;
+                    Bending1_Product1_Temp_Lower = Bending1Monitor.Bending1_Product1_Temp_Lower;
+                    Bending1_Product1_BendingTime = Bending1Monitor.Bending1_Product1_BendingTime;
+                    Bending1_Product1_Result = Bending1Monitor.Bending1_Product1_Result;
+
+                    // Bending1 Monitor - Product 2 (Work2)
+                    Bending1_Product2_QRCode = Bending1Monitor.Bending1_Product2_QRCode;
+                    Bending1_Product2_Load_Present = Bending1Monitor.Bending1_Product2_Load_Present;
+                    Bending1_Product2_Load_Upper = Bending1Monitor.Bending1_Product2_Load_Upper;
+                    Bending1_Product2_Load_Lower = Bending1Monitor.Bending1_Product2_Load_Lower;
+                    Bending1_Product2_Temp_Present = Bending1Monitor.Bending1_Product2_Temp_Present;
+                    Bending1_Product2_Temp_Upper = Bending1Monitor.Bending1_Product2_Temp_Upper;
+                    Bending1_Product2_Temp_Lower = Bending1Monitor.Bending1_Product2_Temp_Lower;
+                    Bending1_Product2_BendingTime = Bending1Monitor.Bending1_Product2_BendingTime;
+                    Bending1_Product2_Result = Bending1Monitor.Bending1_Product2_Result;
+
+                    // Bending1 Monitor - Product 3 (Work3)
+                    Bending1_Product3_QRCode = Bending1Monitor.Bending1_Product3_QRCode;
+                    Bending1_Product3_Load_Present = Bending1Monitor.Bending1_Product3_Load_Present;
+                    Bending1_Product3_Load_Upper = Bending1Monitor.Bending1_Product3_Load_Upper;
+                    Bending1_Product3_Load_Lower = Bending1Monitor.Bending1_Product3_Load_Lower;
+                    Bending1_Product3_Temp_Present = Bending1Monitor.Bending1_Product3_Temp_Present;
+                    Bending1_Product3_Temp_Upper = Bending1Monitor.Bending1_Product3_Temp_Upper;
+                    Bending1_Product3_Temp_Lower = Bending1Monitor.Bending1_Product3_Temp_Lower;
+                    Bending1_Product3_BendingTime = Bending1Monitor.Bending1_Product3_BendingTime;
+                    Bending1_Product3_Result = Bending1Monitor.Bending1_Product3_Result;
+
+                    // Bending1 Monitor - Product 4 (Work4)
+                    Bending1_Product4_QRCode = Bending1Monitor.Bending1_Product4_QRCode;
+                    Bending1_Product4_Load_Present = Bending1Monitor.Bending1_Product4_Load_Present;
+                    Bending1_Product4_Load_Upper = Bending1Monitor.Bending1_Product4_Load_Upper;
+                    Bending1_Product4_Load_Lower = Bending1Monitor.Bending1_Product4_Load_Lower;
+                    Bending1_Product4_Temp_Present = Bending1Monitor.Bending1_Product4_Temp_Present;
+                    Bending1_Product4_Temp_Upper = Bending1Monitor.Bending1_Product4_Temp_Upper;
+                    Bending1_Product4_Temp_Lower = Bending1Monitor.Bending1_Product4_Temp_Lower;
+                    Bending1_Product4_BendingTime = Bending1Monitor.Bending1_Product4_BendingTime;
+                    Bending1_Product4_Result = Bending1Monitor.Bending1_Product4_Result;
+
+                    
+                    
+                }
+
+                // Bending2Monitor 
+
+                var Bending2Monitor = tags.Bending2Monitor;
+                if (Bending2Monitor != null)
+                {
+                    Bending2_BatchNo = Bending2Monitor.Bending2_BatchNo;
+                    Bending2_Product1_QRCode = Bending2Monitor.Bending2_Product1_QRCode;
+                    Bending2_Product1_Load_Present = Bending2Monitor.Bending2_Product1_Load_Present;
+                    Bending2_Product1_Load_Upper = Bending2Monitor.Bending2_Product1_Load_Upper;
+                    Bending2_Product1_Load_Lower = Bending2Monitor.Bending2_Product1_Load_Lower;
+                    Bending2_Product1_Temp_Present = Bending2Monitor.Bending2_Product1_Temp_Present;
+                    Bending2_Product1_Temp_Upper = Bending2Monitor.Bending2_Product1_Temp_Upper;
+                    Bending2_Product1_Temp_Lower = Bending2Monitor.Bending2_Product1_Temp_Lower;
+                    Bending2_Product1_BendingTime = Bending2Monitor.Bending2_Product1_BendingTime;
+                    Bending2_Product1_Result = Bending2Monitor.Bending2_Product1_Result;
+
+                    // Bending2 Monitor - Product 2 (Work2)
+                    Bending2_Product2_QRCode = Bending2Monitor.Bending2_Product2_QRCode;
+                    Bending2_Product2_Load_Present = Bending2Monitor.Bending2_Product2_Load_Present;
+                    Bending2_Product2_Load_Upper = Bending2Monitor.Bending2_Product2_Load_Upper;
+                    Bending2_Product2_Load_Lower = Bending2Monitor.Bending2_Product2_Load_Lower;
+                    Bending2_Product2_Temp_Present = Bending2Monitor.Bending2_Product2_Temp_Present;
+                    Bending2_Product2_Temp_Upper = Bending2Monitor.Bending2_Product2_Temp_Upper;
+                    Bending2_Product2_Temp_Lower = Bending2Monitor.Bending2_Product2_Temp_Lower;
+                    Bending2_Product2_BendingTime = Bending2Monitor.Bending2_Product2_BendingTime;
+                    Bending2_Product2_Result = Bending2Monitor.Bending2_Product2_Result;
+
+                    // Bending2 Monitor - Product 3 (Work3)
+                    Bending2_Product3_QRCode = Bending2Monitor.Bending2_Product3_QRCode;
+                    Bending2_Product3_Load_Present = Bending2Monitor.Bending2_Product3_Load_Present;
+                    Bending2_Product3_Load_Upper = Bending2Monitor.Bending2_Product3_Load_Upper;
+                    Bending2_Product3_Load_Lower = Bending2Monitor.Bending2_Product3_Load_Lower;
+                    Bending2_Product3_Temp_Present = Bending2Monitor.Bending2_Product3_Temp_Present;
+                    Bending2_Product3_Temp_Upper = Bending2Monitor.Bending2_Product3_Temp_Upper;
+                    Bending2_Product3_Temp_Lower = Bending2Monitor.Bending2_Product3_Temp_Lower;
+                    Bending2_Product3_BendingTime = Bending2Monitor.Bending2_Product3_BendingTime;
+                    Bending2_Product3_Result = Bending2Monitor.Bending2_Product3_Result;
+
+                    // Bending2 Monitor - Product 4 (Work4)
+                    Bending2_Product4_QRCode = Bending2Monitor.Bending2_Product4_QRCode;
+                    Bending2_Product4_Load_Present = Bending2Monitor.Bending2_Product4_Load_Present;
+                    Bending2_Product4_Load_Upper = Bending2Monitor.Bending2_Product4_Load_Upper;
+                    Bending2_Product4_Load_Lower = Bending2Monitor.Bending2_Product4_Load_Lower;
+                    Bending2_Product4_Temp_Present = Bending2Monitor.Bending2_Product4_Temp_Present;
+                    Bending2_Product4_Temp_Upper = Bending2Monitor.Bending2_Product4_Temp_Upper;
+                    Bending2_Product4_Temp_Lower = Bending2Monitor.Bending2_Product4_Temp_Lower;
+                    Bending2_Product4_BendingTime = Bending2Monitor.Bending2_Product4_BendingTime;
+                    Bending2_Product4_Result = Bending2Monitor.Bending2_Product4_Result;
+
+                    
+                }
+
+                // Bending3Monitor
+
+                var Bending3Monitor = tags.Bending3Monitor;
+                if (Bending3Monitor != null)
+                {
+                    Bending3_BatchNo = Bending3Monitor.Bending3_BatchNo;
+                    Bending3_Product1_QRCode = Bending3Monitor.Bending3_Product1_QRCode;
+                    Bending3_Product1_Load_Present = Bending3Monitor.Bending3_Product1_Load_Present;
+                    Bending3_Product1_Load_Upper = Bending3Monitor.Bending3_Product1_Load_Upper;
+                    Bending3_Product1_Load_Lower = Bending3Monitor.Bending3_Product1_Load_Lower;
+                    Bending3_Product1_Temp_Present = Bending3Monitor.Bending3_Product1_Temp_Present;
+                    Bending3_Product1_Temp_Upper = Bending3Monitor.Bending3_Product1_Temp_Upper;
+                    Bending3_Product1_Temp_Lower = Bending3Monitor.Bending3_Product1_Temp_Lower;
+                    Bending3_Product1_BendingTime = Bending3Monitor.Bending3_Product1_BendingTime;
+                    Bending3_Product1_Result = Bending3Monitor.Bending3_Product1_Result;
+
+                    // Bending3 Monitor - Product 2 (Work2)
+                    Bending3_Product2_QRCode = Bending3Monitor.Bending3_Product2_QRCode;
+                    Bending3_Product2_Load_Present = Bending3Monitor.Bending3_Product2_Load_Present;
+                    Bending3_Product2_Load_Upper = Bending3Monitor.Bending3_Product2_Load_Upper;
+                    Bending3_Product2_Load_Lower = Bending3Monitor.Bending3_Product2_Load_Lower;
+                    Bending3_Product2_Temp_Present = Bending3Monitor.Bending3_Product2_Temp_Present;
+                    Bending3_Product2_Temp_Upper = Bending3Monitor.Bending3_Product2_Temp_Upper;
+                    Bending3_Product2_Temp_Lower = Bending3Monitor.Bending3_Product2_Temp_Lower;
+                    Bending3_Product2_BendingTime = Bending3Monitor.Bending3_Product2_BendingTime;
+                    Bending3_Product2_Result = Bending3Monitor.Bending3_Product2_Result;
+
+                    // Bending3 Monitor - Product 3 (Work3)
+                    Bending3_Product3_QRCode = Bending3Monitor.Bending3_Product3_QRCode;
+                    Bending3_Product3_Load_Present = Bending3Monitor.Bending3_Product3_Load_Present;
+                    Bending3_Product3_Load_Upper = Bending3Monitor.Bending3_Product3_Load_Upper;
+                    Bending3_Product3_Load_Lower = Bending3Monitor.Bending3_Product3_Load_Lower;
+                    Bending3_Product3_Temp_Present = Bending3Monitor.Bending3_Product3_Temp_Present;
+                    Bending3_Product3_Temp_Upper = Bending3Monitor.Bending3_Product3_Temp_Upper;
+                    Bending3_Product3_Temp_Lower = Bending3Monitor.Bending3_Product3_Temp_Lower;
+                    Bending3_Product3_BendingTime = Bending3Monitor.Bending3_Product3_BendingTime;
+                    Bending3_Product3_Result = Bending3Monitor.Bending3_Product3_Result;
+
+                    // Bending3 Monitor - Product 4 (Work4)
+                    Bending3_Product4_QRCode = Bending3Monitor.Bending3_Product4_QRCode;
+                    Bending3_Product4_Load_Present = Bending3Monitor.Bending3_Product4_Load_Present;
+                    Bending3_Product4_Load_Upper = Bending3Monitor.Bending3_Product4_Load_Upper;
+                    Bending3_Product4_Load_Lower = Bending3Monitor.Bending3_Product4_Load_Lower;
+                    Bending3_Product4_Temp_Present = Bending3Monitor.Bending3_Product4_Temp_Present;
+                    Bending3_Product4_Temp_Upper = Bending3Monitor.Bending3_Product4_Temp_Upper;
+                    Bending3_Product4_Temp_Lower = Bending3Monitor.Bending3_Product4_Temp_Lower;
+                    Bending3_Product4_BendingTime = Bending3Monitor.Bending3_Product4_BendingTime;
+                    Bending3_Product4_Result = Bending3Monitor.Bending3_Product4_Result;
+
+
+                }
+
+                //PostBendingMonitor
+
+                var PostBendingMonitor = tags.PostBending;
+                if (PostBendingMonitor != null)
+                {
+                    PostBending_BatchNo = PostBendingMonitor.BatchNo;
+
+                    // PostBendingMonitor - Product 1
+                    PostBending_Product1_QRCode = PostBendingMonitor.Product1_QRCode;
+                    PostBending_Product1_X_Present = PostBendingMonitor.Product1_X_Present;
+                    PostBending_Product1_X_Upper = PostBendingMonitor.Product1_X_Upper;
+                    PostBending_Product1_X_Lower = PostBendingMonitor.Product1_X_Lower;
+                    PostBending_Product1_Y_Present = PostBendingMonitor.Product1_Y_Present;
+                    PostBending_Product1_Y_Upper = PostBendingMonitor.Product1_Y_Upper;
+                    PostBending_Product1_Y_Lower = PostBendingMonitor.Product1_Y_Lower;
+                    PostBending_Product1_Z_Present = PostBendingMonitor.Product1_Z_Present;
+                    PostBending_Product1_Z_Upper = PostBendingMonitor.Product1_Z_Upper;
+                    PostBending_Product1_Z_Lower = PostBendingMonitor.Product1_Z_Lower;
+                    PostBending_Product1_W_Present = PostBendingMonitor.Product1_W_Present;
+                    PostBending_Product1_W_Upper = PostBendingMonitor.Product1_W_Upper;
+                    PostBending_Product1_W_Lower = PostBendingMonitor.Product1_W_Lower;
+                    PostBending_Product1_Result = PostBendingMonitor.Product1_Result;
+
+                    // PostBendingMonitor - Product 2
+                    PostBending_Product2_QRCode = PostBendingMonitor.Product2_QRCode;
+                    PostBending_Product2_X_Present = PostBendingMonitor.Product2_X_Present;
+                    PostBending_Product2_X_Upper = PostBendingMonitor.Product2_X_Upper;
+                    PostBending_Product2_X_Lower = PostBendingMonitor.Product2_X_Lower;
+                    PostBending_Product2_Y_Present = PostBendingMonitor.Product2_Y_Present;
+                    PostBending_Product2_Y_Upper = PostBendingMonitor.Product2_Y_Upper;
+                    PostBending_Product2_Y_Lower = PostBendingMonitor.Product2_Y_Lower;
+                    PostBending_Product2_Z_Present = PostBendingMonitor.Product2_Z_Present;
+                    PostBending_Product2_Z_Upper = PostBendingMonitor.Product2_Z_Upper;
+                    PostBending_Product2_Z_Lower = PostBendingMonitor.Product2_Z_Lower;
+                    PostBending_Product2_W_Present = PostBendingMonitor.Product2_W_Present;
+                    PostBending_Product2_W_Upper = PostBendingMonitor.Product2_W_Upper;
+                    PostBending_Product2_W_Lower = PostBendingMonitor.Product2_W_Lower;
+                    PostBending_Product2_Result = PostBendingMonitor.Product2_Result;
+
+                    // PostBendingMonitor - Product 3
+                    PostBending_Product3_QRCode = PostBendingMonitor.Product3_QRCode;
+                    PostBending_Product3_X_Present = PostBendingMonitor.Product3_X_Present;
+                    PostBending_Product3_X_Upper = PostBendingMonitor.Product3_X_Upper;
+                    PostBending_Product3_X_Lower = PostBendingMonitor.Product3_X_Lower;
+                    PostBending_Product3_Y_Present = PostBendingMonitor.Product3_Y_Present;
+                    PostBending_Product3_Y_Upper = PostBendingMonitor.Product3_Y_Upper;
+                    PostBending_Product3_Y_Lower = PostBendingMonitor.Product3_Y_Lower;
+                    PostBending_Product3_Z_Present = PostBendingMonitor.Product3_Z_Present;
+                    PostBending_Product3_Z_Upper = PostBendingMonitor.Product3_Z_Upper;
+                    PostBending_Product3_Z_Lower = PostBendingMonitor.Product3_Z_Lower;
+                    PostBending_Product3_W_Present = PostBendingMonitor.Product3_W_Present;
+                    PostBending_Product3_W_Upper = PostBendingMonitor.Product3_W_Upper;
+                    PostBending_Product3_W_Lower = PostBendingMonitor.Product3_W_Lower;
+                    PostBending_Product3_Result = PostBendingMonitor.Product3_Result;
+
+                    // PostBendingMonitor - Product 4
+                    PostBending_Product4_QRCode = PostBendingMonitor.Product4_QRCode;
+                    PostBending_Product4_X_Present = PostBendingMonitor.Product4_X_Present;
+                    PostBending_Product4_X_Upper = PostBendingMonitor.Product4_X_Upper;
+                    PostBending_Product4_X_Lower = PostBendingMonitor.Product4_X_Lower;
+                    PostBending_Product4_Y_Present = PostBendingMonitor.Product4_Y_Present;
+                    PostBending_Product4_Y_Upper = PostBendingMonitor.Product4_Y_Upper;
+                    PostBending_Product4_Y_Lower = PostBendingMonitor.Product4_Y_Lower;
+                    PostBending_Product4_Z_Present = PostBendingMonitor.Product4_Z_Present;
+                    PostBending_Product4_Z_Upper = PostBendingMonitor.Product4_Z_Upper;
+                    PostBending_Product4_Z_Lower = PostBendingMonitor.Product4_Z_Lower;
+                    PostBending_Product4_W_Present = PostBendingMonitor.Product4_W_Present;
+                    PostBending_Product4_W_Upper = PostBendingMonitor.Product4_W_Upper;
+                    PostBending_Product4_W_Lower = PostBendingMonitor.Product4_W_Lower;
+                    PostBending_Product4_Result = PostBendingMonitor.Product4_Result;
+                }
             }
         }
-    }
 
+    }
 }
 
 

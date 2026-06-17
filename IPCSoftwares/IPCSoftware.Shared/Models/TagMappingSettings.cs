@@ -18,6 +18,10 @@ namespace IPCSoftware.Shared.Models
         public ServoTags Servo { get; set; } = new();
         public External ExternalTags { get; set; } = new();
         public Dashboard2 Dashboard2 { get; set; } = new();
+        public Bending1Monitor Bending1Monitor { get; set; } = new();
+        public Bending2Monitor Bending2Monitor { get; set; } = new();
+        public Bending3Monitor Bending3Monitor { get; set; } = new();
+        public PostBendingMonitor PostBending { get; set; } = new();
         public BendingProcessTags BendingProcess { get; set; } = new();
     }
 
@@ -349,6 +353,139 @@ namespace IPCSoftware.Shared.Models
         public int l4Bending3Force { get; set; }
     }
 
+    public class Bending1Monitor
+    {
+        public int Bending1_BatchNo { get; set; }
+        public int Bending1_Product1_QRCode { get; set; }
+        public int Bending1_Product1_Load_Present { get; set; }
+        public int Bending1_Product1_Load_Upper { get; set; }
+        public int Bending1_Product1_Load_Lower { get; set; }
+        public int Bending1_Product1_Temp_Present { get; set; }
+        public int Bending1_Product1_Temp_Upper { get; set; }
+        public int Bending1_Product1_Temp_Lower { get; set; }
+        public int Bending1_Product1_BendingTime { get; set; }
+        public int Bending1_Product1_Result { get; set; }
+        public int Bending1_Product2_QRCode { get; set; }
+        public int Bending1_Product2_Load_Present { get; set; }
+        public int Bending1_Product2_Load_Upper { get; set; }
+        public int Bending1_Product2_Load_Lower { get; set; }
+        public int Bending1_Product2_Temp_Present { get; set; }
+        public int Bending1_Product2_Temp_Upper { get; set; }
+        public int Bending1_Product2_Temp_Lower { get; set; }
+        public int Bending1_Product2_BendingTime { get; set; }
+        public int Bending1_Product2_Result { get; set; }
+        public int Bending1_Product3_QRCode { get; set; }
+        public int Bending1_Product3_Load_Present { get; set; }
+        public int Bending1_Product3_Load_Upper { get; set; }
+        public int Bending1_Product3_Load_Lower { get; set; }
+        public int Bending1_Product3_Temp_Present { get; set; }
+        public int Bending1_Product3_Temp_Upper { get; set; }
+        public int Bending1_Product3_Temp_Lower { get; set; }
+        public int Bending1_Product3_BendingTime { get; set; }
+        public int Bending1_Product3_Result { get; set; }
+        public int Bending1_Product4_QRCode { get; set; }
+        public int Bending1_Product4_Load_Present { get; set; }
+        public int Bending1_Product4_Load_Upper { get; set; }
+        public int Bending1_Product4_Load_Lower { get; set; }
+        public int Bending1_Product4_Temp_Present { get; set; }
+        public int Bending1_Product4_Temp_Upper { get; set; }
+        public int Bending1_Product4_Temp_Lower { get; set; }
+        public int Bending1_Product4_BendingTime { get; set; }
+        public int Bending1_Product4_Result { get; set; }
+        
+
+
+    }
+
+    public class Bending2Monitor
+    {
+        public int Bending2_BatchNo { get; set; }
+        public int Bending2_Product1_QRCode { get; set; }
+        public int Bending2_Product1_Load_Present { get; set; }
+        public int Bending2_Product1_Load_Upper { get; set; }
+        public int Bending2_Product1_Load_Lower { get; set; }
+        public int Bending2_Product1_Temp_Present { get; set; }
+        public int Bending2_Product1_Temp_Upper { get; set; }
+        public int Bending2_Product1_Temp_Lower { get; set; }
+        public int Bending2_Product1_BendingTime { get; set; }
+        public int Bending2_Product1_Result { get; set; }
+        public int Bending2_Product2_QRCode { get; set; }
+        public int Bending2_Product2_Load_Present { get; set; }
+        public int Bending2_Product2_Load_Upper { get; set; }
+        public int Bending2_Product2_Load_Lower { get; set; }
+        public int Bending2_Product2_Temp_Present { get; set; }
+        public int Bending2_Product2_Temp_Upper { get; set; }
+        public int Bending2_Product2_Temp_Lower { get; set; }
+        public int Bending2_Product2_BendingTime { get; set; }
+        public int Bending2_Product2_Result { get; set; }
+        public int Bending2_Product3_QRCode { get; set; }
+        public int Bending2_Product3_Load_Present { get; set; }
+        public int Bending2_Product3_Load_Upper { get; set; }
+        public int Bending2_Product3_Load_Lower { get; set; }
+        public int Bending2_Product3_Temp_Present { get; set; }
+        public int Bending2_Product3_Temp_Upper { get; set; }
+        public int Bending2_Product3_Temp_Lower { get; set; }
+        public int Bending2_Product3_BendingTime { get; set; }
+        public int Bending2_Product3_Result { get; set; }
+        public int Bending2_Product4_QRCode { get; set; }
+        public int Bending2_Product4_Load_Present { get; set; }
+        public int Bending2_Product4_Load_Upper { get; set; }
+        public int Bending2_Product4_Load_Lower { get; set; }
+        public int Bending2_Product4_Temp_Present { get; set; }
+        public int Bending2_Product4_Temp_Upper { get; set; }
+        public int Bending2_Product4_Temp_Lower { get; set; }
+        public int Bending2_Product4_BendingTime { get; set; }
+        public int Bending2_Product4_Result { get; set; }
+        
+    }
+
+    public class Bending3Monitor
+    {
+        public int Bending3_BatchNo { get; set; }
+        public int Bending3_Product1_QRCode { get; set; }
+        public int Bending3_Product1_Load_Present { get; set; }
+        public int Bending3_Product1_Load_Upper { get; set; }
+        public int Bending3_Product1_Load_Lower { get; set; }
+        public int Bending3_Product1_Temp_Present { get; set; }
+        public int Bending3_Product1_Temp_Upper { get; set; }
+        public int Bending3_Product1_Temp_Lower { get; set; }
+        public int Bending3_Product1_BendingTime { get; set; }
+        public int Bending3_Product1_Result { get; set; }
+
+        public int Bending3_Product2_QRCode { get; set; }
+        public int Bending3_Product2_Load_Present { get; set; }
+        public int Bending3_Product2_Load_Upper { get; set; }
+        public int Bending3_Product2_Load_Lower { get; set; }
+        public int Bending3_Product2_Temp_Present { get; set; }
+        public int Bending3_Product2_Temp_Upper { get; set; }
+        public int Bending3_Product2_Temp_Lower { get; set; }
+        public int Bending3_Product2_BendingTime { get; set; }
+        public int Bending3_Product2_Result { get; set; }
+
+        public int Bending3_Product3_QRCode { get; set; }
+        public int Bending3_Product3_Load_Present { get; set; }
+        public int Bending3_Product3_Load_Upper { get; set; }
+        public int Bending3_Product3_Load_Lower { get; set; }
+        public int Bending3_Product3_Temp_Present { get; set; }
+        public int Bending3_Product3_Temp_Upper { get; set; }
+        public int Bending3_Product3_Temp_Lower { get; set; }
+        public int Bending3_Product3_BendingTime { get; set; }
+        public int Bending3_Product3_Result { get; set; }
+
+        public int Bending3_Product4_QRCode { get; set; }
+        public int Bending3_Product4_Load_Present { get; set; }
+        public int Bending3_Product4_Load_Upper { get; set; }
+        public int Bending3_Product4_Load_Lower { get; set; }
+        public int Bending3_Product4_Temp_Present { get; set; }
+        public int Bending3_Product4_Temp_Upper { get; set; }
+        public int Bending3_Product4_Temp_Lower { get; set; }
+        public int Bending3_Product4_BendingTime { get; set; }
+        public int Bending3_Product4_Result { get; set; }
+
+        
+    }
+
+
     public class BendingProcessTags
     {
         // Trigger signals
@@ -437,6 +574,75 @@ namespace IPCSoftware.Shared.Models
         public int InspResult2 { get; set; }
         public int InspResult3 { get; set; }
         public int InspResult4 { get; set; }
+    }
+
+    public class PostBendingMonitor
+    {
+        public int BatchNo { get; set; }
+
+        // Product 1
+        public int Product1_QRCode { get; set; }
+        public int Product1_X_Present { get; set; }
+        public int Product1_X_Upper { get; set; }
+        public int Product1_X_Lower { get; set; }
+        public int Product1_Y_Present { get; set; }
+        public int Product1_Y_Upper { get; set; }
+        public int Product1_Y_Lower { get; set; }
+        public int Product1_Z_Present { get; set; }
+        public int Product1_Z_Upper { get; set; }
+        public int Product1_Z_Lower { get; set; }
+        public int Product1_W_Present { get; set; }
+        public int Product1_W_Upper { get; set; }
+        public int Product1_W_Lower { get; set; }
+        public int Product1_Result { get; set; }
+
+        // Product 2
+        public int Product2_QRCode { get; set; }
+        public int Product2_X_Present { get; set; }
+        public int Product2_X_Upper { get; set; }
+        public int Product2_X_Lower { get; set; }
+        public int Product2_Y_Present { get; set; }
+        public int Product2_Y_Upper { get; set; }
+        public int Product2_Y_Lower { get; set; }
+        public int Product2_Z_Present { get; set; }
+        public int Product2_Z_Upper { get; set; }
+        public int Product2_Z_Lower { get; set; }
+        public int Product2_W_Present { get; set; }
+        public int Product2_W_Upper { get; set; }
+        public int Product2_W_Lower { get; set; }
+        public int Product2_Result { get; set; }
+
+        // Product 3
+        public int Product3_QRCode { get; set; }
+        public int Product3_X_Present { get; set; }
+        public int Product3_X_Upper { get; set; }
+        public int Product3_X_Lower { get; set; }
+        public int Product3_Y_Present { get; set; }
+        public int Product3_Y_Upper { get; set; }
+        public int Product3_Y_Lower { get; set; }
+        public int Product3_Z_Present { get; set; }
+        public int Product3_Z_Upper { get; set; }
+        public int Product3_Z_Lower { get; set; }
+        public int Product3_W_Present { get; set; }
+        public int Product3_W_Upper { get; set; }
+        public int Product3_W_Lower { get; set; }
+        public int Product3_Result { get; set; }
+
+        // Product 4
+        public int Product4_QRCode { get; set; }
+        public int Product4_X_Present { get; set; }
+        public int Product4_X_Upper { get; set; }
+        public int Product4_X_Lower { get; set; }
+        public int Product4_Y_Present { get; set; }
+        public int Product4_Y_Upper { get; set; }
+        public int Product4_Y_Lower { get; set; }
+        public int Product4_Z_Present { get; set; }
+        public int Product4_Z_Upper { get; set; }
+        public int Product4_Z_Lower { get; set; }
+        public int Product4_W_Present { get; set; }
+        public int Product4_W_Upper { get; set; }
+        public int Product4_W_Lower { get; set; }
+        public int Product4_Result { get; set; }
     }
 
 }
