@@ -213,9 +213,10 @@ namespace IPCSoftware.Engine
                     return new ResponsePackage
                     {
                         ResponseId = 4,
-                        //Parameters = oeeCalculate
-                        Parameters= new Dictionary<int, object> { { 4, _oee.OeeResult } }
-                    };
+                        // Parameters = oeeCalculate
+                        Parameters =  _oee.Calculate(latestValueNew)
+                        // Parameters = new Dictionary<int, object> { { 4, _oee.OeeResult } }
+                    };            
                 }
 
                 //-----------------------

@@ -1157,126 +1157,126 @@ namespace IPCSoftware.CoreService.Bending.Service
         {
             PostBendingMonitorModel item = new PostBendingMonitorModel
             {
-                BatchNo = latestValueNew.TryGetValue(29, out var batchNo) ? batchNo.ToString() : "NA",
+                BatchNo = GetString(ConstantValues.PostBending_BatchNo),
                 Product1 = new PostBendingMonitorRow
                 {
-                    Product = latestValueNew.TryGetValue(29, out var p1Prodv) ? p1Prodv.ToString() : "NA",
-                    QRCode = latestValueNew.TryGetValue(29, out var p1QRv) ? p1QRv.ToString() : "NA",
+                    Product = GetString(ConstantValues.PostBending_Product1_QRCode),
+                    QRCode = GetString(ConstantValues.PostBending_Product1_QRCode),
                     X = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p1XUv) ? (double.TryParse(p1XUv.ToString(), out var p1XUr) ? p1XUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p1XPv) ? (double.TryParse(p1XPv.ToString(), out var p1XPr) ? p1XPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p1XLv) ? (double.TryParse(p1XLv.ToString(), out var p1XLr) ? p1XLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product1_X_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product1_X_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product1_X_Lower)
                     },
                     Y = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p1YUv) ? (double.TryParse(p1YUv.ToString(), out var p1YUr) ? p1YUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p1YPv) ? (double.TryParse(p1YPv.ToString(), out var p1YPr) ? p1YPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p1YLv) ? (double.TryParse(p1YLv.ToString(), out var p1YLr) ? p1YLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product1_Y_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product1_Y_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product1_Y_Lower)
                     },
                     Z = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p1ZUv) ? (double.TryParse(p1ZUv.ToString(), out var p1ZUr) ? p1ZUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p1ZPv) ? (double.TryParse(p1ZPv.ToString(), out var p1ZPr) ? p1ZPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p1ZLv) ? (double.TryParse(p1ZLv.ToString(), out var p1ZLr) ? p1ZLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product1_Z_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product1_Z_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product1_Z_Lower)
                     },
                     W = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p1WUv) ? (double.TryParse(p1WUv.ToString(), out var p1WUr) ? p1WUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p1WPv) ? (double.TryParse(p1WPv.ToString(), out var p1WPr) ? p1WPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p1WLv) ? (double.TryParse(p1WLv.ToString(), out var p1WLr) ? p1WLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product1_W_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product1_W_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product1_W_Lower)
                     },
-                    Result = latestValueNew.TryGetValue(29, out var p1Resp) ? (bool.TryParse(p1Resp.ToString(), out var p1Resr) ? p1Resr : false) : false
+                    Result = GetBool(ConstantValues.PostBending_Product1_Result)
                 },
                 Product2 = new PostBendingMonitorRow
                 {
-                    Product = latestValueNew.TryGetValue(29, out var p2Prodv) ? p2Prodv.ToString() : "NA",
-                    QRCode = latestValueNew.TryGetValue(29, out var p2QRv) ? p2QRv.ToString() : "NA",
+                    Product = GetString(ConstantValues.PostBending_Product2_QRCode),
+                    QRCode = GetString(ConstantValues.PostBending_Product2_QRCode),
                     X = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p2XUv) ? (double.TryParse(p2XUv.ToString(), out var p2XUr) ? p2XUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p2XPv) ? (double.TryParse(p2XPv.ToString(), out var p2XPr) ? p2XPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p2XLv) ? (double.TryParse(p2XLv.ToString(), out var p2XLr) ? p2XLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product2_X_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product2_X_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product2_X_Lower)
                     },
                     Y = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p2YUv) ? (double.TryParse(p2YUv.ToString(), out var p2YUr) ? p2YUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p2YPv) ? (double.TryParse(p2YPv.ToString(), out var p2YPr) ? p2YPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p2YLv) ? (double.TryParse(p2YLv.ToString(), out var p2YLr) ? p2YLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product2_Y_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product2_Y_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product2_Y_Lower)
                     },
                     Z = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p2ZUv) ? (double.TryParse(p2ZUv.ToString(), out var p2ZUr) ? p2ZUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p2ZPv) ? (double.TryParse(p2ZPv.ToString(), out var p2ZPr) ? p2ZPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p2ZLv) ? (double.TryParse(p2ZLv.ToString(), out var p2ZLr) ? p2ZLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product2_Z_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product2_Z_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product2_Z_Lower)
                     },
                     W = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p2WUv) ? (double.TryParse(p2WUv.ToString(), out var p2WUr) ? p2WUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p2WPv) ? (double.TryParse(p2WPv.ToString(), out var p2WPr) ? p2WPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p2WLv) ? (double.TryParse(p2WLv.ToString(), out var p2WLr) ? p2WLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product2_W_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product2_W_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product2_W_Lower)
                     },
-                    Result = latestValueNew.TryGetValue(29, out var p2Resv) ? (bool.TryParse(p2Resv.ToString(), out var p2Resr) ? p2Resr : false) : false
+                    Result = GetBool(ConstantValues.PostBending_Product2_Result)
                 },
                 Product3 = new PostBendingMonitorRow
                 {
-                    Product = latestValueNew.TryGetValue(29, out var p3Prodv) ? p3Prodv.ToString() : "NA",
-                    QRCode = latestValueNew.TryGetValue(29, out var p3QRv) ? p3QRv.ToString() : "NA",
+                    Product = GetString(ConstantValues.PostBending_Product3_QRCode),
+                    QRCode = GetString(ConstantValues.PostBending_Product3_QRCode),
                     X = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p3XUv) ? (double.TryParse(p3XUv.ToString(), out var p3XUr) ? p3XUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p3XPv) ? (double.TryParse(p3XPv.ToString(), out var p3XPr) ? p3XPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p3XLv) ? (double.TryParse(p3XLv.ToString(), out var p3XLr) ? p3XLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product3_X_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product3_X_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product3_X_Lower)
                     },
                     Y = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p3YUv) ? (double.TryParse(p3YUv.ToString(), out var p3YUr) ? p3YUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p3YPv) ? (double.TryParse(p3YPv.ToString(), out var p3YPr) ? p3YPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p3YLv) ? (double.TryParse(p3YLv.ToString(), out var p3YLr) ? p3YLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product3_Y_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product3_Y_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product3_Y_Lower)
                     },
                     Z = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p3ZUv) ? (double.TryParse(p3ZUv.ToString(), out var p3ZUr) ? p3ZUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p3ZPv) ? (double.TryParse(p3ZPv.ToString(), out var p3ZPr) ? p3ZPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p3ZLv) ? (double.TryParse(p3ZLv.ToString(), out var p3ZLr) ? p3ZLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product3_Z_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product3_Z_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product3_Z_Lower)
                     },
                     W = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p3WUv) ? (double.TryParse(p3WUv.ToString(), out var p3WUr) ? p3WUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p3WPv) ? (double.TryParse(p3WPv.ToString(), out var p3WPr) ? p3WPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p3WLv) ? (double.TryParse(p3WLv.ToString(), out var p3WLr) ? p3WLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product3_W_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product3_W_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product3_W_Lower)
                     },
-                    Result = latestValueNew.TryGetValue(29, out var p3Resv) ? (bool.TryParse(p3Resv.ToString(), out var p3Resr) ? p3Resr : false) : false
+                    Result = GetBool(ConstantValues.PostBending_Product3_Result)
                 },
                 Product4 = new PostBendingMonitorRow
                 {
-                    Product = latestValueNew.TryGetValue(29, out var p4Prodv) ? p4Prodv.ToString() : "NA",
-                    QRCode = latestValueNew.TryGetValue(29, out var p4QRv) ? p4QRv.ToString() : "NA",
+                    Product = GetString(ConstantValues.PostBending_Product4_QRCode),
+                    QRCode = GetString(ConstantValues.PostBending_Product4_QRCode),
                     X = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p4XUv) ? (double.TryParse(p4XUv.ToString(), out var p4XUr) ? p4XUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p4XPv) ? (double.TryParse(p4XPv.ToString(), out var p4XPr) ? p4XPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p4XLv) ? (double.TryParse(p4XLv.ToString(), out var p4XLr) ? p4XLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product4_X_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product4_X_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product4_X_Lower)
                     },
                     Y = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p4YUv) ? (double.TryParse(p4YUv.ToString(), out var p4YUr) ? p4YUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p4YPv) ? (double.TryParse(p4YPv.ToString(), out var p4YPr) ? p4YPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p4YLv) ? (double.TryParse(p4YLv.ToString(), out var p4YLr) ? p4YLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product4_Y_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product4_Y_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product4_Y_Lower)
                     },
                     Z = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p4ZUv) ? (double.TryParse(p4ZUv.ToString(), out var p4ZUr) ? p4ZUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p4ZPv) ? (double.TryParse(p4ZPv.ToString(), out var p4ZPr) ? p4ZPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p4ZLv) ? (double.TryParse(p4ZLv.ToString(), out var p4ZLr) ? p4ZLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product4_Z_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product4_Z_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product4_Z_Lower)
                     },
                     W = new PostParameterLImitValues
                     {
-                        UpperLimit = latestValueNew.TryGetValue(29, out var p4WUv) ? (double.TryParse(p4WUv.ToString(), out var p4WUr) ? p4WUr : 0) : 0,
-                        PresentValue = latestValueNew.TryGetValue(29, out var p4WPv) ? (double.TryParse(p4WPv.ToString(), out var p4WPr) ? p4WPr : 0) : 0,
-                        LowerLimit = latestValueNew.TryGetValue(29, out var p4WLv) ? (double.TryParse(p4WLv.ToString(), out var p4WLr) ? p4WLr : 0) : 0
+                        UpperLimit = GetFloat(ConstantValues.PostBending_Product4_W_Upper),
+                        PresentValue = GetFloat(ConstantValues.PostBending_Product4_W_Present),
+                        LowerLimit = GetFloat(ConstantValues.PostBending_Product4_W_Lower)
                     },
-                    Result = latestValueNew.TryGetValue(29, out var p4Resv) ? (bool.TryParse(p4Resv.ToString(), out var p4Resr) ? p4Resr : false) : false
+                    Result = GetBool(ConstantValues.PostBending_Product4_Result)
                 }
             };
 
@@ -1285,7 +1285,7 @@ namespace IPCSoftware.CoreService.Bending.Service
                 ResponseId = request.RequestId,
                 Parameters = new Dictionary<int, object>()
                 {
-                    { 0, item }
+                    {request.RequestId, item }
                 }
             });
         }
