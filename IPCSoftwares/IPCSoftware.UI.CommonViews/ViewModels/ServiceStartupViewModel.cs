@@ -46,9 +46,9 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
     /// </summary>
     public class ServiceStartupViewModel : BaseViewModel, IDisposable
     {
-        private readonly SafePoller _servicePoller;
+        private readonly SafePollerEx _servicePoller;
         private readonly string TARGET_SERVICE_NAME;                      //Added by Rishabh -date - 05-05-2026                 
-
+        private readonly CoreClient _coreClient;
         //private RelayCommand _startServiceCommand;
         //private RelayCommand _stopServiceCommand;
 
@@ -80,17 +80,19 @@ namespace IPCSoftware.UI.CommonViews.ViewModels
         public ICommand StartServiceCommand { get; }
         public ICommand StopServiceCommand { get; }
 
-        public ServiceStartupViewModel(IAppLogger logger, string targetServiceName) : base(logger)
+        public ServiceStartupViewModel(IAppLogger logger, CoreClient coreClient, string targetServiceName) : base(logger)
         {
-            TARGET_SERVICE_NAME = targetServiceName;                                    //Added by Rishabh -date - 05-05-2026
+            TARGET_SERVICE_NAME = targetServiceName;
+            _coreClient = coreClient;
+            //Added by Rishabh -date - 05-05-2026
             // Initialize commands
             StartServiceCommand = new RelayCommand(StartService, () => !IsServiceRunning);
             StopServiceCommand = new RelayCommand(StopService, () => IsServiceRunning);
 
             // Service Status Poller (Check every 2 seconds)
-            _servicePoller = new SafePoller(
-                TimeSpan.FromSeconds(2),
-                CheckServiceStatus,
+            _servicePoller = new SafePollerEx(_coreClient,
+                TimeSpan.FromMilliseconds(500),
+                CheckServiceStatus,_logger,
                 ex => _logger.LogError($"Service Poll Error: {ex.Message}", LogType.Diagnostics));
             _servicePoller.Start();
 

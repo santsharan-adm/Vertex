@@ -170,7 +170,7 @@ namespace IPCSoftware.App.Bending.DI
                 var logger = sp.GetRequiredService<IAppLogger>();
                 const string targetServiceName = "IPCSoftware.CoreService.Bending"; 
 
-                return new ServiceStartupViewModel(logger, targetServiceName);
+                return new ServiceStartupViewModel(logger, sp.GetRequiredService<CoreClient>(), targetServiceName);
             });
             //For bending Manual op view - aadded by sanjeev
             services.AddTransient<ManualOperationBendingView>();
